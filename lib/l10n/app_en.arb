@@ -1,0 +1,143 @@
+{
+  "@@locale": "en",
+  "appTitle": "SafeWayHome",
+  "startSession": "Start Session",
+  "endSession": "End Session",
+  "imSafe": "I'm OK",
+  "checkInPrompt": "Are you still safe?",
+  "countdownWarning": "Tap to confirm you're OK ({seconds}s)",
+  "@countdownWarning": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "holdToStaySafe": "Hold to stay safe",
+  "releaseDetected": "Release detected",
+  "fakeCallIncoming": "Incoming call...",
+  "fakeCallAnswer": "Answer",
+  "fakeCallDecline": "Decline",
+  "emergencyContacts": "Emergency Contacts",
+  "addContact": "Add Contact",
+  "editContact": "Edit Contact",
+  "contactName": "Name",
+  "contactPhone": "Phone Number",
+  "contactRelationship": "Relationship",
+  "preferredChannel": "Preferred Channel",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "telegram": "Telegram",
+  "phoneCall": "Phone Call",
+  "phoneCallDescription": "Call your contact directly",
+  "settings": "Settings",
+  "darkTheme": "Dark Theme",
+  "lightTheme": "Light Theme",
+  "language": "Language",
+  "escalationChain": "Escalation Chain",
+  "reminderTemplates": "Reminder Templates",
+  "modes": "Modes",
+  "walkMode": "Walk Mode",
+  "dateMode": "Date Mode",
+  "customMode": "Custom Mode",
+  "createMode": "Create Mode",
+  "editMode": "Edit Mode",
+  "checkInMechanism": "Check-in Method",
+  "holdButton": "Hold Button",
+  "disguisedReminder": "Disguised Reminder",
+  "checkInInterval": "Check-in Interval",
+  "missedTolerance": "Missed Tolerance",
+  "fakeCallSettings": "Fake Call Settings",
+  "callerName": "Caller Name",
+  "callerPhoto": "Caller Photo",
+  "voiceRecording": "Voice Recording",
+  "ringDuration": "Ring Duration",
+  "stepCountdownWarning": "Countdown Warning",
+  "stepDisguisedReminder": "Disguised Reminder",
+  "stepFakeCall": "Fake Call",
+  "stepSmsContacts": "SMS to Contacts",
+  "stepLoudAlarm": "Loud Alarm",
+  "stepCallEmergency": "Call Emergency Services",
+  "emergencyNumber": "Emergency Number",
+  "onboardingWelcome": "Welcome to SafeWayHome",
+  "onboardingDescription": "Your personal safety companion. Add an emergency contact to get started.",
+  "onboardingSelectMode": "Choose your default mode",
+  "onboardingSelectModeDescription": "Walk Mode monitors while you walk home. Date Mode sends discreet check-ins during meetings or dates.",
+  "onboardingAddContact": "Add an emergency contact",
+  "onboardingAddContactDescription": "This person will be notified if you don't check in.",
+  "onboardingPermissions": "Grant permissions",
+  "onboardingPermissionsDescription": "SafeWayHome needs location, phone, and SMS access to keep you safe.",
+  "onboardingGetStarted": "Get Started",
+  "onboardingNext": "Next",
+  "onboardingSkip": "Skip",
+  "onboardingBack": "Back",
+  "permissionLocation": "Location",
+  "permissionPhone": "Phone",
+  "permissionSms": "SMS",
+  "permissionGranted": "Granted",
+  "permissionDenied": "Denied",
+  "grantPermissions": "Grant Permissions",
+  "permissionsNeeded": "Permissions Needed",
+  "save": "Save",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "enabled": "Enabled",
+  "disabled": "Disabled",
+  "seconds": "{count}s",
+  "@seconds": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "minutes": "{count} min",
+  "@minutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "sessionActive": "Session Active",
+  "sessionElapsed": "Elapsed: {time}",
+  "@sessionElapsed": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "smsMessage": "{name} may need help.\nLast known location: {locationUrl}\nTime: {time}",
+  "@smsMessage": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "locationUrl": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "noContactsYet": "No emergency contacts yet",
+  "deleteContactConfirmTitle": "Delete Contact",
+  "deleteContactConfirmMessage": "Are you sure you want to delete {name}?",
+  "@deleteContactConfirmMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fieldRequired": "This field is required",
+  "invalidPhoneNumber": "Enter a valid phone number",
+  "contactSaved": "Contact saved",
+  "contactDeleted": "Contact deleted",
+  "slideToAnswer": "Slide to answer",
+  "fakeCallActive": "Calling...",
+  "choosePhoto": "Choose Photo",
+  "removePhoto": "Remove",
+  "noFileSelected": "None",
+  "templateCalendar": "Calendar Event",
+  "templateDuolingo": "Language Lesson",
+  "templateDelivery": "Delivery Update",
+  "templateWeather": "Weather Alert",
+  "templateFitness": "Fitness Reminder",
+  "templateMessage": "Message Preview",
+  "templateAppUpdate": "App Update",
+  "templateBattery": "Battery Warning",
+  "emergencyNumberSetup": "Emergency Number",
+  "emergencyNumberDescription": "This number will be called as a last resort if you don't respond",
+  "skipStep": "Skip",
+  "skipStepWarning": "We recommend completing this step",
+  "createCustomMode": "Create Custom",
+  "templateSubtitle": "Subtitle",
+  "templateImage": "Custom Image"
+}

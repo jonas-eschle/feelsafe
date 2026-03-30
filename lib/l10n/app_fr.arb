@@ -1,0 +1,143 @@
+{
+  "@@locale": "fr",
+  "appTitle": "SafeWayHome",
+  "startSession": "Démarrer la session",
+  "endSession": "Terminer la session",
+  "imSafe": "Ça va",
+  "checkInPrompt": "Tu es toujours en sécurité ?",
+  "countdownWarning": "Appuie pour confirmer ({seconds}s)",
+  "@countdownWarning": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "holdToStaySafe": "Maintiens pour rester en sécurité",
+  "releaseDetected": "Relâchement détecté",
+  "fakeCallIncoming": "Appel entrant...",
+  "fakeCallAnswer": "Répondre",
+  "fakeCallDecline": "Refuser",
+  "emergencyContacts": "Contacts d'urgence",
+  "addContact": "Ajouter un contact",
+  "editContact": "Modifier le contact",
+  "contactName": "Nom",
+  "contactPhone": "Numéro de téléphone",
+  "contactRelationship": "Lien",
+  "preferredChannel": "Canal préféré",
+  "sms": "SMS",
+  "whatsapp": "WhatsApp",
+  "telegram": "Telegram",
+  "phoneCall": "Appel téléphonique",
+  "phoneCallDescription": "Appeler directement ton contact",
+  "settings": "Paramètres",
+  "darkTheme": "Thème sombre",
+  "lightTheme": "Thème clair",
+  "language": "Langue",
+  "escalationChain": "Chaîne d'escalade",
+  "reminderTemplates": "Modèles de rappel",
+  "modes": "Modes",
+  "walkMode": "Mode trajet",
+  "dateMode": "Mode rendez-vous",
+  "customMode": "Mode personnalisé",
+  "createMode": "Créer un mode",
+  "editMode": "Modifier le mode",
+  "checkInMechanism": "Méthode de check-in",
+  "holdButton": "Maintien du bouton",
+  "disguisedReminder": "Rappel déguisé",
+  "checkInInterval": "Intervalle de check-in",
+  "missedTolerance": "Tolérance aux check-ins manqués",
+  "fakeCallSettings": "Paramètres du faux appel",
+  "callerName": "Nom de l'appelant",
+  "callerPhoto": "Photo de l'appelant",
+  "voiceRecording": "Enregistrement vocal",
+  "ringDuration": "Durée de sonnerie",
+  "stepCountdownWarning": "Compte à rebours",
+  "stepDisguisedReminder": "Rappel déguisé",
+  "stepFakeCall": "Faux appel",
+  "stepSmsContacts": "SMS aux contacts",
+  "stepLoudAlarm": "Alarme forte",
+  "stepCallEmergency": "Appel aux urgences",
+  "emergencyNumber": "Numéro d'urgence",
+  "onboardingWelcome": "Bienvenue sur SafeWayHome",
+  "onboardingDescription": "Ton compagnon de sécurité personnel. Ajoute un contact d'urgence pour commencer.",
+  "onboardingSelectMode": "Choisis ton mode par défaut",
+  "onboardingSelectModeDescription": "Le mode trajet te surveille sur le chemin du retour. Le mode rendez-vous envoie des check-ins discrets pendant tes sorties.",
+  "onboardingAddContact": "Ajoute un contact d'urgence",
+  "onboardingAddContactDescription": "Cette personne sera prévenue si tu ne réponds pas.",
+  "onboardingPermissions": "Accorde les permissions",
+  "onboardingPermissionsDescription": "SafeWayHome a besoin d'accéder à ta localisation, ton téléphone et tes SMS pour assurer ta sécurité.",
+  "onboardingGetStarted": "C'est parti",
+  "onboardingNext": "Suivant",
+  "onboardingSkip": "Passer",
+  "onboardingBack": "Retour",
+  "permissionLocation": "Localisation",
+  "permissionPhone": "Téléphone",
+  "permissionSms": "SMS",
+  "permissionGranted": "Accordée",
+  "permissionDenied": "Refusée",
+  "grantPermissions": "Accorder les permissions",
+  "permissionsNeeded": "Permissions requises",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "enabled": "Activé",
+  "disabled": "Désactivé",
+  "seconds": "{count}s",
+  "@seconds": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "minutes": "{count} min",
+  "@minutes": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "sessionActive": "Session active",
+  "sessionElapsed": "Écoulé : {time}",
+  "@sessionElapsed": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "smsMessage": "{name} a peut-être besoin d'aide.\nDernière position connue : {locationUrl}\nHeure : {time}",
+  "@smsMessage": {
+    "placeholders": {
+      "name": { "type": "String" },
+      "locationUrl": { "type": "String" },
+      "time": { "type": "String" }
+    }
+  },
+  "noContactsYet": "Aucun contact d'urgence pour l'instant",
+  "deleteContactConfirmTitle": "Supprimer le contact",
+  "deleteContactConfirmMessage": "Tu veux vraiment supprimer {name} ?",
+  "@deleteContactConfirmMessage": {
+    "placeholders": {
+      "name": { "type": "String" }
+    }
+  },
+  "fieldRequired": "Ce champ est obligatoire",
+  "invalidPhoneNumber": "Entre un numéro de téléphone valide",
+  "contactSaved": "Contact enregistré",
+  "contactDeleted": "Contact supprimé",
+  "slideToAnswer": "Glisse pour répondre",
+  "fakeCallActive": "Appel en cours...",
+  "choosePhoto": "Choisir une photo",
+  "removePhoto": "Supprimer",
+  "noFileSelected": "Aucun",
+  "templateCalendar": "Événement du calendrier",
+  "templateDuolingo": "Leçon de langue",
+  "templateDelivery": "Mise à jour de livraison",
+  "templateWeather": "Alerte météo",
+  "templateFitness": "Rappel fitness",
+  "templateMessage": "Aperçu du message",
+  "templateAppUpdate": "Mise à jour de l'appli",
+  "templateBattery": "Alerte batterie",
+  "emergencyNumberSetup": "Numéro d'urgence",
+  "emergencyNumberDescription": "Ce numéro sera appelé en dernier recours si tu ne réponds pas",
+  "skipStep": "Passer",
+  "skipStepWarning": "On te recommande de compléter cette étape",
+  "createCustomMode": "Créer un mode perso",
+  "templateSubtitle": "Sous-titre",
+  "templateImage": "Image personnalisée"
+}
