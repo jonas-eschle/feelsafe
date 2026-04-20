@@ -1,0 +1,149 @@
+/// Unit tests for `SessionMode` — fields, copyWith, JSON round-trip
+/// including triggers and overrides, equality.
+library;
+
+import 'package:checks/checks.dart';
+import 'package:guardianangela/data/models/enums.dart';
+import 'package:guardianangela/domain/models/models.dart';
+import 'package:test/test.dart';
+
+import '../../helpers/test_helpers.dart';
+
+void main() {
+  group('SessionMode', () {
+    test('required fields & defaults', () {
+      final m = makeMode();
+      check(m.id).isNotNull();
+      check(m.name).equals('Test');
+      check(m.checkInType).equals(ChainStepType.holdButton);
+      check(m.distressChainId).isNull();
+      check(m.distressTriggers).isEmpty();
+      check(m.disarmTriggers).isEmpty();
+      check(m.overrides).isNull();
+    });
+
+    test('copyWith replaces one field', () {
+      final m = makeMode(name: 'A');
+      final m2 = m.copyWith(name: 'B');
+      check(m2.name).equals('B');
+      check(m2.id).equals(m.id);
+    });
+
+    test('copyWith replaces distressChainId', () {
+      final m = makeMode();
+      final m2 = m.copyWith(distressChainId: 'dc1');
+      check(m2.distressChainId).equals('dc1');
+    });
+
+    test('JSON round-trip (minimal)', () {
+      final m = makeMode();
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with full chain', () {
+      final m = makeMode(
+        steps: [
+          holdStep(order: 0),
+          smsStep(order: 1),
+          fakeCallStep(order: 2),
+        ],
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with distress triggers', () {
+      final m = makeMode().copyWith(
+        distressTriggers: const [
+          HardwareButtonDistressTrigger(
+            buttonType: ButtonType.volumeUp,
+            trigger: RepeatPressTrigger(pressCount: 5, pressWindowMs: 500),
+          ),
+        ],
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with disarm triggers', () {
+      final m = makeMode().copyWith(
+        disarmTriggers: const [
+          TimerDisarmTrigger(durationSeconds: 3600),
+          GpsArrivalDisarmTrigger(
+            latitude: 47.0,
+            longitude: 8.0,
+            radiusMeters: 50,
+          ),
+          WrongPinThresholdDisarmTrigger(threshold: 5),
+        ],
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with ModeOverrides', () {
+      final m = makeMode().copyWith(
+        overrides: const ModeOverrides(
+          distressChainId: 'dc-other',
+          gpsLogging: GpsLoggingConfig(enabled: false),
+        ),
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with empty fields', () {
+      const m = SessionMode(
+        id: 'm1',
+        name: 'X',
+        checkInType: ChainStepType.disguisedReminder,
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('equality', () {
+      final a = makeMode();
+      final b = makeMode();
+      check(a).equals(b);
+      check(a.hashCode).equals(b.hashCode);
+    });
+
+    test('inequality when name differs', () {
+      check(makeMode(name: 'A'))
+          .not((it) => it.equals(makeMode(name: 'B')));
+    });
+
+    test('inequality when chainSteps differ', () {
+      check(makeMode(steps: [holdStep()])).not(
+        (it) => it.equals(makeMode(steps: [holdStep(), smsStep()])),
+      );
+    });
+
+    test('fromJson throws on unknown checkInType', () {
+      check(() => SessionMode.fromJson(const {
+            'id': 'x',
+            'name': 'y',
+            'checkInType': 'bogus',
+          })).throws<ArgumentError>();
+    });
+
+    test('toString contains id, name, type', () {
+      final m = makeMode();
+      final str = m.toString();
+      check(str).contains(m.id);
+      check(str).contains(m.name);
+      check(str).contains('holdButton');
+    });
+
+    test('mode with all trigger types round-trips', () {
+      final m = makeMode().copyWith(
+        distressTriggers: const [
+          HardwareButtonDistressTrigger(
+            buttonType: ButtonType.volumeUp,
+            trigger: LongPressTrigger(durationSeconds: 3.0),
+          ),
+        ],
+        disarmTriggers: const [
+          TimerDisarmTrigger(durationSeconds: 100),
+        ],
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+  });
+}
