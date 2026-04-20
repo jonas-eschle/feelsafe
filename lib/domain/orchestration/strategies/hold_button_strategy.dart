@@ -1,9 +1,12 @@
 /// `HoldButtonStrategy` — strategy for `ChainStepType.holdButton`.
 ///
-/// Hold detection is UI-side (the user holds a button on
-/// `HomeScreen`); this strategy intentionally has no side-effect.
-/// It exists so every step type routes through the strategy
-/// registry uniformly.
+/// Hold detection is UI-side: the user physically holds a button on
+/// `HomeScreen` / `SessionScreen`, and the engine responds via the
+/// `holdStart()` / `holdRelease()` control calls, **not** via a
+/// side-effect produced by this strategy. The strategy exists only
+/// so every step type routes through [EventStrategyRegistry]
+/// uniformly. Both [executeReal] and [simulationDescription] are
+/// intentional no-ops / pure strings.
 library;
 
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -17,10 +20,11 @@ final class HoldButtonStrategy extends EventStrategy {
 
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    // Intentional no-op: hold detection is UI-side.
+    // Intentional no-op: hold detection is UI-side and dispatched to
+    // the engine via holdStart() / holdRelease(). See class doc.
   }
 
   @override
   String simulationDescription(ChainStep step, EventServices services) =>
-      '[SIM] holdButton';
+      '[SIM] Waiting for hold button';
 }

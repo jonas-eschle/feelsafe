@@ -1,10 +1,11 @@
 /// `HardwareButtonStrategy` — strategy for
 /// `ChainStepType.hardwareButton`.
 ///
-/// No-op: hardware-button detection is handled by `TriggerManager`
-/// via the `HardwareButtonServiceProtocol`, not by a chain step.
-/// This strategy exists only so every step type has a registered
-/// strategy.
+/// Hardware-button detection is handled by `TriggerManager` via the
+/// `HardwareButtonServiceProtocol`, **not** by a chain step. This
+/// strategy exists only so every step type routes through
+/// [EventStrategyRegistry] uniformly. Both [executeReal] and
+/// [simulationDescription] are intentional no-ops / pure strings.
 library;
 
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -23,5 +24,5 @@ final class HardwareButtonStrategy extends EventStrategy {
 
   @override
   String simulationDescription(ChainStep step, EventServices services) =>
-      '[SIM] hardwareButton';
+      '[SIM] Hardware trigger armed';
 }
