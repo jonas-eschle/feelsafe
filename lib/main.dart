@@ -1,12 +1,18 @@
-import 'package:flutter/material.dart';
+/// App entry point.
+///
+/// Initializes the Flutter binding, wraps the app in a
+/// `ProviderScope`, and hands off to `GuardianAngelaApp`.
+library;
 
-void main() => runApp(const GuardianAngelaApp());
+import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:guardianangela/app.dart';
 
-class GuardianAngelaApp extends StatelessWidget {
-  const GuardianAngelaApp({super.key});
+export 'package:guardianangela/app.dart' show GuardianAngelaApp;
 
-  @override
-  Widget build(BuildContext context) => const MaterialApp(
-        home: Scaffold(body: Center(child: Placeholder())),
-      );
+/// Main entry point.
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // TODO Phase 6: init AppDatabase before runApp.
+  runApp(const ProviderScope(child: GuardianAngelaApp()));
 }
