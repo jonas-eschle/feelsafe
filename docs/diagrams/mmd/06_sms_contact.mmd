@@ -1,0 +1,30 @@
+stateDiagram-v2
+    [*] --> Executing: start()\nwait=0s (fires immediately)
+
+    Executing --> SendToContacts: strategy.executeReal()
+
+    SendToContacts --> Sent: all contacts attempted
+    SendToContacts --> Queued: no signal\n(WorkManager retry)
+    SendToContacts --> Failed: permission denied\nor invalid number
+
+    Sent --> GracePeriod: duration timer runs
+    Queued --> GracePeriod: non-blocking\nchain continues
+    Failed --> GracePeriod: logged, chain continues
+
+    GracePeriod --> Disarmed: user swipes\n"I'm Safe"
+    GracePeriod --> Advance: grace expires
+
+    Disarmed --> [*]: reset to step 0
+    Advance --> [*]: advance to next step
+
+    note right of Executing
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 15s (send window)
+        grace: 5s
+        retryCount: 0
+
+        Channels: SMS / WhatsApp / Telegram
+        Android SMS: auto-send
+        iOS SMS: user must press Send!
+    end note

@@ -1,0 +1,12 @@
+flowchart LR
+    W["Wait Phase\n(waitSeconds)\n\nholdButton: 0s\nreminder: 1800s\nhardware: 0s\ncountdown: 0s\nfakeCall: 0s\nsms: 0s\nphoneCall: 0s\nalarm: 0s\nemergency: 0s"] --> D["Duration Phase\n(durationSeconds)\n\nholdButton: 10s\nreminder: 60s\nhardware: 0s\ncountdown: 10s\nfakeCall: 30s\nsms: 15s\nphoneCall: 60s\nalarm: 30s\nemergency: 5s"]
+    D --> G["Grace Phase\n(gracePeriodSeconds)\n\nholdButton: 5s\nreminder: 5s\nhardware: 0s\ncountdown: 3s\nfakeCall: 5s\nsms: 5s\nphoneCall: 5s\nalarm: 5s\nemergency: 0s"]
+    G --> Check{miss ≤\nretryCount?}
+    Check -->|yes, confirmed| W2["Reset to Wait\n(full interval)"]
+    Check -->|yes, missed| R["IMMEDIATE Retry\n(skip wait!)"]
+    Check -->|no, exceeded| A["Advance to\nnext step"]
+    R --> D
+
+    style R fill:#ff6b6b,color:#fff
+    style A fill:#ff6b6b,color:#fff
+    style W2 fill:#4ecdc4,color:#fff

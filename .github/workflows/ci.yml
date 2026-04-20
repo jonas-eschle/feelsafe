@@ -1,0 +1,44 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Check formatting
+        run: dart format --output=none --set-exit-if-changed .
+
+      - name: Sort imports
+        run: dart run import_sorter:main --no-comments --exit-if-changed
+
+      - name: Regenerate code
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Check for stale generated files
+        run: |
+          if [ -n "$(git diff --name-only)" ]; then
+            echo "::error::Generated files are stale. Run 'dart run build_runner build' and commit."
+            git diff --name-only
+            exit 1
+          fi
+
+      - name: Analyze
+        run: flutter analyze --fatal-infos
+
+      - name: Test
+        run: flutter test

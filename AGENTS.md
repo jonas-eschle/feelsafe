@@ -1,9 +1,9 @@
-# SafeWayHome - Agent Documentation
+# Guardian Angela - Agent Documentation
 
-This document provides a high-level overview of the SafeWayHome repository to help AI agents and developers navigate and understand the codebase.
+This document provides a high-level overview of the Guardian Angela repository to help AI agents and developers navigate and understand the codebase.
 
 ## Project Overview
-SafeWayHome is a personal safety application built with Flutter. It implements a "dead man's switch" mechanism to ensure user safety during activities like walking home alone or going on dates.
+Guardian Angela is a personal safety application built with Flutter. It implements a "dead man's switch" mechanism to ensure user safety during activities like walking home alone or going on dates.
 
 ## Tech Stack
 - **Framework:** Flutter (Dart)

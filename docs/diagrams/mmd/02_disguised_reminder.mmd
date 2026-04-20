@@ -1,0 +1,35 @@
+stateDiagram-v2
+    [*] --> WaitInterval: start()
+
+    WaitInterval --> ReminderVisible: wait expires\nemit reminderFired
+
+    ReminderVisible --> Disarmed: user interacts\n(tapButton/tapWord/\nswipe/dismiss)
+    ReminderVisible --> GracePeriod: visible time expires
+
+    GracePeriod --> Disarmed: user interacts
+    GracePeriod --> MissCheck: grace expires
+
+    MissCheck --> RetryImmediate: missCount ≤ retryCount\nemit repeatMissed
+    MissCheck --> Advance: missCount > retryCount\nemit stepAdvancing
+
+    RetryImmediate --> ReminderVisible: IMMEDIATE retry\n(skip wait!)\nemit reminderFired
+
+    Disarmed --> WaitInterval: reset to step 0\n(full wait restarts)
+
+    Advance --> [*]: advance to next step
+
+    note right of WaitInterval
+        TIMING DEFAULTS
+        wait: 1800s (30 min)
+        duration: 60s (visible time)
+        grace: 5s
+        retryCount: 3
+        ±20% jitter → 24–36 min
+    end note
+
+    note right of RetryImmediate
+        CRITICAL: Retry fires
+        IMMEDIATELY (no 30min wait).
+        Full wait only between
+        CONFIRMED check-ins.
+    end note

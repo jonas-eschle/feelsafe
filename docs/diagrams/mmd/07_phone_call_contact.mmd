@@ -1,0 +1,33 @@
+stateDiagram-v2
+    [*] --> PreSMS: start()\nwait=0s\npreSendSms=true (default)
+
+    PreSMS --> Dialing: SMS sent\n(or skipped if false)
+    PreSMS --> Dialing: SMS failed\n(call proceeds anyway)
+
+    Dialing --> CallActive: PhoneService.call()
+    CallActive --> WaitForAnswer: duration timer runs
+
+    WaitForAnswer --> GracePeriod: duration expires
+    WaitForAnswer --> Disarmed: user swipes\n"I'm Safe"
+
+    GracePeriod --> RetryCheck: grace expires
+    GracePeriod --> Disarmed: user swipes
+
+    RetryCheck --> Dialing: retry available\n(try same or alt contact)
+    RetryCheck --> Advance: all retries +\nalternatives exhausted
+
+    Disarmed --> [*]: reset to step 0
+    Advance --> [*]: advance to next step
+
+    note right of CallActive
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 60s (call time)
+        grace: 5s
+        retryCount: 1
+
+        2 total attempts (1 + 1 retry)
+        Then alternativeContactIds
+        Can't detect if answered
+        (platform limitation)
+    end note

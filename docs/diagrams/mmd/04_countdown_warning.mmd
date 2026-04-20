@@ -1,0 +1,23 @@
+stateDiagram-v2
+    [*] --> Duration: start()\nwait=0s (fires immediately)
+
+    Duration --> Disarmed: user swipes\n"I'm Safe" slider
+    Duration --> GracePeriod: countdown expires
+
+    GracePeriod --> Disarmed: user swipes
+    GracePeriod --> Advance: grace expires
+
+    Disarmed --> [*]: reset to step 0
+    Advance --> [*]: advance to next step
+
+    note right of Duration
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 10s (countdown)
+        grace: 3s
+        retryCount: 0
+
+        UI: fullScreen/notification/discrete
+        Vibration pattern (default on)
+        Warning sound (default off)
+    end note

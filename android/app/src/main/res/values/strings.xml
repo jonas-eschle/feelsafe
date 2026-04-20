@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android resource strings.
+
+  Flutter app localisation lives in `lib/l10n/l10n/` and is loaded at
+  runtime via `AppLocalizations`; the strings in this file are used
+  only by platform Android surfaces that cannot access Flutter
+  localisation (widget RemoteViews, system dialogs, etc.).
+
+  The home-screen widget renders without any Flutter engine, so its
+  button labels and descriptions must live here.
+-->
+<resources>
+    <string name="widget_description">Guardian Angela — Quick Exit and Fake Call</string>
+    <string name="widget_status_idle">Idle</string>
+    <string name="widget_quick_exit">Quick Exit</string>
+    <string name="widget_fake_call">Fake Call</string>
+</resources>

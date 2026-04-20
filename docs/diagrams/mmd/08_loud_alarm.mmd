@@ -1,0 +1,26 @@
+stateDiagram-v2
+    [*] --> AlarmPlaying: start()\nwait=0s (fires immediately)
+
+    AlarmPlaying --> AlarmPlaying: volume ramping\n(0→max over 10s)
+    AlarmPlaying --> GracePeriod: duration expires
+
+    GracePeriod --> Disarmed: user swipes\n"I'm Safe"
+    GracePeriod --> Advance: grace expires
+
+    AlarmPlaying --> Disarmed: user swipes\n"I'm Safe"\n(always disarmable)
+
+    Disarmed --> [*]: reset to step 0\nstop audio + vibration
+    Advance --> [*]: advance to next step
+
+    note right of AlarmPlaying
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 30s (alarm plays)
+        grace: 5s
+        retryCount: 0
+
+        Volume ramp: 0→max over 10s
+        Audio: siren/beep/custom
+        Vibration: continuous strong pulsing
+        Overrides silent mode
+    end note

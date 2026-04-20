@@ -1,0 +1,30 @@
+stateDiagram-v2
+    [*] --> Confirmation: start()\nwait=0s\nshowConfirmation=true (default)
+
+    Confirmation --> PreSMS: countdown expires\nor user confirms
+    Confirmation --> Disarmed: user cancels
+
+    PreSMS --> Dialing: sendLocationSmsFirst\n(SMS with location to contacts)
+    PreSMS --> Dialing: SMS skipped or failed
+
+    Dialing --> CallActive: PhoneService.callEmergency()\n(112/911/locale)
+
+    CallActive --> Done: duration expires
+
+    Done --> Advance: grace=0s\nadvance immediately
+
+    Disarmed --> [*]: reset to step 0
+    Advance --> [*]: advance to next step\nor chainExhausted
+
+    note right of Confirmation
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 5s
+        grace: 0s (immediate advance)
+        retryCount: 0
+
+        Confirmation: 5s countdown
+        (configurable, default ON)
+        Android: auto-dial
+        iOS: confirmation dialog required
+    end note

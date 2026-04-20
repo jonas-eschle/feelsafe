@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "io.safewayhome.safewayhome"
+    namespace = "com.guardianangela.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "io.safewayhome.safewayhome"
+        applicationId = "com.guardianangela.app"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
@@ -42,6 +42,9 @@ android {
 
 dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.4")
+
+    // WorkManager — persistent background task queue (SMS retry, crash-recovery watchdog)
+    implementation("androidx.work:work-runtime-ktx:2.9.1")
 }
 
 flutter {

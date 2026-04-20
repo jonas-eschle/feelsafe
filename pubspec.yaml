@@ -1,5 +1,5 @@
-name: safewayhome
-description: "SafeWayHome - Personal safety app with dead man's switch"
+name: guardianangela
+description: "Guardian Angela - Personal safety app with dead man's switch"
 publish_to: 'none'
 version: 1.0.0+1
 
@@ -14,14 +14,14 @@ dependencies:
   intl: any
 
   # State management
-  flutter_riverpod: ^2.6.1
+  flutter_riverpod: ^3.0.0
 
   # Navigation
   go_router: ^17.1.0
 
   # Local storage
-  hive: ^2.2.3
-  hive_flutter: ^1.1.0
+  hive_ce: ^2.2.0
+  hive_ce_flutter: ^2.1.0
 
   # Location
   geolocator: ^14.0.2
@@ -34,6 +34,10 @@ dependencies:
 
   # Audio
   just_audio: ^0.10.5
+  # iOS headphone remote button support (C1)
+  audio_service: ^0.18.17
+  # Text-to-speech fallback when built-in voice asset is missing
+  flutter_tts: ^4.2.5
 
   # Vibration
   vibration: ^3.1.8
@@ -47,23 +51,65 @@ dependencies:
   # Image picker (for fake call photo)
   image_picker: ^1.2.1
 
+  # Audio recording (for fake call voice + auto-record)
+  record: ^6.0.0
+
+  # File picker (for picking existing audio files)
+  file_picker: ^11.0.2
+
   # File path
   path_provider: ^2.1.5
+  path: ^1.9.1
 
   # Local notifications (disguised reminders)
   flutter_local_notifications: ^21.0.0
 
+  # Background execution (foreground service)
+  flutter_background_service: ^5.1.0
+  flutter_background_service_android: ^6.2.7
+
   # Icons
   cupertino_icons: ^1.0.8
+  crypto: ^3.0.7
+  battery_plus: ^7.0.0
+  flutter_secure_storage: ^10.0.0
+  shared_preferences: ^2.5.5
+  share_plus: ^12.0.2
+  local_auth: ^3.0.1
+  clock: ^1.1.2
+  package_info_plus: ^9.0.1
+  device_info_plus: ^12.0.0
+  flutter_contacts: ^2.0.2
+  # @visibleForTesting / other static annotations
+  meta: ^1.15.0
+  home_widget: ^0.9.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  hive_generator: ^2.0.1
+  hive_ce_generator: ^1.6.0
   build_runner: ^2.4.13
   mocktail: ^1.0.4
   fake_async: ^1.3.3
+  flutter_launcher_icons: ^0.14.4
+  import_sorter: ^4.6.0
+  checks: ^0.3.1
+  test: ^1.30.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  remove_alpha_ios: true
+  web:
+    generate: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#131118"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+
+import_sorter:
+  comments: false
+  emojis: false
 
 flutter:
   generate: true

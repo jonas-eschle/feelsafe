@@ -1,0 +1,34 @@
+stateDiagram-v2
+    [*] --> Ringing: start()\nwait=0s (rings immediately)
+
+    Ringing --> Answered: user taps Answer
+    Ringing --> Declined: user taps Decline\nor ring timer expires
+
+    Answered --> InCall: voice plays\n(earpiece default)
+    InCall --> Disarmed: user hangs up\nemit userDisarmed
+
+    Declined --> GracePeriod: declineIsSafe=true:\ncount as disarm
+    Declined --> MissCheck: declineIsSafe=false:\ncount as miss
+
+    GracePeriod --> Disarmed: (disarm fires)
+    MissCheck --> RetryOrAdvance: check retryCount
+
+    Disarmed --> [*]: reset to step 0
+
+    RetryOrAdvance --> Ringing: retry available\n(rings again immediately)
+    RetryOrAdvance --> Advance: retries exhausted
+
+    Advance --> [*]: advance to next step
+
+    note right of Ringing
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 30s (ring time)
+        grace: 5s
+        retryCount: 2
+
+        3 total attempts (1 + 2 retries)
+        Call styles: android/ios/
+        whatsapp/telegram/signal
+        Caller: "Angela" (default)
+    end note

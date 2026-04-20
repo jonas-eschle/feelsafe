@@ -1,0 +1,50 @@
+flowchart TD
+    Start([Session Start]) --> S0
+
+    subgraph S0["Step 0: disguisedReminder (retry=3)"]
+        direction TB
+        Wait["Wait 30 min\n(±20% jitter: 24-36 min)"] --> Fire["reminderFired\n(disguised notification)"]
+        Fire --> Vis["Visible 60s\n(Calendar/Duolingo/etc)"]
+        Vis -->|user interacts| Safe["✓ Disarm\n→ restart 30min wait"]
+        Vis -->|no interaction| Grace["Grace: 5s"]
+        Grace -->|user interacts| Safe
+        Grace -->|expires| Miss["Miss #N\nemit repeatMissed"]
+        Miss -->|miss ≤ 3| Retry["IMMEDIATE retry\n(no 30min wait!)"]
+        Retry --> Fire
+        Miss -->|miss > 3| Advance["4 total misses\n→ advance"]
+        Safe --> Wait
+    end
+
+    S0 -->|4 misses| S1
+
+    subgraph S1["Step 1: fakeCall (retry=2)"]
+        direction TB
+        Ring1B["Ring: 30s"] --> Miss1B{Response?}
+        Miss1B -->|answer| Disarm1B[Disarm → step 0]
+        Miss1B -->|miss| Ring2B["Retry ring: 30s"]
+        Ring2B --> Miss2B{Response?}
+        Miss2B -->|answer| Disarm1B
+        Miss2B -->|miss| Ring3B["Retry ring: 30s"]
+        Ring3B --> AdvB[3 misses → advance]
+    end
+
+    S1 -->|3 misses| S2
+
+    subgraph S2["Step 2: smsContact"]
+        direction TB
+        SMSB["Send SMS to ALL contacts\n+ GPS location"] --> G2B[Grace: 5s]
+    end
+
+    S2 -->|grace expires| S3
+
+    subgraph S3["Step 3: callEmergency"]
+        direction TB
+        ConfirmB["5s confirmation"] --> CallB["Call 112/911"]
+    end
+
+    S3 -->|complete| End([Chain Exhausted])
+
+    style S0 fill:#4ecdc4,color:#000
+    style S1 fill:#ffb74d,color:#000
+    style S2 fill:#ff7043,color:#fff
+    style S3 fill:#ef5350,color:#fff

@@ -1,0 +1,27 @@
+stateDiagram-v2
+    [*] --> Listening: start()\nwait=0s, duration=0s,\ngrace=0s, retry=0
+
+    Listening --> PatternDetected: volume button\npattern matched
+
+    PatternDetected --> Disarmed: disarm() → reset to step 0
+
+    Disarmed --> [*]: chain resets
+
+    note right of Listening
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 0s
+        grace: 0s
+        retryCount: 0
+
+        Android only (iOS greyed out)
+        Patterns:
+        - repeatPress: 3× in 500ms
+        - longPress: 2s hold
+    end note
+
+    note right of PatternDetected
+        Pattern match = disarm.
+        Runs as passive listener
+        alongside active step.
+    end note

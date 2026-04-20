@@ -1,0 +1,30 @@
+stateDiagram-v2
+    [*] --> HoldWait: start()\nwait=0s (instant)
+    HoldWait --> Holding: holdStart()
+    HoldWait --> HoldWait: (waiting for touch)
+
+    Holding --> Holding: (user holds continuously)
+    Holding --> SensitivityDelay: holdRelease()
+
+    SensitivityDelay --> Holding: holdStart()\n(brief lift ignored)
+    SensitivityDelay --> GraceCountdown: sensitivity expires\n(default 1.0s)
+
+    GraceCountdown --> Disarmed: holdStart()\n(re-hold = disarm)
+    GraceCountdown --> Advance: grace expires
+
+    Disarmed --> HoldWait: reset to step 0
+    Advance --> [*]: advance to next step
+
+    note right of SensitivityDelay
+        Release sensitivity: 1.0s default
+        Range: 0.3–3.0s
+        Ignores lifts shorter than this
+    end note
+
+    note right of GraceCountdown
+        TIMING DEFAULTS
+        wait: 0s
+        duration: 10s
+        grace: 5s
+        retryCount: 0
+    end note

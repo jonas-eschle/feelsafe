@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Android Auto Backup rules for Guardian Angela.
+
+  Per spec 03, the encrypted Hive database AND the flutter_secure_storage
+  contents (which hold the Hive encryption key) must back up together
+  so the restored app can decrypt its boxes. Any other files are excluded.
+-->
+<full-backup-content>
+  <!-- Hive boxes live in the app's files directory. -->
+  <include domain="file" path="." />
+  <!-- flutter_secure_storage on Android uses EncryptedSharedPreferences
+       named FlutterSecureStorage; include it so the Hive AES key survives
+       a restore. -->
+  <include domain="sharedpref" path="FlutterSecureStorage.xml" />
+
+  <!-- Exclude ephemeral caches and temp files. -->
+  <exclude domain="file" path="cache" />
+  <exclude domain="database" path="." />
+</full-backup-content>
