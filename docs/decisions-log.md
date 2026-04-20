@@ -2653,6 +2653,50 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+---
+
+#### D-PROCESS-1: Rewrite WAL checkpoint schema (JSON-per-phase)
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** The complete-rewrite plan (`/home/jonas/.claude/plans/spicy-enchanting-honey.md`) requires a write-ahead-log so a rate-limited or session-interrupted PM can resume cleanly without guessing. Historical L5 (parallel agent conflict, state lost on interruption) was the driver.
+- **Decision:** `docs/rewrite-wal/phase-NN.json` per phase, overwritten on every PM update (not appended). Schema: `phase`, `title`, `step` (one of `design|code|review|fix|verify|exit`), `iteration` (0–3), `owner_agent`, `owned_files`, `decisions_added`, `gates_passed`, `gates_pending`, `next_action`, `last_update_iso`, `notes`. On resume, PM reads the WAL FIRST, then `git log --oneline -20`, then open TaskUpdate subtasks, then runs the universal gates before dispatching anything.
+- **Rationale:**
+  - Overwrite (not append) keeps each phase WAL small and scannable.
+  - `next_action` as a single sentence forces PM discipline: the successor dispatches exactly this, no reinterpretation.
+  - ISO-8601 timestamp lets successors detect stale WAL (e.g., if commit log shows newer activity than the WAL claims).
+- **Implications:**
+  - Closes L5 (parallel-agent seam failure on interruption).
+  - `docs/rewrite-wal/README.md` documents the schema normatively.
+  - Git commits become the coarse-grained checkpoint; WAL is the fine-grained in-phase state.
+- **References:** `docs/interruption-resilience-strategy.md` §2-3; `docs/rewrite-wal/README.md`; plan §"Journal — the only cross-session truth".
+
+---
+
+#### D-PROCESS-2: Agent-prompt templates at `docs/agent-prompts/`
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Sub-agents (Design, Coding, Reviewer, Fixer, Verifier) need consistent prompt structure so rate-limit survival and scope discipline are guaranteed across invocations. Historical L11 (implicit wiring) and the PM's single-owner rule need codification in prompt form.
+- **Decision:** Six Markdown templates under `docs/agent-prompts/`:
+  - `pm-orchestrator.md` — PM identity, per-phase ritual, interruption preamble.
+  - `design-agent.md` — proposal-only, required output format (Approach / Trade-offs / Risks / Failure-modes-mitigated / Files / Rejected-alternatives).
+  - `coding-agent.md` — interruption preamble, scope rules, pre-alpha break-compat, pure-domain import guard, no-default-arm rule, round-trip-test requirement.
+  - `reviewer.md` — JSON output format (verdict + findings), severity rules (Block / Warn / Note).
+  - `fixer.md` — Block-only scope, iteration counting, gate re-run obligation.
+  - `verifier.md` — read-only gate runner; PM's independent check.
+  - All templates carry the standard interruption preamble: 30-use soft cap / 40-use hard cap / report-on-interrupt.
+- **Rationale:**
+  - Codified prompts prevent scope drift across agent invocations.
+  - A Block → Fixer → re-review loop with `iteration` tracking bounds the review loop (max 3 iterations; 3rd-iter Block escalates to user — PM never self-overrides).
+  - Verifier independence closes the "PM trusts a lying coding agent's self-report" failure mode.
+- **Implications:**
+  - Every phase's agent dispatch carries these templates.
+  - PM keeps them up-to-date as patterns emerge.
+- **References:** `docs/agent-prompts/*.md`; plan §"PM orchestration contract"; `docs/rebuild-strategy.md` §2 (L5, L11).
+
+---
+
 ## Open questions still pending
 
 The table below tracks every open question ever logged. 12 of the

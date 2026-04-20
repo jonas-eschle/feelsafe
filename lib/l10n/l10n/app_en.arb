@@ -1,0 +1,7 @@
+{
+  "@@locale": "en",
+  "appTitle": "Guardian Angela",
+  "@appTitle": {
+    "description": "The application name shown in titles and launchers."
+  }
+}
