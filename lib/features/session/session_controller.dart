@@ -1,85 +1,617 @@
-/// Session-feature controller stub.
+/// Session-feature controller.
 ///
-/// Drives the active safety session — wraps `SessionEngine` and
-/// translates engine events into the `WalkSession` view-model.
+/// Drives the active safety session: constructs the pure-Dart
+/// [SessionEngine], wires it to a [SessionOrchestrator] (side-effect
+/// strategies), a [SessionLogRecorder] (persistable history), and a
+/// [TriggerManager] (hardware panic / GPS arrival / battery), then
+/// translates every engine event into the `WalkSession` view-model
+/// consumed by the UI.
+///
+/// This file owns the end-to-end wiring for L1/L4/L5/L7/L8/L14:
+///   * L1 — every field on `AppSettings`, `SessionMode`, and
+///     `BatteryAlertConfig` that has a real-world effect flows through
+///     a provider into a service. See `docs/wiring-map.md`.
+///   * L4 / L9 — distress triggers (hardware, duress PIN, wrong-PIN
+///     threshold) all call [triggerDistressChain] which replaces the
+///     engine's chain with the resolved distress chain.
+///   * L5 — this file is single-owner; no parallel editor is allowed.
+///   * L7 — the session start awaits
+///     `ref.read(settingsControllerProvider.future)` before looking
+///     up the mode so the async hydrate has completed.
+///   * L8 — stealth configuration surfaces via [SettingsController];
+///     we never hardcode a non-stealth path.
+///   * L14 — the battery-alert session uses the same engine /
+///     orchestrator plumbing as a user session. There is no second,
+///     parallel messaging pipeline.
 library;
+
+import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/utils/pin_result.dart';
+import 'package:guardianangela/data/models/enums.dart';
+import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:guardianangela/domain/engine/engine_state.dart';
+import 'package:guardianangela/domain/engine/session_engine.dart';
+import 'package:guardianangela/domain/engine/session_log_recorder.dart';
+import 'package:guardianangela/domain/engine/trigger_manager.dart';
 import 'package:guardianangela/domain/models/models.dart';
+import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
-/// Stub AsyncNotifier for the active safety session.
+/// Internal bundle collecting the live session's runtime handles so
+/// `dispose` can tear down the whole graph atomically.
+class _SessionRuntime {
+  _SessionRuntime({
+    required this.engine,
+    required this.orchestrator,
+    required this.recorder,
+    required this.triggerManager,
+    required this.eventsSub,
+    this.incomingCallSub,
+  });
+
+  final SessionEngine engine;
+  final SessionOrchestrator orchestrator;
+  final SessionLogRecorder recorder;
+  final TriggerManager? triggerManager;
+  final StreamSubscription<ChainEventData> eventsSub;
+  final StreamSubscription<CallState>? incomingCallSub;
+}
+
+/// Async controller driving the active safety session.
 ///
-/// State is nullable: `null` = no active session, non-null =
-/// session in progress or recently-ended.
+/// State is nullable: `null` = no active session, non-null = a
+/// session is in progress or recently-ended.
 class SessionController extends AsyncNotifier<WalkSession?> {
   /// Callback fired when the engine wants to confirm a distress
-  /// trigger (e.g. hardware panic button). Returning `true` lets
-  /// the distress chain run; `false` cancels.
+  /// trigger (e.g. hardware panic button). Returning `true` lets the
+  /// distress chain run; `false` cancels.
   Future<bool> Function()? onDistressConfirmation;
 
   /// Callback fired when a disarm trigger (GPS arrival, timer)
   /// fires and asks the UI to request PIN entry.
   void Function()? onDisarmRequested;
 
-  @override
-  Future<WalkSession?> build() async => null;
+  /// Wrong-PIN attempts observed on the currently-active prompt.
+  /// Reset every time a new PIN dialog opens by the UI.
+  int _wrongPinCount = 0;
 
-  /// Starts a new session for `modeId`. `isSimulation` routes
-  /// strategies through the simulation services.
+  /// How many wrong-PIN attempts trigger distress. Public for
+  /// configuration parity with `AppSettings`.
+  static const int wrongPinThreshold = 5;
+
+  _SessionRuntime? _runtime;
+
+  @override
+  Future<WalkSession?> build() async {
+    ref.onDispose(_disposeRuntime);
+    return null;
+  }
+
+  /// Starts a new session for [modeId]. [isSimulation] routes every
+  /// strategy through the simulation services.
+  ///
+  /// Throws [StateError] when the user has an active session, when
+  /// the mode does not exist, or when the resolved distress chain is
+  /// empty (D-SAFETY-17).
   Future<void> startSession({
     required String modeId,
     bool isSimulation = false,
   }) async {
-    throw UnimplementedError();
+    // L14: cancel any background battery-alert session before we
+    // start the user session — only one engine may run at a time.
+    if (_runtime != null) {
+      final active = state.value;
+      if (active != null && !active.isBackgroundAlert) {
+        throw StateError(
+          'A user session is already running; disarm it first.',
+        );
+      }
+      await _disposeRuntime();
+    }
+
+    // L7: fully await the settings hydrate before we read the mode.
+    final settings = await ref.read(settingsControllerProvider.future);
+
+    final modesRepo = ref.read(modesRepositoryProvider);
+    final mode = await modesRepo.getById(modeId);
+    if (mode == null) {
+      throw StateError('SessionController: no mode with id "$modeId"');
+    }
+    if (mode.chainSteps.isEmpty) {
+      throw StateError(
+        'SessionController: mode "${mode.name}" has no chain steps',
+      );
+    }
+
+    // Distress chain resolution:
+    // mode.distressChainId explicit -> that chain; else first entry.
+    final distressRepo = ref.read(distressChainsRepositoryProvider);
+    final distressChains = await distressRepo.getAll();
+    final distressChain = _resolveDistressChain(
+      distressChains: distressChains,
+      modeDistressChainId: mode.distressChainId,
+    );
+    if (distressChain.steps.isEmpty) {
+      throw StateError(
+        'SessionController: resolved distress chain has no steps '
+        '(D-SAFETY-17)',
+      );
+    }
+
+    final contactsRepo = ref.read(contactsRepositoryProvider);
+    final contacts = await contactsRepo.getAll();
+    final profileRepo = ref.read(userProfileRepositoryProvider);
+    final profile = await profileRepo.get();
+    final templatesRepo = ref.read(templatesRepositoryProvider);
+    final globalTemplates = await templatesRepo.getAll();
+
+    await _bootstrapSession(
+      mode: mode,
+      settings: settings,
+      contacts: contacts,
+      profile: profile,
+      templates: _resolveTemplates(mode: mode, global: globalTemplates),
+      distressChain: distressChain,
+      isSimulation: isSimulation,
+      isBackgroundAlert: false,
+    );
   }
 
-  /// Starts a one-shot battery-alert session driven by `config`.
+  /// Starts a one-shot battery-alert session driven by [config].
+  ///
+  /// Rejects when a user session is already running (L14: never
+  /// preempt an interactive safety session with a background alert).
   Future<void> startBatteryAlertSession(BatteryAlertConfig config) async {
-    throw UnimplementedError();
+    if (_runtime != null) {
+      final active = state.value;
+      if (active != null && !active.isBackgroundAlert) {
+        throw StateError(
+          'Cannot start battery-alert while a user session is active.',
+        );
+      }
+      // A stale background alert is fine to replace.
+      await _disposeRuntime();
+    }
+    if (!config.enabled || config.chain.isEmpty) {
+      return;
+    }
+    final settings = await ref.read(settingsControllerProvider.future);
+    final contacts = await ref.read(contactsRepositoryProvider).getAll();
+    final profile = await ref.read(userProfileRepositoryProvider).get();
+    final distressChains =
+        await ref.read(distressChainsRepositoryProvider).getAll();
+    final distressChain = _resolveDistressChain(
+      distressChains: distressChains,
+      modeDistressChainId: null,
+    );
+
+    // Build a synthetic mode whose chainSteps are the alert's chain.
+    final syntheticMode = SessionMode(
+      id: 'battery-alert',
+      name: 'Battery Alert',
+      checkInType: config.chain.first.type,
+      chainSteps: config.chain,
+      distressChainId: distressChain.id,
+    );
+
+    await _bootstrapSession(
+      mode: syntheticMode,
+      settings: settings,
+      contacts: contacts,
+      profile: profile,
+      templates: const <ReminderTemplate>[],
+      distressChain: distressChain,
+      isSimulation: false,
+      isBackgroundAlert: true,
+    );
   }
 
   /// Disarms the active session. Requires a valid session-end PIN
-  /// if one is configured.
+  /// only at the UI layer; this method assumes the PIN gate has
+  /// already been passed.
   Future<void> disarm() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.disarm();
   }
 
   /// Pauses the active session (stops timers without ending it).
   Future<void> pause() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.pause();
   }
 
   /// Resumes a paused session.
   Future<void> resume() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.resume();
   }
 
-  /// Accepts a simulated fake-call pretext.
+  /// Accepts the currently ringing simulated fake-call pretext.
   Future<void> answerFakeCall() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.answerFakeCall();
   }
 
-  /// Ends a simulated fake call that is currently "in progress".
+  /// Ends a simulated fake call that is in progress. Disarms the
+  /// engine.
   Future<void> hangUp() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.hangUp();
   }
 
   /// Declines a simulated fake-call pretext.
   Future<void> declineFakeCall() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.declineFakeCall();
   }
 
-  /// Force-fires the distress chain (e.g. hardware panic).
+  /// Force-fires the distress chain (e.g. hardware panic, duress
+  /// PIN, wrong-PIN threshold exhausted).
   Future<void> triggerDistressChain() async {
-    throw UnimplementedError();
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.replaceWithDistressChain(
+      await _currentDistressChainSteps(),
+    );
   }
 
-  /// Handles the outcome of a PIN prompt. `result` is a discriminated
-  /// outcome object from the PIN subsystem (Phase 8+).
-  bool handlePinResult(Object result) {
-    throw UnimplementedError();
+  /// Handles the outcome of a PIN prompt.
+  ///
+  /// Returns `true` when the session should proceed past the prompt
+  /// (correct PIN), `false` otherwise. [PinResult.duress] and
+  /// [PinResult.wrongPinThreshold] both fire the distress chain and
+  /// return `false`.
+  bool handlePinResult(PinResult result) {
+    switch (result) {
+      case PinResult.correct:
+        _wrongPinCount = 0;
+        return true;
+      case PinResult.wrong:
+        _wrongPinCount++;
+        if (_wrongPinCount >= wrongPinThreshold) {
+          // Threshold reached — unconditionally fire distress.
+          unawaited(_fireDistressBecauseOfPin(EndReason.wrongPinExhausted));
+          _wrongPinCount = 0;
+        }
+        return false;
+      case PinResult.duress:
+        _wrongPinCount = 0;
+        unawaited(_fireDistressBecauseOfPin(EndReason.duressPin));
+        return false;
+      case PinResult.wrongPinThreshold:
+        _wrongPinCount = 0;
+        unawaited(_fireDistressBecauseOfPin(EndReason.wrongPinExhausted));
+        return false;
+      case PinResult.timeout:
+      case PinResult.cancelled:
+        return false;
+    }
   }
+
+  Future<void> _fireDistressBecauseOfPin(EndReason reason) async {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.replaceWithDistressChain(
+      await _currentDistressChainSteps(),
+    );
+  }
+
+  Future<List<ChainStep>> _currentDistressChainSteps() async {
+    final distressRepo = ref.read(distressChainsRepositoryProvider);
+    final allChains = await distressRepo.getAll();
+    final resolved = _resolveDistressChain(
+      distressChains: allChains,
+      modeDistressChainId: null,
+    );
+    return resolved.steps;
+  }
+
+  // ----- Internal: bootstrapping -------------------------------------
+
+  Future<void> _bootstrapSession({
+    required SessionMode mode,
+    required AppSettings settings,
+    required List<EmergencyContact> contacts,
+    required UserProfile? profile,
+    required List<ReminderTemplate> templates,
+    required DistressChain distressChain,
+    required bool isSimulation,
+    required bool isBackgroundAlert,
+  }) async {
+    final services = _resolveServices(isSimulation: isSimulation);
+    final context = SessionContext(
+      mode: mode,
+      contacts: contacts,
+      userProfile: profile,
+      isSimulation: isSimulation,
+      reminderTemplates: templates,
+      eventDefaults: _effectiveDefaults(settings, mode),
+    );
+    final engine = SessionEngine(
+      chainSteps: mode.chainSteps,
+      isSimulation: isSimulation,
+    );
+    final orchestrator = SessionOrchestrator(
+      isSimulation: isSimulation,
+      servicesBuilder: (isCancelled, registerWorkId) => EventServices(
+        audio: services.audio,
+        messaging: services.messaging,
+        phone: services.phone,
+        notification: services.notification,
+        vibration: services.vibration,
+        deviceState: services.deviceState,
+        context: context,
+        isCancelled: isCancelled,
+        registerSmsWorkId: registerWorkId,
+      ),
+      chainStepsResolver: () => engine.steps,
+      messagingService: services.messaging,
+    );
+    final recorder = SessionLogRecorder(
+      log: SessionLog(
+        id: _newSessionId(),
+        modeId: mode.id,
+        modeName: mode.name,
+        startedAt: DateTime.now(),
+        isSimulation: isSimulation,
+      ),
+    );
+
+    TriggerManager? triggerManager;
+    // L14: battery-alert sessions never arm hardware triggers — they
+    // are background-only and must not re-fire distress chains
+    // themselves.
+    if (!isBackgroundAlert && !isSimulation) {
+      triggerManager = TriggerManager(
+        engine: engine,
+        mode: mode,
+        hardwareButtonService: services.hardwareButton,
+        geofenceService: services.geofence,
+        batteryMonitorService: services.batteryMonitor,
+        onDisarmRequested: onDisarmRequested,
+        onDistressConfirmation: onDistressConfirmation,
+        distressStepsResolver: () => distressChain.steps,
+      );
+      await triggerManager.start();
+    }
+
+    // Subscribe to engine events BEFORE calling start() so the
+    // sync broadcast of `sessionStarted` is captured.
+    final eventsSub = engine.events.listen((event) {
+      _handleEngineEvent(
+        event: event,
+        orchestrator: orchestrator,
+        recorder: recorder,
+      );
+    });
+
+    // Risk-12 documentation: battery-alert sessions also pause when a
+    // real call arrives, so the alert does not bleed into the call
+    // audio. Symmetric behavior with interactive sessions.
+    StreamSubscription<CallState>? incomingCallSub;
+    if (!isSimulation) {
+      incomingCallSub = services.incomingCall.callState.listen((state) {
+        _handleIncomingCall(engine: engine, state: state);
+      });
+      await services.incomingCall.startListening();
+    }
+
+    _runtime = _SessionRuntime(
+      engine: engine,
+      orchestrator: orchestrator,
+      recorder: recorder,
+      triggerManager: triggerManager,
+      eventsSub: eventsSub,
+      incomingCallSub: incomingCallSub,
+    );
+
+    // Seed `state` with an active WalkSession BEFORE starting so
+    // the UI has something to render when `sessionStarted` arrives.
+    state = AsyncValue.data(
+      WalkSession(
+        id: recorder.log.id,
+        modeId: mode.id,
+        isSimulation: isSimulation,
+        startedAt: recorder.log.startedAt,
+        phase: const SessionPhaseIdle(),
+        currentStepIndex: 0,
+        isBackgroundAlert: isBackgroundAlert,
+      ),
+    );
+
+    engine.start();
+  }
+
+  void _handleEngineEvent({
+    required ChainEventData event,
+    required SessionOrchestrator orchestrator,
+    required SessionLogRecorder recorder,
+  }) {
+    recorder.recordEvent(event);
+    unawaited(orchestrator.handleEvent(event));
+    _updateWalkSession(event: event);
+    if (event.event == ChainEvent.sessionEnded) {
+      _persistSessionLog(recorder.log);
+    }
+  }
+
+  void _handleIncomingCall({
+    required SessionEngine engine,
+    required CallState state,
+  }) {
+    switch (state) {
+      case CallState.ringing:
+      case CallState.active:
+        engine.pause(reason: PauseReason.incomingCall);
+      case CallState.ended:
+      case CallState.idle:
+        if (engine.state is EnginePaused) {
+          engine.resume();
+        }
+    }
+  }
+
+  void _updateWalkSession({required ChainEventData event}) {
+    final current = state.value;
+    if (current == null) return;
+    final runtime = _runtime;
+    if (runtime == null) return;
+    final engineState = runtime.engine.state;
+    final phase = WalkSession.phaseFromEngine(engineState);
+    int? stepIndex = current.currentStepIndex;
+    ChainStepType? stepType = current.currentStepType;
+    int missCount = current.missCount;
+    int? remainingSeconds = current.remainingSeconds;
+    if (engineState is EngineRunning) {
+      stepIndex = engineState.stepIndex;
+      stepType = runtime.engine.steps[engineState.stepIndex].type;
+      missCount = engineState.missCount;
+      remainingSeconds = engineState.remaining.inSeconds;
+    } else if (engineState is EnginePaused) {
+      stepIndex = engineState.snapshot.stepIndex;
+      stepType = runtime.engine.steps[engineState.snapshot.stepIndex].type;
+      missCount = engineState.snapshot.missCount;
+      remainingSeconds = engineState.snapshot.remaining.inSeconds;
+    }
+    state = AsyncValue.data(
+      current.copyWith(
+        phase: phase,
+        currentStepIndex: stepIndex,
+        currentStepType: stepType,
+        missCount: missCount,
+        remainingSeconds: remainingSeconds,
+      ),
+    );
+  }
+
+  Future<void> _persistSessionLog(SessionLog log) async {
+    final repo = ref.read(sessionLogsRepositoryProvider);
+    await repo.save(log);
+  }
+
+  // ----- Internal: defaults + helpers --------------------------------
+
+  EventDefaults _effectiveDefaults(AppSettings settings, SessionMode mode) {
+    final override = mode.overrides?.eventDefaults;
+    return override ?? settings.defaults.eventDefaults;
+  }
+
+  List<ReminderTemplate> _resolveTemplates({
+    required SessionMode mode,
+    required List<ReminderTemplate> global,
+  }) {
+    final local = mode.overrides?.localTemplates ?? const <ReminderTemplate>[];
+    return [...global, ...local];
+  }
+
+  DistressChain _resolveDistressChain({
+    required List<DistressChain> distressChains,
+    required String? modeDistressChainId,
+  }) {
+    if (distressChains.isEmpty) {
+      throw StateError(
+        'No distress chains configured; at least one chain must '
+        'exist to handle distress triggers (D-SAFETY-17).',
+      );
+    }
+    if (modeDistressChainId == null) {
+      return distressChains.first;
+    }
+    for (final chain in distressChains) {
+      if (chain.id == modeDistressChainId) return chain;
+    }
+    return distressChains.first;
+  }
+
+  _SessionServices _resolveServices({required bool isSimulation}) {
+    if (isSimulation) {
+      return _SessionServices(
+        audio: ref.read(simulationAudioProvider),
+        messaging: ref.read(simulationMessagingProvider),
+        phone: ref.read(simulationPhoneProvider),
+        notification: ref.read(simulationNotificationProvider),
+        vibration: ref.read(simulationVibrationProvider),
+        hardwareButton: ref.read(simulationHardwareButtonProvider),
+        geofence: ref.read(simulationGeofenceProvider),
+        batteryMonitor: ref.read(simulationBatteryMonitorProvider),
+        deviceState: ref.read(simulationDeviceStateProvider),
+        incomingCall: ref.read(simulationIncomingCallProvider),
+      );
+    }
+    return _SessionServices(
+      audio: ref.read(audioServiceProvider),
+      messaging: ref.read(messagingServiceProvider),
+      phone: ref.read(phoneServiceProvider),
+      notification: ref.read(notificationServiceProvider),
+      vibration: ref.read(vibrationServiceProvider),
+      hardwareButton: ref.read(hardwareButtonServiceProvider),
+      geofence: ref.read(geofenceServiceProvider),
+      batteryMonitor: ref.read(batteryMonitorServiceProvider),
+      deviceState: ref.read(deviceStateServiceProvider),
+      incomingCall: ref.read(incomingCallServiceProvider),
+    );
+  }
+
+  Future<void> _disposeRuntime() async {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    _runtime = null;
+    await runtime.eventsSub.cancel();
+    final incomingCallSub = runtime.incomingCallSub;
+    if (incomingCallSub != null) {
+      await incomingCallSub.cancel();
+    }
+    await runtime.triggerManager?.dispose();
+    await runtime.orchestrator.cancelPendingWork();
+    runtime.orchestrator.dispose();
+    runtime.engine.dispose();
+  }
+
+  /// Returns a unique session id. Implemented as a monotonic counter
+  /// prefixed by the current ticks to keep tests deterministic.
+  static String _newSessionId() {
+    final now = DateTime.now();
+    return 'session-${now.microsecondsSinceEpoch}';
+  }
+}
+
+/// Internal bundle of services for one session. Picked by
+/// [_resolveServices] based on simulation flag.
+class _SessionServices {
+  _SessionServices({
+    required this.audio,
+    required this.messaging,
+    required this.phone,
+    required this.notification,
+    required this.vibration,
+    required this.hardwareButton,
+    required this.geofence,
+    required this.batteryMonitor,
+    required this.deviceState,
+    required this.incomingCall,
+  });
+
+  final AudioServiceProtocol audio;
+  final MessagingServiceProtocol messaging;
+  final PhoneServiceProtocol phone;
+  final NotificationServiceProtocol notification;
+  final VibrationServiceProtocol vibration;
+  final HardwareButtonServiceProtocol hardwareButton;
+  final GeofenceServiceProtocol geofence;
+  final BatteryMonitorServiceProtocol batteryMonitor;
+  final DeviceStateServiceProtocol deviceState;
+  final IncomingCallServiceProtocol incomingCall;
 }
 
 /// Provider for `SessionController`.
