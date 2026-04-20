@@ -5,7 +5,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
+import 'app_localizations_ar.dart';
+import 'app_localizations_de.dart';
+import 'app_localizations_el.dart';
 import 'app_localizations_en.dart';
+import 'app_localizations_es.dart';
+import 'app_localizations_fa.dart';
+import 'app_localizations_fr.dart';
+import 'app_localizations_he.dart';
+import 'app_localizations_hi.dart';
+import 'app_localizations_pl.dart';
+import 'app_localizations_ru.dart';
+import 'app_localizations_uk.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +104,22 @@ abstract class AppLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('ar'),
+    Locale('de'),
+    Locale('el'),
+    Locale('en'),
+    Locale('es'),
+    Locale('fa'),
+    Locale('fr'),
+    Locale('he'),
+    Locale('hi'),
+    Locale('pl'),
+    Locale('ru'),
+    Locale('uk'),
+    Locale('zh'),
+    Locale('zh', 'TW'),
+  ];
 
   /// The application name shown in titles and launchers.
   ///
@@ -1617,18 +1644,67 @@ class _AppLocalizationsDelegate
   }
 
   @override
-  bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+  bool isSupported(Locale locale) => <String>[
+    'ar',
+    'de',
+    'el',
+    'en',
+    'es',
+    'fa',
+    'fr',
+    'he',
+    'hi',
+    'pl',
+    'ru',
+    'uk',
+    'zh',
+  ].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
 }
 
 AppLocalizations lookupAppLocalizations(Locale locale) {
+  // Lookup logic when language+country codes are specified.
+  switch (locale.languageCode) {
+    case 'zh':
+      {
+        switch (locale.countryCode) {
+          case 'TW':
+            return AppLocalizationsZhTw();
+        }
+        break;
+      }
+  }
+
   // Lookup logic when only language code is specified.
   switch (locale.languageCode) {
+    case 'ar':
+      return AppLocalizationsAr();
+    case 'de':
+      return AppLocalizationsDe();
+    case 'el':
+      return AppLocalizationsEl();
     case 'en':
       return AppLocalizationsEn();
+    case 'es':
+      return AppLocalizationsEs();
+    case 'fa':
+      return AppLocalizationsFa();
+    case 'fr':
+      return AppLocalizationsFr();
+    case 'he':
+      return AppLocalizationsHe();
+    case 'hi':
+      return AppLocalizationsHi();
+    case 'pl':
+      return AppLocalizationsPl();
+    case 'ru':
+      return AppLocalizationsRu();
+    case 'uk':
+      return AppLocalizationsUk();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(

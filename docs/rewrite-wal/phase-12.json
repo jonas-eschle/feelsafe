@@ -1,0 +1,21 @@
+{
+  "phase": "12",
+  "title": "UI screens + theme + core widgets",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-UI-2"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (729/729 passing)",
+    "flutter build appbundle --debug (succeeds, 28s — sqlite3_flutter_libs vs sqlcipher_flutter_libs conflict resolved by dropping drift_flutter)"
+  ],
+  "gates_pending": [
+    "Phase 13 — 14 locales filled (app_en.arb grew to 244 keys; 13 non-English ARBs need translation)",
+    "Phase 12.2 — goldens, deep a11y, full EventDefaults editor, DistressConfirmation/ImSafeSlider flow wiring, PIN Argon2id upgrade"
+  ],
+  "next_action": "Phase 13 — dispatch 13 language agents in parallel (truly disjoint ARB files). After they finish, flutter gen-l10n + verify zero untranslated warnings.",
+  "last_update_iso": "2026-04-20T20:00:00Z",
+  "notes": "244 l10n keys in app_en.arb. D-UI-2 implemented: preview-is-SIM. Pubspec fix: dropped drift_flutter (pulled sqlite3_flutter_libs which conflicted with sqlcipher_flutter_libs). Build now succeeds. Deferred items tracked for Phase 12.2 review — non-blocking for ship if correctness tests pass."
+}

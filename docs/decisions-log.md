@@ -2655,6 +2655,23 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-UI-2: Preview-in-settings IS a live simulation run (not a static mockup)
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Mode editor / distress chain editor / battery alert editor offer a "Preview" button on step types where behavior is hard to visualize from settings (fakeCall, loudAlarm, countdownWarning, disguisedReminder). A static image/text mockup would mislead users about actual behavior.
+- **Decision:** "Preview" runs the real strategy's `executeReal()` against a simulation-wired `EventServices` bundle. The user sees/hears exactly what the step will do — minus the safety-critical side-effects (no real SMS, no real call, no real alarm audio at max volume). Implementation: `event_specific_config._runPreview()` builds `EventServices` from `simulationAudioProvider / simulationMessagingProvider / simulationPhoneProvider / simulationNotificationProvider / simulationVibrationProvider` + `SessionContext(isSimulation: true)`, then calls `EventStrategyRegistry.forStep(step).executeReal(step, services)`. A SnackBar confirms firing with `strategy.simulationDescription`.
+- **Rationale:**
+  - No separate mock/static preview code path to maintain.
+  - The preview IS the real code path — correctness for free.
+  - Users experience the actual UX (ringtone → decline flow, alarm sound, notification text).
+  - 4-layer defense guarantees zero real side-effects: layer 1 (orchestrator branch would block but we're calling strategy directly), layer 2 (simulation service impls log + early-return), layer 3 (platform channels refuse in sim mode), layer 4 (native guards).
+- **Implications:**
+  - `lib/features/modes/widgets/event_specific_config.dart` wires preview for the 4 step types above. Other step types (hold-button, hardware-button, sms-contact, phone-call-contact, call-emergency) don't expose a preview button because either there's nothing visual to preview or the preview would require a live contact.
+- **References:** plan Phase 12 D-UI-2; `lib/features/modes/widgets/event_specific_config.dart`.
+
+---
+
 #### D-CONTROLLER-1: Riverpod async controllers use await-load pattern to close L7 race
 
 - **Status:** RESOLVED
