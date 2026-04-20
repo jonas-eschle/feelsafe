@@ -68,6 +68,7 @@
 		<string>audio</string>
 		<string>location</string>
 		<string>fetch</string>
+		<string>voip</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Guardian Angela may use the camera flash as a visual alert during alarm escalation.</string>

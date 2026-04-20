@@ -1,0 +1,20 @@
+{
+  "phase": "09",
+  "title": "Services — 15 real Dart impls",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-SERVICE-4"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (695/695 passing)"
+  ],
+  "gates_pending": [
+    "Phase 10 native platform channel backends (Android Kotlin + iOS Swift)",
+    "Phase 14 contract tests (run same suite 3 times: real/fake/sim)"
+  ],
+  "next_action": "Phase 10 — native platform. Android Kotlin ∥ iOS Swift (truly disjoint trees; parallel safe).",
+  "last_update_iso": "2026-04-20T18:30:00Z",
+  "notes": "All real impls honour isSimulation=true by logging + early-return (layer 2 of 4-layer defense). Services needing native (sms, phone, call_state, hardware_buttons, system_ui, stealth_icon, device_state) have Dart-side MethodChannel/EventChannel invocations ready — Phase 10 writes native."
+}
