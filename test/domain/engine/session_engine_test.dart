@@ -71,10 +71,7 @@ void main() {
     });
 
     test('engine without injected clock uses package:clock default', () {
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       check(e.state).isA<EngineIdle>();
       e.dispose();
     });
@@ -167,10 +164,7 @@ void main() {
 
     test('start on step with non-zero wait enters wait phase', () {
       fakeAsync((async) {
-        final e = _mk(
-          [smsStep(durationSeconds: 1)
-              .copyWith(waitSeconds: 10)],
-        );
+        final e = _mk([smsStep(durationSeconds: 1).copyWith(waitSeconds: 10)]);
         e.start();
         async.flushMicrotasks();
         final s = e.state as EngineRunning;

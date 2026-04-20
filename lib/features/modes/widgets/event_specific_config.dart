@@ -40,22 +40,39 @@ class EventSpecificConfig extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final form = switch (step.type) {
-      ChainStepType.holdButton => _HoldButtonForm(step: step, onChanged: onChanged),
-      ChainStepType.disguisedReminder =>
-        _DisguisedReminderForm(step: step, onChanged: onChanged),
-      ChainStepType.countdownWarning =>
-        _CountdownForm(step: step, onChanged: onChanged),
+      ChainStepType.holdButton => _HoldButtonForm(
+        step: step,
+        onChanged: onChanged,
+      ),
+      ChainStepType.disguisedReminder => _DisguisedReminderForm(
+        step: step,
+        onChanged: onChanged,
+      ),
+      ChainStepType.countdownWarning => _CountdownForm(
+        step: step,
+        onChanged: onChanged,
+      ),
       ChainStepType.fakeCall => _FakeCallForm(step: step, onChanged: onChanged),
       ChainStepType.smsContact => _SmsForm(step: step, onChanged: onChanged),
-      ChainStepType.phoneCallContact =>
-        _PhoneForm(step: step, onChanged: onChanged),
-      ChainStepType.loudAlarm => _LoudAlarmForm(step: step, onChanged: onChanged),
-      ChainStepType.callEmergency =>
-        _EmergencyForm(step: step, onChanged: onChanged),
-      ChainStepType.hardwareButton =>
-        _HardwareForm(step: step, onChanged: onChanged),
+      ChainStepType.phoneCallContact => _PhoneForm(
+        step: step,
+        onChanged: onChanged,
+      ),
+      ChainStepType.loudAlarm => _LoudAlarmForm(
+        step: step,
+        onChanged: onChanged,
+      ),
+      ChainStepType.callEmergency => _EmergencyForm(
+        step: step,
+        onChanged: onChanged,
+      ),
+      ChainStepType.hardwareButton => _HardwareForm(
+        step: step,
+        onChanged: onChanged,
+      ),
     };
-    final canPreview = step.type == ChainStepType.fakeCall ||
+    final canPreview =
+        step.type == ChainStepType.fakeCall ||
         step.type == ChainStepType.loudAlarm ||
         step.type == ChainStepType.countdownWarning ||
         step.type == ChainStepType.disguisedReminder;
@@ -102,9 +119,9 @@ class EventSpecificConfig extends ConsumerWidget {
     // Execute the real strategy in simulation mode — this is D-UI-2.
     await strategy.executeReal(step, services);
     if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text(l.stepPreviewFired(description))),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(l.stepPreviewFired(description))));
   }
 }
 
@@ -122,22 +139,22 @@ class _HoldButtonForm extends StatelessWidget {
     return TextFormField(
       initialValue: cfg.releaseSensitivity.toString(),
       keyboardType: TextInputType.number,
-      decoration:
-          InputDecoration(labelText: l.stepConfigHoldReleaseSensitivity),
-      onChanged: (v) => onChanged(step.copyWith(
-        config: cfg.copyWith(
-          releaseSensitivity: double.tryParse(v) ?? cfg.releaseSensitivity,
+      decoration: InputDecoration(
+        labelText: l.stepConfigHoldReleaseSensitivity,
+      ),
+      onChanged: (v) => onChanged(
+        step.copyWith(
+          config: cfg.copyWith(
+            releaseSensitivity: double.tryParse(v) ?? cfg.releaseSensitivity,
+          ),
         ),
-      )),
+      ),
     );
   }
 }
 
 class _DisguisedReminderForm extends StatelessWidget {
-  const _DisguisedReminderForm({
-    required this.step,
-    required this.onChanged,
-  });
+  const _DisguisedReminderForm({required this.step, required this.onChanged});
   final ChainStep step;
   final ValueChanged<ChainStep> onChanged;
 
@@ -151,11 +168,13 @@ class _DisguisedReminderForm extends StatelessWidget {
       initialValue: cfg.intervalSeconds.toString(),
       keyboardType: TextInputType.number,
       decoration: InputDecoration(labelText: l.stepConfigReminderInterval),
-      onChanged: (v) => onChanged(step.copyWith(
-        config: cfg.copyWith(
-          intervalSeconds: int.tryParse(v) ?? cfg.intervalSeconds,
+      onChanged: (v) => onChanged(
+        step.copyWith(
+          config: cfg.copyWith(
+            intervalSeconds: int.tryParse(v) ?? cfg.intervalSeconds,
+          ),
         ),
-      )),
+      ),
     );
   }
 }
@@ -176,16 +195,14 @@ class _CountdownForm extends StatelessWidget {
         SwitchListTile(
           value: cfg.vibrate,
           title: Text(l.stepConfigCountdownVibrate),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(vibrate: v),
-          )),
+          onChanged: (v) =>
+              onChanged(step.copyWith(config: cfg.copyWith(vibrate: v))),
         ),
         SwitchListTile(
           value: cfg.playTone,
           title: Text(l.stepConfigCountdownTone),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(playTone: v),
-          )),
+          onChanged: (v) =>
+              onChanged(step.copyWith(config: cfg.copyWith(playTone: v))),
         ),
       ],
     );
@@ -214,9 +231,8 @@ class _FakeCallForm extends StatelessWidget {
         SwitchListTile(
           value: cfg.declineIsSafe,
           title: Text(l.stepConfigFakeCallDecline),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(declineIsSafe: v),
-          )),
+          onChanged: (v) =>
+              onChanged(step.copyWith(config: cfg.copyWith(declineIsSafe: v))),
         ),
       ],
     );
@@ -251,24 +267,22 @@ class _SmsForm extends StatelessWidget {
           ],
           onChanged: (v) {
             if (v == null) return;
-            onChanged(step.copyWith(
-              config: cfg.copyWith(contactSelection: v),
-            ));
+            onChanged(step.copyWith(config: cfg.copyWith(contactSelection: v)));
           },
         ),
         SwitchListTile(
           value: cfg.includeLocation,
           title: Text(l.stepConfigSmsIncludeLocation),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(includeLocation: v),
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(config: cfg.copyWith(includeLocation: v)),
+          ),
         ),
         SwitchListTile(
           value: cfg.includeMedicalInfo,
           title: Text(l.stepConfigSmsIncludeMedical),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(includeMedicalInfo: v),
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(config: cfg.copyWith(includeMedicalInfo: v)),
+          ),
         ),
       ],
     );
@@ -289,9 +303,8 @@ class _PhoneForm extends StatelessWidget {
     return SwitchListTile(
       value: cfg.preSendSms,
       title: Text(l.stepConfigPhonePreSms),
-      onChanged: (v) => onChanged(step.copyWith(
-        config: cfg.copyWith(preSendSms: v),
-      )),
+      onChanged: (v) =>
+          onChanged(step.copyWith(config: cfg.copyWith(preSendSms: v))),
     );
   }
 }
@@ -312,16 +325,14 @@ class _LoudAlarmForm extends StatelessWidget {
         SwitchListTile(
           value: cfg.flashScreen,
           title: Text(l.stepConfigLoudAlarmFlash),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(flashScreen: v),
-          )),
+          onChanged: (v) =>
+              onChanged(step.copyWith(config: cfg.copyWith(flashScreen: v))),
         ),
         SwitchListTile(
           value: cfg.maxVolume,
           title: Text(l.stepConfigLoudAlarmVolume),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(maxVolume: v),
-          )),
+          onChanged: (v) =>
+              onChanged(step.copyWith(config: cfg.copyWith(maxVolume: v))),
         ),
       ],
     );
@@ -344,16 +355,18 @@ class _EmergencyForm extends StatelessWidget {
         TextFormField(
           initialValue: cfg.emergencyNumber ?? '',
           decoration: InputDecoration(labelText: l.stepConfigEmergencyNumber),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(emergencyNumber: v.isEmpty ? null : v),
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(
+              config: cfg.copyWith(emergencyNumber: v.isEmpty ? null : v),
+            ),
+          ),
         ),
         SwitchListTile(
           value: cfg.confirmBeforeCalling,
           title: Text(l.stepConfigEmergencyConfirm),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(confirmBeforeCalling: v),
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(config: cfg.copyWith(confirmBeforeCalling: v)),
+          ),
         ),
       ],
     );
@@ -392,9 +405,7 @@ class _HardwareForm extends StatelessWidget {
           ],
           onChanged: (v) {
             if (v == null) return;
-            onChanged(step.copyWith(
-              config: cfg.copyWith(buttonType: v),
-            ));
+            onChanged(step.copyWith(config: cfg.copyWith(buttonType: v)));
           },
         ),
         DropdownButtonFormField<HardwarePattern>(
@@ -412,19 +423,22 @@ class _HardwareForm extends StatelessWidget {
           ],
           onChanged: (v) {
             if (v == null) return;
-            onChanged(step.copyWith(
-              config: cfg.copyWith(pattern: v),
-            ));
+            onChanged(step.copyWith(config: cfg.copyWith(pattern: v)));
           },
         ),
         TextFormField(
           initialValue: cfg.pressCount.toString(),
           keyboardType: TextInputType.number,
-          decoration:
-              InputDecoration(labelText: l.stepConfigHardwarePressCount),
-          onChanged: (v) => onChanged(step.copyWith(
-            config: cfg.copyWith(pressCount: int.tryParse(v) ?? cfg.pressCount),
-          )),
+          decoration: InputDecoration(
+            labelText: l.stepConfigHardwarePressCount,
+          ),
+          onChanged: (v) => onChanged(
+            step.copyWith(
+              config: cfg.copyWith(
+                pressCount: int.tryParse(v) ?? cfg.pressCount,
+              ),
+            ),
+          ),
         ),
       ],
     );

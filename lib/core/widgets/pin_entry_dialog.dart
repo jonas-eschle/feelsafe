@@ -6,8 +6,9 @@ library;
 
 import 'dart:async';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+
+import 'package:crypto/crypto.dart';
 
 import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
@@ -116,26 +117,25 @@ class _PinDialogState extends State<_PinDialog> {
 
   @override
   Widget build(BuildContext context) => AlertDialog(
-        title: Text(widget.title),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(widget.subtitle),
-            const SizedBox(height: 12),
-            Text(
-              '•' * _buffer.length,
-              style: Theme.of(context).textTheme.displaySmall,
-            ),
-            const SizedBox(height: 12),
-            PinKeypad(onDigit: _onDigit, onBackspace: _onBackspace),
-          ],
+    title: Text(widget.title),
+    content: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(widget.subtitle),
+        const SizedBox(height: 12),
+        Text(
+          '•' * _buffer.length,
+          style: Theme.of(context).textTheme.displaySmall,
         ),
-        actions: [
-          TextButton(
-            onPressed: () =>
-                Navigator.of(context).pop(PinResult.cancelled),
-            child: Text(AppLocalizations.of(context).cancel),
-          ),
-        ],
-      );
+        const SizedBox(height: 12),
+        PinKeypad(onDigit: _onDigit, onBackspace: _onBackspace),
+      ],
+    ),
+    actions: [
+      TextButton(
+        onPressed: () => Navigator.of(context).pop(PinResult.cancelled),
+        child: Text(AppLocalizations.of(context).cancel),
+      ),
+    ],
+  );
 }

@@ -13,9 +13,7 @@ import 'package:guardianangela/core/theme/theme_extensions.dart';
 abstract class AppTheme {
   /// The light theme.
   static ThemeData light() {
-    final scheme = ColorScheme.fromSeed(
-      seedColor: Colors.indigo,
-    );
+    final scheme = ColorScheme.fromSeed(seedColor: Colors.indigo);
     return _buildTheme(scheme, AppColors.light);
   }
 
@@ -33,8 +31,6 @@ abstract class AppTheme {
         useMaterial3: true,
         colorScheme: scheme,
         visualDensity: VisualDensity.adaptivePlatformDensity,
-        extensions: <ThemeExtension<dynamic>>[
-          AppColorsExt(colors: colors),
-        ],
+        extensions: <ThemeExtension<dynamic>>[AppColorsExt(colors: colors)],
       );
 }

@@ -40,8 +40,9 @@ void main() {
 
   group('WalkSession.phaseFromEngine', () {
     test('idle engine maps to idle phase', () {
-      check(WalkSession.phaseFromEngine(const EngineIdle()))
-          .equals(const SessionPhaseIdle());
+      check(
+        WalkSession.phaseFromEngine(const EngineIdle()),
+      ).equals(const SessionPhaseIdle());
     });
 
     test('running engine maps to active phase', () {
@@ -52,8 +53,9 @@ void main() {
         missCount: 0,
         isHolding: false,
       );
-      check(WalkSession.phaseFromEngine(state))
-          .equals(const SessionPhaseActive());
+      check(
+        WalkSession.phaseFromEngine(state),
+      ).equals(const SessionPhaseActive());
     });
 
     test('paused engine maps to paused phase', () {
@@ -67,14 +69,16 @@ void main() {
         ),
         reason: PauseReason.userRequested,
       );
-      check(WalkSession.phaseFromEngine(state))
-          .equals(const SessionPhasePaused());
+      check(
+        WalkSession.phaseFromEngine(state),
+      ).equals(const SessionPhasePaused());
     });
 
     test('ended engine maps to ended phase', () {
       const state = EngineEnded(reason: EndReason.disarm);
-      check(WalkSession.phaseFromEngine(state))
-          .equals(const SessionPhaseEnded());
+      check(
+        WalkSession.phaseFromEngine(state),
+      ).equals(const SessionPhaseEnded());
     });
   });
 
@@ -120,18 +124,21 @@ void main() {
         startedAt: startedAt,
         phase: const SessionPhaseIdle(),
       );
-      check(s.copyWith(phase: const SessionPhaseActive()).phase)
-          .equals(const SessionPhaseActive());
+      check(
+        s.copyWith(phase: const SessionPhaseActive()).phase,
+      ).equals(const SessionPhaseActive());
     });
 
     test('fromJson unknown phase throws', () {
-      check(() => WalkSession.fromJson({
-            'id': 'x',
-            'modeId': 'm',
-            'isSimulation': false,
-            'startedAt': startedAt.toIso8601String(),
-            'phase': 'bogus',
-          })).throws<ArgumentError>();
+      check(
+        () => WalkSession.fromJson({
+          'id': 'x',
+          'modeId': 'm',
+          'isSimulation': false,
+          'startedAt': startedAt.toIso8601String(),
+          'phase': 'bogus',
+        }),
+      ).throws<ArgumentError>();
     });
   });
 }

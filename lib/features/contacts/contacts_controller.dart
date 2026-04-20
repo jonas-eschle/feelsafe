@@ -63,7 +63,7 @@ class ContactsController extends AsyncNotifier<List<EmergencyContact>> {
 
 /// Provider for `ContactsController`.
 final AsyncNotifierProvider<ContactsController, List<EmergencyContact>>
-    contactsControllerProvider =
+contactsControllerProvider =
     AsyncNotifierProvider<ContactsController, List<EmergencyContact>>(
-  ContactsController.new,
-);
+      ContactsController.new,
+    );

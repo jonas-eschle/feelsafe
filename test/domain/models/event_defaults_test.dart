@@ -61,9 +61,9 @@ void main() {
 
     test('copyWith replaces targeted field', () {
       const d = EventDefaults();
-      final d2 = d.copyWith(holdButton: const HoldButtonConfig(
-        releaseSensitivity: 0.9,
-      ));
+      final d2 = d.copyWith(
+        holdButton: const HoldButtonConfig(releaseSensitivity: 0.9),
+      );
       check(d2.holdButton.releaseSensitivity).equals(0.9);
       check(d2.fakeCall).equals(d.fakeCall);
     });

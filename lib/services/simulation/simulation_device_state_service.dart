@@ -7,8 +7,7 @@ import 'dart:developer' as developer;
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 
 /// Simulation double for [DeviceStateServiceProtocol].
-final class SimulationDeviceStateService
-    implements DeviceStateServiceProtocol {
+final class SimulationDeviceStateService implements DeviceStateServiceProtocol {
   /// Creates the simulation device-state service.
   SimulationDeviceStateService();
 

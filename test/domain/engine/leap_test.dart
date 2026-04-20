@@ -12,8 +12,10 @@ import '../../helpers/test_helpers.dart';
 
 SessionEngine _sim() => SessionEngine(
   chainSteps: [
-    smsStep(durationSeconds: 30, gracePeriodSeconds: 10)
-        .copyWith(waitSeconds: 60),
+    smsStep(
+      durationSeconds: 30,
+      gracePeriodSeconds: 10,
+    ).copyWith(waitSeconds: 60),
     smsStep(order: 1, durationSeconds: 1, gracePeriodSeconds: 0),
   ],
   isSimulation: true,

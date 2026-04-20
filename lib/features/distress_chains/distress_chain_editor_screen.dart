@@ -36,7 +36,8 @@ class _DistressChainEditorScreenState
     super.didChangeDependencies();
     final id = GoRouterState.of(context).uri.queryParameters['id'];
     if (id != null && _chain == null) {
-      final all = ref.read(distressChainsControllerProvider).value ??
+      final all =
+          ref.read(distressChainsControllerProvider).value ??
           const <DistressChain>[];
       for (final c in all) {
         if (c.id == id) {
@@ -88,12 +89,12 @@ class _DistressChainEditorScreenState
     final l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_chain == null
-            ? l.distressChainEditorTitleCreate
-            : l.distressChainEditorTitleEdit),
-        actions: [
-          IconButton(onPressed: _save, icon: const Icon(Icons.check)),
-        ],
+        title: Text(
+          _chain == null
+              ? l.distressChainEditorTitleCreate
+              : l.distressChainEditorTitleEdit,
+        ),
+        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -103,8 +104,10 @@ class _DistressChainEditorScreenState
             decoration: InputDecoration(labelText: l.distressChainName),
           ),
           const SizedBox(height: 16),
-          Text(l.modeChainHeader,
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            l.modeChainHeader,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           if (_steps.isEmpty) Text(l.modeChainEmpty),
           for (var i = 0; i < _steps.length; i++)

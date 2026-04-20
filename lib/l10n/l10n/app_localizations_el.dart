@@ -753,6 +753,12 @@ class AppLocalizationsEl extends AppLocalizations {
       'Το αντίγραφο ασφαλείας δεν είναι ακόμη διαθέσιμο. Σύντομα διαθέσιμο.';
 
   @override
+  String get backupPinOptional => 'Προαιρετικό PIN (κρυπτογραφεί το πακέτο)';
+
+  @override
+  String get backupImportOk => 'Η εισαγωγή αντιγράφου ασφαλείας ολοκληρώθηκε.';
+
+  @override
   String get historyTitle => 'Προηγούμενες συνεδρίες';
 
   @override

@@ -51,12 +51,11 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    final id =
-        widget.id ?? GoRouterState.of(context).uri.queryParameters['id'];
+    final id = widget.id ?? GoRouterState.of(context).uri.queryParameters['id'];
     if (id != null && _existing == null) {
       final contacts =
           ref.read(contactsControllerProvider).value ??
-              const <EmergencyContact>[];
+          const <EmergencyContact>[];
       for (final c in contacts) {
         if (c.id == id) {
           _existing = c;
@@ -100,9 +99,9 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
       channels: _channels.toList(growable: false),
     );
     if (contact.channels.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l.contactRequiredError)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l.contactRequiredError)));
       return;
     }
     await ref.read(contactsControllerProvider.notifier).save(contact);
@@ -139,8 +138,9 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _relationshipCtrl,
-              decoration:
-                  InputDecoration(labelText: l.contactFieldRelationship),
+              decoration: InputDecoration(
+                labelText: l.contactFieldRelationship,
+              ),
             ),
             const SizedBox(height: 12),
             TextFormField(
@@ -148,8 +148,10 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
               decoration: InputDecoration(labelText: l.contactFieldLanguage),
             ),
             const SizedBox(height: 24),
-            Text(l.contactChannelsHeader,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l.contactChannelsHeader,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             CheckboxListTile(
               value: _channels.contains(MessageChannel.sms),
               title: Text(l.contactChannelSms),
@@ -195,10 +197,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
               }),
             ),
             const SizedBox(height: 24),
-            FilledButton(
-              onPressed: _save,
-              child: Text(l.commonSave),
-            ),
+            FilledButton(onPressed: _save, child: Text(l.commonSave)),
           ],
         ),
       ),

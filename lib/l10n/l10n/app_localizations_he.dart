@@ -743,6 +743,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get backupNotReady => 'הגיבוי עדיין אינו זמין. בקרוב.';
 
   @override
+  String get backupPinOptional => 'PIN אופציונלי (מצפין את החבילה)';
+
+  @override
+  String get backupImportOk => 'הגיבוי יובא בהצלחה.';
+
+  @override
   String get historyTitle => 'מושבים קודמים';
 
   @override

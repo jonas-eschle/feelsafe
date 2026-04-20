@@ -21,29 +21,29 @@ class PinKeypad extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      for (var row = 0; row < 3; row++)
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            for (var col = 0; col < 3; col++)
+              _KeyButton(
+                label: '${row * 3 + col + 1}',
+                onTap: () => onDigit(row * 3 + col + 1),
+              ),
+          ],
+        ),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          for (var row = 0; row < 3; row++)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                for (var col = 0; col < 3; col++)
-                  _KeyButton(
-                    label: '${row * 3 + col + 1}',
-                    onTap: () => onDigit(row * 3 + col + 1),
-                  ),
-              ],
-            ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const _KeyButton(label: '', onTap: null),
-              _KeyButton(label: '0', onTap: () => onDigit(0)),
-              _KeyButton(label: '⌫', onTap: onBackspace),
-            ],
-          ),
+          const _KeyButton(label: '', onTap: null),
+          _KeyButton(label: '0', onTap: () => onDigit(0)),
+          _KeyButton(label: '⌫', onTap: onBackspace),
         ],
-      );
+      ),
+    ],
+  );
 }
 
 class _KeyButton extends StatelessWidget {
@@ -54,17 +54,14 @@ class _KeyButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.all(6),
-        child: SizedBox(
-          width: 72,
-          height: 56,
-          child: OutlinedButton(
-            onPressed: onTap,
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.titleLarge,
-            ),
-          ),
-        ),
-      );
+    padding: const EdgeInsets.all(6),
+    child: SizedBox(
+      width: 72,
+      height: 56,
+      child: OutlinedButton(
+        onPressed: onTap,
+        child: Text(label, style: Theme.of(context).textTheme.titleLarge),
+      ),
+    ),
+  );
 }

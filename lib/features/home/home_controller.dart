@@ -77,6 +77,5 @@ class HomeController extends AsyncNotifier<HomeState> {
 }
 
 /// Provider for `HomeController`.
-final AsyncNotifierProvider<HomeController, HomeState>
-    homeControllerProvider =
+final AsyncNotifierProvider<HomeController, HomeState> homeControllerProvider =
     AsyncNotifierProvider<HomeController, HomeState>(HomeController.new);

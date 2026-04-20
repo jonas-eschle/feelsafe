@@ -41,9 +41,11 @@ class SessionScreen extends ConsumerWidget {
           if (session.phase is SessionPhaseEnded) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (context.mounted) {
-                context.go(session.isSimulation
-                    ? RouteNames.simulationSummary
-                    : RouteNames.sessionCompleted);
+                context.go(
+                  session.isSimulation
+                      ? RouteNames.simulationSummary
+                      : RouteNames.sessionCompleted,
+                );
               }
             });
           }
@@ -123,9 +125,8 @@ class _SessionBody extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               OutlinedButton(
-                onPressed: () => ref
-                    .read(sessionControllerProvider.notifier)
-                    .pause(),
+                onPressed: () =>
+                    ref.read(sessionControllerProvider.notifier).pause(),
                 child: Text(l.sessionPause),
               ),
               FilledButton.icon(

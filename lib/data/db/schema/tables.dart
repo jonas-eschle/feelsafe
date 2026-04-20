@@ -115,8 +115,7 @@ class SessionLogsTable extends Table {
 @DataClassName('SettingsRow')
 class SettingsTable extends Table {
   /// Literal `'singleton'`; there is always exactly one row.
-  TextColumn get id =>
-      text().withDefault(const Constant('singleton'))();
+  TextColumn get id => text().withDefault(const Constant('singleton'))();
 
   /// Serialized `AppSettings.toJson()` payload.
   TextColumn get jsonPayload => text()();
@@ -133,8 +132,7 @@ class SettingsTable extends Table {
 @DataClassName('UserProfileRow')
 class UserProfileTable extends Table {
   /// Literal `'singleton'`; there is always exactly one row.
-  TextColumn get id =>
-      text().withDefault(const Constant('singleton'))();
+  TextColumn get id => text().withDefault(const Constant('singleton'))();
 
   /// Serialized `UserProfile.toJson()` payload.
   TextColumn get jsonPayload => text()();
@@ -151,8 +149,7 @@ class UserProfileTable extends Table {
 @DataClassName('BatteryAlertRow')
 class BatteryAlertTable extends Table {
   /// Literal `'singleton'`; there is always exactly one row.
-  TextColumn get id =>
-      text().withDefault(const Constant('singleton'))();
+  TextColumn get id => text().withDefault(const Constant('singleton'))();
 
   /// Serialized `BatteryAlertConfig.toJson()` payload.
   TextColumn get jsonPayload => text()();

@@ -9,8 +9,10 @@ library;
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:battery_plus/battery_plus.dart';
 import 'package:flutter/services.dart' show PlatformException;
+
+import 'package:battery_plus/battery_plus.dart';
+
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 
 /// Real platform-backed implementation of
@@ -60,10 +62,7 @@ final class BatteryMonitorService implements BatteryMonitorServiceProtocol {
     );
 
     // Also poll every 60s as a safety net.
-    _pollTimer = Timer.periodic(
-      const Duration(seconds: 60),
-      (_) => _sample(),
-    );
+    _pollTimer = Timer.periodic(const Duration(seconds: 60), (_) => _sample());
   }
 
   @override
@@ -98,11 +97,7 @@ final class BatteryMonitorService implements BatteryMonitorServiceProtocol {
     try {
       return await _battery.batteryLevel;
     } on PlatformException catch (e, s) {
-      developer.log(
-        'battery level platform error',
-        error: e,
-        stackTrace: s,
-      );
+      developer.log('battery level platform error', error: e, stackTrace: s);
       return null;
     }
   }

@@ -31,7 +31,6 @@ import 'package:guardianangela/services/fakes/fake_notification_service.dart';
 import 'package:guardianangela/services/fakes/fake_phone_service.dart';
 import 'package:guardianangela/services/fakes/fake_vibration_service.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
-
 import '../../helpers/test_helpers.dart';
 
 /// Builds a [ChainEventData] for tests.
@@ -76,27 +75,27 @@ class _OrchHarness {
     _steps = newSteps;
   }
 
-  SessionOrchestrator build({
-    MessagingServiceProtocol? messagingOverride,
-  }) => SessionOrchestrator(
-    isSimulation: isSimulation,
-    servicesBuilder: (isCancelled, register) => EventServices(
-      audio: audio,
-      messaging: messaging,
-      phone: phone,
-      notification: notification,
-      vibration: vibration,
-      context: SessionContext(isSimulation: isSimulation),
-      isCancelled: isCancelled,
-      registerSmsWorkId: register,
-    ),
-    chainStepsResolver: () => _steps,
-    messagingService: messagingOverride ?? messaging,
-    onSimulationDescription: simulationDescriptions.add,
-    onStepExecutionFailed: ({required step, required error, required stack}) {
-      failures.add((step: step, error: error));
-    },
-  );
+  SessionOrchestrator build({MessagingServiceProtocol? messagingOverride}) =>
+      SessionOrchestrator(
+        isSimulation: isSimulation,
+        servicesBuilder: (isCancelled, register) => EventServices(
+          audio: audio,
+          messaging: messaging,
+          phone: phone,
+          notification: notification,
+          vibration: vibration,
+          context: SessionContext(isSimulation: isSimulation),
+          isCancelled: isCancelled,
+          registerSmsWorkId: register,
+        ),
+        chainStepsResolver: () => _steps,
+        messagingService: messagingOverride ?? messaging,
+        onSimulationDescription: simulationDescriptions.add,
+        onStepExecutionFailed:
+            ({required step, required error, required stack}) {
+              failures.add((step: step, error: error));
+            },
+      );
 
   void dispose() {
     audio.dispose();
@@ -352,7 +351,9 @@ void main() {
   group('SessionOrchestrator error isolation (D-STRATEGY-2)', () {
     test('routes executeReal error to onStepExecutionFailed', () async {
       final harness = _OrchHarness(
-        steps: [smsStep(contactIds: const ['does-not-exist'])],
+        steps: [
+          smsStep(contactIds: const ['does-not-exist']),
+        ],
       );
       addTearDown(harness.dispose);
       // Use the exploding messaging service to force a throw inside
@@ -371,9 +372,10 @@ void main() {
           ),
         ],
         messagingService: exploding,
-        onStepExecutionFailed: ({required step, required error, required stack}) {
-          harness.failures.add((step: step, error: error));
-        },
+        onStepExecutionFailed:
+            ({required step, required error, required stack}) {
+              harness.failures.add((step: step, error: error));
+            },
         onSimulationDescription: harness.simulationDescriptions.add,
         servicesBuilder: (isCancelled, register) => EventServices(
           audio: harness.audio,
@@ -381,9 +383,7 @@ void main() {
           phone: harness.phone,
           notification: harness.notification,
           vibration: harness.vibration,
-          context: SessionContext(
-            contacts: [makeContact(id: 'a')],
-          ),
+          context: SessionContext(contacts: [makeContact(id: 'a')]),
           isCancelled: isCancelled,
           registerSmsWorkId: register,
         ),
@@ -422,9 +422,10 @@ void main() {
           registerSmsWorkId: register,
         ),
         messagingService: exploding,
-        onStepExecutionFailed: ({required step, required error, required stack}) {
-          harness.failures.add((step: step, error: error));
-        },
+        onStepExecutionFailed:
+            ({required step, required error, required stack}) {
+              harness.failures.add((step: step, error: error));
+            },
       );
       await orch.handleEvent(
         _event(event: ChainEvent.stepStarted, stepIndex: 0),
@@ -477,9 +478,7 @@ void main() {
       // enqueues something and registers the work id.
       final orch = SessionOrchestrator(
         isSimulation: false,
-        chainStepsResolver: () => [
-          step(type: ChainStepType.smsContact),
-        ],
+        chainStepsResolver: () => [step(type: ChainStepType.smsContact)],
         messagingService: harness.messaging,
         servicesBuilder: (isCancelled, register) => EventServices(
           audio: harness.audio,
@@ -498,10 +497,7 @@ void main() {
       expect(orch.pendingWorkIds.length, 1);
       await orch.cancelPendingWork();
       expect(orch.pendingWorkIds, isEmpty);
-      expect(
-        harness.messaging.calls,
-        contains('cancelPending:1'),
-      );
+      expect(harness.messaging.calls, contains('cancelPending:1'));
     });
 
     test('is idempotent when no work registered', () async {
@@ -685,11 +681,12 @@ void main() {
           isCancelled: isCancelled,
           registerSmsWorkId: register,
         ),
-        onStepExecutionFailed: ({required step, required error, required stack}) {
-          capturedStep = step;
-          capturedError = error;
-          capturedStack = stack;
-        },
+        onStepExecutionFailed:
+            ({required step, required error, required stack}) {
+              capturedStep = step;
+              capturedError = error;
+              capturedStack = stack;
+            },
       );
       await orch.handleEvent(
         _event(event: ChainEvent.stepStarted, stepIndex: 0),

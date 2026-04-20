@@ -11,6 +11,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/services.dart';
+
 import 'package:guardianangela/services/protocols/incoming_call_service_protocol.dart';
 
 /// Real platform-backed implementation of
@@ -46,11 +47,7 @@ final class IncomingCallService implements IncomingCallServiceProtocol {
     } on MissingPluginException {
       return Future.error('Not wired — Phase 10');
     } on PlatformException catch (e, s) {
-      developer.log(
-        'call_state.start platform error',
-        error: e,
-        stackTrace: s,
-      );
+      developer.log('call_state.start platform error', error: e, stackTrace: s);
       rethrow;
     }
     _nativeSub = _eventChannel.receiveBroadcastStream().listen(
@@ -59,11 +56,7 @@ final class IncomingCallService implements IncomingCallServiceProtocol {
         if (state != null) _controller.add(state);
       },
       onError: (Object e, StackTrace s) {
-        developer.log(
-          'call_state event error',
-          error: e,
-          stackTrace: s,
-        );
+        developer.log('call_state event error', error: e, stackTrace: s);
       },
     );
     _listening = true;
@@ -79,11 +72,7 @@ final class IncomingCallService implements IncomingCallServiceProtocol {
     } on MissingPluginException {
       // Phase 10 not wired — nothing to stop.
     } on PlatformException catch (e, s) {
-      developer.log(
-        'call_state.stop platform error',
-        error: e,
-        stackTrace: s,
-      );
+      developer.log('call_state.stop platform error', error: e, stackTrace: s);
     }
   }
 

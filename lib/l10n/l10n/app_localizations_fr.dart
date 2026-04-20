@@ -754,6 +754,12 @@ class AppLocalizationsFr extends AppLocalizations {
       'La sauvegarde n\'est pas encore disponible. Bientôt disponible.';
 
   @override
+  String get backupPinOptional => 'PIN facultatif (chiffre le paquet)';
+
+  @override
+  String get backupImportOk => 'Sauvegarde importée avec succès.';
+
+  @override
   String get historyTitle => 'Sessions passées';
 
   @override

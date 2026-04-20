@@ -63,8 +63,7 @@ class _FakeModesRepository extends ModesRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((m) => m.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((m) => m.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -95,8 +94,7 @@ class _FakeContactsRepository extends ContactsRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -144,8 +142,7 @@ class _FakeDistressChainsRepository extends DistressChainsRepository {
   final List<DistressChain> _items;
 
   @override
-  Future<List<DistressChain>> getAll() async =>
-      List<DistressChain>.of(_items);
+  Future<List<DistressChain>> getAll() async => List<DistressChain>.of(_items);
 
   @override
   Future<DistressChain?> getById(String id) async {
@@ -162,8 +159,7 @@ class _FakeDistressChainsRepository extends DistressChainsRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -217,8 +213,7 @@ class _FakeSessionLogsRepository extends SessionLogsRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      saved.removeWhere((l) => l.id == id);
+  Future<void> delete(String id) async => saved.removeWhere((l) => l.id == id);
 
   @override
   Future<void> deleteAll() async => saved.clear();
@@ -254,8 +249,7 @@ class _FakeAudio implements AudioServiceProtocol {
   }) async => calls.add('playVoiceRecording:$assetPath:sim=$isSimulation');
 
   @override
-  Future<void> stopVoiceRecording() async =>
-      calls.add('stopVoiceRecording');
+  Future<void> stopVoiceRecording() async => calls.add('stopVoiceRecording');
 }
 
 class _FakeMessaging implements MessagingServiceProtocol {
@@ -417,8 +411,9 @@ class _FakeGeofence implements GeofenceServiceProtocol {
 }
 
 class _FakeBatteryMonitor implements BatteryMonitorServiceProtocol {
-  final StreamController<int> _ctrl =
-      StreamController<int>.broadcast(sync: true);
+  final StreamController<int> _ctrl = StreamController<int>.broadcast(
+    sync: true,
+  );
 
   @override
   Stream<int> get onLowBattery => _ctrl.stream;
@@ -513,11 +508,17 @@ _Fixture _makeFixture({
   BatteryAlertConfig? batteryAlert,
 }) {
   final modesRepo = _FakeModesRepository(
-    modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
+    modes ??
+        [
+          makeMode(id: 'mode-1', steps: [holdStep()]),
+        ],
   );
   final contactsRepo = _FakeContactsRepository(contacts ?? const []);
   final distressRepo = _FakeDistressChainsRepository(
-    distressChains ?? [makeDistressChain(steps: [smsStep(order: 0)])],
+    distressChains ??
+        [
+          makeDistressChain(steps: [smsStep(order: 0)]),
+        ],
   );
   final settingsRepo = _FakeSettingsRepository(
     settings ?? const AppSettings(defaults: AppDefaults()),
@@ -533,9 +534,7 @@ _Fixture _makeFixture({
     overrides: [
       modesRepositoryProvider.overrideWithValue(modesRepo),
       contactsRepositoryProvider.overrideWithValue(contactsRepo),
-      templatesRepositoryProvider.overrideWithValue(
-        _FakeTemplatesRepository(),
-      ),
+      templatesRepositoryProvider.overrideWithValue(_FakeTemplatesRepository()),
       distressChainsRepositoryProvider.overrideWithValue(distressRepo),
       settingsRepositoryProvider.overrideWithValue(settingsRepo),
       userProfileRepositoryProvider.overrideWithValue(
@@ -559,13 +558,9 @@ _Fixture _makeFixture({
       simulationAudioProvider.overrideWithValue(_FakeAudio()),
       simulationNotificationProvider.overrideWithValue(_FakeNotification()),
       simulationVibrationProvider.overrideWithValue(_FakeVibration()),
-      simulationHardwareButtonProvider.overrideWithValue(
-        _FakeHardwareButton(),
-      ),
+      simulationHardwareButtonProvider.overrideWithValue(_FakeHardwareButton()),
       simulationGeofenceProvider.overrideWithValue(_FakeGeofence()),
-      simulationBatteryMonitorProvider.overrideWithValue(
-        _FakeBatteryMonitor(),
-      ),
+      simulationBatteryMonitorProvider.overrideWithValue(_FakeBatteryMonitor()),
       simulationDeviceStateProvider.overrideWithValue(_FakeDeviceState()),
       simulationLocationProvider.overrideWithValue(_FakeLocation()),
       simulationIncomingCallProvider.overrideWithValue(_FakeIncomingCall()),
@@ -591,11 +586,9 @@ void main() {
     test('throws when mode id does not exist', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
-      await check(controller.startSession(modeId: 'nope'))
-          .throws<StateError>();
+      await check(controller.startSession(modeId: 'nope')).throws<StateError>();
     });
 
     test('throws when mode has no chain steps', () async {
@@ -609,11 +602,11 @@ void main() {
       ];
       final fx = _makeFixture(modes: modes);
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
-      await check(controller.startSession(modeId: 'empty'))
-          .throws<StateError>();
+      await check(
+        controller.startSession(modeId: 'empty'),
+      ).throws<StateError>();
     });
 
     test(
@@ -625,32 +618,30 @@ void main() {
           ],
         );
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         await fx.container.read(sessionControllerProvider.future);
-        await check(controller.startSession(modeId: 'mode-1'))
-            .throws<StateError>();
+        await check(
+          controller.startSession(modeId: 'mode-1'),
+        ).throws<StateError>();
       },
     );
 
-    test(
-      'blocks start when the distress-chain repository is empty',
-      () async {
-        final fx = _makeFixture(distressChains: const []);
-        addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await check(controller.startSession(modeId: 'mode-1'))
-            .throws<StateError>();
-      },
-    );
+    test('blocks start when the distress-chain repository is empty', () async {
+      final fx = _makeFixture(distressChains: const []);
+      addTearDown(fx.container.dispose);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await check(
+        controller.startSession(modeId: 'mode-1'),
+      ).throws<StateError>();
+    });
 
     test('populates WalkSession on successful start', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       final ws = fx.container.read(sessionControllerProvider).value;
@@ -659,35 +650,30 @@ void main() {
       check(ws.isSimulation).isFalse();
     });
 
-    test('refuses to start a second user session over an active one',
-        () async {
+    test('refuses to start a second user session over an active one', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
-      await check(controller.startSession(modeId: 'mode-1'))
-          .throws<StateError>();
+      await check(
+        controller.startSession(modeId: 'mode-1'),
+      ).throws<StateError>();
       await controller.disarm();
     });
   });
 
   group('SessionController simulation routing', () {
-    test('isSimulation=true uses simulation services throughout',
-        () async {
+    test('isSimulation=true uses simulation services throughout', () async {
       final modes = [
         makeMode(
           id: 'mode-sms',
-          steps: [
-            smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0),
-          ],
+          steps: [smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0)],
         ),
       ];
       final fx = _makeFixture(modes: modes);
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-sms', isSimulation: true);
       final ws = fx.container.read(sessionControllerProvider).value;
@@ -702,8 +688,7 @@ void main() {
     test('isSimulation=false uses real services', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       final ws = fx.container.read(sessionControllerProvider).value;
@@ -716,8 +701,7 @@ void main() {
     test('disarm transitions the session to an ended phase', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       await controller.disarm();
@@ -729,8 +713,7 @@ void main() {
     test('pause then resume restores the running phase', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       await controller.pause();
@@ -741,12 +724,10 @@ void main() {
       check(resumed!.phase).isA<SessionPhaseActive>();
     });
 
-    test('disarm is idempotent — calling twice does not explode',
-        () async {
+    test('disarm is idempotent — calling twice does not explode', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       await controller.disarm();
@@ -760,8 +741,9 @@ void main() {
       () async {
         final fx = _makeFixture();
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         await fx.container.read(sessionControllerProvider.future);
         await controller.pause();
         await controller.resume();
@@ -775,8 +757,7 @@ void main() {
     test('triggerDistressChain swaps the engine chain', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       await controller.triggerDistressChain();
@@ -786,12 +767,10 @@ void main() {
       check(ws).isNotNull();
     });
 
-    test('triggerDistressChain is a no-op when no session is active',
-        () async {
+    test('triggerDistressChain is a no-op when no session is active', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.triggerDistressChain();
       check(fx.container.read(sessionControllerProvider).value).isNull();
@@ -802,16 +781,14 @@ void main() {
     test('correct PIN clears wrong counter and returns true', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       check(controller.handlePinResult(PinResult.correct)).isTrue();
     });
 
     test('wrong PIN under threshold returns false', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       for (var i = 0; i < SessionController.wrongPinThreshold - 1; i++) {
         check(controller.handlePinResult(PinResult.wrong)).isFalse();
       }
@@ -820,33 +797,28 @@ void main() {
     test('duress PIN always returns false', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       check(controller.handlePinResult(PinResult.duress)).isFalse();
     });
 
     test('wrongPinThreshold immediately returns false', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
-      check(controller.handlePinResult(PinResult.wrongPinThreshold))
-          .isFalse();
+      final controller = fx.container.read(sessionControllerProvider.notifier);
+      check(controller.handlePinResult(PinResult.wrongPinThreshold)).isFalse();
     });
 
     test('timeout returns false and does not bump the counter', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       check(controller.handlePinResult(PinResult.timeout)).isFalse();
     });
 
     test('cancelled returns false and does not bump the counter', () {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       check(controller.handlePinResult(PinResult.cancelled)).isFalse();
     });
 
@@ -855,8 +827,9 @@ void main() {
       () async {
         final fx = _makeFixture();
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         await fx.container.read(sessionControllerProvider.future);
         await controller.startSession(modeId: 'mode-1');
         for (var i = 0; i < SessionController.wrongPinThreshold; i++) {
@@ -870,12 +843,10 @@ void main() {
   });
 
   group('SessionController battery-alert session', () {
-    test('startBatteryAlertSession no-ops when config is disabled',
-        () async {
+    test('startBatteryAlertSession no-ops when config is disabled', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startBatteryAlertSession(
         const BatteryAlertConfig(enabled: false),
@@ -886,12 +857,9 @@ void main() {
     test('startBatteryAlertSession no-ops when chain is empty', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
-      await controller.startBatteryAlertSession(
-        const BatteryAlertConfig(),
-      );
+      await controller.startBatteryAlertSession(const BatteryAlertConfig());
       check(fx.container.read(sessionControllerProvider).value).isNull();
     });
 
@@ -900,8 +868,9 @@ void main() {
       () async {
         final fx = _makeFixture();
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         await fx.container.read(sessionControllerProvider.future);
         await controller.startSession(modeId: 'mode-1');
         await check(
@@ -912,37 +881,30 @@ void main() {
       },
     );
 
-    test(
-      'startBatteryAlertSession runs with isBackgroundAlert=true',
-      () async {
-        final fx = _makeFixture();
-        addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await controller.startBatteryAlertSession(
-          BatteryAlertConfig(
-            chain: [smsStep(order: 0, durationSeconds: 0)],
-          ),
-        );
-        final ws = fx.container.read(sessionControllerProvider).value;
-        check(ws).isNotNull();
-        check(ws!.isBackgroundAlert).isTrue();
-      },
-    );
+    test('startBatteryAlertSession runs with isBackgroundAlert=true', () async {
+      final fx = _makeFixture();
+      addTearDown(fx.container.dispose);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await controller.startBatteryAlertSession(
+        BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 0)]),
+      );
+      final ws = fx.container.read(sessionControllerProvider).value;
+      check(ws).isNotNull();
+      check(ws!.isBackgroundAlert).isTrue();
+    });
 
     test(
       'startSession cancels an existing battery-alert session (L14)',
       () async {
         final fx = _makeFixture();
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         await fx.container.read(sessionControllerProvider.future);
         await controller.startBatteryAlertSession(
-          BatteryAlertConfig(
-            chain: [smsStep(order: 0, durationSeconds: 10)],
-          ),
+          BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 10)]),
         );
         await controller.startSession(modeId: 'mode-1');
         final ws = fx.container.read(sessionControllerProvider).value;
@@ -963,8 +925,9 @@ void main() {
           ),
         );
         addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
         // Do NOT pre-await settingsControllerProvider.future — simulate
         // UI-level "start as soon as the user taps" timing. The
         // controller must await the hydrate internally.
@@ -979,8 +942,7 @@ void main() {
     test('disarm ends the session and persists a log row', () async {
       final fx = _makeFixture();
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-1');
       await controller.disarm();
@@ -994,58 +956,47 @@ void main() {
     test('uses mode.distressChainId when set', () async {
       final chains = [
         makeDistressChain(id: 'a', steps: [smsStep(order: 0)]),
-        makeDistressChain(id: 'b', steps: [smsStep(order: 0, id: 'b-s')]),
+        makeDistressChain(
+          id: 'b',
+          steps: [smsStep(order: 0, id: 'b-s')],
+        ),
       ];
       final modes = [
-        makeMode(
-          id: 'mode-b',
-          distressChainId: 'b',
-          steps: [holdStep()],
-        ),
+        makeMode(id: 'mode-b', distressChainId: 'b', steps: [holdStep()]),
       ];
       final fx = _makeFixture(modes: modes, distressChains: chains);
       addTearDown(fx.container.dispose);
-      final controller =
-          fx.container.read(sessionControllerProvider.notifier);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startSession(modeId: 'mode-b');
       await controller.triggerDistressChain();
       check(fx.container.read(sessionControllerProvider).value).isNotNull();
     });
 
-    test(
-      'falls back to first chain when distressChainId is null',
-      () async {
-        final chains = [
-          makeDistressChain(id: 'first', steps: [smsStep(order: 0)]),
-          makeDistressChain(id: 'second', steps: [smsStep(order: 0)]),
-        ];
-        final fx = _makeFixture(distressChains: chains);
-        addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await controller.startSession(modeId: 'mode-1');
-        check(fx.container.read(sessionControllerProvider).value)
-            .isNotNull();
-      },
-    );
+    test('falls back to first chain when distressChainId is null', () async {
+      final chains = [
+        makeDistressChain(id: 'first', steps: [smsStep(order: 0)]),
+        makeDistressChain(id: 'second', steps: [smsStep(order: 0)]),
+      ];
+      final fx = _makeFixture(distressChains: chains);
+      addTearDown(fx.container.dispose);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await controller.startSession(modeId: 'mode-1');
+      check(fx.container.read(sessionControllerProvider).value).isNotNull();
+    });
   });
 
   group('SessionController fake-call methods', () {
-    test(
-      'fake-call methods are no-ops when no session is active',
-      () async {
-        final fx = _makeFixture();
-        addTearDown(fx.container.dispose);
-        final controller =
-            fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await controller.answerFakeCall();
-        await controller.hangUp();
-        await controller.declineFakeCall();
-        check(fx.container.read(sessionControllerProvider).value).isNull();
-      },
-    );
+    test('fake-call methods are no-ops when no session is active', () async {
+      final fx = _makeFixture();
+      addTearDown(fx.container.dispose);
+      final controller = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await controller.answerFakeCall();
+      await controller.hangUp();
+      await controller.declineFakeCall();
+      check(fx.container.read(sessionControllerProvider).value).isNull();
+    });
   });
 }

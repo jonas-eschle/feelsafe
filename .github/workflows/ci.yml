@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main]
+    tags: ['v*']
   pull_request:
     branches: [main]
 
@@ -42,3 +43,100 @@ jobs:
 
       - name: Test
         run: flutter test
+
+  # Phase 15 release pipeline — triggers on `v*` tag push only.
+  # Builds the signed Android AAB + iOS archive, uploads symbols to
+  # Sentry (EU host), and publishes to GitHub Releases.
+  #
+  # TODO(release-owner): the following secrets must be populated in
+  # repo settings before this workflow can succeed end-to-end:
+  #   - ANDROID_KEYSTORE_BASE64: base64-encoded upload keystore (.jks).
+  #   - ANDROID_KEYSTORE_PASSWORD / ANDROID_KEY_ALIAS /
+  #     ANDROID_KEY_PASSWORD: keystore credentials.
+  #   - APPLE_CERTIFICATE_BASE64 / APPLE_CERTIFICATE_PASSWORD:
+  #     signing identity for flutter build ipa.
+  #   - APPLE_PROVISIONING_PROFILE_BASE64: distribution profile.
+  #   - SENTRY_AUTH_TOKEN: Sentry CLI auth token (EU org).
+  #   - SENTRY_ORG / SENTRY_PROJECT: Sentry slugs on the EU host.
+  # Until those are wired, the tagged build will fail at the first
+  # secret-referencing step — intentional, so we never ship an
+  # unsigned / unsymbolicated build by accident.
+  release-android:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+
+      # TODO(release-owner): decode keystore + write key.properties
+      #   echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > upload.jks
+      #   cat > android/key.properties <<EOF
+      #   storeFile=upload.jks
+      #   storePassword=${ANDROID_KEYSTORE_PASSWORD}
+      #   keyAlias=${ANDROID_KEY_ALIAS}
+      #   keyPassword=${ANDROID_KEY_PASSWORD}
+      #   EOF
+      - name: Build signed AAB
+        run: flutter build appbundle --release
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      # TODO(release-owner): install sentry-cli and upload native
+      # debug-symbols (NDK) + Dart sourcemaps. The sentry_flutter
+      # docs recommend `sentry-cli upload-dif` for NDK and
+      # `sentry-cli sourcemaps upload` for Dart.
+      - name: Upload symbols to Sentry (EU)
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
+        run: echo "TODO sentry-cli upload symbols"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Upload AAB artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-release-aab
+          path: build/app/outputs/bundle/release/*.aab
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/app/outputs/bundle/release/*.aab
+
+  release-ios:
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: quality
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+      - name: Install dependencies
+        run: flutter pub get
+
+      # TODO(release-owner): install Apple certs + provisioning
+      # profile into the keychain before `flutter build ipa`.
+      - name: Build IPA
+        run: flutter build ipa --release --no-codesign
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      # TODO(release-owner): symbol upload via sentry-cli (EU host).
+      - name: Upload symbols to Sentry (EU)
+        if: ${{ env.SENTRY_AUTH_TOKEN != '' }}
+        run: echo "TODO sentry-cli upload dSYM"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-release-ipa
+          path: build/ios/ipa/*.ipa

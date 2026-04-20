@@ -21,18 +21,19 @@ class DistressChainsDao extends DatabaseAccessor<AppDatabase>
   /// Returns every distress chain, ordered by id. The first element
   /// is the default when a mode's `distressChainId` is null.
   Future<List<DistressChain>> getAll() async {
-    final rows = await (select(distressChainsTable)
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    final rows = await (select(
+      distressChainsTable,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns the distress chain with [id], or null if none exists.
   Future<DistressChain?> getById(String id) async {
-    final row = await (select(distressChainsTable)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(distressChainsTable)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return _decode(row.jsonPayload);
   }

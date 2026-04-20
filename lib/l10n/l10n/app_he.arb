@@ -262,6 +262,8 @@
   "backupExport": "ייצא נתונים",
   "backupImport": "ייבא נתונים",
   "backupNotReady": "הגיבוי עדיין אינו זמין. בקרוב.",
+  "backupPinOptional": "PIN אופציונלי (מצפין את החבילה)",
+  "backupImportOk": "הגיבוי יובא בהצלחה.",
 
   "historyTitle": "מושבים קודמים",
   "historyEmpty": "אין מושבים קודמים עדיין.",

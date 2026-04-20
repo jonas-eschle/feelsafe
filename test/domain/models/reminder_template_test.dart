@@ -61,25 +61,29 @@ void main() {
     });
 
     test('fromJson unknown ConfirmationType throws', () {
-      check(() => ReminderTemplate.fromJson(const {
-            'id': 'x',
-            'name': 'n',
-            'title': 't',
-            'body': 'b',
-            'confirmationType': 'bogus',
-            'displayStyle': 'subtle',
-          })).throws<ArgumentError>();
+      check(
+        () => ReminderTemplate.fromJson(const {
+          'id': 'x',
+          'name': 'n',
+          'title': 't',
+          'body': 'b',
+          'confirmationType': 'bogus',
+          'displayStyle': 'subtle',
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('fromJson unknown ReminderDisplayStyle throws', () {
-      check(() => ReminderTemplate.fromJson(const {
-            'id': 'x',
-            'name': 'n',
-            'title': 't',
-            'body': 'b',
-            'confirmationType': 'tapButton',
-            'displayStyle': 'bogus',
-          })).throws<ArgumentError>();
+      check(
+        () => ReminderTemplate.fromJson(const {
+          'id': 'x',
+          'name': 'n',
+          'title': 't',
+          'body': 'b',
+          'confirmationType': 'tapButton',
+          'displayStyle': 'bogus',
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('equality', () {
@@ -102,9 +106,7 @@ void main() {
     test('all ReminderDisplayStyles round-trip', () {
       for (final style in ReminderDisplayStyle.values) {
         final t = minimal.copyWith(displayStyle: style);
-        check(
-          ReminderTemplate.fromJson(t.toJson()).displayStyle,
-        ).equals(style);
+        check(ReminderTemplate.fromJson(t.toJson()).displayStyle).equals(style);
       }
     });
   });

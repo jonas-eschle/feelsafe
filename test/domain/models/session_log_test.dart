@@ -40,10 +40,12 @@ void main() {
     });
 
     test('fromJson unknown event throws', () {
-      check(() => SessionLogEvent.fromJson(const {
-            'timestamp': '2026-04-01T12:00:00Z',
-            'event': 'bogus',
-          })).throws<ArgumentError>();
+      check(
+        () => SessionLogEvent.fromJson(const {
+          'timestamp': '2026-04-01T12:00:00Z',
+          'event': 'bogus',
+        }),
+      ).throws<ArgumentError>();
     });
   });
 
@@ -126,14 +128,16 @@ void main() {
     });
 
     test('fromJson unknown endReason throws', () {
-      check(() => SessionLog.fromJson(const {
-            'id': 'x',
-            'modeId': 'm',
-            'modeName': 'n',
-            'startedAt': '2026-04-01T00:00:00Z',
-            'endReason': 'bogus',
-            'isSimulation': false,
-          })).throws<ArgumentError>();
+      check(
+        () => SessionLog.fromJson(const {
+          'id': 'x',
+          'modeId': 'm',
+          'modeName': 'n',
+          'startedAt': '2026-04-01T00:00:00Z',
+          'endReason': 'bogus',
+          'isSimulation': false,
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('isSimulation round-trip', () {

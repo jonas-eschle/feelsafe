@@ -8,8 +8,7 @@ import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 
 /// Simulation double for [StealthIconServiceProtocol].
-final class SimulationStealthIconService
-    implements StealthIconServiceProtocol {
+final class SimulationStealthIconService implements StealthIconServiceProtocol {
   /// Creates the simulation stealth-icon service.
   SimulationStealthIconService();
 

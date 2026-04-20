@@ -38,9 +38,9 @@ class GuardianAngelaApp extends ConsumerWidget {
   }
 
   ThemeMode _resolveThemeMode(AppThemeMode? mode) => switch (mode) {
-        AppThemeMode.light => ThemeMode.light,
-        AppThemeMode.dark => ThemeMode.dark,
-        AppThemeMode.system => ThemeMode.system,
-        null => ThemeMode.system,
-      };
+    AppThemeMode.light => ThemeMode.light,
+    AppThemeMode.dark => ThemeMode.dark,
+    AppThemeMode.system => ThemeMode.system,
+    null => ThemeMode.system,
+  };
 }

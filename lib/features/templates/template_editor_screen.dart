@@ -37,7 +37,8 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
     super.didChangeDependencies();
     final id = GoRouterState.of(context).uri.queryParameters['id'];
     if (id != null && _existing == null) {
-      final all = ref.read(templatesControllerProvider).value ??
+      final all =
+          ref.read(templatesControllerProvider).value ??
           const <ReminderTemplate>[];
       for (final t in all) {
         if (t.id == id) {
@@ -87,12 +88,12 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
     final l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(_existing == null
-            ? l.templateEditorTitleCreate
-            : l.templateEditorTitleEdit),
-        actions: [
-          IconButton(onPressed: _save, icon: const Icon(Icons.check)),
-        ],
+        title: Text(
+          _existing == null
+              ? l.templateEditorTitleCreate
+              : l.templateEditorTitleEdit,
+        ),
+        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -113,8 +114,9 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
           const SizedBox(height: 12),
           DropdownButtonFormField<ConfirmationType>(
             initialValue: _confirm,
-            decoration:
-                InputDecoration(labelText: l.templateFieldConfirmationType),
+            decoration: InputDecoration(
+              labelText: l.templateFieldConfirmationType,
+            ),
             items: [
               DropdownMenuItem(
                 value: ConfirmationType.tapButton,

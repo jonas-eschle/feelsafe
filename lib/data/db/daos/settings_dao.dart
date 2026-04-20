@@ -23,10 +23,11 @@ class SettingsDao extends DatabaseAccessor<AppDatabase>
 
   /// Returns the stored [AppSettings], or null if none exists.
   Future<AppSettings?> get() async {
-    final row = await (select(settingsTable)
-          ..where((t) => t.id.equals(_singletonId))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(settingsTable)
+              ..where((t) => t.id.equals(_singletonId))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return AppSettings.fromJson(
       jsonDecode(row.jsonPayload) as Map<String, Object?>,
@@ -46,7 +47,6 @@ class SettingsDao extends DatabaseAccessor<AppDatabase>
   /// Deletes the singleton row. Primarily used by tests and
   /// nuke-and-reseed.
   Future<void> clear() async {
-    await (delete(settingsTable)..where((t) => t.id.equals(_singletonId)))
-        .go();
+    await (delete(settingsTable)..where((t) => t.id.equals(_singletonId))).go();
   }
 }

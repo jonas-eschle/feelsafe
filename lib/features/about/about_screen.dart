@@ -24,10 +24,7 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 24),
             const GuardianAngelaLogo(size: 120),
             const SizedBox(height: 16),
-            Text(
-              l.appTitle,
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
+            Text(l.appTitle, style: Theme.of(context).textTheme.headlineMedium),
             const SizedBox(height: 8),
             Text('${l.aboutVersion}: 1.0.0'),
             const SizedBox(height: 24),

@@ -42,11 +42,7 @@ void main() {
 
     test('JSON round-trip with full chain', () {
       final m = makeMode(
-        steps: [
-          holdStep(order: 0),
-          smsStep(order: 1),
-          fakeCallStep(order: 2),
-        ],
+        steps: [holdStep(order: 0), smsStep(order: 1), fakeCallStep(order: 2)],
       );
       check(SessionMode.fromJson(m.toJson())).equals(m);
     });
@@ -105,22 +101,23 @@ void main() {
     });
 
     test('inequality when name differs', () {
-      check(makeMode(name: 'A'))
-          .not((it) => it.equals(makeMode(name: 'B')));
+      check(makeMode(name: 'A')).not((it) => it.equals(makeMode(name: 'B')));
     });
 
     test('inequality when chainSteps differ', () {
-      check(makeMode(steps: [holdStep()])).not(
-        (it) => it.equals(makeMode(steps: [holdStep(), smsStep()])),
-      );
+      check(
+        makeMode(steps: [holdStep()]),
+      ).not((it) => it.equals(makeMode(steps: [holdStep(), smsStep()])));
     });
 
     test('fromJson throws on unknown checkInType', () {
-      check(() => SessionMode.fromJson(const {
-            'id': 'x',
-            'name': 'y',
-            'checkInType': 'bogus',
-          })).throws<ArgumentError>();
+      check(
+        () => SessionMode.fromJson(const {
+          'id': 'x',
+          'name': 'y',
+          'checkInType': 'bogus',
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('toString contains id, name, type', () {
@@ -139,9 +136,7 @@ void main() {
             trigger: LongPressTrigger(durationSeconds: 3.0),
           ),
         ],
-        disarmTriggers: const [
-          TimerDisarmTrigger(durationSeconds: 100),
-        ],
+        disarmTriggers: const [TimerDisarmTrigger(durationSeconds: 100)],
       );
       check(SessionMode.fromJson(m.toJson())).equals(m);
     });

@@ -65,7 +65,7 @@ class DistressChainsController extends AsyncNotifier<List<DistressChain>> {
 
 /// Provider for `DistressChainsController`.
 final AsyncNotifierProvider<DistressChainsController, List<DistressChain>>
-    distressChainsControllerProvider =
+distressChainsControllerProvider =
     AsyncNotifierProvider<DistressChainsController, List<DistressChain>>(
-  DistressChainsController.new,
-);
+      DistressChainsController.new,
+    );

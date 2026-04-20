@@ -67,17 +67,14 @@ void main() {
     });
 
     test('inequality when a field differs', () {
-      check(holdStep(durationSeconds: 10)).not(
-        (it) => it.equals(holdStep(durationSeconds: 20)),
-      );
+      check(
+        holdStep(durationSeconds: 10),
+      ).not((it) => it.equals(holdStep(durationSeconds: 20)));
     });
 
     test('ordering via order field', () {
-      final steps = [
-        step(order: 2),
-        step(order: 0),
-        step(order: 1),
-      ]..sort((a, b) => a.order.compareTo(b.order));
+      final steps = [step(order: 2), step(order: 0), step(order: 1)]
+        ..sort((a, b) => a.order.compareTo(b.order));
       check(steps.map((s) => s.order).toList()).deepEquals([0, 1, 2]);
     });
 

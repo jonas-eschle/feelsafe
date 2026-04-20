@@ -4,8 +4,9 @@
 /// active.
 library;
 
-import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
+
+import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
 
 /// Real platform-backed implementation of [WakelockServiceProtocol].
 final class WakelockService implements WakelockServiceProtocol {

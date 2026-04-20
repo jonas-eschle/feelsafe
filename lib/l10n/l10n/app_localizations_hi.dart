@@ -746,6 +746,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get backupNotReady => 'बैकअप अभी उपलब्ध नहीं है। जल्द आ रहा है।';
 
   @override
+  String get backupPinOptional => 'वैकल्पिक PIN (पैकेज को एन्क्रिप्ट करता है)';
+
+  @override
+  String get backupImportOk => 'बैकअप सफलतापूर्वक आयात किया गया।';
+
+  @override
   String get historyTitle => 'पिछले सत्र';
 
   @override

@@ -22,10 +22,11 @@ class BatteryAlertDao extends DatabaseAccessor<AppDatabase>
 
   /// Returns the stored [BatteryAlertConfig], or null if none exists.
   Future<BatteryAlertConfig?> get() async {
-    final row = await (select(batteryAlertTable)
-          ..where((t) => t.id.equals(_singletonId))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(batteryAlertTable)
+              ..where((t) => t.id.equals(_singletonId))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return BatteryAlertConfig.fromJson(
       jsonDecode(row.jsonPayload) as Map<String, Object?>,
@@ -44,7 +45,8 @@ class BatteryAlertDao extends DatabaseAccessor<AppDatabase>
 
   /// Deletes the singleton row.
   Future<void> clear() async {
-    await (delete(batteryAlertTable)..where((t) => t.id.equals(_singletonId)))
-        .go();
+    await (delete(
+      batteryAlertTable,
+    )..where((t) => t.id.equals(_singletonId))).go();
   }
 }

@@ -34,8 +34,9 @@ class BatteryAlertScreen extends ConsumerWidget {
               title: Text(l.batteryAlertEnable),
               value: config.enabled,
               onChanged: (v) async {
-                final notifier =
-                    ref.read(batteryAlertControllerProvider.notifier);
+                final notifier = ref.read(
+                  batteryAlertControllerProvider.notifier,
+                );
                 if (v) {
                   await notifier.enable();
                 } else {
@@ -57,8 +58,10 @@ class BatteryAlertScreen extends ConsumerWidget {
                   .setThresholdPercent(v.round()),
             ),
             const Divider(),
-            Text(l.modeChainHeader,
-                style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l.modeChainHeader,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: 8),
             for (var i = 0; i < config.chain.length; i++)
               ChainStepTile(

@@ -59,8 +59,10 @@ class _ImSafeSliderState extends State<ImSafeSlider> {
                 child: GestureDetector(
                   onHorizontalDragUpdate: (d) {
                     setState(() {
-                      _fraction = (_fraction + d.delta.dx / (width - 60))
-                          .clamp(0.0, 1.0);
+                      _fraction = (_fraction + d.delta.dx / (width - 60)).clamp(
+                        0.0,
+                        1.0,
+                      );
                     });
                   },
                   onHorizontalDragEnd: (_) {
@@ -76,10 +78,7 @@ class _ImSafeSliderState extends State<ImSafeSlider> {
                       color: colors.safe,
                       borderRadius: BorderRadius.circular(30),
                     ),
-                    child: Icon(
-                      Icons.arrow_forward,
-                      color: colors.safeOn,
-                    ),
+                    child: Icon(Icons.arrow_forward, color: colors.safeOn),
                   ),
                 ),
               ),

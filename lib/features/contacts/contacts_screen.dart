@@ -29,9 +29,8 @@ class ContactsScreen extends ConsumerWidget {
             ? Center(child: Text(l.contactsEmpty))
             : ReorderableListView.builder(
                 itemCount: contacts.length,
-                onReorder: (o, n) => ref
-                    .read(contactsControllerProvider.notifier)
-                    .reorder(o, n),
+                onReorder: (o, n) =>
+                    ref.read(contactsControllerProvider.notifier).reorder(o, n),
                 itemBuilder: (context, i) => _ContactTile(
                   key: ValueKey(contacts[i].id),
                   contact: contacts[i],
@@ -59,9 +58,7 @@ class _ContactTile extends ConsumerWidget {
       leading: const Icon(Icons.person),
       title: Text(contact.name),
       subtitle: Text(contact.phoneNumber),
-      onTap: () => context.push(
-        '${RouteNames.contactForm}?id=${contact.id}',
-      ),
+      onTap: () => context.push('${RouteNames.contactForm}?id=${contact.id}'),
       trailing: IconButton(
         icon: const Icon(Icons.delete_outline),
         onPressed: () async {

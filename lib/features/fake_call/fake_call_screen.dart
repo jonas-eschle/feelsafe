@@ -37,10 +37,9 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
             const SizedBox(height: 40),
             Text(
               l.fakeCallTitle,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Colors.white),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(color: Colors.white),
             ),
             const Spacer(),
             Row(
@@ -100,23 +99,20 @@ class _CallButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          InkWell(
-            customBorder: const CircleBorder(),
-            onTap: onTap,
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                color: color,
-                shape: BoxShape.circle,
-              ),
-              child: Icon(icon, color: Colors.white, size: 32),
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(label, style: const TextStyle(color: Colors.white)),
-        ],
-      );
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      InkWell(
+        customBorder: const CircleBorder(),
+        onTap: onTap,
+        child: Container(
+          width: 80,
+          height: 80,
+          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          child: Icon(icon, color: Colors.white, size: 32),
+        ),
+      ),
+      const SizedBox(height: 8),
+      Text(label, style: const TextStyle(color: Colors.white)),
+    ],
+  );
 }

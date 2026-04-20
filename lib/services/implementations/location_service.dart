@@ -9,6 +9,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:geolocator/geolocator.dart';
+
 import 'package:guardianangela/domain/models/location_point.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 
@@ -43,18 +44,17 @@ final class LocationService implements LocationServiceProtocol {
       distanceFilter: 20,
       timeLimit: interval * 4,
     );
-    _subscription = Geolocator.getPositionStream(
-      locationSettings: settings,
-    ).listen(
-      _onPosition,
-      onError: (Object error, StackTrace stack) {
-        developer.log(
-          'location stream error',
-          error: error,
-          stackTrace: stack,
+    _subscription = Geolocator.getPositionStream(locationSettings: settings)
+        .listen(
+          _onPosition,
+          onError: (Object error, StackTrace stack) {
+            developer.log(
+              'location stream error',
+              error: error,
+              stackTrace: stack,
+            );
+          },
         );
-      },
-    );
   }
 
   @override

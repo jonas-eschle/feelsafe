@@ -50,10 +50,7 @@ final class DisguisedReminderStrategy extends EventStrategy {
   /// Returns the template whose id matches
   /// `DisguisedReminderConfig.templateId`, or the first entry in
   /// `reminderTemplates`, or null when the list is empty.
-  ReminderTemplate? _resolveTemplate(
-    ChainStep step,
-    EventServices services,
-  ) {
+  ReminderTemplate? _resolveTemplate(ChainStep step, EventServices services) {
     final templates = services.context.reminderTemplates;
     if (templates.isEmpty) return null;
     final config = step.config;

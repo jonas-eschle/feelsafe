@@ -11,6 +11,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:geolocator/geolocator.dart';
+
 import 'package:guardianangela/domain/models/location_point.dart';
 import 'package:guardianangela/services/protocols/geofence_service_protocol.dart';
 
@@ -48,14 +49,13 @@ final class GeofenceService implements GeofenceServiceProtocol {
       distanceFilter: 10,
     );
 
-    _subscription = Geolocator.getPositionStream(
-      locationSettings: settings,
-    ).listen(
-      _onPosition,
-      onError: (Object e, StackTrace s) {
-        developer.log('geofence stream error', error: e, stackTrace: s);
-      },
-    );
+    _subscription = Geolocator.getPositionStream(locationSettings: settings)
+        .listen(
+          _onPosition,
+          onError: (Object e, StackTrace s) {
+            developer.log('geofence stream error', error: e, stackTrace: s);
+          },
+        );
   }
 
   @override

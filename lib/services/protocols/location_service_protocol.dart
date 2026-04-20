@@ -17,9 +17,7 @@ abstract class LocationServiceProtocol {
   /// Starts periodic location tracking.
   ///
   /// [interval] — sampling interval; defaults to 60 seconds.
-  Future<void> startTracking({
-    Duration interval = const Duration(seconds: 60),
-  });
+  Future<void> startTracking({Duration interval = const Duration(seconds: 60)});
 
   /// Stops periodic location tracking.
   Future<void> stopTracking();

@@ -22,10 +22,11 @@ class UserProfileDao extends DatabaseAccessor<AppDatabase>
 
   /// Returns the stored [UserProfile], or null if none exists.
   Future<UserProfile?> get() async {
-    final row = await (select(userProfileTable)
-          ..where((t) => t.id.equals(_singletonId))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(userProfileTable)
+              ..where((t) => t.id.equals(_singletonId))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return UserProfile.fromJson(
       jsonDecode(row.jsonPayload) as Map<String, Object?>,
@@ -44,7 +45,8 @@ class UserProfileDao extends DatabaseAccessor<AppDatabase>
 
   /// Deletes the singleton row.
   Future<void> clear() async {
-    await (delete(userProfileTable)..where((t) => t.id.equals(_singletonId)))
-        .go();
+    await (delete(
+      userProfileTable,
+    )..where((t) => t.id.equals(_singletonId))).go();
   }
 }

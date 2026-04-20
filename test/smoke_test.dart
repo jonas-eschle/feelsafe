@@ -5,9 +5,7 @@ import 'package:guardianangela/app.dart';
 
 void main() {
   testWidgets('GuardianAngelaApp builds without throwing', (tester) async {
-    await tester.pumpWidget(
-      const ProviderScope(child: GuardianAngelaApp()),
-    );
+    await tester.pumpWidget(const ProviderScope(child: GuardianAngelaApp()));
     await tester.pump();
     expect(find.byType(GuardianAngelaApp), findsOneWidget);
   });

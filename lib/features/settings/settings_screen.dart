@@ -25,18 +25,24 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         children: [
           _NavTile(label: l.settingsSectionProfile, route: RouteNames.profile),
-          _NavTile(label: l.settingsSectionContacts, route: RouteNames.contacts),
+          _NavTile(
+            label: l.settingsSectionContacts,
+            route: RouteNames.contacts,
+          ),
           _NavTile(label: l.settingsSectionModes, route: RouteNames.modes),
           _NavTile(
-              label: l.settingsSectionDistressChains,
-              route: RouteNames.distressChains),
+            label: l.settingsSectionDistressChains,
+            route: RouteNames.distressChains,
+          ),
           const Divider(),
           _NavTile(
-              label: l.settingsSectionSecurity,
-              route: RouteNames.settingsSecurity),
+            label: l.settingsSectionSecurity,
+            route: RouteNames.settingsSecurity,
+          ),
           _NavTile(
-              label: l.settingsSectionStealth,
-              route: RouteNames.settingsStealth),
+            label: l.settingsSectionStealth,
+            route: RouteNames.settingsStealth,
+          ),
           const Divider(),
           ListTile(
             title: Text(l.settingsSectionDefaults),
@@ -44,27 +50,36 @@ class SettingsScreen extends ConsumerWidget {
             enabled: false,
           ),
           _NavTile(
-              label: l.settingsSectionEventDefaults,
-              route: RouteNames.eventDefaults),
+            label: l.settingsSectionEventDefaults,
+            route: RouteNames.eventDefaults,
+          ),
           _NavTile(
-              label: l.settingsSectionGpsLogging,
-              route: RouteNames.gpsLogging),
+            label: l.settingsSectionGpsLogging,
+            route: RouteNames.gpsLogging,
+          ),
           _NavTile(
-              label: l.settingsSectionReminderTemplates,
-              route: RouteNames.reminderTemplates),
+            label: l.settingsSectionReminderTemplates,
+            route: RouteNames.reminderTemplates,
+          ),
           _NavTile(
-              label: l.settingsSectionBatteryAlert,
-              route: RouteNames.batteryAlert),
+            label: l.settingsSectionBatteryAlert,
+            route: RouteNames.batteryAlert,
+          ),
           _NavTile(
-              label: l.settingsSectionNotifications,
-              route: RouteNames.notificationSettings),
+            label: l.settingsSectionNotifications,
+            route: RouteNames.notificationSettings,
+          ),
           _NavTile(
-              label: l.settingsSectionHistoryRetention,
-              route: RouteNames.historyRetention),
+            label: l.settingsSectionHistoryRetention,
+            route: RouteNames.historyRetention,
+          ),
           const Divider(),
           _NavTile(label: l.settingsSectionBackup, route: RouteNames.backup),
           _NavTile(label: l.settingsSectionAbout, route: RouteNames.about),
-          _NavTile(label: l.settingsSectionFeedback, route: RouteNames.feedback),
+          _NavTile(
+            label: l.settingsSectionFeedback,
+            route: RouteNames.feedback,
+          ),
           const Divider(),
           _ThemeDropdown(current: settings?.themeMode ?? AppThemeMode.system),
           ListTile(
@@ -90,10 +105,10 @@ class _NavTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ListTile(
-        title: Text(label),
-        trailing: const Icon(Icons.chevron_right),
-        onTap: () => context.push(route),
-      );
+    title: Text(label),
+    trailing: const Icon(Icons.chevron_right),
+    onTap: () => context.push(route),
+  );
 }
 
 class _ThemeDropdown extends ConsumerWidget {
@@ -110,17 +125,21 @@ class _ThemeDropdown extends ConsumerWidget {
         value: current,
         items: [
           DropdownMenuItem(
-              value: AppThemeMode.system, child: Text(l.settingsThemeSystem)),
+            value: AppThemeMode.system,
+            child: Text(l.settingsThemeSystem),
+          ),
           DropdownMenuItem(
-              value: AppThemeMode.light, child: Text(l.settingsThemeLight)),
+            value: AppThemeMode.light,
+            child: Text(l.settingsThemeLight),
+          ),
           DropdownMenuItem(
-              value: AppThemeMode.dark, child: Text(l.settingsThemeDark)),
+            value: AppThemeMode.dark,
+            child: Text(l.settingsThemeDark),
+          ),
         ],
         onChanged: (v) {
           if (v != null) {
-            ref
-                .read(settingsControllerProvider.notifier)
-                .setThemeMode(v);
+            ref.read(settingsControllerProvider.notifier).setThemeMode(v);
           }
         },
       ),

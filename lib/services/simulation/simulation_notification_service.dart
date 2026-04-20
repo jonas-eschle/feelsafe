@@ -37,9 +37,7 @@ final class SimulationNotificationService
     required ReminderTemplate template,
     bool isSimulation = false,
   }) async {
-    developer.log(
-      '[SIM] notification.showDisguisedReminder ${template.id}',
-    );
+    developer.log('[SIM] notification.showDisguisedReminder ${template.id}');
   }
 
   @override

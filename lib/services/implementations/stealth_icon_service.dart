@@ -14,6 +14,7 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
+
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 
@@ -35,9 +36,7 @@ final class StealthIconService implements StealthIconServiceProtocol {
     _cachedPreset = preset;
     if (!Platform.isAndroid) return;
     try {
-      await _channel.invokeMethod<void>('setPreset', {
-        'preset': preset.name,
-      });
+      await _channel.invokeMethod<void>('setPreset', {'preset': preset.name});
     } on MissingPluginException {
       return Future.error('Not wired — Phase 10');
     } on PlatformException catch (e, s) {

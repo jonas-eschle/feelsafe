@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/strategies/loud_alarm_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -98,10 +97,7 @@ void main() {
 
     test('executeReal with wrong config type uses defaults', () async {
       await strategy.executeReal(
-        step(
-          type: ChainStepType.loudAlarm,
-          config: const FakeCallConfig(),
-        ),
+        step(type: ChainStepType.loudAlarm, config: const FakeCallConfig()),
         harness.build(),
       );
       expect(harness.audio.calls, contains('playAlarm:maxVolume=true'));

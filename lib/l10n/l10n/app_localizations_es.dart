@@ -749,6 +749,12 @@ class AppLocalizationsEs extends AppLocalizations {
       'La copia de seguridad aún no está disponible. Próximamente.';
 
   @override
+  String get backupPinOptional => 'PIN opcional (cifra el paquete)';
+
+  @override
+  String get backupImportOk => 'Copia de seguridad importada correctamente.';
+
+  @override
   String get historyTitle => 'Sesiones anteriores';
 
   @override

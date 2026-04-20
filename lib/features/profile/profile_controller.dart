@@ -35,7 +35,7 @@ class ProfileController extends AsyncNotifier<UserProfile?> {
 
 /// Provider for `ProfileController`.
 final AsyncNotifierProvider<ProfileController, UserProfile?>
-    profileControllerProvider =
+profileControllerProvider =
     AsyncNotifierProvider<ProfileController, UserProfile?>(
-  ProfileController.new,
-);
+      ProfileController.new,
+    );

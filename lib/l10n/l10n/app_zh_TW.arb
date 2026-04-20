@@ -261,6 +261,8 @@
   "backupExport": "匯出資料",
   "backupImport": "匯入資料",
   "backupNotReady": "備份功能尚未提供,敬請期待。",
+  "backupPinOptional": "可選 PIN（加密備份包）",
+  "backupImportOk": "備份匯入成功。",
 
   "historyTitle": "過往紀錄",
   "historyEmpty": "尚無過往紀錄。",

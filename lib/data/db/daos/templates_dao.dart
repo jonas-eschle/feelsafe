@@ -20,27 +20,29 @@ class TemplatesDao extends DatabaseAccessor<AppDatabase>
 
   /// Returns every template (global + mode-local), ordered by id.
   Future<List<ReminderTemplate>> getAll() async {
-    final rows = await (select(templatesTable)
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    final rows = await (select(
+      templatesTable,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns only the global templates.
   Future<List<ReminderTemplate>> getAllGlobal() async {
-    final rows = await (select(templatesTable)
-          ..where((t) => t.isGlobal.equals(true))
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    final rows =
+        await (select(templatesTable)
+              ..where((t) => t.isGlobal.equals(true))
+              ..orderBy([(t) => OrderingTerm.asc(t.id)]))
+            .get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns the template with [id], or null if none exists.
   Future<ReminderTemplate?> getById(String id) async {
-    final row = await (select(templatesTable)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(templatesTable)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return _decode(row.jsonPayload);
   }

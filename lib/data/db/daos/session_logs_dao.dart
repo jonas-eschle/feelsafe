@@ -20,18 +20,19 @@ class SessionLogsDao extends DatabaseAccessor<AppDatabase>
 
   /// Returns every log, newest-first.
   Future<List<SessionLog>> getAll() async {
-    final rows = await (select(sessionLogsTable)
-          ..orderBy([(t) => OrderingTerm.desc(t.startedAt)]))
-        .get();
+    final rows = await (select(
+      sessionLogsTable,
+    )..orderBy([(t) => OrderingTerm.desc(t.startedAt)])).get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns the log with [id], or null if none exists.
   Future<SessionLog?> getById(String id) async {
-    final row = await (select(sessionLogsTable)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(sessionLogsTable)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return _decode(row.jsonPayload);
   }

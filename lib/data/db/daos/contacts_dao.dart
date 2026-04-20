@@ -21,21 +21,22 @@ class ContactsDao extends DatabaseAccessor<AppDatabase>
   /// Returns every contact, ordered by `sortOrder` ascending and id
   /// as a tie-breaker.
   Future<List<EmergencyContact>> getAll() async {
-    final rows = await (select(contactsTable)
-          ..orderBy([
-            (t) => OrderingTerm.asc(t.sortOrder),
-            (t) => OrderingTerm.asc(t.id),
-          ]))
-        .get();
+    final rows =
+        await (select(contactsTable)..orderBy([
+              (t) => OrderingTerm.asc(t.sortOrder),
+              (t) => OrderingTerm.asc(t.id),
+            ]))
+            .get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns the contact with [id], or null if none exists.
   Future<EmergencyContact?> getById(String id) async {
-    final row = await (select(contactsTable)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(contactsTable)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return _decode(row.jsonPayload);
   }

@@ -1,39 +1,69 @@
 /// Backup-feature controller.
 ///
-/// The actual import/export implementation is deferred to Phase 15;
-/// today this controller carries only the public entry points used
-/// by the backup screen and returns `null` to signal "no pending
-/// operation".
+/// Thin wrapper around [BackupService] — deferred to Phase 15. The
+/// controller itself holds no state today; the state published to
+/// consumers is the last completed-export payload, or `null` if
+/// nothing has been exported in this session.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Async controller for the import / export backup tool.
-///
-/// State is `Object?` today — Phase 15 will replace it with a sealed
-/// `BackupState` hierarchy (progress, error, last-export-time).
-class BackupController extends AsyncNotifier<Object?> {
-  @override
-  Future<Object?> build() async => null;
+import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:guardianangela/features/backup/backup_service.dart';
 
-  /// Exports every persisted entity (modes, contacts, templates,
-  /// settings) as a JSON bundle. Phase 15 will define the schema.
-  Future<Object?> exportAll() async {
-    throw UnimplementedError(
-      'BackupController.exportAll is scheduled for Phase 15.',
-    );
+/// Provider for a singleton [BackupService].
+final backupServiceProvider = Provider<BackupService>(
+  (ref) => BackupService(
+    modesRepository: ref.watch(modesRepositoryProvider),
+    contactsRepository: ref.watch(contactsRepositoryProvider),
+    templatesRepository: ref.watch(templatesRepositoryProvider),
+    distressChainsRepository: ref.watch(distressChainsRepositoryProvider),
+    settingsRepository: ref.watch(settingsRepositoryProvider),
+    userProfileRepository: ref.watch(userProfileRepositoryProvider),
+    batteryAlertRepository: ref.watch(batteryAlertRepositoryProvider),
+    sessionLogsRepository: ref.watch(sessionLogsRepositoryProvider),
+  ),
+);
+
+/// Async controller for the import / export backup tool.
+class BackupController extends AsyncNotifier<Map<String, Object?>?> {
+  @override
+  Future<Map<String, Object?>?> build() async => null;
+
+  /// Exports every persisted entity as a JSON-compatible map. When
+  /// [pin] is non-empty the body is encrypted; see [BackupService].
+  Future<Map<String, Object?>> exportAll({String? pin}) async {
+    state = const AsyncLoading<Map<String, Object?>?>();
+    try {
+      final service = ref.read(backupServiceProvider);
+      final payload = await service.exportAll(pin: pin);
+      state = AsyncData<Map<String, Object?>?>(payload);
+      return payload;
+    } catch (error, stack) {
+      state = AsyncError<Map<String, Object?>?>(error, stack);
+      rethrow;
+    }
   }
 
-  /// Imports a previously-exported JSON bundle, replacing every
-  /// persisted entity. Phase 15 will define the merge rules.
-  Future<void> importAll(Object bundle) async {
-    throw UnimplementedError(
-      'BackupController.importAll is scheduled for Phase 15.',
-    );
+  /// Imports a previously-exported bundle. Throws
+  /// [BackupVersionError] / [BackupAuthenticationError] /
+  /// [BackupFormatError] on structural problems.
+  Future<void> importAll(Map<String, Object?> payload, {String? pin}) async {
+    state = const AsyncLoading<Map<String, Object?>?>();
+    try {
+      final service = ref.read(backupServiceProvider);
+      await service.importAll(payload, pin: pin);
+      state = const AsyncData<Map<String, Object?>?>(null);
+    } catch (error, stack) {
+      state = AsyncError<Map<String, Object?>?>(error, stack);
+      rethrow;
+    }
   }
 }
 
 /// Provider for `BackupController`.
-final AsyncNotifierProvider<BackupController, Object?>
-    backupControllerProvider =
-    AsyncNotifierProvider<BackupController, Object?>(BackupController.new);
+final AsyncNotifierProvider<BackupController, Map<String, Object?>?>
+backupControllerProvider =
+    AsyncNotifierProvider<BackupController, Map<String, Object?>?>(
+      BackupController.new,
+    );

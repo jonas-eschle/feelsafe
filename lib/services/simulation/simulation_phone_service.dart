@@ -22,10 +22,7 @@ final class SimulationPhoneService implements PhoneServiceProtocol {
   }
 
   @override
-  Future<void> callEmergency(
-    String number, {
-    bool isSimulation = false,
-  }) async {
+  Future<void> callEmergency(String number, {bool isSimulation = false}) async {
     developer.log('[SIM] phone.callEmergency $number');
   }
 }

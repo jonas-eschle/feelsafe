@@ -743,6 +743,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get backupNotReady => 'Backup is not available yet. Coming soon.';
 
   @override
+  String get backupPinOptional => 'Optional PIN (encrypts the bundle)';
+
+  @override
+  String get backupImportOk => 'Backup imported successfully.';
+
+  @override
   String get historyTitle => 'Past sessions';
 
   @override

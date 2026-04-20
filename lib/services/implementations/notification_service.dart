@@ -16,6 +16,7 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 
@@ -55,18 +56,13 @@ final class NotificationService implements NotificationServiceProtocol {
   @override
   Future<void> init() async {
     if (_initialized) return;
-    const androidInit = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings(
       requestAlertPermission: true,
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    const settings = InitializationSettings(
-      android: androidInit,
-      iOS: iosInit,
-    );
+    const settings = InitializationSettings(android: androidInit, iOS: iosInit);
     await _plugin.initialize(
       settings: settings,
       onDidReceiveNotificationResponse: _onResponse,
@@ -136,9 +132,7 @@ final class NotificationService implements NotificationServiceProtocol {
     bool isSimulation = false,
   }) async {
     if (isSimulation) {
-      developer.log(
-        '[SIM-BLOCK] showDisguisedReminder name=${template.name}',
-      );
+      developer.log('[SIM-BLOCK] showDisguisedReminder name=${template.name}');
       await showToast('${template.title} — ${template.body}');
       return;
     }
@@ -220,10 +214,7 @@ final class NotificationService implements NotificationServiceProtocol {
       ),
     );
     // Auto-dismiss after 3 seconds so the toast stays transient.
-    Timer(
-      const Duration(seconds: 3),
-      () => _plugin.cancel(id: id),
-    );
+    Timer(const Duration(seconds: 3), () => _plugin.cancel(id: id));
   }
 
   /// Builds [NotificationDetails] for a given channel.

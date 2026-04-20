@@ -55,8 +55,9 @@ void main() {
     });
 
     test('fromJson unknown icon throws', () {
-      check(() => StealthConfig.fromJson(const {'fakeIcon': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => StealthConfig.fromJson(const {'fakeIcon': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('equality', () {

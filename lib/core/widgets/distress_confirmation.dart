@@ -75,10 +75,9 @@ class _DistressConfirmationState extends State<DistressConfirmation> {
           children: [
             Text(
               widget.stealth ? l.distressCountdownStealth : l.distressCountdown,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(color: Colors.white),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(color: Colors.white),
             ),
             const SizedBox(height: 16),
             Container(
@@ -91,10 +90,9 @@ class _DistressConfirmationState extends State<DistressConfirmation> {
               ),
               child: Text(
                 '$_remaining',
-                style: Theme.of(context)
-                    .textTheme
-                    .displayLarge
-                    ?.copyWith(color: colors.dangerOn),
+                style: Theme.of(
+                  context,
+                ).textTheme.displayLarge?.copyWith(color: colors.dangerOn),
               ),
             ),
             const SizedBox(height: 24),

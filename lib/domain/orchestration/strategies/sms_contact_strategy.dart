@@ -93,7 +93,10 @@ final class SmsContactStrategy extends EventStrategy {
         final ids = config.contactIds;
         if (ids == null || ids.isEmpty) return const [];
         final idSet = ids.toSet();
-        return [for (final c in all) if (idSet.contains(c.id)) c];
+        return [
+          for (final c in all)
+            if (idSet.contains(c.id)) c,
+        ];
     }
   }
 

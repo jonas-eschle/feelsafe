@@ -82,8 +82,9 @@ void main() {
 
     test('JSON round-trip preserves themeMode', () {
       for (final mode in AppThemeMode.values) {
-        final s = const AppSettings(defaults: AppDefaults())
-            .copyWith(themeMode: mode);
+        final s = const AppSettings(
+          defaults: AppDefaults(),
+        ).copyWith(themeMode: mode);
         check(AppSettings.fromJson(s.toJson()).themeMode).equals(mode);
       }
     });
@@ -133,8 +134,9 @@ void main() {
     });
 
     test('fromJson unknown themeMode throws', () {
-      check(() => AppSettings.fromJson(const {'themeMode': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => AppSettings.fromJson(const {'themeMode': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('equality', () {
@@ -173,17 +175,19 @@ void main() {
 
     test('copyWith preserves defaults when not provided', () {
       const s = AppSettings(
-        defaults: AppDefaults(templates: [
-          ReminderTemplate(
-            id: 't1',
-            name: 'N',
-            title: 'T',
-            body: 'B',
-            confirmationType: ConfirmationType.dismiss,
-            displayStyle: ReminderDisplayStyle.subtle,
-            isGlobal: true,
-          ),
-        ]),
+        defaults: AppDefaults(
+          templates: [
+            ReminderTemplate(
+              id: 't1',
+              name: 'N',
+              title: 'T',
+              body: 'B',
+              confirmationType: ConfirmationType.dismiss,
+              displayStyle: ReminderDisplayStyle.subtle,
+              isGlobal: true,
+            ),
+          ],
+        ),
       );
       final s2 = s.copyWith(languageCode: 'fr');
       check(s2.defaults.templates.length).equals(1);

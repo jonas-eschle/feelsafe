@@ -1543,6 +1543,18 @@ abstract class AppLocalizations {
   /// **'Backup is not available yet. Coming soon.'**
   String get backupNotReady;
 
+  /// Label for the optional encryption PIN field on the backup screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional PIN (encrypts the bundle)'**
+  String get backupPinOptional;
+
+  /// Success snackbar after importing a backup.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup imported successfully.'**
+  String get backupImportOk;
+
   /// Title of the past-sessions screen.
   ///
   /// In en, this message translates to:

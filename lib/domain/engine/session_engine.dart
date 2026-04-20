@@ -413,11 +413,7 @@ final class SessionEngine {
         missCount: 0,
         isHolding: false,
       );
-      _emit(
-        ChainEvent.stepStarted,
-        stepIndex: index,
-        stepType: step.type,
-      );
+      _emit(ChainEvent.stepStarted, stepIndex: index, stepType: step.type);
       // holdButton waits for the user's first touch; no timer.
       return;
     }
@@ -432,11 +428,7 @@ final class SessionEngine {
         missCount: 0,
         isHolding: false,
       );
-      _emit(
-        ChainEvent.stepStarted,
-        stepIndex: index,
-        stepType: step.type,
-      );
+      _emit(ChainEvent.stepStarted, stepIndex: index, stepType: step.type);
       _advanceOrComplete(index);
       return;
     }
@@ -449,11 +441,7 @@ final class SessionEngine {
       missCount: 0,
       isHolding: false,
     );
-    _emit(
-      ChainEvent.stepStarted,
-      stepIndex: index,
-      stepType: step.type,
-    );
+    _emit(ChainEvent.stepStarted, stepIndex: index, stepType: step.type);
     if (waitDur == Duration.zero) {
       _enterDurationPhase(index, 0);
     } else {
@@ -537,11 +525,7 @@ final class SessionEngine {
       return;
     }
     final nextStep = _steps[next];
-    _emit(
-      ChainEvent.stepAdvancing,
-      stepIndex: index,
-      nextStep: nextStep,
-    );
+    _emit(ChainEvent.stepAdvancing, stepIndex: index, nextStep: nextStep);
     _enterStep(next);
   }
 

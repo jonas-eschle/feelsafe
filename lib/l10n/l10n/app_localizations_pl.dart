@@ -747,6 +747,12 @@ class AppLocalizationsPl extends AppLocalizations {
       'Kopia zapasowa nie jest jeszcze dostępna. Wkrótce.';
 
   @override
+  String get backupPinOptional => 'Opcjonalny PIN (szyfruje pakiet)';
+
+  @override
+  String get backupImportOk => 'Kopia zapasowa została zaimportowana.';
+
+  @override
   String get historyTitle => 'Poprzednie sesje';
 
   @override

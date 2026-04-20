@@ -61,14 +61,13 @@ final class EngineRunning extends EngineState {
     Duration? remaining,
     int? missCount,
     bool? isHolding,
-  }) =>
-      EngineRunning(
-        stepIndex: stepIndex ?? this.stepIndex,
-        phase: phase ?? this.phase,
-        remaining: remaining ?? this.remaining,
-        missCount: missCount ?? this.missCount,
-        isHolding: isHolding ?? this.isHolding,
-      );
+  }) => EngineRunning(
+    stepIndex: stepIndex ?? this.stepIndex,
+    phase: phase ?? this.phase,
+    remaining: remaining ?? this.remaining,
+    missCount: missCount ?? this.missCount,
+    isHolding: isHolding ?? this.isHolding,
+  );
 }
 
 /// The session is paused. Carries the [EngineRunning] snapshot the

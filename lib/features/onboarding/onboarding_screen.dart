@@ -57,7 +57,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final contactName = _contactNameCtrl.text.trim();
     final contactPhone = _contactPhoneCtrl.text.trim();
     if (contactName.isNotEmpty && contactPhone.isNotEmpty) {
-      await ref.read(contactsControllerProvider.notifier).save(
+      await ref
+          .read(contactsControllerProvider.notifier)
+          .save(
             EmergencyContact(
               id: const Uuid().v4(),
               name: contactName,
@@ -97,10 +99,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               padding: const EdgeInsets.all(16),
               child: Row(
                 children: [
-                  TextButton(
-                    onPressed: _finish,
-                    child: Text(l.onboardingSkip),
-                  ),
+                  TextButton(onPressed: _finish, child: Text(l.onboardingSkip)),
                   const Spacer(),
                   for (var i = 0; i < 3; i++)
                     Container(
@@ -199,10 +198,7 @@ class _ProfilePage extends StatelessWidget {
             decoration: InputDecoration(labelText: l.profileFieldName),
           ),
           const SizedBox(height: 16),
-          Text(
-            l.contactsTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
+          Text(l.contactsTitle, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
           TextField(
             controller: contactNameCtrl,

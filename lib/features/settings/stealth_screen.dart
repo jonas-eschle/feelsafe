@@ -22,8 +22,9 @@ class StealthScreen extends ConsumerWidget {
     final stealth = settings?.defaults.stealth ?? const StealthConfig();
 
     Future<void> update(StealthConfig next) {
-      final defaults =
-          (settings?.defaults ?? const AppDefaults()).copyWith(stealth: next);
+      final defaults = (settings?.defaults ?? const AppDefaults()).copyWith(
+        stealth: next,
+      );
       return ref
           .read(settingsControllerProvider.notifier)
           .setDefaults(defaults);
@@ -45,8 +46,7 @@ class StealthScreen extends ConsumerWidget {
           SwitchListTile(
             title: Text(l.stealthNotificationDisguise),
             value: stealth.notificationDisguise,
-            onChanged: (v) =>
-                update(stealth.copyWith(notificationDisguise: v)),
+            onChanged: (v) => update(stealth.copyWith(notificationDisguise: v)),
           ),
           SwitchListTile(
             title: Text(l.stealthTimerDisplay),
@@ -56,8 +56,7 @@ class StealthScreen extends ConsumerWidget {
           SwitchListTile(
             title: Text(l.stealthSessionScreen),
             value: stealth.sessionScreenStealth,
-            onChanged: (v) =>
-                update(stealth.copyWith(sessionScreenStealth: v)),
+            onChanged: (v) => update(stealth.copyWith(sessionScreenStealth: v)),
           ),
         ],
       ),

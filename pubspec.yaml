@@ -95,6 +95,10 @@ dependencies:
   meta: ^1.15.0
   home_widget: ^0.9.1
 
+  # Telemetry (Phase 15) — Sentry EU host, opt-out-by-default. See
+  # lib/core/telemetry/sentry_config.dart and D-TELEMETRY-1.
+  sentry_flutter: ^9.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -50,11 +50,7 @@ class _LogoPainter extends CustomPainter {
       ..color = haloColor
       ..style = PaintingStyle.stroke
       ..strokeWidth = w * 0.05;
-    canvas.drawCircle(
-      Offset(w / 2, h * 0.2),
-      w * 0.12,
-      halo,
-    );
+    canvas.drawCircle(Offset(w / 2, h * 0.2), w * 0.12, halo);
 
     // Shield body.
     final shield = Paint()

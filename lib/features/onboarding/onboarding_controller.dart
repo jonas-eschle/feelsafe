@@ -65,7 +65,7 @@ class OnboardingController extends AsyncNotifier<OnboardingState> {
 
 /// Provider for `OnboardingController`.
 final AsyncNotifierProvider<OnboardingController, OnboardingState>
-    onboardingControllerProvider =
+onboardingControllerProvider =
     AsyncNotifierProvider<OnboardingController, OnboardingState>(
-  OnboardingController.new,
-);
+      OnboardingController.new,
+    );

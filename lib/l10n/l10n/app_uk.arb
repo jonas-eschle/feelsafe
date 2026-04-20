@@ -237,6 +237,8 @@
   "backupExport": "Експортувати дані",
   "backupImport": "Імпортувати дані",
   "backupNotReady": "Резервне копіювання поки недоступне. Незабаром.",
+  "backupPinOptional": "Необов'язковий PIN (шифрує пакет)",
+  "backupImportOk": "Резервну копію успішно імпортовано.",
   "historyTitle": "Минулі сесії",
   "historyEmpty": "Ще немає минулих сесій.",
   "historyDetailTitle": "Деталі сесії",

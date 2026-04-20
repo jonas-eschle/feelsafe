@@ -15,9 +15,11 @@ import 'dart:developer' as developer;
 
 import 'package:flutter/foundation.dart' show FlutterError;
 import 'package:flutter/services.dart' show rootBundle;
+
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:just_audio/just_audio.dart';
+
+import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 
 /// Real platform-backed implementation of [AudioServiceProtocol].
 final class AudioService implements AudioServiceProtocol {
@@ -91,9 +93,7 @@ final class AudioService implements AudioServiceProtocol {
     }
     final exists = await _assetExists(assetPath);
     if (!exists) {
-      developer.log(
-        'voice asset missing: $assetPath — falling back to TTS',
-      );
+      developer.log('voice asset missing: $assetPath — falling back to TTS');
       await _ttsEngine.speak(
         'Hi, I am running late. I will call you back soon.',
       );

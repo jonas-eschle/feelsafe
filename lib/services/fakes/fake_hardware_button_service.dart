@@ -8,8 +8,7 @@ import 'dart:async';
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
 
 /// Test double for [HardwareButtonServiceProtocol].
-final class FakeHardwareButtonService
-    implements HardwareButtonServiceProtocol {
+final class FakeHardwareButtonService implements HardwareButtonServiceProtocol {
   /// Creates a fake hardware-button service.
   FakeHardwareButtonService();
 

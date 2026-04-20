@@ -1,0 +1,20 @@
+{
+  "phase": "14",
+  "title": "Integration + property + regression tests",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": [],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (860/860 passing; +131)"
+  ],
+  "gates_pending": [
+    "Phase 15 telemetry + backup + release hardening",
+    "Bug: FakeCallConfig.fromJson null→'Mom' coercion (regression-test-locked; verification team addresses)"
+  ],
+  "next_action": "Phase 15 — Sentry telemetry + backup export/import + release hardening.",
+  "last_update_iso": "2026-04-20T21:00:00Z",
+  "notes": "7 integration/property/regression test files. 4-layer sim defense verified via structural grep + behavioural tests. Distress, PIN, pause/resume, GPS disarm, L14 preemption all covered. One bug flagged (FakeCallConfig.callerName null coercion) — regression test locks behavior, verification team will decide true fix vs spec update."
+}

@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/strategies/fake_call_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -106,10 +105,7 @@ void main() {
 
     test('executeReal with wrong config type uses defaults', () async {
       await strategy.executeReal(
-        step(
-          type: ChainStepType.fakeCall,
-          config: const LoudAlarmConfig(),
-        ),
+        step(type: ChainStepType.fakeCall, config: const LoudAlarmConfig()),
         harness.build(),
       );
       expect(harness.audio.calls, contains('playRingtone:'));
@@ -118,10 +114,7 @@ void main() {
 
     test('simulationDescription with wrong config type uses default', () {
       final desc = strategy.simulationDescription(
-        step(
-          type: ChainStepType.fakeCall,
-          config: const LoudAlarmConfig(),
-        ),
+        step(type: ChainStepType.fakeCall, config: const LoudAlarmConfig()),
         harness.build(),
       );
       expect(desc, contains('Mom'));

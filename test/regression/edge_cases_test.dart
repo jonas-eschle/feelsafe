@@ -14,7 +14,6 @@ import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
-
 import '../helpers/test_helpers.dart';
 
 void main() {
@@ -104,10 +103,7 @@ void main() {
   group('Regression: empty chain steps on start', () {
     test('start() throws when steps is empty', () {
       fakeAsync((async) {
-        final e = SessionEngine(
-          chainSteps: const [],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: const [], random: FixedRandom());
         check(e.start).throws<ArgumentError>();
         e.dispose();
       });
@@ -162,9 +158,7 @@ void main() {
         final firstDistressCount = events
             .where((ev) => ev == ChainEvent.distressTriggered)
             .length;
-        e.replaceWithDistressChain([
-          step(type: ChainStepType.loudAlarm),
-        ]);
+        e.replaceWithDistressChain([step(type: ChainStepType.loudAlarm)]);
         async.flushMicrotasks();
         final secondDistressCount = events
             .where((ev) => ev == ChainEvent.distressTriggered)
@@ -215,20 +209,14 @@ void main() {
     });
 
     test('dispose() is idempotent', () {
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       e.dispose();
       e.dispose();
       // No exception thrown.
     });
 
     test('pause on idle engine is a no-op', () {
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       e.pause();
       check(e.state).isA<EngineIdle>();
       e.dispose();
@@ -309,24 +297,19 @@ void main() {
       'SmsContactConfig with empty contactIds round-trips with null-list',
       () {
         // contactIds is parsed via `rawIds is List`; null in → null out.
-        final cfg = StepConfig.fromJson(const {
-          'type': 'smsContact',
-        });
+        final cfg = StepConfig.fromJson(const {'type': 'smsContact'});
         check(cfg).isA<SmsContactConfig>();
       },
     );
 
-    test(
-      'HardwareButtonConfig with unknown buttonType throws',
-      () {
-        check(
-          () => StepConfig.fromJson(const {
-            'type': 'hardwareButton',
-            'buttonType': 'martian',
-          }),
-        ).throws<ArgumentError>();
-      },
-    );
+    test('HardwareButtonConfig with unknown buttonType throws', () {
+      check(
+        () => StepConfig.fromJson(const {
+          'type': 'hardwareButton',
+          'buttonType': 'martian',
+        }),
+      ).throws<ArgumentError>();
+    });
 
     test('unknown MessageChannel throws in SmsContactConfig', () {
       check(
@@ -339,33 +322,22 @@ void main() {
   });
 
   group('Regression: orchestrator lifecycle after end', () {
-    test(
-      'engine events after dispose() are not emitted',
-      () async {
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
-        final events = <ChainEventData>[];
-        final sub = e.events.listen(events.add);
-        e.dispose();
-        await Future<void>.delayed(const Duration(milliseconds: 5));
-        await sub.cancel();
-        check(events).isEmpty();
-      },
-    );
+    test('engine events after dispose() are not emitted', () async {
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
+      final events = <ChainEventData>[];
+      final sub = e.events.listen(events.add);
+      e.dispose();
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+      await sub.cancel();
+      check(events).isEmpty();
+    });
   });
 
   group('Regression: ChainStep randomize bounds', () {
     test('randomize = 0 produces deterministic timing', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [
-            smsStep(
-              durationSeconds: 10,
-              gracePeriodSeconds: 0,
-            ),
-          ],
+          chainSteps: [smsStep(durationSeconds: 10, gracePeriodSeconds: 0)],
           random: FixedRandom(),
         );
         e.start();

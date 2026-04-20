@@ -7,7 +7,6 @@ import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -28,10 +27,7 @@ void main() {
       );
       addTearDown(harness.dispose);
       await strategy.executeReal(
-        step(
-          type: ChainStepType.smsContact,
-          config: const SmsContactConfig(),
-        ),
+        step(type: ChainStepType.smsContact, config: const SmsContactConfig()),
         harness.build(),
       );
       expect(harness.messaging.calls, contains('sendToAll:2'));
@@ -80,9 +76,7 @@ void main() {
     });
 
     test('executeReal with no matching specific ids is a no-op', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(
@@ -98,9 +92,7 @@ void main() {
     });
 
     test('executeReal with null specificIds sends nothing', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(
@@ -115,9 +107,7 @@ void main() {
     });
 
     test('executeReal with empty specificIds sends nothing', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(
@@ -214,9 +204,7 @@ void main() {
     });
 
     test('executeReal touches no non-messaging service', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(type: ChainStepType.smsContact),
@@ -229,9 +217,7 @@ void main() {
     });
 
     test('executeReal without registerSmsWorkId still succeeds', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       // Build a services bundle without register hook by setting
       // harness.registered = const [] never happens; the helper
@@ -245,9 +231,7 @@ void main() {
     });
 
     test('executeReal uses default template when none provided', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(type: ChainStepType.smsContact),
@@ -259,15 +243,10 @@ void main() {
     });
 
     test('executeReal with non-SmsContactConfig uses defaults', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
-        step(
-          type: ChainStepType.smsContact,
-          config: const LoudAlarmConfig(),
-        ),
+        step(type: ChainStepType.smsContact, config: const LoudAlarmConfig()),
         harness.build(),
       );
       expect(harness.messaging.calls, contains('sendToAll:1'));

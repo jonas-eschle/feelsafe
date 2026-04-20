@@ -10,13 +10,15 @@ import 'package:guardianangela/domain/models/models.dart';
 void main() {
   group('Trigger.fromJson', () {
     test('missing kind throws', () {
-      check(() => Trigger.fromJson(const <String, Object?>{}))
-          .throws<ArgumentError>();
+      check(
+        () => Trigger.fromJson(const <String, Object?>{}),
+      ).throws<ArgumentError>();
     });
 
     test('unknown kind throws', () {
-      check(() => Trigger.fromJson(const {'kind': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => Trigger.fromJson(const {'kind': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('dispatches distress', () {
@@ -47,13 +49,15 @@ void main() {
     });
 
     test('unknown HardwareTrigger type throws', () {
-      check(() => HardwareTrigger.fromJson(const {'type': 'x'}))
-          .throws<ArgumentError>();
+      check(
+        () => HardwareTrigger.fromJson(const {'type': 'x'}),
+      ).throws<ArgumentError>();
     });
 
     test('missing HardwareTrigger type throws', () {
-      check(() => HardwareTrigger.fromJson(const <String, Object?>{}))
-          .throws<ArgumentError>();
+      check(
+        () => HardwareTrigger.fromJson(const <String, Object?>{}),
+      ).throws<ArgumentError>();
     });
 
     test('RepeatPressTrigger copyWith', () {
@@ -94,13 +98,15 @@ void main() {
     });
 
     test('unknown DistressTrigger type throws', () {
-      check(() => DistressTrigger.fromJson(const {'type': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => DistressTrigger.fromJson(const {'type': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('missing DistressTrigger type throws', () {
-      check(() => DistressTrigger.fromJson(const <String, Object?>{}))
-          .throws<ArgumentError>();
+      check(
+        () => DistressTrigger.fromJson(const <String, Object?>{}),
+      ).throws<ArgumentError>();
     });
   });
 
@@ -125,8 +131,9 @@ void main() {
     });
 
     test('unknown DisarmTrigger type throws', () {
-      check(() => DisarmTrigger.fromJson(const {'type': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => DisarmTrigger.fromJson(const {'type': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('GpsArrivalDisarmTrigger defaults radius to 100', () {

@@ -13,8 +13,10 @@ import '../../helpers/test_helpers.dart';
 
 SessionEngine _mk() => SessionEngine(
   chainSteps: [
-    smsStep(durationSeconds: 10, gracePeriodSeconds: 10)
-        .copyWith(waitSeconds: 20),
+    smsStep(
+      durationSeconds: 10,
+      gracePeriodSeconds: 10,
+    ).copyWith(waitSeconds: 20),
     smsStep(order: 1, durationSeconds: 1, gracePeriodSeconds: 0),
   ],
   random: FixedRandom(),

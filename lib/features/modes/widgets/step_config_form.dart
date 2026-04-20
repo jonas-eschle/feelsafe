@@ -41,17 +41,21 @@ class StepConfigForm extends StatelessWidget {
           initialValue: step.durationSeconds.toString(),
           keyboardType: TextInputType.number,
           decoration: InputDecoration(labelText: l.stepFieldDuration),
-          onChanged: (v) => onChanged(step.copyWith(
-            durationSeconds: int.tryParse(v) ?? step.durationSeconds,
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(
+              durationSeconds: int.tryParse(v) ?? step.durationSeconds,
+            ),
+          ),
         ),
         TextFormField(
           initialValue: step.gracePeriodSeconds.toString(),
           keyboardType: TextInputType.number,
           decoration: InputDecoration(labelText: l.stepFieldGrace),
-          onChanged: (v) => onChanged(step.copyWith(
-            gracePeriodSeconds: int.tryParse(v) ?? step.gracePeriodSeconds,
-          )),
+          onChanged: (v) => onChanged(
+            step.copyWith(
+              gracePeriodSeconds: int.tryParse(v) ?? step.gracePeriodSeconds,
+            ),
+          ),
         ),
         TextFormField(
           initialValue: step.retryCount.toString(),

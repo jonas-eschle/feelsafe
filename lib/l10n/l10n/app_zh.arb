@@ -262,6 +262,8 @@
   "backupExport": "导出数据",
   "backupImport": "导入数据",
   "backupNotReady": "备份功能尚未可用，敬请期待。",
+  "backupPinOptional": "可选 PIN（加密备份包）",
+  "backupImportOk": "备份导入成功。",
 
   "historyTitle": "历史会话",
   "historyEmpty": "尚无历史会话。",

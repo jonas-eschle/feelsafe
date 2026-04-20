@@ -25,7 +25,6 @@ import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
-
 import '../helpers/test_helpers.dart';
 
 // ---------- minimal in-memory repository fakes ---------------------
@@ -46,15 +45,16 @@ class _FakeModesRepo extends ModesRepository {
     _items.removeWhere((m) => m.id == value.id);
     _items.add(value);
   }
+
   @override
   Future<void> saveAll(List<SessionMode> values) async {
     for (final v in values) {
       await save(v);
     }
   }
+
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((m) => m.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((m) => m.id == id);
   @override
   Future<void> deleteAll() async => _items.clear();
 }
@@ -75,9 +75,9 @@ class _FakeContactsRepo extends ContactsRepository {
     _items.removeWhere((c) => c.id == value.id);
     _items.add(value);
   }
+
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
   @override
   Future<void> deleteAll() async => _items.clear();
 }
@@ -113,8 +113,7 @@ class _FakeDistressRepo extends DistressChainsRepository {
       super.forTesting();
   final List<DistressChain> _items;
   @override
-  Future<List<DistressChain>> getAll() async =>
-      List<DistressChain>.of(_items);
+  Future<List<DistressChain>> getAll() async => List<DistressChain>.of(_items);
   @override
   Future<DistressChain?> getById(String id) async =>
       _items.where((c) => c.id == id).firstOrNull;
@@ -123,9 +122,9 @@ class _FakeDistressRepo extends DistressChainsRepository {
     _items.removeWhere((c) => c.id == value.id);
     _items.add(value);
   }
+
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
   @override
   Future<void> deleteAll() async => _items.clear();
 }
@@ -161,9 +160,9 @@ class _FakeSessionLogsRepo extends SessionLogsRepository {
     saved.removeWhere((l) => l.id == value.id);
     saved.add(value);
   }
+
   @override
-  Future<void> delete(String id) async =>
-      saved.removeWhere((l) => l.id == id);
+  Future<void> delete(String id) async => saved.removeWhere((l) => l.id == id);
   @override
   Future<void> deleteAll() async => saved.clear();
 }
@@ -173,18 +172,24 @@ class _FakeSessionLogsRepo extends SessionLogsRepository {
 class _Audio implements AudioServiceProtocol {
   final List<String> calls = [];
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false}) async =>
-      calls.add('playAlarm');
+  Future<void> playAlarm({
+    bool maxVolume = true,
+    bool isSimulation = false,
+  }) async => calls.add('playAlarm');
   @override
   Future<void> stopAlarm() async => calls.add('stopAlarm');
   @override
-  Future<void> playRingtone({String? assetPath, bool isSimulation = false}) async =>
-      calls.add('playRingtone');
+  Future<void> playRingtone({
+    String? assetPath,
+    bool isSimulation = false,
+  }) async => calls.add('playRingtone');
   @override
   Future<void> stopRingtone() async => calls.add('stopRingtone');
   @override
-  Future<void> playVoiceRecording({required String assetPath, bool isSimulation = false}) async =>
-      calls.add('playVoiceRecording');
+  Future<void> playVoiceRecording({
+    required String assetPath,
+    bool isSimulation = false,
+  }) async => calls.add('playVoiceRecording');
   @override
   Future<void> stopVoiceRecording() async => calls.add('stopVoiceRecording');
 }
@@ -209,6 +214,7 @@ class _Messaging implements MessagingServiceProtocol {
     calls.add('sendMessage:${contact.id}');
     return const MessageWorkId('w0');
   }
+
   @override
   Future<List<MessageWorkId>> sendToAll({
     required List<EmergencyContact> contacts,
@@ -218,6 +224,7 @@ class _Messaging implements MessagingServiceProtocol {
     calls.add('sendToAll:${contacts.length}');
     return const [];
   }
+
   @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async =>
       calls.add('cancelPending');
@@ -231,8 +238,10 @@ class _Phone implements PhoneServiceProtocol {
   Future<void> call(String number, {bool isSimulation = false}) async =>
       calls.add('call:$number');
   @override
-  Future<void> callEmergency(String number, {bool isSimulation = false}) async =>
-      calls.add('callEmergency:$number');
+  Future<void> callEmergency(
+    String number, {
+    bool isSimulation = false,
+  }) async => calls.add('callEmergency:$number');
 }
 
 class _Notification implements NotificationServiceProtocol {
@@ -291,9 +300,14 @@ class _HardwareBtn implements HardwareButtonServiceProtocol {
     int pressCount = 5,
     int pressWindowMs = 500,
     double longPressDurationSeconds = 2.0,
-  }) async { _listening = true; }
+  }) async {
+    _listening = true;
+  }
+
   @override
-  Future<void> stop() async { _listening = false; }
+  Future<void> stop() async {
+    _listening = false;
+  }
 }
 
 class _Geofence implements GeofenceServiceProtocol {
@@ -334,7 +348,9 @@ class _Location implements LocationServiceProtocol {
   @override
   Future<bool> requestPermission() async => true;
   @override
-  Future<void> startTracking({Duration interval = const Duration(seconds: 60)}) async {}
+  Future<void> startTracking({
+    Duration interval = const Duration(seconds: 60),
+  }) async {}
   @override
   Future<void> stopTracking() async {}
   @override
@@ -383,10 +399,7 @@ _Fx _fx({
   final modesRepo = _FakeModesRepo(
     modes ??
         [
-          makeMode(
-            id: 'mode-1',
-            steps: [holdStep()],
-          ),
+          makeMode(id: 'mode-1', steps: [holdStep()]),
         ],
   );
   final contactsRepo = _FakeContactsRepo(contacts ?? const []);
@@ -464,45 +477,39 @@ void main() {
       await ctrl.disarm();
     });
 
-    test(
-      'wrong PIN under threshold does not fire distress',
-      () async {
-        final fx = _fx();
-        addTearDown(fx.container.dispose);
-        final ctrl = fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await ctrl.startSession(modeId: 'mode-1');
-        for (var i = 0; i < SessionController.wrongPinThreshold - 1; i++) {
-          check(ctrl.handlePinResult(PinResult.wrong)).isFalse();
-        }
-        await Future<void>.delayed(const Duration(milliseconds: 10));
-        check(fx.messaging.calls).isEmpty();
-        await ctrl.disarm();
-      },
-    );
+    test('wrong PIN under threshold does not fire distress', () async {
+      final fx = _fx();
+      addTearDown(fx.container.dispose);
+      final ctrl = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await ctrl.startSession(modeId: 'mode-1');
+      for (var i = 0; i < SessionController.wrongPinThreshold - 1; i++) {
+        check(ctrl.handlePinResult(PinResult.wrong)).isFalse();
+      }
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      check(fx.messaging.calls).isEmpty();
+      await ctrl.disarm();
+    });
 
-    test(
-      'wrong PIN at threshold triggers distress asynchronously',
-      () async {
-        final fx = _fx();
-        addTearDown(fx.container.dispose);
-        final ctrl = fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await ctrl.startSession(modeId: 'mode-1');
-        for (var i = 0; i < SessionController.wrongPinThreshold; i++) {
-          ctrl.handlePinResult(PinResult.wrong);
-        }
-        // Allow the async distress replacement to complete.
-        await Future<void>.delayed(const Duration(milliseconds: 50));
-        // The distress chain only has an SMS step; verify messaging
-        // was invoked (needs a contact).
-        // Without contacts, the smsContact strategy still records nothing,
-        // so assert the engine is no longer in its main chain's hold.
-        final ws = fx.container.read(sessionControllerProvider).value;
-        check(ws).isNotNull();
-        await ctrl.disarm();
-      },
-    );
+    test('wrong PIN at threshold triggers distress asynchronously', () async {
+      final fx = _fx();
+      addTearDown(fx.container.dispose);
+      final ctrl = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await ctrl.startSession(modeId: 'mode-1');
+      for (var i = 0; i < SessionController.wrongPinThreshold; i++) {
+        ctrl.handlePinResult(PinResult.wrong);
+      }
+      // Allow the async distress replacement to complete.
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+      // The distress chain only has an SMS step; verify messaging
+      // was invoked (needs a contact).
+      // Without contacts, the smsContact strategy still records nothing,
+      // so assert the engine is no longer in its main chain's hold.
+      final ws = fx.container.read(sessionControllerProvider).value;
+      check(ws).isNotNull();
+      await ctrl.disarm();
+    });
 
     test('duress PIN does not advance session', () async {
       final fx = _fx();
@@ -603,53 +610,41 @@ void main() {
   });
 
   group('Stealth mode', () {
-    test(
-      'stealth-enabled settings are readable during the session',
-      () async {
-        final stealth = const StealthConfig(
-          enabled: true,
-          fakeName: 'Fake',
-        );
-        final fx = _fx(
-          settings: AppSettings(
-            defaults: AppDefaults(stealth: stealth),
-          ),
-        );
-        addTearDown(fx.container.dispose);
-        final ctrl = fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await ctrl.startSession(modeId: 'mode-1');
-        final ws = fx.container.read(sessionControllerProvider).value;
-        check(ws).isNotNull();
-        await ctrl.disarm();
-      },
-    );
+    test('stealth-enabled settings are readable during the session', () async {
+      final stealth = const StealthConfig(enabled: true, fakeName: 'Fake');
+      final fx = _fx(
+        settings: AppSettings(defaults: AppDefaults(stealth: stealth)),
+      );
+      addTearDown(fx.container.dispose);
+      final ctrl = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await ctrl.startSession(modeId: 'mode-1');
+      final ws = fx.container.read(sessionControllerProvider).value;
+      check(ws).isNotNull();
+      await ctrl.disarm();
+    });
 
-    test(
-      'mode overrides can replace stealth settings',
-      () async {
-        final stealth = const StealthConfig(enabled: false);
-        final override = const StealthConfig(enabled: true);
-        final modes = [
-          makeMode(id: 'mode-1', steps: [holdStep()]).copyWith(
-            overrides: ModeOverrides(stealth: override),
-          ),
-        ];
-        final fx = _fx(
-          modes: modes,
-          settings: AppSettings(
-            defaults: AppDefaults(stealth: stealth),
-          ),
-        );
-        addTearDown(fx.container.dispose);
-        final ctrl = fx.container.read(sessionControllerProvider.notifier);
-        await fx.container.read(sessionControllerProvider.future);
-        await ctrl.startSession(modeId: 'mode-1');
-        final ws = fx.container.read(sessionControllerProvider).value;
-        check(ws).isNotNull();
-        await ctrl.disarm();
-      },
-    );
+    test('mode overrides can replace stealth settings', () async {
+      final stealth = const StealthConfig(enabled: false);
+      final override = const StealthConfig(enabled: true);
+      final modes = [
+        makeMode(
+          id: 'mode-1',
+          steps: [holdStep()],
+        ).copyWith(overrides: ModeOverrides(stealth: override)),
+      ];
+      final fx = _fx(
+        modes: modes,
+        settings: AppSettings(defaults: AppDefaults(stealth: stealth)),
+      );
+      addTearDown(fx.container.dispose);
+      final ctrl = fx.container.read(sessionControllerProvider.notifier);
+      await fx.container.read(sessionControllerProvider.future);
+      await ctrl.startSession(modeId: 'mode-1');
+      final ws = fx.container.read(sessionControllerProvider).value;
+      check(ws).isNotNull();
+      await ctrl.disarm();
+    });
   });
 
   group('GPS disarm trigger', () {
@@ -737,9 +732,7 @@ void main() {
       final ctrl = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await ctrl.startBatteryAlertSession(
-        BatteryAlertConfig(
-          chain: [smsStep(order: 0, durationSeconds: 10)],
-        ),
+        BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 10)]),
       );
       await ctrl.startSession(modeId: 'mode-1');
       final ws = fx.container.read(sessionControllerProvider).value;

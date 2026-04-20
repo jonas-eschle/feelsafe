@@ -10,9 +10,7 @@ import 'package:guardianangela/domain/engine/session_log_recorder.dart';
 import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 
-SessionLog _emptyLog({
-  bool isSimulation = false,
-}) => SessionLog(
+SessionLog _emptyLog({bool isSimulation = false}) => SessionLog(
   id: 'log-1',
   modeId: 'mode-1',
   modeName: 'Walk Mode',
@@ -43,8 +41,13 @@ void main() {
 
     test('recordEvent appends a SessionLogEvent', () {
       final r = SessionLogRecorder(log: _emptyLog());
-      r.recordEvent(_ev(ChainEvent.stepStarted, stepIndex: 0,
-          stepType: ChainStepType.holdButton));
+      r.recordEvent(
+        _ev(
+          ChainEvent.stepStarted,
+          stepIndex: 0,
+          stepType: ChainStepType.holdButton,
+        ),
+      );
       check(r.log.events.length).equals(1);
       check(r.log.events.first.event).equals(ChainEvent.stepStarted);
       check(r.log.events.first.stepIndex).equals(0);
@@ -99,9 +102,7 @@ void main() {
         ('appTermination', EndReason.appTermination),
       ]) {
         final r = SessionLogRecorder(log: _emptyLog());
-        r.recordEvent(
-          _ev(ChainEvent.sessionEnded, metadata: {'reason': raw}),
-        );
+        r.recordEvent(_ev(ChainEvent.sessionEnded, metadata: {'reason': raw}));
         check(r.log.endReason).equals(expected);
       }
     });
@@ -117,11 +118,7 @@ void main() {
     test('missCount metadata recorded as message', () {
       final r = SessionLogRecorder(log: _emptyLog());
       r.recordEvent(
-        _ev(
-          ChainEvent.graceExpired,
-          stepIndex: 0,
-          metadata: {'missCount': 2},
-        ),
+        _ev(ChainEvent.graceExpired, stepIndex: 0, metadata: {'missCount': 2}),
       );
       check(r.log.events.first.message).equals('missCount=2');
     });
@@ -144,9 +141,9 @@ void main() {
         eventIndex: 0,
         status: const ActionDeliveryStatus.sent(),
       );
-      check(r.log.events.first.deliveryStatus).equals(
-        const ActionDeliveryStatus.sent(),
-      );
+      check(
+        r.log.events.first.deliveryStatus,
+      ).equals(const ActionDeliveryStatus.sent());
     });
 
     test('updating does not duplicate events', () {

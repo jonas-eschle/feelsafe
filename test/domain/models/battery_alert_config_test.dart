@@ -29,8 +29,9 @@ void main() {
 
     test('round-trip preserves threshold', () {
       const c = BatteryAlertConfig(thresholdPercent: 25);
-      check(BatteryAlertConfig.fromJson(c.toJson()).thresholdPercent)
-          .equals(25);
+      check(
+        BatteryAlertConfig.fromJson(c.toJson()).thresholdPercent,
+      ).equals(25);
     });
 
     test('round-trip preserves disabled state', () {

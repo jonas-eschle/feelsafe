@@ -201,4 +201,5 @@ ProviderContainer makeContainer({List<Override> overrides = const []}) =>
     ProviderContainer(overrides: overrides);
 
 /// Returns a `DateTime Function()` that always returns [fixed].
-DateTime Function() fixedClock(DateTime fixed) => () => fixed;
+DateTime Function() fixedClock(DateTime fixed) =>
+    () => fixed;

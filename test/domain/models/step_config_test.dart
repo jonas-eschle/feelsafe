@@ -17,8 +17,9 @@ void main() {
     });
 
     test('non-string type throws ArgumentError', () {
-      check(() => StepConfig.fromJson(const {'type': 42}))
-          .throws<ArgumentError>();
+      check(
+        () => StepConfig.fromJson(const {'type': 42}),
+      ).throws<ArgumentError>();
     });
 
     test('unknown type throws ArgumentError', () {

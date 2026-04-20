@@ -749,6 +749,12 @@ class AppLocalizationsRu extends AppLocalizations {
       'Резервное копирование пока недоступно. Скоро появится.';
 
   @override
+  String get backupPinOptional => 'Необязательный PIN (шифрует пакет)';
+
+  @override
+  String get backupImportOk => 'Резервная копия успешно импортирована.';
+
+  @override
   String get historyTitle => 'Прошлые сессии';
 
   @override

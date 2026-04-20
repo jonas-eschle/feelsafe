@@ -34,9 +34,8 @@ class TemplatesScreen extends ConsumerWidget {
                     leading: const Icon(Icons.notifications),
                     title: Text(t.name),
                     subtitle: Text(t.title),
-                    onTap: () => context.push(
-                      '${RouteNames.templateEditor}?id=${t.id}',
-                    ),
+                    onTap: () =>
+                        context.push('${RouteNames.templateEditor}?id=${t.id}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () => ref

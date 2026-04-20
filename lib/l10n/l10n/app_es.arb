@@ -262,6 +262,8 @@
   "backupExport": "Exportar datos",
   "backupImport": "Importar datos",
   "backupNotReady": "La copia de seguridad aún no está disponible. Próximamente.",
+  "backupPinOptional": "PIN opcional (cifra el paquete)",
+  "backupImportOk": "Copia de seguridad importada correctamente.",
 
   "historyTitle": "Sesiones anteriores",
   "historyEmpty": "Aún no hay sesiones anteriores.",

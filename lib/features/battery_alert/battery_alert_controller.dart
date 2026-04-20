@@ -52,7 +52,7 @@ class BatteryAlertController extends AsyncNotifier<BatteryAlertConfig> {
 
 /// Provider for `BatteryAlertController`.
 final AsyncNotifierProvider<BatteryAlertController, BatteryAlertConfig>
-    batteryAlertControllerProvider =
+batteryAlertControllerProvider =
     AsyncNotifierProvider<BatteryAlertController, BatteryAlertConfig>(
-  BatteryAlertController.new,
-);
+      BatteryAlertController.new,
+    );

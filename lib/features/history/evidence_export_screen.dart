@@ -20,9 +20,7 @@ class EvidenceExportScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final id = GoRouterState.of(context).uri.queryParameters['id'];
     final logs = ref.watch(historyControllerProvider).value ?? const [];
-    final log = id == null
-        ? null
-        : logs.where((e) => e.id == id).firstOrNull;
+    final log = id == null ? null : logs.where((e) => e.id == id).firstOrNull;
     return Scaffold(
       appBar: AppBar(title: Text(l.evidenceExportTitle)),
       body: Padding(
@@ -38,9 +36,9 @@ class EvidenceExportScreen extends ConsumerWidget {
                         ClipboardData(text: log.toString()),
                       );
                       if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l.evidenceCopied)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(l.evidenceCopied)));
                     },
               child: Text(l.evidenceExportAsText),
             ),
@@ -53,9 +51,9 @@ class EvidenceExportScreen extends ConsumerWidget {
                         ClipboardData(text: log.toJson().toString()),
                       );
                       if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l.evidenceCopied)),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text(l.evidenceCopied)));
                     },
               child: Text(l.evidenceExportAsJson),
             ),

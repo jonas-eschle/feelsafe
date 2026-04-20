@@ -185,9 +185,7 @@ void main() {
     });
 
     test('homeWidgetServiceProvider returns HomeWidgetService', () {
-      check(
-        container.read(homeWidgetServiceProvider),
-      ).isA<HomeWidgetService>();
+      check(container.read(homeWidgetServiceProvider)).isA<HomeWidgetService>();
     });
 
     test('simulationHomeWidgetProvider returns simulation', () {
@@ -229,45 +227,44 @@ void main() {
     });
 
     test('audio', () {
-      check(container.read(audioServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationAudioProvider).runtimeType,
-              ));
+      check(container.read(audioServiceProvider).runtimeType).not(
+        (it) => it.equals(container.read(simulationAudioProvider).runtimeType),
+      );
     });
 
     test('vibration', () {
-      check(container.read(vibrationServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationVibrationProvider).runtimeType,
-              ));
+      check(container.read(vibrationServiceProvider).runtimeType).not(
+        (it) =>
+            it.equals(container.read(simulationVibrationProvider).runtimeType),
+      );
     });
 
     test('messaging', () {
-      check(container.read(messagingServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationMessagingProvider).runtimeType,
-              ));
+      check(container.read(messagingServiceProvider).runtimeType).not(
+        (it) =>
+            it.equals(container.read(simulationMessagingProvider).runtimeType),
+      );
     });
 
     test('phone', () {
-      check(container.read(phoneServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationPhoneProvider).runtimeType,
-              ));
+      check(container.read(phoneServiceProvider).runtimeType).not(
+        (it) => it.equals(container.read(simulationPhoneProvider).runtimeType),
+      );
     });
 
     test('location', () {
-      check(container.read(locationServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationLocationProvider).runtimeType,
-              ));
+      check(container.read(locationServiceProvider).runtimeType).not(
+        (it) =>
+            it.equals(container.read(simulationLocationProvider).runtimeType),
+      );
     });
 
     test('notification', () {
-      check(container.read(notificationServiceProvider).runtimeType)
-          .not((it) => it.equals(
-                container.read(simulationNotificationProvider).runtimeType,
-              ));
+      check(container.read(notificationServiceProvider).runtimeType).not(
+        (it) => it.equals(
+          container.read(simulationNotificationProvider).runtimeType,
+        ),
+      );
     });
 
     test('hardwareButton', () {
@@ -304,9 +301,8 @@ void main() {
 
     test('geofence', () {
       check(container.read(geofenceServiceProvider).runtimeType).not(
-        (it) => it.equals(
-          container.read(simulationGeofenceProvider).runtimeType,
-        ),
+        (it) =>
+            it.equals(container.read(simulationGeofenceProvider).runtimeType),
       );
     });
 
@@ -320,25 +316,22 @@ void main() {
 
     test('homeWidget', () {
       check(container.read(homeWidgetServiceProvider).runtimeType).not(
-        (it) => it.equals(
-          container.read(simulationHomeWidgetProvider).runtimeType,
-        ),
+        (it) =>
+            it.equals(container.read(simulationHomeWidgetProvider).runtimeType),
       );
     });
 
     test('wakelock', () {
       check(container.read(wakelockServiceProvider).runtimeType).not(
-        (it) => it.equals(
-          container.read(simulationWakelockProvider).runtimeType,
-        ),
+        (it) =>
+            it.equals(container.read(simulationWakelockProvider).runtimeType),
       );
     });
 
     test('systemUi', () {
       check(container.read(systemUiServiceProvider).runtimeType).not(
-        (it) => it.equals(
-          container.read(simulationSystemUiProvider).runtimeType,
-        ),
+        (it) =>
+            it.equals(container.read(simulationSystemUiProvider).runtimeType),
       );
     });
   });

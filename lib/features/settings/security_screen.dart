@@ -91,14 +91,10 @@ class _PinRow extends StatelessWidget {
         spacing: 4,
         children: [
           if (hasPin)
-            TextButton(
-              onPressed: onDisable,
-              child: Text(l.securityDisablePin),
-            ),
+            TextButton(onPressed: onDisable, child: Text(l.securityDisablePin)),
           FilledButton(
-            onPressed: () => context.push(
-              '${RouteNames.pinSetup}?which=$which',
-            ),
+            onPressed: () =>
+                context.push('${RouteNames.pinSetup}?which=$which'),
             child: Text(hasPin ? l.securityChangePin : l.securitySetPin),
           ),
         ],

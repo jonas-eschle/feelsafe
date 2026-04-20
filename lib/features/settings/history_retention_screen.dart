@@ -35,7 +35,8 @@ class HistoryRetentionScreen extends ConsumerWidget {
             onChanged: (v) {
               final defaults = (settings?.defaults ?? const AppDefaults())
                   .copyWith(
-                      gpsLogging: gps.copyWith(historyRetentionDays: v.round()));
+                    gpsLogging: gps.copyWith(historyRetentionDays: v.round()),
+                  );
               ref
                   .read(settingsControllerProvider.notifier)
                   .setDefaults(defaults);

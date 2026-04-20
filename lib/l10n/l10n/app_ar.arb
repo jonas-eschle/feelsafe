@@ -237,6 +237,8 @@
   "backupExport": "تصدير البيانات",
   "backupImport": "استيراد البيانات",
   "backupNotReady": "النسخ الاحتياطي غير متاح بعد. سيتوفر قريبًا.",
+  "backupPinOptional": "رمز PIN اختياري (يشفّر الحزمة)",
+  "backupImportOk": "تم استيراد النسخة الاحتياطية بنجاح.",
   "historyTitle": "الجلسات السابقة",
   "historyEmpty": "لا توجد جلسات سابقة بعد.",
   "historyDetailTitle": "تفاصيل الجلسة",

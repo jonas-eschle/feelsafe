@@ -58,7 +58,7 @@ class ModesController extends AsyncNotifier<List<SessionMode>> {
 
 /// Provider for `ModesController`.
 final AsyncNotifierProvider<ModesController, List<SessionMode>>
-    modesControllerProvider =
+modesControllerProvider =
     AsyncNotifierProvider<ModesController, List<SessionMode>>(
-  ModesController.new,
-);
+      ModesController.new,
+    );

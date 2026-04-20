@@ -12,7 +12,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
-
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
@@ -127,10 +126,7 @@ class _HomeBody extends ConsumerWidget {
                 : () async {
                     await ref
                         .read(sessionControllerProvider.notifier)
-                        .startSession(
-                          modeId: mode.id,
-                          isSimulation: simulate,
-                        );
+                        .startSession(modeId: mode.id, isSimulation: simulate);
                     if (context.mounted) {
                       context.push(RouteNames.session);
                     }
@@ -180,8 +176,8 @@ class _HomeShortcut extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => OutlinedButton.icon(
-        onPressed: () => context.push(route),
-        icon: Icon(icon),
-        label: Text(label),
-      );
+    onPressed: () => context.push(route),
+    icon: Icon(icon),
+    label: Text(label),
+  );
 }

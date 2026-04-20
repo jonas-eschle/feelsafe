@@ -107,9 +107,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     if (_runtime != null) {
       final active = state.value;
       if (active != null && !active.isBackgroundAlert) {
-        throw StateError(
-          'A user session is already running; disarm it first.',
-        );
+        throw StateError('A user session is already running; disarm it first.');
       }
       await _disposeRuntime();
     }
@@ -183,8 +181,9 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final settings = await ref.read(settingsControllerProvider.future);
     final contacts = await ref.read(contactsRepositoryProvider).getAll();
     final profile = await ref.read(userProfileRepositoryProvider).get();
-    final distressChains =
-        await ref.read(distressChainsRepositoryProvider).getAll();
+    final distressChains = await ref
+        .read(distressChainsRepositoryProvider)
+        .getAll();
     final distressChain = _resolveDistressChain(
       distressChains: distressChains,
       modeDistressChainId: null,
@@ -261,9 +260,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   Future<void> triggerDistressChain() async {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.replaceWithDistressChain(
-      await _currentDistressChainSteps(),
-    );
+    runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps());
   }
 
   /// Handles the outcome of a PIN prompt.
@@ -302,9 +299,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   Future<void> _fireDistressBecauseOfPin(EndReason reason) async {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.replaceWithDistressChain(
-      await _currentDistressChainSteps(),
-    );
+    runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps());
   }
 
   Future<List<ChainStep>> _currentDistressChainSteps() async {
@@ -616,7 +611,7 @@ class _SessionServices {
 
 /// Provider for `SessionController`.
 final AsyncNotifierProvider<SessionController, WalkSession?>
-    sessionControllerProvider =
+sessionControllerProvider =
     AsyncNotifierProvider<SessionController, WalkSession?>(
-  SessionController.new,
-);
+      SessionController.new,
+    );

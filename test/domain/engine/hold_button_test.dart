@@ -125,10 +125,7 @@ void main() {
 
     test('re-hold inside sensitivity cancels and resumes duration', () {
       fakeAsync((async) {
-        final e = _holdEngine(
-          durationSeconds: 10,
-          releaseSensitivity: 1.0,
-        );
+        final e = _holdEngine(durationSeconds: 10, releaseSensitivity: 1.0);
         e.start();
         async.flushMicrotasks();
         e.holdStart();
@@ -145,10 +142,7 @@ void main() {
 
     test('sensitivity expires → duration countdown begins', () {
       fakeAsync((async) {
-        final e = _holdEngine(
-          durationSeconds: 10,
-          releaseSensitivity: 1.0,
-        );
+        final e = _holdEngine(durationSeconds: 10, releaseSensitivity: 1.0);
         e.start();
         async.flushMicrotasks();
         e.holdStart();
@@ -247,9 +241,9 @@ void main() {
         e.holdRelease();
         async.elapse(const Duration(seconds: 1));
         async.flushMicrotasks();
-        final stepCount = events.where(
-          (ev) => ev == ChainEvent.stepStarted,
-        ).length;
+        final stepCount = events
+            .where((ev) => ev == ChainEvent.stepStarted)
+            .length;
         check(stepCount).equals(1);
         e.dispose();
       });
@@ -276,9 +270,7 @@ void main() {
         e.holdRelease();
         final s = e.state as EngineRunning;
         check(s.phase).equals(TimerPhase.sensitivity);
-        check(s.remaining).equals(
-          const Duration(milliseconds: 300),
-        );
+        check(s.remaining).equals(const Duration(milliseconds: 300));
         e.dispose();
       });
     });

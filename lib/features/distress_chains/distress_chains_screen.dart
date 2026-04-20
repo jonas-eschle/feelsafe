@@ -41,8 +41,8 @@ class DistressChainsScreen extends ConsumerWidget {
                       icon: const Icon(Icons.delete_outline),
                       onPressed: chains.length > 1
                           ? () => ref
-                              .read(distressChainsControllerProvider.notifier)
-                              .delete(c.id)
+                                .read(distressChainsControllerProvider.notifier)
+                                .delete(c.id)
                           : null,
                     ),
                   );

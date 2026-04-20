@@ -77,9 +77,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(l.profileTitle),
-        actions: [
-          IconButton(onPressed: _save, icon: const Icon(Icons.check)),
-        ],
+        actions: [IconButton(onPressed: _save, icon: const Icon(Icons.check))],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -156,8 +154,7 @@ class _ListEditorState extends State<_ListEditor> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const SizedBox(height: 12),
-        Text(widget.label,
-            style: Theme.of(context).textTheme.titleMedium),
+        Text(widget.label, style: Theme.of(context).textTheme.titleMedium),
         for (var i = 0; i < widget.items.length; i++)
           ListTile(
             dense: true,

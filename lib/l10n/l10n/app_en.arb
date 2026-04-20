@@ -499,6 +499,10 @@
   "@backupImport": { "description": "Import button." },
   "backupNotReady": "Backup is not available yet. Coming soon.",
   "@backupNotReady": { "description": "Placeholder message on backup screen." },
+  "backupPinOptional": "Optional PIN (encrypts the bundle)",
+  "@backupPinOptional": { "description": "Label for the optional encryption PIN field on the backup screen." },
+  "backupImportOk": "Backup imported successfully.",
+  "@backupImportOk": { "description": "Success snackbar after importing a backup." },
 
   "historyTitle": "Past sessions",
   "@historyTitle": { "description": "Title of the past-sessions screen." },

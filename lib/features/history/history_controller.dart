@@ -42,7 +42,7 @@ class HistoryController extends AsyncNotifier<List<SessionLog>> {
 
 /// Provider for `HistoryController`.
 final AsyncNotifierProvider<HistoryController, List<SessionLog>>
-    historyControllerProvider =
+historyControllerProvider =
     AsyncNotifierProvider<HistoryController, List<SessionLog>>(
-  HistoryController.new,
-);
+      HistoryController.new,
+    );

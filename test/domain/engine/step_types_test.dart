@@ -51,9 +51,7 @@ void main() {
         e.start();
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(
-          EndReason.chainExhausted,
-        );
+        check((e.state as EngineEnded).reason).equals(EndReason.chainExhausted);
         e.dispose();
       });
     });
@@ -287,9 +285,7 @@ void main() {
         async.elapse(const Duration(seconds: 2));
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(
-          EndReason.chainExhausted,
-        );
+        check((e.state as EngineEnded).reason).equals(EndReason.chainExhausted);
         // Final stepAdvancing with nextStep=null emitted for main chain.
         check(names).contains(ChainEvent.stepAdvancing);
         e.dispose();

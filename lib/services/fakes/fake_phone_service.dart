@@ -18,10 +18,7 @@ final class FakePhoneService implements PhoneServiceProtocol {
   }
 
   @override
-  Future<void> callEmergency(
-    String number, {
-    bool isSimulation = false,
-  }) async {
+  Future<void> callEmergency(String number, {bool isSimulation = false}) async {
     calls.add('callEmergency:$number');
   }
 

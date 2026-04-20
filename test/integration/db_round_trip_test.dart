@@ -32,7 +32,6 @@ import 'package:guardianangela/data/repositories/settings_repository.dart';
 import 'package:guardianangela/data/repositories/templates_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/models.dart';
-
 import '../helpers/test_helpers.dart';
 
 AppDatabase _makeDb() => AppDatabase.forTesting(NativeDatabase.memory());
@@ -92,8 +91,7 @@ void main() {
       ]);
       final all = await repo.getAll();
       check(all.length).equals(3);
-      check(all.map((m) => m.id).toSet())
-          .deepEquals({'a', 'b', 'c'});
+      check(all.map((m) => m.id).toSet()).deepEquals({'a', 'b', 'c'});
     });
 
     test('update via save overwrites existing row', () async {
@@ -113,10 +111,7 @@ void main() {
 
     test('deleteAll wipes everything', () async {
       final repo = ModesRepository(ModesDao(db));
-      await repo.saveAll([
-        makeMode(id: 'a'),
-        makeMode(id: 'b'),
-      ]);
+      await repo.saveAll([makeMode(id: 'a'), makeMode(id: 'b')]);
       await repo.deleteAll();
       check(await repo.getAll()).isEmpty();
     });
@@ -140,10 +135,7 @@ void main() {
       // persistence — that's a controller-layer invariant. Verify
       // round-trip is lossless even for a 1-step chain.
       final repo = DistressChainsRepository(DistressChainsDao(db));
-      final chain = makeDistressChain(
-        id: 'd1',
-        steps: [smsStep(order: 0)],
-      );
+      final chain = makeDistressChain(id: 'd1', steps: [smsStep(order: 0)]);
       await repo.save(chain);
       final read = await repo.getById('d1');
       check(read!.steps.length).equals(1);
@@ -156,16 +148,8 @@ void main() {
         name: 'Big',
         steps: [
           smsStep(order: 0),
-          step(
-            type: ChainStepType.loudAlarm,
-            order: 1,
-            durationSeconds: 5,
-          ),
-          step(
-            type: ChainStepType.callEmergency,
-            order: 2,
-            durationSeconds: 5,
-          ),
+          step(type: ChainStepType.loudAlarm, order: 1, durationSeconds: 5),
+          step(type: ChainStepType.callEmergency, order: 2, durationSeconds: 5),
         ],
       );
       await repo.save(chain);
@@ -186,10 +170,7 @@ void main() {
         startedAt: now,
         isSimulation: false,
         events: [
-          SessionLogEvent(
-            event: ChainEvent.sessionStarted,
-            timestamp: now,
-          ),
+          SessionLogEvent(event: ChainEvent.sessionStarted, timestamp: now),
           SessionLogEvent(
             event: ChainEvent.stepStarted,
             timestamp: now.add(const Duration(seconds: 1)),

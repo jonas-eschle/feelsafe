@@ -33,10 +33,9 @@ void main() {
       final c2 = c.copyWith(
         channels: const [MessageChannel.whatsapp, MessageChannel.telegram],
       );
-      check(c2.channels).deepEquals([
-        MessageChannel.whatsapp,
-        MessageChannel.telegram,
-      ]);
+      check(
+        c2.channels,
+      ).deepEquals([MessageChannel.whatsapp, MessageChannel.telegram]);
     });
 
     test('JSON round-trip (minimal)', () {
@@ -52,11 +51,7 @@ void main() {
           MessageChannel.telegram,
           MessageChannel.phoneCall,
         ],
-      ).copyWith(
-        relationship: 'Mom',
-        languageCode: 'de',
-        sortOrder: 3,
-      );
+      ).copyWith(relationship: 'Mom', languageCode: 'de', sortOrder: 3);
       check(EmergencyContact.fromJson(c.toJson())).equals(c);
     });
 
@@ -78,15 +73,15 @@ void main() {
     });
 
     test('inequality when name differs', () {
-      check(makeContact(name: 'A'))
-          .not((it) => it.equals(makeContact(name: 'B')));
+      check(
+        makeContact(name: 'A'),
+      ).not((it) => it.equals(makeContact(name: 'B')));
     });
 
     test('inequality when channels differ', () {
       check(makeContact(channels: const [MessageChannel.sms])).not(
-        (it) => it.equals(
-          makeContact(channels: const [MessageChannel.whatsapp]),
-        ),
+        (it) =>
+            it.equals(makeContact(channels: const [MessageChannel.whatsapp])),
       );
     });
 
@@ -101,13 +96,15 @@ void main() {
     });
 
     test('fromJson unknown channel throws', () {
-      check(() => EmergencyContact.fromJson(const {
-            'id': 'c',
-            'name': 'X',
-            'phoneNumber': '+1',
-            'sortOrder': 0,
-            'channels': ['bogus'],
-          })).throws<ArgumentError>();
+      check(
+        () => EmergencyContact.fromJson(const {
+          'id': 'c',
+          'name': 'X',
+          'phoneNumber': '+1',
+          'sortOrder': 0,
+          'channels': ['bogus'],
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('sortOrder preserved in round-trip', () {

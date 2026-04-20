@@ -7,8 +7,9 @@ library;
 
 import 'dart:developer' as developer;
 
-import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 import 'package:vibration/vibration.dart';
+
+import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 
 /// Real platform-backed implementation of [VibrationServiceProtocol].
 final class VibrationService implements VibrationServiceProtocol {
@@ -17,16 +18,23 @@ final class VibrationService implements VibrationServiceProtocol {
 
   /// Strong repeating alarm pattern: 500ms on, 200ms off, repeated.
   static const List<int> _alarmPattern = [
-    0, 500, 200, 500, 200, 500, 200, 500, 200, 500,
+    0,
+    500,
+    200,
+    500,
+    200,
+    500,
+    200,
+    500,
+    200,
+    500,
   ];
 
   /// Short warning pulses: 100ms on, 300ms off, 100ms on.
   static const List<int> _warningPattern = [0, 100, 300, 100];
 
   /// Fake incoming-call pattern: classic 1s on, 2s off ring cadence.
-  static const List<int> _fakeCallPattern = [
-    0, 1000, 2000, 1000, 2000, 1000,
-  ];
+  static const List<int> _fakeCallPattern = [0, 1000, 2000, 1000, 2000, 1000];
 
   @override
   Future<void> alarmPattern({bool isSimulation = false}) async {

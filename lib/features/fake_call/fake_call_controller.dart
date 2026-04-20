@@ -34,7 +34,6 @@ class FakeCallController extends AsyncNotifier<Object?> {
 
 /// Provider for `FakeCallController`.
 final AsyncNotifierProvider<FakeCallController, Object?>
-    fakeCallControllerProvider =
-    AsyncNotifierProvider<FakeCallController, Object?>(
+fakeCallControllerProvider = AsyncNotifierProvider<FakeCallController, Object?>(
   FakeCallController.new,
 );

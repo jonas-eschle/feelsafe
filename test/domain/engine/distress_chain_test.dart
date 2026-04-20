@@ -82,9 +82,7 @@ void main() {
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(
-          EndReason.chainExhausted,
-        );
+        check((e.state as EngineEnded).reason).equals(EndReason.chainExhausted);
         check(events).contains(ChainEvent.distressCompleted);
         e.dispose();
       });
@@ -159,17 +157,15 @@ void main() {
         );
         e.start();
         async.flushMicrotasks();
-        check(() => e.replaceWithDistressChain(const []))
-            .throws<ArgumentError>();
+        check(
+          () => e.replaceWithDistressChain(const []),
+        ).throws<ArgumentError>();
         e.dispose();
       });
     });
 
     test('replace after end is a no-op', () {
-      final e = SessionEngine(
-        chainSteps: [_mainHold()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [_mainHold()], random: FixedRandom());
       e.endSession(reason: EndReason.userQuit);
       e.replaceWithDistressChain([_distressSms()]);
       check(e.isDistressChain).isFalse();

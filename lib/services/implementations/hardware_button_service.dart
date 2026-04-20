@@ -11,6 +11,7 @@ import 'dart:async';
 import 'dart:developer' as developer;
 
 import 'package:flutter/services.dart';
+
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
 
 /// Real platform-backed implementation of
@@ -68,11 +69,7 @@ final class HardwareButtonService implements HardwareButtonServiceProtocol {
     _nativeSub = _eventChannel.receiveBroadcastStream().listen(
       _onNativeEvent,
       onError: (Object e, StackTrace s) {
-        developer.log(
-          'hardware_buttons event error',
-          error: e,
-          stackTrace: s,
-        );
+        developer.log('hardware_buttons event error', error: e, stackTrace: s);
       },
     );
     _listening = true;
@@ -104,10 +101,7 @@ final class HardwareButtonService implements HardwareButtonServiceProtocol {
     final timestampMs = map['timestampMs'] as int?;
     final timestamp = timestampMs == null
         ? DateTime.now().toUtc()
-        : DateTime.fromMillisecondsSinceEpoch(
-            timestampMs,
-            isUtc: true,
-          );
+        : DateTime.fromMillisecondsSinceEpoch(timestampMs, isUtc: true);
     _controller.add(
       HardwarePanicEvent(
         buttonType: buttonType,

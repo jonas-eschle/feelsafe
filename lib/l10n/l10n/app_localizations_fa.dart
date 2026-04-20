@@ -748,6 +748,12 @@ class AppLocalizationsFa extends AppLocalizations {
       'پشتیبان‌گیری هنوز در دسترس نیست. به‌زودی اضافه می‌شود.';
 
   @override
+  String get backupPinOptional => 'رمز اختیاری (بسته را رمزگذاری می‌کند)';
+
+  @override
+  String get backupImportOk => 'پشتیبان با موفقیت وارد شد.';
+
+  @override
   String get historyTitle => 'جلسات گذشته';
 
   @override

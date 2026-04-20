@@ -749,6 +749,12 @@ class AppLocalizationsUk extends AppLocalizations {
       'Резервне копіювання поки недоступне. Незабаром.';
 
   @override
+  String get backupPinOptional => 'Необов\'язковий PIN (шифрує пакет)';
+
+  @override
+  String get backupImportOk => 'Резервну копію успішно імпортовано.';
+
+  @override
   String get historyTitle => 'Минулі сесії';
 
   @override

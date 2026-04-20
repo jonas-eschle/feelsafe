@@ -7,7 +7,6 @@ import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/strategies/disguised_reminder_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -46,10 +45,7 @@ void main() {
         ),
         harness.build(),
       );
-      expect(
-        harness.notification.calls,
-        contains('showDisguisedReminder:duo'),
-      );
+      expect(harness.notification.calls, contains('showDisguisedReminder:duo'));
     });
 
     test('executeReal falls back to first template when id missing', () async {
@@ -68,9 +64,7 @@ void main() {
     });
 
     test('executeReal falls back to first when templateId not found', () async {
-      final harness = StrategyHarness(
-        reminderTemplates: [_tpl('first')],
-      );
+      final harness = StrategyHarness(reminderTemplates: [_tpl('first')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(
@@ -153,21 +147,21 @@ void main() {
       // FakeNotificationService doesn't include isSimulation in its
       // call log, but the orchestrator never invokes executeReal in
       // simulation mode anyway; this test just asserts no crash.
-      expect(
-        harness.notification.calls,
-        contains('showDisguisedReminder:t'),
-      );
+      expect(harness.notification.calls, contains('showDisguisedReminder:t'));
     });
 
-    test('executeReal is idempotent-shaped (two invocations log two)', () async {
-      final harness = StrategyHarness(reminderTemplates: [_tpl('t')]);
-      addTearDown(harness.dispose);
-      final s = step(type: ChainStepType.disguisedReminder);
-      final svc = harness.build();
-      await strategy.executeReal(s, svc);
-      await strategy.executeReal(s, svc);
-      expect(harness.notification.calls.length, 2);
-    });
+    test(
+      'executeReal is idempotent-shaped (two invocations log two)',
+      () async {
+        final harness = StrategyHarness(reminderTemplates: [_tpl('t')]);
+        addTearDown(harness.dispose);
+        final s = step(type: ChainStepType.disguisedReminder);
+        final svc = harness.build();
+        await strategy.executeReal(s, svc);
+        await strategy.executeReal(s, svc);
+        expect(harness.notification.calls.length, 2);
+      },
+    );
 
     test('executeReal ignores non-disguisedReminder config types', () async {
       final harness = StrategyHarness(reminderTemplates: [_tpl('t')]);
@@ -180,10 +174,7 @@ void main() {
         ),
         harness.build(),
       );
-      expect(
-        harness.notification.calls,
-        contains('showDisguisedReminder:t'),
-      );
+      expect(harness.notification.calls, contains('showDisguisedReminder:t'));
     });
 
     test('simulationDescription picks first template when no config', () {

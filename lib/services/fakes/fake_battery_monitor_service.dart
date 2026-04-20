@@ -8,8 +8,7 @@ import 'dart:async';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 
 /// Test double for [BatteryMonitorServiceProtocol].
-final class FakeBatteryMonitorService
-    implements BatteryMonitorServiceProtocol {
+final class FakeBatteryMonitorService implements BatteryMonitorServiceProtocol {
   /// Creates a fake battery-monitor service.
   FakeBatteryMonitorService();
 

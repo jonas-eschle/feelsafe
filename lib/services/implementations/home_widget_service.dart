@@ -7,6 +7,7 @@ library;
 import 'dart:async';
 
 import 'package:home_widget/home_widget.dart';
+
 import 'package:guardianangela/services/protocols/home_widget_service_protocol.dart';
 
 /// Real platform-backed implementation of
@@ -46,7 +47,8 @@ final class HomeWidgetService implements HomeWidgetServiceProtocol {
   Stream<Uri?> get widgetClicked => HomeWidget.widgetClicked;
 
   @override
-  Future<Uri?> initiallyLaunchedUri() => HomeWidget.initiallyLaunchedFromHomeWidget();
+  Future<Uri?> initiallyLaunchedUri() =>
+      HomeWidget.initiallyLaunchedFromHomeWidget();
 
   @override
   Future<void> updateStatus({

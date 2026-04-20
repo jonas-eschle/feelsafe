@@ -28,9 +28,8 @@ class ModesScreen extends ConsumerWidget {
             ? Center(child: Text(l.modesEmpty))
             : ReorderableListView.builder(
                 itemCount: modes.length,
-                onReorder: (o, n) => ref
-                    .read(modesControllerProvider.notifier)
-                    .reorder(o, n),
+                onReorder: (o, n) =>
+                    ref.read(modesControllerProvider.notifier).reorder(o, n),
                 itemBuilder: (context, i) {
                   final m = modes[i];
                   return ListTile(
@@ -38,8 +37,8 @@ class ModesScreen extends ConsumerWidget {
                     leading: const Icon(Icons.tune),
                     title: Text(m.name),
                     subtitle: Text('${m.chainSteps.length} steps'),
-                    onTap: () => context
-                        .push('${RouteNames.modeEditor}?id=${m.id}'),
+                    onTap: () =>
+                        context.push('${RouteNames.modeEditor}?id=${m.id}'),
                     trailing: IconButton(
                       icon: const Icon(Icons.delete_outline),
                       onPressed: () => ref

@@ -24,11 +24,7 @@ void main() {
     });
 
     test('toMapsUrl handles negatives', () {
-      final p = LocationPoint(
-        latitude: -33.9,
-        longitude: -70.6,
-        timestamp: ts,
-      );
+      final p = LocationPoint(latitude: -33.9, longitude: -70.6, timestamp: ts);
       check(p.toMapsUrl()).equals('https://maps.google.com/?q=-33.9,-70.6');
     });
 

@@ -88,10 +88,7 @@ final class SessionOrchestrator {
   onStepExecutionFailed;
 
   /// Builds the per-step [EventServices] bundle.
-  final EventServices Function(
-    bool Function(),
-    void Function(MessageWorkId)?,
-  )
+  final EventServices Function(bool Function(), void Function(MessageWorkId)?)
   _servicesBuilder;
 
   /// Returns the active chain's steps at the moment of resolution.

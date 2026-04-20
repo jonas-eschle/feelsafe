@@ -750,6 +750,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get backupNotReady => 'Sicherung ist noch nicht verfügbar. Demnächst.';
 
   @override
+  String get backupPinOptional => 'Optionale PIN (verschlüsselt das Paket)';
+
+  @override
+  String get backupImportOk => 'Sicherung erfolgreich importiert.';
+
+  @override
   String get historyTitle => 'Vergangene Sitzungen';
 
   @override

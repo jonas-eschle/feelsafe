@@ -28,21 +28,19 @@ class ChainStepTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Card(
-        child: ExpansionTile(
-          title: Text(stepTypeLabel(context, step.type)),
-          subtitle: Text(
-            '${step.waitSeconds}s wait · '
-            '${step.durationSeconds}s active · '
-            '${step.gracePeriodSeconds}s grace',
-          ),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete_outline),
-            onPressed: onDelete,
-          ),
-          childrenPadding: const EdgeInsets.all(16),
-          children: [
-            StepConfigForm(step: step, onChanged: onChanged),
-          ],
-        ),
-      );
+    child: ExpansionTile(
+      title: Text(stepTypeLabel(context, step.type)),
+      subtitle: Text(
+        '${step.waitSeconds}s wait · '
+        '${step.durationSeconds}s active · '
+        '${step.gracePeriodSeconds}s grace',
+      ),
+      trailing: IconButton(
+        icon: const Icon(Icons.delete_outline),
+        onPressed: onDelete,
+      ),
+      childrenPadding: const EdgeInsets.all(16),
+      children: [StepConfigForm(step: step, onChanged: onChanged)],
+    ),
+  );
 }

@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/strategies/phone_call_contact_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -84,10 +83,7 @@ void main() {
         step(type: ChainStepType.phoneCallContact),
         harness.build(),
       );
-      expect(
-        harness.phone.calls.any((c) => c.contains('0000000000')),
-        isFalse,
-      );
+      expect(harness.phone.calls.any((c) => c.contains('0000000000')), isFalse);
     });
 
     test('executeReal sends pre-SMS when preSendSms=true', () async {
@@ -149,9 +145,7 @@ void main() {
     });
 
     test('executeReal does not touch audio/vibration/notification', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a')],
-      );
+      final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
       addTearDown(harness.dispose);
       await strategy.executeReal(
         step(type: ChainStepType.phoneCallContact),

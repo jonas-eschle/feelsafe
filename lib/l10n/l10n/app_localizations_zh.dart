@@ -737,6 +737,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupNotReady => '备份功能尚未可用，敬请期待。';
 
   @override
+  String get backupPinOptional => '可选 PIN（加密备份包）';
+
+  @override
+  String get backupImportOk => '备份导入成功。';
+
+  @override
   String get historyTitle => '历史会话';
 
   @override
@@ -1513,6 +1519,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get backupNotReady => '備份功能尚未提供,敬請期待。';
+
+  @override
+  String get backupPinOptional => '可選 PIN（加密備份包）';
+
+  @override
+  String get backupImportOk => '備份匯入成功。';
 
   @override
   String get historyTitle => '過往紀錄';

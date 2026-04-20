@@ -13,8 +13,10 @@ import '../../helpers/test_helpers.dart';
 
 SessionEngine _mk() => SessionEngine(
   chainSteps: [
-    smsStep(durationSeconds: 10, gracePeriodSeconds: 5)
-        .copyWith(waitSeconds: 20),
+    smsStep(
+      durationSeconds: 10,
+      gracePeriodSeconds: 5,
+    ).copyWith(waitSeconds: 20),
     smsStep(order: 1, durationSeconds: 1, gracePeriodSeconds: 0),
   ],
   random: FixedRandom(),
@@ -128,22 +130,24 @@ void main() {
   });
 
   group('resume', () {
-    test('resume from Paused transitions back to Running with same remaining',
-        () {
-      fakeAsync((async) {
-        final e = _mk();
-        e.start();
-        async.flushMicrotasks();
-        async.elapse(const Duration(seconds: 5));
-        e.pause();
-        final beforePaused = (e.state as EnginePaused).snapshot.remaining;
-        e.resume();
-        final resumed = e.state as EngineRunning;
-        check(resumed.remaining).equals(beforePaused);
-        check(resumed.phase).equals(TimerPhase.wait);
-        e.dispose();
-      });
-    });
+    test(
+      'resume from Paused transitions back to Running with same remaining',
+      () {
+        fakeAsync((async) {
+          final e = _mk();
+          e.start();
+          async.flushMicrotasks();
+          async.elapse(const Duration(seconds: 5));
+          e.pause();
+          final beforePaused = (e.state as EnginePaused).snapshot.remaining;
+          e.resume();
+          final resumed = e.state as EngineRunning;
+          check(resumed.remaining).equals(beforePaused);
+          check(resumed.phase).equals(TimerPhase.wait);
+          e.dispose();
+        });
+      },
+    );
 
     test('resume continues countdown from exact remaining', () {
       fakeAsync((async) {
@@ -233,9 +237,7 @@ void main() {
     test('pause during grace preserves grace remaining', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [
-            smsStep(durationSeconds: 5, gracePeriodSeconds: 10),
-          ],
+          chainSteps: [smsStep(durationSeconds: 5, gracePeriodSeconds: 10)],
           random: FixedRandom(),
         );
         e.start();

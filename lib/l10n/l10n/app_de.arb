@@ -262,6 +262,8 @@
   "backupExport": "Daten exportieren",
   "backupImport": "Daten importieren",
   "backupNotReady": "Sicherung ist noch nicht verfügbar. Demnächst.",
+  "backupPinOptional": "Optionale PIN (verschlüsselt das Paket)",
+  "backupImportOk": "Sicherung erfolgreich importiert.",
 
   "historyTitle": "Vergangene Sitzungen",
   "historyEmpty": "Noch keine vergangenen Sitzungen.",

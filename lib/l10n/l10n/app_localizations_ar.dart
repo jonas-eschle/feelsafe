@@ -745,6 +745,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get backupNotReady => 'النسخ الاحتياطي غير متاح بعد. سيتوفر قريبًا.';
 
   @override
+  String get backupPinOptional => 'رمز PIN اختياري (يشفّر الحزمة)';
+
+  @override
+  String get backupImportOk => 'تم استيراد النسخة الاحتياطية بنجاح.';
+
+  @override
   String get historyTitle => 'الجلسات السابقة';
 
   @override

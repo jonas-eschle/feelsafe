@@ -22,7 +22,6 @@ import 'package:guardianangela/domain/orchestration/strategies/hold_button_strat
 import 'package:guardianangela/domain/orchestration/strategies/loud_alarm_strategy.dart';
 import 'package:guardianangela/domain/orchestration/strategies/phone_call_contact_strategy.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
-
 import '../../helpers/test_helpers.dart';
 
 void main() {
@@ -151,19 +150,16 @@ void main() {
       }
     });
 
-    test(
-      'strategies implement EventStrategy with both abstract methods',
-      () {
-        for (final type in ChainStepType.values) {
-          final s = EventStrategyRegistry.forStep(step(type: type));
-          // Just checking the two methods exist on every mapped
-          // instance — a runtime surface guard in case someone
-          // accidentally changes the base class shape.
-          expect(s.simulationDescription, isA<Function>());
-          expect(s.executeReal, isA<Function>());
-        }
-      },
-    );
+    test('strategies implement EventStrategy with both abstract methods', () {
+      for (final type in ChainStepType.values) {
+        final s = EventStrategyRegistry.forStep(step(type: type));
+        // Just checking the two methods exist on every mapped
+        // instance — a runtime surface guard in case someone
+        // accidentally changes the base class shape.
+        expect(s.simulationDescription, isA<Function>());
+        expect(s.executeReal, isA<Function>());
+      }
+    });
 
     test('count of mapped types equals ChainStepType.values.length', () {
       final mapped = <Type>{

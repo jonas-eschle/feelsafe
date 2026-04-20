@@ -41,7 +41,7 @@ class TemplatesController extends AsyncNotifier<List<ReminderTemplate>> {
 
 /// Provider for `TemplatesController`.
 final AsyncNotifierProvider<TemplatesController, List<ReminderTemplate>>
-    templatesControllerProvider =
+templatesControllerProvider =
     AsyncNotifierProvider<TemplatesController, List<ReminderTemplate>>(
-  TemplatesController.new,
-);
+      TemplatesController.new,
+    );

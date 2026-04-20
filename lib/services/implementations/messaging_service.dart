@@ -15,11 +15,13 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
+
+import 'package:url_launcher/url_launcher.dart';
+import 'package:uuid/uuid.dart';
+
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:uuid/uuid.dart';
 
 /// Real platform-backed implementation of
 /// [MessagingServiceProtocol].
@@ -137,10 +139,9 @@ final class MessagingService implements MessagingServiceProtocol {
       _pending.remove(id.value);
     }
     try {
-      await _smsChannel.invokeMethod<void>(
-        'cancelPending',
-        {'workIds': workIds.map((w) => w.value).toList()},
-      );
+      await _smsChannel.invokeMethod<void>('cancelPending', {
+        'workIds': workIds.map((w) => w.value).toList(),
+      });
     } on MissingPluginException {
       developer.log('messaging.cancelPending not wired — Phase 10');
     } on PlatformException catch (e, s) {
@@ -157,9 +158,7 @@ final class MessagingService implements MessagingServiceProtocol {
   Future<void> retryExhaustedSms(String workId) async {
     final entry = _pending[workId];
     if (entry == null) {
-      developer.log(
-        'messaging.retryExhaustedSms: unknown workId=$workId',
-      );
+      developer.log('messaging.retryExhaustedSms: unknown workId=$workId');
       return;
     }
     try {
@@ -180,11 +179,7 @@ final class MessagingService implements MessagingServiceProtocol {
     }
   }
 
-  Future<void> _sendSms(
-    String workId,
-    String recipient,
-    String message,
-  ) async {
+  Future<void> _sendSms(String workId, String recipient, String message) async {
     if (Platform.isAndroid) {
       try {
         await _smsChannel.invokeMethod<void>('send', {
@@ -200,11 +195,7 @@ final class MessagingService implements MessagingServiceProtocol {
         // Phase 10 not wired — surface a deterministic error.
         return Future.error('Not wired — Phase 10');
       } on PlatformException catch (e, s) {
-        developer.log(
-          'sms send platform error',
-          error: e,
-          stackTrace: s,
-        );
+        developer.log('sms send platform error', error: e, stackTrace: s);
         rethrow;
       }
     }
@@ -216,10 +207,7 @@ final class MessagingService implements MessagingServiceProtocol {
     );
     final ok = await launchUrl(uri);
     _deliveryController.add(
-      MessageDeliveryUpdate(
-        workId: workId,
-        status: ok ? 'handoff' : 'failed',
-      ),
+      MessageDeliveryUpdate(workId: workId, status: ok ? 'handoff' : 'failed'),
     );
   }
 
@@ -232,15 +220,9 @@ final class MessagingService implements MessagingServiceProtocol {
     final uri = Uri.parse(
       'https://wa.me/$sanitized?text=${Uri.encodeComponent(message)}',
     );
-    final ok = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     _deliveryController.add(
-      MessageDeliveryUpdate(
-        workId: workId,
-        status: ok ? 'handoff' : 'failed',
-      ),
+      MessageDeliveryUpdate(workId: workId, status: ok ? 'handoff' : 'failed'),
     );
   }
 
@@ -253,20 +235,13 @@ final class MessagingService implements MessagingServiceProtocol {
     final uri = Uri.parse(
       'https://t.me/+$sanitized?text=${Uri.encodeComponent(message)}',
     );
-    final ok = await launchUrl(
-      uri,
-      mode: LaunchMode.externalApplication,
-    );
+    final ok = await launchUrl(uri, mode: LaunchMode.externalApplication);
     _deliveryController.add(
-      MessageDeliveryUpdate(
-        workId: workId,
-        status: ok ? 'handoff' : 'failed',
-      ),
+      MessageDeliveryUpdate(workId: workId, status: ok ? 'handoff' : 'failed'),
     );
   }
 
-  String _digitsOnly(String raw) =>
-      raw.replaceAll(RegExp(r'[^0-9]'), '');
+  String _digitsOnly(String raw) => raw.replaceAll(RegExp(r'[^0-9]'), '');
 
   void _subscribeToNativeDelivery() {
     if (!Platform.isAndroid) return;
@@ -274,11 +249,7 @@ final class MessagingService implements MessagingServiceProtocol {
       _nativeEventSub = _smsEventChannel.receiveBroadcastStream().listen(
         _onNativeEvent,
         onError: (Object e, StackTrace s) {
-          developer.log(
-            'sms event stream error',
-            error: e,
-            stackTrace: s,
-          );
+          developer.log('sms event stream error', error: e, stackTrace: s);
         },
       );
     } on MissingPluginException {

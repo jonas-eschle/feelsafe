@@ -40,6 +40,10 @@ final class AppSettings {
   /// [selectedModeId] — currently active mode; null = none chosen.
   /// [isFirstLaunch] — true until onboarding completes; defaults to
   /// true.
+  /// [telemetryOptOut] — user opted out of Sentry telemetry; defaults
+  /// to false (telemetry on per D-TELEMETRY-1).
+  /// [sessionLogRetentionDays] — how many days session logs are kept;
+  /// defaults to 30 (D-SAFETY-6).
   const AppSettings({
     required this.defaults,
     this.appPinHash,
@@ -52,6 +56,8 @@ final class AppSettings {
     this.alarmDndOverride = false,
     this.selectedModeId,
     this.isFirstLaunch = true,
+    this.telemetryOptOut = false,
+    this.sessionLogRetentionDays = 30,
   });
 
   /// Deserializes `AppSettings` from JSON.
@@ -69,6 +75,9 @@ final class AppSettings {
         : const AppDefaults(),
     selectedModeId: json['selectedModeId'] as String?,
     isFirstLaunch: json['isFirstLaunch'] as bool? ?? true,
+    telemetryOptOut: json['telemetryOptOut'] as bool? ?? false,
+    sessionLogRetentionDays:
+        (json['sessionLogRetentionDays'] as num?)?.toInt() ?? 30,
   );
 
   /// Hash of the app-unlock PIN; null = no lock.
@@ -106,6 +115,15 @@ final class AppSettings {
   /// True until onboarding is complete. Defaults to true.
   final bool isFirstLaunch;
 
+  /// User opted out of Sentry telemetry. Defaults to false (telemetry
+  /// on). Per D-TELEMETRY-1, telemetry is opt-out — flipping this to
+  /// true suppresses all Sentry initialization at app start.
+  final bool telemetryOptOut;
+
+  /// Days to retain session logs. Defaults to 30. Per D-SAFETY-6,
+  /// old logs are pruned on a schedule by `StructuredLogger`.
+  final int sessionLogRetentionDays;
+
   /// Returns a new settings instance with the given fields replaced.
   AppSettings copyWith({
     String? appPinHash,
@@ -119,6 +137,8 @@ final class AppSettings {
     AppDefaults? defaults,
     String? selectedModeId,
     bool? isFirstLaunch,
+    bool? telemetryOptOut,
+    int? sessionLogRetentionDays,
   }) => AppSettings(
     appPinHash: appPinHash ?? this.appPinHash,
     sessionEndPinHash: sessionEndPinHash ?? this.sessionEndPinHash,
@@ -131,6 +151,9 @@ final class AppSettings {
     defaults: defaults ?? this.defaults,
     selectedModeId: selectedModeId ?? this.selectedModeId,
     isFirstLaunch: isFirstLaunch ?? this.isFirstLaunch,
+    telemetryOptOut: telemetryOptOut ?? this.telemetryOptOut,
+    sessionLogRetentionDays:
+        sessionLogRetentionDays ?? this.sessionLogRetentionDays,
   );
 
   /// Serializes to JSON.
@@ -146,6 +169,8 @@ final class AppSettings {
     'defaults': defaults.toJson(),
     'selectedModeId': selectedModeId,
     'isFirstLaunch': isFirstLaunch,
+    'telemetryOptOut': telemetryOptOut,
+    'sessionLogRetentionDays': sessionLogRetentionDays,
   };
 
   @override
@@ -162,7 +187,9 @@ final class AppSettings {
           other.alarmDndOverride == alarmDndOverride &&
           other.defaults == defaults &&
           other.selectedModeId == selectedModeId &&
-          other.isFirstLaunch == isFirstLaunch;
+          other.isFirstLaunch == isFirstLaunch &&
+          other.telemetryOptOut == telemetryOptOut &&
+          other.sessionLogRetentionDays == sessionLogRetentionDays;
 
   @override
   int get hashCode => Object.hash(
@@ -177,6 +204,8 @@ final class AppSettings {
     defaults,
     selectedModeId,
     isFirstLaunch,
+    telemetryOptOut,
+    sessionLogRetentionDays,
   );
 
   @override

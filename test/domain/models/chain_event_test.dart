@@ -48,23 +48,24 @@ void main() {
     });
 
     test('fromJson dispatches', () {
-      check(ActionDeliveryStatus.fromJson('queued')).equals(
-        const ActionDeliveryStatus.queued(),
-      );
-      check(ActionDeliveryStatus.fromJson('sent')).equals(
-        const ActionDeliveryStatus.sent(),
-      );
-      check(ActionDeliveryStatus.fromJson('failed')).equals(
-        const ActionDeliveryStatus.failed(),
-      );
-      check(ActionDeliveryStatus.fromJson('simBlocked')).equals(
-        const ActionDeliveryStatus.simBlocked(),
-      );
+      check(
+        ActionDeliveryStatus.fromJson('queued'),
+      ).equals(const ActionDeliveryStatus.queued());
+      check(
+        ActionDeliveryStatus.fromJson('sent'),
+      ).equals(const ActionDeliveryStatus.sent());
+      check(
+        ActionDeliveryStatus.fromJson('failed'),
+      ).equals(const ActionDeliveryStatus.failed());
+      check(
+        ActionDeliveryStatus.fromJson('simBlocked'),
+      ).equals(const ActionDeliveryStatus.simBlocked());
     });
 
     test('fromJson unknown throws', () {
-      check(() => ActionDeliveryStatus.fromJson('bogus'))
-          .throws<ArgumentError>();
+      check(
+        () => ActionDeliveryStatus.fromJson('bogus'),
+      ).throws<ArgumentError>();
     });
   });
 
@@ -101,10 +102,12 @@ void main() {
     });
 
     test('fromJson unknown event throws', () {
-      check(() => ChainEventData.fromJson(const {
-            'event': 'bogus',
-            'timestamp': '2026-04-01T00:00:00Z',
-          })).throws<ArgumentError>();
+      check(
+        () => ChainEventData.fromJson(const {
+          'event': 'bogus',
+          'timestamp': '2026-04-01T00:00:00Z',
+        }),
+      ).throws<ArgumentError>();
     });
   });
 }

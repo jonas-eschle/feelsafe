@@ -22,11 +22,10 @@ class GpsLoggingScreen extends ConsumerWidget {
     final gps = settings?.defaults.gpsLogging ?? const GpsLoggingConfig();
 
     Future<void> save(GpsLoggingConfig next) async {
-      final defaults =
-          (settings?.defaults ?? const AppDefaults()).copyWith(gpsLogging: next);
-      await ref
-          .read(settingsControllerProvider.notifier)
-          .setDefaults(defaults);
+      final defaults = (settings?.defaults ?? const AppDefaults()).copyWith(
+        gpsLogging: next,
+      );
+      await ref.read(settingsControllerProvider.notifier).setDefaults(defaults);
     }
 
     return Scaffold(
@@ -48,8 +47,7 @@ class GpsLoggingScreen extends ConsumerWidget {
             divisions: 59,
             value: gps.intervalSeconds.toDouble(),
             label: '${gps.intervalSeconds}s',
-            onChanged: (v) =>
-                save(gps.copyWith(intervalSeconds: v.round())),
+            onChanged: (v) => save(gps.copyWith(intervalSeconds: v.round())),
           ),
           ListTile(
             title: Text(l.gpsLoggingAccuracy),

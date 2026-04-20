@@ -15,10 +15,7 @@ import '../../helpers/test_helpers.dart';
 void main() {
   group('speedMultiplier validation', () {
     test('real session accepts 1.0', () {
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       check(e.speedMultiplier).equals(1.0);
       e.dispose();
     });
@@ -235,8 +232,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 20, randomize: 1.0),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 20, randomize: 1.0),
           ],
           random: FixedRandom(),
         );
@@ -253,8 +251,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 20, randomize: 0.0),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 20, randomize: 0.0),
           ],
           random: FixedRandom(),
         );
@@ -270,8 +269,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 100, randomize: 1.0),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 100, randomize: 1.0),
           ],
           random: FixedRandom(0.0),
         );
@@ -288,8 +288,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 100, randomize: 1.0),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 100, randomize: 1.0),
           ],
           random: FixedRandom(1.0),
         );
@@ -306,8 +307,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 100, randomize: 0.5),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 100, randomize: 0.5),
           ],
           random: FixedRandom(0.0),
         );
@@ -324,8 +326,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 10)
-                .copyWith(waitSeconds: 100, randomize: 5.0),
+            smsStep(
+              durationSeconds: 10,
+            ).copyWith(waitSeconds: 100, randomize: 5.0),
           ],
           random: FixedRandom(1.0),
         );

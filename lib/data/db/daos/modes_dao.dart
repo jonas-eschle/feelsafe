@@ -20,18 +20,19 @@ class ModesDao extends DatabaseAccessor<AppDatabase> with _$ModesDaoMixin {
 
   /// Returns every stored mode, ordered by id ascending.
   Future<List<SessionMode>> getAll() async {
-    final rows = await (select(modesTable)
-          ..orderBy([(t) => OrderingTerm.asc(t.id)]))
-        .get();
+    final rows = await (select(
+      modesTable,
+    )..orderBy([(t) => OrderingTerm.asc(t.id)])).get();
     return [for (final row in rows) _decode(row.jsonPayload)];
   }
 
   /// Returns the mode with [id], or null if none exists.
   Future<SessionMode?> getById(String id) async {
-    final row = await (select(modesTable)
-          ..where((t) => t.id.equals(id))
-          ..limit(1))
-        .getSingleOrNull();
+    final row =
+        await (select(modesTable)
+              ..where((t) => t.id.equals(id))
+              ..limit(1))
+            .getSingleOrNull();
     if (row == null) return null;
     return _decode(row.jsonPayload);
   }

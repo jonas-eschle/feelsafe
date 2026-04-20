@@ -262,6 +262,8 @@
   "backupExport": "Eksportuj dane",
   "backupImport": "Importuj dane",
   "backupNotReady": "Kopia zapasowa nie jest jeszcze dostępna. Wkrótce.",
+  "backupPinOptional": "Opcjonalny PIN (szyfruje pakiet)",
+  "backupImportOk": "Kopia zapasowa została zaimportowana.",
 
   "historyTitle": "Poprzednie sesje",
   "historyEmpty": "Brak poprzednich sesji.",

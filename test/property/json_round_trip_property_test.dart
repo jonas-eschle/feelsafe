@@ -19,7 +19,6 @@ import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/models/trigger.dart';
-
 import '../helpers/test_helpers.dart';
 
 /// Utility: round-trip any [StepConfig] through JSON.
@@ -40,10 +39,7 @@ void main() {
     test('DisguisedReminderConfig round-trips', () {
       final cases = [
         const DisguisedReminderConfig(),
-        const DisguisedReminderConfig(
-          templateId: 'foo',
-          intervalSeconds: 30,
-        ),
+        const DisguisedReminderConfig(templateId: 'foo', intervalSeconds: 30),
         const DisguisedReminderConfig(intervalSeconds: 600),
       ];
       for (final cfg in cases) {
@@ -163,23 +159,15 @@ void main() {
       }
     });
 
-    test(
-      'StepConfig.fromJson throws on unknown tag',
-      () {
-        check(
-          () => StepConfig.fromJson(const {'type': 'mystery'}),
-        ).throws<ArgumentError>();
-      },
-    );
+    test('StepConfig.fromJson throws on unknown tag', () {
+      check(
+        () => StepConfig.fromJson(const {'type': 'mystery'}),
+      ).throws<ArgumentError>();
+    });
 
-    test(
-      'StepConfig.fromJson throws on missing tag',
-      () {
-        check(
-          () => StepConfig.fromJson(const {}),
-        ).throws<ArgumentError>();
-      },
-    );
+    test('StepConfig.fromJson throws on missing tag', () {
+      check(() => StepConfig.fromJson(const {})).throws<ArgumentError>();
+    });
   });
 
   group('Domain models: JSON round-trip', () {
@@ -219,11 +207,7 @@ void main() {
         steps: [
           holdStep(),
           smsStep(order: 1, durationSeconds: 3),
-          step(
-            type: ChainStepType.loudAlarm,
-            order: 2,
-            durationSeconds: 2,
-          ),
+          step(type: ChainStepType.loudAlarm, order: 2, durationSeconds: 2),
         ],
         distressChainId: 'd1',
       );
@@ -265,14 +249,12 @@ void main() {
     });
   });
 
-  group('Property: randomized ChainStep creation preserves invariants',
-      () {
+  group('Property: randomized ChainStep creation preserves invariants', () {
     final rand = Random(42);
     test('100 randomized ChainStep instances round-trip', () {
       for (var i = 0; i < 100; i++) {
-        final type = ChainStepType.values[rand.nextInt(
-          ChainStepType.values.length,
-        )];
+        final type =
+            ChainStepType.values[rand.nextInt(ChainStepType.values.length)];
         final s = ChainStep(
           id: 'id-$i',
           type: type,
@@ -288,8 +270,7 @@ void main() {
         check(restored.type).equals(s.type);
         check(restored.order).equals(s.order);
         check(restored.durationSeconds).equals(s.durationSeconds);
-        check(restored.gracePeriodSeconds)
-            .equals(s.gracePeriodSeconds);
+        check(restored.gracePeriodSeconds).equals(s.gracePeriodSeconds);
       }
     });
   });

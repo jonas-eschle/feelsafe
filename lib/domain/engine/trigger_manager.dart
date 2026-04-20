@@ -137,9 +137,7 @@ final class TriggerManager {
     // GPS geofences. `GeofenceService` typically already filters —
     // we re-check defensively.
     final triggers = mode.disarmTriggers.whereType<GpsArrivalDisarmTrigger>();
-    final matched = triggers.any(
-      (t) => _withinRadius(arrival, t),
-    );
+    final matched = triggers.any((t) => _withinRadius(arrival, t));
     if (!matched) return;
     final now = _clock();
     final last = _lastArrivalFiredAt;
@@ -155,10 +153,7 @@ final class TriggerManager {
     }
   }
 
-  static bool _withinRadius(
-    LocationPoint p,
-    GpsArrivalDisarmTrigger trigger,
-  ) {
+  static bool _withinRadius(LocationPoint p, GpsArrivalDisarmTrigger trigger) {
     // Haversine distance in meters between (p.latitude, p.longitude)
     // and the trigger's center.
     const earthRadiusMeters = 6371000.0;
@@ -168,10 +163,10 @@ final class TriggerManager {
     final deltaLon = (trigger.longitude - p.longitude) * (math.pi / 180.0);
     final a =
         math.sin(deltaLat / 2) * math.sin(deltaLat / 2) +
-            math.cos(latP) *
-                math.cos(latT) *
-                math.sin(deltaLon / 2) *
-                math.sin(deltaLon / 2);
+        math.cos(latP) *
+            math.cos(latT) *
+            math.sin(deltaLon / 2) *
+            math.sin(deltaLon / 2);
     final c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a));
     final distance = earthRadiusMeters * c;
     return distance <= trigger.radiusMeters;

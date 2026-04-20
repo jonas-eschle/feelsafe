@@ -28,7 +28,6 @@ import 'package:guardianangela/services/fakes/fake_messaging_service.dart';
 import 'package:guardianangela/services/fakes/fake_notification_service.dart';
 import 'package:guardianangela/services/fakes/fake_phone_service.dart';
 import 'package:guardianangela/services/fakes/fake_vibration_service.dart';
-
 import '../helpers/test_helpers.dart';
 
 final class _Harness {
@@ -97,7 +96,10 @@ _Harness _wire({
       notification: notif,
       vibration: vib,
       context: SessionContext(
-        contacts: [makeContact(id: 'a'), makeContact(id: 'b')],
+        contacts: [
+          makeContact(id: 'a'),
+          makeContact(id: 'b'),
+        ],
         isSimulation: isSimulation,
       ),
       isCancelled: isCancelled,
@@ -128,9 +130,7 @@ void main() {
     test('hold throughout then disarm → Ended(disarm)', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            holdStep(durationSeconds: 5, gracePeriodSeconds: 2),
-          ],
+          chain: [holdStep(durationSeconds: 5, gracePeriodSeconds: 2)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -146,45 +146,40 @@ void main() {
       });
     });
 
-    test(
-      'continuous hold with re-hold during grace still disarms',
-      () {
-        fakeAsync((async) {
-          final h = _wire(
-            chain: [
-              holdStep(
-                durationSeconds: 5,
-                gracePeriodSeconds: 5,
-                releaseSensitivity: 0.1,
-              ),
-            ],
-          );
-          h.engine.start();
-          async.flushMicrotasks();
-          h.engine.holdStart();
-          async.elapse(const Duration(seconds: 3));
-          h.engine.holdRelease();
-          // Sensitivity elapses → enter duration → user re-holds.
-          async.elapse(const Duration(milliseconds: 200));
-          h.engine.holdStart();
-          // Per spec: re-hold during grace = disarm. We are actually
-          // still in duration here, so continue until disarm by user.
-          async.elapse(const Duration(seconds: 2));
-          h.engine.disarm();
-          async.flushMicrotasks();
-          final last = h.engine.state as EngineEnded;
-          check(last.reason).equals(EndReason.disarm);
-          h.cleanup();
-        });
-      },
-    );
+    test('continuous hold with re-hold during grace still disarms', () {
+      fakeAsync((async) {
+        final h = _wire(
+          chain: [
+            holdStep(
+              durationSeconds: 5,
+              gracePeriodSeconds: 5,
+              releaseSensitivity: 0.1,
+            ),
+          ],
+        );
+        h.engine.start();
+        async.flushMicrotasks();
+        h.engine.holdStart();
+        async.elapse(const Duration(seconds: 3));
+        h.engine.holdRelease();
+        // Sensitivity elapses → enter duration → user re-holds.
+        async.elapse(const Duration(milliseconds: 200));
+        h.engine.holdStart();
+        // Per spec: re-hold during grace = disarm. We are actually
+        // still in duration here, so continue until disarm by user.
+        async.elapse(const Duration(seconds: 2));
+        h.engine.disarm();
+        async.flushMicrotasks();
+        final last = h.engine.state as EngineEnded;
+        check(last.reason).equals(EndReason.disarm);
+        h.cleanup();
+      });
+    });
 
     test('happy path emits no grace-expired events', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            holdStep(durationSeconds: 5, gracePeriodSeconds: 3),
-          ],
+          chain: [holdStep(durationSeconds: 5, gracePeriodSeconds: 3)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -192,8 +187,9 @@ void main() {
         async.elapse(const Duration(seconds: 2));
         h.engine.disarm();
         async.flushMicrotasks();
-        final graceEvents =
-            h.events.where((e) => e.event == ChainEvent.graceExpired);
+        final graceEvents = h.events.where(
+          (e) => e.event == ChainEvent.graceExpired,
+        );
         check(graceEvents).isEmpty();
         h.cleanup();
       });
@@ -262,8 +258,7 @@ void main() {
         async.elapse(const Duration(milliseconds: 50));
         h.engine.holdRelease();
         async.elapse(const Duration(seconds: 10));
-        check(h.phone.calls.any((c) => c.contains('callEmergency')))
-            .isTrue();
+        check(h.phone.calls.any((c) => c.contains('callEmergency'))).isTrue();
         h.cleanup();
       });
     });
@@ -320,31 +315,29 @@ void main() {
       });
     });
 
-    test(
-      'disguised reminder with retries fires multiple grace-expired',
-      () {
-        fakeAsync((async) {
-          final h = _wire(
-            chain: [
-              step(
-                type: ChainStepType.disguisedReminder,
-                durationSeconds: 1,
-                gracePeriodSeconds: 1,
-                retryCount: 2,
-              ),
-            ],
-          );
-          h.engine.start();
-          async.flushMicrotasks();
-          async.elapse(const Duration(seconds: 20));
-          final graceEvents =
-              h.events.where((e) => e.event == ChainEvent.graceExpired);
-          // initial miss + 2 retries = 3 graceExpired events.
-          check(graceEvents.length).equals(3);
-          h.cleanup();
-        });
-      },
-    );
+    test('disguised reminder with retries fires multiple grace-expired', () {
+      fakeAsync((async) {
+        final h = _wire(
+          chain: [
+            step(
+              type: ChainStepType.disguisedReminder,
+              durationSeconds: 1,
+              gracePeriodSeconds: 1,
+              retryCount: 2,
+            ),
+          ],
+        );
+        h.engine.start();
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 20));
+        final graceEvents = h.events.where(
+          (e) => e.event == ChainEvent.graceExpired,
+        );
+        // initial miss + 2 retries = 3 graceExpired events.
+        check(graceEvents.length).equals(3);
+        h.cleanup();
+      });
+    });
 
     test('repeatMissed emits between retries', () {
       fakeAsync((async) {
@@ -385,8 +378,7 @@ void main() {
         // The disguised reminder strategy triggers a notification.
         // Note: using FakeNotificationService.calls (no calls list by
         // default, but we assert the event went through the chain).
-        final steps = h.events
-            .where((e) => e.event == ChainEvent.stepStarted);
+        final steps = h.events.where((e) => e.event == ChainEvent.stepStarted);
         check(steps.length).equals(1);
         h.cleanup();
       });
@@ -437,9 +429,7 @@ void main() {
       fakeAsync((async) {
         final h = _wire(
           isSimulation: true,
-          chain: [
-            holdStep(durationSeconds: 30, gracePeriodSeconds: 30),
-          ],
+          chain: [holdStep(durationSeconds: 30, gracePeriodSeconds: 30)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -485,9 +475,7 @@ void main() {
     test('final step completion ends session with chainExhausted', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            smsStep(durationSeconds: 1, gracePeriodSeconds: 0),
-          ],
+          chain: [smsStep(durationSeconds: 1, gracePeriodSeconds: 0)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -501,9 +489,7 @@ void main() {
     test('sessionEnded is emitted exactly once per session', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            smsStep(durationSeconds: 1, gracePeriodSeconds: 0),
-          ],
+          chain: [smsStep(durationSeconds: 1, gracePeriodSeconds: 0)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -542,9 +528,7 @@ void main() {
     test('pause mid-duration resumes with remaining ~= snapshot', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            smsStep(durationSeconds: 10, gracePeriodSeconds: 0),
-          ],
+          chain: [smsStep(durationSeconds: 10, gracePeriodSeconds: 0)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -563,9 +547,7 @@ void main() {
     test('pause during grace preserves the phase', () {
       fakeAsync((async) {
         final h = _wire(
-          chain: [
-            smsStep(durationSeconds: 1, gracePeriodSeconds: 5),
-          ],
+          chain: [smsStep(durationSeconds: 1, gracePeriodSeconds: 5)],
         );
         h.engine.start();
         async.flushMicrotasks();
@@ -601,9 +583,7 @@ void main() {
         // Battery alerts use the same chain/engine; the difference is
         // lifecycle (no TriggerManager). We simulate that here.
         final h = _wire(
-          chain: [
-            smsStep(durationSeconds: 1, gracePeriodSeconds: 0),
-          ],
+          chain: [smsStep(durationSeconds: 1, gracePeriodSeconds: 0)],
         );
         h.engine.start();
         async.flushMicrotasks();

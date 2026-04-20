@@ -120,7 +120,8 @@ SessionMode _mode({
   name: 'Walk',
   checkInType: ChainStepType.holdButton,
   chainSteps: [holdStep()],
-  distressTriggers: distress ??
+  distressTriggers:
+      distress ??
       [
         const HardwareButtonDistressTrigger(
           buttonType: ButtonType.volumeUp,
@@ -160,10 +161,7 @@ void main() {
       final hw = _FakeHardwareButton();
       final gf = _FakeGeofence();
       final bm = _FakeBatteryMonitor();
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       final mgr = TriggerManager(
         engine: e,
         mode: _mode(),
@@ -185,10 +183,7 @@ void main() {
       final hw = _FakeHardwareButton();
       final gf = _FakeGeofence();
       final bm = _FakeBatteryMonitor();
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       final mgr = TriggerManager(
         engine: e,
         mode: _mode(distress: const [], disarm: const []),
@@ -209,10 +204,7 @@ void main() {
       final hw = _FakeHardwareButton();
       final gf = _FakeGeofence();
       final bm = _FakeBatteryMonitor();
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       final mgr = TriggerManager(
         engine: e,
         mode: _mode(),
@@ -233,10 +225,7 @@ void main() {
       final hw = _FakeHardwareButton();
       final gf = _FakeGeofence();
       final bm = _FakeBatteryMonitor();
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       final mgr = TriggerManager(
         engine: e,
         mode: _mode(
@@ -344,10 +333,7 @@ void main() {
       final hw = _FakeHardwareButton();
       final gf = _FakeGeofence();
       final bm = _FakeBatteryMonitor();
-      final e = SessionEngine(
-        chainSteps: [holdStep()],
-        random: FixedRandom(),
-      );
+      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
       var t = DateTime.utc(2026, 4, 1, 12, 0, 0);
       var confirmCount = 0;
       final mgr = TriggerManager(
@@ -423,10 +409,7 @@ void main() {
           holdStep(),
           smsStep(order: 1, durationSeconds: 1, gracePeriodSeconds: 0),
         ];
-        final e = SessionEngine(
-          chainSteps: engineSteps,
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: engineSteps, random: FixedRandom());
         final mgr = TriggerManager(
           engine: e,
           mode: _mode(),

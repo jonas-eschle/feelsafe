@@ -11,6 +11,7 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
+
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 
 /// Real platform-backed implementation of [SystemUiServiceProtocol].
@@ -43,9 +44,7 @@ final class SystemUiService implements SystemUiServiceProtocol {
   Future<void> requestBatteryOptimizationExemption() async {
     if (!Platform.isAndroid) return;
     try {
-      await _channel.invokeMethod<void>(
-        'requestBatteryOptimizationExemption',
-      );
+      await _channel.invokeMethod<void>('requestBatteryOptimizationExemption');
     } on MissingPluginException {
       return Future.error('Not wired — Phase 10');
     } on PlatformException catch (e, s) {
@@ -62,9 +61,7 @@ final class SystemUiService implements SystemUiServiceProtocol {
   Future<bool> isBatteryOptimized() async {
     if (!Platform.isAndroid) return false;
     try {
-      final res = await _channel.invokeMethod<bool>(
-        'isBatteryOptimized',
-      );
+      final res = await _channel.invokeMethod<bool>('isBatteryOptimized');
       return res ?? false;
     } on MissingPluginException {
       developer.log('system_ui.isBatteryOptimized not wired — Phase 10');

@@ -12,10 +12,7 @@ import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import '../../helpers/test_helpers.dart';
 
-SessionEngine _mkEngine(
-  List<ChainStep> steps, {
-  bool isSimulation = false,
-}) =>
+SessionEngine _mkEngine(List<ChainStep> steps, {bool isSimulation = false}) =>
     SessionEngine(
       chainSteps: steps,
       isSimulation: isSimulation,

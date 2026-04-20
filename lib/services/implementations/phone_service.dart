@@ -12,8 +12,10 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
-import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
+
 import 'package:url_launcher/url_launcher.dart';
+
+import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 
 /// Real platform-backed implementation of [PhoneServiceProtocol].
 final class PhoneService implements PhoneServiceProtocol {
@@ -35,10 +37,7 @@ final class PhoneService implements PhoneServiceProtocol {
   }
 
   @override
-  Future<void> callEmergency(
-    String number, {
-    bool isSimulation = false,
-  }) async {
+  Future<void> callEmergency(String number, {bool isSimulation = false}) async {
     if (isSimulation) {
       developer.log('[SIM-BLOCK] phone.callEmergency number=$number');
       return;
@@ -46,10 +45,7 @@ final class PhoneService implements PhoneServiceProtocol {
     await _placeCall(number, isEmergency: true);
   }
 
-  Future<void> _placeCall(
-    String number, {
-    required bool isEmergency,
-  }) async {
+  Future<void> _placeCall(String number, {required bool isEmergency}) async {
     if (Platform.isAndroid) {
       try {
         await _channel.invokeMethod<void>('call', {
@@ -71,9 +67,7 @@ final class PhoneService implements PhoneServiceProtocol {
     final uri = Uri(scheme: 'tel', path: number);
     final ok = await launchUrl(uri);
     if (!ok) {
-      throw StateError(
-        'Failed to launch tel: URI for $number',
-      );
+      throw StateError('Failed to launch tel: URI for $number');
     }
   }
 }

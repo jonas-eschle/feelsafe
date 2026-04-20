@@ -84,13 +84,10 @@ class _HoldToTriggerButtonState extends State<HoldToTriggerButton> {
           child: Center(
             child: Text(
               widget.label,
-              style: Theme.of(context)
-                  .textTheme
-                  .headlineSmall
-                  ?.copyWith(
-                    color: _held ? colors.safeOn : colors.warningOn,
-                    fontWeight: FontWeight.bold,
-                  ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                color: _held ? colors.safeOn : colors.warningOn,
+                fontWeight: FontWeight.bold,
+              ),
             ),
           ),
         ),

@@ -102,15 +102,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         ref.watch(distressChainsControllerProvider).value ?? const [];
     return Scaffold(
       appBar: AppBar(
-        title: Text(_mode == null
-            ? l.modeEditorTitleCreate
-            : l.modeEditorTitleEdit),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.check),
-            onPressed: _save,
-          ),
-        ],
+        title: Text(
+          _mode == null ? l.modeEditorTitleCreate : l.modeEditorTitleEdit,
+        ),
+        actions: [IconButton(icon: const Icon(Icons.check), onPressed: _save)],
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -152,8 +147,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
             onChanged: (v) => setState(() => _distressChainId = v),
           ),
           const SizedBox(height: 24),
-          Text(l.modeChainHeader,
-              style: Theme.of(context).textTheme.titleMedium),
+          Text(
+            l.modeChainHeader,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           if (_chain.isEmpty)
             Text(l.modeChainEmpty)

@@ -49,13 +49,15 @@ void main() {
     });
 
     test('fromJson unknown accuracy throws', () {
-      check(() => GpsLoggingConfig.fromJson(const {'accuracy': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => GpsLoggingConfig.fromJson(const {'accuracy': 'bogus'}),
+      ).throws<ArgumentError>();
     });
 
     test('fromJson unknown format throws', () {
-      check(() => GpsLoggingConfig.fromJson(const {'format': 'bogus'}))
-          .throws<ArgumentError>();
+      check(
+        () => GpsLoggingConfig.fromJson(const {'format': 'bogus'}),
+      ).throws<ArgumentError>();
     });
   });
 }

@@ -20,8 +20,8 @@ class PastEventDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final id = GoRouterState.of(context).uri.queryParameters['id'];
-    final logs = ref.watch(historyControllerProvider).value ??
-        const <SessionLog>[];
+    final logs =
+        ref.watch(historyControllerProvider).value ?? const <SessionLog>[];
     SessionLog? log;
     for (final e in logs) {
       if (e.id == id) {
@@ -42,16 +42,14 @@ class PastEventDetailScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           ListTile(title: Text(entry.modeName)),
-          ListTile(
-            title: Text(entry.startedAt.toLocal().toString()),
-          ),
+          ListTile(title: Text(entry.startedAt.toLocal().toString())),
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         icon: const Icon(Icons.share),
         label: Text(l.evidenceExportTitle),
-        onPressed: () => context
-            .push('${RouteNames.evidenceExport}?id=${entry.id}'),
+        onPressed: () =>
+            context.push('${RouteNames.evidenceExport}?id=${entry.id}'),
       ),
     );
   }

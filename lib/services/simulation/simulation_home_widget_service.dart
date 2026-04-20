@@ -35,9 +35,7 @@ final class SimulationHomeWidgetService implements HomeWidgetServiceProtocol {
     required String modeName,
     required bool isRunning,
   }) async {
-    developer.log(
-      '[SIM] homeWidget.updateStatus $status/$modeName/$isRunning',
-    );
+    developer.log('[SIM] homeWidget.updateStatus $status/$modeName/$isRunning');
   }
 
   @override

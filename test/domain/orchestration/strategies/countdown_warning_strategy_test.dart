@@ -6,7 +6,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/strategies/countdown_warning_strategy.dart';
-
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -90,10 +89,7 @@ void main() {
       await strategy.executeReal(
         step(
           type: ChainStepType.countdownWarning,
-          config: const CountdownWarningConfig(
-            vibrate: false,
-            playTone: false,
-          ),
+          config: const CountdownWarningConfig(vibrate: false, playTone: false),
         ),
         harness.build(),
       );

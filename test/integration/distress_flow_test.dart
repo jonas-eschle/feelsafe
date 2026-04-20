@@ -26,7 +26,6 @@ import 'package:guardianangela/services/fakes/fake_messaging_service.dart';
 import 'package:guardianangela/services/fakes/fake_notification_service.dart';
 import 'package:guardianangela/services/fakes/fake_phone_service.dart';
 import 'package:guardianangela/services/fakes/fake_vibration_service.dart';
-
 import '../helpers/test_helpers.dart';
 
 /// Wires an engine to an orchestrator and records emitted events.
@@ -57,10 +56,7 @@ _Harness _wire({
       phone: phone,
       notification: notif,
       vibration: vib,
-      context: SessionContext(
-        contacts: contacts,
-        isSimulation: isSimulation,
-      ),
+      context: SessionContext(contacts: contacts, isSimulation: isSimulation),
       isCancelled: isCancelled,
       registerSmsWorkId: register,
     ),
@@ -118,11 +114,8 @@ final class _Harness {
 }
 
 ChainStep _hold() => holdStep(durationSeconds: 30, gracePeriodSeconds: 5);
-ChainStep _sms({int order = 0}) => smsStep(
-  order: order,
-  durationSeconds: 1,
-  gracePeriodSeconds: 0,
-);
+ChainStep _sms({int order = 0}) =>
+    smsStep(order: order, durationSeconds: 1, gracePeriodSeconds: 0);
 ChainStep _alarm({int order = 1}) => step(
   type: ChainStepType.loudAlarm,
   order: order,
@@ -251,26 +244,21 @@ void main() {
       });
     });
 
-    test(
-      'duress during grace of hold step still replaces chain',
-      () {
-        fakeAsync((async) {
-          final h = _wire(
-            mainChain: [
-              holdStep(durationSeconds: 5, gracePeriodSeconds: 10),
-            ],
-          );
-          h.engine.start();
-          async.flushMicrotasks();
-          // Enter grace by not holding.
-          async.elapse(const Duration(milliseconds: 100));
-          h.engine.replaceWithDistressChain([_sms()]);
-          async.elapse(const Duration(seconds: 3));
-          check(h.engine.isDistressChain).isTrue();
-          unawaited(h.dispose());
-        });
-      },
-    );
+    test('duress during grace of hold step still replaces chain', () {
+      fakeAsync((async) {
+        final h = _wire(
+          mainChain: [holdStep(durationSeconds: 5, gracePeriodSeconds: 10)],
+        );
+        h.engine.start();
+        async.flushMicrotasks();
+        // Enter grace by not holding.
+        async.elapse(const Duration(milliseconds: 100));
+        h.engine.replaceWithDistressChain([_sms()]);
+        async.elapse(const Duration(seconds: 3));
+        check(h.engine.isDistressChain).isTrue();
+        unawaited(h.dispose());
+      });
+    });
   });
 
   group('Distress flow: wrong-PIN threshold', () {
@@ -341,43 +329,37 @@ void main() {
       });
     });
 
-    test(
-      'replaceWithDistressChain throws on empty steps list',
-      () {
-        fakeAsync((async) {
-          final h = _wire(mainChain: [_hold()]);
-          h.engine.start();
-          async.flushMicrotasks();
-          check(
-            () => h.engine.replaceWithDistressChain(const []),
-          ).throws<ArgumentError>();
-          unawaited(h.dispose());
-        });
-      },
-    );
+    test('replaceWithDistressChain throws on empty steps list', () {
+      fakeAsync((async) {
+        final h = _wire(mainChain: [_hold()]);
+        h.engine.start();
+        async.flushMicrotasks();
+        check(
+          () => h.engine.replaceWithDistressChain(const []),
+        ).throws<ArgumentError>();
+        unawaited(h.dispose());
+      });
+    });
 
-    test(
-      'replaceWithDistressChain after sessionEnded is a no-op',
-      () {
-        fakeAsync((async) {
-          final h = _wire(mainChain: [_hold()]);
-          h.engine.start();
-          async.flushMicrotasks();
-          h.engine.disarm();
-          async.flushMicrotasks();
-          final countBefore = h.events
-              .where((e) => e.event == ChainEvent.distressTriggered)
-              .length;
-          h.engine.replaceWithDistressChain([_sms()]);
-          async.flushMicrotasks();
-          final countAfter = h.events
-              .where((e) => e.event == ChainEvent.distressTriggered)
-              .length;
-          check(countAfter).equals(countBefore);
-          unawaited(h.dispose());
-        });
-      },
-    );
+    test('replaceWithDistressChain after sessionEnded is a no-op', () {
+      fakeAsync((async) {
+        final h = _wire(mainChain: [_hold()]);
+        h.engine.start();
+        async.flushMicrotasks();
+        h.engine.disarm();
+        async.flushMicrotasks();
+        final countBefore = h.events
+            .where((e) => e.event == ChainEvent.distressTriggered)
+            .length;
+        h.engine.replaceWithDistressChain([_sms()]);
+        async.flushMicrotasks();
+        final countAfter = h.events
+            .where((e) => e.event == ChainEvent.distressTriggered)
+            .length;
+        check(countAfter).equals(countBefore);
+        unawaited(h.dispose());
+      });
+    });
   });
 
   group('Distress flow: simulation mode', () {
@@ -413,9 +395,7 @@ void main() {
             registerSmsWorkId: register,
           ),
         );
-        final sub = engine.events.listen(
-          (e) => unawaited(orch.handleEvent(e)),
-        );
+        final sub = engine.events.listen((e) => unawaited(orch.handleEvent(e)));
         engine.start();
         async.flushMicrotasks();
         engine.replaceWithDistressChain([_sms(), _alarm()]);

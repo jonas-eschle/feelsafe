@@ -63,38 +63,42 @@ void main() {
 
     test('substitutes location', () {
       const ctx = SessionContext();
-      check(ctx.resolvePlaceholders('Loc: {location}', location: 'Zurich'))
-          .equals('Loc: Zurich');
+      check(
+        ctx.resolvePlaceholders('Loc: {location}', location: 'Zurich'),
+      ).equals('Loc: Zurich');
     });
 
     test('substitutes time', () {
       const ctx = SessionContext();
-      check(ctx.resolvePlaceholders('Time: {time}', time: '10:00'))
-          .equals('Time: 10:00');
+      check(
+        ctx.resolvePlaceholders('Time: {time}', time: '10:00'),
+      ).equals('Time: 10:00');
     });
 
     test('substitutes description', () {
       const ctx = SessionContext();
-      check(ctx.resolvePlaceholders(
-        'D: {description}',
-        description: 'help',
-      )).equals('D: help');
+      check(
+        ctx.resolvePlaceholders('D: {description}', description: 'help'),
+      ).equals('D: help');
     });
 
     test('unresolved placeholders become empty', () {
       const ctx = SessionContext();
-      check(ctx.resolvePlaceholders('{name} @ {location}, {time}'))
-          .equals(' @ , ');
+      check(
+        ctx.resolvePlaceholders('{name} @ {location}, {time}'),
+      ).equals(' @ , ');
     });
 
     test('all four placeholders together', () {
       const ctx = SessionContext(userProfile: UserProfile(name: 'A'));
-      check(ctx.resolvePlaceholders(
-        '{name}|{location}|{time}|{description}',
-        location: 'L',
-        time: 'T',
-        description: 'D',
-      )).equals('A|L|T|D');
+      check(
+        ctx.resolvePlaceholders(
+          '{name}|{location}|{time}|{description}',
+          location: 'L',
+          time: 'T',
+          description: 'D',
+        ),
+      ).equals('A|L|T|D');
     });
   });
 

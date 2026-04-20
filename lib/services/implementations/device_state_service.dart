@@ -10,6 +10,7 @@ import 'dart:developer' as developer;
 import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
+
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 
 /// Real platform-backed implementation of
