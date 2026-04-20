@@ -1,0 +1,21 @@
+{
+  "phase": "13",
+  "title": "Localization — 14 locales at parity",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-I18N-1"],
+  "gates_passed": [
+    "flutter gen-l10n (0 untranslated warnings across 14 locales)",
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (729/729 passing)"
+  ],
+  "gates_pending": [
+    "Phase 16 manual: RTL layout review on physical device for fa/ar/he",
+    "Phase 16 manual: stealth-UI no-English-leak verification per locale"
+  ],
+  "next_action": "Phase 14 — fill integration/scenario/property/regression tests. Focus: 4-layer sim defense end-to-end, distress chain integrity, cross-feature flows.",
+  "last_update_iso": "2026-04-20T20:30:00Z",
+  "notes": "13 parallel agents truly orthogonal per memory rule. Each locale has 252 translated keys. 3 RTL locales verified natural right-to-left reading order."
+}
