@@ -1,0 +1,21 @@
+{
+  "phase": "08",
+  "title": "Strategies + orchestrator — 4-layer defense layer 1",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-STRATEGY-2"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (695/695 passing; +151)",
+    "Orchestration coverage 99.47% (≥99%)",
+    "Ripgrep: 25 context.services.* call sites across strategies"
+  ],
+  "gates_pending": [
+    "Phase 14 simulation 4-layer defense end-to-end scenario tests"
+  ],
+  "next_action": "Phase 9 — fill real/fake/sim service impls (Dart side). Real impls use pub packages (geolocator, flutter_local_notifications, audio_service, local_auth, etc.). Native platform channel work deferred to Phase 10.",
+  "last_update_iso": "2026-04-20T18:00:00Z",
+  "notes": "SessionOrchestrator now has chainStepsResolver parameter for Phase 11 SessionController integration. Error-isolation policy = continue (safety: failing messaging must not silence later alarm). fake_call_strategy only handles audio+vibration cue; UI layer separately pushes the fake-call screen."
+}

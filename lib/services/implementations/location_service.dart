@@ -1,6 +1,14 @@
-/// Real location-service implementation stub. Phase 9 fills bodies.
+/// Real location-service implementation.
+///
+/// Wraps the `geolocator` package for permission handling, continuous
+/// tracking with a 20m distance filter, and an in-memory FIFO history
+/// capped at 200 points.
 library;
 
+import 'dart:async';
+import 'dart:developer' as developer;
+
+import 'package:geolocator/geolocator.dart';
 import 'package:guardianangela/domain/models/location_point.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 
@@ -9,32 +17,75 @@ final class LocationService implements LocationServiceProtocol {
   /// Creates the real location service.
   LocationService();
 
+  /// Maximum number of points retained in the FIFO history.
+  static const int _historyCap = 200;
+
+  final List<LocationPoint> _history = <LocationPoint>[];
+  StreamSubscription<Position>? _subscription;
+
   @override
-  Future<bool> requestPermission() async =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  Future<bool> requestPermission() async {
+    LocationPermission perm = await Geolocator.checkPermission();
+    if (perm == LocationPermission.denied) {
+      perm = await Geolocator.requestPermission();
+    }
+    return perm == LocationPermission.always ||
+        perm == LocationPermission.whileInUse;
+  }
 
   @override
   Future<void> startTracking({
     Duration interval = const Duration(seconds: 60),
-  }) async => throw UnimplementedError('TODO: Phase 9 real impl');
+  }) async {
+    await _subscription?.cancel();
+    final settings = LocationSettings(
+      accuracy: LocationAccuracy.medium,
+      distanceFilter: 20,
+      timeLimit: interval * 4,
+    );
+    _subscription = Geolocator.getPositionStream(
+      locationSettings: settings,
+    ).listen(
+      _onPosition,
+      onError: (Object error, StackTrace stack) {
+        developer.log(
+          'location stream error',
+          error: error,
+          stackTrace: stack,
+        );
+      },
+    );
+  }
 
   @override
-  Future<void> stopTracking() async =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  Future<void> stopTracking() async {
+    await _subscription?.cancel();
+    _subscription = null;
+  }
 
   @override
-  String? getLastLocationUrl() =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  String? getLastLocationUrl() => getLastLocationPoint()?.toMapsUrl();
 
   @override
   LocationPoint? getLastLocationPoint() =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+      _history.isEmpty ? null : _history.last;
 
   @override
-  List<LocationPoint> get history =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  List<LocationPoint> get history => List.unmodifiable(_history);
 
   @override
-  void clearHistory() =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  void clearHistory() => _history.clear();
+
+  void _onPosition(Position pos) {
+    final point = LocationPoint(
+      latitude: pos.latitude,
+      longitude: pos.longitude,
+      timestamp: pos.timestamp.toUtc(),
+      accuracy: pos.accuracy,
+    );
+    _history.add(point);
+    while (_history.length > _historyCap) {
+      _history.removeAt(0);
+    }
+  }
 }

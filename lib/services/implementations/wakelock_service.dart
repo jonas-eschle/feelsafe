@@ -1,7 +1,11 @@
-/// Real wakelock-service implementation stub. Phase 9 fills bodies.
+/// Real wakelock-service implementation.
+///
+/// Wraps `wakelock_plus` to keep the screen awake while a session is
+/// active.
 library;
 
 import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 
 /// Real platform-backed implementation of [WakelockServiceProtocol].
 final class WakelockService implements WakelockServiceProtocol {
@@ -9,14 +13,11 @@ final class WakelockService implements WakelockServiceProtocol {
   WakelockService();
 
   @override
-  Future<void> enable() async =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  Future<void> enable() async => WakelockPlus.enable();
 
   @override
-  Future<void> disable() async =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  Future<void> disable() async => WakelockPlus.disable();
 
   @override
-  Future<bool> get isEnabled async =>
-      throw UnimplementedError('TODO: Phase 9 real impl');
+  Future<bool> get isEnabled async => WakelockPlus.enabled;
 }
