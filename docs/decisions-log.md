@@ -2655,6 +2655,30 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-ENGINE-1: Sealed `EngineState` + nested enums `EndReason`, `PauseReason`
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** The engine's state transitions need compile-time exhaustiveness so unhandled variants are a static error, not a runtime surprise. Two options considered: (A) an enum-per-axis (`EngineStatus {idle,running,paused,ended}` plus orthogonal fields for step/phase/etc.) or (B) a sealed class hierarchy with concrete `final` subclasses carrying state-specific fields.
+- **Decision:** Option B — sealed class `EngineState` with four concrete subclasses:
+  - `EngineIdle` (no fields)
+  - `EngineRunning({stepIndex, phase: TimerPhase, remaining: Duration, missCount, isHolding})`
+  - `EnginePaused({snapshot: EngineRunning, reason: PauseReason})`
+  - `EngineEnded({reason: EndReason})`
+  Companion enums `PauseReason` and `EndReason` live in the same file (`lib/domain/engine/engine_state.dart`). `TimerPhase` lives in the adjacent `timer_phase.dart` since it's also referenced from chain step configs.
+- **Rationale:**
+  - State-specific fields are carried on the state type itself — no nullable fields on `EngineIdle` or `EngineEnded`. This eliminates a class of null-check bugs.
+  - Dart 3 `switch` expressions enforce exhaustiveness at compile time; adding a new state surfaces every call site that needs updating. Closes L9 (registry missing strategies / missing switch arms).
+  - `EnginePaused.snapshot` is an `EngineRunning` instance — pausing is a value-level snapshot, not a "pre-paused state" flag, so resuming is a simple reassign.
+  - `PauseReason` values (`userRequested`, `incomingCall`, `fakeCallAnswered`, `bootRestart`) and `EndReason` values (`disarm`, `chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`, `userQuit`, `appTermination`) expand the `docs/spec/01-chain-engine.md` originals to match the architecture-sketch inventory + the engine-logic review's `fakeCallAnswered` addition.
+- **Implications:**
+  - Closes failure mode L9 (registry missing strategies) for the engine's switch arms.
+  - `lib/domain/**` cannot import `package:flutter/`; sealed-class + pure Dart satisfies this.
+  - Test (Phase 5) `engine_state_test.dart` will pattern-match every subclass to prove exhaustiveness.
+- **References:** `docs/spec/01-chain-engine.md` lines 706-729; `docs/architecture-sketch.md` §4.1 lines 274-295; `docs/review/engine-logic-review.md` (PauseReason.fakeCallAnswered addition); plan Phase 2.
+
+---
+
 #### D-PROCESS-1: Rewrite WAL checkpoint schema (JSON-per-phase)
 
 - **Status:** RESOLVED
