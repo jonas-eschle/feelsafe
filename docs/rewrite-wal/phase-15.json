@@ -1,0 +1,23 @@
+{
+  "phase": "15",
+  "title": "Telemetry + backup + release hardening",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-TELEMETRY-1", "D-BACKUP-1"],
+  "gates_passed": [
+    "flutter pub get (sentry_flutter added)",
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (886/886 passing; +23)",
+    "flutter gen-l10n (0 warnings; 2 new keys added to all 14 ARBs)"
+  ],
+  "gates_pending": [
+    "Phase 16 end-to-end verification",
+    "Release pipeline secrets (ANDROID_KEYSTORE_*, APPLE_*, SENTRY_*) — product-owner action",
+    "Upgrade backup encryption to AES-256-GCM via package:cryptography (v1.1)"
+  ],
+  "next_action": "Phase 16 — automated verification gates. Defer device matrix to manual PM checklist. Then dispatch verification team per user request.",
+  "last_update_iso": "2026-04-20T21:30:00Z",
+  "notes": "Telemetry + backup + logging + stubbed release CI. D-TELEMETRY-1 / D-BACKUP-1 documented. Backup uses simpler PBKDF2+HMAC approach (no AES package pulled in); TODO comment flags the v1.1 migration to AES-256-GCM."
+}
