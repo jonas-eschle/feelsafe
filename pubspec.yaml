@@ -23,10 +23,13 @@ dependencies:
   hive_ce: ^2.2.0
   hive_ce_flutter: ^2.1.0
   # Drift (SQLCipher-backed persistent database) — Phase 6
+  # NOTE: do NOT depend on drift_flutter or sqlite3_flutter_libs —
+  # both pull sqlite3_flutter_libs which conflicts with
+  # sqlcipher_flutter_libs (duplicate-class Gradle failure). We open
+  # the DB directly via drift/native.dart + sqlcipher_flutter_libs
+  # in lib/data/db/app_database.dart.
   drift: ^2.21.0
-  drift_flutter: ^0.2.4
   sqlcipher_flutter_libs: ^0.6.5
-  # Transitive via drift, referenced directly for `open.overrideFor`.
   sqlite3: ^2.9.4
   # Argon2id PIN hashing (reserved for Phase 11)
   crypt: ^4.3.0

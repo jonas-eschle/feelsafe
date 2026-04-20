@@ -1,0 +1,22 @@
+{
+  "phase": "11",
+  "title": "Controllers + wiring (highest-risk L5)",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-CONTROLLER-1"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (729/729 passing; +34)",
+    "docs/wiring-map.md has 27 rows covering L1/L4/L7/L8/L9/L14",
+    "wiring_map_coverage_test green (L8 closure)"
+  ],
+  "gates_pending": [
+    "Phase 12 UI wires these controllers to screens",
+    "Phase 14 scenario tests exercise cross-controller flows"
+  ],
+  "next_action": "Phase 12 — UI screens + theme + core widgets. Groups A-F sequenced to respect L5 single-owner on hot files. Trigger language agents (Phase 13) whenever app_en.arb grows.",
+  "last_update_iso": "2026-04-20T19:30:00Z",
+  "notes": "SettingsController uses await-load pattern (D-CONTROLLER-1) — mutators await _loadComplete before reading state. DistressChainsController enforces non-empty invariant. Battery-alert path structurally yields to user session. API notes: save() replaces update() on async notifiers due to Riverpod 3 method collision."
+}

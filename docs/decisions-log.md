@@ -2655,6 +2655,21 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-CONTROLLER-1: Riverpod async controllers use await-load pattern to close L7 race
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Historical L7 failure: `SettingsController` returned a synchronous `const AppSettings()` then fired an async `_loadFromRepo()`. Every mutator read `state` synchronously. Fresh-install race: `OnboardingScreen.completeOnboarding()` fired before the load resolved and persisted empty defaults over the seeded state.
+- **Decision:** All Riverpod AsyncNotifier / Notifier controllers that load initial state async MUST:
+  1. Capture the load-complete future as `Future<void>? _loadComplete` in `build()`.
+  2. Every mutator `await _loadComplete` before reading `state`.
+  3. `_persist(...)` helper writes to repo + updates `state` atomically.
+- **Rationale:** Forces all state reads to see post-load values. Eliminates the read-stale-write-stale race that caused 4 prior bugs (onboarding, distress chain, templates, stealth).
+- **Implications:** SettingsController / ProfileController / BatteryAlertController apply this pattern. Method name is `save(...)` not `update(...)` due to Riverpod 3's `AsyncNotifier.update` method name collision.
+- **References:** `lib/features/settings/settings_controller.dart`; plan Phase 11; closes failure mode L7.
+
+---
+
 #### D-SECURITY-1: SQLCipher passphrase = random-generated on first launch, stored in flutter_secure_storage
 
 - **Status:** RESOLVED
