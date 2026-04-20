@@ -2655,6 +2655,25 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-MODELS-1: Domain models = hand-rolled immutable classes; sealed hierarchies use tagged JSON
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** 19 domain models under `lib/domain/models/` need serialization, equality, copyWith, and polymorphic subtypes. Options considered: (A) `freezed` + `json_serializable` code generation; (B) hand-rolled immutable classes with explicit `toJson` / `fromJson` / `copyWith` / `==` / `hashCode`.
+- **Decision:** Option B. All models are hand-rolled immutable classes with explicit serialization, equality, copy. Sealed hierarchies (`StepConfig`, `Trigger`, `DistressTrigger`, `DisarmTrigger`, `HardwareTrigger`, `SessionPhase`) emit a `type` discriminator in their JSON; `fromJson` dispatches via sealed switch-expression with NO `default:` arm (throws `ArgumentError` on unknown tag — closes L9). `ActionDeliveryStatus` is a sealed class with `const` singleton instances rather than an enum (allows future per-status payload without breaking JSON shape).
+- **Rationale:**
+  - Removes code-gen dep (`freezed`, `json_serializable`), shortens `build_runner` time.
+  - Makes models readable and diffable; no `.g.dart` artefacts.
+  - Sealed classes + `final` subtypes + `switch` expressions give compile-time exhaustiveness.
+  - Hand-rolled `toJson`/`fromJson` lets us tune per-field behaviour (e.g., `Duration` as ISO-8601 string, enum as camelCase name).
+- **Implications:**
+  - Every model gets a Phase 5 round-trip test (`toJson -> jsonEncode -> jsonDecode -> fromJson` == original).
+  - Drift tables in Phase 6 use `TypeConverter<Model, String>` with the same `toJson`/`fromJson` pair.
+  - Known spec-gap deviations (noted in WAL `phase-03.json`): `BatteryAlertConfig.enabled` default `true`, `GpsLoggingConfig.intervalSeconds=60`, `StealthConfig.fakeName='Calendar'`, 10 `AppSettings` fields dropped per current plan. Revisit if product owner requires.
+- **References:** plan Phase 3; `docs/spec/03-data-models.md`; `docs/architecture-sketch.md` §4.4; `docs/rewrite-wal/phase-03.json`.
+
+---
+
 #### D-ENGINE-1: Sealed `EngineState` + nested enums `EndReason`, `PauseReason`
 
 - **Status:** RESOLVED

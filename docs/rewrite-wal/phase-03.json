@@ -1,0 +1,22 @@
+{
+  "phase": "03",
+  "title": "Domain models (19 models)",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-MODELS-1"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos",
+    "grep package:flutter/ lib/domain/ (no real imports)",
+    "ChainStep round-trip spot-check (agent-verified)",
+    "SessionMode round-trip spot-check (agent-verified)"
+  ],
+  "gates_pending": [
+    "Phase 5 per-model round-trip tests",
+    "Reconcile SessionLogEvent vocabulary with ChainEvent enum (Phase 7 when recorder wired)"
+  ],
+  "next_action": "Phase 4 — skeleton APIs. Dispatch sequential coding agents for: (a) engine + orchestration stubs; (b) 15 service protocols + 45 impl stubs; (c) 13 feature controllers + router + placeholder screens.",
+  "last_update_iso": "2026-04-20T15:00:00Z",
+  "notes": "21 files created including barrel models.dart. 5 spec-gap notes surfaced by agent, all deferred to later phases: BatteryAlertConfig.enabled default true (spec says false), GpsLoggingConfig.intervalSeconds=60 (spec=30), StealthConfig.fakeName='Calendar' (spec='Music'), SessionLogEvent vocabulary mismatch with ChainEvent enum, 10 AppSettings fields dropped per plan (sessionLogRetentionDays, wrongPinThreshold, schemaVersion, pinLength). Design decisions made by agent: SessionPhase kept as sealed hierarchy (not enum), ChainEvent as flat enum (no per-case payload), ActionDeliveryStatus as sealed-class-with-const-constants. These land as D-MODELS-1 in decisions-log."
+}
