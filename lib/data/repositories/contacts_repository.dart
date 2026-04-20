@@ -1,28 +1,30 @@
-/// CRUD repository for [EmergencyContact] aggregates. Phase 6 fills
-/// the bodies against Drift; until then every method throws
-/// [UnimplementedError].
+/// CRUD repository for [EmergencyContact] aggregates, backed by
+/// Drift.
 library;
 
+import 'package:guardianangela/data/db/daos/contacts_dao.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 
 /// Repository for `EmergencyContact` aggregates.
 final class ContactsRepository {
-  /// Creates a contacts repository.
-  ContactsRepository();
+  /// Creates a contacts repository backed by [dao].
+  ContactsRepository(this._dao);
 
-  /// Returns every saved emergency contact.
-  Future<List<EmergencyContact>> getAll() async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  final ContactsDao _dao;
+
+  /// Returns every saved emergency contact, sorted by
+  /// `EmergencyContact.sortOrder` ascending.
+  Future<List<EmergencyContact>> getAll() => _dao.getAll();
 
   /// Returns the contact with [id], or null if not found.
-  Future<EmergencyContact?> getById(String id) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<EmergencyContact?> getById(String id) => _dao.getById(id);
 
   /// Upserts [value] by its `id`.
-  Future<void> save(EmergencyContact value) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<void> save(EmergencyContact value) => _dao.save(value);
 
   /// Deletes the contact with [id].
-  Future<void> delete(String id) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<void> delete(String id) => _dao.deleteById(id);
+
+  /// Deletes every persisted contact.
+  Future<void> deleteAll() => _dao.deleteAll();
 }

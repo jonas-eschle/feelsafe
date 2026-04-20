@@ -2655,6 +2655,26 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-TEST-1: FixedRandom(0.5) + fakeAsync + injected clock — deterministic test canon
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Engine uses randomized timing jitter (±20%) and a live `DateTime` clock. Tests need deterministic, fast-forward-capable execution.
+- **Decision:** Three helpers, applied uniformly across every engine/strategy/controller test:
+  - `class FixedRandom implements Random` (in `test/helpers/test_helpers.dart`) — always returns 0.5 from `nextDouble`, eliminating jitter variance.
+  - `fake_async` package's `fakeAsync((async) { ... async.elapse(Duration); ... })` wrapper — fast-forward timers without real-time waits.
+  - Engine accepts an injected `DateTime Function()? clock` parameter (default `DateTime.now`); tests pass `fixedClock(DateTime(2026))` for deterministic stamps.
+- **Rationale:**
+  - 0.5 is the midpoint; eliminates both ends of the jitter distribution so timing math matches nominal values exactly.
+  - `fakeAsync` lets engine tests run in milliseconds even when simulating multi-minute sessions.
+  - Injectable clock decouples tests from wall-clock drift.
+- **Implications:**
+  - All engine/strategy/controller test files use FixedRandom + injected clock.
+  - Non-deterministic test failures (flakes) are diagnosable: the only sources of randomness are explicit unless `Random()` is used raw (CI lints against `Random()` without the `FixedRandom` alias — added in Phase 14).
+- **References:** `test/helpers/test_helpers.dart`; plan Phase 5; `docs/test-strategy.md`.
+
+---
+
 #### D-MODELS-1: Domain models = hand-rolled immutable classes; sealed hierarchies use tagged JSON
 
 - **Status:** RESOLVED

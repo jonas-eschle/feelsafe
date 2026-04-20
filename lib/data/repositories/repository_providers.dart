@@ -1,12 +1,20 @@
-/// Riverpod providers for every data-layer repository.
+/// Riverpod providers for the Drift-backed data layer.
 ///
-/// Phase 6 wires these to concrete Drift-backed repositories. Until
-/// then each provider returns a stub instance whose methods throw
-/// [UnimplementedError] — consumers can depend on the symbol so the
-/// graph compiles, but any actual call fails loudly.
+/// The single [AppDatabase] is created lazily on first read and
+/// closed when its provider is disposed. Every repository sits on
+/// top of one DAO, and each DAO closes over the shared database.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:guardianangela/data/db/app_database.dart';
+import 'package:guardianangela/data/db/daos/battery_alert_dao.dart';
+import 'package:guardianangela/data/db/daos/contacts_dao.dart';
+import 'package:guardianangela/data/db/daos/distress_chains_dao.dart';
+import 'package:guardianangela/data/db/daos/modes_dao.dart';
+import 'package:guardianangela/data/db/daos/session_logs_dao.dart';
+import 'package:guardianangela/data/db/daos/settings_dao.dart';
+import 'package:guardianangela/data/db/daos/templates_dao.dart';
+import 'package:guardianangela/data/db/daos/user_profile_dao.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
@@ -16,42 +24,58 @@ import 'package:guardianangela/data/repositories/settings_repository.dart';
 import 'package:guardianangela/data/repositories/templates_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 
+/// Singleton [AppDatabase] provider.
+///
+/// The instance is created on first read and closed when the
+/// provider is disposed (e.g., when the app shuts down). Tests may
+/// override this provider with an in-memory instance.
+final appDatabaseProvider = Provider<AppDatabase>((ref) {
+  final database = AppDatabase();
+  ref.onDispose(database.close);
+  return database;
+});
+
 /// Modes repository provider.
 final modesRepositoryProvider = Provider<ModesRepository>(
-  (_) => ModesRepository(),
+  (ref) => ModesRepository(ModesDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Contacts repository provider.
 final contactsRepositoryProvider = Provider<ContactsRepository>(
-  (_) => ContactsRepository(),
+  (ref) => ContactsRepository(ContactsDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Templates repository provider.
 final templatesRepositoryProvider = Provider<TemplatesRepository>(
-  (_) => TemplatesRepository(),
+  (ref) => TemplatesRepository(TemplatesDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Settings repository provider.
 final settingsRepositoryProvider = Provider<SettingsRepository>(
-  (_) => SettingsRepository(),
+  (ref) => SettingsRepository(SettingsDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Distress-chains repository provider.
 final distressChainsRepositoryProvider = Provider<DistressChainsRepository>(
-  (_) => DistressChainsRepository(),
+  (ref) => DistressChainsRepository(
+    DistressChainsDao(ref.watch(appDatabaseProvider)),
+  ),
 );
 
 /// User-profile repository provider.
 final userProfileRepositoryProvider = Provider<UserProfileRepository>(
-  (_) => UserProfileRepository(),
+  (ref) =>
+      UserProfileRepository(UserProfileDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Battery-alert repository provider.
 final batteryAlertRepositoryProvider = Provider<BatteryAlertRepository>(
-  (_) => BatteryAlertRepository(),
+  (ref) =>
+      BatteryAlertRepository(BatteryAlertDao(ref.watch(appDatabaseProvider))),
 );
 
 /// Session-logs repository provider.
 final sessionLogsRepositoryProvider = Provider<SessionLogsRepository>(
-  (_) => SessionLogsRepository(),
+  (ref) =>
+      SessionLogsRepository(SessionLogsDao(ref.watch(appDatabaseProvider))),
 );

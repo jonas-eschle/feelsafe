@@ -1,29 +1,29 @@
-/// CRUD repository for [SessionLog] aggregates. Phase 6 fills the
-/// bodies against Drift; until then every method throws
-/// [UnimplementedError].
+/// CRUD repository for [SessionLog] aggregates, backed by Drift.
 library;
 
+import 'package:guardianangela/data/db/daos/session_logs_dao.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 
 /// Repository for `SessionLog` aggregates (completed session
 /// records).
 final class SessionLogsRepository {
-  /// Creates a session-logs repository.
-  SessionLogsRepository();
+  /// Creates a session-logs repository backed by [dao].
+  SessionLogsRepository(this._dao);
 
-  /// Returns every saved session log, newest-first recommended.
-  Future<List<SessionLog>> getAll() async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  final SessionLogsDao _dao;
+
+  /// Returns every saved session log, newest-first.
+  Future<List<SessionLog>> getAll() => _dao.getAll();
 
   /// Returns the session log with [id], or null if not found.
-  Future<SessionLog?> getById(String id) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<SessionLog?> getById(String id) => _dao.getById(id);
 
   /// Upserts [value] by its `id`.
-  Future<void> save(SessionLog value) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<void> save(SessionLog value) => _dao.save(value);
 
   /// Deletes the session log with [id].
-  Future<void> delete(String id) async =>
-      throw UnimplementedError('TODO: Phase 6 fills this in');
+  Future<void> delete(String id) => _dao.deleteById(id);
+
+  /// Deletes every persisted session log.
+  Future<void> deleteAll() => _dao.deleteAll();
 }

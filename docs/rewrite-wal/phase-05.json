@@ -1,0 +1,23 @@
+{
+  "phase": "05",
+  "title": "Test scaffolding (helpers + model round-trip + wiring)",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-TEST-1"],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (333/333 passing)"
+  ],
+  "gates_pending": [
+    "Engine tests (Phase 7)",
+    "Strategy tests (Phase 8)",
+    "Controller tests (Phase 11)",
+    "Integration/property/regression (Phase 14)",
+    "Widget + golden tests (Phase 12)"
+  ],
+  "next_action": "Phase 6 — data layer. Add drift + sqlcipher deps; fill lib/data/db/ with tables, DAOs, migrations, encryption; fill 8 repositories; fill seed_data.dart.",
+  "last_update_iso": "2026-04-20T16:30:00Z",
+  "notes": "22 test files, 333 total tests including smoke. FixedRandom(0.5) canonicalized per D-TEST-1. No model bugs found. Deep test scaffolding (engine/strategy/controller/integration) intentionally deferred to be written WITH their implementation — prevents writing throwing-UE test stubs that nobody remembers to turn green later."
+}
