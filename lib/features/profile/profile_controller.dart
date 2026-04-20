@@ -2,6 +2,7 @@
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:guardianangela/domain/models/models.dart';
 
 /// Stub AsyncNotifier exposing the single user profile; nullable.

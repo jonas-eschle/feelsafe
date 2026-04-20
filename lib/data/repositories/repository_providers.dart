@@ -6,6 +6,7 @@
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/db/daos/battery_alert_dao.dart';
 import 'package:guardianangela/data/db/daos/contacts_dao.dart';

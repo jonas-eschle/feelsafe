@@ -11,11 +11,13 @@ library;
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:test/test.dart';
+
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
+import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
 import 'package:guardianangela/data/repositories/templates_repository.dart';
@@ -36,8 +38,6 @@ import 'package:guardianangela/services/simulation/simulation_stealth_icon_servi
 import 'package:guardianangela/services/simulation/simulation_system_ui_service.dart';
 import 'package:guardianangela/services/simulation/simulation_vibration_service.dart';
 import 'package:guardianangela/services/simulation/simulation_wakelock_service.dart';
-import 'package:test/test.dart';
-
 import '../helpers/test_helpers.dart';
 
 void main() {

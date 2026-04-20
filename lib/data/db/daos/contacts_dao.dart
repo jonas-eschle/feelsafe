@@ -4,6 +4,7 @@ library;
 import 'dart:convert';
 
 import 'package:drift/drift.dart';
+
 import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/db/schema/tables.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';

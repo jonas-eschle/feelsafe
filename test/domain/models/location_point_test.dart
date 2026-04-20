@@ -2,8 +2,9 @@
 library;
 
 import 'package:checks/checks.dart';
-import 'package:guardianangela/domain/models/models.dart';
 import 'package:test/test.dart';
+
+import 'package:guardianangela/domain/models/models.dart';
 
 void main() {
   group('LocationPoint', () {

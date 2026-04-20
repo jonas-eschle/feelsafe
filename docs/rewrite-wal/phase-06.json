@@ -1,0 +1,22 @@
+{
+  "phase": "06",
+  "title": "Data layer — Drift + SQLCipher + DAOs + seeds",
+  "step": "exit",
+  "iteration": 0,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": ["D-SECURITY-1", "D-MODELS-2"],
+  "gates_passed": [
+    "flutter pub get (drift deps resolved)",
+    "dart run build_runner build --delete-conflicting-outputs (393 outputs, 0 errors)",
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (333/333 passing)"
+  ],
+  "gates_pending": [
+    "Phase 14 integration tests for DAOs + backup round-trip",
+    "Phase 9 emergency_numbers region-specific dialing"
+  ],
+  "next_action": "Phase 7 — engine implementation. Fill session_engine.dart sealed state machine, session_log_recorder, trigger_manager. Write engine tests WITH implementation.",
+  "last_update_iso": "2026-04-20T17:00:00Z",
+  "notes": "Drift tables are (id PK, jsonPayload, scalar mirrors) not normalized — preserves hand-rolled JSON invariant from D-MODELS-1. Seed uses slugged IDs (seed.mode.walk) so tests have stable references. BatteryAlertConfig.enabled=true, GpsLoggingConfig.intervalSeconds=60, StealthConfig.fakeName='Calendar' kept per plan (spec-gap noted). SQLCipher passphrase via flutter_secure_storage (NOT derived from PIN) = D-SECURITY-1."
+}

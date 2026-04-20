@@ -3,10 +3,11 @@
 library;
 
 import 'package:checks/checks.dart';
+import 'package:test/test.dart';
+
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/models/models.dart';
-import 'package:test/test.dart';
 
 void main() {
   group('SessionLogEvent', () {

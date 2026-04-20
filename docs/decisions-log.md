@@ -2655,6 +2655,41 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-SECURITY-1: SQLCipher passphrase = random-generated on first launch, stored in flutter_secure_storage
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Drift opens the SQLite DB via SQLCipher (`sqlcipher_flutter_libs`). A 256-bit passphrase is required to key the encrypted file. Options: (A) derive from user PIN via Argon2id; (B) generate random on first launch, store in platform keystore.
+- **Decision:** Option B. `EncryptionKey.load()` checks `flutter_secure_storage` for `ga_sqlcipher_passphrase`; generates a fresh 32-byte random base64-encoded passphrase if missing and persists it. Keystore/Keychain protects at-rest.
+- **Rationale:**
+  - PIN changes don't invalidate the DB — a derived key would force full re-encryption on every PIN change, an unacceptable UX cost for a safety app.
+  - PIN is a UX gate, not a crypto boundary. Duress PIN + session-end PIN both need read access to the DB to function; keying the DB to the PIN would break duress paths.
+  - Keystore/Keychain gives hardware-backed storage on both platforms.
+- **Implications:**
+  - Losing the secure storage (device reset) = losing the DB. User must re-onboard. Backup/restore (Phase 15) handles the disaster-recovery case.
+  - The passphrase is per-installation. Not shareable across devices without backup export.
+- **References:** `lib/data/db/encryption.dart`; plan Phase 6; D-SEC-10 (Argon2id is used for PIN hashing, not DB keying).
+
+---
+
+#### D-MODELS-2: Drift tables = (id PK, jsonPayload TEXT, scalar mirrors) not normalized
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Domain models (per D-MODELS-1) are hand-rolled immutable classes with sealed hierarchies serialized to tagged JSON. A normalized schema would require expressing every sealed subtype as SQL tables/columns.
+- **Decision:** One table per aggregate, shape `(id TEXT PRIMARY KEY, jsonPayload TEXT NOT NULL, + scalar mirror columns)`. Scalar mirrors exist ONLY for fields queries must access without parsing the blob: `ContactsTable.sortOrder`, `TemplatesTable.isGlobal`, `SessionLogsTable.startedAt`. All other fields read/write via the hand-rolled `Model.toJson()` / `Model.fromJson()`.
+- **Rationale:**
+  - Domain stays pure Dart; Drift is a persistence mechanism, not a domain layer.
+  - Schema evolution is trivial: a new field appears in jsonPayload automatically. The nuke-and-reseed policy (pre-alpha) makes explicit schema migrations unnecessary.
+  - The only queries we need are: list-all (for lists), get-by-id, save-upsert, delete-by-id, plus startedAt-ordered session logs. A jsonPayload column handles all of those; scalar mirrors cover the ones that need ORDER BY / WHERE.
+- **Implications:**
+  - The schema is not portable to non-JSON clients (acceptable — no such clients exist).
+  - Queries on deeply nested fields (e.g., "find sessions where step count > 5") require loading + filtering in Dart. Safety app usage doesn't have that pattern.
+  - Backup/restore (Phase 15) exports/imports JSON directly; no schema translation layer needed.
+- **References:** `lib/data/db/schema/tables.dart`; plan Phase 6.
+
+---
+
 #### D-TEST-1: FixedRandom(0.5) + fakeAsync + injected clock — deterministic test canon
 
 - **Status:** RESOLVED
