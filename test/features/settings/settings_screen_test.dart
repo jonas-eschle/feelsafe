@@ -36,4 +36,20 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(ListTile).evaluate().length).isGreaterThan(0);
   });
+
+  testWidgets('SettingsScreen alarm DND switch toggles setting',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider.overrideWithValue(repo),
+      ],
+      child: const SettingsScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(find.byType(Switch), 400);
+    await tester.tap(find.byType(Switch));
+    await tester.pumpAndSettle();
+    check(repo.stored!.alarmDndOverride).isTrue();
+  });
 }

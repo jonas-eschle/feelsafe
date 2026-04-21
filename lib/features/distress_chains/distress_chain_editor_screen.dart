@@ -30,22 +30,19 @@ class _DistressChainEditorScreenState
   DistressChain? _chain;
   final TextEditingController _nameCtrl = TextEditingController();
   List<ChainStep> _steps = const [];
+  bool _hydrated = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _hydrate(List<DistressChain> all) {
+    if (_hydrated) return;
+    _hydrated = true;
     final id = GoRouterState.of(context).uri.queryParameters['id'];
-    if (id != null && _chain == null) {
-      final all =
-          ref.read(distressChainsControllerProvider).value ??
-          const <DistressChain>[];
-      for (final c in all) {
-        if (c.id == id) {
-          _chain = c;
-          _nameCtrl.text = c.name;
-          _steps = List.of(c.steps);
-          break;
-        }
+    if (id == null) return;
+    for (final c in all) {
+      if (c.id == id) {
+        _chain = c;
+        _nameCtrl.text = c.name;
+        _steps = List.of(c.steps);
+        break;
       }
     }
   }
@@ -87,6 +84,10 @@ class _DistressChainEditorScreenState
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final chainsAsync = ref.watch(distressChainsControllerProvider);
+    if (!_hydrated) {
+      chainsAsync.whenData(_hydrate);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(

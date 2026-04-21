@@ -73,4 +73,33 @@ void main() {
     final slider = tester.widget<Slider>(find.byType(Slider));
     check(slider.value).equals(0.0);
   });
+
+  testWidgets('drag fires onChanged with a log-scaled value', (tester) async {
+    double? received;
+    await tester.pumpWidget(
+      _host(value: 1, onChanged: (v) => received = v),
+    );
+    // Drag the thumb to the right — this drives Slider.onChanged,
+    // which exercises _toValue via the closure.
+    await tester.drag(find.byType(Slider), const Offset(400, 0));
+    await tester.pump();
+    check(received).isNotNull();
+    // Log-scale mapping: full-right drag maps to roughly maxValue.
+    check(received!).isGreaterThan(1.0);
+    check(received! <= 1000.0).isTrue();
+  });
+
+  testWidgets('midpoint drag emits values through the _toValue curve',
+      (tester) async {
+    final values = <double>[];
+    await tester.pumpWidget(
+      _host(value: 1, onChanged: values.add),
+    );
+    await tester.drag(find.byType(Slider), const Offset(200, 0));
+    await tester.pump();
+    check(values).isNotEmpty();
+    // At least one emitted value should be strictly between the
+    // bounds — confirms the log transform ran.
+    check(values.any((v) => v > 1.0 && v < 1000.0)).isTrue();
+  });
 }

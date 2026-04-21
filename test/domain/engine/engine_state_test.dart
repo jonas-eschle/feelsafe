@@ -25,6 +25,18 @@ void main() {
     test('exhaustive match returns idle label', () {
       check(_describe(const EngineIdle())).equals('idle');
     });
+
+    test('non-const invocation executes the constructor body', () {
+      // `const EngineIdle()` is canonicalized at compile time and does
+      // NOT execute the constructor body at runtime — lcov leaves the
+      // body line uncovered. A non-const invocation forces runtime
+      // body execution so the declaration line is counted.
+      // ignore: prefer_const_constructors
+      final s = EngineIdle();
+      check(s).isA<EngineIdle>();
+      // ignore: prefer_const_constructors
+      check(EngineIdle()).isA<EngineState>();
+    });
   });
 
   group('EngineRunning', () {

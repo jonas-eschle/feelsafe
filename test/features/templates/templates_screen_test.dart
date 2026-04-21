@@ -2,6 +2,7 @@
 library;
 
 import 'package:checks/checks.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
@@ -47,5 +48,18 @@ void main() {
     await tester.pumpAndSettle();
     check(find.text('cal').evaluate().length).equals(1);
     check(find.text('duo').evaluate().length).equals(1);
+  });
+
+  testWidgets('TemplatesScreen delete icon removes template',
+      (tester) async {
+    final repo = FakeTemplatesRepository([_t('x')]);
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+      child: const TemplatesScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    check(await repo.getAll()).isEmpty();
   });
 }

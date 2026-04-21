@@ -132,4 +132,305 @@ void main() {
     await tester.pump(const Duration(milliseconds: 500));
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
+
+  // ─── onChanged interaction tests, one per editable field ───
+  // Hit the inner onChanged closures across all 9 step types.
+
+  Widget hostWith(
+    ChainStep step,
+    ValueChanged<ChainStep> onChanged,
+  ) => hostScreen(
+    child: Scaffold(
+      body: SingleChildScrollView(
+        child: EventSpecificConfig(step: step, onChanged: onChanged),
+      ),
+    ),
+  );
+
+  testWidgets('holdButton: edit releaseSensitivity TextField',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.holdButton,
+      config: const HoldButtonConfig(releaseSensitivity: 2.0),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), '3.5');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HoldButtonConfig).releaseSensitivity)
+        .equals(3.5);
+  });
+
+  testWidgets('disguisedReminder: edit intervalSeconds TextField',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.disguisedReminder,
+      config: const DisguisedReminderConfig(intervalSeconds: 45),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), '120');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as DisguisedReminderConfig).intervalSeconds)
+        .equals(120);
+  });
+
+  testWidgets('countdownWarning: toggle vibrate switch',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.countdownWarning,
+      config: const CountdownWarningConfig(vibrate: false, playTone: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as CountdownWarningConfig).vibrate).isTrue();
+  });
+
+  testWidgets('countdownWarning: toggle playTone switch',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.countdownWarning,
+      config: const CountdownWarningConfig(vibrate: false, playTone: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).at(1));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as CountdownWarningConfig).playTone).isTrue();
+  });
+
+  testWidgets('fakeCall: edit caller name', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.fakeCall,
+      config: const FakeCallConfig(callerName: 'Mom'),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), 'Boss');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as FakeCallConfig).callerName).equals('Boss');
+  });
+
+  testWidgets('fakeCall: toggle declineIsSafe switch', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.fakeCall,
+      config: const FakeCallConfig(declineIsSafe: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as FakeCallConfig).declineIsSafe).isTrue();
+  });
+
+  testWidgets('smsContact: toggle includeLocation', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.smsContact,
+      config: const SmsContactConfig(includeLocation: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as SmsContactConfig).includeLocation).isTrue();
+  });
+
+  testWidgets('smsContact: toggle includeMedicalInfo', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.smsContact,
+      config: const SmsContactConfig(includeMedicalInfo: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).at(1));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as SmsContactConfig).includeMedicalInfo).isTrue();
+  });
+
+  testWidgets('phoneCallContact: toggle preSendSms', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.phoneCallContact,
+      config: const PhoneCallContactConfig(preSendSms: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as PhoneCallContactConfig).preSendSms).isTrue();
+  });
+
+  testWidgets('loudAlarm: toggle flashScreen', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.loudAlarm,
+      config: const LoudAlarmConfig(flashScreen: false, maxVolume: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as LoudAlarmConfig).flashScreen).isTrue();
+  });
+
+  testWidgets('loudAlarm: toggle maxVolume', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.loudAlarm,
+      config: const LoudAlarmConfig(flashScreen: false, maxVolume: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).at(1));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as LoudAlarmConfig).maxVolume).isTrue();
+  });
+
+  testWidgets('callEmergency: edit emergency number (non-empty)',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.callEmergency,
+      config: const CallEmergencyConfig(emergencyNumber: '911'),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), '112');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as CallEmergencyConfig).emergencyNumber)
+        .equals('112');
+  });
+
+  testWidgets('callEmergency: edit emergency number (empty clears)',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.callEmergency,
+      config: const CallEmergencyConfig(emergencyNumber: '911'),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), '');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as CallEmergencyConfig).emergencyNumber).isNull();
+  });
+
+  testWidgets('callEmergency: toggle showConfirmation',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.callEmergency,
+      config: const CallEmergencyConfig(showConfirmation: false),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as CallEmergencyConfig).showConfirmation)
+        .isTrue();
+  });
+
+  testWidgets('hardwareButton: edit press count TextField',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.hardwareButton,
+      config: const HardwareButtonConfig(pressCount: 5),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField), '7');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HardwareButtonConfig).pressCount).equals(7);
+  });
+
+  testWidgets('smsContact: dropdown selects specificIds', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.smsContact,
+      config: const SmsContactConfig(
+        contactSelection: SmsContactSelection.allContacts,
+      ),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    // Open the DropdownButtonFormField, then tap the "specific"
+    // item. The dropdown title strings come from l10n; tap by the
+    // item type rather than by string.
+    await tester.tap(
+      find.byType(DropdownButtonFormField<SmsContactSelection>),
+    );
+    await tester.pumpAndSettle();
+    // A second "Specific" entry is rendered in the overlay.
+    await tester.tap(
+      find.byType(DropdownMenuItem<SmsContactSelection>).last,
+    );
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as SmsContactConfig).contactSelection)
+        .equals(SmsContactSelection.specificIds);
+  });
+
+  testWidgets('hardwareButton: dropdown changes button type',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.hardwareButton,
+      config: const HardwareButtonConfig(buttonType: ButtonType.volumeUp),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<ButtonType>));
+    await tester.pumpAndSettle();
+    // The overlay contains three items; tap the "power" one (last).
+    await tester.tap(find.byType(DropdownMenuItem<ButtonType>).last);
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HardwareButtonConfig).buttonType)
+        .equals(ButtonType.power);
+  });
+
+  testWidgets('hardwareButton: dropdown changes pattern', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.hardwareButton,
+      config: const HardwareButtonConfig(
+        pattern: HardwarePattern.repeatPress,
+      ),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownButtonFormField<HardwarePattern>));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(DropdownMenuItem<HardwarePattern>).last);
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HardwareButtonConfig).pattern)
+        .equals(HardwarePattern.longPress);
+  });
 }

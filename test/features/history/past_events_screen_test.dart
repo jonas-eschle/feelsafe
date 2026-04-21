@@ -2,6 +2,7 @@
 library;
 
 import 'package:checks/checks.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
@@ -47,5 +48,17 @@ void main() {
     await tester.pumpAndSettle();
     check(find.text('Walk').evaluate().length).equals(1);
     check(find.text('Date').evaluate().length).equals(1);
+  });
+
+  testWidgets('PastEventsScreen delete icon removes log', (tester) async {
+    final repo = FakeSessionLogsRepository([_log('a', 'Walk')]);
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [sessionLogsRepositoryProvider.overrideWithValue(repo)],
+      child: const PastEventsScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    check(await repo.getAll()).isEmpty();
   });
 }

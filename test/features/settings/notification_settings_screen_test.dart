@@ -39,4 +39,17 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(SwitchListTile).evaluate().length).equals(1);
   });
+
+  testWidgets('NotificationSettingsScreen toggle persists alarm DND',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const NotificationSettingsScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    check(repo.stored!.alarmDndOverride).isTrue();
+  });
 }

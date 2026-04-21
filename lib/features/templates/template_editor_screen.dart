@@ -31,27 +31,24 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
   final _buttonCtrl = TextEditingController();
   ConfirmationType _confirm = ConfirmationType.tapButton;
   ReminderDisplayStyle _display = ReminderDisplayStyle.subtle;
+  bool _hydrated = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _hydrate(List<ReminderTemplate> all) {
+    if (_hydrated) return;
+    _hydrated = true;
     final id = GoRouterState.of(context).uri.queryParameters['id'];
-    if (id != null && _existing == null) {
-      final all =
-          ref.read(templatesControllerProvider).value ??
-          const <ReminderTemplate>[];
-      for (final t in all) {
-        if (t.id == id) {
-          _existing = t;
-          _nameCtrl.text = t.name;
-          _titleCtrl.text = t.title;
-          _bodyCtrl.text = t.body;
-          _keywordCtrl.text = t.keyword ?? '';
-          _buttonCtrl.text = t.buttonLabel ?? '';
-          _confirm = t.confirmationType;
-          _display = t.displayStyle;
-          break;
-        }
+    if (id == null) return;
+    for (final t in all) {
+      if (t.id == id) {
+        _existing = t;
+        _nameCtrl.text = t.name;
+        _titleCtrl.text = t.title;
+        _bodyCtrl.text = t.body;
+        _keywordCtrl.text = t.keyword ?? '';
+        _buttonCtrl.text = t.buttonLabel ?? '';
+        _confirm = t.confirmationType;
+        _display = t.displayStyle;
+        break;
       }
     }
   }
@@ -86,6 +83,10 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final templatesAsync = ref.watch(templatesControllerProvider);
+    if (!_hydrated) {
+      templatesAsync.whenData(_hydrate);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(

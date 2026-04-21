@@ -656,6 +656,44 @@ void main() {
     );
   });
 
+  group('SessionOrchestrator onStepExecutionFailedEvent', () {
+    test('emits a stepExecutionFailedEvent when executeReal throws',
+        () async {
+      final exploding = _ExplodingMessagingService();
+      addTearDown(exploding.dispose);
+      final harness = _OrchHarness(
+        steps: [step(type: ChainStepType.smsContact)],
+      );
+      addTearDown(harness.dispose);
+      ChainStep? capturedStep;
+      int? capturedIndex;
+      final orch = SessionOrchestrator(
+        isSimulation: false,
+        chainStepsResolver: () => [step(type: ChainStepType.smsContact)],
+        messagingService: exploding,
+        servicesBuilder: (isCancelled, register) => EventServices(
+          audio: harness.audio,
+          messaging: exploding,
+          phone: harness.phone,
+          notification: harness.notification,
+          vibration: harness.vibration,
+          context: SessionContext(contacts: [makeContact(id: 'a')]),
+          isCancelled: isCancelled,
+          registerSmsWorkId: register,
+        ),
+        onStepExecutionFailedEvent: ({required step, required stepIndex}) {
+          capturedStep = step;
+          capturedIndex = stepIndex;
+        },
+      );
+      await orch.handleEvent(
+        _event(event: ChainEvent.stepStarted, stepIndex: 0),
+      );
+      expect(capturedStep, isNotNull);
+      expect(capturedIndex, 0);
+    });
+  });
+
   group('SessionOrchestrator onStepExecutionFailed contract', () {
     test('provides step, error, and stack', () async {
       final exploding = _ExplodingMessagingService();

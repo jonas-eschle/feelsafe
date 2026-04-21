@@ -104,6 +104,31 @@ class EventChannelMock {
     return true;
   }
 
+  /// Pushes a native error envelope to the listening Dart side — the
+  /// subscription's `onError` handler is invoked. Returns whether a
+  /// listener is currently attached.
+  Future<bool> pushError({
+    String code = 'ERR',
+    String? message = 'simulated error',
+    Object? details,
+  }) async {
+    if (!_listening) return false;
+    final data = _channel.codec.encodeErrorEnvelope(
+      code: code,
+      message: message,
+      details: details,
+    );
+    final completer = Completer<void>();
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .handlePlatformMessage(
+      _channel.name,
+      data,
+      (_) => completer.complete(),
+    );
+    await completer.future;
+    return true;
+  }
+
   void _tearDown() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(

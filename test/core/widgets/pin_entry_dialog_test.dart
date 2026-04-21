@@ -178,4 +178,90 @@ void main() {
     await _settleRealAsync(tester, seconds: 5);
     check(resolved).equals(PinResult.duress);
   });
+
+  testWidgets('hashPin helper round-trips with PinHasher.verify',
+      (tester) async {
+    final hash = (await tester.runAsync(() => hashPin('4242')))!;
+    final ok = (await tester.runAsync(
+          () => PinHasher.verify('4242', hash),
+        )) ??
+        false;
+    check(ok).isTrue();
+  });
+
+  testWidgets('Timeout resolves with PinResult.timeout', (tester) async {
+    final stored =
+        (await tester.runAsync(() => PinHasher.hash('1234')))!;
+    PinResult? resolved;
+    await tester.pumpWidget(MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: ElevatedButton(
+            onPressed: () async {
+              final r = await showPinEntryDialog(
+                context: context,
+                sessionEndHash: stored,
+                duressHash: null,
+                timeout: 1,
+              );
+              resolved = r;
+            },
+            child: const Text('open'),
+          ),
+        ),
+      ),
+    ));
+    await tester.pump();
+    await tester.tap(find.text('open'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    // Advance past the 1-second timeout.
+    await tester.pump(const Duration(seconds: 2));
+    await _settleRealAsync(tester, seconds: 1);
+    check(resolved).equals(PinResult.timeout);
+  });
+
+  testWidgets('Backspace removes one digit from the buffer',
+      (tester) async {
+    final stored =
+        (await tester.runAsync(() => PinHasher.hash('7777')))!;
+    PinResult? resolved;
+    await tester.pumpWidget(_appHost(
+      sessionEndHash: stored,
+      duressHash: null,
+      onResolved: (r) => resolved = r,
+    ));
+    await tester.pump();
+    await tester.tap(find.text('open'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 400));
+    // Enter 3 digits (below the 4-digit verify threshold — so no
+    // Argon2 verification fires and the buffer state is stable).
+    for (final d in ['1', '2', '3']) {
+      await tester.tap(find.text(d));
+      await tester.pump();
+    }
+    check(find.text('\u2022\u2022\u2022').evaluate().length).equals(1);
+    // Backspace once → two bullets.
+    await tester.tap(find.text('⌫'));
+    await tester.pump();
+    check(find.text('\u2022\u2022').evaluate().length).equals(1);
+    // Drain to empty, then extra backspace is a no-op.
+    await tester.tap(find.text('⌫'));
+    await tester.pump();
+    await tester.tap(find.text('⌫'));
+    await tester.pump();
+    await tester.tap(find.text('⌫'));
+    await tester.pump();
+    await tester.tap(find.byType(TextButton).last);
+    await _settleRealAsync(tester, seconds: 1);
+    check(resolved).equals(PinResult.cancelled);
+  });
 }

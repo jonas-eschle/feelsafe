@@ -97,4 +97,44 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(StepConfigForm).evaluate().length).equals(1);
   });
+
+  testWidgets('StepConfigForm fires onChanged when duration is edited',
+      (tester) async {
+    ChainStep? latest;
+    await tester.pumpWidget(
+      _host(_step(), onChanged: (step) => latest = step),
+    );
+    await tester.pumpAndSettle();
+    // Field order: wait, duration, grace, retryCount.
+    await tester.enterText(find.byType(TextFormField).at(1), '99');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check(latest!.durationSeconds).equals(99);
+  });
+
+  testWidgets('StepConfigForm fires onChanged when grace is edited',
+      (tester) async {
+    ChainStep? latest;
+    await tester.pumpWidget(
+      _host(_step(), onChanged: (step) => latest = step),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).at(2), '17');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check(latest!.gracePeriodSeconds).equals(17);
+  });
+
+  testWidgets('StepConfigForm fires onChanged when retryCount is edited',
+      (tester) async {
+    ChainStep? latest;
+    await tester.pumpWidget(
+      _host(_step(), onChanged: (step) => latest = step),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).at(3), '4');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check(latest!.retryCount).equals(4);
+  });
 }

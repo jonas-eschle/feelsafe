@@ -69,3 +69,65 @@ Widget hostScreenWithRouter({
     ),
   );
 }
+
+/// Hosts [child] on top of a throwaway root so `context.pop()` has
+/// somewhere to return to. Use this for tests that invoke a screen's
+/// save-and-pop flow.
+///
+/// [overrides] are forwarded to the outer `ProviderScope`.
+/// [initialQuery] appends `?<query>` to the push target so the
+/// hosted screen can read `GoRouterState` query parameters.
+Widget hostScreenPushed({
+  required Widget child,
+  List<Override> overrides = const [],
+  String initialQuery = '',
+}) {
+  final route = '/screen${initialQuery.isEmpty ? '' : '?$initialQuery'}';
+  final router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(
+        path: '/',
+        builder: (context, state) => _PushRoot(target: route),
+      ),
+      GoRoute(
+        path: '/screen',
+        builder: (context, state) => child,
+      ),
+    ],
+  );
+  return ProviderScope(
+    overrides: overrides,
+    child: MaterialApp.router(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      routerConfig: router,
+    ),
+  );
+}
+
+class _PushRoot extends StatefulWidget {
+  const _PushRoot({required this.target});
+  final String target;
+
+  @override
+  State<_PushRoot> createState() => _PushRootState();
+}
+
+class _PushRootState extends State<_PushRoot> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) GoRouter.of(context).push(widget.target);
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) => const Scaffold(body: SizedBox());
+}

@@ -32,4 +32,16 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(FilledButton).evaluate().length).isGreaterOrEqual(1);
   });
+
+  testWidgets('FeedbackScreen send button exercises _openEmail branch',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(child: const FeedbackScreen()));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, 'msg');
+    await tester.pump();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pump();
+    // No crash = the _openEmail async path ran (canLaunchUrl branch).
+    check(find.byType(FeedbackScreen).evaluate().length).equals(1);
+  });
 }

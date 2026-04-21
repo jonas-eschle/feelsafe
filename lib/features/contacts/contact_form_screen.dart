@@ -37,6 +37,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
   final Set<MessageChannel> _channels = <MessageChannel>{};
 
   EmergencyContact? _existing;
+  bool _hydrated = false;
 
   @override
   void initState() {
@@ -48,26 +49,22 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
     _channels.add(MessageChannel.sms);
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _hydrate(List<EmergencyContact> contacts) {
+    if (_hydrated) return;
+    _hydrated = true;
     final id = widget.id ?? GoRouterState.of(context).uri.queryParameters['id'];
-    if (id != null && _existing == null) {
-      final contacts =
-          ref.read(contactsControllerProvider).value ??
-          const <EmergencyContact>[];
-      for (final c in contacts) {
-        if (c.id == id) {
-          _existing = c;
-          _nameCtrl.text = c.name;
-          _phoneCtrl.text = c.phoneNumber;
-          _relationshipCtrl.text = c.relationship ?? '';
-          _languageCtrl.text = c.languageCode ?? '';
-          _channels
-            ..clear()
-            ..addAll(c.channels);
-          break;
-        }
+    if (id == null) return;
+    for (final c in contacts) {
+      if (c.id == id) {
+        _existing = c;
+        _nameCtrl.text = c.name;
+        _phoneCtrl.text = c.phoneNumber;
+        _relationshipCtrl.text = c.relationship ?? '';
+        _languageCtrl.text = c.languageCode ?? '';
+        _channels
+          ..clear()
+          ..addAll(c.channels);
+        break;
       }
     }
   }
@@ -111,6 +108,10 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final contactsAsync = ref.watch(contactsControllerProvider);
+    if (!_hydrated) {
+      contactsAsync.whenData(_hydrate);
+    }
     final isEdit = _existing != null;
     return Scaffold(
       appBar: AppBar(

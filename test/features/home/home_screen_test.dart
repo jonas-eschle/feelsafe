@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
 
 import '../../helpers/test_helpers.dart';
@@ -61,5 +62,52 @@ void main() {
     ));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.settings).evaluate().length).equals(1);
+  });
+
+  testWidgets(
+    'HomeScreen stealth mode swaps title to fakeName and shows subtitle',
+    (tester) async {
+      const stealth = StealthConfig(
+        enabled: true,
+        fakeName: 'Calendar',
+      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(
+              const AppSettings(
+                defaults: AppDefaults(stealth: stealth),
+              ),
+            ),
+          ),
+        ],
+        child: const HomeScreen(),
+      ));
+      await tester.pumpAndSettle();
+      check(find.text('Calendar').evaluate().length).isGreaterOrEqual(1);
+    },
+  );
+
+  testWidgets('HomeScreen simulate toggle flips the switch', (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        modesRepositoryProvider.overrideWithValue(
+          FakeModesRepository([makeMode(id: 'm1', name: 'Walk')]),
+        ),
+        contactsRepositoryProvider
+            .overrideWithValue(FakeContactsRepository()),
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const HomeScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile));
+    await tester.pumpAndSettle();
+    final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+    check(tile.value).isTrue();
   });
 }

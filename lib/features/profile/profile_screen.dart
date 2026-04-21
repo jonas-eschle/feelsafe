@@ -27,23 +27,19 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   List<String> _allergies = [];
   List<String> _medications = [];
   List<String> _conditions = [];
-  bool _loaded = false;
+  bool _hydrated = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (_loaded) return;
-    final profile = ref.read(profileControllerProvider).value;
-    if (profile != null) {
-      _nameCtrl.text = profile.name ?? '';
-      _ageCtrl.text = profile.age?.toString() ?? '';
-      _bloodCtrl.text = profile.bloodType ?? '';
-      _instructionsCtrl.text = profile.emergencyInstructions ?? '';
-      _allergies = List.of(profile.allergies);
-      _medications = List.of(profile.medications);
-      _conditions = List.of(profile.medicalConditions);
-    }
-    _loaded = true;
+  void _hydrate(UserProfile? profile) {
+    if (_hydrated) return;
+    _hydrated = true;
+    if (profile == null) return;
+    _nameCtrl.text = profile.name ?? '';
+    _ageCtrl.text = profile.age?.toString() ?? '';
+    _bloodCtrl.text = profile.bloodType ?? '';
+    _instructionsCtrl.text = profile.emergencyInstructions ?? '';
+    _allergies = List.of(profile.allergies);
+    _medications = List.of(profile.medications);
+    _conditions = List.of(profile.medicalConditions);
   }
 
   @override
@@ -74,6 +70,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final profileAsync = ref.watch(profileControllerProvider);
+    if (!_hydrated) {
+      profileAsync.whenData(_hydrate);
+    }
     return Scaffold(
       appBar: AppBar(
         title: Text(l.profileTitle),

@@ -56,4 +56,34 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(FloatingActionButton).evaluate().length).equals(1);
   });
+
+  testWidgets('ContactsScreen delete dialog cancel button leaves contact',
+      (tester) async {
+    final repo = FakeContactsRepository([makeContact(id: 'c1', name: 'A')]);
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+      child: const ContactsScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
+    await tester.pumpAndSettle();
+    check((await repo.getAll()).length).equals(1);
+  });
+
+  testWidgets('ContactsScreen delete dialog confirm removes contact',
+      (tester) async {
+    final repo = FakeContactsRepository([makeContact(id: 'c1', name: 'A')]);
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+      child: const ContactsScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Delete'));
+    await tester.pumpAndSettle();
+    check(await repo.getAll()).isEmpty();
+  });
 }

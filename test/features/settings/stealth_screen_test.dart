@@ -36,4 +36,73 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(SwitchListTile).evaluate().length).isGreaterThan(0);
   });
+
+  testWidgets('StealthScreen enable toggle persists defaults',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(SwitchListTile).first);
+    await tester.pumpAndSettle();
+    check(repo.stored!.defaults.stealth.enabled).isTrue();
+  });
+
+  testWidgets('StealthScreen notificationDisguise toggle persists',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
+    await tester.pumpAndSettle();
+    // Second switch = notificationDisguise.
+    await tester.tap(find.byType(SwitchListTile).at(1));
+    await tester.pumpAndSettle();
+    check(repo.stored!.defaults.stealth.notificationDisguise).isFalse();
+  });
+
+  testWidgets('StealthScreen timerDisplay toggle persists', (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
+    await tester.pumpAndSettle();
+    final tile = find.widgetWithText(SwitchListTile, 'Show timer in stealth');
+    final list = find.descendant(
+      of: find.byType(StealthScreen),
+      matching: find.byType(Scrollable),
+    );
+    await tester.dragUntilVisible(tile, list.first, const Offset(0, -100));
+    // Default timerDisplay is false; tapping flips it to true.
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    check(repo.stored!.defaults.stealth.timerDisplay).isTrue();
+  });
+
+  testWidgets('StealthScreen sessionScreenStealth toggle persists',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
+    await tester.pumpAndSettle();
+    final tile = find.widgetWithText(
+      SwitchListTile,
+      'Strip branding on session screen',
+    );
+    final list = find.descendant(
+      of: find.byType(StealthScreen),
+      matching: find.byType(Scrollable),
+    );
+    await tester.dragUntilVisible(tile, list.first, const Offset(0, -100));
+    // Default sessionScreenStealth is true; tapping flips it to false.
+    await tester.tap(tile);
+    await tester.pumpAndSettle();
+    check(repo.stored!.defaults.stealth.sessionScreenStealth).isFalse();
+  });
 }

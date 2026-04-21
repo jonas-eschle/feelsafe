@@ -38,4 +38,17 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(Slider).evaluate().length).equals(1);
   });
+
+  testWidgets('HistoryRetentionScreen slider drag persists retention days',
+      (tester) async {
+    final repo = FakeSettingsRepository();
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const HistoryRetentionScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.drag(find.byType(Slider), const Offset(200, 0));
+    await tester.pumpAndSettle();
+    check(repo.stored).isNotNull();
+  });
 }

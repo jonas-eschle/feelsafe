@@ -50,4 +50,19 @@ void main() {
     await tester.pumpAndSettle();
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
+
+  testWidgets('ModesScreen delete icon removes mode', (tester) async {
+    final repo = FakeModesRepository([
+      makeMode(id: 'm1', name: 'Walk'),
+      makeMode(id: 'm2', name: 'Date'),
+    ]);
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+      child: const ModesScreen(),
+    ));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.delete_outline).first);
+    await tester.pumpAndSettle();
+    check((await repo.getAll()).length).equals(1);
+  });
 }

@@ -3,6 +3,7 @@ library;
 
 import 'package:checks/checks.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
@@ -11,6 +12,15 @@ import 'package:guardianangela/features/history/evidence_export_screen.dart';
 
 import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
+
+/// Intercepts `Clipboard.setData` (and other platform-channel calls)
+/// so the widget's `await Clipboard.setData(...)` resolves under test.
+void _mockClipboard() {
+  TestDefaultBinaryMessengerBinding
+      .instance
+      .defaultBinaryMessenger
+      .setMockMethodCallHandler(SystemChannels.platform, (call) async => null);
+}
 
 SessionLog _log(String id) => SessionLog(
   id: id,
@@ -65,4 +75,44 @@ void main() {
     final filled = tester.widget<FilledButton>(find.byType(FilledButton));
     check(filled.onPressed).isNotNull();
   });
+
+  testWidgets(
+    'EvidenceExportScreen copies text to clipboard and shows snackbar',
+    (tester) async {
+      _mockClipboard();
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-9')]),
+          ),
+        ],
+        initialLocation: '/?id=log-9',
+        child: const EvidenceExportScreen(),
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+      check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
+    },
+  );
+
+  testWidgets(
+    'EvidenceExportScreen copies JSON to clipboard via outlined button',
+    (tester) async {
+      _mockClipboard();
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-json')]),
+          ),
+        ],
+        initialLocation: '/?id=log-json',
+        child: const EvidenceExportScreen(),
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(OutlinedButton));
+      await tester.pumpAndSettle();
+      check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
+    },
+  );
 }

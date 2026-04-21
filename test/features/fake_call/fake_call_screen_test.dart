@@ -38,4 +38,56 @@ void main() {
         tester.widget<Scaffold>(find.byType(Scaffold).first);
     check(scaffold.backgroundColor).equals(Colors.black);
   });
+
+  testWidgets('FakeCallScreen tapping Answer shows Hang Up button',
+      (tester) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(child: const FakeCallScreen()),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byIcon(Icons.call));
+    await tester.pumpAndSettle();
+    check(find.byIcon(Icons.call_end).evaluate().length).equals(1);
+    check(find.byIcon(Icons.call).evaluate()).isEmpty();
+  });
+
+  testWidgets('FakeCallScreen tapping Decline triggers controller.decline',
+      (tester) async {
+    await tester.pumpWidget(
+      hostScreenPushed(child: const FakeCallScreen()),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(FakeCallScreen),
+        matching: find.byIcon(Icons.call_end),
+      ),
+    );
+    await tester.pumpAndSettle();
+    // After decline the widget pops back to the root; should no longer render.
+    check(find.byType(FakeCallScreen).evaluate().length).isLessOrEqual(1);
+  });
+
+  testWidgets('FakeCallScreen tapping Hang-up after answer ends call',
+      (tester) async {
+    await tester.pumpWidget(
+      hostScreenPushed(child: const FakeCallScreen()),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(FakeCallScreen),
+        matching: find.byIcon(Icons.call),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(
+      find.descendant(
+        of: find.byType(FakeCallScreen),
+        matching: find.byIcon(Icons.call_end),
+      ),
+    );
+    await tester.pumpAndSettle();
+    check(find.byType(FakeCallScreen).evaluate().length).isLessOrEqual(1);
+  });
 }

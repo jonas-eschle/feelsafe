@@ -35,23 +35,21 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   ChainStepType _checkInType = ChainStepType.holdButton;
   String? _distressChainId;
   List<ChainStep> _chain = const [];
+  bool _hydrated = false;
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void _hydrate(List<SessionMode> modes) {
+    if (_hydrated) return;
+    _hydrated = true;
     final id = GoRouterState.of(context).uri.queryParameters['id'];
-    if (id != null && _mode == null) {
-      final modes =
-          ref.read(modesControllerProvider).value ?? const <SessionMode>[];
-      for (final m in modes) {
-        if (m.id == id) {
-          _mode = m;
-          _nameCtrl.text = m.name;
-          _checkInType = m.checkInType;
-          _distressChainId = m.distressChainId;
-          _chain = List.of(m.chainSteps);
-          break;
-        }
+    if (id == null) return;
+    for (final m in modes) {
+      if (m.id == id) {
+        _mode = m;
+        _nameCtrl.text = m.name;
+        _checkInType = m.checkInType;
+        _distressChainId = m.distressChainId;
+        _chain = List.of(m.chainSteps);
+        break;
       }
     }
   }
@@ -98,6 +96,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final modesAsync = ref.watch(modesControllerProvider);
+    if (!_hydrated) {
+      modesAsync.whenData(_hydrate);
+    }
     final distressChains =
         ref.watch(distressChainsControllerProvider).value ?? const [];
     return Scaffold(
