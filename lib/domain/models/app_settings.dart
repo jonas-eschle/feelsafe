@@ -125,10 +125,19 @@ final class AppSettings {
   final int sessionLogRetentionDays;
 
   /// Returns a new settings instance with the given fields replaced.
+  ///
+  /// Nullable PIN-hash fields and `selectedModeId` support explicit
+  /// clearing via the `clearXxx` flags — the `?? this.field` pattern
+  /// alone cannot distinguish "keep existing" from "set to null". The
+  /// `clearAppPinHash` etc. flags let the controllers (and users)
+  /// actually disable a PIN.
   AppSettings copyWith({
     String? appPinHash,
+    bool clearAppPinHash = false,
     String? sessionEndPinHash,
+    bool clearSessionEndPinHash = false,
     String? duressPinHash,
+    bool clearDuressPinHash = false,
     int? pinTimeoutSeconds,
     AppThemeMode? themeMode,
     String? languageCode,
@@ -136,20 +145,27 @@ final class AppSettings {
     bool? alarmDndOverride,
     AppDefaults? defaults,
     String? selectedModeId,
+    bool clearSelectedModeId = false,
     bool? isFirstLaunch,
     bool? telemetryOptOut,
     int? sessionLogRetentionDays,
   }) => AppSettings(
-    appPinHash: appPinHash ?? this.appPinHash,
-    sessionEndPinHash: sessionEndPinHash ?? this.sessionEndPinHash,
-    duressPinHash: duressPinHash ?? this.duressPinHash,
+    appPinHash: clearAppPinHash ? null : (appPinHash ?? this.appPinHash),
+    sessionEndPinHash: clearSessionEndPinHash
+        ? null
+        : (sessionEndPinHash ?? this.sessionEndPinHash),
+    duressPinHash: clearDuressPinHash
+        ? null
+        : (duressPinHash ?? this.duressPinHash),
     pinTimeoutSeconds: pinTimeoutSeconds ?? this.pinTimeoutSeconds,
     themeMode: themeMode ?? this.themeMode,
     languageCode: languageCode ?? this.languageCode,
     emergencyCallNumber: emergencyCallNumber ?? this.emergencyCallNumber,
     alarmDndOverride: alarmDndOverride ?? this.alarmDndOverride,
     defaults: defaults ?? this.defaults,
-    selectedModeId: selectedModeId ?? this.selectedModeId,
+    selectedModeId: clearSelectedModeId
+        ? null
+        : (selectedModeId ?? this.selectedModeId),
     isFirstLaunch: isFirstLaunch ?? this.isFirstLaunch,
     telemetryOptOut: telemetryOptOut ?? this.telemetryOptOut,
     sessionLogRetentionDays:

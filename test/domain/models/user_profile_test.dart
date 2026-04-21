@@ -76,5 +76,103 @@ void main() {
       const p = UserProfile();
       check(p.copyWith(age: 30).age).equals(30);
     });
+
+    test('copyWith replaces every field', () {
+      const p = UserProfile();
+      final p2 = p.copyWith(
+        name: 'Alice',
+        age: 30,
+        bloodType: 'A-',
+        allergies: const ['x'],
+        medications: const ['m'],
+        medicalConditions: const ['c'],
+        emergencyInstructions: 'i',
+      );
+      check(p2.name).equals('Alice');
+      check(p2.age).equals(30);
+      check(p2.bloodType).equals('A-');
+      check(p2.allergies).deepEquals(const ['x']);
+      check(p2.medications).deepEquals(const ['m']);
+      check(p2.medicalConditions).deepEquals(const ['c']);
+      check(p2.emergencyInstructions).equals('i');
+    });
+
+    test('equality identical', () {
+      const p = UserProfile(name: 'A');
+      check(p == p).isTrue();
+    });
+
+    test('equality cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const UserProfile() == 'x').isFalse();
+    });
+
+    test('equal values equal', () {
+      const a = UserProfile(
+        name: 'A',
+        allergies: ['x'],
+      );
+      const b = UserProfile(
+        name: 'A',
+        allergies: ['x'],
+      );
+      check(a).equals(b);
+      check(a.hashCode).equals(b.hashCode);
+    });
+
+    test('differ by name unequal', () {
+      const a = UserProfile(name: 'A');
+      const b = UserProfile(name: 'B');
+      check(a == b).isFalse();
+    });
+
+    test('differ by age unequal', () {
+      check(const UserProfile(age: 1) == const UserProfile(age: 2)).isFalse();
+    });
+
+    test('differ by bloodType unequal', () {
+      check(
+        const UserProfile(bloodType: 'A') == const UserProfile(bloodType: 'B'),
+      ).isFalse();
+    });
+
+    test('differ by allergies unequal', () {
+      check(
+        const UserProfile(allergies: ['a']) ==
+            const UserProfile(allergies: ['b']),
+      ).isFalse();
+    });
+
+    test('differ by allergies length unequal', () {
+      check(
+        const UserProfile(allergies: ['a']) ==
+            const UserProfile(allergies: ['a', 'b']),
+      ).isFalse();
+    });
+
+    test('differ by medications unequal', () {
+      check(
+        const UserProfile(medications: ['a']) ==
+            const UserProfile(medications: ['b']),
+      ).isFalse();
+    });
+
+    test('differ by medicalConditions unequal', () {
+      check(
+        const UserProfile(medicalConditions: ['a']) ==
+            const UserProfile(medicalConditions: ['b']),
+      ).isFalse();
+    });
+
+    test('differ by emergencyInstructions unequal', () {
+      check(
+        const UserProfile(emergencyInstructions: 'a') ==
+            const UserProfile(emergencyInstructions: 'b'),
+      ).isFalse();
+    });
+
+    test('toString includes name', () {
+      check(const UserProfile(name: 'Alice').toString()).contains('Alice');
+    });
   });
 }

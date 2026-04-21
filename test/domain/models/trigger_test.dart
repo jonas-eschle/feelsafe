@@ -136,6 +136,12 @@ void main() {
       ).throws<ArgumentError>();
     });
 
+    test('missing DisarmTrigger type throws', () {
+      check(
+        () => DisarmTrigger.fromJson(const <String, Object?>{}),
+      ).throws<ArgumentError>();
+    });
+
     test('GpsArrivalDisarmTrigger defaults radius to 100', () {
       const t = GpsArrivalDisarmTrigger(latitude: 0, longitude: 0);
       check(t.radiusMeters).equals(100);
@@ -160,6 +166,332 @@ void main() {
     test('WrongPinThresholdDisarmTrigger copyWith', () {
       const t = WrongPinThresholdDisarmTrigger();
       check(t.copyWith(threshold: 3).threshold).equals(3);
+    });
+
+    test('null copyWith preserves fields across subtypes', () {
+      const r = RepeatPressTrigger(pressCount: 7, pressWindowMs: 123);
+      check(r.copyWith()).equals(r);
+      const l = LongPressTrigger(durationSeconds: 3.5);
+      check(l.copyWith()).equals(l);
+      const h = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.power,
+        trigger: LongPressTrigger(durationSeconds: 2.0),
+      );
+      check(h.copyWith()).equals(h);
+      const g = GpsArrivalDisarmTrigger(
+        latitude: 1,
+        longitude: 2,
+        radiusMeters: 30,
+      );
+      check(g.copyWith()).equals(g);
+      const tt = TimerDisarmTrigger(durationSeconds: 42);
+      check(tt.copyWith()).equals(tt);
+      const w = WrongPinThresholdDisarmTrigger(threshold: 9);
+      check(w.copyWith()).equals(w);
+    });
+  });
+
+  group('HardwareTrigger equality / hashCode / toString', () {
+    test('RepeatPressTrigger identical equals', () {
+      const t = RepeatPressTrigger();
+      check(t == t).isTrue();
+    });
+
+    test('RepeatPressTrigger cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const RepeatPressTrigger() == 'x').isFalse();
+    });
+
+    test('RepeatPressTrigger equal values equal', () {
+      check(const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400))
+          .equals(const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400));
+      check(const RepeatPressTrigger(pressCount: 3).hashCode)
+          .equals(const RepeatPressTrigger(pressCount: 3).hashCode);
+    });
+
+    test('RepeatPressTrigger differ pressCount unequal', () {
+      check(
+        const RepeatPressTrigger(pressCount: 3) ==
+            const RepeatPressTrigger(pressCount: 4),
+      ).isFalse();
+    });
+
+    test('RepeatPressTrigger differ pressWindowMs unequal', () {
+      check(
+        const RepeatPressTrigger(pressWindowMs: 200) ==
+            const RepeatPressTrigger(pressWindowMs: 400),
+      ).isFalse();
+    });
+
+    test('RepeatPressTrigger toString', () {
+      final str = const RepeatPressTrigger(
+        pressCount: 3,
+        pressWindowMs: 400,
+      ).toString();
+      check(str).contains('3');
+      check(str).contains('400');
+    });
+
+    test('LongPressTrigger identical equals', () {
+      const t = LongPressTrigger();
+      check(t == t).isTrue();
+    });
+
+    test('LongPressTrigger cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const LongPressTrigger() == 'x').isFalse();
+    });
+
+    test('LongPressTrigger equal values equal', () {
+      check(const LongPressTrigger(durationSeconds: 3.0))
+          .equals(const LongPressTrigger(durationSeconds: 3.0));
+      check(const LongPressTrigger(durationSeconds: 3.0).hashCode)
+          .equals(const LongPressTrigger(durationSeconds: 3.0).hashCode);
+    });
+
+    test('LongPressTrigger differ duration unequal', () {
+      check(
+        const LongPressTrigger(durationSeconds: 1.0) ==
+            const LongPressTrigger(durationSeconds: 2.0),
+      ).isFalse();
+    });
+
+    test('LongPressTrigger toString', () {
+      final str = const LongPressTrigger(durationSeconds: 4.5).toString();
+      check(str).contains('4.5');
+    });
+  });
+
+  group('HardwareButtonDistressTrigger equality / toString', () {
+    test('identical equals', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      check(t == t).isTrue();
+    });
+
+    test('cross-type unequal', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      // ignore: unrelated_type_equality_checks
+      check(t == 'x').isFalse();
+    });
+
+    test('differ buttonType unequal', () {
+      const a = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      const b = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.power,
+        trigger: RepeatPressTrigger(),
+      );
+      check(a == b).isFalse();
+    });
+
+    test('differ trigger unequal', () {
+      const a = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      const b = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: LongPressTrigger(),
+      );
+      check(a == b).isFalse();
+    });
+
+    test('hashCode stable for equal', () {
+      const a = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      const b = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      check(a.hashCode).equals(b.hashCode);
+    });
+
+    test('toString includes parts', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      final str = t.toString();
+      check(str).contains('volumeUp');
+    });
+  });
+
+  group('DisarmTrigger equality / toString', () {
+    test('GpsArrivalDisarmTrigger identical equals', () {
+      const t = GpsArrivalDisarmTrigger(latitude: 0, longitude: 0);
+      check(t == t).isTrue();
+    });
+
+    test('GpsArrivalDisarmTrigger cross-type unequal', () {
+      const t = GpsArrivalDisarmTrigger(latitude: 0, longitude: 0);
+      // ignore: unrelated_type_equality_checks
+      check(t == 'x').isFalse();
+    });
+
+    test('GpsArrivalDisarmTrigger differ lat unequal', () {
+      check(
+        const GpsArrivalDisarmTrigger(latitude: 1, longitude: 0) ==
+            const GpsArrivalDisarmTrigger(latitude: 2, longitude: 0),
+      ).isFalse();
+    });
+
+    test('GpsArrivalDisarmTrigger differ lon unequal', () {
+      check(
+        const GpsArrivalDisarmTrigger(latitude: 0, longitude: 1) ==
+            const GpsArrivalDisarmTrigger(latitude: 0, longitude: 2),
+      ).isFalse();
+    });
+
+    test('GpsArrivalDisarmTrigger differ radius unequal', () {
+      check(
+        const GpsArrivalDisarmTrigger(
+              latitude: 0,
+              longitude: 0,
+              radiusMeters: 50,
+            ) ==
+            const GpsArrivalDisarmTrigger(
+              latitude: 0,
+              longitude: 0,
+              radiusMeters: 100,
+            ),
+      ).isFalse();
+    });
+
+    test('GpsArrivalDisarmTrigger hashCode stable', () {
+      check(
+        const GpsArrivalDisarmTrigger(latitude: 47.1, longitude: 8.2).hashCode,
+      ).equals(
+        const GpsArrivalDisarmTrigger(latitude: 47.1, longitude: 8.2).hashCode,
+      );
+    });
+
+    test('GpsArrivalDisarmTrigger toString', () {
+      final str = const GpsArrivalDisarmTrigger(
+        latitude: 47.1,
+        longitude: 8.2,
+        radiusMeters: 50,
+      ).toString();
+      check(str).contains('47.1');
+      check(str).contains('8.2');
+      check(str).contains('50');
+    });
+
+    test('TimerDisarmTrigger identical equals', () {
+      const t = TimerDisarmTrigger(durationSeconds: 10);
+      check(t == t).isTrue();
+    });
+
+    test('TimerDisarmTrigger cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const TimerDisarmTrigger(durationSeconds: 1) == 'x').isFalse();
+    });
+
+    test('TimerDisarmTrigger differ unequal', () {
+      check(
+        const TimerDisarmTrigger(durationSeconds: 10) ==
+            const TimerDisarmTrigger(durationSeconds: 20),
+      ).isFalse();
+    });
+
+    test('TimerDisarmTrigger hashCode stable', () {
+      check(const TimerDisarmTrigger(durationSeconds: 5).hashCode)
+          .equals(const TimerDisarmTrigger(durationSeconds: 5).hashCode);
+    });
+
+    test('TimerDisarmTrigger toString', () {
+      check(const TimerDisarmTrigger(durationSeconds: 30).toString())
+          .contains('30');
+    });
+
+    test('WrongPinThresholdDisarmTrigger identical equals', () {
+      const t = WrongPinThresholdDisarmTrigger();
+      check(t == t).isTrue();
+    });
+
+    test('WrongPinThresholdDisarmTrigger cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const WrongPinThresholdDisarmTrigger() == 'x').isFalse();
+    });
+
+    test('WrongPinThresholdDisarmTrigger differ unequal', () {
+      check(
+        const WrongPinThresholdDisarmTrigger(threshold: 3) ==
+            const WrongPinThresholdDisarmTrigger(threshold: 5),
+      ).isFalse();
+    });
+
+    test('WrongPinThresholdDisarmTrigger hashCode stable', () {
+      check(const WrongPinThresholdDisarmTrigger(threshold: 4).hashCode)
+          .equals(const WrongPinThresholdDisarmTrigger(threshold: 4).hashCode);
+    });
+
+    test('WrongPinThresholdDisarmTrigger toString', () {
+      check(const WrongPinThresholdDisarmTrigger(threshold: 7).toString())
+          .contains('7');
+    });
+  });
+
+  group('ButtonType JSON dispatch', () {
+    test('volumeDown round-trips through HardwareButtonDistressTrigger', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeDown,
+        trigger: RepeatPressTrigger(),
+      );
+      check(DistressTrigger.fromJson(t.toJson())).equals(t);
+    });
+
+    test('power round-trips through HardwareButtonDistressTrigger', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.power,
+        trigger: LongPressTrigger(),
+      );
+      check(DistressTrigger.fromJson(t.toJson())).equals(t);
+    });
+
+    test('unknown buttonType throws', () {
+      check(
+        () => HardwareButtonDistressTrigger.fromJson(const {
+          'kind': 'distress',
+          'type': 'hardwareButton',
+          'buttonType': 'bogus',
+          'trigger': {'type': 'repeatPress'},
+        }),
+      ).throws<ArgumentError>();
+    });
+  });
+
+  group('Trigger.fromJson cross-dispatch', () {
+    test('distress hardware round-trips via Trigger.fromJson', () {
+      const t = HardwareButtonDistressTrigger(
+        buttonType: ButtonType.volumeUp,
+        trigger: RepeatPressTrigger(),
+      );
+      check(Trigger.fromJson(t.toJson())).equals(t);
+    });
+
+    test('disarm gps round-trips via Trigger.fromJson', () {
+      const t = GpsArrivalDisarmTrigger(latitude: 1, longitude: 2);
+      check(Trigger.fromJson(t.toJson())).equals(t);
+    });
+
+    test('disarm timer round-trips via Trigger.fromJson', () {
+      const t = TimerDisarmTrigger(durationSeconds: 42);
+      check(Trigger.fromJson(t.toJson())).equals(t);
+    });
+
+    test('disarm wrongPin round-trips via Trigger.fromJson', () {
+      const t = WrongPinThresholdDisarmTrigger(threshold: 3);
+      check(Trigger.fromJson(t.toJson())).equals(t);
     });
   });
 }

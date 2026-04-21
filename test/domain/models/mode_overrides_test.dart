@@ -68,5 +68,119 @@ void main() {
       final o2 = o.copyWith(distressChainId: 'x');
       check(o2.distressChainId).equals('x');
     });
+
+    test('copyWith replaces every field', () {
+      const o = ModeOverrides();
+      const tpl = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: false,
+      );
+      final o2 = o.copyWith(
+        distressChainId: 'x',
+        gpsLogging: const GpsLoggingConfig(enabled: false),
+        stealth: const StealthConfig(enabled: true),
+        localTemplates: const [tpl],
+        eventDefaults: const EventDefaults(),
+      );
+      check(o2.distressChainId).equals('x');
+      check(o2.gpsLogging).isNotNull();
+      check(o2.stealth).isNotNull();
+      check(o2.localTemplates).deepEquals(const [tpl]);
+      check(o2.eventDefaults).isNotNull();
+    });
+
+    test('equality identical', () {
+      const o = ModeOverrides();
+      check(o == o).isTrue();
+    });
+
+    test('equality cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const ModeOverrides() == 'x').isFalse();
+    });
+
+    test('equal values equal', () {
+      const a = ModeOverrides(distressChainId: 'x');
+      const b = ModeOverrides(distressChainId: 'x');
+      check(a).equals(b);
+      check(a.hashCode).equals(b.hashCode);
+    });
+
+    test('differ by distressChainId unequal', () {
+      check(
+        const ModeOverrides() == const ModeOverrides(distressChainId: 'x'),
+      ).isFalse();
+    });
+
+    test('differ by gpsLogging unequal', () {
+      check(
+        const ModeOverrides() ==
+            const ModeOverrides(gpsLogging: GpsLoggingConfig()),
+      ).isFalse();
+    });
+
+    test('differ by stealth unequal', () {
+      check(
+        const ModeOverrides() ==
+            const ModeOverrides(stealth: StealthConfig()),
+      ).isFalse();
+    });
+
+    test('differ by eventDefaults unequal', () {
+      check(
+        const ModeOverrides() ==
+            const ModeOverrides(eventDefaults: EventDefaults()),
+      ).isFalse();
+    });
+
+    test('differ by localTemplates length unequal', () {
+      const tpl = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: false,
+      );
+      check(
+        const ModeOverrides() == const ModeOverrides(localTemplates: [tpl]),
+      ).isFalse();
+    });
+
+    test('differ by localTemplates at index unequal', () {
+      const a = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: false,
+      );
+      const b = ReminderTemplate(
+        id: 't2',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: false,
+      );
+      check(
+        const ModeOverrides(localTemplates: [a]) ==
+            const ModeOverrides(localTemplates: [b]),
+      ).isFalse();
+    });
+
+    test('toString includes distressChainId', () {
+      check(const ModeOverrides(distressChainId: 'abc').toString())
+          .contains('abc');
+    });
   });
 }

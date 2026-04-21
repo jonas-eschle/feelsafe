@@ -59,5 +59,62 @@ void main() {
         () => GpsLoggingConfig.fromJson(const {'format': 'bogus'}),
       ).throws<ArgumentError>();
     });
+
+    test('null copyWith preserves all fields', () {
+      const c = GpsLoggingConfig(
+        enabled: false,
+        intervalSeconds: 10,
+        accuracy: GpsAccuracy.high,
+        format: GpsFormat.decimal,
+        includeInSms: false,
+        historyRetentionDays: 7,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('equality identical', () {
+      const c = GpsLoggingConfig();
+      check(c == c).isTrue();
+    });
+
+    test('equality cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const GpsLoggingConfig() == 'x').isFalse();
+    });
+
+    test('hashCode stable for equal values', () {
+      check(const GpsLoggingConfig().hashCode)
+          .equals(const GpsLoggingConfig().hashCode);
+    });
+
+    test('toString exposes fields', () {
+      final str = const GpsLoggingConfig(
+        enabled: false,
+        intervalSeconds: 15,
+        accuracy: GpsAccuracy.low,
+        format: GpsFormat.decimal,
+        includeInSms: false,
+        historyRetentionDays: 3,
+      ).toString();
+      check(str).contains('enabled: false');
+      check(str).contains('intervalSeconds: 15');
+      check(str).contains('GpsAccuracy.low');
+      check(str).contains('GpsFormat.decimal');
+      check(str).contains('includeInSms: false');
+      check(str).contains('historyRetentionDays: 3');
+    });
+
+    test('differ by enabled unequal', () {
+      check(
+        const GpsLoggingConfig() == const GpsLoggingConfig(enabled: false),
+      ).isFalse();
+    });
+
+    test('differ by intervalSeconds unequal', () {
+      check(
+        const GpsLoggingConfig() ==
+            const GpsLoggingConfig(intervalSeconds: 5),
+      ).isFalse();
+    });
   });
 }

@@ -375,12 +375,502 @@ void main() {
       check(c2.confirmBeforeCalling).isTrue();
     });
 
+    test('copyWith clearEmergencyNumber', () {
+      const c = CallEmergencyConfig(emergencyNumber: '999');
+      final c2 = c.copyWith(clearEmergencyNumber: true);
+      check(c2.emergencyNumber).isNull();
+    });
+
     test('round-trip', () {
       const c = CallEmergencyConfig(
         emergencyNumber: '911',
         confirmBeforeCalling: true,
       );
       check(StepConfig.fromJson(c.toJson())).equals(c);
+    });
+  });
+
+  group('StepConfig toString coverage', () {
+    test('HoldButtonConfig toString', () {
+      check(
+        const HoldButtonConfig(releaseSensitivity: 0.5).toString(),
+      ).contains('0.5');
+    });
+
+    test('DisguisedReminderConfig toString', () {
+      final str = const DisguisedReminderConfig(
+        templateId: 'calendar',
+        intervalSeconds: 20,
+      ).toString();
+      check(str).contains('calendar');
+      check(str).contains('20');
+    });
+
+    test('HardwareButtonConfig toString', () {
+      final str = const HardwareButtonConfig(
+        buttonType: ButtonType.power,
+        pattern: HardwarePattern.longPress,
+        pressCount: 6,
+        pressWindowMs: 300,
+        longPressDurationSeconds: 3.0,
+      ).toString();
+      check(str).contains('power');
+      check(str).contains('longPress');
+      check(str).contains('6');
+      check(str).contains('300');
+      check(str).contains('3.0');
+    });
+
+    test('CountdownWarningConfig toString', () {
+      final str = const CountdownWarningConfig(
+        vibrate: false,
+        playTone: true,
+      ).toString();
+      check(str).contains('vibrate: false');
+      check(str).contains('playTone: true');
+    });
+
+    test('FakeCallConfig toString', () {
+      final str = const FakeCallConfig(
+        callerName: 'Dad',
+        ringtoneAsset: 'a.mp3',
+        voiceRecordingAsset: 'v.mp3',
+        declineIsSafe: true,
+        retryCount: 2,
+      ).toString();
+      check(str).contains('Dad');
+      check(str).contains('a.mp3');
+      check(str).contains('v.mp3');
+      check(str).contains('declineIsSafe: true');
+      check(str).contains('retryCount: 2');
+    });
+
+    test('SmsContactConfig toString', () {
+      final str = const SmsContactConfig(
+        contactIds: ['x'],
+        contactSelection: SmsContactSelection.specificIds,
+        channel: MessageChannel.whatsapp,
+        includeLocation: false,
+        includeMedicalInfo: true,
+      ).toString();
+      check(str).contains('[x]');
+      check(str).contains('specificIds');
+      check(str).contains('whatsapp');
+      check(str).contains('includeLocation: false');
+      check(str).contains('includeMedicalInfo: true');
+    });
+
+    test('PhoneCallContactConfig toString', () {
+      final str = const PhoneCallContactConfig(
+        contactId: 'c1',
+        alternativeContactIds: ['c2'],
+        preSendSms: true,
+      ).toString();
+      check(str).contains('c1');
+      check(str).contains('[c2]');
+      check(str).contains('preSendSms: true');
+    });
+
+    test('LoudAlarmConfig toString', () {
+      final str = const LoudAlarmConfig(
+        flashScreen: false,
+        flashSpeed: 0.2,
+        maxVolume: false,
+      ).toString();
+      check(str).contains('flashScreen: false');
+      check(str).contains('flashSpeed: 0.2');
+      check(str).contains('maxVolume: false');
+    });
+
+    test('CallEmergencyConfig toString', () {
+      final str = const CallEmergencyConfig(
+        emergencyNumber: '911',
+        confirmBeforeCalling: true,
+      ).toString();
+      check(str).contains('911');
+      check(str).contains('confirmBeforeCalling: true');
+    });
+  });
+
+  group('StepConfig equality / hashCode', () {
+    test('HoldButtonConfig identical', () {
+      const c = HoldButtonConfig();
+      check(c == c).isTrue();
+    });
+
+    test('HoldButtonConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const HoldButtonConfig() == 'x').isFalse();
+    });
+
+    test('HoldButtonConfig differ releaseSensitivity unequal', () {
+      check(
+        const HoldButtonConfig(releaseSensitivity: 0.1) ==
+            const HoldButtonConfig(releaseSensitivity: 0.2),
+      ).isFalse();
+    });
+
+    test('DisguisedReminderConfig equal values equal', () {
+      check(const DisguisedReminderConfig(templateId: 't'))
+          .equals(const DisguisedReminderConfig(templateId: 't'));
+      check(const DisguisedReminderConfig(templateId: 't').hashCode)
+          .equals(const DisguisedReminderConfig(templateId: 't').hashCode);
+    });
+
+    test('DisguisedReminderConfig differ unequal', () {
+      check(
+        const DisguisedReminderConfig() ==
+            const DisguisedReminderConfig(intervalSeconds: 1),
+      ).isFalse();
+      check(
+        const DisguisedReminderConfig(templateId: 'a') ==
+            const DisguisedReminderConfig(templateId: 'b'),
+      ).isFalse();
+    });
+
+    test('HardwareButtonConfig identical', () {
+      const c = HardwareButtonConfig();
+      check(c == c).isTrue();
+    });
+
+    test('HardwareButtonConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const HardwareButtonConfig() == 'x').isFalse();
+    });
+
+    test('HardwareButtonConfig equal hashCode', () {
+      check(const HardwareButtonConfig().hashCode)
+          .equals(const HardwareButtonConfig().hashCode);
+    });
+
+    test('HardwareButtonConfig differ fields unequal', () {
+      check(
+        const HardwareButtonConfig() ==
+            const HardwareButtonConfig(buttonType: ButtonType.power),
+      ).isFalse();
+      check(
+        const HardwareButtonConfig() ==
+            const HardwareButtonConfig(pattern: HardwarePattern.longPress),
+      ).isFalse();
+      check(
+        const HardwareButtonConfig() ==
+            const HardwareButtonConfig(pressCount: 10),
+      ).isFalse();
+      check(
+        const HardwareButtonConfig() ==
+            const HardwareButtonConfig(pressWindowMs: 100),
+      ).isFalse();
+      check(
+        const HardwareButtonConfig() ==
+            const HardwareButtonConfig(longPressDurationSeconds: 9.0),
+      ).isFalse();
+    });
+
+    test('CountdownWarningConfig equality', () {
+      check(const CountdownWarningConfig())
+          .equals(const CountdownWarningConfig());
+      check(const CountdownWarningConfig(vibrate: false) ==
+              const CountdownWarningConfig())
+          .isFalse();
+      check(const CountdownWarningConfig(playTone: true) ==
+              const CountdownWarningConfig())
+          .isFalse();
+    });
+
+    test('FakeCallConfig identical', () {
+      const c = FakeCallConfig();
+      check(c == c).isTrue();
+    });
+
+    test('FakeCallConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const FakeCallConfig() == 'x').isFalse();
+    });
+
+    test('FakeCallConfig differ unequal', () {
+      check(
+        const FakeCallConfig() == const FakeCallConfig(callerName: 'Dad'),
+      ).isFalse();
+      check(
+        const FakeCallConfig() == const FakeCallConfig(ringtoneAsset: 'a'),
+      ).isFalse();
+      check(
+        const FakeCallConfig() ==
+            const FakeCallConfig(voiceRecordingAsset: 'v'),
+      ).isFalse();
+      check(
+        const FakeCallConfig() == const FakeCallConfig(declineIsSafe: true),
+      ).isFalse();
+      check(
+        const FakeCallConfig() == const FakeCallConfig(retryCount: 1),
+      ).isFalse();
+    });
+
+    test('FakeCallConfig hashCode stable', () {
+      check(const FakeCallConfig().hashCode).equals(
+        const FakeCallConfig().hashCode,
+      );
+    });
+
+    test('FakeCallConfig copyWith clearCallerName', () {
+      const c = FakeCallConfig(callerName: 'Dad');
+      check(c.copyWith(clearCallerName: true).callerName).isNull();
+    });
+
+    test('SmsContactConfig copyWith clearContactIds', () {
+      const c = SmsContactConfig(contactIds: ['a']);
+      check(c.copyWith(clearContactIds: true).contactIds).isNull();
+    });
+
+    test('SmsContactConfig copyWith full', () {
+      const c = SmsContactConfig();
+      final c2 = c.copyWith(
+        includeLocation: false,
+        includeMedicalInfo: true,
+        autoRecordAudio: true,
+        autoRecordVideo: true,
+        recordDurationSeconds: 30,
+        messageTemplate: 'hi',
+        blackScreenMode: true,
+      );
+      check(c2.includeLocation).isFalse();
+      check(c2.includeMedicalInfo).isTrue();
+      check(c2.autoRecordAudio).isTrue();
+      check(c2.autoRecordVideo).isTrue();
+      check(c2.recordDurationSeconds).equals(30);
+      check(c2.messageTemplate).equals('hi');
+      check(c2.blackScreenMode).isTrue();
+    });
+
+    test('SmsContactConfig identical equals', () {
+      const c = SmsContactConfig();
+      check(c == c).isTrue();
+    });
+
+    test('SmsContactConfig differ unequal', () {
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(contactIds: ['a']),
+      ).isFalse();
+      check(
+        const SmsContactConfig(contactIds: ['a']) ==
+            const SmsContactConfig(contactIds: ['b']),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(
+              contactSelection: SmsContactSelection.firstContact,
+            ),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(channel: MessageChannel.whatsapp),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(includeLocation: false),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(includeMedicalInfo: true),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(autoRecordAudio: true),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(autoRecordVideo: true),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(recordDurationSeconds: 30),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(messageTemplate: 'hi'),
+      ).isFalse();
+      check(
+        const SmsContactConfig() ==
+            const SmsContactConfig(blackScreenMode: true),
+      ).isFalse();
+    });
+
+    test('SmsContactConfig hashCode stable', () {
+      check(const SmsContactConfig().hashCode)
+          .equals(const SmsContactConfig().hashCode);
+    });
+
+    test('PhoneCallContactConfig identical', () {
+      const c = PhoneCallContactConfig();
+      check(c == c).isTrue();
+    });
+
+    test('PhoneCallContactConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const PhoneCallContactConfig() == 'x').isFalse();
+    });
+
+    test('PhoneCallContactConfig differ unequal', () {
+      check(
+        const PhoneCallContactConfig() ==
+            const PhoneCallContactConfig(contactId: 'a'),
+      ).isFalse();
+      check(
+        const PhoneCallContactConfig(alternativeContactIds: ['a']) ==
+            const PhoneCallContactConfig(alternativeContactIds: ['b']),
+      ).isFalse();
+      check(
+        const PhoneCallContactConfig() ==
+            const PhoneCallContactConfig(preSendSms: true),
+      ).isFalse();
+      check(
+        const PhoneCallContactConfig() ==
+            const PhoneCallContactConfig(preSmsIncludeLocation: false),
+      ).isFalse();
+      check(
+        const PhoneCallContactConfig() ==
+            const PhoneCallContactConfig(preSmsMessage: 'x'),
+      ).isFalse();
+    });
+
+    test('PhoneCallContactConfig hashCode stable', () {
+      check(const PhoneCallContactConfig().hashCode)
+          .equals(const PhoneCallContactConfig().hashCode);
+    });
+
+    test('LoudAlarmConfig identical', () {
+      const c = LoudAlarmConfig();
+      check(c == c).isTrue();
+    });
+
+    test('LoudAlarmConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const LoudAlarmConfig() == 'x').isFalse();
+    });
+
+    test('LoudAlarmConfig differ unequal', () {
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(flashScreen: false),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(flashSpeed: 1.0),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(maxVolume: false),
+      ).isFalse();
+    });
+
+    test('CallEmergencyConfig identical', () {
+      const c = CallEmergencyConfig();
+      check(c == c).isTrue();
+    });
+
+    test('CallEmergencyConfig cross-type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(const CallEmergencyConfig() == 'x').isFalse();
+    });
+
+    test('CallEmergencyConfig differ unequal', () {
+      check(
+        const CallEmergencyConfig() ==
+            const CallEmergencyConfig(emergencyNumber: '911'),
+      ).isFalse();
+      check(
+        const CallEmergencyConfig() ==
+            const CallEmergencyConfig(confirmBeforeCalling: true),
+      ).isFalse();
+    });
+
+    test('CallEmergencyConfig hashCode stable', () {
+      check(const CallEmergencyConfig().hashCode)
+          .equals(const CallEmergencyConfig().hashCode);
+    });
+  });
+
+  group('StepConfig null copyWith preserves every field', () {
+    test('HoldButtonConfig', () {
+      const c = HoldButtonConfig(releaseSensitivity: 0.7);
+      check(c.copyWith()).equals(c);
+    });
+
+    test('DisguisedReminderConfig', () {
+      const c = DisguisedReminderConfig(
+        templateId: 't1',
+        intervalSeconds: 15,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('HardwareButtonConfig', () {
+      const c = HardwareButtonConfig(
+        buttonType: ButtonType.power,
+        pattern: HardwarePattern.longPress,
+        pressCount: 9,
+        pressWindowMs: 200,
+        longPressDurationSeconds: 4.0,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('CountdownWarningConfig', () {
+      const c = CountdownWarningConfig(vibrate: false, playTone: true);
+      check(c.copyWith()).equals(c);
+    });
+
+    test('FakeCallConfig', () {
+      const c = FakeCallConfig(
+        callerName: 'X',
+        ringtoneAsset: 'a',
+        voiceRecordingAsset: 'v',
+        declineIsSafe: true,
+        retryCount: 3,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('SmsContactConfig', () {
+      const c = SmsContactConfig(
+        contactIds: ['a'],
+        contactSelection: SmsContactSelection.specificIds,
+        channel: MessageChannel.telegram,
+        includeLocation: false,
+        includeMedicalInfo: true,
+        autoRecordAudio: true,
+        autoRecordVideo: true,
+        recordDurationSeconds: 20,
+        messageTemplate: 'hi',
+        blackScreenMode: true,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('PhoneCallContactConfig', () {
+      const c = PhoneCallContactConfig(
+        contactId: 'c1',
+        alternativeContactIds: ['c2'],
+        preSendSms: true,
+        preSmsIncludeLocation: false,
+        preSmsMessage: 'x',
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('LoudAlarmConfig', () {
+      const c = LoudAlarmConfig(
+        flashScreen: false,
+        flashSpeed: 0.2,
+        maxVolume: false,
+      );
+      check(c.copyWith()).equals(c);
+    });
+
+    test('CallEmergencyConfig', () {
+      const c = CallEmergencyConfig(
+        emergencyNumber: '999',
+        confirmBeforeCalling: true,
+      );
+      check(c.copyWith()).equals(c);
     });
   });
 }

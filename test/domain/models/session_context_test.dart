@@ -114,5 +114,174 @@ void main() {
       final contacts = [makeContact()];
       check(ctx.copyWith(contacts: contacts).contacts).deepEquals(contacts);
     });
+
+    test('replaces userProfile', () {
+      const ctx = SessionContext();
+      const profile = UserProfile(name: 'A');
+      check(ctx.copyWith(userProfile: profile).userProfile).equals(profile);
+    });
+
+    test('replaces isSimulation', () {
+      const ctx = SessionContext();
+      check(ctx.copyWith(isSimulation: true).isSimulation).isTrue();
+    });
+
+    test('replaces reminderTemplates', () {
+      const ctx = SessionContext();
+      const tpl = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: true,
+      );
+      check(
+        ctx.copyWith(reminderTemplates: const [tpl]).reminderTemplates,
+      ).deepEquals(const [tpl]);
+    });
+
+    test('replaces hadMedicalInfo', () {
+      const ctx = SessionContext();
+      check(ctx.copyWith(hadMedicalInfo: true).hadMedicalInfo).isTrue();
+    });
+
+    test('replaces eventDefaults', () {
+      const ctx = SessionContext();
+      const ed = EventDefaults();
+      check(ctx.copyWith(eventDefaults: ed).eventDefaults).equals(ed);
+    });
+
+    test('replaces emergencyNumber', () {
+      const ctx = SessionContext();
+      check(ctx.copyWith(emergencyNumber: '999').emergencyNumber).equals('999');
+    });
+
+    test('null copyWith preserves all fields', () {
+      final ctx = SessionContext(
+        mode: makeMode(),
+        contacts: [makeContact()],
+        userProfile: const UserProfile(name: 'A'),
+        isSimulation: true,
+        hadMedicalInfo: true,
+        eventDefaults: const EventDefaults(),
+        emergencyNumber: '911',
+      );
+      check(ctx.copyWith()).equals(ctx);
+    });
+  });
+
+  group('SessionContext equality / hashCode / toString', () {
+    test('identical contexts equal', () {
+      const ctx = SessionContext();
+      check(ctx == ctx).isTrue();
+    });
+
+    test('equal values equal', () {
+      const a = SessionContext();
+      const b = SessionContext();
+      check(a).equals(b);
+      check(a.hashCode).equals(b.hashCode);
+    });
+
+    test('toString exposes key fields', () {
+      final mode = makeMode(name: 'Walk');
+      final ctx = SessionContext(mode: mode);
+      check(ctx.toString()).contains('Walk');
+    });
+
+    test('different types unequal', () {
+      const ctx = SessionContext();
+      // ignore: unrelated_type_equality_checks
+      check(ctx == 'not a context').isFalse();
+    });
+
+    test('different mode unequal', () {
+      const a = SessionContext();
+      final b = SessionContext(mode: makeMode());
+      check(a == b).isFalse();
+    });
+
+    test('different userProfile unequal', () {
+      const a = SessionContext();
+      const b = SessionContext(userProfile: UserProfile(name: 'A'));
+      check(a == b).isFalse();
+    });
+
+    test('different isSimulation unequal', () {
+      const a = SessionContext();
+      const b = SessionContext(isSimulation: true);
+      check(a == b).isFalse();
+    });
+
+    test('different hadMedicalInfo unequal', () {
+      const a = SessionContext();
+      const b = SessionContext(hadMedicalInfo: true);
+      check(a == b).isFalse();
+    });
+
+    test('different eventDefaults unequal', () {
+      const a = SessionContext();
+      const b = SessionContext(eventDefaults: EventDefaults());
+      check(a == b).isFalse();
+    });
+
+    test('different emergencyNumber unequal', () {
+      const a = SessionContext();
+      const b = SessionContext(emergencyNumber: '999');
+      check(a == b).isFalse();
+    });
+
+    test('different contacts length unequal', () {
+      const a = SessionContext();
+      final b = SessionContext(contacts: [makeContact()]);
+      check(a == b).isFalse();
+    });
+
+    test('different contacts at index unequal', () {
+      final a = SessionContext(contacts: [makeContact(name: 'A')]);
+      final b = SessionContext(contacts: [makeContact(name: 'B')]);
+      check(a == b).isFalse();
+    });
+
+    test('different reminderTemplates length unequal', () {
+      const a = SessionContext();
+      const tpl = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: true,
+      );
+      const b = SessionContext(reminderTemplates: [tpl]);
+      check(a == b).isFalse();
+    });
+
+    test('different reminderTemplates at index unequal', () {
+      const t1 = ReminderTemplate(
+        id: 't1',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: true,
+      );
+      const t2 = ReminderTemplate(
+        id: 't2',
+        name: 'n',
+        title: 'T',
+        body: 'B',
+        confirmationType: ConfirmationType.dismiss,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: true,
+      );
+      const a = SessionContext(reminderTemplates: [t1]);
+      const b = SessionContext(reminderTemplates: [t2]);
+      check(a == b).isFalse();
+    });
   });
 }

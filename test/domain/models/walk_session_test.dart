@@ -140,5 +140,220 @@ void main() {
         }),
       ).throws<ArgumentError>();
     });
+
+    test('fromJson unknown currentStepType throws', () {
+      check(
+        () => WalkSession.fromJson({
+          'id': 'x',
+          'modeId': 'm',
+          'isSimulation': false,
+          'startedAt': startedAt.toIso8601String(),
+          'phase': 'active',
+          'currentStepType': 'bogus',
+        }),
+      ).throws<ArgumentError>();
+    });
+
+    test('every ChainStepType round-trips on currentStepType', () {
+      for (final st in ChainStepType.values) {
+        final s = WalkSession(
+          id: 'w1',
+          modeId: 'm1',
+          isSimulation: false,
+          startedAt: startedAt,
+          phase: const SessionPhaseActive(),
+          currentStepType: st,
+        );
+        check(WalkSession.fromJson(s.toJson())).equals(s);
+      }
+    });
+
+    test('copyWith replaces every field', () {
+      final s = WalkSession(
+        id: 'w1',
+        modeId: 'm1',
+        isSimulation: false,
+        startedAt: startedAt,
+        phase: const SessionPhaseIdle(),
+      );
+      final later = startedAt.add(const Duration(hours: 1));
+      final s2 = s.copyWith(
+        id: 'w2',
+        modeId: 'm2',
+        isSimulation: true,
+        startedAt: later,
+        simulationSpeed: 3.0,
+        phase: const SessionPhaseActive(),
+        currentStepIndex: 4,
+        currentStepType: ChainStepType.fakeCall,
+        missCount: 2,
+        remainingSeconds: 9,
+        simulatedElapsed: const Duration(seconds: 5),
+        firedStepDescriptions: const ['a'],
+        lastSimulationDescription: 'desc',
+        isBackgroundAlert: true,
+      );
+      check(s2.id).equals('w2');
+      check(s2.modeId).equals('m2');
+      check(s2.isSimulation).isTrue();
+      check(s2.startedAt).equals(later);
+      check(s2.simulationSpeed).equals(3.0);
+      check(s2.phase).equals(const SessionPhaseActive());
+      check(s2.currentStepIndex).equals(4);
+      check(s2.currentStepType).equals(ChainStepType.fakeCall);
+      check(s2.missCount).equals(2);
+      check(s2.remainingSeconds).equals(9);
+      check(s2.simulatedElapsed).equals(const Duration(seconds: 5));
+      check(s2.firedStepDescriptions).deepEquals(const ['a']);
+      check(s2.lastSimulationDescription).equals('desc');
+      check(s2.isBackgroundAlert).isTrue();
+    });
+  });
+
+  group('SessionPhase toString / hashCode', () {
+    test('idle toString', () {
+      check(const SessionPhaseIdle().toString()).equals('SessionPhase.idle');
+    });
+
+    test('active toString', () {
+      check(const SessionPhaseActive().toString())
+          .equals('SessionPhase.active');
+    });
+
+    test('paused toString', () {
+      check(const SessionPhasePaused().toString())
+          .equals('SessionPhase.paused');
+    });
+
+    test('ended toString', () {
+      check(const SessionPhaseEnded().toString()).equals('SessionPhase.ended');
+    });
+
+    test('hashCode stable for same phase', () {
+      check(const SessionPhaseIdle().hashCode)
+          .equals(const SessionPhaseIdle().hashCode);
+      check(const SessionPhaseActive().hashCode)
+          .equals(const SessionPhaseActive().hashCode);
+      check(const SessionPhasePaused().hashCode)
+          .equals(const SessionPhasePaused().hashCode);
+      check(const SessionPhaseEnded().hashCode)
+          .equals(const SessionPhaseEnded().hashCode);
+    });
+
+    test('cross-type inequality', () {
+      // ignore: unrelated_type_equality_checks
+      check(const SessionPhaseIdle() == 'idle').isFalse();
+      check(const SessionPhaseActive() == const SessionPhasePaused()).isFalse();
+      check(const SessionPhasePaused() == const SessionPhaseEnded()).isFalse();
+    });
+  });
+
+  group('WalkSession equality', () {
+    final startedAt = DateTime.utc(2026, 4, 1);
+
+    WalkSession base() => WalkSession(
+          id: 'w1',
+          modeId: 'm1',
+          isSimulation: false,
+          startedAt: startedAt,
+          phase: const SessionPhaseActive(),
+        );
+
+    test('identical equals', () {
+      final s = base();
+      check(s == s).isTrue();
+    });
+
+    test('cross type unequal', () {
+      // ignore: unrelated_type_equality_checks
+      check(base() == 'x').isFalse();
+    });
+
+    test('different id unequal', () {
+      check(base() == base().copyWith(id: 'w2')).isFalse();
+    });
+
+    test('different modeId unequal', () {
+      check(base() == base().copyWith(modeId: 'm2')).isFalse();
+    });
+
+    test('different isSimulation unequal', () {
+      check(base() == base().copyWith(isSimulation: true)).isFalse();
+    });
+
+    test('different startedAt unequal', () {
+      check(
+        base() == base().copyWith(startedAt: startedAt.add(
+          const Duration(seconds: 1),
+        )),
+      ).isFalse();
+    });
+
+    test('different simulationSpeed unequal', () {
+      check(base() == base().copyWith(simulationSpeed: 2.0)).isFalse();
+    });
+
+    test('different phase unequal', () {
+      check(base() == base().copyWith(phase: const SessionPhaseIdle()))
+          .isFalse();
+    });
+
+    test('different currentStepIndex unequal', () {
+      check(base() == base().copyWith(currentStepIndex: 1)).isFalse();
+    });
+
+    test('different currentStepType unequal', () {
+      check(
+        base() == base().copyWith(currentStepType: ChainStepType.smsContact),
+      ).isFalse();
+    });
+
+    test('different missCount unequal', () {
+      check(base() == base().copyWith(missCount: 1)).isFalse();
+    });
+
+    test('different remainingSeconds unequal', () {
+      check(base() == base().copyWith(remainingSeconds: 5)).isFalse();
+    });
+
+    test('different simulatedElapsed unequal', () {
+      check(
+        base() == base().copyWith(
+          simulatedElapsed: const Duration(seconds: 1),
+        ),
+      ).isFalse();
+    });
+
+    test('different lastSimulationDescription unequal', () {
+      check(
+        base() == base().copyWith(lastSimulationDescription: 'x'),
+      ).isFalse();
+    });
+
+    test('different isBackgroundAlert unequal', () {
+      check(base() == base().copyWith(isBackgroundAlert: true)).isFalse();
+    });
+
+    test('different firedStepDescriptions length unequal', () {
+      check(
+        base() == base().copyWith(firedStepDescriptions: const ['x']),
+      ).isFalse();
+    });
+
+    test('different firedStepDescriptions at index unequal', () {
+      final a = base().copyWith(firedStepDescriptions: const ['a']);
+      final b = base().copyWith(firedStepDescriptions: const ['b']);
+      check(a == b).isFalse();
+    });
+
+    test('hashCode stable', () {
+      check(base().hashCode).equals(base().hashCode);
+    });
+
+    test('toString exposes id/modeId/phase/step', () {
+      final str = base().toString();
+      check(str).contains('w1');
+      check(str).contains('m1');
+    });
   });
 }

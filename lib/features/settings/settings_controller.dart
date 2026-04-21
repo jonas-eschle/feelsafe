@@ -62,19 +62,31 @@ class SettingsController extends AsyncNotifier<AppSettings> {
   /// Updates the app-unlock PIN hash (null disables the lock).
   Future<void> setAppPinHash(String? hash) async {
     final current = await future;
-    await save(current.copyWith(appPinHash: hash));
+    await save(
+      hash == null
+          ? current.copyWith(clearAppPinHash: true)
+          : current.copyWith(appPinHash: hash),
+    );
   }
 
-  /// Updates the session-end PIN hash.
+  /// Updates the session-end PIN hash (null disables the lock).
   Future<void> setSessionEndPinHash(String? hash) async {
     final current = await future;
-    await save(current.copyWith(sessionEndPinHash: hash));
+    await save(
+      hash == null
+          ? current.copyWith(clearSessionEndPinHash: true)
+          : current.copyWith(sessionEndPinHash: hash),
+    );
   }
 
-  /// Updates the duress PIN hash.
+  /// Updates the duress PIN hash (null disables the lock).
   Future<void> setDuressPinHash(String? hash) async {
     final current = await future;
-    await save(current.copyWith(duressPinHash: hash));
+    await save(
+      hash == null
+          ? current.copyWith(clearDuressPinHash: true)
+          : current.copyWith(duressPinHash: hash),
+    );
   }
 
   /// Updates the PIN-entry lockout timeout in seconds.
