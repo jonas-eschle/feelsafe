@@ -15,21 +15,27 @@ class InfoIconButton extends StatelessWidget {
   final String body;
 
   @override
-  Widget build(BuildContext context) => IconButton(
-    icon: const Icon(Icons.help_outline),
-    tooltip: title,
-    onPressed: () => showModalBottomSheet<void>(
-      context: context,
-      builder: (context) => Padding(
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 12),
-            Text(body),
-          ],
+  Widget build(BuildContext context) => Semantics(
+    label: 'Help: $title',
+    button: true,
+    child: ExcludeSemantics(
+      child: IconButton(
+        icon: const Icon(Icons.help_outline),
+        tooltip: title,
+        onPressed: () => showModalBottomSheet<void>(
+          context: context,
+          builder: (context) => Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: Theme.of(context).textTheme.titleLarge),
+                const SizedBox(height: 12),
+                Text(body),
+              ],
+            ),
+          ),
         ),
       ),
     ),

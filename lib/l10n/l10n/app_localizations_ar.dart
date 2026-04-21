@@ -669,48 +669,48 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stealthSessionScreen => 'إخفاء العلامة التجارية في شاشة الجلسة';
 
   @override
-  String get stealthPickerTitle => 'App icon';
+  String get stealthPickerTitle => 'أيقونة التطبيق';
 
   @override
-  String get stealthPickerIntro => 'Pick how the launcher icon looks.';
+  String get stealthPickerIntro => 'اختر شكل الأيقونة في الشاشة الرئيسية.';
 
   @override
-  String get stealthPresetMusic => 'Music';
+  String get stealthPresetMusic => 'الموسيقى';
 
   @override
-  String get stealthPresetCalendar => 'Calendar';
+  String get stealthPresetCalendar => 'التقويم';
 
   @override
-  String get stealthPresetFitness => 'Fitness';
+  String get stealthPresetFitness => 'اللياقة';
 
   @override
-  String get stealthPresetWeather => 'Weather';
+  String get stealthPresetWeather => 'الطقس';
 
   @override
-  String get stealthPresetNews => 'News';
+  String get stealthPresetNews => 'الأخبار';
 
   @override
-  String get stealthPresetPhotos => 'Photos';
+  String get stealthPresetPhotos => 'الصور';
 
   @override
-  String get stealthPresetNotes => 'Notes';
+  String get stealthPresetNotes => 'الملاحظات';
 
   @override
-  String get stealthPresetClock => 'Clock';
+  String get stealthPresetClock => 'الساعة';
 
   @override
-  String get distressConfirmationTitle => 'Are you in danger?';
+  String get distressConfirmationTitle => 'هل أنت في خطر؟';
 
   @override
-  String get distressConfirmationCancel => 'Cancel';
+  String get distressConfirmationCancel => 'إلغاء';
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '${seconds}s until distress fires';
+    return 'تبدأ سلسلة الاستغاثة خلال $seconds ثانية';
   }
 
   @override
-  String get imSafeSliderLabel => 'Swipe to confirm I\'m safe';
+  String get imSafeSliderLabel => 'اسحب لتأكيد «أنا بأمان»';
 
   @override
   String get batteryAlertTitle => 'تنبيه البطارية';

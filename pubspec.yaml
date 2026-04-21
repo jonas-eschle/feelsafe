@@ -113,6 +113,9 @@ dev_dependencies:
   import_sorter: ^4.6.0
   checks: ^0.3.1
   test: ^1.30.0
+  # Golden-image regression tests (D-TEST-12). Framework + helpers for
+  # pixel-match goldens across a device matrix.
+  golden_toolkit: ^0.15.0
 
 flutter_launcher_icons:
   android: true

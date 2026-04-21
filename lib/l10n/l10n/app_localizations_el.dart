@@ -676,48 +676,49 @@ class AppLocalizationsEl extends AppLocalizations {
       'Αφαίρεση στοιχείων μάρκας από την οθόνη συνεδρίας';
 
   @override
-  String get stealthPickerTitle => 'App icon';
+  String get stealthPickerTitle => 'Εικονίδιο εφαρμογής';
 
   @override
-  String get stealthPickerIntro => 'Pick how the launcher icon looks.';
+  String get stealthPickerIntro =>
+      'Επίλεξε την εμφάνιση του εικονιδίου στην αρχική οθόνη.';
 
   @override
-  String get stealthPresetMusic => 'Music';
+  String get stealthPresetMusic => 'Μουσική';
 
   @override
-  String get stealthPresetCalendar => 'Calendar';
+  String get stealthPresetCalendar => 'Ημερολόγιο';
 
   @override
-  String get stealthPresetFitness => 'Fitness';
+  String get stealthPresetFitness => 'Φυσική κατάσταση';
 
   @override
-  String get stealthPresetWeather => 'Weather';
+  String get stealthPresetWeather => 'Καιρός';
 
   @override
-  String get stealthPresetNews => 'News';
+  String get stealthPresetNews => 'Ειδήσεις';
 
   @override
-  String get stealthPresetPhotos => 'Photos';
+  String get stealthPresetPhotos => 'Φωτογραφίες';
 
   @override
-  String get stealthPresetNotes => 'Notes';
+  String get stealthPresetNotes => 'Σημειώσεις';
 
   @override
-  String get stealthPresetClock => 'Clock';
+  String get stealthPresetClock => 'Ρολόι';
 
   @override
-  String get distressConfirmationTitle => 'Are you in danger?';
+  String get distressConfirmationTitle => 'Βρίσκεσαι σε κίνδυνο;';
 
   @override
-  String get distressConfirmationCancel => 'Cancel';
+  String get distressConfirmationCancel => 'Άκυρο';
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '${seconds}s until distress fires';
+    return 'Η αλυσίδα κινδύνου ξεκινά σε $seconds δευτ.';
   }
 
   @override
-  String get imSafeSliderLabel => 'Swipe to confirm I\'m safe';
+  String get imSafeSliderLabel => 'Σύρε για να επιβεβαιώσεις «Είμαι ασφαλής»';
 
   @override
   String get batteryAlertTitle => 'Ειδοποίηση μπαταρίας';

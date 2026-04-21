@@ -41,16 +41,26 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     // context so it stays alive across rebuilds, and re-reads the
     // latest settings for the stealth flag + app PIN hash.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(sessionControllerProvider.notifier).onDistressConfirmation =
-          _confirmDistress;
+      if (!mounted) return;
+      final controller = ref.read(sessionControllerProvider.notifier);
+      _attachedController = controller;
+      controller.onDistressConfirmation = _confirmDistress;
     });
   }
+
+  /// Cached notifier reference captured in [initState] so that
+  /// [dispose] can detach the callback without calling
+  /// `ref.read(...)` on a disposed element (which throws in Riverpod 3).
+  SessionController? _attachedController;
 
   @override
   void dispose() {
     // Detach the closure so the controller does not hold a stale
-    // reference to this State.
-    ref.read(sessionControllerProvider.notifier).onDistressConfirmation = null;
+    // reference to this State. Use the cached notifier ref; calling
+    // `ref.read(...)` here would throw because the ConsumerElement
+    // is already disposed.
+    _attachedController?.onDistressConfirmation = null;
+    _attachedController = null;
     super.dispose();
   }
 

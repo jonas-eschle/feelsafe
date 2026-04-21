@@ -30,6 +30,7 @@ class PinKeypad extends StatelessWidget {
             for (var col = 0; col < 3; col++)
               _KeyButton(
                 label: '${row * 3 + col + 1}',
+                semanticLabel: 'Digit ${row * 3 + col + 1}',
                 onTap: () => onDigit(row * 3 + col + 1),
               ),
           ],
@@ -37,9 +38,17 @@ class PinKeypad extends StatelessWidget {
       Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const _KeyButton(label: '', onTap: null),
-          _KeyButton(label: '0', onTap: () => onDigit(0)),
-          _KeyButton(label: '⌫', onTap: onBackspace),
+          const _KeyButton(label: '', semanticLabel: null, onTap: null),
+          _KeyButton(
+            label: '0',
+            semanticLabel: 'Digit 0',
+            onTap: () => onDigit(0),
+          ),
+          _KeyButton(
+            label: '⌫',
+            semanticLabel: 'Backspace',
+            onTap: onBackspace,
+          ),
         ],
       ),
     ],
@@ -47,21 +56,35 @@ class PinKeypad extends StatelessWidget {
 }
 
 class _KeyButton extends StatelessWidget {
-  const _KeyButton({required this.label, required this.onTap});
+  const _KeyButton({
+    required this.label,
+    required this.semanticLabel,
+    required this.onTap,
+  });
 
   final String label;
+  final String? semanticLabel;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.all(6),
-    child: SizedBox(
-      width: 72,
-      height: 56,
-      child: OutlinedButton(
-        onPressed: onTap,
-        child: Text(label, style: Theme.of(context).textTheme.titleLarge),
+  Widget build(BuildContext context) {
+    final button = Padding(
+      padding: const EdgeInsets.all(6),
+      child: SizedBox(
+        width: 72,
+        height: 56,
+        child: OutlinedButton(
+          onPressed: onTap,
+          child: Text(label, style: Theme.of(context).textTheme.titleLarge),
+        ),
       ),
-    ),
-  );
+    );
+    if (semanticLabel == null) return button;
+    return Semantics(
+      label: semanticLabel,
+      button: true,
+      enabled: onTap != null,
+      child: ExcludeSemantics(child: button),
+    );
+  }
 }

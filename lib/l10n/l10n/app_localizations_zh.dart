@@ -664,48 +664,48 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stealthSessionScreen => '隐藏会话界面品牌标识';
 
   @override
-  String get stealthPickerTitle => 'App icon';
+  String get stealthPickerTitle => '应用图标';
 
   @override
-  String get stealthPickerIntro => 'Pick how the launcher icon looks.';
+  String get stealthPickerIntro => '选择启动器中图标的外观。';
 
   @override
-  String get stealthPresetMusic => 'Music';
+  String get stealthPresetMusic => '音乐';
 
   @override
-  String get stealthPresetCalendar => 'Calendar';
+  String get stealthPresetCalendar => '日历';
 
   @override
-  String get stealthPresetFitness => 'Fitness';
+  String get stealthPresetFitness => '健身';
 
   @override
-  String get stealthPresetWeather => 'Weather';
+  String get stealthPresetWeather => '天气';
 
   @override
-  String get stealthPresetNews => 'News';
+  String get stealthPresetNews => '新闻';
 
   @override
-  String get stealthPresetPhotos => 'Photos';
+  String get stealthPresetPhotos => '照片';
 
   @override
-  String get stealthPresetNotes => 'Notes';
+  String get stealthPresetNotes => '备忘录';
 
   @override
-  String get stealthPresetClock => 'Clock';
+  String get stealthPresetClock => '时钟';
 
   @override
-  String get distressConfirmationTitle => 'Are you in danger?';
+  String get distressConfirmationTitle => '你处于危险中吗？';
 
   @override
-  String get distressConfirmationCancel => 'Cancel';
+  String get distressConfirmationCancel => '取消';
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '${seconds}s until distress fires';
+    return '求救流程将在 $seconds 秒后启动';
   }
 
   @override
-  String get imSafeSliderLabel => 'Swipe to confirm I\'m safe';
+  String get imSafeSliderLabel => '滑动以确认“我安全”';
 
   @override
   String get batteryAlertTitle => '电量警报';
@@ -1490,6 +1490,50 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stealthSessionScreen => '移除守護畫面的品牌標示';
+
+  @override
+  String get stealthPickerTitle => '應用程式圖示';
+
+  @override
+  String get stealthPickerIntro => '選擇圖示在啟動器中的外觀。';
+
+  @override
+  String get stealthPresetMusic => '音樂';
+
+  @override
+  String get stealthPresetCalendar => '行事曆';
+
+  @override
+  String get stealthPresetFitness => '健身';
+
+  @override
+  String get stealthPresetWeather => '天氣';
+
+  @override
+  String get stealthPresetNews => '新聞';
+
+  @override
+  String get stealthPresetPhotos => '相片';
+
+  @override
+  String get stealthPresetNotes => '備忘錄';
+
+  @override
+  String get stealthPresetClock => '時鐘';
+
+  @override
+  String get distressConfirmationTitle => '你身處危險嗎？';
+
+  @override
+  String get distressConfirmationCancel => '取消';
+
+  @override
+  String distressConfirmationCountdown(Object seconds) {
+    return '求救流程將在 $seconds 秒後啟動';
+  }
+
+  @override
+  String get imSafeSliderLabel => '滑動以確認「我安全」';
 
   @override
   String get batteryAlertTitle => '電量警示';

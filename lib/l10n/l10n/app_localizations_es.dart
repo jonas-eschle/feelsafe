@@ -672,48 +672,48 @@ class AppLocalizationsEs extends AppLocalizations {
       'Ocultar la marca en la pantalla de sesión';
 
   @override
-  String get stealthPickerTitle => 'App icon';
+  String get stealthPickerTitle => 'Icono de la app';
 
   @override
-  String get stealthPickerIntro => 'Pick how the launcher icon looks.';
+  String get stealthPickerIntro => 'Elige el aspecto del icono en el lanzador.';
 
   @override
-  String get stealthPresetMusic => 'Music';
+  String get stealthPresetMusic => 'Música';
 
   @override
-  String get stealthPresetCalendar => 'Calendar';
+  String get stealthPresetCalendar => 'Calendario';
 
   @override
   String get stealthPresetFitness => 'Fitness';
 
   @override
-  String get stealthPresetWeather => 'Weather';
+  String get stealthPresetWeather => 'Tiempo';
 
   @override
-  String get stealthPresetNews => 'News';
+  String get stealthPresetNews => 'Noticias';
 
   @override
-  String get stealthPresetPhotos => 'Photos';
+  String get stealthPresetPhotos => 'Fotos';
 
   @override
-  String get stealthPresetNotes => 'Notes';
+  String get stealthPresetNotes => 'Notas';
 
   @override
-  String get stealthPresetClock => 'Clock';
+  String get stealthPresetClock => 'Reloj';
 
   @override
-  String get distressConfirmationTitle => 'Are you in danger?';
+  String get distressConfirmationTitle => '¿Estás en peligro?';
 
   @override
-  String get distressConfirmationCancel => 'Cancel';
+  String get distressConfirmationCancel => 'Cancelar';
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '${seconds}s until distress fires';
+    return 'Cadena de emergencia en $seconds s';
   }
 
   @override
-  String get imSafeSliderLabel => 'Swipe to confirm I\'m safe';
+  String get imSafeSliderLabel => 'Desliza para confirmar «Estoy a salvo»';
 
   @override
   String get batteryAlertTitle => 'Alerta de batería';
