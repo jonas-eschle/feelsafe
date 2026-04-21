@@ -19,12 +19,36 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+
+/// Factory that builds a fresh [AudioPlayer]. Injected for tests.
+typedef AudioPlayerFactory = AudioPlayer Function();
+
+/// Factory that builds a fresh [FlutterTts]. Injected for tests.
+typedef FlutterTtsFactory = FlutterTts Function();
 
 /// Real platform-backed implementation of [AudioServiceProtocol].
 final class AudioService implements AudioServiceProtocol {
   /// Creates the real audio service.
-  AudioService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// injected in tests.
+  /// [playerFactory] and [ttsFactory] default to building real
+  /// `just_audio` / `flutter_tts` instances; tests inject fakes to
+  /// exercise the plugin-boundary branches.
+  AudioService({
+    PlatformInfo platform = const PlatformInfo(),
+    AudioPlayerFactory? playerFactory,
+    FlutterTtsFactory? ttsFactory,
+  })  : _platform = platform,
+        _playerFactory = playerFactory ?? AudioPlayer.new,
+        _ttsFactory = ttsFactory ?? FlutterTts.new;
+
+  // ignore: unused_field
+  final PlatformInfo _platform;
+  final AudioPlayerFactory _playerFactory;
+  final FlutterTtsFactory _ttsFactory;
 
   /// Bundled alarm asset path.
   static const String _alarmAsset = 'assets/audio/alarm.mp3';
@@ -37,10 +61,10 @@ final class AudioService implements AudioServiceProtocol {
   AudioPlayer? _voicePlayer;
   FlutterTts? _tts;
 
-  AudioPlayer get _alarm => _alarmPlayer ??= AudioPlayer();
-  AudioPlayer get _ringtone => _ringtonePlayer ??= AudioPlayer();
-  AudioPlayer get _voice => _voicePlayer ??= AudioPlayer();
-  FlutterTts get _ttsEngine => _tts ??= FlutterTts();
+  AudioPlayer get _alarm => _alarmPlayer ??= _playerFactory();
+  AudioPlayer get _ringtone => _ringtonePlayer ??= _playerFactory();
+  AudioPlayer get _voice => _voicePlayer ??= _playerFactory();
+  FlutterTts get _ttsEngine => _tts ??= _ttsFactory();
 
   @override
   Future<void> playAlarm({

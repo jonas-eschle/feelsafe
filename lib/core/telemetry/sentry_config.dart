@@ -27,6 +27,33 @@ import 'package:guardianangela/core/logging/structured_logger.dart';
 /// this key via `flutter_secure_storage`.
 const String telemetryOptOutStorageKey = 'ga_telemetry_optout';
 
+/// Signature of the wrapped `SentryFlutter.init` call. Tests replace
+/// this via [sentryInitOverride] to observe the configured options
+/// without actually spinning up the native Sentry transport.
+typedef SentryInitFn = Future<void> Function(
+  FlutterOptionsConfiguration optionsBuilder,
+  Future<void> Function() appRunner,
+);
+
+/// Signature of the wrapped `Sentry.captureException` call. Tests set
+/// [sentryCaptureOverride] to a spy; production defers to the real
+/// Sentry SDK.
+typedef SentryCaptureFn = Future<SentryId> Function(
+  Object error, {
+  StackTrace? stackTrace,
+  ScopeCallback? withScope,
+});
+
+/// Test seam: replaces `SentryFlutter.init` when set. Production keeps
+/// this `null` so the real SDK is used.
+@visibleForTesting
+SentryInitFn? sentryInitOverride;
+
+/// Test seam: replaces `Sentry.captureException` when set. Production
+/// keeps this `null` so the real SDK is used.
+@visibleForTesting
+SentryCaptureFn? sentryCaptureOverride;
+
 bool _initialized = false;
 
 /// Returns true after a successful [initSentry] call. Tests and the
@@ -39,6 +66,8 @@ bool get sentryInitialized => _initialized;
 @visibleForTesting
 void resetSentryForTesting() {
   _initialized = false;
+  sentryInitOverride = null;
+  sentryCaptureOverride = null;
 }
 
 /// Validates that [dsn] targets Sentry's EU data region.
@@ -85,7 +114,8 @@ Future<void> initSentry({
           '(host must end with .de.sentry.io).',
     );
   }
-  await SentryFlutter.init(
+  final initFn = sentryInitOverride ?? _defaultSentryInit;
+  await initFn(
     (options) {
       options
         ..dsn = dsn
@@ -95,7 +125,7 @@ Future<void> initSentry({
         ..sendDefaultPii = false
         ..attachStacktrace = true;
     },
-    appRunner: () async {
+    () async {
       _initialized = true;
       StructuredLogger.telemetry(
         'Sentry initialized (EU host, release=$release).',
@@ -103,6 +133,14 @@ Future<void> initSentry({
       await appRunner();
     },
   );
+}
+
+/// Default [SentryInitFn] — delegates to the real `SentryFlutter.init`.
+Future<void> _defaultSentryInit(
+  FlutterOptionsConfiguration optionsBuilder,
+  Future<void> Function() appRunner,
+) async {
+  await SentryFlutter.init(optionsBuilder, appRunner: appRunner);
 }
 
 /// Reports [error] + [stack] to Sentry.
@@ -116,7 +154,8 @@ Future<void> reportException(
   String? context,
 }) async {
   if (!_initialized) return;
-  await Sentry.captureException(
+  final captureFn = sentryCaptureOverride ?? Sentry.captureException;
+  await captureFn(
     error,
     stackTrace: stack,
     withScope: (scope) {

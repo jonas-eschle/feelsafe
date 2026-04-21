@@ -20,6 +20,11 @@ import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 
+/// Factory that builds a fresh [FlutterLocalNotificationsPlugin].
+/// Injected by tests to substitute a mock.
+typedef NotificationPluginFactory = FlutterLocalNotificationsPlugin
+    Function();
+
 /// Real platform-backed implementation of
 /// [NotificationServiceProtocol].
 final class NotificationService implements NotificationServiceProtocol {
@@ -28,8 +33,14 @@ final class NotificationService implements NotificationServiceProtocol {
   /// [platform] defaults to the const production [PlatformInfo()];
   /// tests inject a [FakePlatformInfo] to exercise the Android-channel
   /// registration path.
-  NotificationService({PlatformInfo platform = const PlatformInfo()})
-      : _platform = platform;
+  /// [pluginFactory] defaults to building a real
+  /// [FlutterLocalNotificationsPlugin]; tests inject a mock so the
+  /// plugin-boundary branches can be exercised on the Linux host.
+  NotificationService({
+    PlatformInfo platform = const PlatformInfo(),
+    NotificationPluginFactory? pluginFactory,
+  })  : _platform = platform,
+        _plugin = (pluginFactory ?? FlutterLocalNotificationsPlugin.new)();
 
   final PlatformInfo _platform;
 
@@ -45,8 +56,7 @@ final class NotificationService implements NotificationServiceProtocol {
   /// Toast-channel id.
   static const String _toastChannelId = 'ga_toasts';
 
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _plugin;
 
   final StreamController<String> _actionController =
       StreamController<String>.broadcast();
