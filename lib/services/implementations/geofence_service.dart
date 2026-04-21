@@ -95,4 +95,15 @@ final class GeofenceService implements GeofenceServiceProtocol {
       _insideRegion = false;
     }
   }
+
+  /// Closes the broadcast controller and cancels the position
+  /// subscription. Fix for bugs.json Warn (leak — controller never
+  /// closed). Idempotent.
+  Future<void> dispose() async {
+    await _subscription?.cancel();
+    _subscription = null;
+    if (!_controller.isClosed) {
+      await _controller.close();
+    }
+  }
 }

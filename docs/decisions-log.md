@@ -2827,6 +2827,126 @@ context, alternatives, rationale, implications, and references.
 
 ---
 
+#### D-STRATEGY-1: Sealed-switch registry dispatches event strategies
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Nine `ChainStepType` values need a matching side-effect strategy. Options: reflection, map lookup, or an exhaustive sealed switch. Plan Phase 4 required L9 mitigation (no silently-missing arms).
+- **Decision:** `EventStrategyRegistry.forStep(ChainStep)` uses a `switch` expression over `ChainStepType` with one arm per value and NO `default:`. Adding a new step type is a compile-time error until the registry learns the new arm.
+- **Rationale:** Dart 3 exhaustiveness gives us L9 for free; strategies are const singletons so lookup is allocation-free.
+- **Implications:** Every new `ChainStepType` requires a matching strategy class and one registry arm.
+- **References:** `lib/domain/orchestration/event_strategy_registry.dart`; plan Phase 4 / 8.
+
+---
+
+#### D-STRATEGY-2: Strategy error-isolation policy = "continue"
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** A misbehaving strategy (e.g., a platform channel that throws) must not silence later escalation steps. Later steps include the loudest/most-visible escalation — shutting the chain on a single mid-chain exception would put the user at risk.
+- **Decision:** `SessionOrchestrator.handleEvent` wraps `executeReal` in `try/catch`, forwards to `onStepExecutionFailed`, and swallows the exception so the engine keeps advancing.
+- **Rationale:** A safety app's correct behaviour on strategy error is to keep going, not halt.
+- **Implications:** Strategies must log their own diagnostic context; orchestrator caller gets a hook it can route to telemetry.
+- **References:** `lib/domain/orchestration/session_orchestrator.dart`; plan Phase 8.
+
+---
+
+#### D-SERVICE-1: 15 services × 3 implementations each (real + fake + simulation)
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Strategies need platform side-effects (audio, SMS, GPS, …). Tests need deterministic doubles. Simulation runs need a structurally-safe implementation that cannot physically reach platform channels.
+- **Decision:** Every service ships three concrete implementations — `XxxService` (real, platform-backed), `FakeXxxService` (in-memory test double), `SimulationXxxService` (structural no-op with SIM-block logging) — against a single `XxxServiceProtocol`.
+- **Rationale:** Three parallel classes keep each concern focused; tests never pick between "real-with-simulate-flag" and "simulation" ambiguously.
+- **Implications:** Adding a service means three files and a matching provider pair.
+- **References:** `lib/services/{protocols,implementations,simulation,fakes}/`; plan Phase 9.
+
+---
+
+#### D-SERVICE-2: Simulation services block I/O at Layer 2
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Beyond Layer 1 (orchestrator simulation branch), each real service also honours `isSimulation: true` kwargs and short-circuits. This is Layer 2 of the 4-layer defense.
+- **Decision:** Every real service method that reaches a platform channel accepts `isSimulation` and returns fast with a `[SIM-BLOCK]` developer-log line when the flag is true.
+- **Rationale:** Defense-in-depth; any single-layer failure does not leak real side-effects.
+- **Implications:** All call sites threading simulation must plumb the flag.
+- **References:** `lib/services/implementations/*.dart`; `docs/spec/01-chain-engine.md §Simulation Safety Guards`.
+
+---
+
+#### D-SERVICE-3: `service_providers.dart` exposes real + simulation pairs
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** The controller picks between real and simulation services per-session. Riverpod needs a stable pair of providers.
+- **Decision:** For each protocol, one `Provider<Protocol>` binds the real impl (`xxxServiceProvider`) and one binds the simulation impl (`simulationXxxProvider`).
+- **Rationale:** Keeps the picker code simple (boolean switch) and makes overriding a single service in tests trivial.
+- **Implications:** 30 providers total. No single-provider-with-factory indirection.
+- **References:** `lib/services/service_providers.dart`; plan Phase 9.
+
+---
+
+#### D-SERVICE-4: `isSimulation` per call-site (not per-instance)
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Debated whether a service instance should "know" its mode at construction or take the flag per call.
+- **Decision:** Per call. The real service is always the same instance; callers pass `isSimulation: services.context.isSimulation` to every mutating method.
+- **Rationale:** Simpler instance lifecycle, no split graph of "real" vs "sim" instances, and a clean audit trail (every call site is explicit).
+- **Implications:** 40 `isSimulation` call sites inside strategies. Risk is silent omission — mitigated by Layer 1 skipping executeReal entirely in simulation mode, so Layer 2 is the belt not the suspenders.
+- **References:** `lib/domain/orchestration/strategies/*.dart`.
+
+---
+
+#### D-UI-1: Session-screen state is a sealed stub until the controller fills it
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** `SessionScreen` renders four distinct session phases (idle / active / paused / ended). Sealed `SessionPhase` subclasses drive the UI branches.
+- **Decision:** Use the sealed `SessionPhase` hierarchy from `WalkSession.phase`; exhaustive pattern-match in the widget tree. No untyped strings or enums.
+- **Rationale:** Compile-time exhaustiveness for phases mirrors the engine-state pattern; cheaper to keep in sync.
+- **Implications:** Adding a new phase requires updating every consumer — caught by the compiler.
+- **References:** `lib/features/session/session_screen.dart`; `lib/domain/models/walk_session.dart`.
+
+---
+
+#### D-BACKUP-1: Backup export uses PBKDF2 → AES-CTR + HMAC-SHA256
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Encrypted backup export needs a password-derived key plus authenticated encryption. Options: AES-GCM (ideal), or PBKDF2 → AES-CTR + HMAC-SHA256 (encrypt-then-MAC construction).
+- **Decision:** Phase 15 ships PBKDF2(100k SHA-256) → 32-byte enc key + 32-byte MAC key, AES-256-CTR + HMAC-SHA256 over (IV + ciphertext). AES-GCM migration reserved for v1.1.
+- **Rationale:** No mature pure-Dart AES-GCM that works across all platforms we ship. Encrypt-then-MAC is IND-CCA secure when implemented correctly.
+- **Implications:** Review-debt — surface in docs/rewrite-debt.md for v1.1 AES-GCM follow-up.
+- **References:** `lib/features/backup/backup_service.dart`; plan Phase 15.
+
+---
+
+#### D-TELEMETRY-1: Sentry EU host, opt-out-by-default
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Telemetry helps debug crashes in production but carries GDPR risk and can log sensitive session context by accident.
+- **Decision:** Sentry (EU `.de.sentry.io` host only — `initSentry` rejects anything else), enabled by default, with a user-visible opt-out that persists to secure storage under `ga_telemetry_optout`. No PII in scope.
+- **Rationale:** EU host for data-residency; opt-out rather than opt-in because the user-visibility problem dominates (crashes go unreported otherwise).
+- **Implications:** Settings screen exposes the toggle; `main.dart` reads it before `runApp`.
+- **References:** `lib/core/telemetry/sentry_config.dart`; `lib/main.dart`; plan Phase 15.
+
+---
+
+#### D-PLATFORM-12: Emergency dial uses `ACTION_DIAL`, not `ACTION_CALL`
+
+- **Status:** RESOLVED
+- **Date:** 2026-04-20
+- **Context:** Android's `ACTION_CALL` places the call automatically but requires the `CALL_PHONE` runtime permission and Play Store review of the emergency pathway.
+- **Decision:** Use `ACTION_DIAL` (pre-populates the dialer; user taps the call button). `CALL_PHONE` is requested only where strictly needed (non-emergency contact auto-dial).
+- **Rationale:** Lower review risk; no silent background dialing; user still completes the call in one tap. Emergency numbers in most regions accept both pathways.
+- **Implications:** Emergency dialing requires one user tap. Documented in the emergency-call spec.
+- **References:** `android/app/src/main/kotlin/com/guardianangela/app/PhoneCallHelper.kt`; plan Phase 10.
+
+---
+
 ## Open questions still pending
 
 The table below tracks every open question ever logged. 12 of the

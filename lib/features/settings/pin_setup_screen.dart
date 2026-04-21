@@ -1,12 +1,16 @@
 /// PIN setup — enter then confirm, save hash.
+///
+/// Fix for bugs.json Block (PIN Argon2id upgrade): hashes now flow
+/// through [PinHasher.hash] (salted + iterated) instead of bare
+/// SHA-256.
 library;
 
 import 'package:flutter/material.dart';
 
-import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/core/utils/pin_hasher.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -26,7 +30,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   bool _confirming = false;
   String? _error;
 
-  String _hash(String pin) => sha256.convert(pin.codeUnits).toString();
+  /// Fix for bugs.json Block (PIN Argon2id upgrade): delegates to
+  /// [PinHasher.hash] so setup and verify use the same primitive.
+  String _hash(String pin) => PinHasher.hash(pin);
 
   void _onDigit(int d) {
     setState(() {

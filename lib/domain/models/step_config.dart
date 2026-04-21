@@ -354,7 +354,16 @@ final class CountdownWarningConfig extends StepConfig {
 final class FakeCallConfig extends StepConfig {
   /// Creates a fake-call config.
   ///
-  /// [callerName] — displayed caller name; defaults to "Mom".
+  /// Fix for bugs.json Bug #4 / historical FakeCallConfig semantics:
+  /// default changed from "Mom" to "Angela" (aligned with the
+  /// Guardian Angela product brand and the "Ask for Angela" safety
+  /// campaign). `callerName` is nullable: explicit `null` round-trips
+  /// as `null` (see [fromJson] / [toJson]) — `copyWith` requires
+  /// `clearCallerName: true` to override a non-null value with null.
+  ///
+  /// [callerName] — displayed caller name; defaults to "Angela".
+  /// `null` means "no caller name provided — the UI renders a safe
+  /// fallback (`?? 'Angela'`)".
   /// [ringtoneAsset] — optional asset path for the ringtone.
   /// [voiceRecordingAsset] — optional asset path for the voice
   /// recording played on answer.
@@ -362,7 +371,7 @@ final class FakeCallConfig extends StepConfig {
   /// to false.
   /// [retryCount] — extra attempts after first ring; defaults to 0.
   const FakeCallConfig({
-    this.callerName = 'Mom',
+    this.callerName = 'Angela',
     this.ringtoneAsset,
     this.voiceRecordingAsset,
     this.declineIsSafe = false,
@@ -370,16 +379,25 @@ final class FakeCallConfig extends StepConfig {
   });
 
   /// Deserializes a `FakeCallConfig` from JSON.
+  ///
+  /// Fix for bugs.json Bug #4: the previous implementation coerced an
+  /// explicit `null` callerName to "Mom", which made the null/set
+  /// round-trip lossy. This version passes the value through as-is —
+  /// `null` round-trips as `null`, and the constructor default only
+  /// applies when the key is missing from JSON.
   factory FakeCallConfig.fromJson(Map<String, Object?> json) => FakeCallConfig(
-    callerName: json['callerName'] as String? ?? 'Mom',
+    callerName: json.containsKey('callerName')
+        ? json['callerName'] as String?
+        : 'Angela',
     ringtoneAsset: json['ringtoneAsset'] as String?,
     voiceRecordingAsset: json['voiceRecordingAsset'] as String?,
     declineIsSafe: json['declineIsSafe'] as bool? ?? false,
     retryCount: (json['retryCount'] as num?)?.toInt() ?? 0,
   );
 
-  /// Name shown as the incoming caller. Defaults to "Mom". May be
-  /// null if explicitly cleared.
+  /// Name shown as the incoming caller. Defaults to "Angela". May be
+  /// null if explicitly cleared; UI layers are expected to fall back
+  /// to "Angela" via `callerName ?? 'Angela'`.
   final String? callerName;
 
   /// Optional asset path for a custom ringtone. Defaults to null.
@@ -397,14 +415,20 @@ final class FakeCallConfig extends StepConfig {
   final int retryCount;
 
   /// Returns a new config with the given fields replaced.
+  ///
+  /// Fix for bugs.json Bug #4: pass `clearCallerName: true` to
+  /// explicitly override a non-null `callerName` with `null`. When
+  /// `clearCallerName` is false and `callerName` is null, the
+  /// existing value is preserved (default copyWith semantics).
   FakeCallConfig copyWith({
     String? callerName,
+    bool clearCallerName = false,
     String? ringtoneAsset,
     String? voiceRecordingAsset,
     bool? declineIsSafe,
     int? retryCount,
   }) => FakeCallConfig(
-    callerName: callerName ?? this.callerName,
+    callerName: clearCallerName ? null : (callerName ?? this.callerName),
     ringtoneAsset: ringtoneAsset ?? this.ringtoneAsset,
     voiceRecordingAsset: voiceRecordingAsset ?? this.voiceRecordingAsset,
     declineIsSafe: declineIsSafe ?? this.declineIsSafe,
@@ -540,8 +564,14 @@ final class SmsContactConfig extends StepConfig {
   final bool blackScreenMode;
 
   /// Returns a new config with the given fields replaced.
+  ///
+  /// Fix for bugs.json historical Warn (copy-with clear patterns):
+  /// pass `clearContactIds: true` to explicitly set `contactIds` to
+  /// `null`. This makes "omit the argument" and "clear the list"
+  /// distinguishable.
   SmsContactConfig copyWith({
     List<String>? contactIds,
+    bool clearContactIds = false,
     SmsContactSelection? contactSelection,
     MessageChannel? channel,
     bool? includeLocation,
@@ -552,7 +582,7 @@ final class SmsContactConfig extends StepConfig {
     String? messageTemplate,
     bool? blackScreenMode,
   }) => SmsContactConfig(
-    contactIds: contactIds ?? this.contactIds,
+    contactIds: clearContactIds ? null : (contactIds ?? this.contactIds),
     contactSelection: contactSelection ?? this.contactSelection,
     channel: channel ?? this.channel,
     includeLocation: includeLocation ?? this.includeLocation,
@@ -838,11 +868,20 @@ final class CallEmergencyConfig extends StepConfig {
   final bool confirmBeforeCalling;
 
   /// Returns a new config with the given fields replaced.
+  ///
+  /// Fix for bugs.json historical Warn (copy-with clear patterns):
+  /// pass `clearEmergencyNumber: true` to explicitly set
+  /// `emergencyNumber` to `null`. With the default `copyWith` shape
+  /// there is no way to distinguish "no argument" from "explicit
+  /// null".
   CallEmergencyConfig copyWith({
     String? emergencyNumber,
+    bool clearEmergencyNumber = false,
     bool? confirmBeforeCalling,
   }) => CallEmergencyConfig(
-    emergencyNumber: emergencyNumber ?? this.emergencyNumber,
+    emergencyNumber: clearEmergencyNumber
+        ? null
+        : (emergencyNumber ?? this.emergencyNumber),
     confirmBeforeCalling: confirmBeforeCalling ?? this.confirmBeforeCalling,
   );
 

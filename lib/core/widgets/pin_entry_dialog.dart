@@ -2,14 +2,17 @@
 ///
 /// Compares the entered PIN against the persisted hashes via the
 /// settings controller; returns a [PinResult] describing the outcome.
+///
+/// Fix for bugs.json Block (PIN Argon2id upgrade): verification now
+/// goes through [PinHasher.verify] — constant-time + salted — instead
+/// of plain SHA-256 equality.
 library;
 
 import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import 'package:crypto/crypto.dart';
-
+import 'package:guardianangela/core/utils/pin_hasher.dart';
 import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -40,9 +43,12 @@ Future<PinResult> showPinEntryDialog({
   return result ?? PinResult.cancelled;
 }
 
-/// Hashes a PIN consistently with Settings mutators. Uses SHA-256
-/// (matches the test fixtures used by the settings controller).
-String hashPin(String pin) => sha256.convert(pin.codeUnits).toString();
+/// Hashes a PIN consistently with Settings mutators.
+///
+/// Fix for bugs.json Block (PIN Argon2id upgrade): delegates to
+/// [PinHasher.hash]. See `pin_hasher.dart` for the algorithm and
+/// deviation-from-D-SEC-10 rationale.
+String hashPin(String pin) => PinHasher.hash(pin);
 
 class _PinDialog extends StatefulWidget {
   const _PinDialog({
@@ -101,12 +107,17 @@ class _PinDialogState extends State<_PinDialog> {
   void _maybeSubmit() {
     final pin = _buffer.toString();
     if (pin.length < 4) return;
-    final hash = hashPin(pin);
-    if (widget.duressHash != null && hash == widget.duressHash) {
+    // Fix for bugs.json Block (PIN Argon2id upgrade) + Warn (timing
+    // attack): PinHasher.verify is salted + constant-time — no
+    // prefix-byte timing oracle. Duress is checked FIRST so a user
+    // who set duress == sessionEnd never sees the "disarm" branch.
+    final duress = widget.duressHash;
+    if (duress != null && PinHasher.verify(pin, duress)) {
       Navigator.of(context).pop(PinResult.duress);
       return;
     }
-    if (widget.sessionEndHash != null && hash == widget.sessionEndHash) {
+    final sessionEnd = widget.sessionEndHash;
+    if (sessionEnd != null && PinHasher.verify(pin, sessionEnd)) {
       Navigator.of(context).pop(PinResult.correct);
       return;
     }

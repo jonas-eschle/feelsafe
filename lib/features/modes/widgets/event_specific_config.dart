@@ -357,7 +357,12 @@ class _EmergencyForm extends StatelessWidget {
           decoration: InputDecoration(labelText: l.stepConfigEmergencyNumber),
           onChanged: (v) => onChanged(
             step.copyWith(
-              config: cfg.copyWith(emergencyNumber: v.isEmpty ? null : v),
+              // Fix for bugs.json historical Warn (copy-with clear
+              // patterns): use `clearEmergencyNumber: true` for
+              // empty text so the value is explicitly nulled.
+              config: v.isEmpty
+                  ? cfg.copyWith(clearEmergencyNumber: true)
+                  : cfg.copyWith(emergencyNumber: v),
             ),
           ),
         ),

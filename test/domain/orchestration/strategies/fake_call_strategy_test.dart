@@ -68,7 +68,8 @@ void main() {
       expect(desc, contains('Alice'));
     });
 
-    test('simulationDescription defaults to Mom when name null', () {
+    test('simulationDescription defaults to Angela when name null', () {
+      // Fix for bugs.json Bug #4: default caller name is "Angela".
       final desc = strategy.simulationDescription(
         step(
           type: ChainStepType.fakeCall,
@@ -76,15 +77,15 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('Mom'));
+      expect(desc, contains('Angela'));
     });
 
-    test('simulationDescription defaults to Mom with no config', () {
+    test('simulationDescription defaults to Angela with no config', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.fakeCall),
         harness.build(),
       );
-      expect(desc, contains('Mom'));
+      expect(desc, contains('Angela'));
     });
 
     test('simulationDescription starts with SIM prefix', () {
@@ -117,7 +118,7 @@ void main() {
         step(type: ChainStepType.fakeCall, config: const LoudAlarmConfig()),
         harness.build(),
       );
-      expect(desc, contains('Mom'));
+      expect(desc, contains('Angela'));
     });
 
     test('executeReal is order-stable: ringtone before vibration', () async {

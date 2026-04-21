@@ -1,0 +1,263 @@
+{
+  "agent": "bugs",
+  "findings": [
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "holdButton UI completely disconnected from engine — the engine's holdStart()/holdRelease() methods are never invoked from session_screen.dart; the HoldToTriggerButton gets empty callbacks, so the entire walk-mode check-in mechanism does not work",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_screen.dart",
+      "line": 120,
+      "evidence": "HoldToTriggerButton(semanticLabel: l.sessionHoldSemantic, label: l.sessionHoldPrompt, onHoldStart: () {}, onHoldRelease: () {})",
+      "suggested_fix": "Wire onHoldStart/onHoldRelease to SessionController.holdStart()/holdRelease() (which must also be added as proxy methods to SessionController, forwarding to engine.holdStart/holdRelease)"
+    },
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "Battery-level monitoring never triggers the battery-alert session: BatteryMonitorService.onLowBattery stream is defined but no code anywhere subscribes to it or invokes SessionController.startBatteryAlertSession()",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/battery_alert/battery_alert_controller.dart",
+      "line": 13,
+      "evidence": "BatteryAlertController has no reference to BatteryMonitorServiceProtocol at all; and startBatteryAlertSession in session_controller.dart is never called from anywhere in lib/",
+      "suggested_fix": "Add a top-level observer (e.g., in app.dart / main.dart) that subscribes to batteryMonitorServiceProvider.onLowBattery and invokes sessionControllerProvider.notifier.startBatteryAlertSession(config), or wire it through BatteryAlertController.build()"
+    },
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "TriggerManager declares batteryMonitorService as required but never uses it — the field is injected but no subscription/startMonitoring call exists",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/trigger_manager.dart",
+      "line": 67,
+      "evidence": "final BatteryMonitorServiceProtocol batteryMonitorService; — referenced only in the constructor and doc comments; no method uses batteryMonitorService.* anywhere in the file",
+      "suggested_fix": "Either remove the unused field and required parameter, or actually wire it to start monitoring and fire the appropriate trigger"
+    },
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "SessionOrchestrator onSimulationDescription callback is never supplied by SessionController, so simulation step descriptions are silently discarded; SimulationSummaryScreen always shows an empty list",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_controller.dart",
+      "line": 340,
+      "evidence": "SessionOrchestrator is constructed without onSimulationDescription; WalkSession.firedStepDescriptions is read by simulation_summary_screen.dart but copyWith(firedStepDescriptions: ...) is never called anywhere in session_controller",
+      "suggested_fix": "Pass onSimulationDescription: (desc) => _appendFiredDescription(desc) that appends to current WalkSession.firedStepDescriptions"
+    },
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "L3 serialization round-trip gap: FakeCallConfig.fromJson coerces explicit null callerName to 'Mom'. The field is typed String? and JSON can hold null, so the round-trip is lossy and a user-cleared caller name becomes 'Mom' after save/reload",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
+      "line": 374,
+      "evidence": "callerName: json['callerName'] as String? ?? 'Mom',",
+      "suggested_fix": "Drop the ?? 'Mom' fallback: callerName: json['callerName'] as String?  — the constructor default is already 'Mom' for the unset case, which is only applied when the key is missing, not when it is explicitly null"
+    },
+    {
+      "severity": "Block",
+      "category": "race",
+      "issue": "Incoming-call handler auto-resumes user-paused sessions: any time a phone call ends/goes idle, if the engine is paused it resumes regardless of the original PauseReason — so a user-initiated pause is silently cancelled by any unrelated call",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_controller.dart",
+      "line": 453,
+      "evidence": "case CallState.ended: case CallState.idle: if (engine.state is EnginePaused) { engine.resume(); }",
+      "suggested_fix": "Only resume if the EnginePaused.reason == PauseReason.incomingCall; leave userRequested/fakeCallAnswered/bootRestart pauses alone"
+    },
+    {
+      "severity": "Block",
+      "category": "L1-L14-regression",
+      "issue": "AppSettings.emergencyCallNumber is never threaded into CallEmergencyConfig: the strategy's doc claims the controller resolves it into the step config before execution, but no such resolution exists anywhere — the strategy falls back to a hardcoded '112' when the step config has no emergencyNumber",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/call_emergency_strategy.dart",
+      "line": 44,
+      "evidence": "final String _defaultEmergencyNumber = '112'; — and no code in session_controller.dart populates CallEmergencyConfig.emergencyNumber from AppSettings.emergencyCallNumber",
+      "suggested_fix": "Either pass the settings emergencyCallNumber through EventServices/SessionContext and let the strategy consult it, or resolve it into the ChainStep.config at session-bootstrap time as the doc claims"
+    },
+    {
+      "severity": "Warn",
+      "category": "timing-attack",
+      "issue": "PIN hash comparison uses plain == on SHA-256 hex strings — timing attack surface for distinguishing which prefix bytes match",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/core/widgets/pin_entry_dialog.dart",
+      "line": 105,
+      "evidence": "if (widget.duressHash != null && hash == widget.duressHash) { ... } if (widget.sessionEndHash != null && hash == widget.sessionEndHash) { ... }",
+      "suggested_fix": "Add a constant-time string equals helper (e.g., XOR-accumulate a diff byte over the full length) and use it for both comparisons"
+    },
+    {
+      "severity": "Warn",
+      "category": "timing-attack",
+      "issue": "PIN hashing uses bare SHA-256 with no salt and no iterations — 4-digit PINs (only 10k combinations) are trivially brute-forceable given any leaked hash",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/core/widgets/pin_entry_dialog.dart",
+      "line": 45,
+      "evidence": "String hashPin(String pin) => sha256.convert(pin.codeUnits).toString(); — duplicated in lib/features/settings/pin_setup_screen.dart line 29",
+      "suggested_fix": "Replace with a salted PBKDF2 (e.g., reuse _pbkdf2 from backup_service.dart with per-install salt stored via flutter_secure_storage, ~100k iterations). Centralize the helper in one place so setup and verify stay identical"
+    },
+    {
+      "severity": "Warn",
+      "category": "leak",
+      "issue": "IncomingCallService StreamController (_controller) is never closed — the protocol has no dispose method and the class exposes none. The session controller only cancels its subscription",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/incoming_call_service.dart",
+      "line": 33,
+      "evidence": "final StreamController<CallState> _controller = StreamController<CallState>.broadcast(); — no close() anywhere; IncomingCallServiceProtocol has no dispose()",
+      "suggested_fix": "Add dispose() on the service and on the protocol (or a uniform Disposable interface) that closes the controller and cancels _nativeSub"
+    },
+    {
+      "severity": "Warn",
+      "category": "leak",
+      "issue": "NotificationService StreamController (_actionController) is never closed, and no dispose method exists; additionally the 3-second toast auto-dismiss Timer in showToast is fire-and-forget and cannot be cancelled",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/notification_service.dart",
+      "line": 217,
+      "evidence": "final StreamController<String> _actionController = StreamController<String>.broadcast(); ... Timer(const Duration(seconds: 3), () => _plugin.cancel(id: id));",
+      "suggested_fix": "Add dispose() that closes _actionController and cancels outstanding timers. Track the toast timer in the existing _scheduledTimers map so cancelAll() cleans it up"
+    },
+    {
+      "severity": "Warn",
+      "category": "leak",
+      "issue": "HardwareButtonService and GeofenceService StreamController (_controller) are never closed — no dispose method on either",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/hardware_button_service.dart",
+      "line": 30,
+      "evidence": "hardware_button_service.dart:30 and geofence_service.dart:23 both declare `final StreamController<...> _controller = StreamController<...>.broadcast();` with no matching .close() anywhere in lib/",
+      "suggested_fix": "Add dispose() methods on each real service that close the controller and cancel the native subscription"
+    },
+    {
+      "severity": "Warn",
+      "category": "L1-L14-regression",
+      "issue": "Strategies never fall back to EventDefaults — all nine strategies do `config is XxxConfig ? config : const XxxConfig()`, ignoring the user-configured AppDefaults.eventDefaults entirely when a step has null config",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/loud_alarm_strategy.dart",
+      "line": 43,
+      "evidence": "LoudAlarmConfig _resolveConfig(ChainStep step) { final raw = step.config; if (raw is LoudAlarmConfig) return raw; return const LoudAlarmConfig(); } — same pattern in all 9 strategies; SessionContext.configFor() exists but is never called",
+      "suggested_fix": "Replace local _resolveConfig helpers with services.context.configFor(step) (which already consults eventDefaults) and make EventServices plumb SessionContext.eventDefaults through"
+    },
+    {
+      "severity": "Warn",
+      "category": "L1-L14-regression",
+      "issue": "PhoneCallContactStrategy silently discards alternativeContactIds — if the primary contact cannot be called the strategy returns without trying any fallback",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/phone_call_contact_strategy.dart",
+      "line": 93,
+      "evidence": "_resolveContact never iterates config.alternativeContactIds; the field is read for == and hashCode in the config but never acted on",
+      "suggested_fix": "When primary lookup fails or the call fails, iterate alternativeContactIds and attempt each in sequence; also check whether the first primary returned null-phoneNumber contact"
+    },
+    {
+      "severity": "Warn",
+      "category": "hardcoded",
+      "issue": "Simulation descriptions returned by event strategies are hardcoded English strings (e.g., '[SIM] Loud alarm + $tail'), but they are rendered in user-facing SimulationSummaryScreen ListTile. Violates l10n coverage",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/loud_alarm_strategy.dart",
+      "line": 37,
+      "evidence": "return '[SIM] Loud alarm + $tail'; — all 9 strategies have similar hardcoded English in simulationDescription()",
+      "suggested_fix": "Return a symbolic key + args tuple (e.g., a SimulationStepDescription with templateKey + Map<String, Object?> params) and resolve to l10n at the UI layer"
+    },
+    {
+      "severity": "Warn",
+      "category": "hardcoded",
+      "issue": "AudioService falls back to a hardcoded English TTS string when a voice asset is missing",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/audio_service.dart",
+      "line": 97,
+      "evidence": "await _ttsEngine.speak('Hi, I am running late. I will call you back soon.');",
+      "suggested_fix": "Move the fallback phrase to a locale-aware string or accept the phrase as a parameter from the caller (session context with localized text)"
+    },
+    {
+      "severity": "Warn",
+      "category": "hardcoded",
+      "issue": "SMS default template and pre-call SMS default are hardcoded English: '{name} may need help...' / '{name} is trying to reach you...'",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/sms_contact_strategy.dart",
+      "line": 25,
+      "evidence": "const String _defaultSmsTemplate = '{name} may need help. Location: {location}. Time: {time}.'; — and phone_call_contact_strategy.dart:25 has _defaultPreSmsTemplate equivalent",
+      "suggested_fix": "Route through a per-contact SMS language (EmergencyContact.smsLanguageCode) and look up the default template from localized strings; no user-facing English fallback"
+    },
+    {
+      "severity": "Warn",
+      "category": "other",
+      "issue": "SessionController._fireDistressBecauseOfPin accepts a `reason` parameter but never uses it — the EndReason.wrongPinExhausted vs EndReason.duressPin distinction is lost before it reaches the engine",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_controller.dart",
+      "line": 299,
+      "evidence": "Future<void> _fireDistressBecauseOfPin(EndReason reason) async { ... runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps()); } — reason is ignored",
+      "suggested_fix": "Either remove the unused parameter, or thread it into the engine so the eventual sessionEnded event carries the correct metadata reason; otherwise audit why handlePinResult branches on the reason at all"
+    },
+    {
+      "severity": "Warn",
+      "category": "other",
+      "issue": "FakeCallScreen never displays FakeCallConfig.callerName — the screen shows a localized l.fakeCallTitle but the caller name from the step config is unreachable from the UI, making the disguise useless",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/fake_call/fake_call_screen.dart",
+      "line": 39,
+      "evidence": "Text(l.fakeCallTitle, ...) — no reference to the current step's FakeCallConfig.callerName anywhere in this file; FakeCallController exposes no caller-name accessor",
+      "suggested_fix": "Expose the current fakeCall step's config via FakeCallController (read from SessionController's active chainStep) and render the callerName in the overlay"
+    },
+    {
+      "severity": "Warn",
+      "category": "other",
+      "issue": "First-launch redirect is explicitly a no-op — isFirstLaunch users are never routed to onboarding",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/router/app_router.dart",
+      "line": 48,
+      "evidence": "redirect: (context, state) => null, — comment says Phase 11 will add it but the feature is missing today",
+      "suggested_fix": "Implement the redirect: read settingsControllerProvider, if state.value?.isFirstLaunch == true and the target is not RouteNames.onboarding, return RouteNames.onboarding"
+    },
+    {
+      "severity": "Warn",
+      "category": "other",
+      "issue": "AppDatabase never initialised before runApp — main.dart has an explicit TODO comment and the database provider is not awaited; any provider that depends on it will crash or return defaults on first access",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
+      "line": 34,
+      "evidence": "// TODO Phase 6: init AppDatabase before runApp.",
+      "suggested_fix": "Init the SQLCipher-backed AppDatabase (and run seed_data if empty) before runApp, wiring the singleton into ProviderScope overrides"
+    },
+    {
+      "severity": "Warn",
+      "category": "other",
+      "issue": "NotificationService.init() is never called from main.dart — Android channels are only created on first show*(), and the action-tap callback will never fire for notifications delivered while the app is backgrounded",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
+      "line": 32,
+      "evidence": "void main() async { ... no ref.read(notificationServiceProvider).init() ... }",
+      "suggested_fix": "Await notificationServiceProvider.init() inside the Sentry appRunner before runApp, so channels are registered even on cold start without a user action"
+    },
+    {
+      "severity": "Warn",
+      "category": "leak",
+      "issue": "AudioService lazily creates three AudioPlayer instances and a FlutterTts but has no dispose method — on hot-reload or controller teardown these hold open platform resources",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/audio_service.dart",
+      "line": 35,
+      "evidence": "AudioPlayer? _alarmPlayer; AudioPlayer? _ringtonePlayer; AudioPlayer? _voicePlayer; FlutterTts? _tts; — no dispose()",
+      "suggested_fix": "Add dispose() that awaits player.dispose() on each non-null player and fts.stop()/shutdown()"
+    },
+    {
+      "severity": "Note",
+      "category": "other",
+      "issue": "SmsContactStrategy ignores SmsContactConfig.channel — it preserves the value on the config but MessagingService.sendToAll iterates every enabled channel per contact. The config's declared channel is advisory only",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/sms_contact_strategy.dart",
+      "line": 63,
+      "evidence": "_touchChannel(channel); // no-op — with comment admitting the field is preserved but not acted on",
+      "suggested_fix": "Either honour the per-step channel (filter contact.channels) in sendToAll, or remove the channel field from SmsContactConfig to avoid misleading users"
+    },
+    {
+      "severity": "Note",
+      "category": "other",
+      "issue": "SmsContactConfig.autoRecordAudio, autoRecordVideo, recordDurationSeconds, includeMedicalInfo, blackScreenMode are stored on the config but the strategy never acts on them",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/sms_contact_strategy.dart",
+      "line": 33,
+      "evidence": "executeReal consumes messageTemplate + contactSelection + channel, but autoRecordAudio/autoRecordVideo/recordDurationSeconds/includeMedicalInfo/blackScreenMode are never read",
+      "suggested_fix": "Either implement the record and medical-info behaviour, or mark these as reserved for future work and disable the UI toggles to avoid user confusion"
+    },
+    {
+      "severity": "Note",
+      "category": "other",
+      "issue": "PhoneCallContactConfig.preSmsIncludeLocation is stored but ignored; the pre-SMS body is resolved via resolvePlaceholders, which substitutes an empty string for {location} when the caller does not pass one (and no caller does)",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/phone_call_contact_strategy.dart",
+      "line": 47,
+      "evidence": "services.context.resolvePlaceholders(config.preSmsMessage ?? _defaultPreSmsTemplate); — location is never supplied so {location} is always empty",
+      "suggested_fix": "Plumb LocationServiceProtocol.getLastLocationUrl() into EventServices or SessionContext and pass it as `location:` to resolvePlaceholders when config.preSmsIncludeLocation is true"
+    },
+    {
+      "severity": "Note",
+      "category": "unawaited",
+      "issue": "SessionController._handleEngineEvent calls `unawaited(orchestrator.handleEvent(event))` for every engine event. If handleEvent throws outside the try/catch (e.g., the strategy itself is non-async and throws synchronously while constructing services), the error is silently dropped",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_controller.dart",
+      "line": 437,
+      "evidence": "unawaited(orchestrator.handleEvent(event));",
+      "suggested_fix": "Wrap in .onError((e, s) => developer.log(...)) or use Zone.current.handleUncaughtError as a safety net"
+    },
+    {
+      "severity": "Note",
+      "category": "other",
+      "issue": "DisguisedReminderStrategy does not honour DisguisedReminderConfig.intervalSeconds — the strategy shows a single notification per stepStarted event; the interval is stored but ignored",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/disguised_reminder_strategy.dart",
+      "line": 25,
+      "evidence": "executeReal reads _resolveTemplate and calls showDisguisedReminder once; intervalSeconds from DisguisedReminderConfig is never consulted",
+      "suggested_fix": "Either wire intervalSeconds into scheduleNotification(delay:) or remove the field. If the engine is expected to drive repeats via step duration/retries, document this relationship in the config doc"
+    }
+  ],
+  "open_questions": [
+    "Is TriggerManager.batteryMonitorService intended to be removed (battery-alert owns its own path) or is the missing wiring a regression?",
+    "Should the startBatteryAlertSession integration live in main.dart (boot-time observer) or a dedicated Riverpod listener on batteryAlertControllerProvider? The current code has neither",
+    "The PIN-hash algorithm (bare SHA-256 of codeUnits) was presumably a placeholder; is there a sanctioned migration path (pre-alpha break-compat permits wiping all hashes when upgrading)?",
+    "FakeCallScreen uses only a localized title; was the lack of caller-name rendering a deliberate simplification for Phase 6 or a wiring gap to fix?"
+  ]
+}

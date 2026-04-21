@@ -20,7 +20,7 @@ final class CountdownWarningStrategy extends EventStrategy {
 
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final isSim = services.context.isSimulation;
     if (config.vibrate) {
       await services.vibration.warningPattern(isSimulation: isSim);
@@ -34,11 +34,23 @@ final class CountdownWarningStrategy extends EventStrategy {
   String simulationDescription(ChainStep step, EventServices services) =>
       '[SIM] ${step.durationSeconds}s countdown warning';
 
-  /// Resolves the step's config, falling back to a default-shaped
-  /// [CountdownWarningConfig] when the step does not carry one.
-  CountdownWarningConfig _resolveConfig(ChainStep step) {
+  /// Resolves the step's config.
+  ///
+  /// Fix for bugs.json Warn (strategies never fall back to
+  /// EventDefaults): prefer step.config, then session eventDefaults,
+  /// then the local const fallback.
+  CountdownWarningConfig _resolveConfig(
+    ChainStep step,
+    EventServices services,
+  ) {
     final raw = step.config;
     if (raw is CountdownWarningConfig) return raw;
+    try {
+      final fromDefaults = services.context.configFor(step);
+      if (fromDefaults is CountdownWarningConfig) return fromDefaults;
+    } on StateError {
+      // No eventDefaults — fall through.
+    }
     return const CountdownWarningConfig();
   }
 }

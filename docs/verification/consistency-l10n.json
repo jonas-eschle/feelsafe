@@ -1,0 +1,93 @@
+{
+  "agent": "consistency-l10n",
+  "l10n_key_parity": {
+    "app_en.arb": 254,
+    "app_de.arb": 254,
+    "app_es.arb": 254,
+    "app_fr.arb": 254,
+    "app_ru.arb": 254,
+    "app_zh.arb": 254,
+    "app_zh_TW.arb": 254,
+    "app_hi.arb": 254,
+    "app_fa.arb": 254,
+    "app_uk.arb": 254,
+    "app_pl.arb": 254,
+    "app_el.arb": 254,
+    "app_ar.arb": 254,
+    "app_he.arb": 254
+  },
+  "l10n_parity_summary": {
+    "total_arb_files": 14,
+    "all_keys_equal": true,
+    "missing_keys_anywhere": 0,
+    "extra_keys_anywhere": 0,
+    "placeholder_mismatches": 0,
+    "phase15_keys_in_all_arbs": {
+      "backupPinOptional": 14,
+      "backupImportOk": 14
+    },
+    "locale_headers_correct": true,
+    "flutter_gen_l10n_warnings": 0,
+    "brand_names_latin_preserved": true
+  },
+  "consistency_summary": {
+    "flutter_analyze_issues": 0,
+    "todo_fixme_hack_count": 4,
+    "non_snake_case_files": 0,
+    "non_pascal_case_classes": 0,
+    "unused_imports": 0,
+    "unlocalized_const_text_matches": 0,
+    "barrel_models_dot_dart_used_everywhere": true,
+    "non_barrel_model_imports": 0,
+    "lines_over_80_chars_non_generated": 125,
+    "lines_over_80_non_generated_note": "All 125 overages are package import paths (e.g., 'package:guardianangela/domain/orchestration/strategies/...'). dart format leaves these intact because import URIs cannot be broken."
+  },
+  "sealed_hierarchies": {
+    "sealed_class_count": 8,
+    "sealed_files": [
+      "lib/domain/engine/engine_state.dart (EngineState)",
+      "lib/domain/models/walk_session.dart (SessionPhase)",
+      "lib/domain/models/step_config.dart (StepConfig)",
+      "lib/domain/models/trigger.dart (Trigger, HardwareTrigger, DistressTrigger, DisarmTrigger)",
+      "lib/domain/models/chain_event.dart (ActionDeliveryStatus)"
+    ],
+    "abstract_classes_count": 17,
+    "abstract_classes_note": "All abstract classes are legitimate interface protocols (services/protocols/*.dart, RouteNames static holder, AppTheme holder, EventStrategy base). Not candidates for sealed conversion."
+  },
+  "findings": [
+    {
+      "severity": "Note",
+      "category": "todo-hack",
+      "issue": "lib/main.dart line 22 has TODO(release-owner) for Sentry project id placeholder",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
+      "suggested_fix": "Resolve before public release; replace placeholder dsn or guard Sentry init with kReleaseMode check."
+    },
+    {
+      "severity": "Note",
+      "category": "todo-hack",
+      "issue": "lib/main.dart line 34 has generic TODO (Phase 6 database init) that is now stale wording",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
+      "suggested_fix": "Remove the stale TODO (DB init already exists elsewhere) or convert to an explanatory doc comment."
+    },
+    {
+      "severity": "Warn",
+      "category": "todo-hack",
+      "issue": "lib/features/backup/backup_service.dart line 32: TODO(Phase 15.1) to swap CTR+HMAC for AES-256-GCM",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/backup/backup_service.dart",
+      "suggested_fix": "Track this as an open crypto upgrade before public release; backing comment at line 30 already documents rationale."
+    },
+    {
+      "severity": "Note",
+      "category": "doc-comment",
+      "issue": "lib/data/db/app_database.dart class AppDatabase itself has no /// doc (constructor and methods documented).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/data/db/app_database.dart",
+      "suggested_fix": "Add a one-line /// comment above `class AppDatabase extends _$AppDatabase` describing it as the Drift SQLCipher database entrypoint."
+    }
+  ],
+  "rtl_natural_check": {
+    "ar_he_fa_spot_checked": true,
+    "non_brand_latin_runs_in_rtl": "All occurrences are {placeholder} tokens (seconds, description, percent) that must stay Latin by design.",
+    "rtl_reads_naturally": true
+  },
+  "open_questions": []
+}

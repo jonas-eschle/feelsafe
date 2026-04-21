@@ -2,11 +2,17 @@
 ///
 /// Keeping every route in a single file makes path surgery cheap.
 /// Path strings live in `RouteNames` so renames stay trivial.
+///
+/// Fix for bugs.json Warn (first-launch redirect): when the settings
+/// controller reports `isFirstLaunch == true` and the target is not
+/// onboarding, the redirect sends the user to the onboarding flow.
 library;
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/about/feedback_screen.dart';
 import 'package:guardianangela/features/contacts/contact_form_screen.dart';
@@ -41,11 +47,25 @@ import 'package:guardianangela/features/templates/templates_screen.dart';
 
 /// The app's global router instance.
 ///
-/// Phase 11 will add a real first-launch redirect (currently the
-/// redirect callback is a no-op that returns null for every request).
+/// Fix for bugs.json Warn (first-launch redirect): if
+/// `isFirstLaunch == true` and the user is not already on the
+/// onboarding route, redirect them. Reads the settings synchronously
+/// via `ProviderScope.containerOf`; while the async hydrate is still
+/// pending, the redirect defers (returns null) so the user lands on
+/// home briefly, and the next frame re-evaluates.
 final GoRouter appRouter = GoRouter(
   initialLocation: RouteNames.home,
-  redirect: (context, state) => null,
+  redirect: (context, state) {
+    final container = ProviderScope.containerOf(context, listen: false);
+    final async = container.read(settingsControllerProvider);
+    final settings = async.value;
+    if (settings == null) return null;
+    if (settings.isFirstLaunch &&
+        state.matchedLocation != RouteNames.onboarding) {
+      return RouteNames.onboarding;
+    }
+    return null;
+  },
   routes: <GoRoute>[
     GoRoute(
       name: 'home',

@@ -33,9 +33,30 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final state = ref.watch(homeControllerProvider);
+    // Fix for specs.json Block #3 (StealthConfig has no consumers):
+    // when stealth is enabled, render the fake name instead of the
+    // "Guardian Angela" branded title, with the fake-icon preset
+    // surfaced as a subtitle so the disguise reads coherently.
+    final stealth =
+        ref.watch(settingsControllerProvider).value?.defaults.stealth;
+    final useStealth = stealth != null && stealth.enabled;
+    final title = useStealth ? stealth.fakeName : l.homeTitle;
+    final subtitle = useStealth ? stealth.fakeIcon.name : null;
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.homeTitle),
+        title: subtitle == null
+            ? Text(title)
+            : Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(title),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
+                ],
+              ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),

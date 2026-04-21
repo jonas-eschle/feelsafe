@@ -137,6 +137,14 @@ final class NotificationService implements NotificationServiceProtocol {
       return;
     }
     await _ensureInit();
+    // Fix for specs.json Block #3 clarification (StealthConfig
+    // consumers): this path always renders the template's `title` and
+    // `body` — there is no "branded Guardian Angela" alternative
+    // surface. `StealthConfig.notificationDisguise` therefore does
+    // not gate WHETHER this method is called; it is a preference
+    // toggle the reminder-template UI uses when composing the
+    // template itself (so a user who opts out of disguise can still
+    // pick a plainly-named reminder template).
     await _plugin.show(
       id: _allocId(),
       title: template.title,
@@ -257,6 +265,21 @@ final class NotificationService implements NotificationServiceProtocol {
     final payload = response.payload ?? response.actionId;
     if (payload != null && payload.isNotEmpty) {
       _actionController.add(payload);
+    }
+  }
+
+  /// Releases the action-tap controller and cancels every pending
+  /// timer (including toast auto-dismiss and scheduled notifications).
+  ///
+  /// Fix for bugs.json Warn (leak — _actionController never closed,
+  /// toast Timer fire-and-forget). Idempotent.
+  Future<void> dispose() async {
+    for (final timer in _scheduledTimers.values) {
+      timer.cancel();
+    }
+    _scheduledTimers.clear();
+    if (!_actionController.isClosed) {
+      await _actionController.close();
     }
   }
 }

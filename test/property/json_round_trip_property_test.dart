@@ -74,9 +74,10 @@ void main() {
     });
 
     test('FakeCallConfig round-trips non-null cases', () {
-      // Note: FakeCallConfig.callerName has default 'Mom' — explicit
-      // null round-trips to 'Mom' (documented default-fallback
-      // behavior). Tests assert only on lossless cases.
+      // Fix for bugs.json Bug #4: null callerName now round-trips as
+      // null (lossless). The constructor default is applied only when
+      // the key is missing from the JSON map. Default changed to
+      // "Angela" (fixer brief item #4).
       const cases = [
         FakeCallConfig(),
         FakeCallConfig(
@@ -93,12 +94,13 @@ void main() {
     });
 
     test(
-      'FakeCallConfig with explicit null callerName normalizes to "Mom"',
+      'FakeCallConfig with explicit null callerName round-trips as null',
       () {
-        // Documented behavior: null callerName round-trips to default.
+        // Fix for bugs.json Bug #4: the previous coercion-to-"Mom" is
+        // removed. Explicit null survives the round-trip.
         const cfg = FakeCallConfig(callerName: null);
         final restored = _roundTrip(cfg) as FakeCallConfig;
-        check(restored.callerName).equals('Mom');
+        check(restored.callerName).isNull();
       },
     );
 

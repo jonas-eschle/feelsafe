@@ -141,8 +141,14 @@ final simulationLocationProvider = Provider<LocationServiceProtocol>(
 );
 
 /// Real notification service.
+///
+/// Fix for bugs.json Warn (leak — _actionController never closed).
 final notificationServiceProvider = Provider<NotificationServiceProtocol>(
-  (_) => NotificationService(),
+  (ref) {
+    final service = NotificationService();
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );
 
 /// Simulation notification service.
@@ -151,8 +157,14 @@ final simulationNotificationProvider = Provider<NotificationServiceProtocol>(
 );
 
 /// Real hardware-button service.
+///
+/// Fix for bugs.json Warn (leak — controller never closed).
 final hardwareButtonServiceProvider = Provider<HardwareButtonServiceProtocol>(
-  (_) => HardwareButtonService(),
+  (ref) {
+    final service = HardwareButtonService();
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );
 
 /// Simulation hardware-button service.
@@ -162,8 +174,15 @@ final simulationHardwareButtonProvider =
     );
 
 /// Real incoming-call service.
+///
+/// Fix for bugs.json Warn (leak — controller never closed): wire the
+/// service's `dispose()` into the Riverpod provider lifecycle.
 final incomingCallServiceProvider = Provider<IncomingCallServiceProtocol>(
-  (_) => IncomingCallService(),
+  (ref) {
+    final service = IncomingCallService();
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );
 
 /// Simulation incoming-call service.
@@ -193,8 +212,14 @@ final simulationDeviceStateProvider = Provider<DeviceStateServiceProtocol>(
 );
 
 /// Real geofence service.
+///
+/// Fix for bugs.json Warn (leak — controller never closed).
 final geofenceServiceProvider = Provider<GeofenceServiceProtocol>(
-  (_) => GeofenceService(),
+  (ref) {
+    final service = GeofenceService();
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );
 
 /// Simulation geofence service.

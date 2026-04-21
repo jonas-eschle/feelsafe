@@ -1,0 +1,255 @@
+{
+  "agent": "integration-tests",
+  "test_inventory": {
+    "integration": [
+      "test/integration/session_scenarios_test.dart",
+      "test/integration/distress_flow_test.dart",
+      "test/integration/simulation_defense_test.dart",
+      "test/integration/cross_feature_test.dart",
+      "test/integration/db_round_trip_test.dart"
+    ],
+    "scenarios": [],
+    "property": [
+      "test/property/json_round_trip_property_test.dart"
+    ],
+    "regression": [
+      "test/regression/edge_cases_test.dart"
+    ],
+    "wiring": [
+      "test/wiring/wiring_contract_test.dart",
+      "test/wiring/wiring_map_coverage_test.dart"
+    ],
+    "helpers": [
+      "test/helpers/test_helpers.dart"
+    ],
+    "notes": "No test/scenarios/ directory exists (empty category, not required by current repo layout). Domain + feature + core + wiring trees contain additional focused tests that indirectly reinforce P0 coverage (e.g. trigger_manager_test, session_controller_test)."
+  },
+  "p0_coverage": {
+    "P0-1": {
+      "status": "covered",
+      "file": "test/integration/session_scenarios_test.dart",
+      "tests": [
+        "Walk Mode: happy path > hold throughout then disarm → Ended(disarm)",
+        "Walk Mode: happy path > continuous hold with re-hold during grace still disarms",
+        "Walk Mode: worst path > full chain: hold → alarm → callEmergency fires phone"
+      ]
+    },
+    "P0-2": {
+      "status": "covered",
+      "file": "test/integration/session_scenarios_test.dart",
+      "tests": [
+        "Date Mode: disguised reminder cycle > disguised reminder → advance after grace",
+        "Date Mode: disguised reminder cycle > disguised reminder with retries fires multiple grace-expired",
+        "Date Mode: disguised reminder cycle > repeatMissed emits between retries",
+        "Date Mode: disguised reminder cycle > disguised reminder triggers notification on step start"
+      ]
+    },
+    "P0-3": {
+      "status": "covered",
+      "file": "test/integration/session_scenarios_test.dart",
+      "tests": [
+        "Simulation scenarios > walk-mode simulation collects descriptions only",
+        "Simulation scenarios > simulation leap fast-forwards through phases",
+        "Simulation scenarios > non-simulation leap throws StateError",
+        "Simulation scenarios > speedMultiplier in real mode throws ArgumentError"
+      ]
+    },
+    "P0-4": {
+      "status": "covered",
+      "file": "test/integration/distress_flow_test.dart",
+      "tests": [
+        "Distress flow: hardware panic replaces main chain > main hold chain is replaced by distress on panic",
+        "Distress flow: hardware panic replaces main chain > main-chain steps after replacement do not execute",
+        "Distress flow: D-SAFETY-17 non-interruption > second replaceWithDistressChain is a no-op",
+        "also: test/regression/edge_cases_test.dart > Regression: D-SAFETY-17 distress during distress"
+      ]
+    },
+    "P0-5": {
+      "status": "covered",
+      "file": "test/integration/distress_flow_test.dart",
+      "tests": [
+        "Distress flow: duress PIN (silent trigger) > duress replacement emits no pre-confirmation events",
+        "Distress flow: duress PIN (silent trigger) > duress keeps delivering through the orchestrator",
+        "Distress flow: duress PIN (silent trigger) > duress during grace of hold step still replaces chain",
+        "also: test/integration/cross_feature_test.dart > PIN + distress integration > duress PIN does not advance session"
+      ]
+    },
+    "P0-6": {
+      "status": "covered",
+      "file": "test/integration/cross_feature_test.dart",
+      "tests": [
+        "PIN + distress integration > wrong PIN at threshold triggers distress asynchronously",
+        "PIN + distress integration > wrong PIN under threshold does not fire distress",
+        "also: test/integration/distress_flow_test.dart > Distress flow: wrong-PIN threshold > N consecutive triggerings fire distress once"
+      ]
+    },
+    "P0-7": {
+      "status": "covered",
+      "file": "test/integration/cross_feature_test.dart",
+      "tests": [
+        "Incoming call during session (Risk-12) > ringing call pauses the session",
+        "Incoming call during session (Risk-12) > ended call resumes the session",
+        "Incoming call during session (Risk-12) > idle call state after pause resumes the session",
+        "Incoming call during session (Risk-12) > Risk-12: battery-alert session also pauses on incoming call"
+      ]
+    },
+    "P0-8": {
+      "status": "covered",
+      "file": "test/integration/cross_feature_test.dart",
+      "tests": [
+        "GPS disarm trigger > GPS arrival fires onDisarmRequested when configured",
+        "GPS disarm trigger > GPS arrival when no GPS trigger is configured has no effect",
+        "also: test/domain/engine/trigger_manager_test.dart > GPS arrival → disarm > arrival inside geofence calls onDisarmRequested"
+      ]
+    },
+    "P0-9": {
+      "status": "covered",
+      "file": "test/integration/simulation_defense_test.dart",
+      "tests": [
+        "Layer 1: SessionOrchestrator simulation branch > loudAlarm/callEmergency/smsContact/fakeCall stepStarted in simulation (4 tests)",
+        "Layer 1: SessionOrchestrator simulation branch > every strategy has a non-empty simulationDescription",
+        "Layer 2: real service impls honor isSimulation (7 tests covering Audio, Phone, Vibration)",
+        "Layer 3: simulation service impls never reach real paths (4 tests)",
+        "Layer 4: simulation files have no real-side imports (3 tests: no url_launcher, no MethodChannel, no flutter/services)"
+      ]
+    }
+  },
+  "property_coverage": {
+    "status": "partial",
+    "file": "test/property/json_round_trip_property_test.dart",
+    "covered_types": [
+      "HoldButtonConfig",
+      "DisguisedReminderConfig",
+      "HardwareButtonConfig",
+      "CountdownWarningConfig",
+      "FakeCallConfig",
+      "SmsContactConfig",
+      "PhoneCallContactConfig",
+      "LoudAlarmConfig",
+      "CallEmergencyConfig",
+      "ChainStep (100 randomized instances)",
+      "EmergencyContact",
+      "SessionMode",
+      "ChainEventData",
+      "EventDefaults (all ChainStepType values)",
+      "HardwareButtonDistressTrigger"
+    ],
+    "gaps": [
+      "AppSettings — not in property suite (has focused JSON test elsewhere)",
+      "UserProfile — not in property suite",
+      "AppDefaults / ModeOverrides — not in property suite",
+      "DistressChain — not in property suite",
+      "StealthConfig / GpsLoggingConfig — not in property suite",
+      "BatteryAlertConfig — not in property suite",
+      "SessionLog — not in property suite",
+      "ReminderTemplate — not in property suite",
+      "DisarmTrigger (TimerDisarmTrigger / GpsArrivalDisarmTrigger) — not explicitly in property suite",
+      "N is small (5-100 depending on type), not the 200 targeted by TEST-120"
+    ]
+  },
+  "regression_coverage": {
+    "AUDIT-BUG-3_phone_call_fallback": {
+      "status": "covered",
+      "file": "test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart",
+      "test": "executeReal does NOT use hardcoded fallback number (line 78-87)",
+      "location": "test/domain/orchestration/strategies/ (not under test/regression/)"
+    },
+    "FakeCallConfig_callerName_null_coercion": {
+      "status": "covered",
+      "file": "test/property/json_round_trip_property_test.dart",
+      "test": "FakeCallConfig with explicit null callerName normalizes to \"Mom\" (line 95-103)",
+      "note": "Test locks current behavior; phase-14 notes flag this as a bug where null should be preserved rather than coerced — verification team to decide true fix vs spec update."
+    },
+    "SettingsController_async_load_race_L7": {
+      "status": "covered-indirectly",
+      "file": "test/features/session/session_controller_test.dart",
+      "test": "SessionController L7 race mitigation > startSession awaits the settings hydrate before reading mode (line 917-938)",
+      "note": "Tests the consumer (SessionController) awaits hydrate rather than SettingsController directly. No dedicated test/regression/settings_controller_test.dart exists."
+    }
+  },
+  "fake_vs_real_assessment": {
+    "status": "good",
+    "evidence": [
+      "All integration tests use FakeAudioService / FakeMessagingService / FakePhoneService / FakeNotificationService / FakeVibrationService from lib/services/fakes/",
+      "db_round_trip_test uses NativeDatabase.memory() — in-memory Drift, never touches disk",
+      "cross_feature_test uses in-memory repository subclasses + ProviderContainer overrides — never hits Drift",
+      "FixedRandom is used consistently to eliminate jitter nondeterminism (per D-TEST-1)",
+      "fake_async.fakeAsync() wraps all timer-driven tests — no wall-clock sleeps",
+      "All platform-channel dependent services are stubbed (IncomingCall, Geofence, BatteryMonitor, DeviceState, Location, HardwareButton)"
+    ],
+    "concerns": [
+      "Layer 2 tests in simulation_defense_test.dart instantiate real AudioService, PhoneService, VibrationService and call them with isSimulation:true. They expect short-circuit behavior; if the real impl ever tries to resolve a MethodChannel before the short-circuit check, these tests could fail with MissingPluginException on CI. Current impl short-circuits before channel access, so the approach is acceptable, but the test contract is fragile and deserves a comment."
+    ]
+  },
+  "findings": [
+    {
+      "severity": "Warn",
+      "category": "regression-gap",
+      "issue": "No test/regression/settings_controller_test.dart directly exercises the SettingsController L7 race (OnboardingScreen.completeOnboarding persisting empty defaults over seeded state per D-CONTROLLER-1).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/regression/edge_cases_test.dart",
+      "suggested_fix": "Add a regression test that spawns SettingsController, invokes a mutator before `build().future` resolves, and asserts the seeded AppDefaults survive (not overwritten by const AppSettings())."
+    },
+    {
+      "severity": "Warn",
+      "category": "regression-gap",
+      "issue": "FakeCallConfig null-callerName coercion test ASSERTS the coercion to 'Mom' as correct behavior. Per decisions-log and rewrite-wal/phase-14.json this is actually flagged as a potential bug (round-trip should preserve null). Test locks in the wrong behavior.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/property/json_round_trip_property_test.dart",
+      "suggested_fix": "Either (a) promote to a regression test with a comment explaining why coercion is intentional, or (b) change fromJson to preserve null and update the default-resolution layer; re-target the test."
+    },
+    {
+      "severity": "Warn",
+      "category": "missing-p0",
+      "issue": "P0-6 (wrong-PIN threshold) is covered but ASSERTS WEAKLY in cross_feature_test: after crossing threshold it checks 'ws is not null' rather than asserting the engine is in distress chain or that messaging.calls fired. The 50ms delay + absence of contacts in the fixture make the chain advance silently.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/cross_feature_test.dart",
+      "suggested_fix": "Supply at least one contact in the fixture, then assert fx.messaging.calls is non-empty OR the underlying engine's isDistressChain==true after the async delay."
+    },
+    {
+      "severity": "Note",
+      "category": "missing-p0",
+      "issue": "P0-7 incoming call pause test uses Future.delayed(10ms) instead of fakeAsync, which couples test timing to the test host's scheduler. Not deterministic.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/cross_feature_test.dart",
+      "suggested_fix": "Wrap these tests in fakeAsync and use async.elapse to drive the incoming-call subscription deterministically."
+    },
+    {
+      "severity": "Note",
+      "category": "assertion-quality",
+      "issue": "session_scenarios_test 'disguised reminder triggers notification on step start' never asserts a notification was shown — it only asserts stepStarted event count == 1. The FakeNotificationService does not expose a calls list.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/session_scenarios_test.dart",
+      "suggested_fix": "Either add a showDisguisedReminder call list on FakeNotificationService (mirroring other fakes) or rename the test to match what it actually verifies."
+    },
+    {
+      "severity": "Note",
+      "category": "missing-p0",
+      "issue": "P0-9 Layer 4 structural check for 'no flutter/services import' and 'no MethodChannel construction' is source-string grep. It does not catch transitive imports via other dart packages that do bring in MethodChannel.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/simulation_defense_test.dart",
+      "suggested_fix": "Add an additional test that walks the transitive dependency graph of each simulation_*.dart file (e.g. via analyzer) to verify no transitive dependency on dart:ui platform message infrastructure."
+    },
+    {
+      "severity": "Note",
+      "category": "missing-p0",
+      "issue": "Property suite (TEST-120) is smaller than the 200 iterations the test-strategy specifies, and only 15 of ~25 domain models are covered.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/property/json_round_trip_property_test.dart",
+      "suggested_fix": "Add a parametrized round-trip test that enumerates every JSON-serializable model (AppSettings, UserProfile, AppDefaults, ModeOverrides, DistressChain, StealthConfig, GpsLoggingConfig, BatteryAlertConfig, SessionLog, ReminderTemplate, DisarmTrigger subtypes) with 200 randomized instances per type."
+    },
+    {
+      "severity": "Note",
+      "category": "fake-vs-real",
+      "issue": "simulation_defense_test Layer 2 instantiates real AudioService/PhoneService/VibrationService. If a future refactor moves the isSimulation short-circuit below a MethodChannel call, the test will fail with MissingPluginException on CI rather than a clean assertion.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/simulation_defense_test.dart",
+      "suggested_fix": "Add a comment on each Layer 2 test documenting the 'short-circuit before channel access' contract, or wrap with a test that explicitly registers a test MethodChannel handler that throws to enforce the invariant."
+    },
+    {
+      "severity": "Note",
+      "category": "assertion-quality",
+      "issue": "test/scenarios/ directory is absent (listed in the audit scope). Not a block — the content lives under test/integration/ — but the directory-name drift may confuse future agents following the test-strategy doc.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/",
+      "suggested_fix": "Either create an empty test/scenarios/ with a README pointing to test/integration/, or update docs/test-strategy.md to refer only to test/integration/."
+    }
+  ],
+  "open_questions": [
+    "FakeCallConfig null-callerName coercion: is coercion to 'Mom' the intended spec or is it a bug flagged in phase-14 notes? The current property test locks the coercion in — decision needed before signing off.",
+    "Should a dedicated test/regression/settings_controller_test.dart be added, or is the session_controller L7 test sufficient to cover D-CONTROLLER-1?",
+    "Does the project intend to add P1 coverage for TEST-106/107/108 (mode switch / language change / contact deletion blocked during session)? Currently absent.",
+    "Layer 4 sim-defense uses file-string grep. Is a deeper transitive-import check desired, or is the human-readable source check considered adequate?"
+  ]
+}

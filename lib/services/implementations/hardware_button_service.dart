@@ -110,4 +110,16 @@ final class HardwareButtonService implements HardwareButtonServiceProtocol {
       ),
     );
   }
+
+  /// Closes the broadcast controller and cancels the native
+  /// subscription. Fix for bugs.json Warn (leak — controller never
+  /// closed). Idempotent.
+  Future<void> dispose() async {
+    await _nativeSub?.cancel();
+    _nativeSub = null;
+    _listening = false;
+    if (!_controller.isClosed) {
+      await _controller.close();
+    }
+  }
 }

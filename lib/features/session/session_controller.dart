@@ -255,6 +255,28 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     runtime.engine.declineFakeCall();
   }
 
+  /// Signals that the user started holding the hold-button widget.
+  ///
+  /// Fix for bugs.json Bug #1 (holdButton UI disconnected from engine):
+  /// `SessionScreen` previously handed empty lambdas to
+  /// `HoldToTriggerButton`, so the engine never received touch events.
+  /// Thin wrapper around [SessionEngine.holdStart].
+  void holdStart() {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.holdStart();
+  }
+
+  /// Signals that the user released the hold-button widget.
+  ///
+  /// Fix for bugs.json Bug #1 (holdButton UI disconnected from engine).
+  /// Thin wrapper around [SessionEngine.holdRelease].
+  void holdRelease() {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.holdRelease();
+  }
+
   /// Force-fires the distress chain (e.g. hardware panic, duress
   /// PIN, wrong-PIN threshold exhausted).
   Future<void> triggerDistressChain() async {
@@ -332,6 +354,10 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       isSimulation: isSimulation,
       reminderTemplates: templates,
       eventDefaults: _effectiveDefaults(settings, mode),
+      // Fix for bugs.json Bug #7: thread the user's configured
+      // emergency number into the session context so
+      // CallEmergencyStrategy no longer hardcodes '112'.
+      emergencyNumber: settings.emergencyCallNumber,
     );
     final engine = SessionEngine(
       chainSteps: mode.chainSteps,
@@ -352,6 +378,12 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       ),
       chainStepsResolver: () => engine.steps,
       messagingService: services.messaging,
+      // Fix for bugs.json Bug #3: the orchestrator accepts an
+      // onSimulationDescription sink but the controller never
+      // supplied one, so SimulationSummaryScreen always showed an
+      // empty list. Route descriptions into the live WalkSession
+      // so the summary screen renders them.
+      onSimulationDescription: _appendFiredDescription,
     );
     final recorder = SessionLogRecorder(
       log: SessionLog(
@@ -451,7 +483,13 @@ class SessionController extends AsyncNotifier<WalkSession?> {
         engine.pause(reason: PauseReason.incomingCall);
       case CallState.ended:
       case CallState.idle:
-        if (engine.state is EnginePaused) {
+        // Fix for bugs.json Bug #5: only auto-resume when the pause
+        // was initiated by this incoming call. User-requested,
+        // fake-call-answered, or boot-restart pauses must not be
+        // silently cancelled by an unrelated call ending.
+        final engineState = engine.state;
+        if (engineState is EnginePaused &&
+            engineState.reason == PauseReason.incomingCall) {
           engine.resume();
         }
     }
@@ -493,6 +531,26 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   Future<void> _persistSessionLog(SessionLog log) async {
     final repo = ref.read(sessionLogsRepositoryProvider);
     await repo.save(log);
+  }
+
+  /// Appends a simulation-description toast to the live WalkSession.
+  ///
+  /// Fix for bugs.json Bug #3: previously the orchestrator had no
+  /// sink for simulation descriptions, so SimulationSummaryScreen
+  /// always showed an empty list. Called from
+  /// `onSimulationDescription` inside [_bootstrapSession].
+  void _appendFiredDescription(String description) {
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncValue.data(
+      current.copyWith(
+        firedStepDescriptions: [
+          ...current.firedStepDescriptions,
+          description,
+        ],
+        lastSimulationDescription: description,
+      ),
+    );
   }
 
   // ----- Internal: defaults + helpers --------------------------------

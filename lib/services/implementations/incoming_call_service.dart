@@ -76,6 +76,18 @@ final class IncomingCallService implements IncomingCallServiceProtocol {
     }
   }
 
+  /// Releases the broadcast controller and cancels the native
+  /// subscription. Fix for bugs.json Warn (leak — controller never
+  /// closed). Idempotent.
+  Future<void> dispose() async {
+    await _nativeSub?.cancel();
+    _nativeSub = null;
+    _listening = false;
+    if (!_controller.isClosed) {
+      await _controller.close();
+    }
+  }
+
   CallState? _parseState(Object? raw) => switch (raw) {
     'idle' => CallState.idle,
     'ringing' => CallState.ringing,

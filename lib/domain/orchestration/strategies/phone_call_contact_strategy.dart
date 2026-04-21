@@ -32,7 +32,7 @@ final class PhoneCallContactStrategy extends EventStrategy {
 
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final contact = _resolveContact(services, config);
     if (contact == null) {
       developer.log(
@@ -64,16 +64,29 @@ final class PhoneCallContactStrategy extends EventStrategy {
 
   @override
   String simulationDescription(ChainStep step, EventServices services) {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final contact = _resolveContact(services, config);
     if (contact == null) return '[SIM] No contact to call';
     return '[SIM] Would call ${contact.name}';
   }
 
-  /// Resolves the step config, falling back to defaults.
-  PhoneCallContactConfig _resolveConfig(ChainStep step) {
+  /// Resolves the step config.
+  ///
+  /// Fix for bugs.json Warn (strategies never fall back to
+  /// EventDefaults): prefer step.config, then session eventDefaults,
+  /// then the local const fallback.
+  PhoneCallContactConfig _resolveConfig(
+    ChainStep step,
+    EventServices services,
+  ) {
     final raw = step.config;
     if (raw is PhoneCallContactConfig) return raw;
+    try {
+      final fromDefaults = services.context.configFor(step);
+      if (fromDefaults is PhoneCallContactConfig) return fromDefaults;
+    } on StateError {
+      // No eventDefaults — fall through.
+    }
     return const PhoneCallContactConfig();
   }
 

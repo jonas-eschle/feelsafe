@@ -29,8 +29,18 @@ class SessionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final async = ref.watch(sessionControllerProvider);
+    final settings = ref.watch(settingsControllerProvider).value;
+    // Fix for specs.json Block #3 (StealthConfig has no consumers):
+    // when stealth.enabled + stealth.sessionScreenStealth, drop the
+    // Guardian Angela branding and show a blank AppBar title.
+    final stealth = settings?.defaults.stealth;
+    final hideBranding = stealth != null &&
+        stealth.enabled &&
+        stealth.sessionScreenStealth;
     return Scaffold(
-      appBar: AppBar(title: Text(l.sessionTitle)),
+      appBar: AppBar(
+        title: Text(hideBranding ? '' : l.sessionTitle),
+      ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('$err')),
@@ -113,12 +123,20 @@ class _SessionBody extends ConsumerWidget {
           if (session.phase is SessionPhasePaused)
             Chip(label: Text(l.sessionPausedBadge)),
           const Spacer(),
+          // Fix for bugs.json Bug #1: wire hold-button events into the
+          // engine via SessionController.holdStart/holdRelease. Prior
+          // code used empty lambdas, so walk-mode check-in was
+          // completely disconnected.
           if (session.currentStepType == ChainStepType.holdButton)
             HoldToTriggerButton(
               semanticLabel: l.sessionHoldSemantic,
               label: l.sessionHoldPrompt,
-              onHoldStart: () {},
-              onHoldRelease: () {},
+              onHoldStart: () => ref
+                  .read(sessionControllerProvider.notifier)
+                  .holdStart(),
+              onHoldRelease: () => ref
+                  .read(sessionControllerProvider.notifier)
+                  .holdRelease(),
             ),
           const Spacer(),
           Row(

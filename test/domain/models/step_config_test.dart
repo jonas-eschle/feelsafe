@@ -210,7 +210,10 @@ void main() {
   group('FakeCallConfig', () {
     test('defaults', () {
       const c = FakeCallConfig();
-      check(c.callerName).equals('Mom');
+      // Default changed from "Mom" to "Angela" per fixer brief item #4
+      // (Guardian Angela product brand + "Ask for Angela" safety
+      // campaign).
+      check(c.callerName).equals('Angela');
       check(c.ringtoneAsset).isNull();
       check(c.voiceRecordingAsset).isNull();
       check(c.declineIsSafe).isFalse();

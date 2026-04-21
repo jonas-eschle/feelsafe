@@ -33,6 +33,10 @@ final class SessionContext {
   /// delivered this session; defaults to false.
   /// [eventDefaults] — the effective event defaults; defaults to
   /// null (engine falls back to step-level config where needed).
+  /// [emergencyNumber] — resolved emergency-call number from
+  /// [AppSettings.emergencyCallNumber]; used by [CallEmergencyStrategy]
+  /// when a step's `CallEmergencyConfig.emergencyNumber` is null.
+  /// Defaults to '112'. Fix for bugs.json Bug #7.
   const SessionContext({
     this.mode,
     this.contacts = const [],
@@ -41,6 +45,7 @@ final class SessionContext {
     this.reminderTemplates = const [],
     this.hadMedicalInfo = false,
     this.eventDefaults,
+    this.emergencyNumber = '112',
   });
 
   /// The active mode, if any.
@@ -63,6 +68,12 @@ final class SessionContext {
 
   /// Effective event defaults for this session.
   final EventDefaults? eventDefaults;
+
+  /// Resolved emergency-call number from
+  /// [AppSettings.emergencyCallNumber]. Consumed by
+  /// [CallEmergencyStrategy] when the step's config has no
+  /// per-step override. Defaults to '112'. Fix for bugs.json Bug #7.
+  final String emergencyNumber;
 
   /// Returns the config for [step]. If [step.config] is non-null,
   /// returns it. Otherwise, returns the matching default from
@@ -113,6 +124,7 @@ final class SessionContext {
     List<ReminderTemplate>? reminderTemplates,
     bool? hadMedicalInfo,
     EventDefaults? eventDefaults,
+    String? emergencyNumber,
   }) => SessionContext(
     mode: mode ?? this.mode,
     contacts: contacts ?? this.contacts,
@@ -121,6 +133,7 @@ final class SessionContext {
     reminderTemplates: reminderTemplates ?? this.reminderTemplates,
     hadMedicalInfo: hadMedicalInfo ?? this.hadMedicalInfo,
     eventDefaults: eventDefaults ?? this.eventDefaults,
+    emergencyNumber: emergencyNumber ?? this.emergencyNumber,
   );
 
   @override
@@ -132,6 +145,7 @@ final class SessionContext {
     if (other.isSimulation != isSimulation) return false;
     if (other.hadMedicalInfo != hadMedicalInfo) return false;
     if (other.eventDefaults != eventDefaults) return false;
+    if (other.emergencyNumber != emergencyNumber) return false;
     if (other.contacts.length != contacts.length) return false;
     for (var i = 0; i < contacts.length; i++) {
       if (other.contacts[i] != contacts[i]) return false;
@@ -154,6 +168,7 @@ final class SessionContext {
     Object.hashAll(reminderTemplates),
     hadMedicalInfo,
     eventDefaults,
+    emergencyNumber,
   );
 
   @override

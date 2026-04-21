@@ -18,7 +18,7 @@ final class FakeCallStrategy extends EventStrategy {
 
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final isSim = services.context.isSimulation;
     await services.audio.playRingtone(
       assetPath: config.ringtoneAsset,
@@ -29,14 +29,27 @@ final class FakeCallStrategy extends EventStrategy {
 
   @override
   String simulationDescription(ChainStep step, EventServices services) {
-    final config = _resolveConfig(step);
-    return '[SIM] Incoming call from ${config.callerName ?? 'Mom'}';
+    final config = _resolveConfig(step, services);
+    // Fix for bugs.json Bug #4 (FakeCallConfig semantics): default
+    // caller name is "Angela". Null callerName uses the same
+    // fallback since the UI shows the same display.
+    return '[SIM] Incoming call from ${config.callerName ?? 'Angela'}';
   }
 
-  /// Resolves the step's config, falling back to a default.
-  FakeCallConfig _resolveConfig(ChainStep step) {
+  /// Resolves the step's config.
+  ///
+  /// Fix for bugs.json Warn (strategies never fall back to
+  /// EventDefaults): uses the 3-tier resolution — step.config, then
+  /// the session's eventDefaults, then the local const fallback.
+  FakeCallConfig _resolveConfig(ChainStep step, EventServices services) {
     final raw = step.config;
     if (raw is FakeCallConfig) return raw;
+    try {
+      final fromDefaults = services.context.configFor(step);
+      if (fromDefaults is FakeCallConfig) return fromDefaults;
+    } on StateError {
+      // No eventDefaults available — fall through to the const default.
+    }
     return const FakeCallConfig();
   }
 }

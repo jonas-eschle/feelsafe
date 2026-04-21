@@ -421,5 +421,54 @@ void main() {
         }
       },
     );
+
+    // Fix for historical.json Note / fixer brief item #13: extend the
+    // structural check to flag geolocator (real GPS) and
+    // flutter_local_notifications (platform-native notifications)
+    // imports from simulation files. Both would breach Layer 4.
+    test('no simulation file imports geolocator', () {
+      final files = simDir
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.dart'));
+      final importRe = RegExp(
+        r"^\s*import\s+['"
+        "\""
+        r"]package:geolocator",
+      );
+      for (final file in files) {
+        final content = file.readAsStringSync();
+        final hasImport = content
+            .split('\n')
+            .any((line) => importRe.hasMatch(line));
+        check(
+          hasImport,
+          because: '${file.path} must not import geolocator',
+        ).isFalse();
+      }
+    });
+
+    test('no simulation file imports flutter_local_notifications', () {
+      final files = simDir
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((f) => f.path.endsWith('.dart'));
+      final importRe = RegExp(
+        r"^\s*import\s+['"
+        "\""
+        r"]package:flutter_local_notifications",
+      );
+      for (final file in files) {
+        final content = file.readAsStringSync();
+        final hasImport = content
+            .split('\n')
+            .any((line) => importRe.hasMatch(line));
+        check(
+          hasImport,
+          because:
+              '${file.path} must not import flutter_local_notifications',
+        ).isFalse();
+      }
+    });
   });
 }

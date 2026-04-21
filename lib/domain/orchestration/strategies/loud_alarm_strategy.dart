@@ -18,7 +18,7 @@ final class LoudAlarmStrategy extends EventStrategy {
 
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final isSim = services.context.isSimulation;
     await services.audio.playAlarm(
       maxVolume: config.maxVolume,
@@ -32,15 +32,25 @@ final class LoudAlarmStrategy extends EventStrategy {
 
   @override
   String simulationDescription(ChainStep step, EventServices services) {
-    final config = _resolveConfig(step);
+    final config = _resolveConfig(step, services);
     final tail = config.flashScreen ? 'flash' : 'vibrate';
     return '[SIM] Loud alarm + $tail';
   }
 
-  /// Resolves the step config, falling back to a default shape.
-  LoudAlarmConfig _resolveConfig(ChainStep step) {
+  /// Resolves the step config.
+  ///
+  /// Fix for bugs.json Warn (strategies never fall back to
+  /// EventDefaults): prefer step.config, then session eventDefaults,
+  /// then the local const fallback.
+  LoudAlarmConfig _resolveConfig(ChainStep step, EventServices services) {
     final raw = step.config;
     if (raw is LoudAlarmConfig) return raw;
+    try {
+      final fromDefaults = services.context.configFor(step);
+      if (fromDefaults is LoudAlarmConfig) return fromDefaults;
+    } on StateError {
+      // No eventDefaults — fall through.
+    }
     return const LoudAlarmConfig();
   }
 }
