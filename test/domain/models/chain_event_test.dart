@@ -16,12 +16,27 @@ void main() {
         'stepAdvancing',
         'graceExpired',
         'repeatMissed',
+        'reminderFired',
+        'pauseExpired',
+        'stepExecutionFailed',
         'distressTriggered',
         'distressCompleted',
         'sessionPaused',
         'sessionResumed',
         'sessionEnded',
       ]);
+    });
+
+    test('spec 01 §Events Emitted values are present', () {
+      // Spec-driven set: all 3 newly-introduced events must be
+      // round-trippable.
+      for (final name in [
+        'reminderFired',
+        'pauseExpired',
+        'stepExecutionFailed',
+      ]) {
+        check(ChainEvent.values.map((e) => e.name).toList()).contains(name);
+      }
     });
   });
 

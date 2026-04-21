@@ -30,7 +30,12 @@ void main() {
         step(type: ChainStepType.smsContact, config: const SmsContactConfig()),
         harness.build(),
       );
-      expect(harness.messaging.calls, contains('sendToAll:2'));
+      // Spec 02 Extra-15/15b: one sendMessage per contact on the
+      // configured channel.
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 2);
     });
 
     test('executeReal sends only to first when firstContact', () async {
@@ -50,7 +55,10 @@ void main() {
         ),
         harness.build(),
       );
-      expect(harness.messaging.calls, contains('sendToAll:1'));
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 1);
     });
 
     test('executeReal filters to specific ids', () async {
@@ -72,7 +80,10 @@ void main() {
         ),
         harness.build(),
       );
-      expect(harness.messaging.calls, contains('sendToAll:2'));
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 2);
     });
 
     test('executeReal with no matching specific ids is a no-op', () async {
@@ -164,7 +175,10 @@ void main() {
       // The fake records only contacts/channels, not message body,
       // so assert the delivery happened; body-shape tests live in
       // the session-context test file.
-      expect(harness.messaging.calls, contains('sendToAll:1'));
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 1);
     });
 
     test('simulationDescription reports the count', () {
@@ -237,9 +251,10 @@ void main() {
         step(type: ChainStepType.smsContact),
         harness.build(),
       );
-      // No way to inspect the body from the fake, but the call must
-      // have happened with the right count.
-      expect(harness.messaging.calls, contains('sendToAll:1'));
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 1);
     });
 
     test('executeReal with non-SmsContactConfig uses defaults', () async {
@@ -249,7 +264,91 @@ void main() {
         step(type: ChainStepType.smsContact, config: const LoudAlarmConfig()),
         harness.build(),
       );
-      expect(harness.messaging.calls, contains('sendToAll:1'));
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .length;
+      expect(sends, 1);
+    });
+
+    // Spec 02 §6.smsContact Extra-15/15b — single-channel dispatch.
+    test('executeReal skips contacts lacking config.channel', () async {
+      final harness = StrategyHarness(
+        contacts: [
+          // Alice has whatsapp — will be picked.
+          makeContact(
+            id: 'a',
+            name: 'Alice',
+            channels: const [MessageChannel.whatsapp],
+          ),
+          // Bob has SMS only — skipped for a whatsapp step.
+          makeContact(id: 'b', name: 'Bob'),
+        ],
+      );
+      addTearDown(harness.dispose);
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(
+            channel: MessageChannel.whatsapp,
+          ),
+        ),
+        harness.build(),
+      );
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .toList();
+      expect(sends.length, 1);
+      expect(sends.first.endsWith('/whatsapp'), isTrue);
+    });
+
+    test('executeReal is no-op when no contact has the channel', () async {
+      final harness = StrategyHarness(
+        contacts: [
+          makeContact(id: 'a', channels: const [MessageChannel.sms]),
+        ],
+      );
+      addTearDown(harness.dispose);
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(
+            channel: MessageChannel.telegram,
+          ),
+        ),
+        harness.build(),
+      );
+      expect(
+        harness.messaging.calls.where((c) => c.startsWith('sendMessage:')),
+        isEmpty,
+      );
+    });
+
+    test('executeReal sends on exactly the configured channel', () async {
+      final harness = StrategyHarness(
+        contacts: [
+          makeContact(
+            id: 'a',
+            channels: const [
+              MessageChannel.sms,
+              MessageChannel.whatsapp,
+              MessageChannel.telegram,
+            ],
+          ),
+        ],
+      );
+      addTearDown(harness.dispose);
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(channel: MessageChannel.telegram),
+        ),
+        harness.build(),
+      );
+      final sends = harness.messaging.calls
+          .where((c) => c.startsWith('sendMessage:'))
+          .toList();
+      expect(sends.length, 1);
+      expect(sends.first.endsWith('/telegram'), isTrue);
     });
   });
 }

@@ -5,7 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
+import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/strategies/phone_call_contact_strategy.dart';
+import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import '../../../helpers/test_helpers.dart';
 import '_strategy_harness.dart';
 
@@ -98,7 +100,10 @@ void main() {
         ),
         harness.build(),
       );
-      expect(harness.messaging.calls, contains('sendToAll:1'));
+      expect(
+        harness.messaging.calls.any((c) => c.startsWith('sendMessage:')),
+        isTrue,
+      );
     });
 
     test('executeReal skips pre-SMS when preSendSms=false', () async {
@@ -216,5 +221,117 @@ void main() {
       expect(harness.messaging.calls, isEmpty);
       expect(harness.phone.calls, isEmpty);
     });
+
+    // Spec 02 §7.phoneCallContact Retry Logic + alternatives.
+    test('alternativeContactIds tried after primary succeeds is no-op', () async {
+      final harness = StrategyHarness(
+        contacts: [
+          makeContact(id: 'a', phoneNumber: '+111'),
+          makeContact(id: 'b', phoneNumber: '+222'),
+        ],
+      );
+      addTearDown(harness.dispose);
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.phoneCallContact,
+          config: const PhoneCallContactConfig(
+            contactId: 'a',
+            alternativeContactIds: ['b'],
+          ),
+        ),
+        harness.build(),
+      );
+      // Primary succeeded (no retry) → no call to alternate.
+      expect(harness.phone.calls, contains('call:+111'));
+      expect(harness.phone.calls.contains('call:+222'), isFalse);
+    });
+
+    test('retryCount triggers multiple attempts when phone throws', () async {
+      final explodingPhone = _ExplodingPhone(failures: 99);
+      final harness = StrategyHarness(
+        contacts: [makeContact(id: 'a', phoneNumber: '+111')],
+      );
+      addTearDown(harness.dispose);
+      final services = EventServices(
+        audio: harness.audio,
+        messaging: harness.messaging,
+        phone: explodingPhone,
+        notification: harness.notification,
+        vibration: harness.vibration,
+        context: harness.context,
+        isCancelled: () => false,
+        registerSmsWorkId: harness.registered.add,
+      );
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.phoneCallContact,
+          retryCount: 2,
+          config: const PhoneCallContactConfig(contactId: 'a'),
+        ),
+        services,
+      );
+      // retryCount=2 → 3 attempts on the same contact.
+      expect(explodingPhone.attempts, 3);
+    });
+
+    test('falls through to alternate when primary keeps failing', () async {
+      final explodingPhone = _ExplodingPhone(failures: 2);
+      final harness = StrategyHarness(
+        contacts: [
+          makeContact(id: 'a', phoneNumber: '+111'),
+          makeContact(id: 'b', phoneNumber: '+222'),
+        ],
+      );
+      addTearDown(harness.dispose);
+      final services = EventServices(
+        audio: harness.audio,
+        messaging: harness.messaging,
+        phone: explodingPhone,
+        notification: harness.notification,
+        vibration: harness.vibration,
+        context: harness.context,
+        isCancelled: () => false,
+        registerSmsWorkId: harness.registered.add,
+      );
+      await strategy.executeReal(
+        step(
+          type: ChainStepType.phoneCallContact,
+          retryCount: 1,
+          config: const PhoneCallContactConfig(
+            contactId: 'a',
+            alternativeContactIds: ['b'],
+          ),
+        ),
+        services,
+      );
+      // Primary failed both attempts (retryCount=1 → 2 calls), then
+      // alt succeeded on first attempt = 3 total.
+      expect(explodingPhone.attempts, 3);
+      expect(explodingPhone.numbers.first, '+111');
+      expect(explodingPhone.numbers.last, '+222');
+    });
   });
+}
+
+/// Test double that throws [failures] times before succeeding.
+final class _ExplodingPhone implements PhoneServiceProtocol {
+  _ExplodingPhone({required this.failures});
+
+  final int failures;
+  int attempts = 0;
+  final List<String> numbers = [];
+
+  @override
+  Future<void> call(String number, {bool isSimulation = false}) async {
+    attempts++;
+    numbers.add(number);
+    if (attempts <= failures) {
+      throw StateError('simulated call failure #$attempts');
+    }
+  }
+
+  @override
+  Future<void> callEmergency(String number, {bool isSimulation = false}) async {
+    throw UnimplementedError();
+  }
 }

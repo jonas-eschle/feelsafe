@@ -162,7 +162,7 @@ void main() {
         type: ChainStepType.callEmergency,
         config: const CallEmergencyConfig(
           emergencyNumber: '911',
-          confirmBeforeCalling: true,
+          showConfirmation: true,
         ),
       );
       check(ChainStep.fromJson(s.toJson())).equals(s);

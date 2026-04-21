@@ -367,10 +367,10 @@ class _EmergencyForm extends StatelessWidget {
           ),
         ),
         SwitchListTile(
-          value: cfg.confirmBeforeCalling,
+          value: cfg.showConfirmation,
           title: Text(l.stepConfigEmergencyConfirm),
           onChanged: (v) => onChanged(
-            step.copyWith(config: cfg.copyWith(confirmBeforeCalling: v)),
+            step.copyWith(config: cfg.copyWith(showConfirmation: v)),
           ),
         ),
       ],

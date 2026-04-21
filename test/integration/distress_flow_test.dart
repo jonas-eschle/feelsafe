@@ -189,8 +189,10 @@ void main() {
         async.elapse(const Duration(seconds: 5));
         // The audio alarm (from distress) fired, but the main SMS
         // did not fire through messaging.
+        // Spec 02 Extra-15/15b: SMS strategy now uses sendMessage
+        // per contact on the configured channel.
         final sentContactIds = h.messaging.calls
-            .where((c) => c.startsWith('sendToAll:'))
+            .where((c) => c.startsWith('sendMessage:'))
             .toList();
         check(sentContactIds).isEmpty();
         check(h.audio.calls).isNotEmpty();

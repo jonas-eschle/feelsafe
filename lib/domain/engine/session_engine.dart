@@ -53,10 +53,11 @@ final class SessionEngine {
   SessionEngine({
     required List<ChainStep> chainSteps,
     this.isSimulation = false,
-    this.speedMultiplier = 1.0,
+    double speedMultiplier = 1.0,
     Random? random,
     DateTime Function()? clock,
   }) : _steps = List.of(chainSteps),
+       _speedMultiplier = speedMultiplier,
        _random = random ?? Random(),
        _clock = clock ?? (() => pkg_clock.clock.now()) {
     if (speedMultiplier.isNaN ||
@@ -84,7 +85,12 @@ final class SessionEngine {
   final bool isSimulation;
 
   /// Speed multiplier (simulation only, else `1.0`).
-  final double speedMultiplier;
+  ///
+  /// Mutable in simulation mode so [setSpeedMultiplier] can adjust
+  /// timing on the fly (spec 01 §Engine API).
+  double get speedMultiplier => _speedMultiplier;
+
+  double _speedMultiplier;
 
   /// Internal mutable chain storage. Swapped wholesale by
   /// [replaceWithDistressChain] — never mutated in place.
@@ -390,6 +396,68 @@ final class SessionEngine {
     _enterStep(0);
   }
 
+  /// Explicit user check-in during a `disguisedReminder` step.
+  ///
+  /// Spec 01 §Engine API: advances past the current step without
+  /// waiting for the grace period to expire. No-op outside
+  /// [EngineRunning] or on non-disguisedReminder steps.
+  void checkIn() {
+    final current = _state;
+    if (current is! EngineRunning) return;
+    if (_steps[current.stepIndex].type !=
+        ChainStepType.disguisedReminder) {
+      return;
+    }
+    _cancelTimer();
+    _advanceOrComplete(current.stepIndex);
+  }
+
+  /// Early check-in: user responds BEFORE grace expires on a
+  /// `disguisedReminder` step.
+  ///
+  /// Spec 01 §Engine API / D-UX-4: advances immediately. Behaves like
+  /// [checkIn] for disguisedReminder steps; kept as a distinct entry
+  /// point for UI semantics ("early" vs on-grace).
+  void earlyCheckIn() => checkIn();
+
+  /// Simulation-only: adjust [speedMultiplier] mid-run.
+  ///
+  /// Spec 01 §Engine API. Currently-scheduled timers keep their
+  /// original wall-clock deadlines; the new multiplier applies to
+  /// every phase scheduled after this call.
+  ///
+  /// Throws [StateError] on non-simulation engines. Throws
+  /// [ArgumentError] on NaN / infinity / non-positive values.
+  void setSpeedMultiplier(double value) {
+    if (!isSimulation) {
+      throw StateError(
+        'setSpeedMultiplier() requires isSimulation == true',
+      );
+    }
+    if (value.isNaN || value.isInfinite || value <= 0) {
+      throw ArgumentError.value(
+        value,
+        'value',
+        'must be a finite positive number',
+      );
+    }
+    _speedMultiplier = value;
+  }
+
+  /// Restart the current step: cancel the running timer and re-enter
+  /// the current step's `wait` phase from scratch.
+  ///
+  /// Spec 01 §Engine API; used by recovery flows (e.g., crash
+  /// restart while within the maxPauseDuration window).
+  /// No-op outside [EngineRunning].
+  void restartCurrentStep() {
+    final current = _state;
+    if (current is! EngineRunning) return;
+    final index = current.stepIndex;
+    _cancelTimer();
+    _enterStep(index);
+  }
+
   /// Releases internal resources (timers, stream controllers).
   ///
   /// Idempotent. Does not emit any trailing events.
@@ -460,6 +528,17 @@ final class SessionEngine {
       missCount: missCount,
       isHolding: false,
     );
+    // Spec 01 §Disguised Reminder State Machine: emit reminderFired
+    // when wait→duration transitions — the reminder overlay is now
+    // visible. UI consumers coalesce on this single event.
+    if (step.type == ChainStepType.disguisedReminder) {
+      _emit(
+        ChainEvent.reminderFired,
+        stepIndex: index,
+        stepType: step.type,
+        metadata: {'missCount': missCount},
+      );
+    }
     if (duration == Duration.zero) {
       _enterGracePhase(index, missCount);
     } else {

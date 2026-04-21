@@ -10,6 +10,8 @@ import 'package:guardianangela/data/models/enums.dart';
 
 /// The kind of engine event. Used as the `event` field of
 /// `ChainEventData`.
+///
+/// Spec 01 §Events Emitted defines the full event set.
 enum ChainEvent {
   /// A new session just started.
   sessionStarted,
@@ -25,6 +27,21 @@ enum ChainEvent {
 
   /// A disguised-reminder retry fired with no response.
   repeatMissed,
+
+  /// A disguised-reminder step entered its `duration` phase — the
+  /// reminder overlay is now visible to the user. Spec 01 §Disguised
+  /// Reminder State Machine.
+  reminderFired,
+
+  /// A pause exceeded `AppSettings.maxPauseDuration` and the engine
+  /// auto-resumed. Reserved by spec 01 §Events Emitted; not yet
+  /// emitted — wiring requires maxPauseDuration plumbing through
+  /// settings which is out of scope for this alignment pass.
+  pauseExpired,
+
+  /// A strategy's `executeReal` threw. Emitted by the orchestrator's
+  /// error-isolation catch (D-STRATEGY-2). Spec 01 §Events Emitted.
+  stepExecutionFailed,
 
   /// A distress trigger fired; the engine replaced the main chain
   /// with the distress chain.
@@ -257,6 +274,9 @@ ChainEvent _eventFromJson(Object? raw) => switch (raw) {
   'stepAdvancing' => ChainEvent.stepAdvancing,
   'graceExpired' => ChainEvent.graceExpired,
   'repeatMissed' => ChainEvent.repeatMissed,
+  'reminderFired' => ChainEvent.reminderFired,
+  'pauseExpired' => ChainEvent.pauseExpired,
+  'stepExecutionFailed' => ChainEvent.stepExecutionFailed,
   'distressTriggered' => ChainEvent.distressTriggered,
   'distressCompleted' => ChainEvent.distressCompleted,
   'sessionPaused' => ChainEvent.sessionPaused,

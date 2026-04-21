@@ -1,0 +1,29 @@
+{
+  "phase": "16",
+  "title": "End-to-end verification + real-device matrix",
+  "step": "exit",
+  "iteration": 2,
+  "owner_agent": null,
+  "owned_files": [],
+  "decisions_added": [],
+  "gates_passed": [
+    "flutter analyze --fatal-infos (0 issues)",
+    "flutter test -j 6 (1486/1486 passing)",
+    "flutter gen-l10n (0 warnings across 14 locales)",
+    "flutter build appbundle --debug (succeeds)",
+    "grep package:flutter/ lib/domain/ (0 real imports)",
+    "Every strategy executeReal calls services.<x> (ripgrep verified)",
+    "Sealed-switch exhaustiveness (no default: arms in lib/domain/)",
+    "wiring_map_coverage_test green (27 rows, all providers resolve)",
+    "4-layer simulation defense verified structurally + behaviorally"
+  ],
+  "gates_pending": [
+    "Per-layer coverage to 99%+ (current: engine 99.2%, models 99.08%, orchestration 99.47%, services 80%, features partial). Reaching 99% on services requires physical device; other layers need deeper controller/widget test coverage.",
+    "Manual device matrix on Android Pixel/Samsung + iOS 17+ (items #10-17 of plan Phase 16 checklist)",
+    "PIN Argon2id hash primitive (currently crypt SHA-512 + 500K rounds + per-PIN salt — strong interim, D-SEC-10 mandates Argon2id which needs native binding)",
+    "Golden tests / deep a11y audit / DistressConfirmation + ImSafeSlider flow wiring / Stealth preset picker UI"
+  ],
+  "next_action": "Verification team delivered 8 audit reports at docs/verification/*.json. All Block-severity bugs fixed (15 items + PIN-clear bug found during coverage push). Rewrite is ship-ready for pre-alpha; beta requires (a) device matrix, (b) 99% coverage across services+features, (c) Argon2id native primitive, (d) deferred UI work.",
+  "last_update_iso": "2026-04-21T00:00:00Z",
+  "notes": "Verification team (8 parallel read-only audits) + fixer agent (15 Block bugs) + 4 parallel coverage agents + PM-level PIN-clear bug fix. Total tests 886 → 1486 (+600). SettingsController PIN-clear bug was latent — coverage push surfaced it. 2 iterations of fix within this phase."
+}

@@ -77,7 +77,12 @@ void main() {
   group('HoldButtonConfig', () {
     test('defaults', () {
       const c = HoldButtonConfig();
-      check(c.releaseSensitivity).equals(0.3);
+      // Spec 02 §1.holdButton default 1.0.
+      check(c.releaseSensitivity).equals(1.0);
+      check(c.holdStyle).equals(HoldStyle.largeButton);
+      check(c.vibrateOnRelease).isTrue();
+      check(c.soundOnRelease).isFalse();
+      check(c.blackScreenMode).isFalse();
     });
 
     test('copyWith', () {
@@ -90,7 +95,13 @@ void main() {
     });
 
     test('round-trip', () {
-      const c = HoldButtonConfig(releaseSensitivity: 0.9);
+      const c = HoldButtonConfig(
+        releaseSensitivity: 0.9,
+        holdStyle: HoldStyle.fullScreen,
+        vibrateOnRelease: false,
+        soundOnRelease: true,
+        blackScreenMode: true,
+      );
       check(StepConfig.fromJson(c.toJson())).equals(c);
     });
 
@@ -104,6 +115,10 @@ void main() {
       const c = DisguisedReminderConfig();
       check(c.templateId).isNull();
       check(c.intervalSeconds).equals(60);
+      check(c.randomizeInterval).isFalse();
+      check(c.randomizeTemplateOrder).isFalse();
+      check(c.resetOnEarlyCheckIn).isTrue();
+      check(c.blackScreenMode).isFalse();
     });
 
     test('copyWith', () {
@@ -210,21 +225,26 @@ void main() {
   group('FakeCallConfig', () {
     test('defaults', () {
       const c = FakeCallConfig();
-      // Default changed from "Mom" to "Angela" per fixer brief item #4
-      // (Guardian Angela product brand + "Ask for Angela" safety
-      // campaign).
+      // Default "Angela" per Guardian Angela product brand + "Ask
+      // for Angela" safety campaign. declineIsSafe defaults to TRUE
+      // per D-SAFETY-7 (minimize false positives).
       check(c.callerName).equals('Angela');
       check(c.ringtoneAsset).isNull();
       check(c.voiceRecordingAsset).isNull();
-      check(c.declineIsSafe).isFalse();
-      check(c.retryCount).equals(0);
+      check(c.declineIsSafe).isTrue();
+      check(c.callStyle).equals(CallStyle.standard);
+      check(c.callerPhotoPath).isNull();
+      check(c.voiceOutputMode).equals(VoiceOutputMode.tts);
+      check(c.ringDurationSeconds).equals(30);
+      check(c.declineWithDistressHoldSeconds).equals(2.0);
+      check(c.blackScreenMode).isFalse();
     });
 
     test('copyWith', () {
       const c = FakeCallConfig();
-      final c2 = c.copyWith(callerName: 'Dad', retryCount: 3);
+      final c2 = c.copyWith(callerName: 'Dad', ringDurationSeconds: 45);
       check(c2.callerName).equals('Dad');
-      check(c2.retryCount).equals(3);
+      check(c2.ringDurationSeconds).equals(45);
     });
 
     test('round-trip', () {
@@ -232,8 +252,13 @@ void main() {
         callerName: 'Dad',
         ringtoneAsset: 'a.mp3',
         voiceRecordingAsset: 'v.mp3',
-        declineIsSafe: true,
-        retryCount: 2,
+        declineIsSafe: false,
+        callStyle: CallStyle.videoCall,
+        callerPhotoPath: 'photo.png',
+        voiceOutputMode: VoiceOutputMode.recording,
+        ringDurationSeconds: 15,
+        declineWithDistressHoldSeconds: 3.0,
+        blackScreenMode: true,
       );
       check(StepConfig.fromJson(c.toJson())).equals(c);
     });
@@ -338,25 +363,53 @@ void main() {
   group('LoudAlarmConfig', () {
     test('defaults', () {
       const c = LoudAlarmConfig();
-      check(c.flashScreen).isTrue();
+      // Spec 02 §8.loudAlarm flashScreen default false.
+      check(c.flashScreen).isFalse();
       check(c.flashSpeed).equals(0.5);
       check(c.maxVolume).isTrue();
+      check(c.volume).equals(1.0);
+      check(c.soundChoice).equals(LoudAlarmSound.siren);
+      check(c.gradualVolume).isFalse();
+      check(c.flashLight).isTrue();
+      check(c.flashSpeedMs).equals(500);
+      check(c.blackScreenMode).isFalse();
     });
 
     test('copyWith', () {
       const c = LoudAlarmConfig();
       final c2 = c.copyWith(
-        flashScreen: false,
+        flashScreen: true,
         flashSpeed: 0.1,
         maxVolume: false,
+        volume: 0.5,
+        soundChoice: LoudAlarmSound.whoop,
+        gradualVolume: true,
+        flashLight: false,
+        flashSpeedMs: 250,
+        blackScreenMode: true,
       );
-      check(c2.flashScreen).isFalse();
+      check(c2.flashScreen).isTrue();
       check(c2.flashSpeed).equals(0.1);
       check(c2.maxVolume).isFalse();
+      check(c2.volume).equals(0.5);
+      check(c2.soundChoice).equals(LoudAlarmSound.whoop);
+      check(c2.gradualVolume).isTrue();
+      check(c2.flashLight).isFalse();
+      check(c2.flashSpeedMs).equals(250);
+      check(c2.blackScreenMode).isTrue();
     });
 
     test('round-trip', () {
-      const c = LoudAlarmConfig(flashScreen: false, flashSpeed: 1.0);
+      const c = LoudAlarmConfig(
+        flashScreen: true,
+        flashSpeed: 1.0,
+        volume: 0.8,
+        soundChoice: LoudAlarmSound.bell,
+        gradualVolume: true,
+        flashLight: false,
+        flashSpeedMs: 300,
+        blackScreenMode: true,
+      );
       check(StepConfig.fromJson(c.toJson())).equals(c);
     });
   });
@@ -365,14 +418,18 @@ void main() {
     test('defaults', () {
       const c = CallEmergencyConfig();
       check(c.emergencyNumber).isNull();
-      check(c.confirmBeforeCalling).isFalse();
+      // Spec 02 §9 / D-UX-8: showConfirmation defaults to true.
+      check(c.showConfirmation).isTrue();
+      check(c.sendLocationSmsFirst).isTrue();
+      check(c.confirmationDurationSeconds).equals(5);
+      check(c.blackScreenMode).isFalse();
     });
 
     test('copyWith', () {
       const c = CallEmergencyConfig();
-      final c2 = c.copyWith(emergencyNumber: '999', confirmBeforeCalling: true);
+      final c2 = c.copyWith(emergencyNumber: '999', showConfirmation: false);
       check(c2.emergencyNumber).equals('999');
-      check(c2.confirmBeforeCalling).isTrue();
+      check(c2.showConfirmation).isFalse();
     });
 
     test('copyWith clearEmergencyNumber', () {
@@ -384,7 +441,10 @@ void main() {
     test('round-trip', () {
       const c = CallEmergencyConfig(
         emergencyNumber: '911',
-        confirmBeforeCalling: true,
+        showConfirmation: false,
+        sendLocationSmsFirst: false,
+        confirmationDurationSeconds: 10,
+        blackScreenMode: true,
       );
       check(StepConfig.fromJson(c.toJson())).equals(c);
     });
@@ -435,14 +495,14 @@ void main() {
         callerName: 'Dad',
         ringtoneAsset: 'a.mp3',
         voiceRecordingAsset: 'v.mp3',
-        declineIsSafe: true,
-        retryCount: 2,
+        declineIsSafe: false,
+        ringDurationSeconds: 15,
       ).toString();
       check(str).contains('Dad');
       check(str).contains('a.mp3');
       check(str).contains('v.mp3');
-      check(str).contains('declineIsSafe: true');
-      check(str).contains('retryCount: 2');
+      check(str).contains('declineIsSafe: false');
+      check(str).contains('ringDurationSeconds: 15');
     });
 
     test('SmsContactConfig toString', () {
@@ -485,10 +545,10 @@ void main() {
     test('CallEmergencyConfig toString', () {
       final str = const CallEmergencyConfig(
         emergencyNumber: '911',
-        confirmBeforeCalling: true,
+        showConfirmation: false,
       ).toString();
       check(str).contains('911');
-      check(str).contains('confirmBeforeCalling: true');
+      check(str).contains('showConfirmation: false');
     });
   });
 
@@ -599,10 +659,26 @@ void main() {
             const FakeCallConfig(voiceRecordingAsset: 'v'),
       ).isFalse();
       check(
-        const FakeCallConfig() == const FakeCallConfig(declineIsSafe: true),
+        const FakeCallConfig() == const FakeCallConfig(declineIsSafe: false),
       ).isFalse();
       check(
-        const FakeCallConfig() == const FakeCallConfig(retryCount: 1),
+        const FakeCallConfig() ==
+            const FakeCallConfig(ringDurationSeconds: 45),
+      ).isFalse();
+      check(
+        const FakeCallConfig() ==
+            const FakeCallConfig(callStyle: CallStyle.videoCall),
+      ).isFalse();
+      check(
+        const FakeCallConfig() ==
+            const FakeCallConfig(voiceOutputMode: VoiceOutputMode.none),
+      ).isFalse();
+      check(
+        const FakeCallConfig() ==
+            const FakeCallConfig(declineWithDistressHoldSeconds: 3.0),
+      ).isFalse();
+      check(
+        const FakeCallConfig() == const FakeCallConfig(blackScreenMode: true),
       ).isFalse();
     });
 
@@ -751,13 +827,32 @@ void main() {
 
     test('LoudAlarmConfig differ unequal', () {
       check(
-        const LoudAlarmConfig() == const LoudAlarmConfig(flashScreen: false),
+        const LoudAlarmConfig() == const LoudAlarmConfig(flashScreen: true),
       ).isFalse();
       check(
         const LoudAlarmConfig() == const LoudAlarmConfig(flashSpeed: 1.0),
       ).isFalse();
       check(
         const LoudAlarmConfig() == const LoudAlarmConfig(maxVolume: false),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(volume: 0.5),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() ==
+            const LoudAlarmConfig(soundChoice: LoudAlarmSound.bell),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(gradualVolume: true),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(flashLight: false),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(flashSpeedMs: 1000),
+      ).isFalse();
+      check(
+        const LoudAlarmConfig() == const LoudAlarmConfig(blackScreenMode: true),
       ).isFalse();
     });
 
@@ -778,7 +873,19 @@ void main() {
       ).isFalse();
       check(
         const CallEmergencyConfig() ==
-            const CallEmergencyConfig(confirmBeforeCalling: true),
+            const CallEmergencyConfig(showConfirmation: false),
+      ).isFalse();
+      check(
+        const CallEmergencyConfig() ==
+            const CallEmergencyConfig(sendLocationSmsFirst: false),
+      ).isFalse();
+      check(
+        const CallEmergencyConfig() ==
+            const CallEmergencyConfig(confirmationDurationSeconds: 10),
+      ).isFalse();
+      check(
+        const CallEmergencyConfig() ==
+            const CallEmergencyConfig(blackScreenMode: true),
       ).isFalse();
     });
 
@@ -823,8 +930,13 @@ void main() {
         callerName: 'X',
         ringtoneAsset: 'a',
         voiceRecordingAsset: 'v',
-        declineIsSafe: true,
-        retryCount: 3,
+        declineIsSafe: false,
+        callStyle: CallStyle.videoCall,
+        callerPhotoPath: 'p.png',
+        voiceOutputMode: VoiceOutputMode.recording,
+        ringDurationSeconds: 20,
+        declineWithDistressHoldSeconds: 1.5,
+        blackScreenMode: true,
       );
       check(c.copyWith()).equals(c);
     });
@@ -868,7 +980,10 @@ void main() {
     test('CallEmergencyConfig', () {
       const c = CallEmergencyConfig(
         emergencyNumber: '999',
-        confirmBeforeCalling: true,
+        showConfirmation: false,
+        sendLocationSmsFirst: false,
+        confirmationDurationSeconds: 12,
+        blackScreenMode: true,
       );
       check(c.copyWith()).equals(c);
     });

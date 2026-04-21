@@ -253,7 +253,8 @@ void main() {
   group('default releaseSensitivity', () {
     test('step with no config uses HoldButtonConfig default', () {
       fakeAsync((async) {
-        // No explicit config — engine falls back to 0.3s default.
+        // Spec 02 §1.holdButton: no explicit config → engine falls
+        // back to releaseSensitivity 1.0s default.
         final e = SessionEngine(
           chainSteps: [
             step(
@@ -270,7 +271,7 @@ void main() {
         e.holdRelease();
         final s = e.state as EngineRunning;
         check(s.phase).equals(TimerPhase.sensitivity);
-        check(s.remaining).equals(const Duration(milliseconds: 300));
+        check(s.remaining).equals(const Duration(milliseconds: 1000));
         e.dispose();
       });
     });

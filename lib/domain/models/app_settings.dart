@@ -43,7 +43,9 @@ final class AppSettings {
   /// [telemetryOptOut] — user opted out of Sentry telemetry; defaults
   /// to false (telemetry on per D-TELEMETRY-1).
   /// [sessionLogRetentionDays] — how many days session logs are kept;
-  /// defaults to 30 (D-SAFETY-6).
+  /// defaults to 180 per spec/B8 (D-SAFETY-6).
+  /// [wrongPinThreshold] — consecutive wrong-PIN entries that fire
+  /// the distress chain; defaults to 5 per D-SEC-5 / spec A3.
   const AppSettings({
     required this.defaults,
     this.appPinHash,
@@ -57,7 +59,8 @@ final class AppSettings {
     this.selectedModeId,
     this.isFirstLaunch = true,
     this.telemetryOptOut = false,
-    this.sessionLogRetentionDays = 30,
+    this.sessionLogRetentionDays = 180,
+    this.wrongPinThreshold = 5,
   });
 
   /// Deserializes `AppSettings` from JSON.
@@ -77,7 +80,9 @@ final class AppSettings {
     isFirstLaunch: json['isFirstLaunch'] as bool? ?? true,
     telemetryOptOut: json['telemetryOptOut'] as bool? ?? false,
     sessionLogRetentionDays:
-        (json['sessionLogRetentionDays'] as num?)?.toInt() ?? 30,
+        (json['sessionLogRetentionDays'] as num?)?.toInt() ?? 180,
+    wrongPinThreshold:
+        (json['wrongPinThreshold'] as num?)?.toInt() ?? 5,
   );
 
   /// Hash of the app-unlock PIN; null = no lock.
@@ -120,9 +125,14 @@ final class AppSettings {
   /// true suppresses all Sentry initialization at app start.
   final bool telemetryOptOut;
 
-  /// Days to retain session logs. Defaults to 30. Per D-SAFETY-6,
-  /// old logs are pruned on a schedule by `StructuredLogger`.
+  /// Days to retain session logs. Defaults to 180 per spec/B8. Per
+  /// D-SAFETY-6, old logs are pruned on a schedule by
+  /// `StructuredLogger`.
   final int sessionLogRetentionDays;
+
+  /// Consecutive wrong-PIN entries that silently fire the distress
+  /// chain. Defaults to 5 per D-SEC-5 / spec A3.
+  final int wrongPinThreshold;
 
   /// Returns a new settings instance with the given fields replaced.
   ///
@@ -149,6 +159,7 @@ final class AppSettings {
     bool? isFirstLaunch,
     bool? telemetryOptOut,
     int? sessionLogRetentionDays,
+    int? wrongPinThreshold,
   }) => AppSettings(
     appPinHash: clearAppPinHash ? null : (appPinHash ?? this.appPinHash),
     sessionEndPinHash: clearSessionEndPinHash
@@ -170,6 +181,7 @@ final class AppSettings {
     telemetryOptOut: telemetryOptOut ?? this.telemetryOptOut,
     sessionLogRetentionDays:
         sessionLogRetentionDays ?? this.sessionLogRetentionDays,
+    wrongPinThreshold: wrongPinThreshold ?? this.wrongPinThreshold,
   );
 
   /// Serializes to JSON.
@@ -187,6 +199,7 @@ final class AppSettings {
     'isFirstLaunch': isFirstLaunch,
     'telemetryOptOut': telemetryOptOut,
     'sessionLogRetentionDays': sessionLogRetentionDays,
+    'wrongPinThreshold': wrongPinThreshold,
   };
 
   @override
@@ -205,7 +218,8 @@ final class AppSettings {
           other.selectedModeId == selectedModeId &&
           other.isFirstLaunch == isFirstLaunch &&
           other.telemetryOptOut == telemetryOptOut &&
-          other.sessionLogRetentionDays == sessionLogRetentionDays;
+          other.sessionLogRetentionDays == sessionLogRetentionDays &&
+          other.wrongPinThreshold == wrongPinThreshold;
 
   @override
   int get hashCode => Object.hash(
@@ -222,6 +236,7 @@ final class AppSettings {
     isFirstLaunch,
     telemetryOptOut,
     sessionLogRetentionDays,
+    wrongPinThreshold,
   );
 
   @override

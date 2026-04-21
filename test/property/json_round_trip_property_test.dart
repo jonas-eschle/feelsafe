@@ -84,8 +84,12 @@ void main() {
           callerName: 'Bob',
           ringtoneAsset: 'r.mp3',
           voiceRecordingAsset: 'v.mp3',
-          declineIsSafe: true,
-          retryCount: 3,
+          declineIsSafe: false,
+          callStyle: CallStyle.videoCall,
+          voiceOutputMode: VoiceOutputMode.recording,
+          ringDurationSeconds: 20,
+          declineWithDistressHoldSeconds: 3.0,
+          blackScreenMode: true,
         ),
       ];
       for (final cfg in cases) {
@@ -154,7 +158,7 @@ void main() {
     test('CallEmergencyConfig round-trips with override', () {
       const cases = [
         CallEmergencyConfig(),
-        CallEmergencyConfig(emergencyNumber: '112', confirmBeforeCalling: true),
+        CallEmergencyConfig(emergencyNumber: '112', showConfirmation: false),
       ];
       for (final cfg in cases) {
         check(_roundTrip(cfg)).equals(cfg);

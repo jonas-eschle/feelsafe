@@ -98,6 +98,7 @@ dependencies:
   # Telemetry (Phase 15) — Sentry EU host, opt-out-by-default. See
   # lib/core/telemetry/sentry_config.dart and D-TELEMETRY-1.
   sentry_flutter: ^9.0.0
+  argon2: ^1.0.1
 
 dev_dependencies:
   flutter_test:

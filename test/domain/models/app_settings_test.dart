@@ -22,6 +22,39 @@ void main() {
       check(s.alarmDndOverride).isFalse();
       check(s.isFirstLaunch).isTrue();
       check(s.selectedModeId).isNull();
+      // Spec 03 §AppSettings / B8 / D-SEC-5 / A3.
+      check(s.sessionLogRetentionDays).equals(180);
+      check(s.wrongPinThreshold).equals(5);
+    });
+
+    test('wrongPinThreshold configurable', () {
+      const s = AppSettings(defaults: AppDefaults(), wrongPinThreshold: 3);
+      check(s.wrongPinThreshold).equals(3);
+    });
+
+    test('JSON round-trip preserves wrongPinThreshold', () {
+      const s = AppSettings(defaults: AppDefaults(), wrongPinThreshold: 10);
+      check(AppSettings.fromJson(s.toJson()).wrongPinThreshold).equals(10);
+    });
+
+    test('JSON round-trip preserves sessionLogRetentionDays', () {
+      const s = AppSettings(
+        defaults: AppDefaults(),
+        sessionLogRetentionDays: 365,
+      );
+      check(
+        AppSettings.fromJson(s.toJson()).sessionLogRetentionDays,
+      ).equals(365);
+    });
+
+    test('fromJson with missing wrongPinThreshold falls back to 5', () {
+      final s = AppSettings.fromJson(const <String, Object?>{});
+      check(s.wrongPinThreshold).equals(5);
+    });
+
+    test('fromJson with missing sessionLogRetentionDays falls back to 180', () {
+      final s = AppSettings.fromJson(const <String, Object?>{});
+      check(s.sessionLogRetentionDays).equals(180);
     });
 
     test('all three PIN hashes default to null', () {

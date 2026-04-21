@@ -67,6 +67,7 @@ final class SessionOrchestrator {
     this.messagingService,
     this.onSimulationDescription,
     this.onStepExecutionFailed,
+    this.onStepExecutionFailedEvent,
   }) : _servicesBuilder = servicesBuilder,
        _chainStepsResolver = chainStepsResolver;
 
@@ -86,6 +87,15 @@ final class SessionOrchestrator {
     required StackTrace stack,
   })?
   onStepExecutionFailed;
+
+  /// Optional hook fired when a strategy's `executeReal` throws. Used
+  /// by the session controller to emit a `ChainEvent.stepExecutionFailed`
+  /// into the engine's event stream (spec 01 §Events Emitted).
+  ///
+  /// Kept separate from [onStepExecutionFailed] so callers can log
+  /// via one and emit via the other.
+  final void Function({required ChainStep step, required int stepIndex})?
+  onStepExecutionFailedEvent;
 
   /// Builds the per-step [EventServices] bundle.
   final EventServices Function(bool Function(), void Function(MessageWorkId)?)
@@ -132,6 +142,15 @@ final class SessionOrchestrator {
       final hook = onStepExecutionFailed;
       if (hook != null) {
         hook(step: step, error: error, stack: stack);
+      }
+      // Spec 01 §Events Emitted: emit stepExecutionFailed so session
+      // telemetry can observe failures without interrupting the chain.
+      final emitHook = onStepExecutionFailedEvent;
+      if (emitHook != null) {
+        final idx = event.stepIndex;
+        if (idx != null) {
+          emitHook(step: step, stepIndex: idx);
+        }
       }
       // Swallow the error: per D-STRATEGY-2, the chain keeps going
       // so later escalation steps still run.

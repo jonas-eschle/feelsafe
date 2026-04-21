@@ -365,4 +365,159 @@ void main() {
       });
     });
   });
+
+  // Spec 01 §Disguised Reminder State Machine.
+  group('SessionEngine reminderFired event', () {
+    test('reminderFired fires when disguisedReminder enters duration', () {
+      fakeAsync((async) {
+        final e = _mk([
+          step(
+            type: ChainStepType.disguisedReminder,
+            waitSeconds: 5,
+            durationSeconds: 10,
+          ),
+        ]);
+        final names = <ChainEvent>[];
+        e.events.listen((ev) => names.add(ev.event));
+        e.start();
+        async.elapse(const Duration(seconds: 6));
+        async.flushMicrotasks();
+        check(names).contains(ChainEvent.reminderFired);
+        e.dispose();
+      });
+    });
+
+    test('reminderFired NOT emitted for non-disguisedReminder steps', () {
+      fakeAsync((async) {
+        final e = _mk([smsStep(durationSeconds: 3)]);
+        final names = <ChainEvent>[];
+        e.events.listen((ev) => names.add(ev.event));
+        e.start();
+        async.elapse(const Duration(seconds: 5));
+        async.flushMicrotasks();
+        check(names.contains(ChainEvent.reminderFired)).isFalse();
+        e.dispose();
+      });
+    });
+  });
+
+  // Spec 01 §Engine API: new methods required by spec-alignment.
+  group('SessionEngine.checkIn / earlyCheckIn', () {
+    test('checkIn advances past a disguisedReminder step', () {
+      fakeAsync((async) {
+        final e = _mk([
+          step(
+            type: ChainStepType.disguisedReminder,
+            durationSeconds: 30,
+            gracePeriodSeconds: 5,
+          ),
+          smsStep(order: 1),
+        ]);
+        e.start();
+        async.flushMicrotasks();
+        e.checkIn();
+        async.flushMicrotasks();
+        final state = e.state as EngineRunning;
+        check(state.stepIndex).equals(1);
+        e.dispose();
+      });
+    });
+
+    test('checkIn is no-op on non-disguisedReminder steps', () {
+      fakeAsync((async) {
+        final e = _mk([smsStep(durationSeconds: 30)]);
+        e.start();
+        async.flushMicrotasks();
+        final before = e.state;
+        e.checkIn();
+        async.flushMicrotasks();
+        check(e.state).equals(before);
+        e.dispose();
+      });
+    });
+
+    test('earlyCheckIn behaves like checkIn', () {
+      fakeAsync((async) {
+        final e = _mk([
+          step(
+            type: ChainStepType.disguisedReminder,
+            durationSeconds: 30,
+            gracePeriodSeconds: 5,
+          ),
+          smsStep(order: 1),
+        ]);
+        e.start();
+        async.flushMicrotasks();
+        e.earlyCheckIn();
+        async.flushMicrotasks();
+        final state = e.state as EngineRunning;
+        check(state.stepIndex).equals(1);
+        e.dispose();
+      });
+    });
+  });
+
+  group('SessionEngine.setSpeedMultiplier', () {
+    test('setSpeedMultiplier throws on real sessions', () {
+      final e = _mk([holdStep()]);
+      check(() => e.setSpeedMultiplier(2.0)).throws<StateError>();
+      e.dispose();
+    });
+
+    test('setSpeedMultiplier mutates the getter in simulation mode', () {
+      final e = SessionEngine(
+        chainSteps: [holdStep()],
+        isSimulation: true,
+        speedMultiplier: 1.0,
+        random: FixedRandom(),
+      );
+      e.setSpeedMultiplier(4.0);
+      check(e.speedMultiplier).equals(4.0);
+      e.dispose();
+    });
+
+    test('setSpeedMultiplier rejects NaN / infinity / non-positive', () {
+      final e = SessionEngine(
+        chainSteps: [holdStep()],
+        isSimulation: true,
+        random: FixedRandom(),
+      );
+      check(() => e.setSpeedMultiplier(double.nan)).throws<ArgumentError>();
+      check(
+        () => e.setSpeedMultiplier(double.infinity),
+      ).throws<ArgumentError>();
+      check(() => e.setSpeedMultiplier(0)).throws<ArgumentError>();
+      check(() => e.setSpeedMultiplier(-1.0)).throws<ArgumentError>();
+      e.dispose();
+    });
+  });
+
+  group('SessionEngine.restartCurrentStep', () {
+    test('restartCurrentStep re-enters current step at wait phase', () {
+      fakeAsync((async) {
+        final e = _mk([
+          smsStep(
+            durationSeconds: 5,
+            gracePeriodSeconds: 1,
+          ),
+        ]);
+        e.start();
+        async.elapse(const Duration(seconds: 2));
+        async.flushMicrotasks();
+        e.restartCurrentStep();
+        async.flushMicrotasks();
+        final state = e.state as EngineRunning;
+        check(state.stepIndex).equals(0);
+        check(state.missCount).equals(0);
+        e.dispose();
+      });
+    });
+
+    test('restartCurrentStep is no-op outside EngineRunning', () {
+      final e = _mk([holdStep()]);
+      e.restartCurrentStep();
+      check(e.state).isA<EngineIdle>();
+      e.dispose();
+    });
+  });
 }

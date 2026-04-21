@@ -2,9 +2,17 @@
 ///
 /// Resolves the target contact set from the step's
 /// [SmsContactConfig] (allContacts / firstContact / specificIds),
-/// resolves placeholders in the message template, and fans the
-/// message out via [MessagingServiceProtocol.sendToAll]. Every
-/// returned [MessageWorkId] is passed to
+/// resolves placeholders in the message template, and dispatches
+/// each contact on `config.channel` via
+/// [MessagingServiceProtocol.sendMessage].
+///
+/// Spec 02 §6.smsContact Single-Channel Dispatch (Extra-15/15b),
+/// D-DATA-7: each `smsContact` step uses EXACTLY ONE channel. A
+/// contact whose `channels` list does not contain `config.channel`
+/// is skipped — add a second `smsContact` step to send via another
+/// channel.
+///
+/// Every returned [MessageWorkId] is passed to
 /// `services.registerSmsWorkId` (when present) so the orchestrator
 /// can cancel pending sends on disarm. When zero contacts match, the
 /// strategy logs and returns — no garbage send (see AUDIT-BUG-3).
@@ -12,7 +20,6 @@ library;
 
 import 'dart:developer' as developer;
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
@@ -33,8 +40,8 @@ final class SmsContactStrategy extends EventStrategy {
   Future<void> executeReal(ChainStep step, EventServices services) async {
     final config = _resolveConfig(step, services);
     final channel = config.channel;
-    final contacts = _resolveContacts(services, config);
-    if (contacts.isEmpty) {
+    final candidates = _resolveContacts(services, config);
+    if (candidates.isEmpty) {
       developer.log(
         'SmsContactStrategy: zero contacts matched '
         '(${config.contactSelection.name}); skipping send.',
@@ -42,32 +49,51 @@ final class SmsContactStrategy extends EventStrategy {
       );
       return;
     }
+    // Spec 02 Extra-15/15b / D-DATA-7: single-channel dispatch.
+    // Skip contacts that lack the configured channel. The caller
+    // should add a second smsContact step to send via a different
+    // channel.
+    final contacts = [
+      for (final c in candidates)
+        if (c.channels.contains(channel)) c,
+    ];
+    if (contacts.isEmpty) {
+      developer.log(
+        'SmsContactStrategy: no candidate contacts carry '
+        'channel ${channel.name}; skipping.',
+        name: 'orchestration.smsContact',
+      );
+      return;
+    }
     final message = services.context.resolvePlaceholders(
       config.messageTemplate ?? _defaultSmsTemplate,
     );
-    final ids = await services.messaging.sendToAll(
-      contacts: contacts,
-      message: message,
-      isSimulation: services.context.isSimulation,
-    );
+    final isSim = services.context.isSimulation;
     final register = services.registerSmsWorkId;
-    if (register != null) {
-      for (final id in ids) {
+    for (final contact in contacts) {
+      final id = await services.messaging.sendMessage(
+        contact: contact,
+        message: message,
+        channel: channel,
+        isSimulation: isSim,
+      );
+      if (register != null) {
         register(id);
       }
     }
-    // Channel is advisory here — `sendToAll` iterates every enabled
-    // channel per contact. A future revision may add a per-channel
-    // filter. The value is preserved on the config so the real impl
-    // and tests can assert on it.
-    _touchChannel(channel);
   }
 
   @override
   String simulationDescription(ChainStep step, EventServices services) {
     final config = _resolveConfig(step, services);
-    final contacts = _resolveContacts(services, config);
-    return '[SIM] Would send SMS to ${contacts.length} contacts';
+    final candidates = _resolveContacts(services, config);
+    final channel = config.channel;
+    final contacts = [
+      for (final c in candidates)
+        if (c.channels.contains(channel)) c,
+    ];
+    return '[SIM] Would send ${channel.name} to '
+        '${contacts.length} contacts';
   }
 
   /// Resolves the step config.
@@ -108,13 +134,5 @@ final class SmsContactStrategy extends EventStrategy {
             if (idSet.contains(c.id)) c,
         ];
     }
-  }
-
-  /// No-op that exists solely to silence dead-code analysis when the
-  /// channel field becomes read-only in the strategy. Kept explicit
-  /// so future refactors see that the field is intentionally threaded
-  /// through but not yet acted on.
-  void _touchChannel(MessageChannel channel) {
-    // no-op
   }
 }

@@ -49,14 +49,13 @@ void main() {
     test('round-trip with customized sub-configs', () {
       const d = EventDefaults(
         holdButton: HoldButtonConfig(releaseSensitivity: 0.8),
-        fakeCall: FakeCallConfig(callerName: 'Boss', retryCount: 2),
-        loudAlarm: LoudAlarmConfig(flashScreen: false),
+        fakeCall: FakeCallConfig(callerName: 'Boss'),
+        loudAlarm: LoudAlarmConfig(flashScreen: true),
       );
       final r = EventDefaults.fromJson(d.toJson());
       check(r.holdButton.releaseSensitivity).equals(0.8);
       check(r.fakeCall.callerName).equals('Boss');
-      check(r.fakeCall.retryCount).equals(2);
-      check(r.loudAlarm.flashScreen).isFalse();
+      check(r.loudAlarm.flashScreen).isTrue();
     });
 
     test('copyWith replaces targeted field', () {

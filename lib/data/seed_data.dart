@@ -113,7 +113,7 @@ DistressChain _defaultDistressChain() => const DistressChain(
       order: 2,
       durationSeconds: 30,
       gracePeriodSeconds: 0,
-      config: CallEmergencyConfig(confirmBeforeCalling: false),
+      config: CallEmergencyConfig(showConfirmation: false),
     ),
   ],
 );
