@@ -13,10 +13,10 @@ library;
 
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 
@@ -24,7 +24,14 @@ import 'package:guardianangela/services/protocols/notification_service_protocol.
 /// [NotificationServiceProtocol].
 final class NotificationService implements NotificationServiceProtocol {
   /// Creates the real notification service.
-  NotificationService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to exercise the Android-channel
+  /// registration path.
+  NotificationService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform;
+
+  final PlatformInfo _platform;
 
   /// Persistent-session notification id.
   static const int _sessionNotificationId = 1;
@@ -69,7 +76,7 @@ final class NotificationService implements NotificationServiceProtocol {
     );
 
     // Register Android channels explicitly.
-    if (Platform.isAndroid) {
+    if (_platform.isAndroid) {
       final androidImpl = _plugin
           .resolvePlatformSpecificImplementation<
             AndroidFlutterLocalNotificationsPlugin

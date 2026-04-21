@@ -12,13 +12,13 @@ library;
 
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
@@ -27,9 +27,15 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 /// [MessagingServiceProtocol].
 final class MessagingService implements MessagingServiceProtocol {
   /// Creates the real messaging service.
-  MessagingService() {
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to exercise the Android path.
+  MessagingService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform {
     _subscribeToNativeDelivery();
   }
+
+  final PlatformInfo _platform;
 
   /// Method channel for Android SEND_SMS + WorkManager scheduling.
   /// Phase 10 wires the native side.
@@ -66,7 +72,7 @@ final class MessagingService implements MessagingServiceProtocol {
   Future<bool> canAutoSend(MessageChannel channel) async {
     // SMS can be sent silently only on Android (requires native bridge).
     // WhatsApp/Telegram always route via url_launcher (user-visible).
-    return channel == MessageChannel.sms && Platform.isAndroid;
+    return channel == MessageChannel.sms && _platform.isAndroid;
   }
 
   @override
@@ -180,7 +186,7 @@ final class MessagingService implements MessagingServiceProtocol {
   }
 
   Future<void> _sendSms(String workId, String recipient, String message) async {
-    if (Platform.isAndroid) {
+    if (_platform.isAndroid) {
       try {
         await _smsChannel.invokeMethod<void>('send', {
           'workId': workId,
@@ -244,7 +250,7 @@ final class MessagingService implements MessagingServiceProtocol {
   String _digitsOnly(String raw) => raw.replaceAll(RegExp(r'[^0-9]'), '');
 
   void _subscribeToNativeDelivery() {
-    if (!Platform.isAndroid) return;
+    if (!_platform.isAndroid) return;
     try {
       _nativeEventSub = _smsEventChannel.receiveBroadcastStream().listen(
         _onNativeEvent,

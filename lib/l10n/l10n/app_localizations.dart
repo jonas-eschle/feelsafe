@@ -1405,6 +1405,90 @@ abstract class AppLocalizations {
   /// **'Strip branding on session screen'**
   String get stealthSessionScreen;
 
+  /// Stealth icon preset picker title.
+  ///
+  /// In en, this message translates to:
+  /// **'App icon'**
+  String get stealthPickerTitle;
+
+  /// Stealth icon preset picker intro.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick how the launcher icon looks.'**
+  String get stealthPickerIntro;
+
+  /// Stealth preset: Music.
+  ///
+  /// In en, this message translates to:
+  /// **'Music'**
+  String get stealthPresetMusic;
+
+  /// Stealth preset: Calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get stealthPresetCalendar;
+
+  /// Stealth preset: Fitness.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness'**
+  String get stealthPresetFitness;
+
+  /// Stealth preset: Weather.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get stealthPresetWeather;
+
+  /// Stealth preset: News.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get stealthPresetNews;
+
+  /// Stealth preset: Photos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos'**
+  String get stealthPresetPhotos;
+
+  /// Stealth preset: Notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get stealthPresetNotes;
+
+  /// Stealth preset: Clock.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock'**
+  String get stealthPresetClock;
+
+  /// Distress confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you in danger?'**
+  String get distressConfirmationTitle;
+
+  /// Distress cancel button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get distressConfirmationCancel;
+
+  /// Distress countdown copy.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s until distress fires'**
+  String distressConfirmationCountdown(Object seconds);
+
+  /// Swipe-to-confirm disarm slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to confirm I\'m safe'**
+  String get imSafeSliderLabel;
+
   /// Title of battery-alert screen.
   ///
   /// In en, this message translates to:

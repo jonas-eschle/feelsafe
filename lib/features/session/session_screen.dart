@@ -12,7 +12,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/widgets/distress_confirmation.dart';
 import 'package:guardianangela/core/widgets/hold_to_trigger_button.dart';
+import 'package:guardianangela/core/widgets/im_safe_slider.dart';
 import 'package:guardianangela/core/widgets/pin_entry_dialog.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/walk_session.dart';
@@ -21,12 +23,68 @@ import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Active-session screen.
-class SessionScreen extends ConsumerWidget {
+class SessionScreen extends ConsumerStatefulWidget {
   /// Creates the session screen.
   const SessionScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SessionScreen> createState() => _SessionScreenState();
+}
+
+class _SessionScreenState extends ConsumerState<SessionScreen> {
+  @override
+  void initState() {
+    super.initState();
+    // Wire the distress-confirmation callback so TriggerManager can
+    // ask the UI to gate a hardware-panic trigger behind the
+    // countdown overlay. The closure captures `ref` rather than
+    // context so it stays alive across rebuilds, and re-reads the
+    // latest settings for the stealth flag + app PIN hash.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(sessionControllerProvider.notifier).onDistressConfirmation =
+          _confirmDistress;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Detach the closure so the controller does not hold a stale
+    // reference to this State.
+    ref.read(sessionControllerProvider.notifier).onDistressConfirmation = null;
+    super.dispose();
+  }
+
+  Future<bool> _confirmDistress() async {
+    if (!mounted) return true;
+    final settings = await ref.read(settingsControllerProvider.future);
+    if (!mounted) return true;
+    final stealth = settings.defaults.stealth;
+    return showDistressConfirmation(
+      context,
+      duration: 5,
+      isStealth: stealth.enabled,
+      onCancel: () async {
+        // If an app PIN is configured, require it to cancel the
+        // distress trigger. Any result other than `correct` rejects
+        // the cancel (countdown auto-confirms).
+        final pinHash = settings.appPinHash;
+        if (pinHash == null) return true;
+        if (!mounted) return false;
+        final result = await showPinEntryDialog(
+          context: context,
+          sessionEndHash: pinHash,
+          duressHash: settings.duressPinHash,
+          timeout: settings.pinTimeoutSeconds,
+        );
+        return ref
+            .read(sessionControllerProvider.notifier)
+            .handlePinResult(result);
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final async = ref.watch(sessionControllerProvider);
     final settings = ref.watch(settingsControllerProvider).value;
@@ -140,19 +198,22 @@ class _SessionBody extends ConsumerWidget {
             ),
           const Spacer(),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
               OutlinedButton(
                 onPressed: () =>
                     ref.read(sessionControllerProvider.notifier).pause(),
                 child: Text(l.sessionPause),
               ),
-              FilledButton.icon(
-                icon: const Icon(Icons.check),
-                label: Text(l.sessionDisarm),
-                onPressed: () => _disarm(context, ref),
-              ),
             ],
+          ),
+          const SizedBox(height: 12),
+          // Swipe-to-confirm disarm. On release at the end of the
+          // track we gate the actual disarm behind the session-end
+          // PIN (same path as the legacy button via handlePinResult).
+          ImSafeSlider(
+            label: l.imSafeSliderLabel,
+            onConfirmed: () => _disarm(context, ref),
           ),
         ],
       ),

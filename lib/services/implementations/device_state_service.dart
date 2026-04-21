@@ -7,26 +7,32 @@
 library;
 
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 
 /// Real platform-backed implementation of
 /// [DeviceStateServiceProtocol].
 final class DeviceStateService implements DeviceStateServiceProtocol {
   /// Creates the real device-state service.
-  DeviceStateService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to reach the Android branch.
+  DeviceStateService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform;
 
   /// Method channel name. Native side lands in Phase 10.
   static const MethodChannel _channel = MethodChannel(
     'com.guardianangela.app/device_state',
   );
 
+  final PlatformInfo _platform;
+
   @override
   Future<bool> isDndOn() async {
-    if (!Platform.isAndroid) return false;
+    if (!_platform.isAndroid) return false;
     try {
       final res = await _channel.invokeMethod<bool>('isDndOn');
       return res ?? false;
@@ -45,7 +51,7 @@ final class DeviceStateService implements DeviceStateServiceProtocol {
 
   @override
   Future<bool> isSilent() async {
-    if (!Platform.isAndroid) return false;
+    if (!_platform.isAndroid) return false;
     try {
       final res = await _channel.invokeMethod<bool>('isSilent');
       return res ?? false;

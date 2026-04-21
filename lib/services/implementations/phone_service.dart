@@ -9,23 +9,29 @@
 library;
 
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
 import 'package:url_launcher/url_launcher.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 
 /// Real platform-backed implementation of [PhoneServiceProtocol].
 final class PhoneService implements PhoneServiceProtocol {
   /// Creates the real phone service.
-  PhoneService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to exercise the Android path.
+  PhoneService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform;
 
   /// Method channel name; Phase 10 wires the native Android side.
   static const MethodChannel _channel = MethodChannel(
     'com.guardianangela.app/phone',
   );
+
+  final PlatformInfo _platform;
 
   @override
   Future<void> call(String number, {bool isSimulation = false}) async {
@@ -46,7 +52,7 @@ final class PhoneService implements PhoneServiceProtocol {
   }
 
   Future<void> _placeCall(String number, {required bool isEmergency}) async {
-    if (Platform.isAndroid) {
+    if (_platform.isAndroid) {
       try {
         await _channel.invokeMethod<void>('call', {
           'number': number,

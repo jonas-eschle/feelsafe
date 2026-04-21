@@ -3,6 +3,9 @@
 /// Shows a circular countdown with a "Cancel" button. If the user
 /// does not cancel before the timer expires, [onConfirmed] fires;
 /// cancel fires [onCancelled]. Stealth-aware via [stealth].
+///
+/// [showDistressConfirmation] is the await-able entry point used by
+/// the session UI to gate a distress trigger on user confirmation.
 library;
 
 import 'dart:async';
@@ -11,6 +14,51 @@ import 'package:flutter/material.dart';
 
 import 'package:guardianangela/core/theme/theme_extensions.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+
+/// Shows the distress-confirmation overlay as a full-screen modal.
+///
+/// Returns `true` when the countdown completes (user did not cancel
+/// in time), `false` when the user cancels.
+///
+/// [duration] is the number of seconds to wait before auto-confirming.
+/// Defaults to 5.
+///
+/// [isStealth] hides distress-specific copy when true.
+///
+/// [onCancel] is called when the user taps the cancel button. If it
+/// returns `true`, the cancel is honored (dialog pops with `false`).
+/// If it returns `false`, the cancel is rejected and the countdown
+/// auto-confirms immediately (dialog pops with `true`). A null
+/// [onCancel] always honors the cancel.
+Future<bool> showDistressConfirmation(
+  BuildContext context, {
+  int duration = 5,
+  bool isStealth = false,
+  Future<bool> Function()? onCancel,
+}) async {
+  final result = await showDialog<bool>(
+    context: context,
+    barrierDismissible: false,
+    builder: (dialogContext) => Dialog.fullscreen(
+      child: DistressConfirmation(
+        countdownSeconds: duration,
+        stealth: isStealth,
+        onConfirmed: () => Navigator.of(dialogContext).pop(true),
+        onCancelled: () async {
+          final hook = onCancel;
+          if (hook == null) {
+            Navigator.of(dialogContext).pop(false);
+            return;
+          }
+          final ok = await hook();
+          if (!dialogContext.mounted) return;
+          Navigator.of(dialogContext).pop(!ok);
+        },
+      ),
+    ),
+  );
+  return result ?? true;
+}
 
 /// Countdown overlay widget.
 class DistressConfirmation extends StatefulWidget {

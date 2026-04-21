@@ -8,24 +8,30 @@
 library;
 
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 
 /// Real platform-backed implementation of [SystemUiServiceProtocol].
 final class SystemUiService implements SystemUiServiceProtocol {
   /// Creates the real system-UI service.
-  SystemUiService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to exercise the Android path.
+  SystemUiService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform;
 
   static const MethodChannel _channel = MethodChannel(
     'com.guardianangela.app/system_ui',
   );
 
+  final PlatformInfo _platform;
+
   @override
   Future<void> quickExit() async {
-    if (!Platform.isAndroid) return;
+    if (!_platform.isAndroid) return;
     try {
       await _channel.invokeMethod<void>('quickExit');
     } on MissingPluginException {
@@ -42,7 +48,7 @@ final class SystemUiService implements SystemUiServiceProtocol {
 
   @override
   Future<void> requestBatteryOptimizationExemption() async {
-    if (!Platform.isAndroid) return;
+    if (!_platform.isAndroid) return;
     try {
       await _channel.invokeMethod<void>('requestBatteryOptimizationExemption');
     } on MissingPluginException {
@@ -59,7 +65,7 @@ final class SystemUiService implements SystemUiServiceProtocol {
 
   @override
   Future<bool> isBatteryOptimized() async {
-    if (!Platform.isAndroid) return false;
+    if (!_platform.isAndroid) return false;
     try {
       final res = await _channel.invokeMethod<bool>('isBatteryOptimized');
       return res ?? false;

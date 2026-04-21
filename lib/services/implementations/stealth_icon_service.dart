@@ -11,10 +11,10 @@
 library;
 
 import 'dart:developer' as developer;
-import 'dart:io' show Platform;
 
 import 'package:flutter/services.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 
@@ -22,11 +22,17 @@ import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.
 /// [StealthIconServiceProtocol].
 final class StealthIconService implements StealthIconServiceProtocol {
   /// Creates the real stealth-icon service.
-  StealthIconService();
+  ///
+  /// [platform] defaults to the const production [PlatformInfo()];
+  /// tests inject a [FakePlatformInfo] to exercise the Android path.
+  StealthIconService({PlatformInfo platform = const PlatformInfo()})
+      : _platform = platform;
 
   static const MethodChannel _channel = MethodChannel(
     'com.guardianangela.app/stealth_icon',
   );
+
+  final PlatformInfo _platform;
 
   /// In-memory fallback for iOS / when native side is not wired.
   StealthIconPreset _cachedPreset = StealthIconPreset.calendar;
@@ -34,7 +40,7 @@ final class StealthIconService implements StealthIconServiceProtocol {
   @override
   Future<void> setPreset(StealthIconPreset preset) async {
     _cachedPreset = preset;
-    if (!Platform.isAndroid) return;
+    if (!_platform.isAndroid) return;
     try {
       await _channel.invokeMethod<void>('setPreset', {'preset': preset.name});
     } on MissingPluginException {
@@ -51,7 +57,7 @@ final class StealthIconService implements StealthIconServiceProtocol {
 
   @override
   Future<StealthIconPreset> getCurrentPreset() async {
-    if (!Platform.isAndroid) return _cachedPreset;
+    if (!_platform.isAndroid) return _cachedPreset;
     try {
       final raw = await _channel.invokeMethod<String>('getCurrentPreset');
       if (raw == null) return _cachedPreset;

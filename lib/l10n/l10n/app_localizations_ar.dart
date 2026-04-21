@@ -669,6 +669,50 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stealthSessionScreen => 'إخفاء العلامة التجارية في شاشة الجلسة';
 
   @override
+  String get stealthPickerTitle => 'App icon';
+
+  @override
+  String get stealthPickerIntro => 'Pick how the launcher icon looks.';
+
+  @override
+  String get stealthPresetMusic => 'Music';
+
+  @override
+  String get stealthPresetCalendar => 'Calendar';
+
+  @override
+  String get stealthPresetFitness => 'Fitness';
+
+  @override
+  String get stealthPresetWeather => 'Weather';
+
+  @override
+  String get stealthPresetNews => 'News';
+
+  @override
+  String get stealthPresetPhotos => 'Photos';
+
+  @override
+  String get stealthPresetNotes => 'Notes';
+
+  @override
+  String get stealthPresetClock => 'Clock';
+
+  @override
+  String get distressConfirmationTitle => 'Are you in danger?';
+
+  @override
+  String get distressConfirmationCancel => 'Cancel';
+
+  @override
+  String distressConfirmationCountdown(Object seconds) {
+    return '${seconds}s until distress fires';
+  }
+
+  @override
+  String get imSafeSliderLabel => 'Swipe to confirm I\'m safe';
+
+  @override
   String get batteryAlertTitle => 'تنبيه البطارية';
 
   @override
