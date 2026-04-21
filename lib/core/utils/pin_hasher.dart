@@ -12,11 +12,19 @@
 /// (a handful of hashes per app launch), so the cost is acceptable
 /// and it keeps unit tests runnable without native bindings.
 ///
+/// Fix for bugs.json Block (Argon2id UI-thread freeze): [hash] and
+/// [verify] are now async and hop the Argon2 derivation into a
+/// worker isolate via `Isolate.run`, so the ~1.3s cost no longer
+/// blocks the UI thread. `Isolate.run` is used rather than
+/// `compute()` so the API works from pure-Dart call sites (no
+/// Flutter dependency).
+///
 /// Pre-alpha break-compat: any hashes stored under a previous scheme
 /// will fail to parse and be rejected; users must re-set their PIN.
 library;
 
 import 'dart:convert';
+import 'dart:isolate';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -50,13 +58,16 @@ abstract final class PinHasher {
   /// no side channel to reproduce the digest. Two calls with the
   /// same [pin] return **different** strings (random salt).
   ///
+  /// Runs the ~1.3s Argon2id derivation inside a worker isolate
+  /// (`Isolate.run`) so the caller's event loop is not blocked.
+  ///
   /// Throws [ArgumentError] when [pin] is empty.
-  static String hash(String pin) {
+  static Future<String> hash(String pin) async {
     if (pin.isEmpty) {
       throw ArgumentError.value(pin, 'pin', 'must not be empty');
     }
     final salt = _generateSalt();
-    final digest = _derive(pin, salt);
+    final digest = await Isolate.run(() => _derive(pin, salt));
     return _encodePhc(salt, digest);
   }
 
@@ -67,7 +78,9 @@ abstract final class PinHasher {
   /// false on any malformed or unsupported [stored] string (wrong
   /// algorithm, wrong version, wrong params, bad base64, etc.) —
   /// never throws.
-  static bool verify(String pin, String stored) {
+  ///
+  /// Runs the derivation in a worker isolate (see [hash]).
+  static Future<bool> verify(String pin, String stored) async {
     if (pin.isEmpty || stored.isEmpty) return false;
     final parsed = _decodePhc(stored);
     if (parsed == null) return false;
@@ -79,7 +92,11 @@ abstract final class PinHasher {
         parsed.lanes != _lanes) {
       return false;
     }
-    final candidate = _derive(pin, parsed.salt, hashLen: parsed.hash.length);
+    final hashLen = parsed.hash.length;
+    final salt = parsed.salt;
+    final candidate = await Isolate.run(
+      () => _derive(pin, salt, hashLen: hashLen),
+    );
     return _constantTimeEquals(candidate, parsed.hash);
   }
 

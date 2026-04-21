@@ -105,6 +105,13 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     final hideBranding = stealth != null &&
         stealth.enabled &&
         stealth.sessionScreenStealth;
+    // Fix for bugs.json Block (stealth.timerDisplay no-op): hide the
+    // remaining-seconds text AND the hold-button countdown when
+    // stealth is active and `timerDisplay` is false. Settings UI has
+    // always persisted this flag; until now nothing consumed it.
+    final hideTimer = stealth != null &&
+        stealth.enabled &&
+        !stealth.timerDisplay;
     return Scaffold(
       appBar: AppBar(
         title: Text(hideBranding ? '' : l.sessionTitle),
@@ -127,7 +134,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
               }
             });
           }
-          return _SessionBody(session: session);
+          return _SessionBody(session: session, hideTimer: hideTimer);
         },
       ),
     );
@@ -135,9 +142,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
 }
 
 class _SessionBody extends ConsumerWidget {
-  const _SessionBody({required this.session});
+  const _SessionBody({required this.session, required this.hideTimer});
 
   final WalkSession session;
+
+  /// When true, the remaining-seconds text is suppressed (stealth
+  /// mode with timerDisplay=false). The hold-button label loses the
+  /// seconds-suffix in that case as well.
+  final bool hideTimer;
 
   Future<void> _disarm(BuildContext context, WidgetRef ref) async {
     final settings = await ref.read(settingsControllerProvider.future);
@@ -181,7 +193,7 @@ class _SessionBody extends ConsumerWidget {
             ),
             style: Theme.of(context).textTheme.titleMedium,
           ),
-          if (session.remainingSeconds != null)
+          if (session.remainingSeconds != null && !hideTimer)
             Text(
               l.sessionRemaining(session.remainingSeconds!),
               style: Theme.of(context).textTheme.headlineMedium,

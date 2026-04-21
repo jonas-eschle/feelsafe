@@ -3,6 +3,13 @@
 /// Fix for bugs.json Block (PIN Argon2id upgrade): hashes now flow
 /// through [PinHasher.hash] (salted + iterated) instead of bare
 /// SHA-256.
+///
+/// Fix for bugs.json Block (_submit race): `_maybeAdvance` previously
+/// fired `_submit` without awaiting. After the confirmation buffer
+/// reached the target length, every further digit re-entered
+/// `_submit`, producing concurrent Argon2 hashes and settings writes
+/// that could both pop the route. The new `_submitting` guard
+/// short-circuits re-entry until the in-flight submit resolves.
 library;
 
 import 'package:flutter/material.dart';
@@ -28,13 +35,15 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   final _first = StringBuffer();
   final _second = StringBuffer();
   bool _confirming = false;
+  bool _submitting = false;
   String? _error;
 
   /// Fix for bugs.json Block (PIN Argon2id upgrade): delegates to
   /// [PinHasher.hash] so setup and verify use the same primitive.
-  String _hash(String pin) => PinHasher.hash(pin);
+  Future<String> _hash(String pin) => PinHasher.hash(pin);
 
   void _onDigit(int d) {
+    if (_submitting) return;
     setState(() {
       (_confirming ? _second : _first).write(d);
       _error = null;
@@ -43,6 +52,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
   }
 
   void _onBackspace() {
+    if (_submitting) return;
     final buf = _confirming ? _second : _first;
     final s = buf.toString();
     if (s.isEmpty) return;
@@ -54,46 +64,54 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   void _maybeAdvance() {
     if (!_confirming) {
-      if (_first.length >= 4 && _first.length >= 4) {
-        // Accept 4-8 digits.
-      }
       if (_first.length >= 4) {
         setState(() => _confirming = true);
       }
       return;
     }
     if (_second.length >= _first.length) {
+      // Guard re-entry: `_submit` hashes on a worker isolate and
+      // awaits an async settings write; a repeat digit tap must not
+      // fire a second concurrent `_submit`.
+      if (_submitting) return;
       _submit();
     }
   }
 
   Future<void> _submit() async {
-    final l = AppLocalizations.of(context);
-    final a = _first.toString();
-    final b = _second.toString();
-    if (a != b) {
-      setState(() {
-        _error = l.pinSetupMismatch;
-        _first.clear();
-        _second.clear();
-        _confirming = false;
-      });
-      return;
+    if (_submitting) return;
+    _submitting = true;
+    try {
+      final l = AppLocalizations.of(context);
+      final a = _first.toString();
+      final b = _second.toString();
+      if (a != b) {
+        setState(() {
+          _error = l.pinSetupMismatch;
+          _first.clear();
+          _second.clear();
+          _confirming = false;
+        });
+        return;
+      }
+      final hash = await _hash(a);
+      if (!mounted) return;
+      final which = GoRouterState.of(context).uri.queryParameters['which'];
+      final notifier = ref.read(settingsControllerProvider.notifier);
+      switch (which) {
+        case 'app':
+          await notifier.setAppPinHash(hash);
+        case 'sessionEnd':
+          await notifier.setSessionEndPinHash(hash);
+        case 'duress':
+          await notifier.setDuressPinHash(hash);
+        default:
+          await notifier.setSessionEndPinHash(hash);
+      }
+      if (mounted) context.pop();
+    } finally {
+      _submitting = false;
     }
-    final hash = _hash(a);
-    final which = GoRouterState.of(context).uri.queryParameters['which'];
-    final notifier = ref.read(settingsControllerProvider.notifier);
-    switch (which) {
-      case 'app':
-        await notifier.setAppPinHash(hash);
-      case 'sessionEnd':
-        await notifier.setSessionEndPinHash(hash);
-      case 'duress':
-        await notifier.setDuressPinHash(hash);
-      default:
-        await notifier.setSessionEndPinHash(hash);
-    }
-    if (mounted) context.pop();
   }
 
   @override
@@ -110,7 +128,7 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
             Text(_confirming ? l.pinSetupConfirm : l.pinSetupEnter),
             const SizedBox(height: 24),
             Text(
-              '•' * buf.length,
+              '\u2022' * buf.length,
               style: Theme.of(context).textTheme.displayMedium,
             ),
             if (_error != null) ...[

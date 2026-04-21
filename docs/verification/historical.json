@@ -1,14 +1,15 @@
 {
   "agent": "historical-issues",
+  "verification_pass": "re-run",
   "l_mode_status": {
     "L1": "defended",
     "L2": "defended",
-    "L3": "broken",
+    "L3": "defended",
     "L4": "defended",
     "L5": "defended",
-    "L6": "defended-partial",
+    "L6": "defended",
     "L7": "defended",
-    "L8": "defended",
+    "L8": "defended-partial",
     "L9": "defended",
     "L10": "defended",
     "L11": "defended",
@@ -16,51 +17,59 @@
     "L13": "defended",
     "L14": "defended"
   },
+  "l_mode_notes": {
+    "L3": "FakeCallConfig.callerName null round-trip now works correctly: fromJson at step_config.dart:572-575 uses json.containsKey('callerName') so explicit null is preserved; copyWith has clearCallerName sentinel (step_config.dart:630,642)",
+    "L8": "StealthConfig is consumed in home_screen (fakeName+fakeIcon) and session_screen (branding hide under sessionScreenStealth), but stealth.timerDisplay is set by UI yet never read by SessionScreen — toggle is a no-op. See new bug."
+  },
   "specific_bug_status": {
     "AUDIT-BUG-3": "fixed",
-    "FakeCallConfig.callerName": "regressed",
+    "FakeCallConfig.callerName": "fixed",
     "SettingsController.async_load_race": "fixed",
-    "SmsContactConfig.contactIds_null_coalesce": "regressed"
+    "SmsContactConfig.contactIds_null_coalesce": "fixed",
+    "CallEmergencyConfig.emergencyNumber_null_coalesce": "fixed",
+    "AppSettings.pin_hashes_null_coalesce": "fixed",
+    "StealthConfig.timerDisplay_unused": "regressed-new"
   },
   "findings": [
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "regression",
-      "issue": "FakeCallConfig.callerName null round-trip asymmetry still present: fromJson coerces null -> 'Mom' (line 374); copyWith uses ?? pattern (line 407) so 'clear to null' is impossible. The regression test at test/property/json_round_trip_property_test.dart:95-101 locks the broken behavior ('null callerName normalizes to Mom') rather than fixing it. Field is declared String? with doc 'May be null if explicitly cleared' but is practically non-nullable after a single round-trip.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Either drop the '?? Mom' in fromJson and preserve null (and switch copyWith to sentinel/ValueGetter<String?> to allow explicit clearing), OR change field to non-nullable final String callerName with no ? and update UI/tests accordingly."
+      "issue": "StealthConfig.timerDisplay is toggleable in Settings -> Stealth (stealth_screen.dart:62) and persisted on StealthConfig, but never read anywhere in the session UI. SessionScreen unconditionally renders the remaining-seconds Text (session_screen.dart:184-188) with no stealth guard. The setting appears functional but has zero runtime effect — a stealth user can't actually hide the timer.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_screen.dart",
+      "line": 184,
+      "suggested_fix": "Gate the remaining-seconds Text on stealth.timerDisplay || !(stealth.enabled && stealth.sessionScreenStealth). Add a widget test that asserts the Text is absent when StealthConfig(enabled: true, sessionScreenStealth: true, timerDisplay: false)."
     },
     {
       "severity": "Warn",
       "category": "regression",
-      "issue": "SmsContactConfig.copyWith uses 'contactIds ?? this.contactIds' pattern (line 555 in step_config.dart) — callers cannot explicitly clear contactIds. Matches audit prompt's '_SmsContactForm contactIds null-coalesce bug'. Latent because the current UI form in event_specific_config.dart:242 never tries to clear contactIds, but anyone wiring the specificIds selector would hit it.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Use a sentinel (e.g. ValueGetter<List<String>?>?) or add a separate clearContactIds bool on copyWith, or require the caller to pass an empty list for 'none'."
-    },
-    {
-      "severity": "Warn",
-      "category": "regression",
-      "issue": "Same ??-null-eaten pattern in CallEmergencyConfig.copyWith line 845 for emergencyNumber. The UI form at event_specific_config.dart:360 does 'v.isEmpty ? null : v' expecting null to clear the override, but copyWith keeps the old value. User cannot clear a per-step emergency override once set.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Audit all nullable-field copyWith implementations in step_config.dart and switch them to a sentinel pattern; add a property test that 'copyWith(field: null)' successfully clears every nullable String? field."
+      "issue": "SessionController._fireDistressBecauseOfPin still accepts EndReason reason but never uses it — the wrongPinExhausted vs duressPin distinction is lost before reaching the engine. handlePinResult at line 303/309/313 branches on the reason and passes it in, only to have it discarded.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_controller.dart",
+      "line": 321,
+      "suggested_fix": "Either drop the parameter at all call sites OR extend SessionEngine.replaceWithDistressChain to accept the EndReason and propagate it into the eventual sessionEnded event metadata."
     },
     {
       "severity": "Note",
       "category": "ineffective-defense",
-      "issue": "simulation_defense_test.dart Layer 4 structural checks only grep for url_launcher, MethodChannel, and flutter/services. The audit prompt requires 0 imports of geolocator and flutter_local_notifications also — those are not covered, so a future commit could introduce a real geolocator import into a SimulationLocationService without failing CI.",
+      "issue": "Historical note 'simulation_defense_test.dart Layer 4 structural checks don't cover geolocator / flutter_local_notifications' — now fixed: simulation_defense_test.dart:437 asserts no simulation file imports package:geolocator and line 459 asserts no simulation file imports package:flutter_local_notifications.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/simulation_defense_test.dart",
-      "suggested_fix": "Extend Layer 4 tests to grep for 'package:geolocator' and 'package:flutter_local_notifications' imports across simulation/*.dart as additional forbidden imports."
+      "status": "fixed-in-prior-pass"
     },
     {
       "severity": "Note",
       "category": "defense-missing",
-      "issue": "ChainStep.copyWith and other nullable-field copyWith methods across the models tree may suffer the same ??-eats-null pattern. Only FakeCallConfig and the two above were audited in depth; a systemic property test is missing.",
+      "issue": "The historical 'generic property test: copyWith(nullableField: null) clears every nullable String? field' is still missing. SmsContactConfig, CallEmergencyConfig, FakeCallConfig, AppSettings all have targeted clearXxx flags now, but there is no systematic property test that iterates every StepConfig subclass. A future nullable field added to a config that forgets the pattern would slip through.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/",
-      "suggested_fix": "Add a generic property-based test that iterates all StepConfig subclasses and asserts 'copyWith(nullableField: null)' actually clears."
+      "suggested_fix": "Add test/property/copy_with_clear_property_test.dart that reflects over StepConfig subclasses (or enumerates them manually) and asserts that for each nullable field, either (a) the field is copyable via a clearXxx sentinel, or (b) the field is documented as non-nullable-at-construction. Also extend to AppSettings, UserProfile, ModeOverrides."
+    },
+    {
+      "severity": "Note",
+      "category": "defense-missing",
+      "issue": "No test pins the Argon2id PIN hashing cost parameters (m=65536, t=3, p=4) to the stored PHC format AND asserts that stored hashes created by one version verify under the current version. This is adequate while the pre-alpha break-compat policy lets users re-set PINs, but if the parameters silently drift (e.g., someone bumps t=3 to t=4) users will lock themselves out with no clear error. pin_hasher_test.dart has format-shape checks but not a cross-run fixture."
     }
   ],
   "open_questions": [
-    "Is the FakeCallConfig.callerName 'null coerces to Mom' behavior genuinely intended as a UX default, or is it a bug the regression test is grandfathering? The CLAUDE.md pre-alpha 'break compatibility freely' policy argues for picking one and fixing the semantics definitively.",
-    "Should SmsContactSelection.firstContact be removed entirely (doc comment already marks it 'Retained for legacy stored configs... not reachable from the redesigned editor UI')? Under the pre-alpha no-migration policy this could be dropped in a nuke-and-reseed pass."
+    "Should StealthConfig.timerDisplay simply be removed (rather than wired) if the product has decided a stealth user always sees the timer? Removing it avoids the no-op-toggle footgun; wiring it honours user expectations.",
+    "Should the unused EndReason parameter on _fireDistressBecauseOfPin be dropped or plumbed? If sessionEnded events are meant to surface 'which trigger caused this' for post-session logs, it needs plumbing. If post-session logs already derive this elsewhere, drop the param.",
+    "Argon2id per-digit verification on the UI thread is a user-facing latency problem. Worth a follow-up issue to move to compute() or to verify only on length plateau."
   ]
 }

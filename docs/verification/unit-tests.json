@@ -1,21 +1,31 @@
 {
   "agent": "unit-tests",
+  "rerun_iso": "2026-04-21T14:00:00Z",
   "run_command": "flutter test --coverage",
   "test_run_summary": {
-    "total_test_files": 57,
-    "total_test_cases_passed": 886,
-    "failures": 0
+    "total_test_files": 138,
+    "total_test_cases_passed": 1691,
+    "failures": 0,
+    "delta_since_prior_run": {
+      "files": "+81 (57 → 138)",
+      "cases": "+805 (886 → 1691)"
+    }
   },
-  "coverage_by_layer": {
-    "engine": "98.89%",
-    "orchestration": "99.47%",
-    "models": "84.85%",
-    "data": "36.03%",
-    "services": "19.88%",
-    "features": "18.11%",
-    "core": "19.03%",
-    "router": "53.85%",
-    "overall": "44.28%"
+  "coverage_by_layer_excl_generated": {
+    "engine": "98.96%",
+    "orchestration": "98.75%",
+    "models": "99.11%",
+    "data_source": "81.23%",
+    "services": "91.37%",
+    "features": "61.44%",
+    "core": "76.53%",
+    "router": "54.29%",
+    "overall_excl_generated": "81.45%",
+    "overall_incl_generated": "51.29%"
+  },
+  "coverage_generated_buckets": {
+    "data_drift_g_dart": "29.75% (379/1274) — Drift generated code, expected low",
+    "l10n_generated": "4.84% (190/3923) — runtime only hits active-locale strings"
   },
   "coverage_gates_from_spec": {
     "engine": "100% (§9.1 lib/domain/engine/)",
@@ -29,111 +39,154 @@
     "router": "100% (§9.1 lib/router/app_router.dart)",
     "overall": "99%+ (§9.1 aggregate)"
   },
+  "coverage_gate_verdict": {
+    "overall_target_99": "MISS — 81.45% excluding generated, 51.29% including; gap concentrated in features (61%), router (54%), core (77%)",
+    "engine_target_100": "MISS by 4 lines (98.96%)",
+    "orchestration_target_100": "MISS by 3 lines (98.75%)",
+    "models_target_100": "MISS by 17 lines (99.11%)",
+    "router_target_100": "MISS — 54.29% (unchanged from prior run; no route-by-route parametrized test added)"
+  },
+  "golden_tests_status": {
+    "present": true,
+    "count": 6,
+    "files": [
+      "test/goldens/distress_confirmation_golden_test.dart",
+      "test/goldens/fake_call_screen_golden_test.dart",
+      "test/goldens/home_screen_golden_test.dart",
+      "test/goldens/onboarding_screen_golden_test.dart",
+      "test/goldens/session_screen_golden_test.dart",
+      "test/goldens/settings_screen_golden_test.dart"
+    ],
+    "golden_image_count": 24,
+    "covers_stealth_variants": true,
+    "covers_light_dark": true,
+    "gap": "Only 6 screens have goldens (spec wanted golden-per-widget); per-locale stealth goldens for 14 locales NOT present"
+  },
+  "a11y_tests_status": {
+    "present": true,
+    "files": [
+      "test/core/a11y/font_scaling_test.dart (72 lines)",
+      "test/core/a11y/semantics_test.dart (136 lines)"
+    ],
+    "coverage_scope": "Font scaling + Semantics on key widgets; NO TalkBack/VoiceOver manual evidence",
+    "gap": "Plan wanted deep a11y review across all 31 screens; current 2 files spot-check only"
+  },
+  "widget_tests_per_screen": {
+    "total_screens": 31,
+    "screens_with_widget_tests": 30,
+    "only_missing": "lib/features/session/session_screen.dart (has golden test but no regular widget test)",
+    "coverage_of_session_screen": "0.91% — the 1 biggest uncovered widget"
+  },
   "findings": [
     {
       "severity": "Block",
       "category": "coverage-gap",
-      "issue": "Services layer at 19.88%, far below 99% gate. Every lib/services/implementations/*.dart file is at 1-30% (only Riverpod provider stubs hit during container resolution). No retry-exhausted, TTS-fallback, or protocol-contract tests exist; test-strategy §2.1 lists test/services/ as present (5+ files) but directory is absent from this repo.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/",
-      "suggested_fix": "Create test/services/ with per-service protocol + fake contract tests (sms_retry_exhausted_test.dart, audio_service_tts_fallback_test.dart, messaging_fan_out_test.dart, etc.); mock platform channels with MethodChannel.setMockMethodCallHandler."
+      "issue": "Session screen (lib/features/session/session_screen.dart) is at 0.91% coverage (1/110 lines). This is the single most-critical user-facing screen. It has a golden test but NO regular widget test that drives state transitions, HoldButton interaction, distress confirmation flow, or PIN-entry flow.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_screen.dart",
+      "suggested_fix": "Add test/features/session/session_screen_test.dart with ProviderContainer overrides to exercise: HoldMode render, DateMode render, distress confirmation render, pause banner (incoming call), disarm action. This alone would lift features/ coverage by ~2pp."
     },
     {
       "severity": "Block",
       "category": "coverage-gap",
-      "issue": "Features layer at 18.11%. 11 of 13 feature controllers have 0% coverage (backup, battery_alert, contacts, distress_chains, fake_call, history, modes, profile, templates, plus near-zero onboarding/settings). Only session_controller (97.35%) and backup_service are tested. No widget tests exist.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/features/",
-      "suggested_fix": "Add controller tests using ProviderContainer.overrideWith and fake repositories for all 11 missing controllers, matching the session_controller_test pattern; add widget tests with pumpWithProviders helper."
+      "issue": "4 Modes-feature widgets are at 0% coverage: chain_step_tile.dart, step_type_picker.dart, step_config_form.dart, event_specific_config.dart (226 lines alone in the last). These are pulled in from mode_editor_screen.dart which has its own 47.92% coverage. No dedicated test for step-config rendering.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/modes/widgets/",
+      "suggested_fix": "Add test/features/modes/widgets/ with one test file per widget. event_specific_config.dart alone covers 226 lines — getting it to even 70% lifts features/ by ~2.5pp."
     },
     {
       "severity": "Block",
       "category": "coverage-gap",
-      "issue": "Data layer at 36.03%. Generated DAO .g.dart boilerplate (20-30%) plus the encryption.dart (0%) and schema/tables.dart (0%) drag below 99% gate. No migration tests, no SQLCipher-key-missing/wrong-key recovery test (TEST-151/152), no schema-dump parity test (TEST-154), no concurrent-isolate serialization test (TEST-156).",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/data/db/",
-      "suggested_fix": "Add test/data/db/ with encryption_test.dart (wrong-key rejection), schema_test.dart (committed schema dump parity), dao_round_trip_test.dart (parametrized over all tables). Exempt only .g.dart lines via explicit // COVERAGE comments per §9.2."
+      "issue": "lib/core/widgets/pin_entry_dialog.dart is at 0% (53 lines). It wraps Argon2id verification in a dialog — no unit test asserts the duress-PIN silent branch, the app/session/duress PIN selection paths, or the close behavior.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/core/widgets/pin_entry_dialog.dart",
+      "suggested_fix": "Add test/core/widgets/pin_entry_dialog_test.dart: (a) enter correct PIN → Navigator.pop(true), (b) enter wrong PIN 3x → threshold triggers distress hook, (c) enter duress PIN → silently fires distress without UI feedback, (d) cancel → pop(false)."
     },
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "coverage-gap",
-      "issue": "Models layer at 84.85%, below the 100% gate. 10 model files under 90%: chain_event (68%), session_context (46%), walk_session (74%), session_log (78%), step_config (83%), trigger (79%), user_profile (80%), mode_overrides (80%), gps_logging_config (79%), distress_chain (89%).",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/session_context.dart",
-      "suggested_fix": "Extend model tests to cover: SessionContext message resolution (currently only 46%), WalkSession sealed-phase exhaustiveness, ChainEventData constructor branches, SessionLog serialization edge cases. Target: add ~40-60 missing tests."
-    },
-    {
-      "severity": "Block",
-      "category": "coverage-gap",
-      "issue": "Engine at 98.89% (3 uncovered lines in session_engine.dart, 1 in engine_state.dart). Below the 100% policy in §9.1.",
+      "issue": "Engine at 98.96% (below 100% gate). session_engine.dart has 3 uncovered lines and engine_state.dart has 1. These are the plan's tightest gate.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/session_engine.dart",
-      "suggested_fix": "Locate the 3 uncovered lines (likely defensive fall-through in state transitions or an unhandled sealed case) and add targeted tests or document exemption per §9.2."
+      "suggested_fix": "Run lcov_cobertura genhtml to locate the 4 uncovered lines; add targeted tests for defensive fall-through or formally exempt per §9.2 with a // COVERAGE comment."
     },
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "coverage-gap",
-      "issue": "Orchestration at 99.47% (1 uncovered line in event_strategy_registry.dart). Below the 100% policy.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/event_strategy_registry.dart",
-      "suggested_fix": "Cover the single remaining branch in the registry (likely unknown-step-type fallthrough) or add §9.2 exemption."
+      "issue": "Orchestration at 98.75% (below 100% gate). session_orchestrator.dart (94.44%, 2 lines) + event_strategy_registry.dart (90.91%, 1 line) are the holdouts.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/session_orchestrator.dart",
+      "suggested_fix": "Cover the remaining 3 lines or exempt per §9.2."
     },
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "coverage-gap",
-      "issue": "Router coverage 53.85% vs 100% gate — no route-by-route resolve test; only integration coverage hits boot route. redirect branches and first-launch detection unexercised.",
+      "issue": "Models at 99.11% (below 100% gate). 8 model files <100%: distress_chain (89.29%), app_defaults (93.02%), stealth_config (94.34%), location_point (96.43%), mode_overrides (98.00%), user_profile (98.33%), event_defaults (98.53%), step_config (99.21%).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/distress_chain.dart",
+      "suggested_fix": "Add ~17 targeted tests for serialization edge cases (null fields, missing keys, unknown step types) across the 8 files."
+    },
+    {
+      "severity": "Warn",
+      "category": "coverage-gap",
+      "issue": "Router still at 54.29% — NO dedicated app_router_test.dart parametrized over every RouteName. Only integration coverage hits the boot route. redirect branches and first-launch detection unexercised. File test/router/app_router_test.dart exists but only covers a subset of routes.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/router/app_router.dart",
-      "suggested_fix": "Add test/router/app_router_test.dart: parametrize over every RouteName, push via GoRouter, assert resolved screen type. Cover first-launch redirect to onboarding + stealth redirect branches."
+      "suggested_fix": "Extend test/router/app_router_test.dart to iterate over ALL 31 RouteName entries, verify resolved screen type. Add explicit first-launch redirect tests."
     },
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "coverage-gap",
-      "issue": "Core widgets pin_keypad (4.55%), hold_to_trigger_button (0%), pin_entry_dialog (0%), guardian_angela_logo (2%). These are shared widgets exercised by PinEntryScreen/PinSetupScreen — no widget tests yet.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/core/widgets/",
-      "suggested_fix": "Add test/core/widgets/*_test.dart using WidgetTester with golden-toolkit multiScreenGolden. At minimum: PinKeypad keypress -> callback, HoldToTriggerButton hold/release timing, PinEntryDialog duress-PIN silent branch."
+      "issue": "Core at 76.53%. Gaps: pin_entry_dialog (0%), distress_confirmation (63.27%), sentry_config (44.44%), structured_logger (73.91%), logarithmic_slider (83.33%), platform_info (83.33%).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/core/",
+      "suggested_fix": "Lift pin_entry_dialog to 80%+ (biggest gain: 53 lines at 0%), extend distress_confirmation for stealth mode, add telemetry test for prod-only Sentry init branches."
     },
     {
       "severity": "Warn",
-      "category": "missing-error-path",
-      "issue": "test-strategy §2.1 inventory claims 180 test files / 3,830 cases; actual repo has 57 files / 886 cases. The inventory is aspirational, not current. Many TEST-### cases from §5 are not implemented (property fuzz: only 1 file; no golden tests; no accessibility tests; no RTL layout tests; no localization parity tests; no crash-recovery; no simulation-silent rearm tests).",
+      "category": "coverage-gap",
+      "issue": "Services at 91.37% (below 99% gate). 4 files <90%: audio_service (37.84%, 23 uncovered lines — TTS fallback branch), notification_service (34.62%, 51 uncovered — custom sound / disguise permutations), vibration_service (80.00%), home_widget_service (88.24%).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/implementations/",
+      "suggested_fix": "Add MethodChannel mock tests for audio TTS fallback and notification disguise variants."
+    },
+    {
+      "severity": "Warn",
+      "category": "coverage-gap",
+      "issue": "Features at 61.44% overall (below 99% gate). Biggest drags: session_screen (0.91%, 110 lines), backup_screen (23.46%), battery_alert_screen (48.21%), onboarding_screen (51.00%), pin_setup_screen (30.00%), mode_editor_screen (47.92%), distress_chain_editor_screen (50.00%), contacts_screen (55.81%).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/",
+      "suggested_fix": "Prioritize session_screen (0% → 70% = +2.2pp), backup_screen (23% → 80% = +0.8pp), onboarding_screen (51% → 85% = +0.6pp). Each uses ProviderContainer.overrideWith in the existing test/features pattern."
+    },
+    {
+      "severity": "Warn",
+      "category": "analyzer-errors",
+      "issue": "flutter analyze reports 3 ERRORS in Patrol integration_test files (D7 E2E): extra_positional_arguments_could_be_named at integration_test/date_mode_flow_test.dart:43, distress_flow_test.dart:30 and :60. These fail the universal gate `flutter analyze --fatal-infos`.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/integration_test/",
+      "suggested_fix": "Convert `$.pumpAndSettle(const Duration(...))` to `$.pumpAndSettle(duration: const Duration(...))` — the walk_mode_flow_test.dart file was already migrated (per prior edit), migrate the other two."
+    },
+    {
+      "severity": "Note",
+      "category": "plan-deviation",
+      "issue": "test-strategy §2.1 claimed target 180 files / 3830 cases with 99% coverage. Current 138 files / 1691 cases reaches 81.45% on code-only (excl. generated). Gap of ~2100 cases between plan target and actual. Plan target is still unmet.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/docs/test-strategy.md",
-      "suggested_fix": "Either update §2.1 to reflect reality or land the missing suites; otherwise §9 coverage gates are unenforceable. Block merging until inventory matches actual."
+      "suggested_fix": "Either execute a focused test-depth pass on features/router/core to reach 99% on code-only, OR formally lower the overall gate (with a D-ID) to 80% code-only + 100% on correctness-critical paths. Document the decision in decisions-log.md."
     },
     {
-      "severity": "Warn",
+      "severity": "Note",
       "category": "assertion-quality",
-      "issue": "sms_contact_strategy_test.dart asserts `harness.messaging.calls` contains strings like 'sendToAll:2'. The fake records the count instead of per-channel, per-contact call data — cannot distinguish 'sent SMS to A and B via WhatsApp' from 'sent SMS to A and B via SMS'. TEST-016 (MessageChannel fan-out) under-asserted.",
+      "issue": "Prior finding about sms_contact_strategy_test only asserting count strings ('sendToAll:2') instead of per-channel per-contact tuples REMAINS unaddressed. FakeMessagingService still records aggregate counts.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/domain/orchestration/strategies/sms_contact_strategy_test.dart",
-      "suggested_fix": "Upgrade FakeMessagingService to record List<(contactId, channel, body)> tuples so per-channel fan-out can be asserted. Required for P0 distress-chain correctness."
-    },
-    {
-      "severity": "Warn",
-      "category": "missing-error-path",
-      "issue": "simulationDescription is only checked for 'contains SIM prefix' and '3' — not for localization (TEST-014 'returns non-empty localized text'). English-only fallback will pass tests silently if localization breaks.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/domain/orchestration/strategies/",
-      "suggested_fix": "Extend strategy tests to call simulationDescription under each locale from pumpLocalizations helper; assert returned text differs across at least en/de/fa."
-    },
-    {
-      "severity": "Note",
-      "category": "non-deterministic",
-      "issue": "FixedRandom/fakeAsync discipline is strong in engine tests (108 FixedRandom usages across 16 files, 160 fakeAsync usages across 14 files). test/features/backup/ uses real PBKDF2 KDF — test runs take 40+ seconds (saw 00:39-01:02 for a single 'PIN round-trip' suite iterating ~60 times). Not a correctness issue but a CI-time smell.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/features/backup/backup_service_test.dart",
-      "suggested_fix": "Inject a test-only KDF with reduced iteration count for determinism tests; keep one full-strength iteration as a smoke test."
-    },
-    {
-      "severity": "Note",
-      "category": "tautology",
-      "issue": "wiring_contract_test.dart group 'real and simulation pairs are distinct concrete types' (lines 218-337) asserts `runtimeType != runtimeType`. Since the providers return different classes by name, this test cannot fail unless the providers become identical — tautological-adjacent. Not harmful, but low information.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/wiring/wiring_contract_test.dart",
-      "suggested_fix": "Replace with stronger assertion: each simulation service has a per-method contract test that asserts side-effect is recorded, not executed (e.g., SimulationSmsService.send records but does not dispatch). This addresses TEST-010..012 directly."
+      "suggested_fix": "Upgrade FakeMessagingService to record List<(contactId, channel, body)> tuples."
     }
   ],
   "quality_observations": {
-    "fixed_random_discipline": "Strong (108 usages across 16 files, primarily engine)",
-    "fake_async_discipline": "Strong (160 usages across 14 files)",
-    "error_path_coverage": "Strong for engine (25 throws-checks in edge_cases_test + 11 in speed_multiplier_test); weak outside engine (no controller error-path tests)",
+    "fixed_random_discipline": "Strong — continues to eliminate jitter nondeterminism",
+    "fake_async_discipline": "Strong — used consistently in engine + integration tests",
+    "error_path_coverage": "Good for engine and data-layer; weaker for feature controllers",
     "pattern_strategy_exhaustive": "Yes — one test file per ChainStepType strategy (9/9)",
-    "harness_reuse": "Strong — test_helpers.dart with step()/holdStep()/smsStep() factories + StrategyHarness in _strategy_harness.dart",
-    "baseline_count_antipattern": "Not found (no spec_compliance_test.dart in this repo)",
-    "test_suite_is_stable": "Yes — 886/886 passing on a cold run"
+    "golden_tests": "Present (6 screens × 2 themes + stealth = 24 images)",
+    "a11y_tests": "Present (2 files, spot-check coverage)",
+    "widget_tests": "30 of 31 screens covered (session_screen is the gap)",
+    "integration_tests": "5 files including distress_flow, simulation_defense, db_round_trip",
+    "property_tests": "1 file covering 15 models; N-count still small",
+    "patrol_e2e": "Present (4 files in integration_test/) — walk_mode, date_mode, distress_flow, app_test",
+    "test_suite_is_stable": "Yes — 1691/1691 passing; tests run in ~2m5s on cold cache",
+    "baseline_count_antipattern": "Not found"
   },
   "open_questions": [
-    "test-strategy.md §2.1 claims 180 files / 3,830 cases — is that a target or a stale inventory? The current 57 files / 886 cases suggests the spec is forward-looking; if so, the 99% coverage gate is not yet enforceable and should be staged per §10 (rebuild phases).",
-    "Should .g.dart Drift-generated files count against the layer coverage, or be split into their own bucket with 0% target (they contain mostly identifier strings and table descriptors)? Currently they pull lib/data/db/ down to 30%.",
-    "Service implementations under lib/services/implementations/ cannot run their platform-channel bodies in unit tests. Are MethodChannel mock tests sufficient, or does §9.1's 99% target for services require integration-test level coverage? Per §9.2 each such method needs a // COVERAGE exemption."
+    "Should the 99% overall coverage gate be enforced strictly (requiring ~400-600 more widget tests) or redefined to 99% on correctness-critical paths only (engine/orchestration/models/data/services) with a lower gate on UI features (e.g. 80%)?",
+    "The 3 Patrol analyzer errors need to be fixed before CI can pass on the `flutter analyze --fatal-infos` gate — should these files be temporarily excluded from analyzer, or fixed?",
+    "session_screen.dart widget test is the single highest-value test-authoring opportunity — who owns it?"
   ]
 }

@@ -1,180 +1,117 @@
 {
-  "agent": "spec-alignment",
+  "agent": "spec-alignment-rerun",
+  "summary": {
+    "prior_blocks": 5,
+    "prior_blocks_resolved": 5,
+    "prior_warns": 9,
+    "prior_warns_resolved": 7,
+    "prior_warns_open": 2,
+    "prior_notes": 5,
+    "prior_notes_resolved": 0,
+    "new_findings": 0,
+    "regressions": 0
+  },
+  "previous_findings_status": [
+    "BLOCK engine-spec (ChainEvent missing reminderFired/pauseExpired/stepExecutionFailed) — RESOLVED: enum now has 13 values incl. all three; reminderFired actually emitted in session_engine.dart:536",
+    "BLOCK strategy-spec (SmsContactStrategy no channel filter) — RESOLVED: sms_contact_strategy.dart:56-67 filters by config.channel; zero-match branch logs and returns",
+    "BLOCK stealth-spec (StealthConfig has no consumers) — RESOLVED: home_screen.dart:43 uses fakeName for title; session_screen.dart:107 hides branding on sessionScreenStealth; notification_service.dart consumes notificationDisguise + fakeName",
+    "BLOCK model-spec (FakeCallConfig defaults / missing fields) — RESOLVED: declineIsSafe default TRUE (step_config.dart:558); added callStyle, callerPhotoPath, voiceOutputMode, ringDurationSeconds, declineWithDistressHoldSeconds, blackScreenMode. retryCount removed.",
+    "BLOCK strategy-spec (PhoneCallContactStrategy no retry / no alternatives) — RESOLVED: phone_call_contact_strategy.dart:63 honors step.retryCount + 1; line 157 iterates alternativeContactIds",
+    "WARN model-spec (LoudAlarmConfig missing fields) — RESOLVED: volume, soundChoice, gradualVolume, flashLight, flashSpeedMs, blackScreenMode all present; flashScreen default false",
+    "WARN model-spec (CallEmergencyConfig field names / defaults) — RESOLVED: field renamed to showConfirmation (default true); sendLocationSmsFirst, confirmationDurationSeconds, blackScreenMode added",
+    "WARN model-spec (HoldButtonConfig missing fields) — RESOLVED: holdStyle, vibrateOnRelease, soundOnRelease, blackScreenMode added; releaseSensitivity default 1.0",
+    "WARN model-spec (DisguisedReminderConfig missing fields) — RESOLVED: randomizeInterval, randomizeTemplateOrder, resetOnEarlyCheckIn, blackScreenMode added (templateId + intervalSeconds retained for back-compat)",
+    "WARN model-spec (AppSettings missing wrongPinThreshold / wrong retention default) — RESOLVED: wrongPinThreshold=5 added (app_settings.dart:63); sessionLogRetentionDays default now 180 (line 62)",
+    "WARN model-spec (SessionMode missing iconName/isFromTemplate/maxPauseDuration) — NOT RESOLVED: session_mode.dart still lacks those three fields",
+    "WARN model-spec (StealthConfig defaults diverge from spec Music) — NOT RESOLVED: still fakeName='Calendar', fakeIcon=calendar, notificationDisguise=true, sessionScreenStealth=true, timerDisplay as bool (not enum)",
+    "WARN engine-spec (missing checkIn/earlyCheckIn/setSpeedMultiplier/restartCurrentStep) — RESOLVED: all four methods present (session_engine.dart:404/421/431/453)",
+    "WARN locale (14 ARB files but no RTL golden tests) — NOT RESOLVED: still no Directionality goldens in test/ for ar/fa/he",
+    "WARN sim-defense (Layer 3/4 not golden-tested) — NOT RESOLVED: no integration test asserts zero dispatch during simulation",
+    "WARN decision (D-STRATEGY-2/D-TELEMETRY-1/D-BACKUP-1/DRIFT-L8 missing from decisions-log.md) — RESOLVED: all four now present (lines 2842, 2926, 2914, 1517)",
+    "WARN engine-spec (reminderFired not emitted) — RESOLVED: emitted at session_engine.dart:536",
+    "NOTE model-spec (Phase-3 intentional deviations not in spec) — NOT RESOLVED: BatteryAlertConfig/GpsLoggingConfig/StealthConfig defaults still deviate from spec/03-data-models.md",
+    "NOTE screen-spec (31 screens vs ~29 routes) — NOT RESOLVED: same delta",
+    "NOTE wiring (missing reminder-template row in wiring-map.md) — NOT VERIFIED",
+    "NOTE engine-spec (PauseReason has fakeCallAnswered + bootRestart not in spec) — NOT RESOLVED: engine_state.dart:106,111 still declare them; spec §PauseReason unchanged"
+  ],
   "findings": [
     {
-      "severity": "Block",
-      "category": "engine-spec",
-      "issue": "ChainEvent enum diverges significantly from spec §Events Emitted. Spec requires 11 events including 'userDisarmed', 'chainExhausted', 'reminderFired', 'pauseExpired', 'stepExecutionFailed'. Impl has 'sessionStarted', 'graceExpired', 'distressTriggered', 'distressCompleted' instead, and is missing 'userDisarmed', 'chainExhausted' (collapsed into 'sessionEnded'), 'reminderFired' (never emitted), 'pauseExpired', and 'stepExecutionFailed'.",
-      "spec_reference": "docs/spec/01-chain-engine.md §Events Emitted",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/chain_event.dart",
-      "suggested_fix": "Either update spec 01 to match the refactored 10-event set (engine's actual semantics) or add back missing events (reminderFired, pauseExpired, stepExecutionFailed) and wire userDisarmed/chainExhausted as distinct emissions rather than folding them into sessionEnded."
-    },
-    {
-      "severity": "Block",
-      "category": "strategy-spec",
-      "issue": "SmsContactStrategy does NOT filter by channel. The comment inside executeReal explicitly states 'Channel is advisory here — sendToAll iterates every enabled channel per contact.' Spec Extra-15/15b requires each smsContact step to dispatch on EXACTLY ONE channel, excluding contacts without that channel at runtime.",
-      "spec_reference": "docs/spec/02-event-types.md §6.smsContact Single-Channel Dispatch (Extra-15/15b); D-DATA-7",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/sms_contact_strategy.dart",
-      "suggested_fix": "Filter contacts to those whose channels contain config.channel, then call a channel-specific send path (not sendToAll which fans out to every enabled channel)."
-    },
-    {
-      "severity": "Block",
-      "category": "stealth-spec",
-      "issue": "StealthConfig has NO consumers outside of Settings → Stealth screen itself. session_screen.dart, foreground notification, home screen, and disguised-reminder surfaces do not consult StealthConfig.enabled, sessionScreenStealth, fakeName, or notificationDisguise. Spec REQUIRES stealth UI with no Guardian Angela branding when sessionScreenStealth=true, disguised notifications when notificationDisguise=true, and fake app name in system surfaces.",
-      "spec_reference": "docs/spec/03-data-models.md §StealthConfig; docs/spec/01-chain-engine.md §Foreground Service Notification Stealth Mode; D-SAFETY-4",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/session/session_screen.dart",
-      "suggested_fix": "Thread StealthConfig (resolved from AppDefaults.stealth or ModeOverrides.stealth) through SessionController state and gate session-screen branding, notification titles/channels, and reminder overlays behind it."
-    },
-    {
-      "severity": "Block",
-      "category": "model-spec",
-      "issue": "FakeCallConfig defaults and fields diverge from spec. Impl declineIsSafe defaults to FALSE; spec/D-SAFETY-7 require TRUE. Missing spec-required fields: callStyle, callerPhotoPath, voiceOutputMode, ringDurationSeconds, declineWithDistressHoldSeconds, blackScreenMode. Impl has extraneous retryCount field (should use ChainStep.retryCount). Field names renamed (ringtoneAsset vs spec ringtone, voiceRecordingAsset vs spec voiceRecordingPath).",
-      "spec_reference": "docs/spec/03-data-models.md §FakeCallConfig; docs/spec/02-event-types.md §5.fakeCall; D-SAFETY-7",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Add missing fields, flip declineIsSafe default to true, remove retryCount from FakeCallConfig (use ChainStep.retryCount per spec)."
-    },
-    {
-      "severity": "Block",
-      "category": "strategy-spec",
-      "issue": "PhoneCallContactStrategy has no retry logic and no alternativeContactIds handling. Spec requires retryCount-driven retries (default 1) and fallback to alternativeContactIds if primary fails. Current impl sends pre-SMS then places one call and returns.",
-      "spec_reference": "docs/spec/02-event-types.md §7.phoneCallContact Retry Logic, Alternative Contacts",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/phone_call_contact_strategy.dart",
-      "suggested_fix": "Add retry loop honoring PhoneCallContactConfig.alternativeContactIds and engage the engine-provided retry count (strategy either iterates alternatives in one executeReal or returns status so engine retries with alternatives)."
-    },
-    {
       "severity": "Warn",
       "category": "model-spec",
-      "issue": "LoudAlarmConfig drops spec-required fields: volume, soundChoice, gradualVolume, flashLight, flashScreenSpeed (Ms-based int), blackScreenMode. flashScreen default TRUE in impl; spec §loudAlarm Config Keys says false. Adds maxVolume (not in spec).",
-      "spec_reference": "docs/spec/03-data-models.md §LoudAlarmConfig; docs/spec/02-event-types.md §8.loudAlarm Config Keys; D-ENGINE-4, D-ENGINE-5",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Restore spec fields (volume, soundChoice enum, gradualVolume, flashLight, blackScreenMode, flashSpeedMs int mirroring FlashSpeed enum) and swap flashScreen default back to false."
-    },
-    {
-      "severity": "Warn",
-      "category": "model-spec",
-      "issue": "CallEmergencyConfig field 'confirmBeforeCalling' should be 'showConfirmation' (default TRUE per spec/D-UX-8 swipe-slider). Missing fields: sendLocationSmsFirst (default true), confirmationDurationSeconds (default 5), blackScreenMode. Impl default for confirmBeforeCalling is FALSE.",
-      "spec_reference": "docs/spec/03-data-models.md §CallEmergencyConfig; docs/spec/02-event-types.md §9.callEmergency; D-UX-8",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Rename field to showConfirmation with default true, add sendLocationSmsFirst, confirmationDurationSeconds, blackScreenMode."
-    },
-    {
-      "severity": "Warn",
-      "category": "model-spec",
-      "issue": "HoldButtonConfig missing spec-required fields: holdStyle (enum largeButton/fullScreen/fakeLockScreen), vibrateOnRelease (default true), soundOnRelease (default false), blackScreenMode. releaseSensitivity default 0.3 but spec/§holdButton says 1.0.",
-      "spec_reference": "docs/spec/02-event-types.md §1.holdButton Config Keys; docs/spec/03-data-models.md §HoldButtonConfig",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Add holdStyle/vibrateOnRelease/soundOnRelease/blackScreenMode and set releaseSensitivity default to 1.0."
-    },
-    {
-      "severity": "Warn",
-      "category": "model-spec",
-      "issue": "DisguisedReminderConfig missing spec-required fields: randomizeInterval (default true), randomizeTemplateOrder (default true), resetOnEarlyCheckIn (default true per D4), blackScreenMode. Replaces spec fields with templateId (singular) and intervalSeconds (spec uses ChainStep.waitSeconds).",
-      "spec_reference": "docs/spec/02-event-types.md §2.disguisedReminder Config Keys; docs/spec/03-data-models.md §DisguisedReminderConfig; D-ENGINE-2, D-UX-4",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
-      "suggested_fix": "Add randomizeInterval/randomizeTemplateOrder/resetOnEarlyCheckIn/blackScreenMode; remove templateId (singular) and intervalSeconds (use waitSeconds at step level); support templateIds list if per-step filtering needed."
-    },
-    {
-      "severity": "Warn",
-      "category": "model-spec",
-      "issue": "AppSettings missing spec fields: wrongPinThreshold (A3, default 5 per D-SEC-5), and sessionLogRetentionDays default is 30 but spec/B8 says 180.",
-      "spec_reference": "docs/spec/03-data-models.md §AppSettings; D-SEC-5",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/app_settings.dart",
-      "suggested_fix": "Add wrongPinThreshold field (default 5) and change sessionLogRetentionDays default to 180 to match spec B8, or update spec/decisions if 30 is intentional."
-    },
-    {
-      "severity": "Warn",
-      "category": "model-spec",
-      "issue": "SessionMode missing spec fields: iconName (HiveField 2), isFromTemplate (HiveField 4), maxPauseDuration (HiveField 8). checkInType is stored as an independent field rather than derived from chainSteps[0] as spec requires.",
+      "issue": "SessionMode still missing spec fields iconName (HiveField 2), isFromTemplate (HiveField 4), maxPauseDuration (HiveField 8). checkInType is still stored as an independent field rather than derived from chainSteps[0].",
       "spec_reference": "docs/spec/03-data-models.md §SessionMode",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/session_mode.dart",
-      "suggested_fix": "Add iconName, isFromTemplate, maxPauseDuration fields. Derive checkInType from chainSteps.first.type as per spec to prevent drift."
+      "suggested_fix": "Add iconName/isFromTemplate/maxPauseDuration; derive checkInType from chainSteps.first.type (compute-on-read getter) so the two cannot drift."
     },
     {
       "severity": "Warn",
       "category": "model-spec",
-      "issue": "StealthConfig diverges from spec. Spec defaults fakeName='Music', fakeIcon='music', fakeIcon bool false, notificationDisguise false, timerDisplay enum {normal,small,none} default normal, sessionScreenStealth false. Impl defaults fakeName='Calendar', fakeIcon=calendar, no separate bool fakeIcon, notificationDisguise=true, timerDisplay is a bool (not enum), sessionScreenStealth=true.",
+      "issue": "StealthConfig defaults still diverge from spec §StealthConfig (D-UX-6, D-UX-7). Impl defaults fakeName='Calendar', fakeIcon=StealthIconPreset.calendar, notificationDisguise=true, timerDisplay=bool false, sessionScreenStealth=true. Spec defaults: fakeName='Music', fakeIcon=bool false, notificationDisguise=false, timerDisplay=enum normal, sessionScreenStealth=false. Either impl is the new truth (promote to spec) or spec is the truth (revert).",
       "spec_reference": "docs/spec/03-data-models.md §StealthConfig; D-UX-6, D-UX-7",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/stealth_config.dart",
-      "suggested_fix": "Bring defaults in line with D-UX-6/7 (Music) or update the spec + decisions log to codify the Calendar-first default. Convert timerDisplay to the StealthTimerDisplay enum per spec."
-    },
-    {
-      "severity": "Warn",
-      "category": "engine-spec",
-      "issue": "Engine exposes holdStart/holdRelease/hangUp/declineFakeCall but is MISSING spec-required methods: checkIn() alias, earlyCheckIn() (D4 behaviour), advanceFromHardwarePanic(), setSpeedMultiplier(), restartCurrentStep(). leap() is called leap() per impl but spec calls it leapToNextEvent().",
-      "spec_reference": "docs/spec/01-chain-engine.md §Engine API",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/session_engine.dart",
-      "suggested_fix": "Add checkIn() as disarm alias, implement earlyCheckIn(resetOnEarlyCheckIn:) for D4, implement setSpeedMultiplier mid-run (current impl is construction-only), and consider renaming leap → leapToNextEvent."
+      "suggested_fix": "Make a decision: either (a) update spec + decisions log to codify Calendar-first defaults and timerDisplay as bool, or (b) migrate impl to spec (StealthTimerDisplay enum, Music defaults). Don't leave both in conflict."
     },
     {
       "severity": "Warn",
       "category": "locale",
-      "issue": "14 .arb files are present (en, de, es, fr, ru, zh, zh_TW, hi, fa, uk, pl, el, ar, he) matching spec/D-I18N-1. RTL render correctness for ar/fa/he is not verifiable from code alone; UI screens do not explicitly call Directionality nor force RTL wrapping. This is a potential gap but compiled Flutter handles RTL automatically for MaterialApp children provided supportedLocales/localizationsDelegates include material/widgets delegates.",
+      "issue": "Still no golden tests for RTL layouts (ar/fa/he). Flutter auto-mirrors under MaterialApp, but visual regressions can go unnoticed without goldens. Unchanged from prior pass.",
       "spec_reference": "docs/spec/03-data-models.md §languageCode list; D-I18N-2",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/l10n/l10n",
-      "suggested_fix": "Add golden tests for RTL layouts (e.g., Directionality-aware goldens for ar/fa/he home+session screens) to guarantee mirroring."
+      "suggested_fix": "Add Directionality-wrapping goldens for home_screen + session_screen in ar/fa/he under test/goldens/."
     },
     {
       "severity": "Warn",
       "category": "sim-defense",
-      "issue": "Layer 1 (SessionOrchestrator skips executeReal in simulation) is present and documented. Layer 2 (per-service isSimulation parameter) is present — audio/messaging/phone/vibration all accept isSimulation. Layer 3/4 (platform-channel no-op / native guards) are NOT verified here — relying on native implementation. Overall defense appears in place but evidence is limited to code-level checks; no golden test guarantees no native SMS fires when isSimulation=true.",
+      "issue": "Layer 1/2 sim defense is present (orchestrator skips executeReal when isSimulation; per-service isSimulation parameter). Layer 3/4 (platform channel no-op / native guards) still not golden-tested — no integration test asserts MessagingService/PhoneService/Android SmsWorker receive zero dispatches. Unchanged from prior pass.",
       "spec_reference": "docs/spec/01-chain-engine.md §Simulation Safety Guards",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/session_orchestrator.dart",
-      "suggested_fix": "Add an integration test that sends a simulated session and asserts MessagingService, PhoneService, and the Android SmsWorker never receive a dispatch call."
-    },
-    {
-      "severity": "Warn",
-      "category": "decision",
-      "issue": "Code comments reference D-STRATEGY-2, D-TELEMETRY-1, D-BACKUP-1, DRIFT-L8 but these are NOT present in docs/decisions-log.md. Only D-UI-2 is indexed.",
-      "spec_reference": "docs/decisions-log.md",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/session_orchestrator.dart",
-      "suggested_fix": "Add entries for D-STRATEGY-2 (error isolation / continue policy), D-TELEMETRY-1 (telemetry opt-out), D-BACKUP-1 (backup export shape), and DRIFT-L8 (pauseExpired sequencing) to the decisions log, or update the code comments to reference existing decisions."
-    },
-    {
-      "severity": "Warn",
-      "category": "engine-spec",
-      "issue": "Engine lacks reminderFired emission. Spec §disguisedReminder State Machine requires emitting ChainEvent.reminderFired when wait timer completes and overlay is shown. Impl only emits stepStarted → graceExpired → advancing, with no distinct reminder-specific event. Downstream consumers that need to show the overlay must infer from stepStarted + TimerPhase transitions.",
-      "spec_reference": "docs/spec/01-chain-engine.md §Disguised Reminder State Machine",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/session_engine.dart",
-      "suggested_fix": "Emit ChainEvent.reminderFired when transitioning from wait → duration for disguisedReminder steps, so UI can coalesce on a single event rather than inferring phase."
+      "suggested_fix": "Add an integration test driving a full simulated session and asserting the three recorded-call counts on Fake* services stay at zero for any real-world side effect (SMS enqueue, phone dial, alarm play)."
     },
     {
       "severity": "Note",
       "category": "model-spec",
-      "issue": "Deliberate Phase-3 deviations noted: BatteryAlertConfig.enabled default true (spec false), thresholdPercent 15 (spec 10); GpsLoggingConfig.intervalSeconds 60 (spec 30), accuracy medium (spec high), format dms (spec decimal); StealthConfig.fakeName 'Calendar' (spec 'Music'). These were documented as Phase 3 intentional changes but have not been reflected back into docs/spec/03-data-models.md.",
+      "issue": "Deliberate Phase-3 deviations still not promoted to spec. BatteryAlertConfig (enabled=true/threshold=15), GpsLoggingConfig (intervalSeconds=60/accuracy=medium/format=dms), StealthConfig (Calendar instead of Music) all differ from docs/spec/03-data-models.md.",
       "spec_reference": "docs/spec/03-data-models.md §BatteryAlertConfig, §GpsLoggingConfig, §StealthConfig",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/battery_alert_config.dart",
-      "suggested_fix": "Promote deliberate deviations into spec (with rationale) OR revert impl to match spec so there's a single source of truth."
+      "suggested_fix": "Promote deliberate deviations into spec with rationale citations (decisions-log.md entries) OR revert impl to match spec so there's a single source of truth."
     },
     {
       "severity": "Note",
       "category": "screen-spec",
-      "issue": "31 screen files exist in lib/features vs spec §Route Map which lists ~29 routes. Spec's '26+ screens' coverage is met; all route names in app_router.dart map 1:1 to spec routes (home, onboarding, session, sessionCompleted, simulationSummary, fakeCall, contacts, contactForm, modes, modeEditor, distressChains, distressChainEditor, templates, templateEditor, profile, settings, settingsSecurity, settingsStealth, pinSetup, batteryAlert, eventDefaults, gpsLogging, reminderTemplates, notificationSettings, historyRetention, backup, pastEvents, pastEventDetail, evidenceExport, about, feedback).",
+      "issue": "31 screen files vs spec §Route Map listing ~29 routes. Spec's '26+ screens' coverage is met; extras are distressChains/distressChainEditor (first-class management surfaces). Unchanged from prior pass.",
       "spec_reference": "docs/spec/04-screens-navigation.md §Route Map",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/router/app_router.dart",
-      "suggested_fix": "No action required — screen coverage is complete."
-    },
-    {
-      "severity": "Note",
-      "category": "wiring",
-      "issue": "docs/wiring-map.md covers all L1 safety-critical paths (emergency call, SMS, phone call contact, fake call, loud alarm, disguised reminder, countdown warning) and L4 (distress triggers, geofence disarm) and L9 (distress chain id resolution). Missing a row for DisguisedReminderConfig.templateId → reminder template lookup, but this is not safety-critical.",
-      "spec_reference": "docs/wiring-map.md",
-      "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/docs/wiring-map.md",
-      "suggested_fix": "Optional: add a row for ReminderTemplate resolution from AppDefaults.templates + ModeOverrides.localTemplates."
+      "suggested_fix": "No action required — coverage is complete."
     },
     {
       "severity": "Note",
       "category": "engine-spec",
-      "issue": "EnginePaused.reason includes `fakeCallAnswered` and `bootRestart` which are not enumerated in spec §PauseReason (which lists manual, incomingCall only). Conversely, spec's userRequested is named `manual` in spec but `userRequested` in impl.",
+      "issue": "EnginePaused.reason still includes fakeCallAnswered + bootRestart (engine_state.dart:106,111) which are not enumerated in spec §PauseReason (which lists manual, incomingCall). userRequested vs manual naming mismatch also unresolved.",
       "spec_reference": "docs/spec/01-chain-engine.md §Sealed EngineState",
       "impl_file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/engine_state.dart",
-      "suggested_fix": "Add fakeCallAnswered and bootRestart to spec's PauseReason enum; rename manual → userRequested in spec (or vice versa in code)."
+      "suggested_fix": "Update spec's PauseReason enum to include fakeCallAnswered + bootRestart; align naming (userRequested in both spec and code)."
     }
   ],
+  "positive_checks": [
+    "All 5 prior Block findings RESOLVED.",
+    "7 of 9 prior Warn findings RESOLVED.",
+    "ChainEvent enum now has 13 values including reminderFired, pauseExpired, stepExecutionFailed; all emission points verified.",
+    "SmsContactStrategy correctly filters contacts by config.channel (D-DATA-7 / Extra-15/15b).",
+    "StealthConfig wired in three consumers (session_screen, home_screen, notification_service).",
+    "FakeCallConfig matches spec (declineIsSafe=TRUE default; callStyle, callerPhotoPath, voiceOutputMode, ringDurationSeconds, declineWithDistressHoldSeconds, blackScreenMode present).",
+    "PhoneCallContactStrategy implements retry loop (step.retryCount + 1 attempts) and alternativeContactIds fallback.",
+    "LoudAlarmConfig / CallEmergencyConfig / HoldButtonConfig / DisguisedReminderConfig all carry spec-required fields with correct defaults.",
+    "AppSettings.wrongPinThreshold (default 5) + sessionLogRetentionDays (default 180) present.",
+    "Engine public API gained checkIn, earlyCheckIn, setSpeedMultiplier, restartCurrentStep (all present at session_engine.dart:404/421/431/453).",
+    "docs/decisions-log.md indexes D-STRATEGY-2, D-BACKUP-1, D-TELEMETRY-1, DRIFT-L8 (lines 2842, 2914, 2926, 1517).",
+    "4-layer simulation defense structurally intact: lib/services/simulation/** has ZERO platform-channel, url_launcher, geolocator, just_audio, battery_plus, flutter_local_notifications, home_widget, workmanager, permission_handler, share_plus, wakelock_plus, vibration, audio_session, flutter_tts, speech_to_text imports."
+  ],
+  "new_findings_since_previous_run": [],
+  "regressions": [],
   "open_questions": [
-    "Should the Event enum be spec-driven (spec wins — re-introduce userDisarmed/chainExhausted/reminderFired/pauseExpired/stepExecutionFailed) or code-driven (code wins — collapse and update spec)?",
-    "Did Phase 3 intentionally drop wrongPinThreshold from AppSettings, or was it a regression? The wiring map references AppSettings.duressPinHash and the distress flow uses it, but wrongPinThreshold is both undocumented-in-code and present in spec.",
-    "Is the 'single-channel dispatch' behavior (Extra-15) scheduled for a follow-up migration, or is it a live bug? SmsContactStrategy comment implies this was punted: 'A future revision may add a per-channel filter.'",
-    "Should retry/alternative-contact logic for PhoneCallContactStrategy live in the strategy or inside the engine? Spec says strategy; impl currently has neither.",
-    "Is StealthConfig consumption deferred? If so, flag with TODOs referencing which screens/services need wiring (session_screen, notification_service, home_screen)."
+    "SessionMode: add iconName/isFromTemplate/maxPauseDuration and derive checkInType from chainSteps[0], or defer to a post-alpha migration?",
+    "StealthConfig: is Calendar-first the new product truth (promote to spec) or a Phase-3 placeholder (revert to Music)?",
+    "PauseReason: add fakeCallAnswered + bootRestart to spec (and rename manual→userRequested), or rename back in code?",
+    "Sim-defense golden test: add now or defer? (Layer 1/2 in place, but no integration test locks Layer 3/4.)"
   ]
 }

@@ -1,20 +1,21 @@
 {
   "agent": "consistency-l10n",
+  "rerun_iso": "2026-04-21T14:00:00Z",
   "l10n_key_parity": {
-    "app_en.arb": 254,
-    "app_de.arb": 254,
-    "app_es.arb": 254,
-    "app_fr.arb": 254,
-    "app_ru.arb": 254,
-    "app_zh.arb": 254,
-    "app_zh_TW.arb": 254,
-    "app_hi.arb": 254,
-    "app_fa.arb": 254,
-    "app_uk.arb": 254,
-    "app_pl.arb": 254,
-    "app_el.arb": 254,
-    "app_ar.arb": 254,
-    "app_he.arb": 254
+    "app_en.arb": 268,
+    "app_de.arb": 268,
+    "app_es.arb": 268,
+    "app_fr.arb": 268,
+    "app_ru.arb": 268,
+    "app_zh.arb": 268,
+    "app_zh_TW.arb": 268,
+    "app_hi.arb": 268,
+    "app_fa.arb": 268,
+    "app_uk.arb": 268,
+    "app_pl.arb": 268,
+    "app_el.arb": 268,
+    "app_ar.arb": 268,
+    "app_he.arb": 268
   },
   "l10n_parity_summary": {
     "total_arb_files": 14,
@@ -22,72 +23,97 @@
     "missing_keys_anywhere": 0,
     "extra_keys_anywhere": 0,
     "placeholder_mismatches": 0,
-    "phase15_keys_in_all_arbs": {
-      "backupPinOptional": 14,
-      "backupImportOk": 14
-    },
+    "delta_since_prior_run": "+14 keys per locale (254 → 268); parity maintained across all 14 locales",
     "locale_headers_correct": true,
     "flutter_gen_l10n_warnings": 0,
     "brand_names_latin_preserved": true
   },
   "consistency_summary": {
-    "flutter_analyze_issues": 0,
-    "todo_fixme_hack_count": 4,
+    "flutter_analyze_issues": 3,
+    "flutter_analyze_delta": "+3 errors since prior run (was 0)",
+    "flutter_analyze_errors": [
+      "integration_test/date_mode_flow_test.dart:43:29 — extra_positional_arguments_could_be_named (Patrol pumpAndSettle API)",
+      "integration_test/distress_flow_test.dart:30:29 — extra_positional_arguments_could_be_named (Patrol pumpAndSettle API)",
+      "integration_test/distress_flow_test.dart:60:29 — extra_positional_arguments_could_be_named (Patrol pumpAndSettle API)"
+    ],
+    "todo_fixme_hack_count_in_lib": 4,
+    "todo_fixme_unimplemented_locations": [
+      "lib/domain/validation/session_validator.dart:59 — throw UnimplementedError()",
+      "lib/domain/orchestration/strategies/phone_call_contact_strategy.dart:15 — TODO(phase-4b): spec extension",
+      "lib/domain/orchestration/strategies/phone_call_contact_strategy.dart:90 — TODO(phase-4b): PhoneServiceProtocol.call",
+      "lib/features/backup/backup_service.dart:32 — TODO(Phase 15.1): swap CTR+HMAC for AES-256-GCM",
+      "lib/main.dart:39 — TODO(release-owner): Sentry dsn placeholder"
+    ],
     "non_snake_case_files": 0,
     "non_pascal_case_classes": 0,
     "unused_imports": 0,
     "unlocalized_const_text_matches": 0,
     "barrel_models_dot_dart_used_everywhere": true,
     "non_barrel_model_imports": 0,
-    "lines_over_80_chars_non_generated": 125,
-    "lines_over_80_non_generated_note": "All 125 overages are package import paths (e.g., 'package:guardianangela/domain/orchestration/strategies/...'). dart format leaves these intact because import URIs cannot be broken."
+    "lines_over_80_chars_non_generated_note": "Not re-measured; prior run counted 125 overages, all package import paths that dart format cannot break."
   },
   "sealed_hierarchies": {
-    "sealed_class_count": 8,
+    "sealed_class_count_unchanged": true,
     "sealed_files": [
       "lib/domain/engine/engine_state.dart (EngineState)",
       "lib/domain/models/walk_session.dart (SessionPhase)",
       "lib/domain/models/step_config.dart (StepConfig)",
       "lib/domain/models/trigger.dart (Trigger, HardwareTrigger, DistressTrigger, DisarmTrigger)",
       "lib/domain/models/chain_event.dart (ActionDeliveryStatus)"
-    ],
-    "abstract_classes_count": 17,
-    "abstract_classes_note": "All abstract classes are legitimate interface protocols (services/protocols/*.dart, RouteNames static holder, AppTheme holder, EventStrategy base). Not candidates for sealed conversion."
+    ]
   },
   "findings": [
     {
+      "severity": "Block",
+      "category": "analyzer-gate-broken",
+      "issue": "flutter analyze --fatal-infos FAILS with 3 errors in integration_test/ Patrol D7 tests. This is the universal consistency gate and it is red. Regression since prior verification run (was 0 issues).",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/integration_test/",
+      "suggested_fix": "Replace `pumpAndSettle(const Duration(...))` with `pumpAndSettle(duration: const Duration(...))` in both date_mode_flow_test.dart (1 call site) and distress_flow_test.dart (2 call sites). walk_mode_flow_test.dart is already migrated."
+    },
+    {
+      "severity": "Warn",
+      "category": "todo-hack",
+      "issue": "lib/features/backup/backup_service.dart line 32: TODO(Phase 15.1) to swap CTR+HMAC for AES-256-GCM. Still unresolved since prior run.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/backup/backup_service.dart",
+      "suggested_fix": "Track this as an open crypto upgrade before public release; reasoning doc comment at line 30 remains."
+    },
+    {
       "severity": "Note",
       "category": "todo-hack",
-      "issue": "lib/main.dart line 22 has TODO(release-owner) for Sentry project id placeholder",
+      "issue": "lib/main.dart line 39 still has TODO(release-owner) for Sentry project id placeholder.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
       "suggested_fix": "Resolve before public release; replace placeholder dsn or guard Sentry init with kReleaseMode check."
     },
     {
       "severity": "Note",
       "category": "todo-hack",
-      "issue": "lib/main.dart line 34 has generic TODO (Phase 6 database init) that is now stale wording",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/main.dart",
-      "suggested_fix": "Remove the stale TODO (DB init already exists elsewhere) or convert to an explanatory doc comment."
-    },
-    {
-      "severity": "Warn",
-      "category": "todo-hack",
-      "issue": "lib/features/backup/backup_service.dart line 32: TODO(Phase 15.1) to swap CTR+HMAC for AES-256-GCM",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/features/backup/backup_service.dart",
-      "suggested_fix": "Track this as an open crypto upgrade before public release; backing comment at line 30 already documents rationale."
+      "issue": "lib/domain/orchestration/strategies/phone_call_contact_strategy.dart has 2 TODO(phase-4b) markers awaiting spec extension.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/strategies/phone_call_contact_strategy.dart",
+      "suggested_fix": "Extend PhoneServiceProtocol.call to return outcome; update strategy + tests."
     },
     {
       "severity": "Note",
-      "category": "doc-comment",
-      "issue": "lib/data/db/app_database.dart class AppDatabase itself has no /// doc (constructor and methods documented).",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/data/db/app_database.dart",
-      "suggested_fix": "Add a one-line /// comment above `class AppDatabase extends _$AppDatabase` describing it as the Drift SQLCipher database entrypoint."
+      "category": "unimplemented",
+      "issue": "lib/domain/validation/session_validator.dart line 59: throw UnimplementedError(). No production caller exercises this branch.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/validation/session_validator.dart",
+      "suggested_fix": "Either implement the validation branch or remove the dead method."
     }
   ],
   "rtl_natural_check": {
     "ar_he_fa_spot_checked": true,
     "non_brand_latin_runs_in_rtl": "All occurrences are {placeholder} tokens (seconds, description, percent) that must stay Latin by design.",
-    "rtl_reads_naturally": true
+    "rtl_reads_naturally": true,
+    "note_new_keys": "14 new keys added since prior run preserve parity across fa/ar/he; not re-translated individually in this verification run."
   },
-  "open_questions": []
+  "summary_of_changes_since_prior_run": {
+    "arb_key_count": "254 → 268 (+14 per locale)",
+    "arb_parity": "Maintained across 14 locales",
+    "analyzer_status": "PASS → FAIL (3 new errors in Patrol D7 tests)",
+    "sealed_classes_count": "Unchanged",
+    "todo_count": "Unchanged (4 TODOs + 1 UnimplementedError remain)"
+  },
+  "open_questions": [
+    "The 3 analyzer errors are Patrol-test specific — should they be temporarily excluded from the strict analyzer gate, or fixed immediately?",
+    "Are any of the 14 new ARB keys expected to require manual RTL review for natural phrasing (fa/ar/he)?"
+  ]
 }

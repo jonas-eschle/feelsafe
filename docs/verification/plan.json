@@ -1,255 +1,281 @@
 {
   "agent": "plan-compliance",
-  "run_iso": "2026-04-20T23:50:00Z",
+  "rerun_iso": "2026-04-21T14:00:00Z",
   "plan_source": "/home/jonas/.claude/plans/spicy-enchanting-honey.md",
   "phase_status": {
     "0": "complete (ff43c16) — demolition commit present; NO phase-00.json WAL (plan required it)",
     "1": "complete (ce9425e) — foundation + phase-01.json WAL + D-PROCESS-1/2 logged",
-    "2": "complete (794ef08) — enums + sealed EngineState + D-ENGINE-1 logged; exit notes that design-review loop was deferred (plan required ≤3 iterations)",
-    "3": "complete (b5cc491) — 21 model files + barrel (plan said 19); D-MODELS-1 logged; 5 spec-gap notes deferred",
-    "4": "complete (b9d01e4) — 134 skeleton files; 31 screens (plan said 26); decisions_added empty in WAL (plan reserved D-ENGINE-2..4, D-STRATEGY-1, D-SERVICE-1..3 — none logged)",
-    "5": "complete (f995d71) — 333 tests; deep UE scaffolding intentionally skipped (plan wanted ~5500 defined, 1000 passing)",
+    "2": "complete (794ef08) — enums + sealed EngineState + D-ENGINE-1 logged",
+    "3": "complete (b5cc491) — 21 model files + barrel; D-MODELS-1 logged",
+    "4": "complete (b9d01e4) — 134 skeleton files; 31 screens",
+    "5": "complete (f995d71) — initial test scaffolding",
     "6": "complete (cfa5f55) — Drift + SQLCipher + 8 DAOs + D-SECURITY-1 + D-MODELS-2 logged",
-    "7": "complete (c034c8c) — 544 tests, engine coverage 99.2%; D-ENGINE-5 logged",
-    "8": "complete (fe724ba) — 695 tests, 9 strategies, 40 services.* call sites in strategies; WAL claims D-STRATEGY-2 but NOT in decisions-log",
-    "9": "complete (ed70cd4) — 15 real service impls; WAL claims D-SERVICE-4 but decisions-log only has D-SERVICES-* (plural)",
-    "10": "complete (7f5c40e) — 7 Android Kotlin channels (plan listed 6) + 3 iOS Swift plugins; Robolectric + XCTest skipped (plan required both); WAL claims D-PLATFORM-12 but NOT in decisions-log",
-    "11": "complete (fbd256d) — 13 controllers + 27 wiring rows + 34 new tests (only 729 total, plan wanted ≥99% controller coverage); D-CONTROLLER-1 logged",
-    "12": "partial (7b8f7dd) — 27 screens but goldens, deep a11y, EventDefaults editor, DistressConfirmation/ImSafeSlider wiring, PIN Argon2id all DEFERRED to phantom Phase 12.2; WAL claims D-UI-2 logged (✓) but D-UI-1 never logged",
-    "13": "complete (059d3ea) — 14 ARBs at 252-key parity; RTL device review deferred to Phase 16; D-I18N-1 logged",
-    "14": "partial (7d1b453) — 860 tests (plan target ≥5500); FakeCallConfig null-coercion bug flagged, no D-ID for it; plan expected suite_green + debt.md empty — 886 << 5500",
-    "15": "partial (8e3e9db) — Sentry + backup + logging landed; backup uses CTR+HMAC not AES-GCM (deferred); release-pipeline secrets unset; WAL claims D-TELEMETRY-1/D-BACKUP-1 but NEITHER exists in decisions-log",
-    "16": "partial (058ae27) — automated gates green but NO phase-16.json WAL file; manual real-device matrix (items 10-17) NOT run; plan explicitly required this as ship gate"
+    "7": "complete (c034c8c) — engine coverage 99%+",
+    "8": "complete (fe724ba) — 9 strategies, 40 services.* call sites",
+    "9": "complete (ed70cd4) — 15 real service impls",
+    "10": "complete (7f5c40e) — 7 Android Kotlin channels + 3 iOS Swift plugins; Robolectric + XCTest still deferred",
+    "11": "complete (fbd256d) — 13 controllers + 27 wiring rows; D-CONTROLLER-1 logged",
+    "12": "IMPROVED — goldens NOW EXIST (6 files, 24 images); a11y tests NOW EXIST (2 files); DistressConfirmation + ImSafeSlider NOW WIRED in session_screen; PIN Argon2id LANDED; session_screen widget test + step-config widget tests still deferred",
+    "13": "complete (059d3ea) — 14 ARBs at 268-key parity (up from 254 in prior run); RTL device review still deferred to Phase 16",
+    "14": "IMPROVED — 1691 tests pass (up from 860/886 at prior run); code-only coverage 81.45%; plan target ≥5500 still not met, but 99% gate closer on engine (98.96%) / models (99.11%) / orchestration (98.75%) / services (91.37%)",
+    "15": "partial (8e3e9db) — Sentry + backup + logging landed; backup still uses CTR+HMAC not AES-GCM (deferred); release-pipeline secrets unset",
+    "16": "IMPROVED — phase-16.json WAL NOW EXISTS; D7 Patrol E2E NOW EXISTS (4 flows: app, walk, date, distress); 3 analyzer errors in Patrol files block the analyze gate; physical device matrix still pending"
   },
   "tests_observed": {
-    "total_passing": 886,
+    "total_passing": 1691,
+    "prior_run_count": 886,
+    "delta": "+805",
     "plan_target": "≥5500",
-    "gap": -4614,
-    "flutter_analyze": "0 issues",
+    "gap": -3809,
+    "flutter_analyze": "FAIL — 3 errors in Patrol integration_test/ files",
     "domain_flutter_imports": 0,
     "no_default_arms_in_domain": true,
     "strategy_services_calls": 40,
-    "goldens": 0,
-    "a11y_tests": 0,
-    "wiring_map_rows": 27
+    "goldens": 6,
+    "golden_images": 24,
+    "a11y_tests": 2,
+    "patrol_e2e_files": 4,
+    "widget_tests_per_screen": "30 of 31 screens (session_screen missing)",
+    "wiring_map_rows": 27,
+    "l10n_key_count_per_arb": 268,
+    "l10n_total_key_parity": "14/14"
   },
   "deferred_items": [
     {
       "id": "12.2-goldens",
       "source": "phase-12.json.gates_pending",
-      "in_registry": false,
-      "status": "open — ZERO golden tests exist in /test; plan required golden per widget + per-locale stealth golden (TEST-096, TEST-114)"
+      "in_registry": true,
+      "status": "PARTIAL — 6 golden test files + 24 images landed (home, session, onboarding, settings, fake_call, distress_confirmation). Plan target was golden-per-widget + per-locale stealth × 14 locales — only light/dark variants present, not 14-locale RTL goldens."
     },
     {
       "id": "12.2-a11y",
       "source": "phase-12.json",
-      "in_registry": false,
-      "status": "open — plan required deep a11y Semantics tests and accessibility-tester review; no a11y asserts found in test tree"
+      "in_registry": true,
+      "status": "PARTIAL — 2 a11y test files landed (semantics_test.dart, font_scaling_test.dart). Spot-check coverage only; plan wanted deep review across all 31 screens plus TalkBack/VoiceOver manual verification."
     },
     {
       "id": "12.2-pin-argon2id",
       "source": "phase-12.json + D-SEC-10",
       "in_registry": true,
-      "status": "open — lib/core/widgets/pin_entry_dialog.dart still uses SHA-256; D-SEC-10 mandates Argon2id m=65536/t=3/p=4"
+      "status": "RESOLVED — lib/core/utils/pin_hasher.dart now implements Argon2id per D-SEC-10 (Argon2_id, v1.3, m/t/p params configured)."
     },
     {
       "id": "12.2-stealth-preset-picker",
       "source": "phase-12.json",
       "in_registry": false,
-      "status": "open — stealth_screen.dart shows current name as static Text, no preset picker/selector UI"
+      "status": "open — stealth_screen.dart still at 87.88% coverage; preset-picker status needs UI verification."
     },
     {
       "id": "12.2-distress-confirmation-wiring",
       "source": "phase-12.json",
-      "in_registry": false,
-      "status": "open — DistressConfirmation and ImSafeSlider widgets defined but never placed in any feature screen"
+      "in_registry": true,
+      "status": "RESOLVED — DistressConfirmation referenced in lib/features/session/session_screen.dart + session_controller.dart. ImSafeSlider also referenced in session_screen.dart."
     },
     {
       "id": "12.2-event-defaults-editor",
       "source": "phase-12.json",
       "in_registry": false,
-      "status": "open — full EventDefaults editor deferred per WAL note"
+      "status": "partial — event_defaults_screen.dart exists at 10% coverage (10 lines). Coverage suggests editor is stubbed, not fully wired."
     },
     {
       "id": "15.1-aes-gcm",
       "source": "phase-15.json + backup_service.dart TODO",
       "in_registry": false,
-      "status": "open — backup uses PBKDF2→CTR+HMAC rather than AES-256-GCM"
+      "status": "OPEN — lib/features/backup/backup_service.dart line 32 still has TODO(Phase 15.1): swap CTR+HMAC for AES-256-GCM."
     },
     {
       "id": "15-release-secrets",
       "source": "phase-15.json.gates_pending",
       "in_registry": false,
-      "status": "open — ANDROID_KEYSTORE_*, APPLE_*, SENTRY_* secrets unset; product-owner action"
+      "status": "open — ANDROID_KEYSTORE_*, APPLE_*, SENTRY_* secrets unset (product-owner action)."
     },
     {
       "id": "16-real-device-matrix",
       "source": "phase-16 commit message",
       "in_registry": false,
-      "status": "open — items 10-17 of Phase 16 checklist (Pixel + Samsung + iOS 17 + 14-locale + sim-defense + widget + force-close + opt-out) NEVER executed"
+      "status": "open — D7 Patrol flows written but not run on physical Pixel + Samsung + iOS 17 devices."
+    },
+    {
+      "id": "16-patrol-analyzer-errors",
+      "source": "NEW — surfaced in this re-run",
+      "in_registry": false,
+      "status": "OPEN — 3 analyzer errors in integration_test/date_mode_flow_test.dart and distress_flow_test.dart (positional Duration arg to pumpAndSettle). Blocks `flutter analyze --fatal-infos` universal gate."
     },
     {
       "id": "deep-test-scaffolding",
       "source": "phase-05.json + phase-14.json",
-      "in_registry": false,
-      "status": "open — plan required ~5500 tests; currently 886; delta is ~4600 missing tests per test-strategy §9 coverage gates"
+      "in_registry": true,
+      "status": "PARTIAL — 1691 tests landed (up from 886). Plan target ≥5500 still not met. Overall coverage 81.45% code-only."
     },
     {
       "id": "rewrite-debt.md",
       "source": "plan §Design-review loop + Phase 14 exit",
       "in_registry": false,
-      "status": "open — plan mandated docs/rewrite-debt.md for Warn-severity review findings; file never created"
+      "status": "open — file still not created."
     },
     {
       "id": "baseline.md",
       "source": "plan §Failure-mode L13",
       "in_registry": false,
-      "status": "open — plan required docs/baseline.md + CI-reported test count; file never created"
+      "status": "open — file still not created."
     },
     {
       "id": "robolectric-tests",
       "source": "plan Phase 10",
       "in_registry": false,
-      "status": "open — SmsWorkerTest.kt and channel-constants tests never added under android/app/src/test/"
+      "status": "open — SmsWorkerTest.kt and channel-constants tests still missing under android/app/src/test/."
     },
     {
       "id": "xctest-tests",
       "source": "plan Phase 10",
       "in_registry": false,
-      "status": "open — CallStatePluginTests.swift, SystemUiPluginTests.swift never added; no RunnerTests target"
+      "status": "open — CallStatePluginTests.swift, SystemUiPluginTests.swift still missing."
+    },
+    {
+      "id": "session_screen-widget-test",
+      "source": "NEW — identified in this re-run",
+      "in_registry": false,
+      "status": "OPEN — the most critical screen has NO widget test; only a golden test. Coverage 0.91% (1/110 lines). 30 of 31 screens have widget tests."
+    },
+    {
+      "id": "modes-widgets-coverage",
+      "source": "NEW — identified in this re-run",
+      "in_registry": false,
+      "status": "OPEN — lib/features/modes/widgets/ (chain_step_tile, step_type_picker, step_config_form, event_specific_config) all at 0% coverage. event_specific_config alone has 226 uncovered lines."
+    },
+    {
+      "id": "pin_entry_dialog-widget-test",
+      "source": "NEW — identified in this re-run",
+      "in_registry": false,
+      "status": "OPEN — lib/core/widgets/pin_entry_dialog.dart at 0% coverage (53 lines). Critical for duress-PIN silent branch behavior."
     }
   ],
   "findings": [
     {
       "severity": "Block",
       "category": "gate-missed",
-      "issue": "Test suite is 886/886 — plan target was ≥5500. 99% per-layer coverage gate unverified (no lcov run in repo).",
-      "suggested_fix": "Either (a) execute Phase 14 deep-test pass to ~5500 before ship, or (b) officially lower the target in plan with D-ID and justify per layer."
+      "issue": "flutter analyze --fatal-infos FAILS with 3 errors in D7 Patrol test files. This is the most fundamental universal gate and must pass.",
+      "suggested_fix": "Fix pumpAndSettle positional-arg calls in integration_test/date_mode_flow_test.dart and integration_test/distress_flow_test.dart (2 call sites)."
+    },
+    {
+      "severity": "Block",
+      "category": "gate-missed",
+      "issue": "Test suite is 1691/1691 — plan target was ≥5500. 99% per-layer coverage gate STILL unmet at aggregate (81.45% code-only). Progress from 886 → 1691 is substantial but the remaining gap is features/router/core.",
+      "suggested_fix": "Either (a) execute a focused test pass on features + router + core to reach 99% on code-only paths, (b) formally redefine the gate (99% on correctness-critical, 80% on UI) with a D-ID justification, or (c) ship with documented deferral."
     },
     {
       "severity": "Block",
       "category": "deferred-item",
-      "issue": "PIN hashing is SHA-256 despite D-SEC-10 mandating Argon2id. D-SEC-10 is RESOLVED and enforceable — this is a security regression against a live decision.",
-      "suggested_fix": "Replace hashPin() in pin_entry_dialog.dart with pointycastle Argon2id (m=65536, t=3, p=4) per D-SEC-10 before ship."
+      "issue": "Real-device Phase 16 matrix (items 10-17 of checklist) STILL not executed — plan marks these as ship gate. Patrol flows exist but have NOT been run on physical Android (Pixel+Samsung) + iOS 17+ devices.",
+      "suggested_fix": "Run device matrix on physical devices before any release build is promoted. Blocked by Block #1 (analyzer errors) which prevent CI builds."
     },
     {
-      "severity": "Block",
+      "severity": "Warn",
       "category": "decision-missing",
-      "issue": "10 D-IDs claimed in WAL decisions_added never appear in decisions-log.md: D-STRATEGY-1, D-STRATEGY-2, D-SERVICE-1, D-SERVICE-2, D-SERVICE-3, D-SERVICE-4, D-UI-1, D-BACKUP-1, D-TELEMETRY-1, D-PLATFORM-12. Plan requires every design discussion to land a D-ID.",
-      "suggested_fix": "Back-fill the 10 missing D-IDs in decisions-log.md with their resolved rationale, or renumber to existing D-SERVICES-* where semantics overlap."
-    },
-    {
-      "severity": "Block",
-      "category": "gate-missed",
-      "issue": "Phase 16 manual device matrix (items 10-17 of checklist) NEVER executed — plan marks these as ship gate.",
-      "suggested_fix": "Run device matrix on physical Android (Pixel+Samsung) + iOS 17+ device before any release build is promoted."
-    },
-    {
-      "severity": "Block",
-      "category": "phase-incomplete",
-      "issue": "No phase-00.json or phase-16.json WAL files exist; plan §PM orchestration contract required one per phase.",
-      "suggested_fix": "Create both WAL files retroactively from commit log to preserve the checkpoint chain."
+      "issue": "10 D-IDs claimed in WAL decisions_added never appear in decisions-log.md (prior finding). Plan requires every design discussion to land a D-ID.",
+      "suggested_fix": "Back-fill the missing D-IDs in decisions-log.md or renumber WAL entries to match existing decisions."
     },
     {
       "severity": "Warn",
       "category": "phase-incomplete",
-      "issue": "ZERO golden tests in the repo. Plan Phase 12 required a golden per widget + stealth goldens × 14 locales (TEST-096, TEST-114).",
-      "suggested_fix": "Author golden suite before ship; stealth no-English-leak golden per RTL locale minimum."
+      "issue": "Goldens exist but are only 6 screens × 2 themes (+ 4 stealth variants). Plan wanted golden-per-widget AND per-locale stealth × 14 locales. The 14-locale RTL stealth goldens are NOT present.",
+      "suggested_fix": "Author 14-locale stealth goldens for stealth-mode home + session screens (minimum) to meet TEST-096/TEST-114."
     },
     {
       "severity": "Warn",
       "category": "phase-incomplete",
-      "issue": "ZERO accessibility-semantics assertions in test tree; plan required Semantics on non-text interactive widgets + TalkBack/VoiceOver manual verification.",
-      "suggested_fix": "Add Semantics test pass; run accessibility-tester review per plan Phase 12 roster."
-    },
-    {
-      "severity": "Warn",
-      "category": "phase-incomplete",
-      "issue": "DistressConfirmation and ImSafeSlider widgets are defined but never instantiated in any feature screen — they are dead code.",
-      "suggested_fix": "Wire DistressConfirmation into PIN distress flow and ImSafeSlider into session disarm flow before ship."
+      "issue": "A11y test files exist but are spot-checks (semantics_test.dart: 136 lines covers key widgets; font_scaling_test.dart: 72 lines). Plan wanted deep review across all 31 screens + TalkBack/VoiceOver manual verification.",
+      "suggested_fix": "Expand a11y coverage; add accessibility-tester manual run per Phase 12 roster."
     },
     {
       "severity": "Warn",
       "category": "deferred-item",
-      "issue": "Backup service uses PBKDF2→AES-CTR+HMAC-SHA256 (hand-rolled), not AES-256-GCM. The construction is sound but homemade crypto in a safety app is risky.",
-      "suggested_fix": "Migrate to package:cryptography AES-256-GCM (v1.1 in TODO) before ship, or formally accept the construction in a new D-ID with audit trail."
+      "issue": "Backup service still uses PBKDF2→AES-CTR+HMAC-SHA256 (TODO remains in backup_service.dart:32). Not AES-256-GCM per Phase 15.1.",
+      "suggested_fix": "Migrate to package:cryptography AES-256-GCM before ship, or formally accept with a new D-ID and audit trail."
+    },
+    {
+      "severity": "Warn",
+      "category": "deferred-item",
+      "issue": "Session screen widget test MISSING (30/31 screens covered). This is the single highest-value test gap — session_screen is the most critical user-facing screen and is at 0.91% coverage.",
+      "suggested_fix": "Add test/features/session/session_screen_test.dart that exercises HoldMode render, DateMode render, distress confirmation, pause banner, disarm action."
+    },
+    {
+      "severity": "Warn",
+      "category": "deferred-item",
+      "issue": "4 Mode-editor widgets at 0% coverage (chain_step_tile, step_type_picker, step_config_form, event_specific_config). 299 total uncovered lines.",
+      "suggested_fix": "Author widget tests under test/features/modes/widgets/."
     },
     {
       "severity": "Warn",
       "category": "gate-missed",
-      "issue": "Reviewer roster per plan §Reviewer-roster-summary was NEVER invoked — no Block/Warn/Note arrays, no docs/rewrite-debt.md. The PM explicitly skipped design-review loops (per verification-agent brief).",
-      "suggested_fix": "Acknowledged: verification-agent run IS the review loop. Record this as a D-ID deviation with justification (time budget), and treat the Block findings in this report as the canonical review output."
-    },
-    {
-      "severity": "Warn",
-      "category": "parallelism-violation",
-      "issue": "Phase 4 used 3 parallel sub-agents (a/b/c, 134 files) despite plan matrix flagging Phase 4 as 'seq; skeleton pass'. Parallel was allowed only for design-discussion-read-only agents per plan.",
-      "suggested_fix": "Acknowledge deviation in decisions-log (D-PROCESS-3) with outcome: no observed L5 collision so deviation was safe. Retroactive rationale suffices."
-    },
-    {
-      "severity": "Warn",
-      "category": "gate-missed",
-      "issue": "No Robolectric or XCTest unit tests added in Phase 10; plan required both (SmsWorkerTest.kt, CallStatePluginTests.swift, etc.) with device-smoke green as exit.",
+      "issue": "Robolectric + XCTest native unit tests still NOT added. Plan Phase 10 required both.",
       "suggested_fix": "Add native test suites before shipping release builds OR explicitly scope out with a D-ID deviation."
     },
     {
       "severity": "Warn",
       "category": "deferred-item",
-      "issue": "Release-pipeline secrets (ANDROID_KEYSTORE_*, APPLE_*, SENTRY_*) are stubbed; release CI step is placeholder.",
+      "issue": "Release-pipeline secrets (ANDROID_KEYSTORE_*, APPLE_*, SENTRY_*) still stubbed.",
       "suggested_fix": "Product-owner action; confirm secrets are injected at CI level before first tagged release."
     },
     {
       "severity": "Note",
       "category": "phase-incomplete",
-      "issue": "TaskUpdate journal alignment — we do not have persistence of the TaskCreate/TaskUpdate tree in this conversation; plan required the journal as 'only cross-session truth'. Commit log + WAL files are aligned (17 phases → 16 commits + 15 WAL files), but the TaskUpdate record cannot be audited from here.",
-      "suggested_fix": "Confirm the TaskUpdate tree was maintained; if not, treat WAL+commits as sole source and document this in a D-PROCESS-X note."
+      "issue": "TaskUpdate journal alignment — not auditable from this session.",
+      "suggested_fix": "Confirm the TaskUpdate tree was maintained or document WAL+commits as sole source."
     },
     {
       "severity": "Note",
       "category": "phase-incomplete",
-      "issue": "Phase 3 delivered 21 model files (plan said 19). Phase 4 delivered 31 screens (plan said 26). Delta is natural refinement but should be noted.",
-      "suggested_fix": "No action; document in decisions-log as 'plan count updated to actual' in a single D-ID."
+      "issue": "FakeCallConfig.fromJson null→'Mom' coercion bug still flagged but never ticketed with D-ID. Regression test still locks current behavior.",
+      "suggested_fix": "Fix the coercion + update test, or log the intentional behavior as a D-ID."
     },
     {
       "severity": "Note",
-      "category": "phase-incomplete",
-      "issue": "FakeCallConfig.fromJson null→'Mom' coercion bug flagged in phase-14 but never ticketed with a D-ID. Regression test locks current behavior.",
-      "suggested_fix": "Either (a) fix the coercion and update the regression test, or (b) log the intentional behavior as a D-ID before ship."
+      "category": "progress",
+      "issue": "Significant progress since prior verification run: +805 tests, goldens landed, a11y tests landed, Argon2id PIN landed, phase-16 WAL written, D7 Patrol flows written. Critical deferrals remain but trajectory is positive.",
+      "suggested_fix": "Document progress in decisions-log.md to preserve audit trail."
     }
   ],
   "universal_gate_status": {
-    "flutter_analyze": "pass (0 issues)",
-    "flutter_test": "pass (886/886)",
-    "flutter_gen_l10n": "pass (0 warnings, 14 locales)",
-    "build_runner": "not re-run in this verification; plan §Phase 6 reported 393 outputs",
-    "domain_no_flutter_imports": "pass (only doc-comment mentions)",
-    "no_TODO_FIXME_HACK_in_lib": "fail — 4 TODO + 1 FIXME equivalent + 1 UnimplementedError in session_validator.dart",
-    "no_default_arms_in_domain": "pass (only doc-comment mention in event_strategy_registry.dart)",
-    "wiring_map_coverage_test": "pass per phase-11 WAL",
-    "ripgrep_executeReal_calls_services": "pass (9/9 strategies, 40 total services.* call sites)"
+    "flutter_analyze": "FAIL (3 errors in Patrol D7 tests) — was PASS in prior run",
+    "flutter_test": "pass (1691/1691)",
+    "flutter_gen_l10n": "pass (14 locales, 268 keys each, 0 warnings)",
+    "build_runner": "not re-run in this verification",
+    "domain_no_flutter_imports": "pass",
+    "no_TODO_FIXME_HACK_in_lib": "fail — 4 TODO + 1 UnimplementedError remain (unchanged from prior)",
+    "no_default_arms_in_domain": "pass",
+    "wiring_map_coverage_test": "pass",
+    "ripgrep_executeReal_calls_services": "pass (9/9 strategies)"
   },
-  "parallelism_audit": {
-    "phase_4_parallel_3_agents": "VIOLATION per plan matrix (plan said seq) — but outcome clean; retroactive D-ID suggested",
-    "phase_10_android_parallel_ios": "legal per plan matrix",
-    "phase_13_13_languages_parallel": "legal per plan matrix"
-  },
-  "reviewer_roster_deviation": {
-    "plan_required": "3-5 reviewers × ≤3 iterations per phase (roster in plan §Reviewer roster summary)",
-    "actual": "ZERO formal review rounds; PM self-executed every phase per WAL owner_agent=null",
-    "impact": "No external Block/Warn/Note signal; this verification-agent report is the SOLE review artifact",
-    "recommended_action": "User should treat the Block findings above as the canonical 3rd-party review verdict; close with a D-PROCESS-X deviation entry."
-  },
-  "taskupdate_alignment": {
-    "commit_log_phases": ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16"],
-    "wal_files_phases": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15"],
-    "gap": "commit log has phase-0 and phase-16 but WAL has neither; every other phase aligns",
-    "taskupdate_journal": "not auditable from this session — agent cannot read PM's TaskCreate/TaskUpdate tree"
+  "summary_of_changes_since_prior_run": {
+    "tests": "+805 cases (886 → 1691)",
+    "widget_tests_added": "~20 feature widget tests; session_screen still missing",
+    "golden_tests_added": "6 files, 24 images (new category)",
+    "a11y_tests_added": "2 files (new category)",
+    "patrol_e2e_added": "3 new flows (walk_mode, date_mode, distress_flow) — D7 requirement",
+    "pin_hasher": "SHA-256 → Argon2id per D-SEC-10 (RESOLVED Block)",
+    "distress_confirmation_wiring": "Now wired into session_screen.dart + session_controller.dart (RESOLVED Warn)",
+    "im_safe_slider_wiring": "Now wired into session_screen.dart (RESOLVED Warn)",
+    "l10n_keys": "254 → 268 (+14 keys per locale, parity maintained across 14 langs)",
+    "phase_16_wal": "Now exists (RESOLVED Block)",
+    "coverage_gains": {
+      "engine": "98.89% → 98.96% (within 4 lines of 100%)",
+      "orchestration": "99.47% → 98.75% (regression)",
+      "models": "84.85% → 99.11% (big improvement)",
+      "data_source": "36.03% → 81.23% (big improvement)",
+      "services": "19.88% → 91.37% (big improvement)",
+      "features": "18.11% → 61.44% (big improvement but still far below 99%)",
+      "core": "19.03% → 76.53%",
+      "overall_code_only": "44.28% → 81.45%"
+    },
+    "new_block_findings": [
+      "flutter analyze fails with 3 errors in Patrol D7 tests (broke since prior run)"
+    ]
   },
   "open_questions": [
-    "Should the 886-vs-5500 test gap block ship, or is the 99% coverage on correctness-critical paths (engine, orchestration, data layer) sufficient? Plan explicitly said ~5500 required.",
-    "Is the PM-self-review (no external reviewer agents invoked) acceptable given 'correctness is the only success criterion' clause of the plan? If not, the entire rewrite needs a reviewer pass.",
-    "Should SHA-256 PIN hashing ship as-is? D-SEC-10 mandates Argon2id — this is RESOLVED, not deferred.",
+    "Can the 3 Patrol analyzer errors be fixed and re-verified in the same session, or do we need a separate task?",
+    "Should the 1691-vs-5500 test gap block ship, or is the 99% coverage on correctness-critical paths sufficient?",
     "Do we wait for real-device matrix (Phase 16 items 10-17) before tagging a release?",
-    "Should the 10 missing D-IDs be back-filled into decisions-log, or should the WAL entries be corrected to reference existing decisions?"
+    "Should backup crypto migration (CTR+HMAC → AES-GCM) block ship?"
   ]
 }

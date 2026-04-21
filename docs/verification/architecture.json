@@ -1,11 +1,12 @@
 {
-  "agent": "architecture",
+  "agent": "architecture-rerun",
   "summary": {
     "layers_present": ["core", "data", "domain", "services", "features", "router"],
     "domain_flutter_imports": 0,
     "domain_drift_imports": 0,
     "domain_hive_imports": 0,
     "domain_riverpod_imports": 0,
+    "domain_data_layer_imports": 12,
     "services_count": 15,
     "services_with_protocol": 15,
     "services_with_real_impl": 15,
@@ -20,99 +21,123 @@
     "drift_repositories": 8,
     "go_routes_declared": 31,
     "wiring_map_rows": 28,
-    "wal_phases_present": 15
+    "wal_phases_present": 15,
+    "chain_event_values": 13,
+    "platforminfo_consumers": 6
   },
+  "previous_findings_status": [
+    "WARN layering (enums.dart in data) — NOT FIXED: domain/** still imports lib/data/models/enums.dart in 12 files",
+    "WARN sealed-hierarchy (HardwareTrigger undocumented) — NOT FIXED: trigger.dart still has 4 sealed hierarchies (Trigger, HardwareTrigger, DistressTrigger, DisarmTrigger), architecture-sketch.md §4.4 still lists 2",
+    "WARN services (EventServices missing location/hardwareButton/incomingCall) — NOT FIXED: EventServices still exposes audio/messaging/phone/notification/vibration/context/isCancelled/deviceState?/registerSmsWorkId? only",
+    "NOTE layering (no fake providers in service_providers.dart) — NOT FIXED: still only Provider<xServiceProtocol> real + simulation pairs (no documentation clarifying the contract)",
+    "NOTE alignment (directory tree deviates from §3) — NOT FIXED: lib/data/db/ nesting unchanged; lib/core/errors/, lib/router/redirect_logic.dart, lib/data/migrations/ still absent; lib/core/logging/, lib/core/telemetry/ still present",
+    "NOTE exhaustiveness (Random() fallback) — NOT FIXED: session_engine.dart:61 still has `_random = random ?? Random()` default",
+    "NOTE wiring (WAL 15 phases vs task-prompt 17) — NOT FIXED: still phase-01…phase-15 only",
+    "NOTE alignment (31 routes vs spec 29) — NOT FIXED: app_router.dart still declares 31 GoRoutes"
+  ],
   "findings": [
     {
       "severity": "Warn",
       "category": "layering",
-      "issue": "Domain imports from data layer (lib/data/models/enums.dart)",
+      "issue": "Domain layer still imports enums.dart from data layer across 12 files. This Warn from the previous verification pass is unresolved — creates a reverse Domain→Data dependency that will bite future refactors.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/step_config.dart",
       "line": 10,
-      "evidence": "import 'package:guardianangela/data/models/enums.dart'; — also in chain_event.dart:9, chain_step.dart:9, emergency_contact.dart:5, event_defaults.dart:7, reminder_template.dart:9, session_log.dart:9, session_mode.dart:6, step_config.dart:10, walk_session.dart:8, engine/session_engine.dart:19, orchestration/event_strategy_registry.dart:9, orchestration/strategies/sms_contact_strategy.dart:15",
-      "suggested_fix": "Move lib/data/models/enums.dart (MessageChannel, ChainStepType, ConfirmationType, ReminderDisplayStyle) to lib/domain/models/enums.dart so Domain stops reaching into the Data layer. The file is pure Dart with no Flutter/Drift deps, so the move is mechanical."
-    },
-    {
-      "severity": "Warn",
-      "category": "sealed-hierarchy",
-      "issue": "Trigger sealed hierarchy is missing the dedicated file named in spec (co-located for DistressTrigger + DisarmTrigger + HardwareTrigger is fine, but HardwareTrigger is NOT listed in architecture-sketch.md §4.4 table)",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/trigger.dart",
-      "line": 39,
-      "evidence": "sealed class HardwareTrigger defined in trigger.dart alongside Trigger+DistressTrigger+DisarmTrigger; architecture model inventory only names Trigger (sealed + 2 subtypes: DistressTrigger, DisarmTrigger).",
-      "suggested_fix": "Update architecture-sketch.md §4.4 to acknowledge HardwareTrigger as an additional sealed hierarchy used to model repeatPress/longPress patterns, OR fold HardwareTrigger fields directly into HardwareButtonDistressTrigger to match the spec."
+      "evidence": "import 'package:guardianangela/data/models/enums.dart'; — same import appears in chain_event.dart:9, chain_step.dart:9, emergency_contact.dart:5, event_defaults.dart:7, reminder_template.dart:9, session_log.dart:9, session_mode.dart:6, step_config.dart:10, walk_session.dart:8, engine/session_engine.dart:19, orchestration/event_strategy_registry.dart:9, orchestration/strategies/phone_call_contact_strategy.dart:31",
+      "suggested_fix": "Move lib/data/models/enums.dart to lib/domain/models/enums.dart. File has zero Flutter/Drift/Hive deps; purely a mechanical move plus 12 import rewrites. Leave a re-export shim at the old path if any non-domain code still imports it."
     },
     {
       "severity": "Warn",
       "category": "services",
-      "issue": "EventServices bundle is missing location, hardwareButton, incomingCall, geofence, and batteryMonitor fields named in architecture-sketch.md §4.3 ('location', 'hardwareButton', 'incomingCall').",
+      "issue": "EventServices bundle still missing location, hardwareButton, incomingCall, geofence, batteryMonitor fields that architecture-sketch.md §4.3 lists. Unchanged from prior verification pass.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/orchestration/event_services.dart",
       "line": 19,
-      "evidence": "final class EventServices only exposes audio, messaging, phone, notification, vibration, context, isCancelled, deviceState?, registerSmsWorkId? — spec §4.3 also lists location, hardwareButton, incomingCall.",
-      "suggested_fix": "Either extend EventServices with location / hardwareButton / incomingCall / geofence / batteryMonitor protocol fields (matching the strategy table in §4.2 that says SmsContactStrategy reads 'messaging, location'), or update architecture-sketch.md to reflect that those services are reached via TriggerManager and SessionController instead of EventServices."
+      "evidence": "final class EventServices declares only audio, messaging, phone, notification, vibration, context, isCancelled, deviceState?, registerSmsWorkId? — none of location/hardwareButton/incomingCall/geofence/batteryMonitor mentioned.",
+      "suggested_fix": "Either (a) extend EventServices with the missing service protocols OR (b) patch architecture-sketch.md §4.3 to declare those services live on TriggerManager + SessionController, not inside EventServices. Pick one — the current state is ambiguous."
     },
     {
-      "severity": "Note",
-      "category": "layering",
-      "issue": "services/service_providers.dart exposes only real+simulation providers; no fake providers despite 15 fakes existing under lib/services/fakes/. Architecture §6.2 is silent on whether fakes need providers, but the test/wiring contract test assumes overrideWith is possible.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/service_providers.dart",
-      "line": 93,
-      "evidence": "Only Provider<xxxServiceProtocol> pairs: audioServiceProvider + simulationAudioProvider (× 15). No fake-backed provider wiring.",
-      "suggested_fix": "This is fine because tests override via provider.overrideWithValue(FakeXxx()); document the choice in service_providers.dart header to make the contract explicit."
-    },
-    {
-      "severity": "Note",
-      "category": "alignment",
-      "issue": "Directory tree deviates from architecture-sketch.md §3 in several places.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib",
-      "line": 0,
-      "evidence": "Missing: lib/core/errors/, lib/router/redirect_logic.dart, lib/data/migrations/. Present but spec flattened: lib/data/db/{schema,daos,encryption.dart} nests under /db/ rather than at /data/ top-level. Present but unspec'd: lib/core/logging/, lib/core/telemetry/.",
-      "suggested_fix": "Either (a) relocate lib/data/db/* up to lib/data/ per the spec, and add the missing errors/redirect_logic.dart/migrations stubs; or (b) patch architecture-sketch.md §3 to reflect actual layout (nesting under lib/data/db/ is reasonable for schema-v1)."
+      "severity": "Warn",
+      "category": "sealed-hierarchy",
+      "issue": "HardwareTrigger sealed hierarchy still orthogonal to architecture-sketch.md §4.4 inventory. Unchanged from prior pass.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/models/trigger.dart",
+      "line": 39,
+      "evidence": "sealed class HardwareTrigger with RepeatPressTrigger, LongPressTrigger subclasses alongside Trigger/DistressTrigger/DisarmTrigger (total 4 sealed hierarchies in trigger.dart).",
+      "suggested_fix": "Update architecture-sketch.md §4.4 model inventory to list HardwareTrigger (sealed, 2 subtypes) OR fold its fields into HardwareButtonDistressTrigger."
     },
     {
       "severity": "Note",
       "category": "exhaustiveness",
-      "issue": "Random() fallback in SessionEngine constructor violates §2.3 forbidden-pattern 'Direct use of Random() in Domain (inject Random)' — but only as a default when caller doesn't inject.",
+      "issue": "SessionEngine constructor still defaults `random` parameter to `Random()` if not injected. Unchanged from prior pass. Violates §2.3 forbidden-pattern strictly but is a harmless convenience default.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/domain/engine/session_engine.dart",
-      "line": 60,
+      "line": 61,
       "evidence": "_random = random ?? Random(),",
-      "suggested_fix": "Make the `random` parameter required (callers already pass one in SessionController); OR relax §2.3 to allow a constructor-default Random when the param is explicitly overridable (current pattern)."
-    },
-    {
-      "severity": "Note",
-      "category": "wiring",
-      "issue": "WAL directory has phase-01 … phase-15 (15 phases); task prompt references 'phases 0-16' (17 phases). Gap between documented phasing and checked-in evidence.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/docs/rewrite-wal",
-      "line": 0,
-      "evidence": "ls docs/rewrite-wal/phase-*.json → phase-01 through phase-15 (15 files). No phase-00 (bootstrap) or phase-16 (finalization).",
-      "suggested_fix": "Either add phase-00.json + phase-16.json WAL stubs to close the numbering gap, or confirm with PM that the live numbering is 1-15 and update the task-prompt line 'across 17 phases (0-16)'."
+      "suggested_fix": "Make `random` required and update SessionController + tests to pass one explicitly; OR relax §2.3 to allow constructor defaults when the param is overridable."
     },
     {
       "severity": "Note",
       "category": "alignment",
-      "issue": "Route count is 31 GoRoutes vs architecture-sketch.md §8 target of 29 routes. Superset is acceptable but worth reconciling.",
+      "issue": "Directory tree still deviates from architecture-sketch.md §3. lib/core/errors/, lib/router/redirect_logic.dart, lib/data/migrations/ still absent. lib/core/logging/, lib/core/telemetry/ still present as unlisted extras. Unchanged from prior pass.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib",
+      "line": 0,
+      "evidence": "find lib/ -maxdepth 3 -type d confirms structure unchanged since last verification.",
+      "suggested_fix": "Either reflow impl to match spec §3 or patch §3 to list lib/core/logging/, lib/core/telemetry/, lib/data/db/ nesting as deliberate."
+    },
+    {
+      "severity": "Note",
+      "category": "wiring",
+      "issue": "WAL still has phase-01 … phase-15 (15 JSON files). Task prompt references 'phases 0-16' (17). Unchanged from prior pass.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/docs/rewrite-wal",
+      "line": 0,
+      "evidence": "ls docs/rewrite-wal/phase-*.json → phase-01 through phase-15.",
+      "suggested_fix": "Either add phase-00.json + phase-16.json WAL stubs or update task-prompt numbering to 1-15."
+    },
+    {
+      "severity": "Note",
+      "category": "alignment",
+      "issue": "Route count unchanged: 31 GoRoutes vs architecture-sketch.md §8 target of 29. Unchanged from prior pass.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/router/app_router.dart",
       "line": 46,
-      "evidence": "grep -c 'GoRoute(' lib/router/app_router.dart → 31. Architecture §8 table lists 29 routes.",
-      "suggested_fix": "Audit app_router.dart against the §8 table and either remove the two extras (distressChains list + distressChainEditor are likely the additions) or update §8 to list them."
+      "evidence": "grep -c 'GoRoute(' lib/router/app_router.dart → 31.",
+      "suggested_fix": "Either remove distressChains + distressChainEditor extras or update §8 to list them."
+    },
+    {
+      "severity": "Note",
+      "category": "layering",
+      "issue": "service_providers.dart still lacks fake-backed provider wiring AND lacks a header doc-comment explaining why (the prior-pass suggestion was to document the override-via-test contract). Neither a new issue nor a regression, just unresolved.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/lib/services/service_providers.dart",
+      "line": 1,
+      "evidence": "File header comment mentions only real + simulation providers; does not mention fakes or override-by-test pattern.",
+      "suggested_fix": "Add a paragraph to the library doc-comment: 'Fakes are not wired here — tests override providers via ProviderScope(overrides: [audioServiceProvider.overrideWithValue(FakeAudioService())]).' This codifies the contract."
     }
   ],
   "positive_checks": [
     "lib/domain/** has ZERO package:flutter/*, package:drift, package:hive*, or package:flutter_riverpod imports — core pure-Dart invariant holds.",
-    "lib/services/simulation/** has ZERO imports of url_launcher, flutter/services (MethodChannel), geolocator, just_audio, battery_plus, or flutter_local_notifications — 4-layer simulation defense structurally intact.",
+    "lib/services/simulation/** has ZERO imports of url_launcher, flutter/services, geolocator, just_audio, battery_plus, flutter_local_notifications, home_widget, workmanager, permission_handler, share_plus, wakelock_plus, vibration, audio_session, flutter_tts, speech_to_text — 4-layer sim defense structurally intact.",
     "EventStrategyRegistry.forStep is a switch expression with NO default: arm (compile-time exhaustive over ChainStepType).",
-    "lib/domain has ZERO 'default:' arms on any enum switch — exhaustiveness preserved.",
+    "lib/domain has ZERO 'default:' arms on any enum switch — exhaustiveness preserved (only docstring mention found in event_strategy_registry.dart:5).",
     "lib/domain has ZERO DateTime.now() calls (injected clock used everywhere per D-ENGINE-1).",
-    "Sealed-hierarchy pattern used correctly in EngineState, StepConfig, Trigger (+ HardwareTrigger, DistressTrigger, DisarmTrigger), ActionDeliveryStatus, SessionPhase.",
-    "Every one of the 15 services has a protocol + real impl + fake impl + simulation impl file.",
+    "Sealed-hierarchy pattern used correctly for EngineState, StepConfig (9 concrete final subclasses), Trigger (+ HardwareTrigger, DistressTrigger, DisarmTrigger), ActionDeliveryStatus (4 final _*Status subclasses), SessionPhase.",
+    "All 9 StepConfig subclasses are declared `final class` (compile-time hermetic).",
+    "Every one of the 15 services has a protocol + real impl + fake impl + simulation impl file (15/15/15/15).",
     "Every one of the 13 features has a Riverpod *ControllerProvider binding.",
     "All 8 Drift tables have matching DAOs (8) and repositories (8).",
-    "Wiring map docs/wiring-map.md has 28 rows (≥ 20 threshold)."
+    "Wiring map docs/wiring-map.md has 28 rows (≥ 20 threshold).",
+    "ChainEvent enum now has 13 values — reminderFired, pauseExpired, stepExecutionFailed all present. reminderFired is emitted at session_engine.dart:536.",
+    "Engine methods checkIn / earlyCheckIn / setSpeedMultiplier / restartCurrentStep all present (session_engine.dart:404/421/431/453).",
+    "PlatformInfo abstraction lives in lib/core/platform/platform_info.dart with const factory + FakePlatformInfo; 6 service implementations consume it (notification, messaging, phone, stealth_icon, system_ui, device_state).",
+    "Only one direct Platform.is* call remains outside lib/core/platform/: lib/data/db/app_database.dart:80 (data-layer DB init, appropriate).",
+    "StealthConfig wiring: session_screen.dart:107 (sessionScreenStealth), home_screen.dart:43 (fakeName), notification_service.dart (fakeName + notificationDisguise) — prior Block specs.json #3 is structurally resolved.",
+    "SmsContactStrategy now filters contacts by config.channel (single-channel dispatch Extra-15/15b) at sms_contact_strategy.dart:56-67 — prior Block specs.json #2 resolved.",
+    "FakeCallConfig.declineIsSafe default is TRUE (step_config.dart:558) — prior Block specs.json #4 resolved.",
+    "All new spec fields present: HoldButtonConfig.holdStyle/vibrateOnRelease/soundOnRelease/blackScreenMode + releaseSensitivity=1.0; DisguisedReminderConfig.randomizeInterval/randomizeTemplateOrder/resetOnEarlyCheckIn/blackScreenMode; LoudAlarmConfig.volume/soundChoice/gradualVolume/flashLight/flashSpeedMs/blackScreenMode; CallEmergencyConfig.showConfirmation=true/sendLocationSmsFirst/confirmationDurationSeconds/blackScreenMode; AppSettings.wrongPinThreshold=5 + sessionLogRetentionDays=180.",
+    "PhoneCallContactStrategy now honours ChainStep.retryCount and iterates PhoneCallContactConfig.alternativeContactIds (phone_call_contact_strategy.dart:63,157) — prior Block specs.json #5 resolved.",
+    "docs/decisions-log.md now contains D-STRATEGY-2 (line 2842), D-BACKUP-1 (2914), D-TELEMETRY-1 (2926), DRIFT-L8 (1517) — prior Warn specs.json #15 resolved."
   ],
+  "new_findings_since_previous_run": [],
+  "regressions": [],
   "open_questions": [
-    "Should HardwareTrigger be documented as a first-class sealed hierarchy in architecture-sketch.md §4.4, or folded into HardwareButtonDistressTrigger to keep the model inventory at 19 entries?",
-    "Should EventServices be extended with location / hardwareButton / incomingCall fields to match §4.3 exactly, or should the spec be updated to reflect that those services live on TriggerManager + SessionController?",
-    "Is lib/data/db/* nesting (vs. flat lib/data/schema/ + lib/data/daos/ + lib/data/encryption/ + lib/data/migrations/) an intentional deviation worth locking into the architecture spec?",
-    "Should lib/data/models/enums.dart move to lib/domain/models/enums.dart so the Domain→Data reverse dependency is eliminated?",
-    "Are 31 routes (vs. spec 29) the new baseline, or are distressChains + distressChainEditor meant to fold under existing routes?"
+    "Layering: move enums.dart from lib/data/models/ to lib/domain/models/ now, or after Phase 4?",
+    "EventServices: extend with location/hardwareButton/incomingCall, or promote TriggerManager / SessionController to the documented home for those services in architecture-sketch.md §4.3?",
+    "HardwareTrigger: upgrade architecture-sketch.md §4.4 to first-class inventory item or fold into HardwareButtonDistressTrigger fields?",
+    "SessionEngine Random default: keep convenience default, or tighten §2.3 by removing the `?? Random()` fallback?"
   ]
 }

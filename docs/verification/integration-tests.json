@@ -1,28 +1,35 @@
 {
   "agent": "integration-tests",
+  "rerun_iso": "2026-04-21T14:00:00Z",
   "test_inventory": {
-    "integration": [
-      "test/integration/session_scenarios_test.dart",
-      "test/integration/distress_flow_test.dart",
-      "test/integration/simulation_defense_test.dart",
-      "test/integration/cross_feature_test.dart",
-      "test/integration/db_round_trip_test.dart"
+    "integration_widget_driven": [
+      "test/integration/session_scenarios_test.dart (597 lines)",
+      "test/integration/distress_flow_test.dart (420 lines)",
+      "test/integration/simulation_defense_test.dart (474 lines)",
+      "test/integration/cross_feature_test.dart (743 lines)",
+      "test/integration/db_round_trip_test.dart (258 lines)"
     ],
     "scenarios": [],
     "property": [
-      "test/property/json_round_trip_property_test.dart"
+      "test/property/json_round_trip_property_test.dart (283 lines)"
     ],
     "regression": [
-      "test/regression/edge_cases_test.dart"
+      "test/regression/edge_cases_test.dart (376 lines)"
     ],
     "wiring": [
-      "test/wiring/wiring_contract_test.dart",
-      "test/wiring/wiring_map_coverage_test.dart"
+      "test/wiring/wiring_contract_test.dart (396 lines)",
+      "test/wiring/wiring_map_coverage_test.dart (110 lines)"
+    ],
+    "patrol_e2e": [
+      "integration_test/app_test.dart",
+      "integration_test/walk_mode_flow_test.dart (D7 — newly added)",
+      "integration_test/date_mode_flow_test.dart (D7 — newly added)",
+      "integration_test/distress_flow_test.dart (D7 — newly added)"
     ],
     "helpers": [
       "test/helpers/test_helpers.dart"
     ],
-    "notes": "No test/scenarios/ directory exists (empty category, not required by current repo layout). Domain + feature + core + wiring trees contain additional focused tests that indirectly reinforce P0 coverage (e.g. trigger_manager_test, session_controller_test)."
+    "notes": "test/scenarios/ directory still absent (same as prior run). Patrol E2E suite is NEW (D7 requirement recently added). integration_test/ files have analyzer errors that need fixing."
   },
   "p0_coverage": {
     "P0-1": {
@@ -81,7 +88,8 @@
         "PIN + distress integration > wrong PIN at threshold triggers distress asynchronously",
         "PIN + distress integration > wrong PIN under threshold does not fire distress",
         "also: test/integration/distress_flow_test.dart > Distress flow: wrong-PIN threshold > N consecutive triggerings fire distress once"
-      ]
+      ],
+      "weakness_flagged_prior": "Weak assertion (checked 'ws is not null' rather than distress chain state). Still pending upgrade."
     },
     "P0-7": {
       "status": "covered",
@@ -91,7 +99,8 @@
         "Incoming call during session (Risk-12) > ended call resumes the session",
         "Incoming call during session (Risk-12) > idle call state after pause resumes the session",
         "Incoming call during session (Risk-12) > Risk-12: battery-alert session also pauses on incoming call"
-      ]
+      ],
+      "weakness_flagged_prior": "Uses Future.delayed(10ms) — couples to host scheduler. Still pending upgrade to fakeAsync."
     },
     "P0-8": {
       "status": "covered",
@@ -115,7 +124,7 @@
     }
   },
   "property_coverage": {
-    "status": "partial",
+    "status": "partial — unchanged from prior run",
     "file": "test/property/json_round_trip_property_test.dart",
     "covered_types": [
       "HoldButtonConfig",
@@ -135,7 +144,7 @@
       "HardwareButtonDistressTrigger"
     ],
     "gaps": [
-      "AppSettings — not in property suite (has focused JSON test elsewhere)",
+      "AppSettings — not in property suite",
       "UserProfile — not in property suite",
       "AppDefaults / ModeOverrides — not in property suite",
       "DistressChain — not in property suite",
@@ -143,34 +152,42 @@
       "BatteryAlertConfig — not in property suite",
       "SessionLog — not in property suite",
       "ReminderTemplate — not in property suite",
-      "DisarmTrigger (TimerDisarmTrigger / GpsArrivalDisarmTrigger) — not explicitly in property suite",
+      "DisarmTrigger variants — not explicitly in property suite",
       "N is small (5-100 depending on type), not the 200 targeted by TEST-120"
     ]
   },
   "regression_coverage": {
     "AUDIT-BUG-3_phone_call_fallback": {
       "status": "covered",
-      "file": "test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart",
-      "test": "executeReal does NOT use hardcoded fallback number (line 78-87)",
-      "location": "test/domain/orchestration/strategies/ (not under test/regression/)"
+      "file": "test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart"
     },
     "FakeCallConfig_callerName_null_coercion": {
       "status": "covered",
       "file": "test/property/json_round_trip_property_test.dart",
-      "test": "FakeCallConfig with explicit null callerName normalizes to \"Mom\" (line 95-103)",
-      "note": "Test locks current behavior; phase-14 notes flag this as a bug where null should be preserved rather than coerced — verification team to decide true fix vs spec update."
+      "note": "Test still locks coercion to 'Mom'; phase-14 flagged this as a bug to decide. Still unresolved."
     },
     "SettingsController_async_load_race_L7": {
       "status": "covered-indirectly",
       "file": "test/features/session/session_controller_test.dart",
-      "test": "SessionController L7 race mitigation > startSession awaits the settings hydrate before reading mode (line 917-938)",
-      "note": "Tests the consumer (SessionController) awaits hydrate rather than SettingsController directly. No dedicated test/regression/settings_controller_test.dart exists."
+      "note": "No dedicated test/regression/settings_controller_test.dart yet."
     }
+  },
+  "patrol_e2e_status": {
+    "exists": true,
+    "d7_requirement_met": "Partially — 3 Patrol flows exist (walk, date, distress) + app_test.dart",
+    "flutter_analyze_clean": false,
+    "analyzer_errors": [
+      "integration_test/date_mode_flow_test.dart:43:29 extra_positional_arguments_could_be_named",
+      "integration_test/distress_flow_test.dart:30:29 extra_positional_arguments_could_be_named",
+      "integration_test/distress_flow_test.dart:60:29 extra_positional_arguments_could_be_named"
+    ],
+    "fix_summary": "Use `pumpAndSettle(duration: const Duration(seconds: N))` rather than positional Duration arg. walk_mode_flow_test.dart was already migrated.",
+    "physical_device_runs": "Unknown — not executed on device in this verification"
   },
   "fake_vs_real_assessment": {
     "status": "good",
     "evidence": [
-      "All integration tests use FakeAudioService / FakeMessagingService / FakePhoneService / FakeNotificationService / FakeVibrationService from lib/services/fakes/",
+      "All widget-driven integration tests use FakeAudioService / FakeMessagingService / FakePhoneService / FakeNotificationService / FakeVibrationService from lib/services/fakes/",
       "db_round_trip_test uses NativeDatabase.memory() — in-memory Drift, never touches disk",
       "cross_feature_test uses in-memory repository subclasses + ProviderContainer overrides — never hits Drift",
       "FixedRandom is used consistently to eliminate jitter nondeterminism (per D-TEST-1)",
@@ -178,78 +195,77 @@
       "All platform-channel dependent services are stubbed (IncomingCall, Geofence, BatteryMonitor, DeviceState, Location, HardwareButton)"
     ],
     "concerns": [
-      "Layer 2 tests in simulation_defense_test.dart instantiate real AudioService, PhoneService, VibrationService and call them with isSimulation:true. They expect short-circuit behavior; if the real impl ever tries to resolve a MethodChannel before the short-circuit check, these tests could fail with MissingPluginException on CI. Current impl short-circuits before channel access, so the approach is acceptable, but the test contract is fragile and deserves a comment."
+      "Layer 2 tests in simulation_defense_test.dart instantiate real AudioService, PhoneService, VibrationService and call them with isSimulation:true. They expect short-circuit behavior; if the real impl ever tries to resolve a MethodChannel before the short-circuit check, these tests could fail with MissingPluginException on CI."
     ]
   },
   "findings": [
     {
-      "severity": "Warn",
-      "category": "regression-gap",
-      "issue": "No test/regression/settings_controller_test.dart directly exercises the SettingsController L7 race (OnboardingScreen.completeOnboarding persisting empty defaults over seeded state per D-CONTROLLER-1).",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/regression/edge_cases_test.dart",
-      "suggested_fix": "Add a regression test that spawns SettingsController, invokes a mutator before `build().future` resolves, and asserts the seeded AppDefaults survive (not overwritten by const AppSettings())."
-    },
-    {
-      "severity": "Warn",
-      "category": "regression-gap",
-      "issue": "FakeCallConfig null-callerName coercion test ASSERTS the coercion to 'Mom' as correct behavior. Per decisions-log and rewrite-wal/phase-14.json this is actually flagged as a potential bug (round-trip should preserve null). Test locks in the wrong behavior.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/property/json_round_trip_property_test.dart",
-      "suggested_fix": "Either (a) promote to a regression test with a comment explaining why coercion is intentional, or (b) change fromJson to preserve null and update the default-resolution layer; re-target the test."
+      "severity": "Block",
+      "category": "analyzer-gate-broken",
+      "issue": "flutter analyze --fatal-infos fails with 3 errors in Patrol D7 tests (date_mode_flow_test.dart, distress_flow_test.dart). Universal gate is red.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/integration_test/",
+      "suggested_fix": "Replace positional Duration with `duration:` named parameter in all pumpAndSettle calls in the two affected files. walk_mode_flow_test.dart is already fixed."
     },
     {
       "severity": "Warn",
       "category": "missing-p0",
-      "issue": "P0-6 (wrong-PIN threshold) is covered but ASSERTS WEAKLY in cross_feature_test: after crossing threshold it checks 'ws is not null' rather than asserting the engine is in distress chain or that messaging.calls fired. The 50ms delay + absence of contacts in the fixture make the chain advance silently.",
+      "issue": "P0-6 (wrong-PIN threshold) still asserts WEAKLY — prior run's upgrade-recommendation not yet applied. cross_feature_test.dart only checks 'ws is not null' after threshold crossing; no assertion that engine is in distress chain or that messaging.calls fired.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/cross_feature_test.dart",
-      "suggested_fix": "Supply at least one contact in the fixture, then assert fx.messaging.calls is non-empty OR the underlying engine's isDistressChain==true after the async delay."
+      "suggested_fix": "Supply at least one contact in the fixture, then assert fx.messaging.calls is non-empty OR engine is in distress chain phase after the async delay."
+    },
+    {
+      "severity": "Warn",
+      "category": "regression-gap",
+      "issue": "No test/regression/settings_controller_test.dart directly exercising the D-CONTROLLER-1 race (OnboardingScreen.completeOnboarding persisting empty defaults over seeded state). Still open from prior run.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/regression/",
+      "suggested_fix": "Author the dedicated regression test."
+    },
+    {
+      "severity": "Warn",
+      "category": "regression-gap",
+      "issue": "FakeCallConfig null-callerName coercion test still locks 'Mom' as correct behavior. phase-14 flagged this as a bug — decision still needed.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/property/json_round_trip_property_test.dart",
+      "suggested_fix": "Either fix fromJson to preserve null (and update test) or document the intentional coercion in a D-ID."
     },
     {
       "severity": "Note",
       "category": "missing-p0",
-      "issue": "P0-7 incoming call pause test uses Future.delayed(10ms) instead of fakeAsync, which couples test timing to the test host's scheduler. Not deterministic.",
+      "issue": "P0-7 incoming call pause test still uses Future.delayed instead of fakeAsync. Not deterministic.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/cross_feature_test.dart",
-      "suggested_fix": "Wrap these tests in fakeAsync and use async.elapse to drive the incoming-call subscription deterministically."
+      "suggested_fix": "Wrap in fakeAsync and use async.elapse."
     },
     {
       "severity": "Note",
       "category": "assertion-quality",
-      "issue": "session_scenarios_test 'disguised reminder triggers notification on step start' never asserts a notification was shown — it only asserts stepStarted event count == 1. The FakeNotificationService does not expose a calls list.",
+      "issue": "session_scenarios_test 'disguised reminder triggers notification on step start' still does not assert a notification was shown — only stepStarted event count.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/session_scenarios_test.dart",
-      "suggested_fix": "Either add a showDisguisedReminder call list on FakeNotificationService (mirroring other fakes) or rename the test to match what it actually verifies."
+      "suggested_fix": "Add a showDisguisedReminder call list on FakeNotificationService."
     },
     {
       "severity": "Note",
       "category": "missing-p0",
-      "issue": "P0-9 Layer 4 structural check for 'no flutter/services import' and 'no MethodChannel construction' is source-string grep. It does not catch transitive imports via other dart packages that do bring in MethodChannel.",
+      "issue": "P0-9 Layer 4 structural check is still source-string grep — not a transitive-import check.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/simulation_defense_test.dart",
-      "suggested_fix": "Add an additional test that walks the transitive dependency graph of each simulation_*.dart file (e.g. via analyzer) to verify no transitive dependency on dart:ui platform message infrastructure."
+      "suggested_fix": "Add analyzer-based transitive import check."
     },
     {
       "severity": "Note",
       "category": "missing-p0",
-      "issue": "Property suite (TEST-120) is smaller than the 200 iterations the test-strategy specifies, and only 15 of ~25 domain models are covered.",
+      "issue": "Property suite (TEST-120) N-count still small (5-100); 10 of ~25 models still missing.",
       "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/property/json_round_trip_property_test.dart",
-      "suggested_fix": "Add a parametrized round-trip test that enumerates every JSON-serializable model (AppSettings, UserProfile, AppDefaults, ModeOverrides, DistressChain, StealthConfig, GpsLoggingConfig, BatteryAlertConfig, SessionLog, ReminderTemplate, DisarmTrigger subtypes) with 200 randomized instances per type."
+      "suggested_fix": "Extend to 200 iterations per type; add the 10 missing model types."
     },
     {
       "severity": "Note",
-      "category": "fake-vs-real",
-      "issue": "simulation_defense_test Layer 2 instantiates real AudioService/PhoneService/VibrationService. If a future refactor moves the isSimulation short-circuit below a MethodChannel call, the test will fail with MissingPluginException on CI rather than a clean assertion.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/integration/simulation_defense_test.dart",
-      "suggested_fix": "Add a comment on each Layer 2 test documenting the 'short-circuit before channel access' contract, or wrap with a test that explicitly registers a test MethodChannel handler that throws to enforce the invariant."
-    },
-    {
-      "severity": "Note",
-      "category": "assertion-quality",
-      "issue": "test/scenarios/ directory is absent (listed in the audit scope). Not a block — the content lives under test/integration/ — but the directory-name drift may confuse future agents following the test-strategy doc.",
-      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/test/",
-      "suggested_fix": "Either create an empty test/scenarios/ with a README pointing to test/integration/, or update docs/test-strategy.md to refer only to test/integration/."
+      "category": "patrol-device-matrix",
+      "issue": "Patrol E2E exists but has NOT been run on physical devices. D7 spec requires device-matrix execution.",
+      "file": "/home/jonas/Documents/software/android/safetyapp1/safewayhome/integration_test/",
+      "suggested_fix": "After fixing the 3 analyzer errors, run patrol test on Pixel + Samsung + iOS 17 per plan Phase 16 checklist items 10-17."
     }
   ],
   "open_questions": [
-    "FakeCallConfig null-callerName coercion: is coercion to 'Mom' the intended spec or is it a bug flagged in phase-14 notes? The current property test locks the coercion in — decision needed before signing off.",
-    "Should a dedicated test/regression/settings_controller_test.dart be added, or is the session_controller L7 test sufficient to cover D-CONTROLLER-1?",
-    "Does the project intend to add P1 coverage for TEST-106/107/108 (mode switch / language change / contact deletion blocked during session)? Currently absent.",
-    "Layer 4 sim-defense uses file-string grep. Is a deeper transitive-import check desired, or is the human-readable source check considered adequate?"
+    "Should Patrol E2E device-matrix execution be a ship gate, or can we ship with the 3 flows passing on a simulator and defer physical-device verification?",
+    "FakeCallConfig null-callerName coercion: still needs a decision (fix-or-document-with-D-ID).",
+    "Should the D7 Patrol flows assert state-machine-level outcomes (e.g., 'session entered distress phase'), or is UI-label detection sufficient?"
   ]
 }

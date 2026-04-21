@@ -20,6 +20,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
 import 'package:sqlite3/open.dart';
 
+import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/data/db/encryption.dart';
 import 'package:guardianangela/data/db/schema/tables.dart';
 
@@ -43,7 +44,15 @@ class AppDatabase extends _$AppDatabase {
   ///
   /// When [executor] is null the default lazy SQLCipher connection
   /// (file in the application documents directory) is used.
-  AppDatabase([QueryExecutor? executor]) : super(executor ?? _openConnection());
+  ///
+  /// [platform] injects host-platform detection. Defaults to
+  /// `const PlatformInfo()` (reads `dart:io` `Platform.isAndroid`).
+  /// Tests can pass a [FakePlatformInfo] to force either branch of
+  /// [_openConnection].
+  AppDatabase({
+    QueryExecutor? executor,
+    PlatformInfo platform = const PlatformInfo(),
+  }) : super(executor ?? _openConnection(platform));
 
   /// Creates an in-memory test instance. Not used by production code.
   @visibleForTesting
@@ -73,11 +82,11 @@ class AppDatabase extends _$AppDatabase {
   /// to delete the file as part of a nuke-and-reseed.
   static const String dbFileName = 'guardian_angela.sqlite';
 
-  static LazyDatabase _openConnection() {
+  static LazyDatabase _openConnection(PlatformInfo platform) {
     return LazyDatabase(() async {
       // On Android, `sqlite3` opens the system sqlite by default.
       // Route it to the bundled SQLCipher binary instead.
-      if (Platform.isAndroid) {
+      if (platform.isAndroid) {
         await applyWorkaroundToOpenSqlCipherOnOldAndroidVersions();
         open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
       }

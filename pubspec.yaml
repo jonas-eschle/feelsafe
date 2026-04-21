@@ -116,6 +116,13 @@ dev_dependencies:
   # Golden-image regression tests (D-TEST-12). Framework + helpers for
   # pixel-match goldens across a device matrix.
   golden_toolkit: ^0.15.0
+  # Patrol end-to-end testing (Phase 16 test-strategy.md §7.4).
+  # Flutter-aware runner with native-interaction helpers. Runs on
+  # Android emulator / iOS simulator — NOT in the unit test pass.
+  # See integration_test/ for smoke flows.
+  integration_test:
+    sdk: flutter
+  patrol: ^4.5.0
 
 flutter_launcher_icons:
   android: true

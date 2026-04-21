@@ -6,6 +6,12 @@
 /// Fix for bugs.json Block (PIN Argon2id upgrade): verification now
 /// goes through [PinHasher.verify] — constant-time + salted — instead
 /// of plain SHA-256 equality.
+///
+/// Fix for bugs.json Block (Argon2id UI-thread freeze): [PinHasher]
+/// is now async (Argon2id runs in a worker isolate). We also gate
+/// repeated `_maybeSubmit` invocations behind an `_inFlight` flag so
+/// each digit added after length>=4 does not pile up concurrent
+/// verifications on the same buffer.
 library;
 
 import 'dart:async';
@@ -48,7 +54,7 @@ Future<PinResult> showPinEntryDialog({
 /// Fix for bugs.json Block (PIN Argon2id upgrade): delegates to
 /// [PinHasher.hash]. See `pin_hasher.dart` for the algorithm and
 /// deviation-from-D-SEC-10 rationale.
-String hashPin(String pin) => PinHasher.hash(pin);
+Future<String> hashPin(String pin) => PinHasher.hash(pin);
 
 class _PinDialog extends StatefulWidget {
   const _PinDialog({
@@ -73,6 +79,12 @@ class _PinDialogState extends State<_PinDialog> {
   final StringBuffer _buffer = StringBuffer();
   Timer? _timeoutTimer;
 
+  /// Guards [_maybeSubmit] so a single verify pass runs for one
+  /// buffer state, even as the user keeps tapping digits. Without
+  /// this, each digit after length>=4 would enqueue another ~1.3s
+  /// Argon2 verification, amplifying cost 5x for an 8-digit PIN.
+  bool _inFlight = false;
+
   @override
   void initState() {
     super.initState();
@@ -92,7 +104,7 @@ class _PinDialogState extends State<_PinDialog> {
   void _onDigit(int d) {
     if (_buffer.length >= 8) return;
     setState(() => _buffer.write(d));
-    _maybeSubmit();
+    unawaited(_maybeSubmit());
   }
 
   void _onBackspace() {
@@ -104,25 +116,45 @@ class _PinDialogState extends State<_PinDialog> {
     });
   }
 
-  void _maybeSubmit() {
-    final pin = _buffer.toString();
-    if (pin.length < 4) return;
-    // Fix for bugs.json Block (PIN Argon2id upgrade) + Warn (timing
-    // attack): PinHasher.verify is salted + constant-time — no
-    // prefix-byte timing oracle. Duress is checked FIRST so a user
-    // who set duress == sessionEnd never sees the "disarm" branch.
-    final duress = widget.duressHash;
-    if (duress != null && PinHasher.verify(pin, duress)) {
-      Navigator.of(context).pop(PinResult.duress);
-      return;
-    }
-    final sessionEnd = widget.sessionEndHash;
-    if (sessionEnd != null && PinHasher.verify(pin, sessionEnd)) {
-      Navigator.of(context).pop(PinResult.correct);
-      return;
-    }
-    if (pin.length >= 8) {
-      Navigator.of(context).pop(PinResult.wrong);
+  Future<void> _maybeSubmit() async {
+    if (_inFlight) return;
+    _inFlight = true;
+    try {
+      // We may have absorbed more digits while a previous verify
+      // was in flight; loop until the buffer is stable between
+      // iterations or the length drops below 4.
+      while (true) {
+        final pin = _buffer.toString();
+        if (pin.length < 4) return;
+        // Fix for bugs.json Block (PIN Argon2id upgrade) + Warn
+        // (timing attack): PinHasher.verify is salted + constant-
+        // time — no prefix-byte timing oracle. Duress is checked
+        // FIRST so a user who set duress == sessionEnd never sees
+        // the "disarm" branch.
+        final duress = widget.duressHash;
+        if (duress != null && await PinHasher.verify(pin, duress)) {
+          if (!mounted) return;
+          Navigator.of(context).pop(PinResult.duress);
+          return;
+        }
+        final sessionEnd = widget.sessionEndHash;
+        if (sessionEnd != null &&
+            await PinHasher.verify(pin, sessionEnd)) {
+          if (!mounted) return;
+          if (_buffer.toString() != pin) continue;
+          Navigator.of(context).pop(PinResult.correct);
+          return;
+        }
+        // Buffer mutated during verify — re-check against the new
+        // string rather than popping based on stale data.
+        if (_buffer.toString() != pin) continue;
+        if (pin.length >= 8 && mounted) {
+          Navigator.of(context).pop(PinResult.wrong);
+        }
+        return;
+      }
+    } finally {
+      _inFlight = false;
     }
   }
 
@@ -135,7 +167,7 @@ class _PinDialogState extends State<_PinDialog> {
         Text(widget.subtitle),
         const SizedBox(height: 12),
         Text(
-          '•' * _buffer.length,
+          '\u2022' * _buffer.length,
           style: Theme.of(context).textTheme.displaySmall,
         ),
         const SizedBox(height: 12),
