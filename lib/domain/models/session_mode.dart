@@ -53,6 +53,8 @@ final class SessionMode {
     this.trackingIntervalSeconds = 300,
     this.trackingBufferSize = 50,
     this.iconName,
+    this.pauseAllowed = true,
+    this.maxPauseMinutes,
   });
 
   /// Deserializes a `SessionMode` from JSON.
@@ -96,6 +98,8 @@ final class SessionMode {
       trackingBufferSize:
           (json['trackingBufferSize'] as num?)?.toInt() ?? 50,
       iconName: json['iconName'] as String?,
+      pauseAllowed: json['pauseAllowed'] as bool? ?? true,
+      maxPauseMinutes: (json['maxPauseMinutes'] as num?)?.toInt(),
     );
   }
 
@@ -144,6 +148,21 @@ final class SessionMode {
   /// heuristic.
   final String? iconName;
 
+  /// Q11 — whether the user can pause an active session via the
+  /// session screen's "Pause" button. Defaults to true.
+  final bool pauseAllowed;
+
+  /// Q11 — when [pauseAllowed], the maximum allowed pause duration
+  /// in minutes. `null` = unlimited. Defaults to null.
+  final int? maxPauseMinutes;
+
+  /// Pivot 3 alias for [distressChainId]. The unification under
+  /// "distress mode" (deleting the standalone DistressChain class)
+  /// is in progress; until it lands, this getter exposes the same
+  /// id under the spec-canonical name so call sites can use the new
+  /// terminology without waiting for the model split.
+  String? get distressModeId => distressChainId;
+
   /// Returns a new mode with the given fields replaced.
   SessionMode copyWith({
     String? id,
@@ -159,12 +178,17 @@ final class SessionMode {
     int? trackingBufferSize,
     String? iconName,
     bool clearIconName = false,
+    bool? pauseAllowed,
+    int? maxPauseMinutes,
+    bool clearMaxPauseMinutes = false,
+    String? distressModeId,
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
     checkInType: checkInType ?? this.checkInType,
     chainSteps: chainSteps ?? this.chainSteps,
-    distressChainId: distressChainId ?? this.distressChainId,
+    distressChainId:
+        distressChainId ?? distressModeId ?? this.distressChainId,
     distressTriggers: distressTriggers ?? this.distressTriggers,
     disarmTriggers: disarmTriggers ?? this.disarmTriggers,
     overrides: overrides ?? this.overrides,
@@ -173,6 +197,10 @@ final class SessionMode {
         trackingIntervalSeconds ?? this.trackingIntervalSeconds,
     trackingBufferSize: trackingBufferSize ?? this.trackingBufferSize,
     iconName: clearIconName ? null : (iconName ?? this.iconName),
+    pauseAllowed: pauseAllowed ?? this.pauseAllowed,
+    maxPauseMinutes: clearMaxPauseMinutes
+        ? null
+        : (maxPauseMinutes ?? this.maxPauseMinutes),
   );
 
   /// Serializes to JSON.
@@ -193,6 +221,8 @@ final class SessionMode {
     'trackingIntervalSeconds': trackingIntervalSeconds,
     'trackingBufferSize': trackingBufferSize,
     if (iconName != null) 'iconName': iconName,
+    'pauseAllowed': pauseAllowed,
+    'maxPauseMinutes': maxPauseMinutes,
   };
 
   @override

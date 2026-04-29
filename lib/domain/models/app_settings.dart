@@ -61,6 +61,12 @@ final class AppSettings {
     this.telemetryOptOut = false,
     this.sessionLogRetentionDays = 180,
     this.wrongPinThreshold = 5,
+    this.appPinBiometricEnabled = false,
+    this.sessionEndPinBiometricEnabled = false,
+    this.distressCancelBiometricEnabled = false,
+    this.requireLaunchAuth = false,
+    this.launchAuthBiometric = true,
+    this.sentryEnabled = false,
   });
 
   /// Deserializes `AppSettings` from JSON.
@@ -83,6 +89,15 @@ final class AppSettings {
         (json['sessionLogRetentionDays'] as num?)?.toInt() ?? 180,
     wrongPinThreshold:
         (json['wrongPinThreshold'] as num?)?.toInt() ?? 5,
+    appPinBiometricEnabled:
+        json['appPinBiometricEnabled'] as bool? ?? false,
+    sessionEndPinBiometricEnabled:
+        json['sessionEndPinBiometricEnabled'] as bool? ?? false,
+    distressCancelBiometricEnabled:
+        json['distressCancelBiometricEnabled'] as bool? ?? false,
+    requireLaunchAuth: json['requireLaunchAuth'] as bool? ?? false,
+    launchAuthBiometric: json['launchAuthBiometric'] as bool? ?? true,
+    sentryEnabled: json['sentryEnabled'] as bool? ?? false,
   );
 
   /// Hash of the app-unlock PIN; null = no lock.
@@ -134,6 +149,34 @@ final class AppSettings {
   /// chain. Defaults to 5 per D-SEC-5 / spec A3.
   final int wrongPinThreshold;
 
+  /// When true, the app-unlock PIN prompt tries biometric first.
+  /// Requires [appPinHash] non-null.
+  final bool appPinBiometricEnabled;
+
+  /// When true, the session-end PIN prompt tries biometric first.
+  /// Requires [sessionEndPinHash] non-null.
+  final bool sessionEndPinBiometricEnabled;
+
+  /// When true, the distress-cancel PIN prompt tries biometric
+  /// first. Authenticates against the APP PIN. Requires
+  /// [appPinHash] non-null.
+  final bool distressCancelBiometricEnabled;
+
+  /// Q14 launch gate. When true AND [appPinHash] is non-null, the
+  /// app gates the home screen behind a PIN-or-biometric prompt on
+  /// every cold start. Default false (opt-in).
+  final bool requireLaunchAuth;
+
+  /// Q14 sub-toggle. When true AND [requireLaunchAuth] is true,
+  /// the launch gate tries biometric first; PIN is always available
+  /// as a fallback. Default true.
+  final bool launchAuthBiometric;
+
+  /// Master Sentry telemetry toggle (Q42 amended). Defaults to
+  /// **false** — telemetry is opt-in. When false, no Sentry SDK
+  /// initialization happens at app start.
+  final bool sentryEnabled;
+
   /// Returns a new settings instance with the given fields replaced.
   ///
   /// Nullable PIN-hash fields and `selectedModeId` support explicit
@@ -160,6 +203,12 @@ final class AppSettings {
     bool? telemetryOptOut,
     int? sessionLogRetentionDays,
     int? wrongPinThreshold,
+    bool? appPinBiometricEnabled,
+    bool? sessionEndPinBiometricEnabled,
+    bool? distressCancelBiometricEnabled,
+    bool? requireLaunchAuth,
+    bool? launchAuthBiometric,
+    bool? sentryEnabled,
   }) => AppSettings(
     appPinHash: clearAppPinHash ? null : (appPinHash ?? this.appPinHash),
     sessionEndPinHash: clearSessionEndPinHash
@@ -182,6 +231,15 @@ final class AppSettings {
     sessionLogRetentionDays:
         sessionLogRetentionDays ?? this.sessionLogRetentionDays,
     wrongPinThreshold: wrongPinThreshold ?? this.wrongPinThreshold,
+    appPinBiometricEnabled:
+        appPinBiometricEnabled ?? this.appPinBiometricEnabled,
+    sessionEndPinBiometricEnabled:
+        sessionEndPinBiometricEnabled ?? this.sessionEndPinBiometricEnabled,
+    distressCancelBiometricEnabled: distressCancelBiometricEnabled ??
+        this.distressCancelBiometricEnabled,
+    requireLaunchAuth: requireLaunchAuth ?? this.requireLaunchAuth,
+    launchAuthBiometric: launchAuthBiometric ?? this.launchAuthBiometric,
+    sentryEnabled: sentryEnabled ?? this.sentryEnabled,
   );
 
   /// Serializes to JSON.
@@ -200,6 +258,12 @@ final class AppSettings {
     'telemetryOptOut': telemetryOptOut,
     'sessionLogRetentionDays': sessionLogRetentionDays,
     'wrongPinThreshold': wrongPinThreshold,
+    'appPinBiometricEnabled': appPinBiometricEnabled,
+    'sessionEndPinBiometricEnabled': sessionEndPinBiometricEnabled,
+    'distressCancelBiometricEnabled': distressCancelBiometricEnabled,
+    'requireLaunchAuth': requireLaunchAuth,
+    'launchAuthBiometric': launchAuthBiometric,
+    'sentryEnabled': sentryEnabled,
   };
 
   @override

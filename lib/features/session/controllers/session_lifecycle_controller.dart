@@ -30,7 +30,7 @@ import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/session_log_recorder.dart';
 import 'package:guardianangela/domain/engine/tracking_buffer.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';

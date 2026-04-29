@@ -24,6 +24,7 @@ final class AppDefaults {
     this.stealth = const StealthConfig(),
     this.templates = const [],
     this.eventDefaults = const EventDefaults(),
+    this.defaultDistressModeId,
   });
 
   /// Deserializes `AppDefaults` from JSON.
@@ -50,6 +51,7 @@ final class AppDefaults {
               json['eventDefaults']! as Map<String, Object?>,
             )
           : const EventDefaults(),
+      defaultDistressModeId: json['defaultDistressModeId'] as String?,
     );
   }
 
@@ -65,17 +67,28 @@ final class AppDefaults {
   /// Global per-step-type event defaults.
   final EventDefaults eventDefaults;
 
+  /// Pivot 3 (D-DATA-21 superseded). Optional id of the global
+  /// default distress mode — referenced by `Mode.distressModeId`
+  /// when that field is null. Null = no global default; modes
+  /// without an explicit distressModeId block at session start.
+  final String? defaultDistressModeId;
+
   /// Returns a new `AppDefaults` with the given fields replaced.
   AppDefaults copyWith({
     GpsLoggingConfig? gpsLogging,
     StealthConfig? stealth,
     List<ReminderTemplate>? templates,
     EventDefaults? eventDefaults,
+    String? defaultDistressModeId,
+    bool clearDefaultDistressModeId = false,
   }) => AppDefaults(
     gpsLogging: gpsLogging ?? this.gpsLogging,
     stealth: stealth ?? this.stealth,
     templates: templates ?? this.templates,
     eventDefaults: eventDefaults ?? this.eventDefaults,
+    defaultDistressModeId: clearDefaultDistressModeId
+        ? null
+        : (defaultDistressModeId ?? this.defaultDistressModeId),
   );
 
   /// Serializes to JSON.
@@ -84,6 +97,7 @@ final class AppDefaults {
     'stealth': stealth.toJson(),
     'templates': templates.map((t) => t.toJson()).toList(growable: false),
     'eventDefaults': eventDefaults.toJson(),
+    'defaultDistressModeId': defaultDistressModeId,
   };
 
   @override

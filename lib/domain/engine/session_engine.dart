@@ -444,6 +444,37 @@ final class SessionEngine {
     _speedMultiplier = value;
   }
 
+  /// Effective speed multiplier accounting for background clamp.
+  ///
+  /// In real sessions, the background clamp can reduce wall-clock
+  /// progress while the OS throttles us; tests inspect this getter
+  /// to verify the effective rate. Computed as
+  /// `_speedMultiplier * _backgroundClamp`, both of which default
+  /// to 1.0.
+  double get effectiveSpeedMultiplier =>
+      _speedMultiplier * _backgroundClamp;
+
+  /// Background-clamp factor in (0, 1]. Defaults to 1.0 (no clamp).
+  double get backgroundClamp => _backgroundClamp;
+
+  double _backgroundClamp = 1.0;
+
+  /// Sets the background-clamp factor. Used by the lifecycle
+  /// controller when the OS pushes the app into the background and
+  /// we need to slow timer progression to match doze-mode reality.
+  ///
+  /// [value] must be in `(0, 1]`. Throws [ArgumentError] otherwise.
+  void setBackgroundClamp(double value) {
+    if (value.isNaN || value.isInfinite || value <= 0 || value > 1) {
+      throw ArgumentError.value(
+        value,
+        'value',
+        'background clamp must be in (0, 1]',
+      );
+    }
+    _backgroundClamp = value;
+  }
+
   /// Restart the current step: cancel the running timer and re-enter
   /// the current step's `wait` phase from scratch.
   ///
