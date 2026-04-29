@@ -2374,6 +2374,288 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'— none —'**
   String get pickerNoneLabel;
+
+  /// Title of the emergency-confirm pre-dial screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling {number}'**
+  String emergencyConfirmTitle(Object number);
+
+  /// Subtitle of the emergency-confirm pre-dial screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold the cancel button to abort.'**
+  String get emergencyConfirmSubtitle;
+
+  /// Countdown line on the pre-dial screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling in {seconds}s'**
+  String emergencyConfirmCountdown(Object seconds);
+
+  /// Cancel button on the pre-dial screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get emergencyConfirmCancel;
+
+  /// Header in the calendar stealth UI.
+  ///
+  /// In en, this message translates to:
+  /// **'Upcoming'**
+  String get stealthCalendarUpcoming;
+
+  /// Stealth calendar event title placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Meeting'**
+  String get stealthCalendarUpcomingEvent;
+
+  /// Stealth calendar countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'in {minutes} min'**
+  String stealthCalendarUntilEvent(Object minutes);
+
+  /// Today header in the stealth calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get stealthCalendarToday;
+
+  /// Stealth calendar mock event.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee with Alex'**
+  String get stealthCalendarEvent1;
+
+  /// Stealth calendar mock event.
+  ///
+  /// In en, this message translates to:
+  /// **'Standup'**
+  String get stealthCalendarEvent2;
+
+  /// Stealth calendar mock event.
+  ///
+  /// In en, this message translates to:
+  /// **'Lunch'**
+  String get stealthCalendarEvent3;
+
+  /// Stealth calendar mock event.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout'**
+  String get stealthCalendarEvent4;
+
+  /// Stealth calendar mock event.
+  ///
+  /// In en, this message translates to:
+  /// **'Dinner with Sam'**
+  String get stealthCalendarEvent5;
+
+  /// Hint shown on stealth screens for the disarm gesture.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe up to end'**
+  String get stealthDisarmGestureHint;
+
+  /// Default track title on the stealth music screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled Track'**
+  String get stealthMusicTrackTitle;
+
+  /// Default artist on the stealth music screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Artist'**
+  String get stealthMusicArtist;
+
+  /// Default album on the stealth music screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Album'**
+  String get stealthMusicAlbum;
+
+  /// Now-playing label on the stealth music screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get stealthMusicNowPlaying;
+
+  /// Disarm-gesture hint on the stealth music screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to disarm'**
+  String get stealthMusicSwipeHint;
+
+  /// Previous-track button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get stealthMusicPrevious;
+
+  /// Pause button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get stealthMusicPause;
+
+  /// Next-track button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get stealthMusicNext;
+
+  /// Podcast show name placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcast'**
+  String get stealthPodcastShowName;
+
+  /// Podcast episode title placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode'**
+  String get stealthPodcastEpisodeTitle;
+
+  /// Episodes-list header on the stealth podcast screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Episodes'**
+  String get stealthPodcastEpisodesHeader;
+
+  /// Speed-toggle label on the stealth podcast screen.
+  ///
+  /// In en, this message translates to:
+  /// **'1x'**
+  String get stealthPodcastSpeedLabel;
+
+  /// Stealth podcast episode placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode 1'**
+  String get stealthPodcastEpisode1;
+
+  /// Stealth podcast episode placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode 2'**
+  String get stealthPodcastEpisode2;
+
+  /// Stealth podcast episode placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode 3'**
+  String get stealthPodcastEpisode3;
+
+  /// Stealth podcast episode placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Episode 4'**
+  String get stealthPodcastEpisode4;
+
+  /// Stealth preset name shown in the picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Podcast'**
+  String get stealthPresetPodcast;
+
+  /// Stealth preset: no disguise (real session screen).
+  ///
+  /// In en, this message translates to:
+  /// **'None'**
+  String get stealthPresetNone;
+
+  /// Label of the simulation speed slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Speed'**
+  String get sessionSimSpeedLabel;
+
+  /// Simulation speed value display.
+  ///
+  /// In en, this message translates to:
+  /// **'{value}x'**
+  String sessionSimSpeedValue(Object value);
+
+  /// Indicator that simulation speed is capped while app is backgrounded.
+  ///
+  /// In en, this message translates to:
+  /// **'Background-capped'**
+  String get sessionSimSpeedBackgroundCap;
+
+  /// Label of the advanced-controls toggle in simulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Advanced'**
+  String get sessionSimAdvancedLabel;
+
+  /// Simulation button — fires the distress chain.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger panic'**
+  String get sessionSimTriggerPanic;
+
+  /// Simulation button — fakes a GPS arrival event.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger arrival'**
+  String get sessionSimTriggerArrival;
+
+  /// Simulation button — fakes a low-battery event.
+  ///
+  /// In en, this message translates to:
+  /// **'Trigger low battery'**
+  String get sessionSimTriggerBattery;
+
+  /// Top-level simulate-arrival action.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate arrival'**
+  String get simulateGpsArrival;
+
+  /// Top-level simulate-low-battery action.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulate low battery'**
+  String get simulateLowBattery;
+
+  /// Title of the Q14 launch-gate screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Guardian Angela'**
+  String get launchGateTitle;
+
+  /// Subtitle of the Q14 launch-gate screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your PIN or use biometrics.'**
+  String get launchGateSubtitle;
+
+  /// Error label on the Q14 launch-gate screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong PIN'**
+  String get launchGateWrong;
+
+  /// Reason string for biometric prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Guardian Angela'**
+  String get launchGateBiometricReason;
+
+  /// Button to fall back to biometric auth on the launch gate.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics'**
+  String get launchGateUseBiometric;
+
+  /// Submit button used by the launch-gate PIN entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get pinSubmit;
 }
 
 class _AppLocalizationsDelegate

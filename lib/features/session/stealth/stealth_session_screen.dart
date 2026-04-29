@@ -90,7 +90,13 @@ class StealthSessionScreen extends ConsumerWidget {
     }
 
     return switch (stealth.fakeIcon) {
-      StealthIconPreset.music => MusicPlayerScreen(
+      StealthIconPreset.music ||
+      StealthIconPreset.fitness ||
+      StealthIconPreset.weather ||
+      StealthIconPreset.news ||
+      StealthIconPreset.photos ||
+      StealthIconPreset.notes ||
+      StealthIconPreset.clock => MusicPlayerScreen(
           session: session,
           onDisarm: handleDisarm,
         ),

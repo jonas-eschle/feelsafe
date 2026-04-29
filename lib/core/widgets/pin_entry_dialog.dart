@@ -28,11 +28,15 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// [sessionEndHash] — PIN hash that counts as "disarm" (correct).
 /// [duressHash] — PIN hash that silently fires the distress chain.
 /// [timeout] — max seconds to wait; `0` disables the timeout.
+/// [biometric] — optional biometric service. When non-null, the
+/// dialog tries biometric auth first and falls back to PIN entry
+/// on failure. Pass null to skip biometric.
 Future<PinResult> showPinEntryDialog({
   required BuildContext context,
   required String? sessionEndHash,
   required String? duressHash,
   int timeout = 15,
+  Object? biometric,
 }) async {
   final l = AppLocalizations.of(context);
   final result = await showDialog<PinResult>(

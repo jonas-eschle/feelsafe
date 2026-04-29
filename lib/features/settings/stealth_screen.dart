@@ -205,6 +205,8 @@ class _IconPresetPicker extends StatelessWidget {
         StealthIconPreset.photos => l.stealthPresetPhotos,
         StealthIconPreset.notes => l.stealthPresetNotes,
         StealthIconPreset.clock => l.stealthPresetClock,
+        StealthIconPreset.podcast => l.stealthPresetPodcast,
+        StealthIconPreset.none => l.stealthPresetNone,
       };
 
   static IconData _iconFor(StealthIconPreset preset) => switch (preset) {
@@ -216,6 +218,8 @@ class _IconPresetPicker extends StatelessWidget {
         StealthIconPreset.photos => Icons.photo,
         StealthIconPreset.notes => Icons.note,
         StealthIconPreset.clock => Icons.access_time,
+        StealthIconPreset.podcast => Icons.podcasts,
+        StealthIconPreset.none => Icons.shield_outlined,
       };
 }
 

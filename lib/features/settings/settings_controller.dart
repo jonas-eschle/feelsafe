@@ -89,6 +89,24 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     );
   }
 
+  /// Updates the app-PIN biometric-first toggle.
+  Future<void> setAppPinBiometricEnabled(bool enabled) async {
+    final current = await future;
+    await save(current.copyWith(appPinBiometricEnabled: enabled));
+  }
+
+  /// Updates the session-end-PIN biometric-first toggle.
+  Future<void> setSessionEndPinBiometricEnabled(bool enabled) async {
+    final current = await future;
+    await save(current.copyWith(sessionEndPinBiometricEnabled: enabled));
+  }
+
+  /// Updates the distress-cancel biometric-first toggle.
+  Future<void> setDistressCancelBiometricEnabled(bool enabled) async {
+    final current = await future;
+    await save(current.copyWith(distressCancelBiometricEnabled: enabled));
+  }
+
   /// Updates the PIN-entry lockout timeout in seconds.
   Future<void> setPinTimeoutSeconds(int seconds) async {
     final current = await future;

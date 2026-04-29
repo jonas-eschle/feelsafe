@@ -49,4 +49,15 @@ abstract class NotificationServiceProtocol {
 
   /// Shows a short transient toast (simulation descriptions).
   Future<void> showToast(String message);
+
+  /// Posts a notification asking the user to confirm whether the
+  /// session should end after a disarm trigger (timer / GPS arrival)
+  /// fired while the app was in the background. Two action buttons:
+  /// "End session" and "Continue".
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  });
 }

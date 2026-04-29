@@ -71,6 +71,16 @@ final class FakeNotificationService implements NotificationServiceProtocol {
     calls.add('showToast:$message');
   }
 
+  @override
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {
+    calls.add('showDisarmTriggerNotification:$title');
+  }
+
   /// Test helper: synthesize a tap event on the stream.
   void injectTap(String actionId) {
     _tapController.add(actionId);

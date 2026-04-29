@@ -105,6 +105,8 @@ final class WalkSession {
   /// string.
   /// [isBackgroundAlert] — true when showing a background alert;
   /// defaults to false.
+  /// [totalSteps] — total step count of the active chain; used by
+  /// the session screen step counter. Defaults to 0.
   const WalkSession({
     required this.id,
     required this.modeId,
@@ -120,6 +122,7 @@ final class WalkSession {
     this.firedStepDescriptions = const [],
     this.lastSimulationDescription,
     this.isBackgroundAlert = false,
+    this.totalSteps = 0,
   });
 
   /// Session id.
@@ -165,6 +168,9 @@ final class WalkSession {
   /// to false.
   final bool isBackgroundAlert;
 
+  /// Total step count in the active chain. Defaults to 0.
+  final int totalSteps;
+
   /// Derives the correct [SessionPhase] from an [EngineState].
   static SessionPhase phaseFromEngine(EngineState state) => switch (state) {
     EngineIdle() => const SessionPhaseIdle(),
@@ -189,6 +195,7 @@ final class WalkSession {
     List<String>? firedStepDescriptions,
     String? lastSimulationDescription,
     bool? isBackgroundAlert,
+    int? totalSteps,
   }) => WalkSession(
     id: id ?? this.id,
     modeId: modeId ?? this.modeId,
@@ -205,6 +212,7 @@ final class WalkSession {
     lastSimulationDescription:
         lastSimulationDescription ?? this.lastSimulationDescription,
     isBackgroundAlert: isBackgroundAlert ?? this.isBackgroundAlert,
+    totalSteps: totalSteps ?? this.totalSteps,
   );
 
   /// Serializes to JSON (debug-only — `WalkSession` is ephemeral).

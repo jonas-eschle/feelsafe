@@ -41,12 +41,13 @@ final class TriggerManager {
     required this.mode,
     required this.hardwareButtonService,
     required this.geofenceService,
-    required this.batteryMonitorService,
+    BatteryMonitorServiceProtocol? batteryMonitorService,
     this.onDisarmRequested,
     this.onDistressConfirmation,
     this.distressStepsResolver,
     DateTime Function()? clock,
-  }) : _clock = clock ?? DateTime.now;
+  })  : batteryMonitorService = batteryMonitorService,
+        _clock = clock ?? DateTime.now;
 
   /// Minimum time between successive trigger fires.
   static const Duration cooldown = Duration(milliseconds: 500);
@@ -64,7 +65,7 @@ final class TriggerManager {
   final GeofenceServiceProtocol geofenceService;
 
   /// Battery-monitor service.
-  final BatteryMonitorServiceProtocol batteryMonitorService;
+  final BatteryMonitorServiceProtocol? batteryMonitorService;
 
   /// Optional disarm callback.
   final void Function()? onDisarmRequested;

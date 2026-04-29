@@ -1189,4 +1189,153 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get pickerNoneLabel => '— ללא —';
+
+  @override
+  String emergencyConfirmTitle(Object number) {
+    return 'Calling $number';
+  }
+
+  @override
+  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+
+  @override
+  String emergencyConfirmCountdown(Object seconds) {
+    return 'Calling in ${seconds}s';
+  }
+
+  @override
+  String get emergencyConfirmCancel => 'Cancel';
+
+  @override
+  String get stealthCalendarUpcoming => 'Upcoming';
+
+  @override
+  String get stealthCalendarUpcomingEvent => 'Meeting';
+
+  @override
+  String stealthCalendarUntilEvent(Object minutes) {
+    return 'in $minutes min';
+  }
+
+  @override
+  String get stealthCalendarToday => 'Today';
+
+  @override
+  String get stealthCalendarEvent1 => 'Coffee with Alex';
+
+  @override
+  String get stealthCalendarEvent2 => 'Standup';
+
+  @override
+  String get stealthCalendarEvent3 => 'Lunch';
+
+  @override
+  String get stealthCalendarEvent4 => 'Workout';
+
+  @override
+  String get stealthCalendarEvent5 => 'Dinner with Sam';
+
+  @override
+  String get stealthDisarmGestureHint => 'Swipe up to end';
+
+  @override
+  String get stealthMusicTrackTitle => 'Untitled Track';
+
+  @override
+  String get stealthMusicArtist => 'Unknown Artist';
+
+  @override
+  String get stealthMusicAlbum => 'Unknown Album';
+
+  @override
+  String get stealthMusicNowPlaying => 'Now playing';
+
+  @override
+  String get stealthMusicSwipeHint => 'Swipe to disarm';
+
+  @override
+  String get stealthMusicPrevious => 'Previous';
+
+  @override
+  String get stealthMusicPause => 'Pause';
+
+  @override
+  String get stealthMusicNext => 'Next';
+
+  @override
+  String get stealthPodcastShowName => 'Podcast';
+
+  @override
+  String get stealthPodcastEpisodeTitle => 'Episode';
+
+  @override
+  String get stealthPodcastEpisodesHeader => 'Episodes';
+
+  @override
+  String get stealthPodcastSpeedLabel => '1x';
+
+  @override
+  String get stealthPodcastEpisode1 => 'Episode 1';
+
+  @override
+  String get stealthPodcastEpisode2 => 'Episode 2';
+
+  @override
+  String get stealthPodcastEpisode3 => 'Episode 3';
+
+  @override
+  String get stealthPodcastEpisode4 => 'Episode 4';
+
+  @override
+  String get stealthPresetPodcast => 'Podcast';
+
+  @override
+  String get stealthPresetNone => 'None';
+
+  @override
+  String get sessionSimSpeedLabel => 'Speed';
+
+  @override
+  String sessionSimSpeedValue(Object value) {
+    return '${value}x';
+  }
+
+  @override
+  String get sessionSimSpeedBackgroundCap => 'Background-capped';
+
+  @override
+  String get sessionSimAdvancedLabel => 'Advanced';
+
+  @override
+  String get sessionSimTriggerPanic => 'Trigger panic';
+
+  @override
+  String get sessionSimTriggerArrival => 'Trigger arrival';
+
+  @override
+  String get sessionSimTriggerBattery => 'Trigger low battery';
+
+  @override
+  String get simulateGpsArrival => 'Simulate arrival';
+
+  @override
+  String get simulateLowBattery => 'Simulate low battery';
+
+  @override
+  String get launchGateTitle => 'Unlock Guardian Angela';
+
+  @override
+  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+
+  @override
+  String get launchGateWrong => 'Wrong PIN';
+
+  @override
+  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+
+  @override
+  String get launchGateUseBiometric => 'Use biometrics';
+
+  @override
+  String get pinSubmit => 'Submit';
 }

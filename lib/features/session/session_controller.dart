@@ -233,6 +233,29 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     runtime.engine.resume();
   }
 
+  /// Simulation-only: adjust the engine's speed multiplier mid-run.
+  void setSimulationSpeedMultiplier(double value) {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.setSpeedMultiplier(value);
+  }
+
+  /// Simulation-only: synthesize a GPS-arrival event so the user can
+  /// rehearse the auto-disarm path without actually walking.
+  Future<void> simulateGpsArrival() async {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.disarm();
+  }
+
+  /// Simulation-only: synthesize a low-battery threshold crossing so
+  /// the user can rehearse the battery-alert path.
+  Future<void> simulateLowBattery() async {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    // No-op on the engine; UI feedback only.
+  }
+
   /// Accepts the currently ringing simulated fake-call pretext.
   Future<void> answerFakeCall() async {
     final runtime = _runtime;

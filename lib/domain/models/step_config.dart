@@ -1486,6 +1486,7 @@ final class CallEmergencyConfig extends StepConfig {
     this.sendLocationSmsFirst = true,
     this.confirmationDurationSeconds = 5,
     this.blackScreenMode = false,
+    this.stealthSuppressConfirmation = true,
     this.logGps = LogGpsOverride.useDefault,
   });
 
@@ -1500,6 +1501,8 @@ final class CallEmergencyConfig extends StepConfig {
         confirmationDurationSeconds:
             (json['confirmationDurationSeconds'] as num?)?.toInt() ?? 5,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+        stealthSuppressConfirmation:
+            json['stealthSuppressConfirmation'] as bool? ?? true,
         logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
@@ -1523,6 +1526,13 @@ final class CallEmergencyConfig extends StepConfig {
   /// false.
   final bool blackScreenMode;
 
+  /// When true AND stealth is active, the swipe-to-confirm slider
+  /// is suppressed (the call is placed silently). Defaults to true.
+  /// *Why:* the confirmation slider is a visible UI tell; under
+  /// stealth the call should look like an outgoing call from the
+  /// disguise app, not a guarded gesture.
+  final bool stealthSuppressConfirmation;
+
   /// Per-step GPS-logging override (DE-2).
   @override
   final LogGpsOverride logGps;
@@ -1538,6 +1548,7 @@ final class CallEmergencyConfig extends StepConfig {
     bool? sendLocationSmsFirst,
     int? confirmationDurationSeconds,
     bool? blackScreenMode,
+    bool? stealthSuppressConfirmation,
     LogGpsOverride? logGps,
   }) => CallEmergencyConfig(
     emergencyNumber: clearEmergencyNumber
@@ -1549,6 +1560,8 @@ final class CallEmergencyConfig extends StepConfig {
     confirmationDurationSeconds:
         confirmationDurationSeconds ?? this.confirmationDurationSeconds,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    stealthSuppressConfirmation:
+        stealthSuppressConfirmation ?? this.stealthSuppressConfirmation,
     logGps: logGps ?? this.logGps,
   );
 
@@ -1560,6 +1573,7 @@ final class CallEmergencyConfig extends StepConfig {
     'sendLocationSmsFirst': sendLocationSmsFirst,
     'confirmationDurationSeconds': confirmationDurationSeconds,
     'blackScreenMode': blackScreenMode,
+    'stealthSuppressConfirmation': stealthSuppressConfirmation,
     'logGps': logGpsOverrideToJson(logGps),
   };
 
@@ -1572,6 +1586,7 @@ final class CallEmergencyConfig extends StepConfig {
           other.sendLocationSmsFirst == sendLocationSmsFirst &&
           other.confirmationDurationSeconds ==
               confirmationDurationSeconds &&
+          other.stealthSuppressConfirmation == stealthSuppressConfirmation &&
           other.blackScreenMode == blackScreenMode &&
           other.logGps == logGps;
 

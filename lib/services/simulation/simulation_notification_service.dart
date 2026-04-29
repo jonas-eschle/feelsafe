@@ -71,6 +71,16 @@ final class SimulationNotificationService
     developer.log('[SIM] notification.showToast $message');
   }
 
+  @override
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {
+    developer.log('[SIM] notification.showDisarmTriggerNotification $title');
+  }
+
   /// Closes the tap stream controller.
   void dispose() {
     _tapController.close();

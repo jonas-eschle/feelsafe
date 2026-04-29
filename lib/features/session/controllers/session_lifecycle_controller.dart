@@ -354,7 +354,7 @@ class SessionLifecycleController {
       name: 'Battery Alert',
       checkInType: config.chain.first.type,
       chainSteps: config.chain,
-      distressModeId: settings.defaults.defaultDistressModeId,
+      distressChainId: settings.defaults.defaultDistressModeId,
     );
 
     await _bootstrapSession(
@@ -398,7 +398,7 @@ class SessionLifecycleController {
         'pause() called on a mode that has pauseAllowed == false.',
       );
     }
-    runtime.engine.pause(maxPauseMinutes: runtime.mode.maxPauseMinutes);
+    runtime.engine.pause();
   }
 
   /// Resumes a paused session.
@@ -414,7 +414,9 @@ class SessionLifecycleController {
   void setSimulationBackgroundClamp(bool enabled) {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.setBackgroundClamp(enabled);
+    // Map bool to clamp factor: enabled = 0.1 (10× slowdown when
+    // backgrounded matches the OS doze-mode reality), disabled = 1.0.
+    runtime.engine.setBackgroundClamp(enabled ? 0.1 : 1.0);
   }
 
   /// Simulation-only thin wrapper around

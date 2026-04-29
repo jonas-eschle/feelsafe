@@ -108,6 +108,14 @@ final class SessionEngine {
   /// True after [replaceWithDistressChain] has swapped the chain.
   bool _isDistressChain = false;
 
+  /// The forensic reason recorded when the distress chain was
+  /// triggered. Null until [replaceWithDistressChain] is called.
+  TriggerReason? _distressTriggerReason;
+
+  /// Returns the forensic distress trigger reason, or null if no
+  /// distress chain has been triggered.
+  TriggerReason? get distressTriggerReason => _distressTriggerReason;
+
   /// Single active timer; null when no phase is scheduled.
   Timer? _timer;
 
@@ -376,7 +384,14 @@ final class SessionEngine {
   /// state. Per D-SAFETY-17, calling this while already running a
   /// distress chain is a no-op — distress escalation is
   /// non-interruptible.
-  void replaceWithDistressChain(List<ChainStep> steps) {
+  ///
+  /// [triggerReason] — propagated to `sessionEnded.endReason` so
+  /// `SessionLog` records the distinct forensic reason. Defaults to
+  /// `TriggerReason.hardwarePanic` for backwards compatibility.
+  void replaceWithDistressChain(
+    List<ChainStep> steps, {
+    TriggerReason triggerReason = TriggerReason.hardwarePanic,
+  }) {
     if (_state is EngineEnded) return;
     if (_isDistressChain) return;
     if (steps.isEmpty) {
@@ -385,6 +400,7 @@ final class SessionEngine {
     _cancelTimer();
     _steps = List.of(steps);
     _isDistressChain = true;
+    _distressTriggerReason = triggerReason;
     // Emit with no stepIndex — this is a chain-level event.
     _emit(ChainEvent.distressTriggered);
     // If the engine was Idle before, transition through

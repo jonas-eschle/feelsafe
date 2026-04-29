@@ -285,6 +285,19 @@ final class NotificationService implements NotificationServiceProtocol {
     }
   }
 
+  @override
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {
+    developer.log(
+      'showDisarmTriggerNotification: title=$title body=$body '
+      'end=$endSessionLabel continue=$continueLabel',
+    );
+  }
+
   /// Releases the action-tap controller and cancels every pending
   /// timer (including toast auto-dismiss and scheduled notifications).
   ///
