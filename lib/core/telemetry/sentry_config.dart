@@ -27,6 +27,14 @@ import 'package:guardianangela/core/logging/structured_logger.dart';
 /// this key via `flutter_secure_storage`.
 const String telemetryOptOutStorageKey = 'ga_telemetry_optout';
 
+/// Opt-IN secure-storage fallback key (Q42).
+///
+/// `'true'` = the user has explicitly opted in to telemetry. Anything
+/// else (missing key, `'false'`, malformed value) keeps telemetry
+/// off. *Why:* GDPR-compliant default — auto-firing telemetry on
+/// first launch never had user consent.
+const String telemetryOptInStorageKey = 'ga_telemetry_optin';
+
 /// Signature of the wrapped `SentryFlutter.init` call. Tests replace
 /// this via [sentryInitOverride] to observe the configured options
 /// without actually spinning up the native Sentry transport.

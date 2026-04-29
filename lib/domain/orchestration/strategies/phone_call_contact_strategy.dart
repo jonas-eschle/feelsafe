@@ -34,6 +34,8 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/domain/orchestration/location_resolver.dart';
+import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';
 
 /// Default pre-SMS body when neither the step config nor a global
 /// template provides one.
@@ -58,6 +60,15 @@ final class PhoneCallContactStrategy extends EventStrategy {
       return;
     }
     final isSim = services.context.isSimulation;
+    // Spec 11 §DE-2: resolve the per-step GPS-logging override
+    // once per call. Drives the `{location}` placeholder in the
+    // pre-call SMS, plus opt-out of any location lookup performed
+    // by the platform call layer in the future.
+    final logGps = LogGpsResolver.resolve(step, services);
+    final locationUrl = LocationResolver.resolve(
+      services,
+      logGpsEnabled: logGps && config.preSmsIncludeLocation,
+    );
     // Spec 02 §7: +1 extra attempts per retryCount on the current
     // contact before moving to the next alternative.
     final attemptsPerContact = step.retryCount + 1;
@@ -67,6 +78,7 @@ final class PhoneCallContactStrategy extends EventStrategy {
         if (config.preSendSms) {
           final preBody = services.context.resolvePlaceholders(
             config.preSmsMessage ?? _defaultPreSmsTemplate,
+            location: locationUrl,
           );
           final id = await services.messaging.sendMessage(
             contact: contact,

@@ -71,6 +71,35 @@ final class LocationService implements LocationServiceProtocol {
       _history.isEmpty ? null : _history.last;
 
   @override
+  Future<LocationPoint?> getCurrentPosition() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+        ),
+      );
+      final point = LocationPoint(
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        timestamp: pos.timestamp.toUtc(),
+        accuracy: pos.accuracy,
+      );
+      _history.add(point);
+      while (_history.length > _historyCap) {
+        _history.removeAt(0);
+      }
+      return point;
+    } on Object catch (error, stack) {
+      developer.log(
+        'getCurrentPosition error',
+        error: error,
+        stackTrace: stack,
+      );
+      return null;
+    }
+  }
+
+  @override
   List<LocationPoint> get history => List.unmodifiable(_history);
 
   @override

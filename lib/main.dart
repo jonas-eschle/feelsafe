@@ -1,10 +1,11 @@
 /// App entry point.
 ///
 /// Initializes the Flutter binding, wraps the app in a
-/// `ProviderScope`, and hands off to `GuardianAngelaApp`. Phase 15
-/// additionally gates telemetry: if the user has **not** opted out
-/// (secure-storage fallback key `ga_telemetry_optout`), Sentry is
-/// initialized against the EU data region before `runApp`.
+/// `ProviderScope`, and hands off to `GuardianAngelaApp`.
+///
+/// Telemetry: per Q42 (opt-in, default OFF), Sentry is initialized
+/// before `runApp` only when the user has opted in. The DSN is
+/// supplied at build time via `--dart-define=SENTRY_DSN=…`.
 ///
 /// Fix for bugs.json Warn (main.dart init):
 /// * Initializes [AppDatabase] (SQLCipher passphrase, first-launch
@@ -34,25 +35,40 @@ import 'package:guardianangela/services/service_providers.dart';
 
 export 'package:guardianangela/app.dart' show GuardianAngelaApp;
 
-/// Sentry DSN for the Guardian Angela Flutter app (EU host).
-///
-/// TODO(release-owner): replace the placeholder project id with the
-/// real production project id before the first public build. The
-/// host MUST end with `.de.sentry.io` — [initSentry] rejects
-/// anything else.
-const String _sentryDsn =
-    'https://00000000000000000000000000000000@o0.ingest.de.sentry.io/0';
+/// Sentry DSN (Q43). Supplied via `--dart-define=SENTRY_DSN=…` at
+/// build time. Empty default keeps the source tree free of any DSN
+/// literal — release builds inject the production value, debug
+/// builds run with no DSN and Sentry stays disabled regardless of
+/// the opt-in toggle.
+const String _sentryDsn = String.fromEnvironment(
+  'SENTRY_DSN',
+  defaultValue: '',
+);
 
 const String _appRelease = 'guardianangela@1.0.0+1';
 
 /// Main entry point.
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  const storage = FlutterSecureStorage();
-  final optOutRaw = await storage.read(key: telemetryOptOutStorageKey);
-  final optedOut = optOutRaw == 'true';
+  // ignore: deprecated_member_use
+  const storage = FlutterSecureStorage(
+    // Q38: AndroidOptions(encryptedSharedPreferences: true) swaps the
+    // default soft-Keystore-wrapped SharedPreferences backend for
+    // AndroidX EncryptedSharedPreferences.
+    // ignore: deprecated_member_use
+    aOptions: AndroidOptions(encryptedSharedPreferences: true),
+  );
+  // Q42: Sentry is opt-IN, default OFF. The legacy
+  // `ga_telemetry_optout` storage key is being phased to a
+  // `ga_telemetry_optin` key — the former meant `true=disabled`,
+  // the latter means `true=enabled`. Absence of either → telemetry
+  // stays off. Also fast-path: when no DSN was provided at build
+  // time (debug builds), we never even read the toggle.
+  final optInRaw = await storage.read(key: telemetryOptInStorageKey);
+  final optedIn = optInRaw == 'true';
+  final telemetryEnabled = optedIn && _sentryDsn.isNotEmpty;
   await initSentry(
-    enabled: !optedOut,
+    enabled: telemetryEnabled,
     dsn: _sentryDsn,
     release: _appRelease,
     appRunner: () async {
@@ -75,8 +91,11 @@ void main() async {
       try {
         await container.read(notificationServiceProvider).init();
       } on Object catch (e, s) {
-        developer.log('main: NotificationService.init failed',
-            error: e, stackTrace: s);
+        developer.log(
+          'main: NotificationService.init failed',
+          error: e,
+          stackTrace: s,
+        );
       }
       // Fix for bugs.json Bug #2 (battery-alert monitor never
       // subscribed): wire a top-level listener that, on every low-
@@ -95,11 +114,6 @@ void main() async {
 
 /// Subscribes the top-level [BatteryMonitorService] to trigger a
 /// background battery-alert session when the threshold is crossed.
-///
-/// Fix for bugs.json Bug #2: previously nothing in `lib/` subscribed
-/// to `onLowBattery`, so `SessionController.startBatteryAlertSession`
-/// was unreachable. This watcher starts monitoring with the user's
-/// configured threshold and, on fire, invokes the controller.
 Future<void> _startBatteryAlertWatcher(ProviderContainer container) async {
   try {
     final batteryRepo = container.read(batteryAlertRepositoryProvider);
@@ -107,7 +121,6 @@ Future<void> _startBatteryAlertWatcher(ProviderContainer container) async {
     final config = stored ?? const BatteryAlertConfig();
     if (!config.enabled) return;
     final monitor = container.read(batteryMonitorServiceProvider);
-    // Subscribe BEFORE start so we don't miss an immediate crossing.
     monitor.onLowBattery.listen((_) async {
       try {
         final current = (await batteryRepo.get()) ?? config;
@@ -116,13 +129,19 @@ Future<void> _startBatteryAlertWatcher(ProviderContainer container) async {
             .read(sessionControllerProvider.notifier)
             .startBatteryAlertSession(current);
       } on Object catch (e, s) {
-        developer.log('battery-alert session start failed',
-            error: e, stackTrace: s);
+        developer.log(
+          'battery-alert session start failed',
+          error: e,
+          stackTrace: s,
+        );
       }
     });
     await monitor.startMonitoring(thresholdPercent: config.thresholdPercent);
   } on Object catch (e, s) {
-    developer.log('battery-alert watcher init failed',
-        error: e, stackTrace: s);
+    developer.log(
+      'battery-alert watcher init failed',
+      error: e,
+      stackTrace: s,
+    );
   }
 }

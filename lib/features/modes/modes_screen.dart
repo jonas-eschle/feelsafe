@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
+import 'package:guardianangela/features/modes/widgets/mode_icon_library.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Modes list.
@@ -34,7 +35,7 @@ class ModesScreen extends ConsumerWidget {
                   final m = modes[i];
                   return ListTile(
                     key: ValueKey(m.id),
-                    leading: const Icon(Icons.tune),
+                    leading: Icon(iconForName(m.iconName) ?? Icons.tune),
                     title: Text(m.name),
                     subtitle: Text('${m.chainSteps.length} steps'),
                     onTap: () =>

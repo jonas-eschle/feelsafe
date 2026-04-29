@@ -22,6 +22,7 @@ export 'session_log.dart';
 export 'session_mode.dart';
 export 'stealth_config.dart';
 export 'step_config.dart';
+export 'tracking_point.dart';
 export 'trigger.dart';
 export 'user_profile.dart';
 export 'walk_session.dart';

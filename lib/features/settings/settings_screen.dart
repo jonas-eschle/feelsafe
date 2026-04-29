@@ -31,8 +31,8 @@ class SettingsScreen extends ConsumerWidget {
           ),
           _NavTile(label: l.settingsSectionModes, route: RouteNames.modes),
           _NavTile(
-            label: l.settingsSectionDistressChains,
-            route: RouteNames.distressChains,
+            label: l.settingsSectionDistressModes,
+            route: RouteNames.distressModes,
           ),
           const Divider(),
           _NavTile(

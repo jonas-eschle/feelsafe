@@ -34,6 +34,79 @@ enum HardwarePattern {
   longPress,
 }
 
+/// Per-step override for GPS logging on a `ChainStep` (spec 11
+/// §DE-2).
+///
+/// *Why:* GPS logging is configured globally via
+/// `AppDefaults.gpsLogging.enabled`. Some users want it on for
+/// escalation steps (SMS, calls) but off for check-in steps to save
+/// battery — or vice versa. A tri-state per-step switch lets each
+/// step opt in or out without touching the global default.
+///
+/// Resolution order at runtime — innermost wins:
+///   1. `step.config.logGps` (per-instance)
+///   2. `EventDefaults.forType(stepType).logGps` (per-type default)
+///   3. `AppDefaults.gpsLogging.enabled` (global)
+///
+/// See [resolveLogGps] for the helper.
+enum LogGpsOverride {
+  /// Defer to the next layer in the resolution order.
+  useDefault,
+
+  /// Force GPS logging on for this step regardless of any default.
+  forceOn,
+
+  /// Skip GPS logging for this step regardless of any default.
+  forceOff,
+}
+
+/// Resolves the effective GPS-logging boolean for a step (DE-2).
+///
+/// [stepValue] is `step.config.logGps`; [defaultsValue] is the
+/// per-type default from `EventDefaults.forType(...).logGps`;
+/// [globalEnabled] is `AppDefaults.gpsLogging.enabled`.
+///
+/// Returns `true` iff the effective override resolves to "GPS on".
+/// The first non-`useDefault` value wins; if every layer says
+/// `useDefault`, [globalEnabled] decides.
+bool resolveLogGps(
+  LogGpsOverride? stepValue,
+  LogGpsOverride? defaultsValue,
+  bool globalEnabled,
+) {
+  for (final v in [stepValue, defaultsValue]) {
+    switch (v) {
+      case LogGpsOverride.forceOn:
+        return true;
+      case LogGpsOverride.forceOff:
+        return false;
+      case LogGpsOverride.useDefault:
+      case null:
+        continue;
+    }
+  }
+  return globalEnabled;
+}
+
+/// JSON helper for [LogGpsOverride]. Defaults to
+/// [LogGpsOverride.useDefault] when missing or unrecognised — *Why:*
+/// persisted shape predates DE-2, so old configs round-trip as "use
+/// default".
+LogGpsOverride logGpsOverrideFromJson(Object? raw) => switch (raw) {
+  'default' || 'useDefault' || null => LogGpsOverride.useDefault,
+  'true' || 'forceOn' => LogGpsOverride.forceOn,
+  'false' || 'forceOff' => LogGpsOverride.forceOff,
+  _ => throw ArgumentError.value(raw, 'logGps', 'unknown LogGpsOverride'),
+};
+
+/// Persisted name for [LogGpsOverride] — the spec's tri-state
+/// shape: `"default"` / `"true"` / `"false"`.
+String logGpsOverrideToJson(LogGpsOverride v) => switch (v) {
+  LogGpsOverride.useDefault => 'default',
+  LogGpsOverride.forceOn => 'true',
+  LogGpsOverride.forceOff => 'false',
+};
+
 /// How an `SmsContactConfig` step chooses target contacts.
 enum SmsContactSelection {
   /// Every channel-capable contact is messaged (dynamic set).
@@ -57,6 +130,13 @@ enum SmsContactSelection {
 sealed class StepConfig {
   /// Const base constructor — no fields on the root.
   const StepConfig();
+
+  /// Per-step GPS-logging override (DE-2). Every concrete subtype
+  /// holds its own `final LogGpsOverride logGps` field defaulted to
+  /// [LogGpsOverride.useDefault]; this abstract getter unifies
+  /// access so callers (and [resolveLogGps]) need not switch on the
+  /// runtime type.
+  LogGpsOverride get logGps;
 
   /// Serializes this config to a JSON map including a `type`
   /// discriminator so `fromJson` can pick the correct subclass.
@@ -110,12 +190,15 @@ final class HoldButtonConfig extends StepConfig {
   /// [vibrateOnRelease] — buzz on release; defaults to true.
   /// [soundOnRelease] — play a sound on release; defaults to false.
   /// [blackScreenMode] — render on a black overlay; defaults to false.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const HoldButtonConfig({
     this.releaseSensitivity = 1.0,
     this.holdStyle = HoldStyle.largeButton,
     this.vibrateOnRelease = true,
     this.soundOnRelease = false,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `HoldButtonConfig` from JSON.
@@ -127,6 +210,7 @@ final class HoldButtonConfig extends StepConfig {
         vibrateOnRelease: json['vibrateOnRelease'] as bool? ?? true,
         soundOnRelease: json['soundOnRelease'] as bool? ?? false,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// Seconds the engine waits after a release to confirm the user
@@ -145,6 +229,11 @@ final class HoldButtonConfig extends StepConfig {
   /// Whether the step renders on a black screen. Defaults to false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2). Defaults to
+  /// [LogGpsOverride.useDefault].
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   HoldButtonConfig copyWith({
     double? releaseSensitivity,
@@ -152,12 +241,14 @@ final class HoldButtonConfig extends StepConfig {
     bool? vibrateOnRelease,
     bool? soundOnRelease,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => HoldButtonConfig(
     releaseSensitivity: releaseSensitivity ?? this.releaseSensitivity,
     holdStyle: holdStyle ?? this.holdStyle,
     vibrateOnRelease: vibrateOnRelease ?? this.vibrateOnRelease,
     soundOnRelease: soundOnRelease ?? this.soundOnRelease,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -168,6 +259,7 @@ final class HoldButtonConfig extends StepConfig {
     'vibrateOnRelease': vibrateOnRelease,
     'soundOnRelease': soundOnRelease,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -178,7 +270,8 @@ final class HoldButtonConfig extends StepConfig {
           other.holdStyle == holdStyle &&
           other.vibrateOnRelease == vibrateOnRelease &&
           other.soundOnRelease == soundOnRelease &&
-          other.blackScreenMode == blackScreenMode;
+          other.blackScreenMode == blackScreenMode &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -187,6 +280,7 @@ final class HoldButtonConfig extends StepConfig {
     vibrateOnRelease,
     soundOnRelease,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -195,7 +289,8 @@ final class HoldButtonConfig extends StepConfig {
       'holdStyle: $holdStyle, '
       'vibrateOnRelease: $vibrateOnRelease, '
       'soundOnRelease: $soundOnRelease, '
-      'blackScreenMode: $blackScreenMode)';
+      'blackScreenMode: $blackScreenMode, '
+      'logGps: $logGps)';
 }
 
 HoldStyle _holdStyleFromJson(Object? raw) => switch (raw) {
@@ -226,6 +321,8 @@ final class DisguisedReminderConfig extends StepConfig {
   /// the current retry cycle; defaults to true per D-UX-4.
   /// [blackScreenMode] — render the notification on a black overlay;
   /// defaults to false.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const DisguisedReminderConfig({
     this.templateId,
     this.intervalSeconds = 60,
@@ -233,6 +330,7 @@ final class DisguisedReminderConfig extends StepConfig {
     this.randomizeTemplateOrder = false,
     this.resetOnEarlyCheckIn = true,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `DisguisedReminderConfig` from JSON.
@@ -247,6 +345,7 @@ final class DisguisedReminderConfig extends StepConfig {
         resetOnEarlyCheckIn:
             json['resetOnEarlyCheckIn'] as bool? ?? true,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// Optional id of a specific `ReminderTemplate` to fire for this
@@ -271,6 +370,10 @@ final class DisguisedReminderConfig extends StepConfig {
   /// false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   DisguisedReminderConfig copyWith({
     String? templateId,
@@ -279,6 +382,7 @@ final class DisguisedReminderConfig extends StepConfig {
     bool? randomizeTemplateOrder,
     bool? resetOnEarlyCheckIn,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => DisguisedReminderConfig(
     templateId: templateId ?? this.templateId,
     intervalSeconds: intervalSeconds ?? this.intervalSeconds,
@@ -288,6 +392,7 @@ final class DisguisedReminderConfig extends StepConfig {
     resetOnEarlyCheckIn:
         resetOnEarlyCheckIn ?? this.resetOnEarlyCheckIn,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -299,6 +404,7 @@ final class DisguisedReminderConfig extends StepConfig {
     'randomizeTemplateOrder': randomizeTemplateOrder,
     'resetOnEarlyCheckIn': resetOnEarlyCheckIn,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -310,7 +416,8 @@ final class DisguisedReminderConfig extends StepConfig {
           other.randomizeInterval == randomizeInterval &&
           other.randomizeTemplateOrder == randomizeTemplateOrder &&
           other.resetOnEarlyCheckIn == resetOnEarlyCheckIn &&
-          other.blackScreenMode == blackScreenMode;
+          other.blackScreenMode == blackScreenMode &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -320,6 +427,7 @@ final class DisguisedReminderConfig extends StepConfig {
     randomizeTemplateOrder,
     resetOnEarlyCheckIn,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -343,12 +451,15 @@ final class HardwareButtonConfig extends StepConfig {
   /// [pressWindowMs] — window for repeat presses; defaults to 500.
   /// [longPressDurationSeconds] — threshold for long-press pattern;
   /// defaults to 2.0.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const HardwareButtonConfig({
     this.buttonType = ButtonType.volumeUp,
     this.pattern = HardwarePattern.repeatPress,
     this.pressCount = 5,
     this.pressWindowMs = 500,
     this.longPressDurationSeconds = 2.0,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `HardwareButtonConfig` from JSON.
@@ -360,6 +471,7 @@ final class HardwareButtonConfig extends StepConfig {
         pressWindowMs: (json['pressWindowMs'] as num?)?.toInt() ?? 500,
         longPressDurationSeconds:
             (json['longPressDurationSeconds'] as num?)?.toDouble() ?? 2.0,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// The physical button to watch. Defaults to `ButtonType.volumeUp`.
@@ -379,6 +491,10 @@ final class HardwareButtonConfig extends StepConfig {
   /// Long-press duration threshold in seconds. Defaults to 2.0.
   final double longPressDurationSeconds;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   HardwareButtonConfig copyWith({
     ButtonType? buttonType,
@@ -386,6 +502,7 @@ final class HardwareButtonConfig extends StepConfig {
     int? pressCount,
     int? pressWindowMs,
     double? longPressDurationSeconds,
+    LogGpsOverride? logGps,
   }) => HardwareButtonConfig(
     buttonType: buttonType ?? this.buttonType,
     pattern: pattern ?? this.pattern,
@@ -393,6 +510,7 @@ final class HardwareButtonConfig extends StepConfig {
     pressWindowMs: pressWindowMs ?? this.pressWindowMs,
     longPressDurationSeconds:
         longPressDurationSeconds ?? this.longPressDurationSeconds,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -403,6 +521,7 @@ final class HardwareButtonConfig extends StepConfig {
     'pressCount': pressCount,
     'pressWindowMs': pressWindowMs,
     'longPressDurationSeconds': longPressDurationSeconds,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -413,7 +532,8 @@ final class HardwareButtonConfig extends StepConfig {
           other.pattern == pattern &&
           other.pressCount == pressCount &&
           other.pressWindowMs == pressWindowMs &&
-          other.longPressDurationSeconds == longPressDurationSeconds;
+          other.longPressDurationSeconds == longPressDurationSeconds &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -422,6 +542,7 @@ final class HardwareButtonConfig extends StepConfig {
     pressCount,
     pressWindowMs,
     longPressDurationSeconds,
+    logGps,
   );
 
   @override
@@ -429,7 +550,8 @@ final class HardwareButtonConfig extends StepConfig {
       'HardwareButtonConfig(buttonType: $buttonType, '
       'pattern: $pattern, pressCount: $pressCount, '
       'pressWindowMs: $pressWindowMs, '
-      'longPressDurationSeconds: $longPressDurationSeconds)';
+      'longPressDurationSeconds: $longPressDurationSeconds, '
+      'logGps: $logGps)';
 }
 
 ButtonType _buttonTypeFromJson(Object? raw) => switch (raw) {
@@ -453,13 +575,20 @@ final class CountdownWarningConfig extends StepConfig {
   ///
   /// [vibrate] — buzz during the countdown; defaults to true.
   /// [playTone] — play a warning tone; defaults to false.
-  const CountdownWarningConfig({this.vibrate = true, this.playTone = false});
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
+  const CountdownWarningConfig({
+    this.vibrate = true,
+    this.playTone = false,
+    this.logGps = LogGpsOverride.useDefault,
+  });
 
   /// Deserializes a `CountdownWarningConfig` from JSON.
   factory CountdownWarningConfig.fromJson(Map<String, Object?> json) =>
       CountdownWarningConfig(
         vibrate: json['vibrate'] as bool? ?? true,
         playTone: json['playTone'] as bool? ?? false,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// Whether to vibrate during the countdown. Defaults to true.
@@ -469,18 +598,27 @@ final class CountdownWarningConfig extends StepConfig {
   /// to false.
   final bool playTone;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
-  CountdownWarningConfig copyWith({bool? vibrate, bool? playTone}) =>
-      CountdownWarningConfig(
-        vibrate: vibrate ?? this.vibrate,
-        playTone: playTone ?? this.playTone,
-      );
+  CountdownWarningConfig copyWith({
+    bool? vibrate,
+    bool? playTone,
+    LogGpsOverride? logGps,
+  }) => CountdownWarningConfig(
+    vibrate: vibrate ?? this.vibrate,
+    playTone: playTone ?? this.playTone,
+    logGps: logGps ?? this.logGps,
+  );
 
   @override
   Map<String, Object?> toJson() => {
     'type': 'countdownWarning',
     'vibrate': vibrate,
     'playTone': playTone,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -488,42 +626,78 @@ final class CountdownWarningConfig extends StepConfig {
       identical(this, other) ||
       other is CountdownWarningConfig &&
           other.vibrate == vibrate &&
-          other.playTone == playTone;
+          other.playTone == playTone &&
+          other.logGps == logGps;
 
   @override
-  int get hashCode => Object.hash(vibrate, playTone);
+  int get hashCode => Object.hash(vibrate, playTone, logGps);
 
   @override
   String toString() =>
-      'CountdownWarningConfig(vibrate: $vibrate, playTone: $playTone)';
+      'CountdownWarningConfig(vibrate: $vibrate, '
+      'playTone: $playTone, logGps: $logGps)';
 }
 
 /// Visual style for a `FakeCallConfig` step.
 ///
 /// Spec 03 §FakeCallConfig.
+///
+/// *Why this enum set ({android, ios, whatsapp, telegram, signal} —
+/// dropped `standard`/`videoCall`/`ring`):* these five are the
+/// real-world call screens the engine renders faithfully.
+/// `standard` was a non-disguise duplicate of `android`/`ios`;
+/// `videoCall` was never implementable without front-camera capture
+/// (out of scope); `ring` was a behavior, not a UI style.
 enum CallStyle {
-  /// Standard phone-call UI.
-  standard,
+  /// Material 3 incoming-call screen (default Android lockscreen).
+  android,
 
-  /// Video-call UI (camera-style full-screen).
-  videoCall,
+  /// iOS-style lockscreen with horizontal slide-to-answer.
+  ios,
 
-  /// Simple ring-only (no UI, just ringtone).
-  ring,
+  /// WhatsApp-themed incoming call screen (green Material).
+  whatsapp,
+
+  /// Telegram-themed incoming call screen.
+  telegram,
+
+  /// Signal-themed incoming call screen.
+  signal,
 }
 
-/// Voice output behavior when the user answers a fake call.
+/// What plays when a fake call is answered.
 ///
 /// Spec 03 §FakeCallConfig.
-enum VoiceOutputMode {
-  /// Speak a dynamic TTS phrase.
-  tts,
-
-  /// Play a pre-recorded audio asset.
+///
+/// *Why split from the old `voiceOutputMode`:* what plays and where
+/// it routes are orthogonal — bundling them into one enum forced
+/// impossible combinations like "speaker but no audio".
+enum VoiceSource {
+  /// Play a pre-recorded audio asset (or built-in per-locale fallback
+  /// when no path is set).
   recording,
 
-  /// Silent — ring only.
+  /// Speak a dynamic TTS phrase via `flutter_tts`.
+  tts,
+
+  /// Silent — ring only; the user pretends to talk.
   none,
+}
+
+/// Where the fake-call audio is routed.
+///
+/// Spec 03 §FakeCallConfig.
+///
+/// *Why split from the old `voiceOutputMode`:* lets advanced users
+/// pick `tts` on `speaker` or `recording` on `earpiece`
+/// independently — useful when the user wants nearby parties to hear
+/// "the call" (speaker) but is using a synthesized voice (tts).
+enum VoiceRoute {
+  /// Route to the earpiece (private phone-call feel).
+  earpiece,
+
+  /// Route to the loudspeaker.
+  speaker,
 }
 
 /// Configuration for a `fakeCall` step.
@@ -541,27 +715,33 @@ final class FakeCallConfig extends StepConfig {
   /// recording played on answer.
   /// [declineIsSafe] — whether declining counts as disarm; defaults
   /// to TRUE per D-SAFETY-7 (minimize false positives).
-  /// [callStyle] — visual style; defaults to [CallStyle.standard].
+  /// [callStyle] — visual style; defaults to [CallStyle.android].
   /// [callerPhotoPath] — optional asset path for the caller photo.
-  /// [voiceOutputMode] — voice behavior on answer; defaults to
-  /// [VoiceOutputMode.tts].
+  /// [voiceSource] — what plays on answer; defaults to
+  /// [VoiceSource.tts].
+  /// [voiceRoute] — where the audio routes; defaults to
+  /// [VoiceRoute.earpiece].
   /// [ringDurationSeconds] — how long the ringtone plays; defaults
   /// to 30.
   /// [declineWithDistressHoldSeconds] — holding the decline button N
-  /// seconds fires distress chain; defaults to 2.0.
+  /// seconds fires distress chain; defaults to 5.0 (Q21).
   /// [blackScreenMode] — renders UI under a black overlay;
   /// defaults to false.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const FakeCallConfig({
     this.callerName = 'Angela',
     this.ringtoneAsset,
     this.voiceRecordingAsset,
     this.declineIsSafe = true,
-    this.callStyle = CallStyle.standard,
+    this.callStyle = CallStyle.android,
     this.callerPhotoPath,
-    this.voiceOutputMode = VoiceOutputMode.tts,
+    this.voiceSource = VoiceSource.tts,
+    this.voiceRoute = VoiceRoute.earpiece,
     this.ringDurationSeconds = 30,
-    this.declineWithDistressHoldSeconds = 2.0,
+    this.declineWithDistressHoldSeconds = 5.0,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `FakeCallConfig` from JSON.
@@ -578,13 +758,15 @@ final class FakeCallConfig extends StepConfig {
     declineIsSafe: json['declineIsSafe'] as bool? ?? true,
     callStyle: _callStyleFromJson(json['callStyle']),
     callerPhotoPath: json['callerPhotoPath'] as String?,
-    voiceOutputMode: _voiceOutputModeFromJson(json['voiceOutputMode']),
+    voiceSource: _voiceSourceFromJson(json['voiceSource']),
+    voiceRoute: _voiceRouteFromJson(json['voiceRoute']),
     ringDurationSeconds:
         (json['ringDurationSeconds'] as num?)?.toInt() ?? 30,
     declineWithDistressHoldSeconds:
         (json['declineWithDistressHoldSeconds'] as num?)?.toDouble() ??
-        2.0,
+        5.0,
     blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+    logGps: logGpsOverrideFromJson(json['logGps']),
   );
 
   /// Name shown as the incoming caller. Defaults to "Angela". May be
@@ -603,15 +785,19 @@ final class FakeCallConfig extends StepConfig {
   /// disarm. Defaults to true per D-SAFETY-7.
   final bool declineIsSafe;
 
-  /// Visual presentation style. Defaults to [CallStyle.standard].
+  /// Visual presentation style. Defaults to [CallStyle.android].
   final CallStyle callStyle;
 
   /// Optional asset path for the caller photo. Defaults to null.
   final String? callerPhotoPath;
 
-  /// Voice output behavior on answer. Defaults to
-  /// [VoiceOutputMode.tts].
-  final VoiceOutputMode voiceOutputMode;
+  /// What plays when the call is answered. Defaults to
+  /// [VoiceSource.tts].
+  final VoiceSource voiceSource;
+
+  /// Where the audio routes when the call is answered. Defaults to
+  /// [VoiceRoute.earpiece] (private phone-call feel).
+  final VoiceRoute voiceRoute;
 
   /// How long the ringtone plays, in seconds. Defaults to 30.
   final int ringDurationSeconds;
@@ -624,6 +810,10 @@ final class FakeCallConfig extends StepConfig {
   /// surface). Defaults to false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   FakeCallConfig copyWith({
     String? callerName,
@@ -634,10 +824,12 @@ final class FakeCallConfig extends StepConfig {
     CallStyle? callStyle,
     String? callerPhotoPath,
     bool clearCallerPhotoPath = false,
-    VoiceOutputMode? voiceOutputMode,
+    VoiceSource? voiceSource,
+    VoiceRoute? voiceRoute,
     int? ringDurationSeconds,
     double? declineWithDistressHoldSeconds,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => FakeCallConfig(
     callerName: clearCallerName ? null : (callerName ?? this.callerName),
     ringtoneAsset: ringtoneAsset ?? this.ringtoneAsset,
@@ -647,12 +839,14 @@ final class FakeCallConfig extends StepConfig {
     callerPhotoPath: clearCallerPhotoPath
         ? null
         : (callerPhotoPath ?? this.callerPhotoPath),
-    voiceOutputMode: voiceOutputMode ?? this.voiceOutputMode,
+    voiceSource: voiceSource ?? this.voiceSource,
+    voiceRoute: voiceRoute ?? this.voiceRoute,
     ringDurationSeconds: ringDurationSeconds ?? this.ringDurationSeconds,
     declineWithDistressHoldSeconds:
         declineWithDistressHoldSeconds ??
         this.declineWithDistressHoldSeconds,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -664,10 +858,12 @@ final class FakeCallConfig extends StepConfig {
     'declineIsSafe': declineIsSafe,
     'callStyle': callStyle.name,
     'callerPhotoPath': callerPhotoPath,
-    'voiceOutputMode': voiceOutputMode.name,
+    'voiceSource': voiceSource.name,
+    'voiceRoute': voiceRoute.name,
     'ringDurationSeconds': ringDurationSeconds,
     'declineWithDistressHoldSeconds': declineWithDistressHoldSeconds,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -680,11 +876,13 @@ final class FakeCallConfig extends StepConfig {
           other.declineIsSafe == declineIsSafe &&
           other.callStyle == callStyle &&
           other.callerPhotoPath == callerPhotoPath &&
-          other.voiceOutputMode == voiceOutputMode &&
+          other.voiceSource == voiceSource &&
+          other.voiceRoute == voiceRoute &&
           other.ringDurationSeconds == ringDurationSeconds &&
           other.declineWithDistressHoldSeconds ==
               declineWithDistressHoldSeconds &&
-          other.blackScreenMode == blackScreenMode;
+          other.blackScreenMode == blackScreenMode &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -694,10 +892,12 @@ final class FakeCallConfig extends StepConfig {
     declineIsSafe,
     callStyle,
     callerPhotoPath,
-    voiceOutputMode,
+    voiceSource,
+    voiceRoute,
     ringDurationSeconds,
     declineWithDistressHoldSeconds,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -706,29 +906,39 @@ final class FakeCallConfig extends StepConfig {
       'ringtoneAsset: $ringtoneAsset, '
       'voiceRecordingAsset: $voiceRecordingAsset, '
       'declineIsSafe: $declineIsSafe, callStyle: $callStyle, '
-      'voiceOutputMode: $voiceOutputMode, '
+      'voiceSource: $voiceSource, voiceRoute: $voiceRoute, '
       'ringDurationSeconds: $ringDurationSeconds, '
-      'blackScreenMode: $blackScreenMode)';
+      'blackScreenMode: $blackScreenMode, '
+      'logGps: $logGps)';
 }
 
 CallStyle _callStyleFromJson(Object? raw) => switch (raw) {
-  'standard' => CallStyle.standard,
-  'videoCall' => CallStyle.videoCall,
-  'ring' => CallStyle.ring,
-  null => CallStyle.standard,
+  'android' => CallStyle.android,
+  'ios' => CallStyle.ios,
+  'whatsapp' => CallStyle.whatsapp,
+  'telegram' => CallStyle.telegram,
+  'signal' => CallStyle.signal,
+  null => CallStyle.android,
   _ => throw ArgumentError.value(raw, 'callStyle', 'unknown CallStyle'),
 };
 
-VoiceOutputMode _voiceOutputModeFromJson(Object? raw) => switch (raw) {
-  'tts' => VoiceOutputMode.tts,
-  'recording' => VoiceOutputMode.recording,
-  'none' => VoiceOutputMode.none,
-  null => VoiceOutputMode.tts,
+VoiceSource _voiceSourceFromJson(Object? raw) => switch (raw) {
+  'recording' => VoiceSource.recording,
+  'tts' => VoiceSource.tts,
+  'none' => VoiceSource.none,
+  null => VoiceSource.tts,
   _ => throw ArgumentError.value(
     raw,
-    'voiceOutputMode',
-    'unknown VoiceOutputMode',
+    'voiceSource',
+    'unknown VoiceSource',
   ),
+};
+
+VoiceRoute _voiceRouteFromJson(Object? raw) => switch (raw) {
+  'earpiece' => VoiceRoute.earpiece,
+  'speaker' => VoiceRoute.speaker,
+  null => VoiceRoute.earpiece,
+  _ => throw ArgumentError.value(raw, 'voiceRoute', 'unknown VoiceRoute'),
 };
 
 /// Configuration for an `smsContact` step.
@@ -752,6 +962,8 @@ final class SmsContactConfig extends StepConfig {
   /// [messageTemplate] — optional custom message template.
   /// [blackScreenMode] — render the step on a black screen; defaults
   /// to false.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const SmsContactConfig({
     this.contactIds,
     this.contactSelection = SmsContactSelection.allContacts,
@@ -763,6 +975,7 @@ final class SmsContactConfig extends StepConfig {
     this.recordDurationSeconds = 15,
     this.messageTemplate,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes an `SmsContactConfig` from JSON.
@@ -782,6 +995,7 @@ final class SmsContactConfig extends StepConfig {
           (json['recordDurationSeconds'] as num?)?.toInt() ?? 15,
       messageTemplate: json['messageTemplate'] as String?,
       blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+      logGps: logGpsOverrideFromJson(json['logGps']),
     );
   }
 
@@ -822,6 +1036,10 @@ final class SmsContactConfig extends StepConfig {
   /// to false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   ///
   /// Fix for bugs.json historical Warn (copy-with clear patterns):
@@ -840,6 +1058,7 @@ final class SmsContactConfig extends StepConfig {
     int? recordDurationSeconds,
     String? messageTemplate,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => SmsContactConfig(
     contactIds: clearContactIds ? null : (contactIds ?? this.contactIds),
     contactSelection: contactSelection ?? this.contactSelection,
@@ -851,6 +1070,7 @@ final class SmsContactConfig extends StepConfig {
     recordDurationSeconds: recordDurationSeconds ?? this.recordDurationSeconds,
     messageTemplate: messageTemplate ?? this.messageTemplate,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -866,6 +1086,7 @@ final class SmsContactConfig extends StepConfig {
     'recordDurationSeconds': recordDurationSeconds,
     'messageTemplate': messageTemplate,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -881,7 +1102,8 @@ final class SmsContactConfig extends StepConfig {
         other.autoRecordVideo == autoRecordVideo &&
         other.recordDurationSeconds == recordDurationSeconds &&
         other.messageTemplate == messageTemplate &&
-        other.blackScreenMode == blackScreenMode;
+        other.blackScreenMode == blackScreenMode &&
+        other.logGps == logGps;
   }
 
   @override
@@ -896,6 +1118,7 @@ final class SmsContactConfig extends StepConfig {
     recordDurationSeconds,
     messageTemplate,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -939,12 +1162,15 @@ final class PhoneCallContactConfig extends StepConfig {
   /// [preSmsIncludeLocation] — include location in the pre-SMS;
   /// defaults to true.
   /// [preSmsMessage] — optional custom pre-SMS message.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const PhoneCallContactConfig({
     this.contactId,
     this.alternativeContactIds = const [],
     this.preSendSms = false,
     this.preSmsIncludeLocation = true,
     this.preSmsMessage,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `PhoneCallContactConfig` from JSON.
@@ -958,6 +1184,7 @@ final class PhoneCallContactConfig extends StepConfig {
       preSendSms: json['preSendSms'] as bool? ?? false,
       preSmsIncludeLocation: json['preSmsIncludeLocation'] as bool? ?? true,
       preSmsMessage: json['preSmsMessage'] as String?,
+      logGps: logGpsOverrideFromJson(json['logGps']),
     );
   }
 
@@ -978,6 +1205,10 @@ final class PhoneCallContactConfig extends StepConfig {
   /// Optional custom pre-SMS body. Defaults to null.
   final String? preSmsMessage;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   PhoneCallContactConfig copyWith({
     String? contactId,
@@ -985,12 +1216,14 @@ final class PhoneCallContactConfig extends StepConfig {
     bool? preSendSms,
     bool? preSmsIncludeLocation,
     String? preSmsMessage,
+    LogGpsOverride? logGps,
   }) => PhoneCallContactConfig(
     contactId: contactId ?? this.contactId,
     alternativeContactIds: alternativeContactIds ?? this.alternativeContactIds,
     preSendSms: preSendSms ?? this.preSendSms,
     preSmsIncludeLocation: preSmsIncludeLocation ?? this.preSmsIncludeLocation,
     preSmsMessage: preSmsMessage ?? this.preSmsMessage,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -1001,6 +1234,7 @@ final class PhoneCallContactConfig extends StepConfig {
     'preSendSms': preSendSms,
     'preSmsIncludeLocation': preSmsIncludeLocation,
     'preSmsMessage': preSmsMessage,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -1011,7 +1245,8 @@ final class PhoneCallContactConfig extends StepConfig {
         _listEquals(other.alternativeContactIds, alternativeContactIds) &&
         other.preSendSms == preSendSms &&
         other.preSmsIncludeLocation == preSmsIncludeLocation &&
-        other.preSmsMessage == preSmsMessage;
+        other.preSmsMessage == preSmsMessage &&
+        other.logGps == logGps;
   }
 
   @override
@@ -1021,13 +1256,14 @@ final class PhoneCallContactConfig extends StepConfig {
     preSendSms,
     preSmsIncludeLocation,
     preSmsMessage,
+    logGps,
   );
 
   @override
   String toString() =>
       'PhoneCallContactConfig(contactId: $contactId, '
       'alternativeContactIds: $alternativeContactIds, '
-      'preSendSms: $preSendSms)';
+      'preSendSms: $preSendSms, logGps: $logGps)';
 }
 
 /// Sound choice for a `LoudAlarmConfig` step.
@@ -1067,6 +1303,8 @@ final class LoudAlarmConfig extends StepConfig {
   /// to 500.
   /// [blackScreenMode] — render behind a black overlay; defaults to
   /// false.
+  /// [logGps] — per-step GPS logging override (DE-2); defaults to
+  /// [LogGpsOverride.useDefault].
   const LoudAlarmConfig({
     this.flashScreen = false,
     this.flashSpeed = 0.5,
@@ -1077,6 +1315,7 @@ final class LoudAlarmConfig extends StepConfig {
     this.flashLight = true,
     this.flashSpeedMs = 500,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `LoudAlarmConfig` from JSON.
@@ -1091,6 +1330,7 @@ final class LoudAlarmConfig extends StepConfig {
         flashLight: json['flashLight'] as bool? ?? true,
         flashSpeedMs: (json['flashSpeedMs'] as num?)?.toInt() ?? 500,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// Whether the screen strobes during the alarm. Defaults to false
@@ -1124,6 +1364,10 @@ final class LoudAlarmConfig extends StepConfig {
   /// Render under a black overlay (stealth alarm). Defaults to false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   LoudAlarmConfig copyWith({
     bool? flashScreen,
@@ -1135,6 +1379,7 @@ final class LoudAlarmConfig extends StepConfig {
     bool? flashLight,
     int? flashSpeedMs,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => LoudAlarmConfig(
     flashScreen: flashScreen ?? this.flashScreen,
     flashSpeed: flashSpeed ?? this.flashSpeed,
@@ -1145,6 +1390,7 @@ final class LoudAlarmConfig extends StepConfig {
     flashLight: flashLight ?? this.flashLight,
     flashSpeedMs: flashSpeedMs ?? this.flashSpeedMs,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -1159,6 +1405,7 @@ final class LoudAlarmConfig extends StepConfig {
     'flashLight': flashLight,
     'flashSpeedMs': flashSpeedMs,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -1173,7 +1420,8 @@ final class LoudAlarmConfig extends StepConfig {
           other.gradualVolume == gradualVolume &&
           other.flashLight == flashLight &&
           other.flashSpeedMs == flashSpeedMs &&
-          other.blackScreenMode == blackScreenMode;
+          other.blackScreenMode == blackScreenMode &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -1186,6 +1434,7 @@ final class LoudAlarmConfig extends StepConfig {
     flashLight,
     flashSpeedMs,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -1194,7 +1443,8 @@ final class LoudAlarmConfig extends StepConfig {
       'flashSpeed: $flashSpeed, maxVolume: $maxVolume, '
       'volume: $volume, soundChoice: $soundChoice, '
       'flashLight: $flashLight, flashSpeedMs: $flashSpeedMs, '
-      'blackScreenMode: $blackScreenMode)';
+      'blackScreenMode: $blackScreenMode, '
+      'logGps: $logGps)';
 }
 
 LoudAlarmSound _loudAlarmSoundFromJson(Object? raw) => switch (raw) {
@@ -1236,6 +1486,7 @@ final class CallEmergencyConfig extends StepConfig {
     this.sendLocationSmsFirst = true,
     this.confirmationDurationSeconds = 5,
     this.blackScreenMode = false,
+    this.logGps = LogGpsOverride.useDefault,
   });
 
   /// Deserializes a `CallEmergencyConfig` from JSON.
@@ -1249,6 +1500,7 @@ final class CallEmergencyConfig extends StepConfig {
         confirmationDurationSeconds:
             (json['confirmationDurationSeconds'] as num?)?.toInt() ?? 5,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
+        logGps: logGpsOverrideFromJson(json['logGps']),
       );
 
   /// Per-step override of the global emergency number. Defaults to
@@ -1271,6 +1523,10 @@ final class CallEmergencyConfig extends StepConfig {
   /// false.
   final bool blackScreenMode;
 
+  /// Per-step GPS-logging override (DE-2).
+  @override
+  final LogGpsOverride logGps;
+
   /// Returns a new config with the given fields replaced.
   ///
   /// Pass `clearEmergencyNumber: true` to explicitly set
@@ -1282,6 +1538,7 @@ final class CallEmergencyConfig extends StepConfig {
     bool? sendLocationSmsFirst,
     int? confirmationDurationSeconds,
     bool? blackScreenMode,
+    LogGpsOverride? logGps,
   }) => CallEmergencyConfig(
     emergencyNumber: clearEmergencyNumber
         ? null
@@ -1292,6 +1549,7 @@ final class CallEmergencyConfig extends StepConfig {
     confirmationDurationSeconds:
         confirmationDurationSeconds ?? this.confirmationDurationSeconds,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
+    logGps: logGps ?? this.logGps,
   );
 
   @override
@@ -1302,6 +1560,7 @@ final class CallEmergencyConfig extends StepConfig {
     'sendLocationSmsFirst': sendLocationSmsFirst,
     'confirmationDurationSeconds': confirmationDurationSeconds,
     'blackScreenMode': blackScreenMode,
+    'logGps': logGpsOverrideToJson(logGps),
   };
 
   @override
@@ -1313,7 +1572,8 @@ final class CallEmergencyConfig extends StepConfig {
           other.sendLocationSmsFirst == sendLocationSmsFirst &&
           other.confirmationDurationSeconds ==
               confirmationDurationSeconds &&
-          other.blackScreenMode == blackScreenMode;
+          other.blackScreenMode == blackScreenMode &&
+          other.logGps == logGps;
 
   @override
   int get hashCode => Object.hash(
@@ -1322,6 +1582,7 @@ final class CallEmergencyConfig extends StepConfig {
     sendLocationSmsFirst,
     confirmationDurationSeconds,
     blackScreenMode,
+    logGps,
   );
 
   @override
@@ -1330,7 +1591,8 @@ final class CallEmergencyConfig extends StepConfig {
       'showConfirmation: $showConfirmation, '
       'sendLocationSmsFirst: $sendLocationSmsFirst, '
       'confirmationDurationSeconds: $confirmationDurationSeconds, '
-      'blackScreenMode: $blackScreenMode)';
+      'blackScreenMode: $blackScreenMode, '
+      'logGps: $logGps)';
 }
 
 bool _listEquals<T>(List<T>? a, List<T>? b) {

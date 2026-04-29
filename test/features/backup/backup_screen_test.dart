@@ -62,6 +62,12 @@ void main() {
       child: const BackupScreen(),
     ));
     await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(FilledButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
     check(find.byType(AlertDialog).evaluate().length).equals(1);
@@ -73,6 +79,12 @@ void main() {
       overrides: _allRepoOverrides(),
       child: const BackupScreen(),
     ));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(FilledButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
@@ -90,6 +102,12 @@ void main() {
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'pass');
     await tester.pump();
+    await tester.dragUntilVisible(
+      find.byType(FilledButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
     // Encrypted envelope contains "encrypted": true.
@@ -103,6 +121,12 @@ void main() {
       child: const BackupScreen(),
     ));
     await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
     check(find.byType(AlertDialog).evaluate().length).equals(1);
@@ -114,6 +138,12 @@ void main() {
       overrides: _allRepoOverrides(),
       child: const BackupScreen(),
     ));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
@@ -146,6 +176,12 @@ void main() {
       child: const BackupScreen(),
     ));
     await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
     await tester.tap(find.widgetWithText(TextButton, 'Cancel'));
@@ -159,6 +195,12 @@ void main() {
       overrides: _allRepoOverrides(),
       child: const BackupScreen(),
     ));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
@@ -181,6 +223,12 @@ void main() {
       child: const BackupScreen(),
     ));
     await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
     await tester.enterText(
@@ -201,6 +249,12 @@ void main() {
       overrides: _allRepoOverrides(),
       child: const BackupScreen(),
     ));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();
@@ -230,6 +284,12 @@ void main() {
       overrides: _allRepoOverrides(),
       child: const BackupScreen(),
     ));
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(OutlinedButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(OutlinedButton));
     await tester.pumpAndSettle();

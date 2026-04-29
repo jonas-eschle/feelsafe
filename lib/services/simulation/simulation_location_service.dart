@@ -47,6 +47,12 @@ final class SimulationLocationService implements LocationServiceProtocol {
   }
 
   @override
+  Future<LocationPoint?> getCurrentPosition() async {
+    developer.log('[SIM] location.getCurrentPosition');
+    return null;
+  }
+
+  @override
   List<LocationPoint> get history {
     developer.log('[SIM] location.history');
     return const [];

@@ -37,6 +37,10 @@ final class SessionContext {
   /// [AppSettings.emergencyCallNumber]; used by [CallEmergencyStrategy]
   /// when a step's `CallEmergencyConfig.emergencyNumber` is null.
   /// Defaults to '112'. Fix for bugs.json Bug #7.
+  /// [gpsLoggingEnabled] — global GPS logging flag (DE-2). Sourced
+  /// from `mode.overrides.gpsLogging.enabled` when set, else
+  /// `AppDefaults.gpsLogging.enabled`. Defaults to `true` —
+  /// matches `GpsLoggingConfig`'s default.
   const SessionContext({
     this.mode,
     this.contacts = const [],
@@ -46,6 +50,7 @@ final class SessionContext {
     this.hadMedicalInfo = false,
     this.eventDefaults,
     this.emergencyNumber = '112',
+    this.gpsLoggingEnabled = true,
   });
 
   /// The active mode, if any.
@@ -74,6 +79,11 @@ final class SessionContext {
   /// [CallEmergencyStrategy] when the step's config has no
   /// per-step override. Defaults to '112'. Fix for bugs.json Bug #7.
   final String emergencyNumber;
+
+  /// Global GPS-logging master toggle for this session (DE-2).
+  /// Sourced from `mode.overrides.gpsLogging.enabled` when set, else
+  /// `AppDefaults.gpsLogging.enabled`. Defaults to `true`.
+  final bool gpsLoggingEnabled;
 
   /// Returns the config for [step]. If [step.config] is non-null,
   /// returns it. Otherwise, returns the matching default from
@@ -125,6 +135,7 @@ final class SessionContext {
     bool? hadMedicalInfo,
     EventDefaults? eventDefaults,
     String? emergencyNumber,
+    bool? gpsLoggingEnabled,
   }) => SessionContext(
     mode: mode ?? this.mode,
     contacts: contacts ?? this.contacts,
@@ -134,6 +145,7 @@ final class SessionContext {
     hadMedicalInfo: hadMedicalInfo ?? this.hadMedicalInfo,
     eventDefaults: eventDefaults ?? this.eventDefaults,
     emergencyNumber: emergencyNumber ?? this.emergencyNumber,
+    gpsLoggingEnabled: gpsLoggingEnabled ?? this.gpsLoggingEnabled,
   );
 
   @override
@@ -146,6 +158,7 @@ final class SessionContext {
     if (other.hadMedicalInfo != hadMedicalInfo) return false;
     if (other.eventDefaults != eventDefaults) return false;
     if (other.emergencyNumber != emergencyNumber) return false;
+    if (other.gpsLoggingEnabled != gpsLoggingEnabled) return false;
     if (other.contacts.length != contacts.length) return false;
     for (var i = 0; i < contacts.length; i++) {
       if (other.contacts[i] != contacts[i]) return false;
@@ -169,6 +182,7 @@ final class SessionContext {
     hadMedicalInfo,
     eventDefaults,
     emergencyNumber,
+    gpsLoggingEnabled,
   );
 
   @override

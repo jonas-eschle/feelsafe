@@ -15,6 +15,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/services/implementations/audio_service.dart';
 import 'package:guardianangela/services/implementations/battery_monitor_service.dart';
+import 'package:guardianangela/services/implementations/biometric_service.dart';
 import 'package:guardianangela/services/implementations/device_state_service.dart';
 import 'package:guardianangela/services/implementations/geofence_service.dart';
 import 'package:guardianangela/services/implementations/hardware_button_service.dart';
@@ -30,6 +31,7 @@ import 'package:guardianangela/services/implementations/vibration_service.dart';
 import 'package:guardianangela/services/implementations/wakelock_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
+import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/geofence_service_protocol.dart';
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
@@ -98,6 +100,12 @@ final audioServiceProvider = Provider<AudioServiceProtocol>(
 /// Simulation audio service.
 final simulationAudioProvider = Provider<AudioServiceProtocol>(
   (_) => SimulationAudioService(),
+);
+
+/// Real biometric authentication service. There is no simulation
+/// variant — biometric is a user-presence check, not a side effect.
+final biometricServiceProvider = Provider<BiometricServiceProtocol>(
+  (_) => BiometricService(),
 );
 
 /// Real vibration service.

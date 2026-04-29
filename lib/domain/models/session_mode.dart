@@ -25,6 +25,21 @@ final class SessionMode {
   /// [disarmTriggers] — triggers that auto-disarm the session.
   /// Defaults to empty.
   /// [overrides] — optional per-mode overrides of `AppDefaults`.
+  /// [trackingEnabled] — spec 11 §DE-3 (interval-based GPS recording).
+  /// When true, the engine starts a periodic GPS sampler at
+  /// [trackingIntervalSeconds] cadence and retains the last
+  /// [trackingBufferSize] fixes in memory. Default `false` (off; saves
+  /// battery for users that don't need background GPS). *Why off by
+  /// default:* sub-minute GPS sampling is a noticeable battery drain
+  /// — users opt in per mode.
+  /// [trackingIntervalSeconds] — spec 11 §DE-3. Sampling cadence in
+  /// seconds when [trackingEnabled]. Default 300 (5 min).
+  /// [trackingBufferSize] — spec 11 §DE-3. Maximum number of points
+  /// retained in the in-memory buffer. Default 50.
+  /// [iconName] — optional symbolic name of the Material icon to
+  /// use when rendering this mode (e.g. on the Home tile or in the
+  /// modes list). Resolved via `kModeIconLibrary` on the UI side.
+  /// `null` = the UI falls back to its name-based heuristic.
   const SessionMode({
     required this.id,
     required this.name,
@@ -34,6 +49,10 @@ final class SessionMode {
     this.distressTriggers = const [],
     this.disarmTriggers = const [],
     this.overrides,
+    this.trackingEnabled = false,
+    this.trackingIntervalSeconds = 300,
+    this.trackingBufferSize = 50,
+    this.iconName,
   });
 
   /// Deserializes a `SessionMode` from JSON.
@@ -71,6 +90,12 @@ final class SessionMode {
       overrides: rawOverrides is Map<String, Object?>
           ? ModeOverrides.fromJson(rawOverrides)
           : null,
+      trackingEnabled: json['trackingEnabled'] as bool? ?? false,
+      trackingIntervalSeconds:
+          (json['trackingIntervalSeconds'] as num?)?.toInt() ?? 300,
+      trackingBufferSize:
+          (json['trackingBufferSize'] as num?)?.toInt() ?? 50,
+      iconName: json['iconName'] as String?,
     );
   }
 
@@ -99,6 +124,26 @@ final class SessionMode {
   /// Optional per-mode overrides of `AppDefaults`.
   final ModeOverrides? overrides;
 
+  /// Spec 11 §DE-3 — when true, the engine runs a periodic GPS
+  /// sampler during the session. Default `false`.
+  final bool trackingEnabled;
+
+  /// Spec 11 §DE-3 — sampling cadence in seconds when
+  /// [trackingEnabled]. Default 300 (5 min). Values below 10s are
+  /// not enforced at the model layer; the UI snaps to the spec
+  /// snap-stops list (10s, 30s, 1m, 2m, 5m, 10m, 15m, 30m, 1h).
+  final int trackingIntervalSeconds;
+
+  /// Spec 11 §DE-3 — maximum number of points kept in the ephemeral
+  /// in-memory tracking buffer. Default 50.
+  final int trackingBufferSize;
+
+  /// Optional symbolic icon name (e.g. `directions_walk`). Resolved
+  /// to a Material `IconData` by `kModeIconLibrary` on the UI side.
+  /// `null` = no preference; the UI falls back to its name-based
+  /// heuristic.
+  final String? iconName;
+
   /// Returns a new mode with the given fields replaced.
   SessionMode copyWith({
     String? id,
@@ -109,6 +154,11 @@ final class SessionMode {
     List<DistressTrigger>? distressTriggers,
     List<DisarmTrigger>? disarmTriggers,
     ModeOverrides? overrides,
+    bool? trackingEnabled,
+    int? trackingIntervalSeconds,
+    int? trackingBufferSize,
+    String? iconName,
+    bool clearIconName = false,
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -118,6 +168,11 @@ final class SessionMode {
     distressTriggers: distressTriggers ?? this.distressTriggers,
     disarmTriggers: disarmTriggers ?? this.disarmTriggers,
     overrides: overrides ?? this.overrides,
+    trackingEnabled: trackingEnabled ?? this.trackingEnabled,
+    trackingIntervalSeconds:
+        trackingIntervalSeconds ?? this.trackingIntervalSeconds,
+    trackingBufferSize: trackingBufferSize ?? this.trackingBufferSize,
+    iconName: clearIconName ? null : (iconName ?? this.iconName),
   );
 
   /// Serializes to JSON.
@@ -134,6 +189,10 @@ final class SessionMode {
         .map((t) => t.toJson())
         .toList(growable: false),
     'overrides': overrides?.toJson(),
+    'trackingEnabled': trackingEnabled,
+    'trackingIntervalSeconds': trackingIntervalSeconds,
+    'trackingBufferSize': trackingBufferSize,
+    if (iconName != null) 'iconName': iconName,
   };
 
   @override
@@ -145,6 +204,12 @@ final class SessionMode {
     if (other.checkInType != checkInType) return false;
     if (other.distressChainId != distressChainId) return false;
     if (other.overrides != overrides) return false;
+    if (other.trackingEnabled != trackingEnabled) return false;
+    if (other.trackingIntervalSeconds != trackingIntervalSeconds) {
+      return false;
+    }
+    if (other.trackingBufferSize != trackingBufferSize) return false;
+    if (other.iconName != iconName) return false;
     if (!_listEquals(other.chainSteps, chainSteps)) return false;
     if (!_listEquals(other.distressTriggers, distressTriggers)) return false;
     if (!_listEquals(other.disarmTriggers, disarmTriggers)) return false;
@@ -161,6 +226,10 @@ final class SessionMode {
     Object.hashAll(distressTriggers),
     Object.hashAll(disarmTriggers),
     overrides,
+    trackingEnabled,
+    trackingIntervalSeconds,
+    trackingBufferSize,
+    iconName,
   );
 
   @override

@@ -17,8 +17,8 @@ import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/about/feedback_screen.dart';
 import 'package:guardianangela/features/contacts/contact_form_screen.dart';
 import 'package:guardianangela/features/contacts/contacts_screen.dart';
-import 'package:guardianangela/features/distress_chains/distress_chain_editor_screen.dart';
-import 'package:guardianangela/features/distress_chains/distress_chains_screen.dart';
+import 'package:guardianangela/features/distress_modes/distress_mode_editor_screen.dart';
+import 'package:guardianangela/features/distress_modes/distress_modes_screen.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
 import 'package:guardianangela/features/history/evidence_export_screen.dart';
 import 'package:guardianangela/features/history/past_event_detail_screen.dart';
@@ -118,14 +118,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) => const ModeEditorScreen(),
     ),
     GoRoute(
-      name: 'distressChains',
-      path: RouteNames.distressChains,
-      builder: (context, state) => const DistressChainsScreen(),
+      name: 'distressModes',
+      path: RouteNames.distressModes,
+      builder: (context, state) => const DistressModesScreen(),
     ),
     GoRoute(
-      name: 'distressChainEditor',
-      path: RouteNames.distressChainEditor,
-      builder: (context, state) => const DistressChainEditorScreen(),
+      name: 'distressModeEditor',
+      path: RouteNames.distressModeEditor,
+      builder: (context, state) => const DistressModeEditorScreen(),
     ),
     GoRoute(
       name: 'templates',

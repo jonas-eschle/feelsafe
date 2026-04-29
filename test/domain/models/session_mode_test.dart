@@ -20,6 +20,10 @@ void main() {
       check(m.distressTriggers).isEmpty();
       check(m.disarmTriggers).isEmpty();
       check(m.overrides).isNull();
+      // Spec 11 §DE-3 defaults.
+      check(m.trackingEnabled).isFalse();
+      check(m.trackingIntervalSeconds).equals(300);
+      check(m.trackingBufferSize).equals(50);
     });
 
     test('copyWith replaces one field', () {
@@ -139,6 +143,80 @@ void main() {
         disarmTriggers: const [TimerDisarmTrigger(durationSeconds: 100)],
       );
       check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('JSON round-trip with tracking fields (DE-3)', () {
+      final m = makeMode().copyWith(
+        trackingEnabled: true,
+        trackingIntervalSeconds: 60,
+        trackingBufferSize: 100,
+      );
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+    });
+
+    test('copyWith replaces tracking fields independently', () {
+      final m = makeMode();
+      final m2 = m.copyWith(trackingEnabled: true);
+      check(m2.trackingEnabled).isTrue();
+      check(m2.trackingIntervalSeconds).equals(m.trackingIntervalSeconds);
+      check(m2.trackingBufferSize).equals(m.trackingBufferSize);
+
+      final m3 = m.copyWith(trackingIntervalSeconds: 30);
+      check(m3.trackingIntervalSeconds).equals(30);
+      check(m3.trackingEnabled).equals(m.trackingEnabled);
+
+      final m4 = m.copyWith(trackingBufferSize: 25);
+      check(m4.trackingBufferSize).equals(25);
+    });
+
+    test('inequality when tracking fields differ', () {
+      final a = makeMode();
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingEnabled: true)),
+      );
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingIntervalSeconds: 600)),
+      );
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingBufferSize: 75)),
+      );
+    });
+
+    test('fromJson defaults missing tracking fields', () {
+      final json = {
+        'id': 'm1',
+        'name': 'X',
+        'checkInType': 'holdButton',
+      };
+      final m = SessionMode.fromJson(json);
+      check(m.trackingEnabled).isFalse();
+      check(m.trackingIntervalSeconds).equals(300);
+      check(m.trackingBufferSize).equals(50);
+    });
+
+    test('iconName defaults to null', () {
+      final m = makeMode();
+      check(m.iconName).isNull();
+    });
+
+    test('JSON round-trip preserves iconName', () {
+      final m = makeMode().copyWith(iconName: 'directions_walk');
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+      check(SessionMode.fromJson(m.toJson()).iconName)
+          .equals('directions_walk');
+    });
+
+    test('copyWith clearIconName resets the icon to null', () {
+      final m = makeMode().copyWith(iconName: 'shield');
+      check(m.iconName).equals('shield');
+      check(m.copyWith(clearIconName: true).iconName).isNull();
+    });
+
+    test('inequality when iconName differs', () {
+      final a = makeMode();
+      check(a).not(
+        (it) => it.equals(a.copyWith(iconName: 'fitness_center')),
+      );
     });
   });
 }

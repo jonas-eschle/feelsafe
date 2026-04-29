@@ -32,11 +32,17 @@ class BackupController extends AsyncNotifier<Map<String, Object?>?> {
 
   /// Exports every persisted entity as a JSON-compatible map. When
   /// [pin] is non-empty the body is encrypted; see [BackupService].
-  Future<Map<String, Object?>> exportAll({String? pin}) async {
+  ///
+  /// [selection] — per-element opt-out toggles (D5). Defaults to
+  /// [BackupSelection.all].
+  Future<Map<String, Object?>> exportAll({
+    String? pin,
+    BackupSelection selection = BackupSelection.all,
+  }) async {
     state = const AsyncLoading<Map<String, Object?>?>();
     try {
       final service = ref.read(backupServiceProvider);
-      final payload = await service.exportAll(pin: pin);
+      final payload = await service.exportAll(pin: pin, selection: selection);
       state = AsyncData<Map<String, Object?>?>(payload);
       return payload;
     } catch (error, stack) {

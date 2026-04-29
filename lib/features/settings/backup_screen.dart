@@ -1,10 +1,12 @@
 /// Backup import / export screen.
 ///
 /// Calls [BackupController.exportAll] / [BackupController.importAll]
-/// with a user-supplied optional PIN. Export payloads are stringified
-/// JSON shown in a dialog so the user can copy-paste into email /
-/// drive; import accepts pasted JSON the same way. File-system
-/// read/write is deferred to a Phase 15.1 enhancement.
+/// with a user-supplied optional PIN and a per-element [BackupSelection]
+/// driven by the on-screen toggles (D5).
+///
+/// Export payloads are stringified JSON shown in a dialog so the user
+/// can copy-paste into email / drive; import accepts pasted JSON the
+/// same way.
 library;
 
 import 'dart:convert';
@@ -29,6 +31,11 @@ class BackupScreen extends ConsumerStatefulWidget {
 class _BackupScreenState extends ConsumerState<BackupScreen> {
   final _pinController = TextEditingController();
 
+  /// Per-element export selection. The "Settings" toggle is not part
+  /// of [BackupSelection] — it is rendered as an always-on disabled
+  /// switch (D5: backup must be self-restorable).
+  BackupSelection _selection = BackupSelection.all;
+
   @override
   void dispose() {
     _pinController.dispose();
@@ -40,23 +47,96 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     final l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(title: Text(l.backupTitle)),
-      body: Padding(
-        padding: const EdgeInsets.all(24),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 8),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            TextField(
-              controller: _pinController,
-              obscureText: true,
-              decoration: InputDecoration(
-                labelText: l.backupPinOptional,
-                border: const OutlineInputBorder(),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+              child: TextField(
+                controller: _pinController,
+                obscureText: true,
+                decoration: InputDecoration(
+                  labelText: l.backupPinOptional,
+                  border: const OutlineInputBorder(),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(24, 16, 24, 8),
+              child: Text(
+                l.backupSelectionHeader,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
+            ),
+            // Settings — always on, disabled. The backup MUST remain
+            // self-restorable, so this toggle cannot be turned off.
+            SwitchListTile(
+              value: true,
+              onChanged: null,
+              title: Text(l.backupToggleSettings),
+              subtitle: Text(l.backupToggleSettingsSubtitle),
+            ),
+            SwitchListTile(
+              value: _selection.contacts,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(contacts: v),
+              ),
+              title: Text(l.backupToggleContacts),
+            ),
+            SwitchListTile(
+              value: _selection.modes,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(modes: v),
+              ),
+              title: Text(l.backupToggleModes),
+            ),
+            SwitchListTile(
+              value: _selection.distressModes,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(distressModes: v),
+              ),
+              title: Text(l.backupToggleDistressModes),
+            ),
+            SwitchListTile(
+              value: _selection.templates,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(templates: v),
+              ),
+              title: Text(l.backupToggleTemplates),
+            ),
+            SwitchListTile(
+              value: _selection.sessionLogs,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(sessionLogs: v),
+              ),
+              title: Text(l.backupToggleSessionLogs),
+            ),
+            SwitchListTile(
+              value: _selection.recordings,
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(recordings: v),
+              ),
+              title: Text(l.backupToggleRecordings),
+            ),
+            const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: FilledButton(
+                onPressed: _onExport,
+                child: Text(l.backupExport),
+              ),
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: OutlinedButton(
+                onPressed: _onImport,
+                child: Text(l.backupImport),
               ),
             ),
             const SizedBox(height: 24),
-            FilledButton(onPressed: _onExport, child: Text(l.backupExport)),
-            const SizedBox(height: 12),
-            OutlinedButton(onPressed: _onImport, child: Text(l.backupImport)),
           ],
         ),
       ),
@@ -69,7 +149,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final payload = await ref
           .read(backupControllerProvider.notifier)
-          .exportAll(pin: pin.isEmpty ? null : pin);
+          .exportAll(
+            pin: pin.isEmpty ? null : pin,
+            selection: _selection,
+          );
       if (!mounted) return;
       final encoded = const JsonEncoder.withIndent('  ').convert(payload);
       await showDialog<void>(

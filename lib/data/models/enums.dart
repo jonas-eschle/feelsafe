@@ -87,3 +87,29 @@ enum ReminderDisplayStyle {
   /// Overlay or notification card; user can keep using the device.
   subtle,
 }
+
+/// Why the session entered the distress chain.
+///
+/// Used by `DistressOrchestrationController.fireBecauseOfPin` and
+/// related call sites to discriminate the trigger source. Drives the
+/// deceptive wrong-PIN dialog (only fires for
+/// [TriggerReason.wrongPinExhausted]) and the session-end reason in
+/// `SessionLog`.
+enum TriggerReason {
+  /// Fired by a hardware-button pattern (e.g., 5× volume in 1.5s).
+  hardwarePanic,
+
+  /// Fired because the wrong-PIN threshold was hit.
+  ///
+  /// *Why distinguish:* the deceptive "Old PIN from Angela" dialog
+  /// must show, and the session-end reason should be
+  /// `EndReason.wrongPinExhausted`.
+  wrongPinExhausted,
+
+  /// Fired because the duress PIN was entered.
+  ///
+  /// *Why distinguish:* the dialog is suppressed (the user
+  /// deliberately keyed in the duress PIN; surfacing a fake-Angela
+  /// prompt would tip off an observer).
+  duressPin,
+}

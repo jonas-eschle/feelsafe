@@ -111,4 +111,56 @@ void main() {
     // present in the default collapsed state.
     check(find.byType(StepConfigForm).evaluate()).isEmpty();
   });
+
+  testWidgets(
+    'ChainStepTile hides the duplicate icon when onDuplicate is null',
+    (tester) async {
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
+        ),
+      ));
+      await tester.pumpAndSettle();
+      check(find.byIcon(Icons.content_copy_outlined).evaluate()).isEmpty();
+    },
+  );
+
+  testWidgets(
+    'ChainStepTile shows the duplicate icon when onDuplicate is set',
+    (tester) async {
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
+          onDuplicate: () {},
+        ),
+      ));
+      await tester.pumpAndSettle();
+      check(
+        find.byIcon(Icons.content_copy_outlined).evaluate().length,
+      ).equals(1);
+    },
+  );
+
+  testWidgets(
+    'ChainStepTile duplicate icon triggers onDuplicate exactly once',
+    (tester) async {
+      var dups = 0;
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
+          onDuplicate: () => dups++,
+        ),
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.content_copy_outlined));
+      await tester.pumpAndSettle();
+      check(dups).equals(1);
+    },
+  );
 }

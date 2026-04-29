@@ -25,6 +25,8 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/domain/orchestration/location_resolver.dart';
+import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';
 
 /// Default message body when neither the step config nor any global
 /// template provides one.
@@ -65,8 +67,23 @@ final class SmsContactStrategy extends EventStrategy {
       );
       return;
     }
+    // Spec 11 §DE-3 — resolve `{location}` via the layered resolver:
+    // prefer the ephemeral tracking buffer (with an age annotation),
+    // fall back to a fresh `LocationServiceProtocol.getLastLocationUrl`,
+    // and finally to the literal "Location unavailable".
+    //
+    // Spec 11 §DE-2: gate the lookup on the resolved per-step
+    // `logGps` override. When the user has opted out (force-off),
+    // the resolver short-circuits to "Location unavailable" without
+    // hitting GPS.
+    final logGps = LogGpsResolver.resolve(step, services);
+    final locationUrl = LocationResolver.resolve(
+      services,
+      logGpsEnabled: logGps,
+    );
     final message = services.context.resolvePlaceholders(
       config.messageTemplate ?? _defaultSmsTemplate,
+      location: locationUrl,
     );
     final isSim = services.context.isSimulation;
     final register = services.registerSmsWorkId;

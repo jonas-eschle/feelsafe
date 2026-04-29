@@ -232,11 +232,12 @@ void main() {
       check(c.ringtoneAsset).isNull();
       check(c.voiceRecordingAsset).isNull();
       check(c.declineIsSafe).isTrue();
-      check(c.callStyle).equals(CallStyle.standard);
+      check(c.callStyle).equals(CallStyle.android);
       check(c.callerPhotoPath).isNull();
-      check(c.voiceOutputMode).equals(VoiceOutputMode.tts);
+      check(c.voiceSource).equals(VoiceSource.tts);
+      check(c.voiceRoute).equals(VoiceRoute.earpiece);
       check(c.ringDurationSeconds).equals(30);
-      check(c.declineWithDistressHoldSeconds).equals(2.0);
+      check(c.declineWithDistressHoldSeconds).equals(5.0);
       check(c.blackScreenMode).isFalse();
     });
 
@@ -253,9 +254,10 @@ void main() {
         ringtoneAsset: 'a.mp3',
         voiceRecordingAsset: 'v.mp3',
         declineIsSafe: false,
-        callStyle: CallStyle.videoCall,
+        callStyle: CallStyle.ios,
         callerPhotoPath: 'photo.png',
-        voiceOutputMode: VoiceOutputMode.recording,
+        voiceSource: VoiceSource.recording,
+        voiceRoute: VoiceRoute.speaker,
         ringDurationSeconds: 15,
         declineWithDistressHoldSeconds: 3.0,
         blackScreenMode: true,
@@ -667,11 +669,15 @@ void main() {
       ).isFalse();
       check(
         const FakeCallConfig() ==
-            const FakeCallConfig(callStyle: CallStyle.videoCall),
+            const FakeCallConfig(callStyle: CallStyle.ios),
       ).isFalse();
       check(
         const FakeCallConfig() ==
-            const FakeCallConfig(voiceOutputMode: VoiceOutputMode.none),
+            const FakeCallConfig(voiceSource: VoiceSource.none),
+      ).isFalse();
+      check(
+        const FakeCallConfig() ==
+            const FakeCallConfig(voiceRoute: VoiceRoute.speaker),
       ).isFalse();
       check(
         const FakeCallConfig() ==
@@ -931,9 +937,10 @@ void main() {
         ringtoneAsset: 'a',
         voiceRecordingAsset: 'v',
         declineIsSafe: false,
-        callStyle: CallStyle.videoCall,
+        callStyle: CallStyle.whatsapp,
         callerPhotoPath: 'p.png',
-        voiceOutputMode: VoiceOutputMode.recording,
+        voiceSource: VoiceSource.recording,
+        voiceRoute: VoiceRoute.speaker,
         ringDurationSeconds: 20,
         declineWithDistressHoldSeconds: 1.5,
         blackScreenMode: true,

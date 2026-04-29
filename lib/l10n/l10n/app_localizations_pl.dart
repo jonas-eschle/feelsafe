@@ -176,6 +176,112 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionSimulationBanner => 'Symulacja';
 
   @override
+  String get sessionCheckIn => 'I\'m checked in';
+
+  @override
+  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+
+  @override
+  String get sessionDisarmTriggerBody =>
+      'A disarm trigger fired. End the session?';
+
+  @override
+  String get sessionDisarmTriggerConfirm => 'End session';
+
+  @override
+  String get sessionDisarmTriggerCancel => 'Continue';
+
+  @override
+  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+
+  @override
+  String get wrongPinAngelaBody =>
+      'Are you sure you want to proceed with this old PIN?';
+
+  @override
+  String get wrongPinAngelaConfirm => 'OK';
+
+  @override
+  String get wrongPinAngelaCancel => 'Cancel';
+
+  @override
+  String get sessionStepCountdownTitle => 'Warning';
+
+  @override
+  String get sessionStepCountdownBody =>
+      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+
+  @override
+  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+
+  @override
+  String get sessionStepDisguisedDefaultBody =>
+      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+
+  @override
+  String get sessionStepSmsStatus => 'Sending message to contacts…';
+
+  @override
+  String get sessionStepSmsDelivered => 'Delivered';
+
+  @override
+  String get sessionStepSmsSent => 'Sent';
+
+  @override
+  String get sessionStepSmsQueued => 'Queued';
+
+  @override
+  String get sessionStepSmsFailed => 'Failed';
+
+  @override
+  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+
+  @override
+  String get sessionStepPhoneCallCancel => 'Cancel call';
+
+  @override
+  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+
+  @override
+  String get sessionStepLoudAlarmBody =>
+      'The alarm is sounding to attract attention.';
+
+  @override
+  String get sessionStepLoudAlarmFlashWarning =>
+      'Photosensitive warning: screen is flashing.';
+
+  @override
+  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+
+  @override
+  String sessionStepCallEmergencyNumber(Object number) {
+    return 'Number: $number';
+  }
+
+  @override
+  String sessionStepHardwareButtonRepeat(
+    Object button,
+    Object count,
+    Object windowMs,
+  ) {
+    return 'Press $button $count times within ${windowMs}ms';
+  }
+
+  @override
+  String sessionStepHardwareButtonLong(Object button, Object seconds) {
+    return 'Hold $button for $seconds seconds';
+  }
+
+  @override
+  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+
+  @override
+  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+
+  @override
+  String get sessionStepHardwareButtonPower => 'power';
+
+  @override
   String get sessionCompletedTitle => 'Sesja zakończona';
 
   @override
@@ -206,6 +312,30 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get fakeCallHangUp => 'Rozłącz';
+
+  @override
+  String get fakeCallSlideToAnswer => 'slide to answer';
+
+  @override
+  String get fakeCallUnknownCaller => 'Unknown';
+
+  @override
+  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+
+  @override
+  String get fakeCallIncomingTelegram => 'Telegram voice call';
+
+  @override
+  String get fakeCallIncomingSignal => 'Signal voice call';
+
+  @override
+  String get fakeCallBrandWhatsapp => 'WHATSAPP';
+
+  @override
+  String get fakeCallBrandTelegram => 'TELEGRAM';
+
+  @override
+  String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
   String get contactsTitle => 'Kontakty alarmowe';
@@ -283,7 +413,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get modeFieldCheckInType => 'Typ potwierdzenia';
 
   @override
-  String get modeFieldDistressChain => 'Łańcuch alarmowy';
+  String get modeFieldDistressChain => 'Tryb alarmowy';
 
   @override
   String get modeFieldDistressChainDefault => 'Użyj domyślnego';
@@ -296,6 +426,195 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get modeChainEmpty => 'Brak kroków. Dotknij Dodaj krok.';
+
+  @override
+  String get modeFieldIcon => 'Ikona';
+
+  @override
+  String get modeIconPickerTitle => 'Wybierz ikonę';
+
+  @override
+  String get modeIconClear => 'Brak ikony';
+
+  @override
+  String get modeDistressHeader => 'Wyzwalacze alarmu';
+
+  @override
+  String get modeDistressEmpty => 'Brak skonfigurowanych wyzwalaczy.';
+
+  @override
+  String get modeDistressAdd => 'Dodaj wyzwalacz';
+
+  @override
+  String get modeDistressTypeHardware => 'Przycisk sprzętowy';
+
+  @override
+  String get modeDistressButtonType => 'Przycisk';
+
+  @override
+  String get modeDistressButtonVolumeUp => 'Głośniej';
+
+  @override
+  String get modeDistressButtonVolumeDown => 'Ciszej';
+
+  @override
+  String get modeDistressButtonPower => 'Zasilanie';
+
+  @override
+  String get modeDistressPattern => 'Wzorzec';
+
+  @override
+  String get modeDistressPatternRepeat => 'Wielokrotne naciśnięcie';
+
+  @override
+  String get modeDistressPatternLong => 'Długie naciśnięcie';
+
+  @override
+  String get modeDistressPressCount => 'Liczba naciśnięć';
+
+  @override
+  String get modeDistressPressWindow => 'Okno (ms)';
+
+  @override
+  String get modeDistressLongDuration => 'Czas trzymania (sekundy)';
+
+  @override
+  String modeDistressSummaryRepeat(Object count, Object windowMs) {
+    return '$count naciśnięć / $windowMs ms';
+  }
+
+  @override
+  String modeDistressSummaryLong(Object seconds) {
+    return 'Trzymaj ${seconds}s';
+  }
+
+  @override
+  String get modeOverridesHeader => 'Nadpisania trybu';
+
+  @override
+  String get modeOverridesUseDefault => 'Użyj domyślnego';
+
+  @override
+  String get modeOverridesGpsLabel => 'Zapis GPS';
+
+  @override
+  String get modeOverridesStealthLabel => 'Tryb dyskretny';
+
+  @override
+  String get modeOverridesEventDefaultsLabel => 'Domyślne wartości zdarzeń';
+
+  @override
+  String get modeOverridesLocalTemplatesLabel => 'Lokalne szablony przypomnień';
+
+  @override
+  String get modeOverridesGpsEnabled => 'GPS włączony';
+
+  @override
+  String get modeOverridesGpsIntervalLabel => 'Interwał próbkowania (s)';
+
+  @override
+  String get modeOverridesGpsIncludeInSms => 'Dodawaj lokalizację do SMS';
+
+  @override
+  String get modeOverridesStealthEnabled => 'Tryb dyskretny włączony';
+
+  @override
+  String get modeOverridesStealthFakeName => 'Fałszywa nazwa aplikacji';
+
+  @override
+  String get modeOverridesEventDefaultsHint =>
+      'Niestandardowe wartości aktywne dla tego trybu.';
+
+  @override
+  String modeOverridesLocalTemplatesCount(Object count) {
+    return '$count lokalnych szablonów';
+  }
+
+  @override
+  String get modeUnsavedTitle => 'Odrzucić zmiany?';
+
+  @override
+  String get modeUnsavedBody =>
+      'Masz niezapisane zmiany. Odrzucić je i wyjść z edytora?';
+
+  @override
+  String get modeUnsavedDiscard => 'Odrzuć';
+
+  @override
+  String get modeUnsavedKeep => 'Kontynuuj edycję';
+
+  @override
+  String get stepDuplicate => 'Duplikuj krok';
+
+  @override
+  String get stepTimingHeader => 'Czas';
+
+  @override
+  String stepTimingSummary(Object wait, Object duration, Object grace) {
+    return 'oczekiwanie ${wait}s / czas ${duration}s / okres łaski ${grace}s';
+  }
+
+  @override
+  String get stepCategoryAll => 'Wszystkie';
+
+  @override
+  String get stepCategoryAction => 'Działanie';
+
+  @override
+  String get stepCategoryReminder => 'Przypomnienie';
+
+  @override
+  String get stepCategoryDisarm => 'Zameldowanie';
+
+  @override
+  String get modeTrackingHeader => 'Śledzenie GPS';
+
+  @override
+  String get modeTrackingEnabled => 'Rejestruj GPS podczas sesji';
+
+  @override
+  String get modeTrackingIntervalLabel => 'Interwał próbkowania';
+
+  @override
+  String get modeTrackingBufferSizeLabel => 'Rozmiar bufora';
+
+  @override
+  String modeTrackingBufferSizeValue(Object count) {
+    return '$count punktów';
+  }
+
+  @override
+  String get modeTrackingBatteryNote =>
+      'Częste śledzenie GPS zwiększa zużycie baterii.';
+
+  @override
+  String get stepConfigLogGpsLabel => 'Rejestrowanie GPS';
+
+  @override
+  String get stepConfigLogGpsDefault => 'Domyślnie';
+
+  @override
+  String get stepConfigLogGpsOn => 'Wł.';
+
+  @override
+  String get stepConfigLogGpsOff => 'Wył.';
+
+  @override
+  String get stepConfigLogGpsDefaultOn => 'Domyślnie (Wł.)';
+
+  @override
+  String get stepConfigLogGpsDefaultOff => 'Domyślnie (Wył.)';
+
+  @override
+  String get moreSettingsHeader => 'Więcej ustawień';
+
+  @override
+  String moreSettingsHeaderCustomized(int count) {
+    return 'Więcej ustawień (dostosowano $count)';
+  }
+
+  @override
+  String get stepTypePickerLabel => 'Step type';
 
   @override
   String get stepTypeHoldButton => 'Przytrzymaj przycisk';
@@ -424,25 +743,33 @@ class AppLocalizationsPl extends AppLocalizations {
   String get stepConfigPhonePreSms => 'Wyślij SMS przed połączeniem';
 
   @override
-  String get distressChainsTitle => 'Łańcuchy alarmowe';
+  String get distressModesTitle => 'Tryby alarmowe';
 
   @override
-  String get distressChainsEmpty => 'Brak łańcuchów alarmowych.';
+  String get distressModeInUseTitle => 'Tryb alarmowy jest używany';
 
   @override
-  String get distressChainsAdd => 'Dodaj łańcuch';
+  String distressModeInUseBody(Object modes) {
+    return 'Ten tryb alarmowy jest nadal powiązany z: $modes. Zanim go usuniesz, przypisz te tryby do innego trybu alarmowego.';
+  }
 
   @override
-  String get distressChainEditorTitleCreate => 'Nowy łańcuch alarmowy';
+  String get distressModesEmpty => 'Brak trybów alarmowych.';
 
   @override
-  String get distressChainEditorTitleEdit => 'Edytuj łańcuch alarmowy';
+  String get distressModesAdd => 'Dodaj tryb alarmowy';
 
   @override
-  String get distressChainName => 'Nazwa łańcucha';
+  String get distressModeEditorTitleCreate => 'Nowy tryb alarmowy';
 
   @override
-  String get distressCountdown => 'Uruchamianie łańcucha alarmowego...';
+  String get distressModeEditorTitleEdit => 'Edytuj tryb alarmowy';
+
+  @override
+  String get distressModeName => 'Nazwa trybu alarmowego';
+
+  @override
+  String get distressCountdown => 'Uruchamianie trybu alarmowego...';
 
   @override
   String get distressCountdownStealth => 'Proszę czekać...';
@@ -562,7 +889,7 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsSectionProfile => 'Profil';
 
   @override
-  String get settingsSectionDistressChains => 'Łańcuchy alarmowe';
+  String get settingsSectionDistressModes => 'Tryby alarmowe';
 
   @override
   String get settingsSectionReminderTemplates => 'Szablony przypomnień';
@@ -707,7 +1034,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return 'Łańcuch alarmowy zostanie uruchomiony za $seconds s';
+    return 'Tryb alarmowy zostanie uruchomiony za $seconds s';
   }
 
   @override
@@ -796,6 +1123,34 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get backupImportOk => 'Kopia zapasowa została zaimportowana.';
+
+  @override
+  String get backupSelectionHeader => 'Include in export';
+
+  @override
+  String get backupToggleSettings => 'Settings';
+
+  @override
+  String get backupToggleSettingsSubtitle =>
+      'Always included so the backup can be restored.';
+
+  @override
+  String get backupToggleContacts => 'Emergency contacts';
+
+  @override
+  String get backupToggleModes => 'Modes';
+
+  @override
+  String get backupToggleDistressModes => 'Distress modes';
+
+  @override
+  String get backupToggleTemplates => 'Reminder templates';
+
+  @override
+  String get backupToggleSessionLogs => 'Session history';
+
+  @override
+  String get backupToggleRecordings => 'Audio recordings';
 
   @override
   String get historyTitle => 'Poprzednie sesje';

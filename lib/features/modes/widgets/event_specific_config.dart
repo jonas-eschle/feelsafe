@@ -18,6 +18,9 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
+import 'package:guardianangela/features/modes/widgets/log_gps_selector.dart';
+import 'package:guardianangela/features/modes/widgets/more_settings_panel.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -80,6 +83,11 @@ class EventSpecificConfig extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         form,
+        // Spec 11 §DE-4: collapsible "More settings" tile hosts the
+        // rare-toggle subset (currently the DE-2 GPS override).
+        // Hidden by default; the badge counter on the collapsed
+        // header surfaces non-default values without expanding.
+        _StepMoreSettings(step: step, onChanged: onChanged),
         if (canPreview) ...[
           const SizedBox(height: 16),
           OutlinedButton.icon(
@@ -448,4 +456,62 @@ class _HardwareForm extends StatelessWidget {
       ],
     );
   }
+}
+
+/// "More settings" tile (DE-4) hosting the rare-toggle fields for
+/// the current step.
+///
+/// Currently wraps just the DE-2 [LogGpsSelector] but is the
+/// single host for any future per-step rarity (D-OPS-3 non-blocking
+/// flag, randomize toggles, custom sound paths, …).
+class _StepMoreSettings extends ConsumerWidget {
+  const _StepMoreSettings({required this.step, required this.onChanged});
+
+  final ChainStep step;
+  final ValueChanged<ChainStep> onChanged;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(settingsControllerProvider).value;
+    // The fallback boolean shown under "Default" — sourced from the
+    // global GPS-logging master toggle. Defaults to true when
+    // settings haven't loaded so the UI stays predictable during
+    // hydration.
+    final fallback = settings?.defaults.gpsLogging.enabled ?? true;
+    final currentLogGps = step.config?.logGps ?? LogGpsOverride.useDefault;
+    final customizedCount =
+        currentLogGps == LogGpsOverride.useDefault ? 0 : 1;
+    return MoreSettingsPanel(
+      customizedCount: customizedCount,
+      children: [
+        LogGpsSelector(
+          value: currentLogGps,
+          resolvedFallback: fallback,
+          onChanged: (next) {
+            final cfg = step.config;
+            if (cfg == null) return;
+            onChanged(step.copyWith(config: _withLogGps(cfg, next)));
+          },
+        ),
+      ],
+    );
+  }
+
+  /// Returns a copy of [config] with `logGps` replaced.
+  ///
+  /// *Why a switch:* the sealed parent declares `logGps` as an
+  /// abstract getter so the only way to update it is to dispatch
+  /// per concrete subtype's `copyWith`.
+  StepConfig _withLogGps(StepConfig config, LogGpsOverride next) =>
+      switch (config) {
+        HoldButtonConfig() => config.copyWith(logGps: next),
+        DisguisedReminderConfig() => config.copyWith(logGps: next),
+        HardwareButtonConfig() => config.copyWith(logGps: next),
+        CountdownWarningConfig() => config.copyWith(logGps: next),
+        FakeCallConfig() => config.copyWith(logGps: next),
+        SmsContactConfig() => config.copyWith(logGps: next),
+        PhoneCallContactConfig() => config.copyWith(logGps: next),
+        LoudAlarmConfig() => config.copyWith(logGps: next),
+        CallEmergencyConfig() => config.copyWith(logGps: next),
+      };
 }

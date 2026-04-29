@@ -3,6 +3,11 @@
 /// Covers the timing block (wait/duration/grace/retryCount fields)
 /// and rendering for a handful of [ChainStepType] variants. Deeper
 /// per-subtype assertions live in event_specific_config_test.dart.
+///
+/// Note: the timing block now lives inside a collapsible
+/// [ExpansionTile] that defaults to closed. Tests that need to read
+/// or interact with the timing inputs must expand the panel first
+/// via the helper [_expandTiming].
 library;
 
 import 'package:checks/checks.dart';
@@ -45,21 +50,35 @@ Widget _host(ChainStep step, {ValueChanged<ChainStep>? onChanged}) =>
       ),
     );
 
-void main() {
-  testWidgets('StepConfigForm renders 4 timing TextFormFields', (tester) async {
-    await tester.pumpWidget(_host(_step()));
-    await tester.pumpAndSettle();
-    // wait / duration / grace / retryCount = 4 timing fields; the
-    // hold-button event-specific form adds one more for sensitivity.
-    check(find.byType(TextFormField).evaluate().length).isGreaterOrEqual(4);
-  });
+/// Expands the collapsible Timing panel so its TextFormFields are
+/// in the widget tree (ExpansionTile lazy-builds children).
+Future<void> _expandTiming(WidgetTester tester) async {
+  await tester.tap(find.byType(ExpansionTile).first);
+  await tester.pumpAndSettle();
+}
 
-  testWidgets('StepConfigForm duration field echoes the step value',
-      (tester) async {
-    await tester.pumpWidget(_host(_step(duration: 77)));
-    await tester.pumpAndSettle();
-    check(find.text('77').evaluate().length).isGreaterOrEqual(1);
-  });
+void main() {
+  testWidgets(
+    'StepConfigForm renders 4 timing TextFormFields when expanded',
+    (tester) async {
+      await tester.pumpWidget(_host(_step()));
+      await tester.pumpAndSettle();
+      await _expandTiming(tester);
+      // wait / duration / grace / retryCount = 4 timing fields; the
+      // hold-button event-specific form adds one more for sensitivity.
+      check(find.byType(TextFormField).evaluate().length).isGreaterOrEqual(4);
+    },
+  );
+
+  testWidgets(
+    'StepConfigForm duration field echoes the step value when expanded',
+    (tester) async {
+      await tester.pumpWidget(_host(_step(duration: 77)));
+      await tester.pumpAndSettle();
+      await _expandTiming(tester);
+      check(find.text('77').evaluate().length).isGreaterOrEqual(1);
+    },
+  );
 
   testWidgets('StepConfigForm fires onChanged when wait is edited',
       (tester) async {
@@ -68,6 +87,7 @@ void main() {
       _host(_step(), onChanged: (step) => latest = step),
     );
     await tester.pumpAndSettle();
+    await _expandTiming(tester);
     await tester.enterText(find.byType(TextFormField).first, '42');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
@@ -105,7 +125,9 @@ void main() {
       _host(_step(), onChanged: (step) => latest = step),
     );
     await tester.pumpAndSettle();
-    // Field order: wait, duration, grace, retryCount.
+    await _expandTiming(tester);
+    // Field order inside the timing panel: wait, duration, grace,
+    // retryCount.
     await tester.enterText(find.byType(TextFormField).at(1), '99');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
@@ -119,6 +141,7 @@ void main() {
       _host(_step(), onChanged: (step) => latest = step),
     );
     await tester.pumpAndSettle();
+    await _expandTiming(tester);
     await tester.enterText(find.byType(TextFormField).at(2), '17');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
@@ -132,9 +155,22 @@ void main() {
       _host(_step(), onChanged: (step) => latest = step),
     );
     await tester.pumpAndSettle();
+    await _expandTiming(tester);
     await tester.enterText(find.byType(TextFormField).at(3), '4');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check(latest!.retryCount).equals(4);
   });
+
+  testWidgets(
+    'StepConfigForm timing panel is collapsed by default',
+    (tester) async {
+      await tester.pumpWidget(_host(_step()));
+      await tester.pumpAndSettle();
+      // Without expansion, the four timing TextFormFields are not in
+      // the tree (lazy-built by ExpansionTile). The hold-button
+      // event-specific form contributes exactly one TextFormField.
+      check(find.byType(TextFormField).evaluate().length).equals(1);
+    },
+  );
 }

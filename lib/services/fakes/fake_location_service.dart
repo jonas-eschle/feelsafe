@@ -49,6 +49,17 @@ final class FakeLocationService implements LocationServiceProtocol {
     return _history.isEmpty ? null : _history.last;
   }
 
+  /// Scripted return value for [getCurrentPosition]. Defaults to null
+  /// (no fix). Tests assign an explicit point to script a successful
+  /// fetch.
+  LocationPoint? currentPosition;
+
+  @override
+  Future<LocationPoint?> getCurrentPosition() async {
+    calls.add('getCurrentPosition');
+    return currentPosition;
+  }
+
   @override
   List<LocationPoint> get history => List.unmodifiable(_history);
 

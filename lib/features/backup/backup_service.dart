@@ -103,6 +103,91 @@ class BackupFormatError implements Exception {
   String toString() => 'BackupFormatError: $reason';
 }
 
+/// Per-element export selection — a value object passed by the
+/// [BackupScreen] toggles to the export pipeline (D5).
+///
+/// `settings` is intentionally always-true: the export bundle MUST
+/// remain self-restorable. The toggle on the screen is rendered
+/// disabled to make this contract visible to the user.
+class BackupSelection {
+  /// Creates a selection. Every flag defaults to true (the
+  /// "everything" preset matches the legacy export behavior).
+  const BackupSelection({
+    this.contacts = true,
+    this.modes = true,
+    this.distressModes = true,
+    this.templates = true,
+    this.sessionLogs = true,
+    this.recordings = true,
+  });
+
+  /// The "include everything" preset (legacy behaviour).
+  static const BackupSelection all = BackupSelection();
+
+  /// Whether to include `EmergencyContact`s.
+  final bool contacts;
+
+  /// Whether to include user-facing modes (the regular ones — the
+  /// ones whose ids are NOT referenced as a distress mode).
+  final bool modes;
+
+  /// Whether to include distress-flagged modes.
+  final bool distressModes;
+
+  /// Whether to include reminder templates.
+  final bool templates;
+
+  /// Whether to include `SessionLog` history.
+  final bool sessionLogs;
+
+  /// Whether to include audio-evidence recordings.
+  final bool recordings;
+
+  /// Returns a new selection with the given flags replaced.
+  BackupSelection copyWith({
+    bool? contacts,
+    bool? modes,
+    bool? distressModes,
+    bool? templates,
+    bool? sessionLogs,
+    bool? recordings,
+  }) => BackupSelection(
+    contacts: contacts ?? this.contacts,
+    modes: modes ?? this.modes,
+    distressModes: distressModes ?? this.distressModes,
+    templates: templates ?? this.templates,
+    sessionLogs: sessionLogs ?? this.sessionLogs,
+    recordings: recordings ?? this.recordings,
+  );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is BackupSelection &&
+          other.contacts == contacts &&
+          other.modes == modes &&
+          other.distressModes == distressModes &&
+          other.templates == templates &&
+          other.sessionLogs == sessionLogs &&
+          other.recordings == recordings;
+
+  @override
+  int get hashCode => Object.hash(
+    contacts,
+    modes,
+    distressModes,
+    templates,
+    sessionLogs,
+    recordings,
+  );
+
+  @override
+  String toString() =>
+      'BackupSelection(contacts: $contacts, modes: $modes, '
+      'distressModes: $distressModes, templates: $templates, '
+      'sessionLogs: $sessionLogs, recordings: $recordings)';
+}
+
 /// Export / import service for the full app backup bundle.
 final class BackupService {
   /// Creates a backup service.
@@ -147,20 +232,53 @@ final class BackupService {
   /// map then carries `{version, exportedAt, encrypted: true, salt,
   /// nonce, tag, ciphertext}`. Otherwise the map carries `{version,
   /// exportedAt, encrypted: false, ...sections}`.
-  Future<Map<String, Object?>> exportAll({String? pin}) async {
+  ///
+  /// [selection] — per-element opt-out (D5). Defaults to
+  /// [BackupSelection.all]. `selection.settings` is always honoured:
+  /// the bundle must remain self-restorable.
+  Future<Map<String, Object?>> exportAll({
+    String? pin,
+    BackupSelection selection = BackupSelection.all,
+  }) async {
+    // Per D5 (backup toggles), the user opts out of individual
+    // sections via [selection]. `settings` is always exported.
+    final allModes = await _modes.getAll();
+    final settings = await _settings.get();
+    final distressIds = _resolveDistressModeIds(allModes, settings);
+    final filteredModes = allModes.where((m) {
+      final isDistress = distressIds.contains(m.id);
+      return isDistress ? selection.distressModes : selection.modes;
+    });
+
     final sections = <String, Object?>{
-      'modes': (await _modes.getAll()).map((m) => m.toJson()).toList(),
-      'contacts': (await _contacts.getAll()).map((c) => c.toJson()).toList(),
-      'templates': (await _templates.getAll()).map((t) => t.toJson()).toList(),
+      'modes': filteredModes.map((m) => m.toJson()).toList(),
+      'contacts': selection.contacts
+          ? (await _contacts.getAll()).map((c) => c.toJson()).toList()
+          : const <Map<String, Object?>>[],
+      'templates': selection.templates
+          ? (await _templates.getAll()).map((t) => t.toJson()).toList()
+          : const <Map<String, Object?>>[],
       'distressChains': (await _distressChains.getAll())
           .map((d) => d.toJson())
           .toList(),
-      'settings': (await _settings.get())?.toJson(),
+      'settings': settings?.toJson(),
       'userProfile': (await _userProfile.get())?.toJson(),
       'batteryAlertConfig': (await _batteryAlert.get())?.toJson(),
-      'sessionLogs': (await _sessionLogs.getAll())
-          .map((s) => s.toJson())
-          .toList(),
+      'sessionLogs': selection.sessionLogs
+          ? (await _sessionLogs.getAll()).map((s) => s.toJson()).toList()
+          : const <Map<String, Object?>>[],
+      // `recordings` is deferred — once recordings become persisted
+      // entities the list goes here. Exposing the empty list keeps
+      // the round-trip stable.
+      'recordings': const <Map<String, Object?>>[],
+      'selection': {
+        'contacts': selection.contacts,
+        'modes': selection.modes,
+        'distressModes': selection.distressModes,
+        'templates': selection.templates,
+        'sessionLogs': selection.sessionLogs,
+        'recordings': selection.recordings,
+      },
     };
     final header = <String, Object?>{
       'version': kBackupVersion,
@@ -243,6 +361,26 @@ final class BackupService {
   }
 
   List<Object?> _listOf(Object? raw) => raw is List ? raw : const [];
+
+  /// Returns the set of mode-ids that are referenced as a distress
+  /// mode by any saved mode's `distressChainId`.
+  ///
+  /// *Why this heuristic:* a "distress mode" in the current codebase
+  /// is structurally a `SessionMode` whose id is referenced from
+  /// another mode's `distressChainId` field. Once the Q52 unification
+  /// lands and `SessionMode.isDistressMode` exists, this helper can
+  /// be replaced with `m.isDistressMode == true`.
+  Set<String> _resolveDistressModeIds(
+    Iterable<SessionMode> allModes,
+    AppSettings? settings,
+  ) {
+    final ids = <String>{};
+    for (final m in allModes) {
+      final id = m.distressChainId;
+      if (id != null && id.isNotEmpty) ids.add(id);
+    }
+    return ids;
+  }
 
   _EncryptedBlob _encryptBody(String plaintext, String pin) {
     final salt = _randomBytes(_saltLength);

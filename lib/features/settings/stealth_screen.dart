@@ -48,9 +48,12 @@ class StealthScreen extends ConsumerWidget {
             value: stealth.enabled,
             onChanged: (v) => update(stealth.copyWith(enabled: v)),
           ),
-          ListTile(
-            title: Text(l.stealthFakeName),
-            subtitle: Text(stealth.fakeName),
+          // Editable fake-name TextField — the user MUST be able to
+          // pick the disguise label that appears in launcher/menus to
+          // align with their personal cover story.
+          _FakeNameField(
+            value: stealth.fakeName,
+            onChanged: (v) => update(stealth.copyWith(fakeName: v)),
           ),
           SwitchListTile(
             title: Text(l.stealthNotificationDisguise),
@@ -73,6 +76,71 @@ class StealthScreen extends ConsumerWidget {
             onSelect: pickPreset,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Editable text field for [StealthConfig.fakeName]. Stateful so the
+/// underlying [TextEditingController] is bound to the field's
+/// lifecycle rather than rebuilt on every parent rebuild.
+class _FakeNameField extends StatefulWidget {
+  const _FakeNameField({required this.value, required this.onChanged});
+
+  /// Current persisted fake-name.
+  final String value;
+
+  /// Called when the user finishes editing (blur or submit) with a
+  /// non-empty value. Empty submissions are ignored — fakeName is
+  /// always shown to an observer, so a blank value would be a tell.
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_FakeNameField> createState() => _FakeNameFieldState();
+}
+
+class _FakeNameFieldState extends State<_FakeNameField> {
+  late final TextEditingController _ctrl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctrl = TextEditingController(text: widget.value);
+  }
+
+  @override
+  void didUpdateWidget(covariant _FakeNameField old) {
+    super.didUpdateWidget(old);
+    if (_ctrl.text != widget.value) {
+      _ctrl.text = widget.value;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  void _commit(String raw) {
+    final trimmed = raw.trim();
+    if (trimmed.isEmpty) return;
+    widget.onChanged(trimmed);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: TextField(
+        controller: _ctrl,
+        decoration: InputDecoration(
+          labelText: l.stealthFakeName,
+          border: const OutlineInputBorder(),
+        ),
+        onSubmitted: _commit,
+        onEditingComplete: () => _commit(_ctrl.text),
       ),
     );
   }

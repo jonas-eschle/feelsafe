@@ -175,6 +175,112 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionSimulationBanner => 'סימולציה';
 
   @override
+  String get sessionCheckIn => 'I\'m checked in';
+
+  @override
+  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+
+  @override
+  String get sessionDisarmTriggerBody =>
+      'A disarm trigger fired. End the session?';
+
+  @override
+  String get sessionDisarmTriggerConfirm => 'End session';
+
+  @override
+  String get sessionDisarmTriggerCancel => 'Continue';
+
+  @override
+  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+
+  @override
+  String get wrongPinAngelaBody =>
+      'Are you sure you want to proceed with this old PIN?';
+
+  @override
+  String get wrongPinAngelaConfirm => 'OK';
+
+  @override
+  String get wrongPinAngelaCancel => 'Cancel';
+
+  @override
+  String get sessionStepCountdownTitle => 'Warning';
+
+  @override
+  String get sessionStepCountdownBody =>
+      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+
+  @override
+  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+
+  @override
+  String get sessionStepDisguisedDefaultBody =>
+      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+
+  @override
+  String get sessionStepSmsStatus => 'Sending message to contacts…';
+
+  @override
+  String get sessionStepSmsDelivered => 'Delivered';
+
+  @override
+  String get sessionStepSmsSent => 'Sent';
+
+  @override
+  String get sessionStepSmsQueued => 'Queued';
+
+  @override
+  String get sessionStepSmsFailed => 'Failed';
+
+  @override
+  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+
+  @override
+  String get sessionStepPhoneCallCancel => 'Cancel call';
+
+  @override
+  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+
+  @override
+  String get sessionStepLoudAlarmBody =>
+      'The alarm is sounding to attract attention.';
+
+  @override
+  String get sessionStepLoudAlarmFlashWarning =>
+      'Photosensitive warning: screen is flashing.';
+
+  @override
+  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+
+  @override
+  String sessionStepCallEmergencyNumber(Object number) {
+    return 'Number: $number';
+  }
+
+  @override
+  String sessionStepHardwareButtonRepeat(
+    Object button,
+    Object count,
+    Object windowMs,
+  ) {
+    return 'Press $button $count times within ${windowMs}ms';
+  }
+
+  @override
+  String sessionStepHardwareButtonLong(Object button, Object seconds) {
+    return 'Hold $button for $seconds seconds';
+  }
+
+  @override
+  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+
+  @override
+  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+
+  @override
+  String get sessionStepHardwareButtonPower => 'power';
+
+  @override
   String get sessionCompletedTitle => 'המושב הושלם';
 
   @override
@@ -204,6 +310,30 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get fakeCallHangUp => 'נתק';
+
+  @override
+  String get fakeCallSlideToAnswer => 'slide to answer';
+
+  @override
+  String get fakeCallUnknownCaller => 'Unknown';
+
+  @override
+  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+
+  @override
+  String get fakeCallIncomingTelegram => 'Telegram voice call';
+
+  @override
+  String get fakeCallIncomingSignal => 'Signal voice call';
+
+  @override
+  String get fakeCallBrandWhatsapp => 'WHATSAPP';
+
+  @override
+  String get fakeCallBrandTelegram => 'TELEGRAM';
+
+  @override
+  String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
   String get contactsTitle => 'אנשי קשר לשעת חירום';
@@ -281,7 +411,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get modeFieldCheckInType => 'סוג צ\'ק-אין';
 
   @override
-  String get modeFieldDistressChain => 'שרשרת מצוקה';
+  String get modeFieldDistressChain => 'מצב מצוקה';
 
   @override
   String get modeFieldDistressChainDefault => 'השתמש בברירת המחדל';
@@ -294,6 +424,193 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get modeChainEmpty => 'אין שלבים עדיין. הקישו על הוסף שלב.';
+
+  @override
+  String get modeFieldIcon => 'סמל';
+
+  @override
+  String get modeIconPickerTitle => 'בחר סמל';
+
+  @override
+  String get modeIconClear => 'ללא סמל';
+
+  @override
+  String get modeDistressHeader => 'טריגרים למצוקה';
+
+  @override
+  String get modeDistressEmpty => 'אין טריגרי מצוקה מוגדרים.';
+
+  @override
+  String get modeDistressAdd => 'הוסף טריגר';
+
+  @override
+  String get modeDistressTypeHardware => 'כפתור פיזי';
+
+  @override
+  String get modeDistressButtonType => 'כפתור';
+
+  @override
+  String get modeDistressButtonVolumeUp => 'עוצמה +';
+
+  @override
+  String get modeDistressButtonVolumeDown => 'עוצמה −';
+
+  @override
+  String get modeDistressButtonPower => 'הפעלה';
+
+  @override
+  String get modeDistressPattern => 'תבנית';
+
+  @override
+  String get modeDistressPatternRepeat => 'לחיצה חוזרת';
+
+  @override
+  String get modeDistressPatternLong => 'לחיצה ארוכה';
+
+  @override
+  String get modeDistressPressCount => 'מספר לחיצות';
+
+  @override
+  String get modeDistressPressWindow => 'חלון (אלפיות שנייה)';
+
+  @override
+  String get modeDistressLongDuration => 'משך החזקה (שניות)';
+
+  @override
+  String modeDistressSummaryRepeat(Object count, Object windowMs) {
+    return '$count לחיצות / $windowMs מ׳׳ש';
+  }
+
+  @override
+  String modeDistressSummaryLong(Object seconds) {
+    return 'החזק $seconds שניות';
+  }
+
+  @override
+  String get modeOverridesHeader => 'עקיפות מצב';
+
+  @override
+  String get modeOverridesUseDefault => 'השתמש בברירת המחדל';
+
+  @override
+  String get modeOverridesGpsLabel => 'תיעוד GPS';
+
+  @override
+  String get modeOverridesStealthLabel => 'מצב חמקני';
+
+  @override
+  String get modeOverridesEventDefaultsLabel => 'ברירות מחדל לאירועים';
+
+  @override
+  String get modeOverridesLocalTemplatesLabel => 'תבניות תזכורת מקומיות';
+
+  @override
+  String get modeOverridesGpsEnabled => 'GPS פעיל';
+
+  @override
+  String get modeOverridesGpsIntervalLabel => 'מרווח דגימה (שניות)';
+
+  @override
+  String get modeOverridesGpsIncludeInSms => 'הוסף מיקום ל-SMS';
+
+  @override
+  String get modeOverridesStealthEnabled => 'מצב חמקני פעיל';
+
+  @override
+  String get modeOverridesStealthFakeName => 'שם אפליקציה מזויף';
+
+  @override
+  String get modeOverridesEventDefaultsHint =>
+      'ברירות מחדל מותאמות פעילות עבור מצב זה.';
+
+  @override
+  String modeOverridesLocalTemplatesCount(Object count) {
+    return '$count תבניות מקומיות';
+  }
+
+  @override
+  String get modeUnsavedTitle => 'לבטל שינויים?';
+
+  @override
+  String get modeUnsavedBody => 'יש לך שינויים שלא נשמרו. לבטל ולצאת מהעורך?';
+
+  @override
+  String get modeUnsavedDiscard => 'בטל';
+
+  @override
+  String get modeUnsavedKeep => 'המשך עריכה';
+
+  @override
+  String get stepDuplicate => 'שכפל שלב';
+
+  @override
+  String get stepTimingHeader => 'תזמון';
+
+  @override
+  String stepTimingSummary(Object wait, Object duration, Object grace) {
+    return 'המתנה $waitש\' / משך $durationש\' / חסד $graceש\'';
+  }
+
+  @override
+  String get stepCategoryAll => 'הכל';
+
+  @override
+  String get stepCategoryAction => 'פעולה';
+
+  @override
+  String get stepCategoryReminder => 'תזכורת';
+
+  @override
+  String get stepCategoryDisarm => 'צ\'ק-אין';
+
+  @override
+  String get modeTrackingHeader => 'מעקב GPS';
+
+  @override
+  String get modeTrackingEnabled => 'הקלט GPS במהלך הסשן';
+
+  @override
+  String get modeTrackingIntervalLabel => 'מרווח דגימה';
+
+  @override
+  String get modeTrackingBufferSizeLabel => 'גודל המאגר';
+
+  @override
+  String modeTrackingBufferSizeValue(Object count) {
+    return '$count נקודות';
+  }
+
+  @override
+  String get modeTrackingBatteryNote => 'מעקב GPS תכוף מגדיל את צריכת הסוללה.';
+
+  @override
+  String get stepConfigLogGpsLabel => 'תיעוד GPS';
+
+  @override
+  String get stepConfigLogGpsDefault => 'ברירת מחדל';
+
+  @override
+  String get stepConfigLogGpsOn => 'פעיל';
+
+  @override
+  String get stepConfigLogGpsOff => 'כבוי';
+
+  @override
+  String get stepConfigLogGpsDefaultOn => 'ברירת מחדל (פעיל)';
+
+  @override
+  String get stepConfigLogGpsDefaultOff => 'ברירת מחדל (כבוי)';
+
+  @override
+  String get moreSettingsHeader => 'הגדרות נוספות';
+
+  @override
+  String moreSettingsHeaderCustomized(int count) {
+    return 'הגדרות נוספות ($count מותאמים)';
+  }
+
+  @override
+  String get stepTypePickerLabel => 'Step type';
 
   @override
   String get stepTypeHoldButton => 'לחצן החזקה';
@@ -421,25 +738,33 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stepConfigPhonePreSms => 'שלח SMS לפני השיחה';
 
   @override
-  String get distressChainsTitle => 'שרשראות מצוקה';
+  String get distressModesTitle => 'מצבי מצוקה';
 
   @override
-  String get distressChainsEmpty => 'אין שרשראות מצוקה עדיין.';
+  String get distressModeInUseTitle => 'מצב המצוקה בשימוש';
 
   @override
-  String get distressChainsAdd => 'הוסף שרשרת';
+  String distressModeInUseBody(Object modes) {
+    return 'מצב המצוקה הזה עדיין מקושר ל: $modes. קשר את המצבים האלו למצב מצוקה אחר לפני מחיקה.';
+  }
 
   @override
-  String get distressChainEditorTitleCreate => 'שרשרת מצוקה חדשה';
+  String get distressModesEmpty => 'אין מצבי מצוקה עדיין.';
 
   @override
-  String get distressChainEditorTitleEdit => 'ערוך שרשרת מצוקה';
+  String get distressModesAdd => 'הוסף מצב מצוקה';
 
   @override
-  String get distressChainName => 'שם השרשרת';
+  String get distressModeEditorTitleCreate => 'מצב מצוקה חדש';
 
   @override
-  String get distressCountdown => 'מפעיל שרשרת מצוקה...';
+  String get distressModeEditorTitleEdit => 'ערוך מצב מצוקה';
+
+  @override
+  String get distressModeName => 'שם מצב המצוקה';
+
+  @override
+  String get distressCountdown => 'מפעיל מצב מצוקה...';
 
   @override
   String get distressCountdownStealth => 'אנא המתינו...';
@@ -559,7 +884,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsSectionProfile => 'פרופיל';
 
   @override
-  String get settingsSectionDistressChains => 'שרשראות מצוקה';
+  String get settingsSectionDistressModes => 'מצבי מצוקה';
 
   @override
   String get settingsSectionReminderTemplates => 'תבניות תזכורת';
@@ -791,6 +1116,34 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get backupImportOk => 'הגיבוי יובא בהצלחה.';
+
+  @override
+  String get backupSelectionHeader => 'Include in export';
+
+  @override
+  String get backupToggleSettings => 'Settings';
+
+  @override
+  String get backupToggleSettingsSubtitle =>
+      'Always included so the backup can be restored.';
+
+  @override
+  String get backupToggleContacts => 'Emergency contacts';
+
+  @override
+  String get backupToggleModes => 'Modes';
+
+  @override
+  String get backupToggleDistressModes => 'Distress modes';
+
+  @override
+  String get backupToggleTemplates => 'Reminder templates';
+
+  @override
+  String get backupToggleSessionLogs => 'Session history';
+
+  @override
+  String get backupToggleRecordings => 'Audio recordings';
 
   @override
   String get historyTitle => 'מושבים קודמים';

@@ -174,6 +174,112 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionSimulationBanner => '模拟';
 
   @override
+  String get sessionCheckIn => 'I\'m checked in';
+
+  @override
+  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+
+  @override
+  String get sessionDisarmTriggerBody =>
+      'A disarm trigger fired. End the session?';
+
+  @override
+  String get sessionDisarmTriggerConfirm => 'End session';
+
+  @override
+  String get sessionDisarmTriggerCancel => 'Continue';
+
+  @override
+  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+
+  @override
+  String get wrongPinAngelaBody =>
+      'Are you sure you want to proceed with this old PIN?';
+
+  @override
+  String get wrongPinAngelaConfirm => 'OK';
+
+  @override
+  String get wrongPinAngelaCancel => 'Cancel';
+
+  @override
+  String get sessionStepCountdownTitle => 'Warning';
+
+  @override
+  String get sessionStepCountdownBody =>
+      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+
+  @override
+  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+
+  @override
+  String get sessionStepDisguisedDefaultBody =>
+      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+
+  @override
+  String get sessionStepSmsStatus => 'Sending message to contacts…';
+
+  @override
+  String get sessionStepSmsDelivered => 'Delivered';
+
+  @override
+  String get sessionStepSmsSent => 'Sent';
+
+  @override
+  String get sessionStepSmsQueued => 'Queued';
+
+  @override
+  String get sessionStepSmsFailed => 'Failed';
+
+  @override
+  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+
+  @override
+  String get sessionStepPhoneCallCancel => 'Cancel call';
+
+  @override
+  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+
+  @override
+  String get sessionStepLoudAlarmBody =>
+      'The alarm is sounding to attract attention.';
+
+  @override
+  String get sessionStepLoudAlarmFlashWarning =>
+      'Photosensitive warning: screen is flashing.';
+
+  @override
+  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+
+  @override
+  String sessionStepCallEmergencyNumber(Object number) {
+    return 'Number: $number';
+  }
+
+  @override
+  String sessionStepHardwareButtonRepeat(
+    Object button,
+    Object count,
+    Object windowMs,
+  ) {
+    return 'Press $button $count times within ${windowMs}ms';
+  }
+
+  @override
+  String sessionStepHardwareButtonLong(Object button, Object seconds) {
+    return 'Hold $button for $seconds seconds';
+  }
+
+  @override
+  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+
+  @override
+  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+
+  @override
+  String get sessionStepHardwareButtonPower => 'power';
+
+  @override
   String get sessionCompletedTitle => '会话已完成';
 
   @override
@@ -202,6 +308,30 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get fakeCallHangUp => '挂断';
+
+  @override
+  String get fakeCallSlideToAnswer => 'slide to answer';
+
+  @override
+  String get fakeCallUnknownCaller => 'Unknown';
+
+  @override
+  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+
+  @override
+  String get fakeCallIncomingTelegram => 'Telegram voice call';
+
+  @override
+  String get fakeCallIncomingSignal => 'Signal voice call';
+
+  @override
+  String get fakeCallBrandWhatsapp => 'WHATSAPP';
+
+  @override
+  String get fakeCallBrandTelegram => 'TELEGRAM';
+
+  @override
+  String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
   String get contactsTitle => '紧急联系人';
@@ -278,7 +408,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modeFieldCheckInType => '签到类型';
 
   @override
-  String get modeFieldDistressChain => '求救链';
+  String get modeFieldDistressChain => '求救模式';
 
   @override
   String get modeFieldDistressChainDefault => '使用默认';
@@ -291,6 +421,192 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get modeChainEmpty => '尚无步骤。点击“添加步骤”。';
+
+  @override
+  String get modeFieldIcon => '图标';
+
+  @override
+  String get modeIconPickerTitle => '选择图标';
+
+  @override
+  String get modeIconClear => '无图标';
+
+  @override
+  String get modeDistressHeader => '求救触发器';
+
+  @override
+  String get modeDistressEmpty => '未配置求救触发器。';
+
+  @override
+  String get modeDistressAdd => '添加触发器';
+
+  @override
+  String get modeDistressTypeHardware => '硬件按键';
+
+  @override
+  String get modeDistressButtonType => '按键';
+
+  @override
+  String get modeDistressButtonVolumeUp => '音量上';
+
+  @override
+  String get modeDistressButtonVolumeDown => '音量下';
+
+  @override
+  String get modeDistressButtonPower => '电源';
+
+  @override
+  String get modeDistressPattern => '模式';
+
+  @override
+  String get modeDistressPatternRepeat => '重复按键';
+
+  @override
+  String get modeDistressPatternLong => '长按';
+
+  @override
+  String get modeDistressPressCount => '按键次数';
+
+  @override
+  String get modeDistressPressWindow => '窗口(毫秒)';
+
+  @override
+  String get modeDistressLongDuration => '按住时长(秒)';
+
+  @override
+  String modeDistressSummaryRepeat(Object count, Object windowMs) {
+    return '$count次 / $windowMs毫秒';
+  }
+
+  @override
+  String modeDistressSummaryLong(Object seconds) {
+    return '按住$seconds秒';
+  }
+
+  @override
+  String get modeOverridesHeader => '模式覆盖';
+
+  @override
+  String get modeOverridesUseDefault => '使用应用默认';
+
+  @override
+  String get modeOverridesGpsLabel => 'GPS 记录';
+
+  @override
+  String get modeOverridesStealthLabel => '隐身';
+
+  @override
+  String get modeOverridesEventDefaultsLabel => '事件默认值';
+
+  @override
+  String get modeOverridesLocalTemplatesLabel => '本地提醒模板';
+
+  @override
+  String get modeOverridesGpsEnabled => '启用 GPS 记录';
+
+  @override
+  String get modeOverridesGpsIntervalLabel => '采样间隔(秒)';
+
+  @override
+  String get modeOverridesGpsIncludeInSms => '在短信中附加位置';
+
+  @override
+  String get modeOverridesStealthEnabled => '启用隐身';
+
+  @override
+  String get modeOverridesStealthFakeName => '伪装应用名称';
+
+  @override
+  String get modeOverridesEventDefaultsHint => '此模式启用了自定义事件默认值。';
+
+  @override
+  String modeOverridesLocalTemplatesCount(Object count) {
+    return '$count 个本地模板';
+  }
+
+  @override
+  String get modeUnsavedTitle => '放弃更改?';
+
+  @override
+  String get modeUnsavedBody => '您有未保存的更改。放弃并离开编辑器?';
+
+  @override
+  String get modeUnsavedDiscard => '放弃';
+
+  @override
+  String get modeUnsavedKeep => '继续编辑';
+
+  @override
+  String get stepDuplicate => '复制步骤';
+
+  @override
+  String get stepTimingHeader => '时间';
+
+  @override
+  String stepTimingSummary(Object wait, Object duration, Object grace) {
+    return '等待 $wait秒 / 时长 $duration秒 / 宽限 $grace秒';
+  }
+
+  @override
+  String get stepCategoryAll => '全部';
+
+  @override
+  String get stepCategoryAction => '动作';
+
+  @override
+  String get stepCategoryReminder => '提醒';
+
+  @override
+  String get stepCategoryDisarm => '签到';
+
+  @override
+  String get modeTrackingHeader => 'GPS 追踪';
+
+  @override
+  String get modeTrackingEnabled => '会话期间记录 GPS';
+
+  @override
+  String get modeTrackingIntervalLabel => '采样间隔';
+
+  @override
+  String get modeTrackingBufferSizeLabel => '缓冲区大小';
+
+  @override
+  String modeTrackingBufferSizeValue(Object count) {
+    return '$count 个点';
+  }
+
+  @override
+  String get modeTrackingBatteryNote => '频繁的 GPS 追踪会增加电池消耗。';
+
+  @override
+  String get stepConfigLogGpsLabel => 'GPS 记录';
+
+  @override
+  String get stepConfigLogGpsDefault => '默认';
+
+  @override
+  String get stepConfigLogGpsOn => '开启';
+
+  @override
+  String get stepConfigLogGpsOff => '关闭';
+
+  @override
+  String get stepConfigLogGpsDefaultOn => '默认（开启）';
+
+  @override
+  String get stepConfigLogGpsDefaultOff => '默认（关闭）';
+
+  @override
+  String get moreSettingsHeader => '更多设置';
+
+  @override
+  String moreSettingsHeaderCustomized(int count) {
+    return '更多设置（已自定义 $count 项）';
+  }
+
+  @override
+  String get stepTypePickerLabel => 'Step type';
 
   @override
   String get stepTypeHoldButton => '按住按钮';
@@ -418,25 +734,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepConfigPhonePreSms => '拨打前发送短信';
 
   @override
-  String get distressChainsTitle => '求救链';
+  String get distressModesTitle => '求救模式';
 
   @override
-  String get distressChainsEmpty => '尚无求救链。';
+  String get distressModeInUseTitle => '求救模式正在使用中';
 
   @override
-  String get distressChainsAdd => '添加链';
+  String distressModeInUseBody(Object modes) {
+    return '此求救模式仍绑定到：$modes。请先将这些模式改绑到其他求救模式，再删除本模式。';
+  }
 
   @override
-  String get distressChainEditorTitleCreate => '新建求救链';
+  String get distressModesEmpty => '尚无求救模式。';
 
   @override
-  String get distressChainEditorTitleEdit => '编辑求救链';
+  String get distressModesAdd => '添加求救模式';
 
   @override
-  String get distressChainName => '链名称';
+  String get distressModeEditorTitleCreate => '新建求救模式';
 
   @override
-  String get distressCountdown => '正在触发求救链……';
+  String get distressModeEditorTitleEdit => '编辑求救模式';
+
+  @override
+  String get distressModeName => '求救模式名称';
+
+  @override
+  String get distressCountdown => '正在触发求救模式……';
 
   @override
   String get distressCountdownStealth => '请稍候……';
@@ -556,7 +880,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsSectionProfile => '个人资料';
 
   @override
-  String get settingsSectionDistressChains => '求救链';
+  String get settingsSectionDistressModes => '求救模式';
 
   @override
   String get settingsSectionReminderTemplates => '提醒模板';
@@ -701,7 +1025,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '求救流程将在 $seconds 秒后启动';
+    return '求救模式将在 $seconds 秒后启动';
   }
 
   @override
@@ -785,6 +1109,34 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get backupImportOk => '备份导入成功。';
+
+  @override
+  String get backupSelectionHeader => 'Include in export';
+
+  @override
+  String get backupToggleSettings => 'Settings';
+
+  @override
+  String get backupToggleSettingsSubtitle =>
+      'Always included so the backup can be restored.';
+
+  @override
+  String get backupToggleContacts => 'Emergency contacts';
+
+  @override
+  String get backupToggleModes => 'Modes';
+
+  @override
+  String get backupToggleDistressModes => 'Distress modes';
+
+  @override
+  String get backupToggleTemplates => 'Reminder templates';
+
+  @override
+  String get backupToggleSessionLogs => 'Session history';
+
+  @override
+  String get backupToggleRecordings => 'Audio recordings';
 
   @override
   String get historyTitle => '历史会话';
@@ -1106,7 +1458,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get modeFieldCheckInType => '報平安方式';
 
   @override
-  String get modeFieldDistressChain => '求救流程';
+  String get modeFieldDistressChain => '求救模式';
 
   @override
   String get modeFieldDistressChainDefault => '使用預設';
@@ -1119,6 +1471,189 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get modeChainEmpty => '尚未有任何步驟。點選「新增步驟」。';
+
+  @override
+  String get modeFieldIcon => '圖示';
+
+  @override
+  String get modeIconPickerTitle => '選擇圖示';
+
+  @override
+  String get modeIconClear => '無圖示';
+
+  @override
+  String get modeDistressHeader => '求救觸發器';
+
+  @override
+  String get modeDistressEmpty => '尚未設定求救觸發器。';
+
+  @override
+  String get modeDistressAdd => '新增觸發器';
+
+  @override
+  String get modeDistressTypeHardware => '硬體按鍵';
+
+  @override
+  String get modeDistressButtonType => '按鍵';
+
+  @override
+  String get modeDistressButtonVolumeUp => '音量+';
+
+  @override
+  String get modeDistressButtonVolumeDown => '音量−';
+
+  @override
+  String get modeDistressButtonPower => '電源';
+
+  @override
+  String get modeDistressPattern => '模式';
+
+  @override
+  String get modeDistressPatternRepeat => '連續按下';
+
+  @override
+  String get modeDistressPatternLong => '長按';
+
+  @override
+  String get modeDistressPressCount => '按鍵次數';
+
+  @override
+  String get modeDistressPressWindow => '時間窗(毫秒)';
+
+  @override
+  String get modeDistressLongDuration => '按住時間(秒)';
+
+  @override
+  String modeDistressSummaryRepeat(Object count, Object windowMs) {
+    return '$count 次 / $windowMs 毫秒';
+  }
+
+  @override
+  String modeDistressSummaryLong(Object seconds) {
+    return '按住 $seconds 秒';
+  }
+
+  @override
+  String get modeOverridesHeader => '模式覆寫';
+
+  @override
+  String get modeOverridesUseDefault => '使用應用預設';
+
+  @override
+  String get modeOverridesGpsLabel => 'GPS 紀錄';
+
+  @override
+  String get modeOverridesStealthLabel => '隱身';
+
+  @override
+  String get modeOverridesEventDefaultsLabel => '事件預設值';
+
+  @override
+  String get modeOverridesLocalTemplatesLabel => '本地提醒範本';
+
+  @override
+  String get modeOverridesGpsEnabled => '啟用 GPS 紀錄';
+
+  @override
+  String get modeOverridesGpsIntervalLabel => '取樣間隔(秒)';
+
+  @override
+  String get modeOverridesGpsIncludeInSms => '在簡訊中加入位置';
+
+  @override
+  String get modeOverridesStealthEnabled => '啟用隱身';
+
+  @override
+  String get modeOverridesStealthFakeName => '假冒應用名稱';
+
+  @override
+  String get modeOverridesEventDefaultsHint => '此模式啟用了自訂事件預設值。';
+
+  @override
+  String modeOverridesLocalTemplatesCount(Object count) {
+    return '$count 個本地範本';
+  }
+
+  @override
+  String get modeUnsavedTitle => '捨棄變更?';
+
+  @override
+  String get modeUnsavedBody => '您有未儲存的變更。捨棄並離開編輯器?';
+
+  @override
+  String get modeUnsavedDiscard => '捨棄';
+
+  @override
+  String get modeUnsavedKeep => '繼續編輯';
+
+  @override
+  String get stepDuplicate => '複製步驟';
+
+  @override
+  String get stepTimingHeader => '時間';
+
+  @override
+  String stepTimingSummary(Object wait, Object duration, Object grace) {
+    return '等待 $wait 秒 / 時長 $duration 秒 / 寬限 $grace 秒';
+  }
+
+  @override
+  String get stepCategoryAll => '全部';
+
+  @override
+  String get stepCategoryAction => '動作';
+
+  @override
+  String get stepCategoryReminder => '提醒';
+
+  @override
+  String get stepCategoryDisarm => '簽到';
+
+  @override
+  String get modeTrackingHeader => 'GPS 追蹤';
+
+  @override
+  String get modeTrackingEnabled => '工作階段期間記錄 GPS';
+
+  @override
+  String get modeTrackingIntervalLabel => '取樣間隔';
+
+  @override
+  String get modeTrackingBufferSizeLabel => '緩衝區大小';
+
+  @override
+  String modeTrackingBufferSizeValue(Object count) {
+    return '$count 個點';
+  }
+
+  @override
+  String get modeTrackingBatteryNote => '頻繁的 GPS 追蹤會增加電池耗用。';
+
+  @override
+  String get stepConfigLogGpsLabel => 'GPS 記錄';
+
+  @override
+  String get stepConfigLogGpsDefault => '預設';
+
+  @override
+  String get stepConfigLogGpsOn => '開啟';
+
+  @override
+  String get stepConfigLogGpsOff => '關閉';
+
+  @override
+  String get stepConfigLogGpsDefaultOn => '預設（開啟）';
+
+  @override
+  String get stepConfigLogGpsDefaultOff => '預設（關閉）';
+
+  @override
+  String get moreSettingsHeader => '更多設定';
+
+  @override
+  String moreSettingsHeaderCustomized(int count) {
+    return '更多設定（已自訂 $count 項）';
+  }
 
   @override
   String get stepTypeHoldButton => '按住按鈕';
@@ -1246,25 +1781,33 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stepConfigPhonePreSms => '通話前先傳送簡訊';
 
   @override
-  String get distressChainsTitle => '求救流程';
+  String get distressModesTitle => '求救模式';
 
   @override
-  String get distressChainsEmpty => '尚未建立求救流程。';
+  String get distressModeInUseTitle => '求救模式使用中';
 
   @override
-  String get distressChainsAdd => '新增流程';
+  String distressModeInUseBody(Object modes) {
+    return '此求救模式仍繫結於:$modes。請先將這些模式改為其他求救模式,再刪除本模式。';
+  }
 
   @override
-  String get distressChainEditorTitleCreate => '新求救流程';
+  String get distressModesEmpty => '尚未建立求救模式。';
 
   @override
-  String get distressChainEditorTitleEdit => '編輯求救流程';
+  String get distressModesAdd => '新增求救模式';
 
   @override
-  String get distressChainName => '流程名稱';
+  String get distressModeEditorTitleCreate => '新求救模式';
 
   @override
-  String get distressCountdown => '正在觸發求救流程…';
+  String get distressModeEditorTitleEdit => '編輯求救模式';
+
+  @override
+  String get distressModeName => '求救模式名稱';
+
+  @override
+  String get distressCountdown => '正在觸發求救模式…';
 
   @override
   String get distressCountdownStealth => '請稍候…';
@@ -1384,7 +1927,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get settingsSectionProfile => '個人資料';
 
   @override
-  String get settingsSectionDistressChains => '求救流程';
+  String get settingsSectionDistressModes => '求救模式';
 
   @override
   String get settingsSectionReminderTemplates => '提醒範本';
@@ -1529,7 +2072,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String distressConfirmationCountdown(Object seconds) {
-    return '求救流程將在 $seconds 秒後啟動';
+    return '求救模式將在 $seconds 秒後啟動';
   }
 
   @override

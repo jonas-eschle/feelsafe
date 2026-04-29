@@ -433,6 +433,190 @@ abstract class AppLocalizations {
   /// **'Simulation'**
   String get sessionSimulationBanner;
 
+  /// In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m checked in'**
+  String get sessionCheckIn;
+
+  /// Title of the disarm-trigger confirmation dialog (GPS arrival / timer).
+  ///
+  /// In en, this message translates to:
+  /// **'Disarm trigger fired'**
+  String get sessionDisarmTriggerTitle;
+
+  /// Body of the disarm-trigger confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'A disarm trigger fired. End the session?'**
+  String get sessionDisarmTriggerBody;
+
+  /// Confirm button on the disarm-trigger dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'End session'**
+  String get sessionDisarmTriggerConfirm;
+
+  /// Cancel button on the disarm-trigger dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get sessionDisarmTriggerCancel;
+
+  /// Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations.
+  ///
+  /// In en, this message translates to:
+  /// **'Old PIN from Angela'**
+  String get wrongPinAngelaTitle;
+
+  /// Body of the deceptive wrong-PIN dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to proceed with this old PIN?'**
+  String get wrongPinAngelaBody;
+
+  /// Primary button on the deceptive wrong-PIN dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get wrongPinAngelaConfirm;
+
+  /// Secondary button on the deceptive wrong-PIN dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get wrongPinAngelaCancel;
+
+  /// Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get sessionStepCountdownTitle;
+
+  /// Subtitle on the countdown-warning step UI.
+  ///
+  /// In en, this message translates to:
+  /// **'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.'**
+  String get sessionStepCountdownBody;
+
+  /// Fallback title shown on a disguisedReminder step when no template title is resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get sessionStepDisguisedDefaultTitle;
+
+  /// Fallback body shown on a disguisedReminder step when no template body is resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap \'I\'m checked in\' to confirm you\'re safe.'**
+  String get sessionStepDisguisedDefaultBody;
+
+  /// Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending message to contacts…'**
+  String get sessionStepSmsStatus;
+
+  /// Per-message status label shown when the messaging service reports the message was delivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get sessionStepSmsDelivered;
+
+  /// Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered).
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get sessionStepSmsSent;
+
+  /// Per-message status label shown while a message is queued for delivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Queued'**
+  String get sessionStepSmsQueued;
+
+  /// Per-message status label shown when the messaging service reports a delivery failure.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get sessionStepSmsFailed;
+
+  /// Status text shown during a phoneCallContact step while the contact is being called.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling emergency contact…'**
+  String get sessionStepPhoneCallStatus;
+
+  /// Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session).
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel call'**
+  String get sessionStepPhoneCallCancel;
+
+  /// Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm playing'**
+  String get sessionStepLoudAlarmTitle;
+
+  /// Subtitle shown during a loudAlarm step.
+  ///
+  /// In en, this message translates to:
+  /// **'The alarm is sounding to attract attention.'**
+  String get sessionStepLoudAlarmBody;
+
+  /// Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true.
+  ///
+  /// In en, this message translates to:
+  /// **'Photosensitive warning: screen is flashing.'**
+  String get sessionStepLoudAlarmFlashWarning;
+
+  /// Status text shown during a callEmergency step before / while the emergency number is dialed.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling emergency services…'**
+  String get sessionStepCallEmergencyStatus;
+
+  /// Display of the emergency number being dialed.
+  ///
+  /// In en, this message translates to:
+  /// **'Number: {number}'**
+  String sessionStepCallEmergencyNumber(Object number);
+
+  /// Instruction text shown during a hardwareButton step with repeat-press pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Press {button} {count} times within {windowMs}ms'**
+  String sessionStepHardwareButtonRepeat(
+    Object button,
+    Object count,
+    Object windowMs,
+  );
+
+  /// Instruction text shown during a hardwareButton step with long-press pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold {button} for {seconds} seconds'**
+  String sessionStepHardwareButtonLong(Object button, Object seconds);
+
+  /// Lowercase noun for the volume-up hardware button used in step instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'volume up'**
+  String get sessionStepHardwareButtonVolumeUp;
+
+  /// Lowercase noun for the volume-down hardware button used in step instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'volume down'**
+  String get sessionStepHardwareButtonVolumeDown;
+
+  /// Lowercase noun for the power hardware button used in step instructions.
+  ///
+  /// In en, this message translates to:
+  /// **'power'**
+  String get sessionStepHardwareButtonPower;
+
   /// Title of the session-completed screen.
   ///
   /// In en, this message translates to:
@@ -492,6 +676,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Hang up'**
   String get fakeCallHangUp;
+
+  /// Hint text inside the iOS-style slide-to-answer track.
+  ///
+  /// In en, this message translates to:
+  /// **'slide to answer'**
+  String get fakeCallSlideToAnswer;
+
+  /// Fallback caller name when the configured callerName is empty.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown'**
+  String get fakeCallUnknownCaller;
+
+  /// Incoming-call header for the WhatsApp call style.
+  ///
+  /// In en, this message translates to:
+  /// **'WhatsApp voice call'**
+  String get fakeCallIncomingWhatsapp;
+
+  /// Incoming-call header for the Telegram call style.
+  ///
+  /// In en, this message translates to:
+  /// **'Telegram voice call'**
+  String get fakeCallIncomingTelegram;
+
+  /// Incoming-call header for the Signal call style.
+  ///
+  /// In en, this message translates to:
+  /// **'Signal voice call'**
+  String get fakeCallIncomingSignal;
+
+  /// Top-of-screen brand badge in the WhatsApp fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'WHATSAPP'**
+  String get fakeCallBrandWhatsapp;
+
+  /// Top-of-screen brand badge in the Telegram fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'TELEGRAM'**
+  String get fakeCallBrandTelegram;
+
+  /// Top-of-screen brand badge in the Signal fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'SIGNAL'**
+  String get fakeCallBrandSignal;
 
   /// Title of the contacts list screen.
   ///
@@ -666,6 +898,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No steps yet. Tap Add step.'**
   String get modeChainEmpty;
+
+  /// Label for the mode-icon picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get modeFieldIcon;
+
+  /// Title of the icon-picker bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick an icon'**
+  String get modeIconPickerTitle;
+
+  /// Option in the icon picker that clears the icon selection.
+  ///
+  /// In en, this message translates to:
+  /// **'No icon'**
+  String get modeIconClear;
+
+  /// Section header for distress-trigger list.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress triggers'**
+  String get modeDistressHeader;
+
+  /// Empty state for distress triggers.
+  ///
+  /// In en, this message translates to:
+  /// **'No distress triggers configured.'**
+  String get modeDistressEmpty;
+
+  /// Button to add a distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Add distress trigger'**
+  String get modeDistressAdd;
+
+  /// Distress trigger type: hardware button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware button'**
+  String get modeDistressTypeHardware;
+
+  /// Hardware-button selector label.
+  ///
+  /// In en, this message translates to:
+  /// **'Button'**
+  String get modeDistressButtonType;
+
+  /// Hardware-button option: volume up.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume up'**
+  String get modeDistressButtonVolumeUp;
+
+  /// Hardware-button option: volume down.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume down'**
+  String get modeDistressButtonVolumeDown;
+
+  /// Hardware-button option: power.
+  ///
+  /// In en, this message translates to:
+  /// **'Power'**
+  String get modeDistressButtonPower;
+
+  /// Distress hardware-pattern selector label.
+  ///
+  /// In en, this message translates to:
+  /// **'Pattern'**
+  String get modeDistressPattern;
+
+  /// Distress pattern: multiple presses.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat press'**
+  String get modeDistressPatternRepeat;
+
+  /// Distress pattern: long press.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press'**
+  String get modeDistressPatternLong;
+
+  /// Distress repeat-press count field.
+  ///
+  /// In en, this message translates to:
+  /// **'Press count'**
+  String get modeDistressPressCount;
+
+  /// Distress repeat-press window field, in ms.
+  ///
+  /// In en, this message translates to:
+  /// **'Press window (ms)'**
+  String get modeDistressPressWindow;
+
+  /// Distress long-press duration field, in seconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold duration (seconds)'**
+  String get modeDistressLongDuration;
+
+  /// Compact summary of a repeat-press distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} presses / {windowMs} ms'**
+  String modeDistressSummaryRepeat(Object count, Object windowMs);
+
+  /// Compact summary of a long-press distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold {seconds}s'**
+  String modeDistressSummaryLong(Object seconds);
+
+  /// Section header for the per-mode overrides panel.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode overrides'**
+  String get modeOverridesHeader;
+
+  /// Toggle that resets a mode override to its app-wide default.
+  ///
+  /// In en, this message translates to:
+  /// **'Use app default'**
+  String get modeOverridesUseDefault;
+
+  /// Sub-label for the GPS-logging override row.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS logging'**
+  String get modeOverridesGpsLabel;
+
+  /// Sub-label for the stealth override row.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth'**
+  String get modeOverridesStealthLabel;
+
+  /// Sub-label for the event-defaults override row.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults'**
+  String get modeOverridesEventDefaultsLabel;
+
+  /// Sub-label for the local-templates override row.
+  ///
+  /// In en, this message translates to:
+  /// **'Local reminder templates'**
+  String get modeOverridesLocalTemplatesLabel;
+
+  /// Per-mode GPS-logging toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS logging enabled'**
+  String get modeOverridesGpsEnabled;
+
+  /// Per-mode GPS sampling interval label.
+  ///
+  /// In en, this message translates to:
+  /// **'Sampling interval (seconds)'**
+  String get modeOverridesGpsIntervalLabel;
+
+  /// Per-mode GPS-in-SMS toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Append location to SMS'**
+  String get modeOverridesGpsIncludeInSms;
+
+  /// Per-mode stealth toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth enabled'**
+  String get modeOverridesStealthEnabled;
+
+  /// Per-mode stealth fake-name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake app name'**
+  String get modeOverridesStealthFakeName;
+
+  /// Hint when event defaults are overridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom event defaults active for this mode.'**
+  String get modeOverridesEventDefaultsHint;
+
+  /// Mode-local template count summary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} mode-local templates'**
+  String modeOverridesLocalTemplatesCount(Object count);
+
+  /// Unsaved-changes prompt title.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get modeUnsavedTitle;
+
+  /// Unsaved-changes prompt body.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes. Discard them and leave the editor?'**
+  String get modeUnsavedBody;
+
+  /// Confirm-discard button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get modeUnsavedDiscard;
+
+  /// Cancel-discard button label.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get modeUnsavedKeep;
+
+  /// Tooltip / label for the duplicate-step action on a chain step tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate step'**
+  String get stepDuplicate;
+
+  /// Header for the collapsible timing panel on a step tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get stepTimingHeader;
+
+  /// Compact summary shown on a collapsed timing panel.
+  ///
+  /// In en, this message translates to:
+  /// **'wait {wait}s / duration {duration}s / grace {grace}s'**
+  String stepTimingSummary(Object wait, Object duration, Object grace);
+
+  /// Step-type picker filter: all categories.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get stepCategoryAll;
+
+  /// Step-type picker filter: outgoing-action steps (SMS, calls, alarm).
+  ///
+  /// In en, this message translates to:
+  /// **'Action'**
+  String get stepCategoryAction;
+
+  /// Step-type picker filter: reminder / countdown steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder'**
+  String get stepCategoryReminder;
+
+  /// Step-type picker filter: hold-button / hardware check-in steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in'**
+  String get stepCategoryDisarm;
+
+  /// Section header for interval-based GPS tracking settings (DE-3).
+  ///
+  /// In en, this message translates to:
+  /// **'Tracking'**
+  String get modeTrackingHeader;
+
+  /// Toggle: enable interval-based GPS recording.
+  ///
+  /// In en, this message translates to:
+  /// **'Record GPS during session'**
+  String get modeTrackingEnabled;
+
+  /// Label above the tracking-interval slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Sampling interval'**
+  String get modeTrackingIntervalLabel;
+
+  /// Label above the tracking buffer-size slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Buffer size'**
+  String get modeTrackingBufferSizeLabel;
+
+  /// Current buffer capacity in points.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} points'**
+  String modeTrackingBufferSizeValue(Object count);
+
+  /// Inline warning shown beneath the tracking section.
+  ///
+  /// In en, this message translates to:
+  /// **'Frequent GPS tracking increases battery drain.'**
+  String get modeTrackingBatteryNote;
+
+  /// Label for the per-step GPS logging tri-state selector (spec 11 §DE-2).
+  ///
+  /// In en, this message translates to:
+  /// **'GPS logging'**
+  String get stepConfigLogGpsLabel;
+
+  /// Tri-state segment label: defer to the per-type/global default.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get stepConfigLogGpsDefault;
+
+  /// Tri-state segment label: force GPS logging on for this step.
+  ///
+  /// In en, this message translates to:
+  /// **'On'**
+  String get stepConfigLogGpsOn;
+
+  /// Tri-state segment label: skip GPS logging for this step.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get stepConfigLogGpsOff;
+
+  /// Muted hint under the GPS selector when set to Default and the resolved value is On.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (On)'**
+  String get stepConfigLogGpsDefaultOn;
+
+  /// Muted hint under the GPS selector when set to Default and the resolved value is Off.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (Off)'**
+  String get stepConfigLogGpsDefaultOff;
+
+  /// Header for the collapsible More settings tile in step config editors (spec 11 §DE-4).
+  ///
+  /// In en, this message translates to:
+  /// **'More settings'**
+  String get moreSettingsHeader;
+
+  /// Header for the More settings tile when one or more rare-toggle fields differ from their defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'More settings ({count} customized)'**
+  String moreSettingsHeaderCustomized(int count);
+
+  /// Label for the step-type dropdown in the mode editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Step type'**
+  String get stepTypePickerLabel;
 
   /// Label for holdButton step.
   ///
@@ -913,46 +1493,58 @@ abstract class AppLocalizations {
   /// **'Send pre-call SMS'**
   String get stepConfigPhonePreSms;
 
-  /// Title of distress-chains list.
+  /// Title of distress-modes list.
   ///
   /// In en, this message translates to:
-  /// **'Distress chains'**
-  String get distressChainsTitle;
+  /// **'Distress modes'**
+  String get distressModesTitle;
 
-  /// Empty state on distress chains.
+  /// Title of the dialog shown when the user tries to delete a distress mode that is still bound to one or more modes.
   ///
   /// In en, this message translates to:
-  /// **'No distress chains yet.'**
-  String get distressChainsEmpty;
+  /// **'Distress mode is in use'**
+  String get distressModeInUseTitle;
 
-  /// Add-distress-chain FAB.
+  /// Body of the dependent-modes warning dialog.
   ///
   /// In en, this message translates to:
-  /// **'Add chain'**
-  String get distressChainsAdd;
+  /// **'This distress mode is still bound to: {modes}. Rebind those modes to a different distress mode before deleting.'**
+  String distressModeInUseBody(Object modes);
 
-  /// Title when creating a distress chain.
+  /// Empty state on distress modes.
   ///
   /// In en, this message translates to:
-  /// **'New distress chain'**
-  String get distressChainEditorTitleCreate;
+  /// **'No distress modes yet.'**
+  String get distressModesEmpty;
 
-  /// Title when editing a distress chain.
+  /// Add-distress-mode FAB.
   ///
   /// In en, this message translates to:
-  /// **'Edit distress chain'**
-  String get distressChainEditorTitleEdit;
+  /// **'Add distress mode'**
+  String get distressModesAdd;
 
-  /// Distress chain name field.
+  /// Title when creating a distress mode.
   ///
   /// In en, this message translates to:
-  /// **'Chain name'**
-  String get distressChainName;
+  /// **'New distress mode'**
+  String get distressModeEditorTitleCreate;
+
+  /// Title when editing a distress mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit distress mode'**
+  String get distressModeEditorTitleEdit;
+
+  /// Distress mode name field.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress mode name'**
+  String get distressModeName;
 
   /// Label in distress confirmation overlay.
   ///
   /// In en, this message translates to:
-  /// **'Triggering distress chain...'**
+  /// **'Triggering distress mode...'**
   String get distressCountdown;
 
   /// Stealth label in distress confirmation.
@@ -1189,11 +1781,11 @@ abstract class AppLocalizations {
   /// **'Profile'**
   String get settingsSectionProfile;
 
-  /// Distress chains entry.
+  /// Distress modes entry.
   ///
   /// In en, this message translates to:
-  /// **'Distress chains'**
-  String get settingsSectionDistressChains;
+  /// **'Distress modes'**
+  String get settingsSectionDistressModes;
 
   /// Templates entry.
   ///
@@ -1638,6 +2230,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Backup imported successfully.'**
   String get backupImportOk;
+
+  /// Section header above the per-element backup toggles.
+  ///
+  /// In en, this message translates to:
+  /// **'Include in export'**
+  String get backupSelectionHeader;
+
+  /// Always-on toggle showing that settings are always exported.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get backupToggleSettings;
+
+  /// Explanation under the disabled Settings toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Always included so the backup can be restored.'**
+  String get backupToggleSettingsSubtitle;
+
+  /// Toggle to include contacts in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get backupToggleContacts;
+
+  /// Toggle to include user-facing modes in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Modes'**
+  String get backupToggleModes;
+
+  /// Toggle to include distress-flagged modes in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress modes'**
+  String get backupToggleDistressModes;
+
+  /// Toggle to include reminder templates in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder templates'**
+  String get backupToggleTemplates;
+
+  /// Toggle to include session logs in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Session history'**
+  String get backupToggleSessionLogs;
+
+  /// Toggle to include audio-evidence recordings in the export.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio recordings'**
+  String get backupToggleRecordings;
 
   /// Title of the past-sessions screen.
   ///

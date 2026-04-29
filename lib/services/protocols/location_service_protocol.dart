@@ -30,6 +30,18 @@ abstract class LocationServiceProtocol {
   /// been recorded yet.
   LocationPoint? getLastLocationPoint();
 
+  /// Requests a single, fresh GPS fix. Returns null when permission is
+  /// denied or the platform fails to acquire a fix within its internal
+  /// timeout.
+  ///
+  /// Used by the spec 11 §DE-3 interval-based tracker, which calls
+  /// this on every Timer tick rather than relying on a continuous
+  /// position stream — a periodic single-shot pattern keeps the
+  /// platform's location stack idle between samples and avoids the
+  /// `distanceFilter` drop-outs that the streaming API exhibits when
+  /// the user is stationary.
+  Future<LocationPoint?> getCurrentPosition();
+
   /// All [LocationPoint]s captured in the current session, ordered
   /// oldest-first.
   List<LocationPoint> get history;

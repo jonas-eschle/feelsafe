@@ -32,6 +32,26 @@ enum StealthIconPreset {
 
   /// Clock app icon preset.
   clock,
+
+  /// Podcast app icon preset.
+  podcast,
+
+  /// No icon preset (default app face).
+  none,
+}
+
+/// How the session timer is rendered while stealth is active (Q26).
+enum StealthTimerDisplay {
+  /// Show the full localized "remaining" countdown text. Default
+  /// when stealth is disabled.
+  normal,
+
+  /// Integer-only display (e.g., "37"). Useful when the disguise UI
+  /// already has its own visible clock.
+  small,
+
+  /// Hide the timer text entirely.
+  none,
 }
 
 /// Configuration for the app's stealth appearance.

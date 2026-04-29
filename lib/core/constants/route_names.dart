@@ -43,12 +43,12 @@ abstract class RouteNames {
   /// Session mode create / edit form.
   static const String modeEditor = '/modes/edit';
 
-  // ------------------------------- distress chains
-  /// Global distress chains list.
-  static const String distressChains = '/distress-chains';
+  // ------------------------------- distress modes
+  /// Global distress modes list.
+  static const String distressModes = '/distress-modes';
 
-  /// Distress chain create / edit form.
-  static const String distressChainEditor = '/distress-chains/edit';
+  /// Distress mode create / edit form.
+  static const String distressModeEditor = '/distress-modes/edit';
 
   // ------------------------------- templates
   /// Disguised reminder templates list.

@@ -62,7 +62,11 @@
         </activity>
 
         <!--
-            Stealth icon activity-aliases (Phase 10).
+            Stealth icon activity-aliases (Q24 / spec 06 §Stealth).
+
+            Per spec there are exactly 4 launcher faces:
+            * the real `.MainActivity` (Guardian Angela)
+            * three disabled aliases below (Music, Podcast, Calendar)
 
             Each alias reuses @mipmap/ic_launcher until Phase 12 Group F lands
             the dedicated stealth drawables (TODO: replace android:icon /
@@ -84,89 +88,24 @@
         </activity-alias>
 
         <activity-alias
+            android:name=".StealthAlias_podcast"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="Podcasts"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias
             android:name=".StealthAlias_calendar"
             android:enabled="false"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
             android:label="Calendar"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_fitness"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Fitness"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_weather"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Weather"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_news"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="News"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_photos"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Photos"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_notes"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Notes"
-            android:targetActivity=".MainActivity">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:name=".StealthAlias_clock"
-            android:enabled="false"
-            android:exported="true"
-            android:icon="@mipmap/ic_launcher"
-            android:label="Clock"
             android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

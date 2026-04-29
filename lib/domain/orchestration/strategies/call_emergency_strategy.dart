@@ -19,6 +19,8 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/domain/orchestration/location_resolver.dart';
+import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';
 
 /// Strategy for emergency-call steps.
 final class CallEmergencyStrategy extends EventStrategy {
@@ -28,6 +30,17 @@ final class CallEmergencyStrategy extends EventStrategy {
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
     final number = _resolveNumber(step, services);
+    // Spec 11 §DE-2: resolve the per-step GPS-logging override and
+    // ask [LocationResolver] respect it. Even though
+    // [PhoneServiceProtocol.callEmergency] does not currently embed
+    // GPS itself, [LocationResolver] is the single chokepoint for a
+    // pre-call location fix when
+    // `CallEmergencyConfig.sendLocationSmsFirst` is wired into a
+    // strategy extension. Computing it here keeps DE-2 honoured for
+    // every emergency dispatch — no GPS is hit when the user has
+    // opted out at any layer.
+    final logGps = LogGpsResolver.resolve(step, services);
+    LocationResolver.resolve(services, logGpsEnabled: logGps);
     await services.phone.callEmergency(
       number,
       isSimulation: services.context.isSimulation,
