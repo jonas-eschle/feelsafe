@@ -2735,10 +2735,10 @@ abstract class AppLocalizations {
   /// **'{value}x'**
   String sessionSimSpeedValue(Object value);
 
-  /// Indicator that simulation speed is capped while app is backgrounded.
+  /// Indicator that simulation speed is capped at 60x while app is backgrounded.
   ///
   /// In en, this message translates to:
-  /// **'Background-capped'**
+  /// **'Capped at 60× in background'**
   String get sessionSimSpeedBackgroundCap;
 
   /// Label of the advanced-controls toggle in simulation.

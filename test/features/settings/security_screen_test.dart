@@ -27,6 +27,12 @@ void main() {
   });
 
   testWidgets('SecurityScreen shows three PIN rows', (tester) async {
+    // The screen now also shows three biometric switches (Q-bio) and
+    // a duress-test row (Q-DURESS-TEST) so the content overflows the
+    // default 800x600 viewport. Use a tall viewport so the PIN
+    // timeout slider mounts.
+    await tester.binding.setSurfaceSize(const Size(800, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: [
         settingsRepositoryProvider.overrideWithValue(

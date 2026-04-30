@@ -1394,7 +1394,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Background-capped';
+  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
 
   @override
   String get sessionSimAdvancedLabel => 'Advanced';
