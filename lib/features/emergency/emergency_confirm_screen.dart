@@ -142,13 +142,23 @@ class _EmergencyConfirmScreenState
                 ),
               ),
               const SizedBox(height: 32),
+              // Big countdown digit — rendered standalone so test
+              // suites and accessibility readers get a discrete
+              // "8" / "7" / ... instead of a templated sentence.
               Text(
-                l.emergencyConfirmCountdown(_remaining.clamp(0, 999)),
+                '${_remaining.clamp(0, 999)}',
                 textAlign: TextAlign.center,
                 style: theme.textTheme.displayLarge?.copyWith(
                   color: theme.colorScheme.onErrorContainer,
                   fontWeight: FontWeight.w700,
                   fontSize: 96,
+                ),
+              ),
+              Text(
+                l.emergencyConfirmCountdown(_remaining.clamp(0, 999)),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onErrorContainer,
                 ),
               ),
               const Spacer(),

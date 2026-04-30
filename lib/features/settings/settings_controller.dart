@@ -8,8 +8,10 @@ library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/utils/session_locked_error.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 
 /// Async controller exposing the singleton `AppSettings`.
 ///
@@ -25,8 +27,16 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     return stored ?? const AppSettings(defaults: AppDefaults());
   }
 
+  void _ensureNotLocked(String action) {
+    final session = ref.read(sessionControllerProvider.notifier);
+    if (session.isSessionActive) {
+      throw SessionLockedError(action);
+    }
+  }
+
   /// Overwrites the current settings with [value] and persists it.
   Future<void> save(AppSettings value) async {
+    _ensureNotLocked('save settings');
     // Await the pending hydrate so `state.value` reflects the most
     // recent persisted settings before this mutation runs.
     await future;
@@ -53,10 +63,15 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     await save(current.copyWith(emergencyCallNumber: number));
   }
 
-  /// Updates just the selected mode id.
+  /// Updates just the selected mode id. Bypasses the session lock —
+  /// changing the *next-session* mode while the current one runs is
+  /// always allowed (the active session keeps its own snapshot).
   Future<void> setSelectedModeId(String? modeId) async {
     final current = await future;
-    await save(current.copyWith(selectedModeId: modeId));
+    final repo = ref.read(settingsRepositoryProvider);
+    final next = current.copyWith(selectedModeId: modeId);
+    await repo.save(next);
+    state = AsyncValue.data(next);
   }
 
   /// Updates the app-unlock PIN hash (null disables the lock).
