@@ -83,6 +83,8 @@ final class StealthIconService implements StealthIconServiceProtocol {
     'photos' => StealthIconPreset.photos,
     'notes' => StealthIconPreset.notes,
     'clock' => StealthIconPreset.clock,
+    'podcast' => StealthIconPreset.podcast,
+    'none' => StealthIconPreset.none,
     _ => null,
   };
 }

@@ -348,6 +348,11 @@ void main() {
     });
 
     testWidgets('backup_screen_export_shows_json_dialog', (tester) async {
+      // The BackupScreen content overflows the default 800x600
+      // viewport (PIN field, selection toggles, plus the two CTAs).
+      // Use a tall viewport so the Export button is hit-testable.
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: _backupOverrides(),
         child: const BackupScreen(),

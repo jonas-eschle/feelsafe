@@ -157,14 +157,24 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
               if (v != null) setState(() => _display = v);
             },
           ),
-          TextField(
-            controller: _keywordCtrl,
-            decoration: InputDecoration(labelText: l.templateFieldKeyword),
-          ),
-          TextField(
-            controller: _buttonCtrl,
-            decoration: InputDecoration(labelText: l.templateFieldButtonLabel),
-          ),
+          // Conditional confirmation-specific field. Only one shows
+          // at a time based on `_confirm`:
+          //   tapButton → buttonLabel
+          //   tapWord   → keyword
+          //   swipe / dismiss → none
+          if (_confirm == ConfirmationType.tapWord)
+            TextField(
+              controller: _keywordCtrl,
+              decoration:
+                  InputDecoration(labelText: l.templateFieldKeyword),
+            ),
+          if (_confirm == ConfirmationType.tapButton)
+            TextField(
+              controller: _buttonCtrl,
+              decoration: InputDecoration(
+                labelText: l.templateFieldButtonLabel,
+              ),
+            ),
         ],
       ),
     );
