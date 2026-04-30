@@ -144,9 +144,36 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
               ),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _languageCtrl,
+            DropdownButtonFormField<String>(
+              initialValue: _languageCtrl.text.isEmpty
+                  ? null
+                  : _languageCtrl.text,
               decoration: InputDecoration(labelText: l.contactFieldLanguage),
+              items: [
+                DropdownMenuItem<String>(
+                  value: null,
+                  child: Text(l.contactLanguageDefault),
+                ),
+                for (final code in const [
+                  'en',
+                  'de',
+                  'es',
+                  'fr',
+                  'ru',
+                  'zh',
+                  'zh_TW',
+                  'hi',
+                  'fa',
+                  'uk',
+                  'pl',
+                  'el',
+                  'ar',
+                  'he',
+                ])
+                  DropdownMenuItem<String>(value: code, child: Text(code)),
+              ],
+              onChanged: (v) =>
+                  setState(() => _languageCtrl.text = v ?? ''),
             ),
             const SizedBox(height: 24),
             Text(

@@ -15,6 +15,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
+import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -344,11 +345,15 @@ void main() {
     });
 
     test('replaceWithDistressChain after sessionEnded is a no-op', () {
+      // Spec D-SAFETY-17: distress chain cannot be triggered after
+      // the session has truly ended. Use endSession() to reach the
+      // EngineEnded state — engine.disarm() is a re-arm and would
+      // leave the session running.
       fakeAsync((async) {
         final h = _wire(mainChain: [_hold()]);
         h.engine.start();
         async.flushMicrotasks();
-        h.engine.disarm();
+        h.engine.endSession(reason: EndReason.userQuit);
         async.flushMicrotasks();
         final countBefore = h.events
             .where((e) => e.event == ChainEvent.distressTriggered)

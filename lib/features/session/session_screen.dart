@@ -30,6 +30,7 @@ import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/models/walk_session.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/features/session/widgets/simulation_advanced_controls.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -238,7 +239,7 @@ class _SessionBody extends ConsumerWidget {
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
-          if (session.isSimulation)
+          if (session.isSimulation) ...[
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(8),
@@ -248,6 +249,8 @@ class _SessionBody extends ConsumerWidget {
                 textAlign: TextAlign.center,
               ),
             ),
+            const SimulationAdvancedControls(),
+          ],
           const SizedBox(height: 16),
           Text(
             l.sessionStepLabel(
@@ -273,16 +276,17 @@ class _SessionBody extends ConsumerWidget {
           // intentionally an empty placeholder.
           _StepWidget(session: session),
           const Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              OutlinedButton(
-                onPressed: () =>
-                    ref.read(sessionControllerProvider.notifier).pause(),
-                child: Text(l.sessionPause),
-              ),
-            ],
-          ),
+          if (ref.read(sessionControllerProvider.notifier).isPauseAllowed)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                OutlinedButton(
+                  onPressed: () =>
+                      ref.read(sessionControllerProvider.notifier).pause(),
+                  child: Text(l.sessionPause),
+                ),
+              ],
+            ),
           const SizedBox(height: 12),
           // Swipe-to-confirm disarm. On release at the end of the
           // track we gate the actual disarm behind the session-end

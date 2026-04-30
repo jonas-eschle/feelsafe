@@ -397,6 +397,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get contactFieldLanguage => 'لغة الرسائل النصية (اختياري)';
 
   @override
+  String get contactLanguageDefault => 'Default (use app language)';
+
+  @override
   String get contactChannelsHeader => 'قنوات المراسلة';
 
   @override

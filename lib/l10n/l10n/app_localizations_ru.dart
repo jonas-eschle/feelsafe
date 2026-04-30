@@ -398,6 +398,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get contactFieldLanguage => 'Язык SMS (необязательно)';
 
   @override
+  String get contactLanguageDefault => 'Default (use app language)';
+
+  @override
   String get contactChannelsHeader => 'Каналы сообщений';
 
   @override

@@ -833,6 +833,12 @@ abstract class AppLocalizations {
   /// **'SMS language (optional)'**
   String get contactFieldLanguage;
 
+  /// Default option in the per-contact language dropdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (use app language)'**
+  String get contactLanguageDefault;
+
   /// Channels section header.
   ///
   /// In en, this message translates to:

@@ -127,7 +127,11 @@ _Harness _wire({
 
 void main() {
   group('Walk Mode: happy path', () {
-    test('hold throughout then disarm → Ended(disarm)', () {
+    test('hold throughout then end-session → Ended(disarm)', () {
+      // Spec 01: engine.disarm() is a re-arm to step 0. To actually
+      // terminate the session via the user-initiated path we use
+      // engine.endSession(EndReason.disarm) — which is what
+      // SessionController.disarm() does.
       fakeAsync((async) {
         final h = _wire(
           chain: [holdStep(durationSeconds: 5, gracePeriodSeconds: 2)],
@@ -137,8 +141,8 @@ void main() {
         h.engine.holdStart();
         // Hold through most of the duration.
         async.elapse(const Duration(seconds: 3));
-        // User disarms manually.
-        h.engine.disarm();
+        // User ends the session manually.
+        h.engine.endSession(reason: EndReason.disarm);
         async.flushMicrotasks();
         final last = h.engine.state as EngineEnded;
         check(last.reason).equals(EndReason.disarm);
@@ -146,7 +150,9 @@ void main() {
       });
     });
 
-    test('continuous hold with re-hold during grace still disarms', () {
+    test('re-hold during grace re-arms (resets to step 0)', () {
+      // Spec 01 §holdButton: re-hold during grace = disarm() = re-arm
+      // to step 0. The session keeps running.
       fakeAsync((async) {
         final h = _wire(
           chain: [
@@ -165,13 +171,12 @@ void main() {
         // Sensitivity elapses → enter duration → user re-holds.
         async.elapse(const Duration(milliseconds: 200));
         h.engine.holdStart();
-        // Per spec: re-hold during grace = disarm. We are actually
-        // still in duration here, so continue until disarm by user.
         async.elapse(const Duration(seconds: 2));
         h.engine.disarm();
         async.flushMicrotasks();
-        final last = h.engine.state as EngineEnded;
-        check(last.reason).equals(EndReason.disarm);
+        // Engine is still running (re-armed at step 0).
+        check(h.engine.state).isA<EngineRunning>();
+        check((h.engine.state as EngineRunning).stepIndex).equals(0);
         h.cleanup();
       });
     });
@@ -185,7 +190,7 @@ void main() {
         async.flushMicrotasks();
         h.engine.holdStart();
         async.elapse(const Duration(seconds: 2));
-        h.engine.disarm();
+        h.engine.endSession(reason: EndReason.disarm);
         async.flushMicrotasks();
         final graceEvents = h.events.where(
           (e) => e.event == ChainEvent.graceExpired,

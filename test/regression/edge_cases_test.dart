@@ -132,7 +132,7 @@ void main() {
         );
         e.start();
         async.flushMicrotasks();
-        e.disarm();
+        e.endSession(reason: EndReason.userQuit);
         async.flushMicrotasks();
         check(e.start).throws<StateError>();
         e.dispose();
@@ -186,7 +186,9 @@ void main() {
   });
 
   group('Regression: idempotent lifecycle operations', () {
-    test('disarm() twice does not re-emit sessionEnded', () {
+    test('disarm() twice does not double-emit userDisarmed unfairly', () {
+      // Spec 01: each disarm() call is a re-arm; both fire userDisarmed
+      // and sessionEnded never fires (disarm doesn't end the session).
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [holdStep()],
@@ -200,10 +202,12 @@ void main() {
         async.flushMicrotasks();
         e.disarm();
         async.flushMicrotasks();
-        final endedCount = events
-            .where((ev) => ev == ChainEvent.sessionEnded)
+        final disarmCount = events
+            .where((ev) => ev == ChainEvent.userDisarmed)
             .length;
-        check(endedCount).equals(1);
+        // Each disarm fires once; no sessionEnded.
+        check(disarmCount).equals(2);
+        check(events.contains(ChainEvent.sessionEnded)).isFalse();
         e.dispose();
       });
     });

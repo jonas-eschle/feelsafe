@@ -392,6 +392,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contactFieldLanguage => '短信语言（可选）';
 
   @override
+  String get contactLanguageDefault => 'Default (use app language)';
+
+  @override
   String get contactChannelsHeader => '消息渠道';
 
   @override

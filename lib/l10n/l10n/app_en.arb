@@ -249,6 +249,8 @@
   "@contactFieldRelationship": { "description": "Relationship field." },
   "contactFieldLanguage": "SMS language (optional)",
   "@contactFieldLanguage": { "description": "Per-contact language field." },
+  "contactLanguageDefault": "Default (use app language)",
+  "@contactLanguageDefault": { "description": "Default option in the per-contact language dropdown." },
   "contactChannelsHeader": "Messaging channels",
   "@contactChannelsHeader": { "description": "Channels section header." },
   "contactChannelSms": "SMS",

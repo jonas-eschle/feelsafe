@@ -395,6 +395,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get contactFieldLanguage => 'SMS language (optional)';
 
   @override
+  String get contactLanguageDefault => 'Default (use app language)';
+
+  @override
   String get contactChannelsHeader => 'Messaging channels';
 
   @override

@@ -262,14 +262,15 @@ void main() {
       ).isGreaterOrEqual(1);
     });
 
-    testWidgets('contact_form_shows_channel_chips', (tester) async {
+    testWidgets('contact_form_shows_channel_toggles', (tester) async {
+      // Spec 04 §Contact Form lines 1351-1354: channel toggles are
+      // rendered as CheckboxListTile rows (one per channel).
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: _formOverrides(),
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      // Channel toggles rendered as FilterChip badges (4 channels).
-      check(find.byType(FilterChip).evaluate().length).isGreaterOrEqual(4);
+      check(find.byType(CheckboxListTile).evaluate().length).isGreaterOrEqual(4);
     });
   });
 

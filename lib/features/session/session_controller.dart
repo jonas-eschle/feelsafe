@@ -49,6 +49,7 @@ class _SessionRuntime {
     required this.engine,
     required this.orchestrator,
     required this.recorder,
+    required this.mode,
     required this.triggerManager,
     required this.eventsSub,
     this.incomingCallSub,
@@ -57,6 +58,7 @@ class _SessionRuntime {
   final SessionEngine engine;
   final SessionOrchestrator orchestrator;
   final SessionLogRecorder recorder;
+  final SessionMode mode;
   final TriggerManager? triggerManager;
   final StreamSubscription<ChainEventData> eventsSub;
   final StreamSubscription<CallState>? incomingCallSub;
@@ -83,6 +85,15 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   /// completeness; the return value is IGNORED — distress fires
   /// regardless. Null = skip dialog and fire immediately.
   Future<void> Function()? onAngelaDeceptiveDialog;
+
+  /// True when the active mode permits manual pause. Backed by the
+  /// underlying runtime state; defaults to `true` when no session is
+  /// running so generic UI builders do not strip the button.
+  bool get isPauseAllowed {
+    final runtime = _runtime;
+    if (runtime == null) return true;
+    return runtime.mode.pauseAllowed;
+  }
 
   /// Wrong-PIN attempts observed on the currently-active prompt.
   /// Reset every time a new PIN dialog opens by the UI.
@@ -487,6 +498,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       engine: engine,
       orchestrator: orchestrator,
       recorder: recorder,
+      mode: mode,
       triggerManager: triggerManager,
       eventsSub: eventsSub,
       incomingCallSub: incomingCallSub,

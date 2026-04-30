@@ -397,6 +397,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get contactFieldLanguage => 'زبان پیامک (اختیاری)';
 
   @override
+  String get contactLanguageDefault => 'Default (use app language)';
+
+  @override
   String get contactChannelsHeader => 'کانال‌های پیام‌رسانی';
 
   @override
