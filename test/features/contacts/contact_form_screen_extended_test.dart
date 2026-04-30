@@ -134,6 +134,8 @@ void main() {
   testWidgets(
     'ContactFormScreen persists relationship + language when populated',
     (tester) async {
+      // Spec 04 line 1357: language is a Dropdown, not a free-form
+      // text field. Pick "es" via the DropdownButtonFormField path.
       final repo = FakeContactsRepository();
       await tester.pumpWidget(hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
@@ -147,7 +149,9 @@ void main() {
       await tester.enterText(fields.at(0), 'Sara');
       await tester.enterText(fields.at(1), '+15550001111');
       await tester.enterText(fields.at(2), 'Sister');
-      await tester.enterText(fields.at(3), 'es');
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('es').last);
       await tester.pump();
       final save = find.descendant(
         of: find.byType(ContactFormScreen),

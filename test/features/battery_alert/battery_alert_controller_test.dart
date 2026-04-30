@@ -23,11 +23,13 @@ ProviderContainer _makeContainer({BatteryAlertConfig? seed}) {
 void main() {
   group('BatteryAlertController.build', () {
     test('returns default BatteryAlertConfig when repo empty', () async {
+      // Q34: battery alert defaults to OFF (privacy-first opt-in).
+      // Q35: threshold defaults to 10% (closer to actual emergency).
       final container = _makeContainer();
       addTearDown(container.dispose);
       final cfg = await container.read(batteryAlertControllerProvider.future);
-      check(cfg.enabled).isTrue();
-      check(cfg.thresholdPercent).equals(15);
+      check(cfg.enabled).isFalse();
+      check(cfg.thresholdPercent).equals(10);
       check(cfg.chain).isEmpty();
     });
 

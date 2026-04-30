@@ -57,31 +57,33 @@ void main() {
   testWidgets(
     'ContactFormScreen toggling channels off after turning on removes them',
     (tester) async {
+      // Spec 04 §Contact Form lines 1351-1354: channel toggles are
+      // CheckboxListTile rows, not FilterChips. Tap each non-SMS
+      // checkbox twice (on, then off); SMS starts on.
       final repo = FakeContactsRepository();
       await tester.pumpWidget(hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      // 0=SMS (on by default), 1=WhatsApp, 2=Telegram, 3=Phone.
-      final chips = find.byType(FilterChip);
-      // Tap each non-SMS chip twice (on, then off).
+      final boxes = find.byType(CheckboxListTile);
+      // 0=SMS, 1=WhatsApp, 2=Telegram, 3=Phone (per the form layout).
       for (final i in const [1, 2, 3]) {
-        await tester.tap(chips.at(i));
+        await tester.tap(boxes.at(i));
         await tester.pumpAndSettle();
-        await tester.tap(chips.at(i));
+        await tester.tap(boxes.at(i));
         await tester.pumpAndSettle();
       }
       // SMS starts on; tap it once (off), tap again (on).
-      await tester.tap(chips.at(0));
+      await tester.tap(boxes.at(0));
       await tester.pumpAndSettle();
-      await tester.tap(chips.at(0));
+      await tester.tap(boxes.at(0));
       await tester.pumpAndSettle();
-      // All four chips end up with SMS-on-only.
-      final sms = tester.widget<FilterChip>(chips.at(0));
-      check(sms.selected).equals(true);
-      final wa = tester.widget<FilterChip>(chips.at(1));
-      check(wa.selected).equals(false);
+      // All four checkboxes end up with SMS-on-only.
+      final sms = tester.widget<CheckboxListTile>(boxes.at(0));
+      check(sms.value).equals(true);
+      final wa = tester.widget<CheckboxListTile>(boxes.at(1));
+      check(wa.value).equals(false);
     },
   );
 

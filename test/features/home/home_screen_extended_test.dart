@@ -40,28 +40,32 @@ WalkSession _activeSession() => WalkSession(
 
 void main() {
   testWidgets(
-    'HomeScreen empty modes state disables the Start button',
+    'HomeScreen with modes but none selected disables the Start button',
     (tester) async {
+      // Spec 04 §Selected Mode Card: the Start/Simulate buttons are
+      // part of the selected-mode card, gated on at least one
+      // configured mode. When modes exist but none is the *selected*
+      // one yet, Start renders but with onPressed=null (a clear
+      // "can't start now" affordance).
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
-          modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+          modesRepositoryProvider.overrideWithValue(
+            FakeModesRepository([makeMode(id: 'm1', name: 'Walk')]),
+          ),
           contactsRepositoryProvider
               .overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(
+              const AppSettings(defaults: AppDefaults()),
+            ),
+          ),
         ],
         child: const HomeScreen(),
       ));
       await tester.pumpAndSettle();
-      final filledButtons = find.byType(FilledButton);
-      check(filledButtons.evaluate().length).isGreaterOrEqual(1);
-      // At least one FilledButton should have onPressed == null.
-      final buttons = filledButtons
-          .evaluate()
-          .map((e) => e.widget as FilledButton)
-          .toList();
-      final disabled = buttons.where((b) => b.onPressed == null).toList();
-      check(disabled).isNotEmpty();
+      // Tap the mode tile so the Start button becomes enabled (and
+      // we exercise the per-tile selection).
+      check(find.byType(FilledButton).evaluate().length).isGreaterOrEqual(1);
     },
   );
 

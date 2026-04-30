@@ -127,13 +127,15 @@ void main() {
   );
 
   testWidgets(
-    'SessionScreen hides remaining-seconds text when stealth.timerDisplay=false',
+    'SessionScreen hides remaining-seconds text when stealth.timerDisplay=none',
     (tester) async {
-      // Fix for bugs.json Block (stealth.timerDisplay no-op): the
-      // setting must now actually hide the seconds-countdown text.
+      // Q26: timerDisplay is a 3-state enum (normal / small / none).
+      // Only `none` hides the seconds text; `normal` and `small`
+      // both show it.
       const stealth = StealthConfig(
         enabled: true,
         sessionScreenStealth: false,
+        timerDisplay: StealthTimerDisplay.none,
       );
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: _overrides(
