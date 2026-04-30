@@ -407,32 +407,9 @@ void main() {
           .contains('30');
     });
 
-    test('WrongPinThresholdDisarmTrigger identical equals', () {
-      const t = WrongPinThresholdDisarmTrigger();
-      check(t == t).isTrue();
-    });
-
-    test('WrongPinThresholdDisarmTrigger cross-type unequal', () {
-      // ignore: unrelated_type_equality_checks
-      check(const WrongPinThresholdDisarmTrigger() == 'x').isFalse();
-    });
-
-    test('WrongPinThresholdDisarmTrigger differ unequal', () {
-      check(
-        const WrongPinThresholdDisarmTrigger(threshold: 3) ==
-            const WrongPinThresholdDisarmTrigger(threshold: 5),
-      ).isFalse();
-    });
-
-    test('WrongPinThresholdDisarmTrigger hashCode stable', () {
-      check(const WrongPinThresholdDisarmTrigger(threshold: 4).hashCode)
-          .equals(const WrongPinThresholdDisarmTrigger(threshold: 4).hashCode);
-    });
-
-    test('WrongPinThresholdDisarmTrigger toString', () {
-      check(const WrongPinThresholdDisarmTrigger(threshold: 7).toString())
-          .contains('7');
-    });
+    // Q9: WrongPinThresholdDisarmTrigger was deleted. Threshold
+    // lives on AppSettings.wrongPinThreshold now; the legacy class
+    // is no longer present so its tests are removed.
   });
 
   group('ButtonType JSON dispatch', () {
@@ -483,9 +460,16 @@ void main() {
       check(Trigger.fromJson(t.toJson())).equals(t);
     });
 
-    test('disarm wrongPin round-trips via Trigger.fromJson', () {
-      const t = WrongPinThresholdDisarmTrigger(threshold: 3);
-      check(Trigger.fromJson(t.toJson())).equals(t);
+    test('disarm wrongPin tag is rejected via Trigger.fromJson', () {
+      // Q9: WrongPinThresholdDisarmTrigger was deleted. A persisted
+      // legacy tag must throw rather than silently round-trip.
+      check(
+        () => Trigger.fromJson(const {
+          'kind': 'disarm',
+          'type': 'wrongPinThreshold',
+          'threshold': 3,
+        }),
+      ).throws<ArgumentError>();
     });
   });
 }

@@ -10,10 +10,13 @@ import '../../helpers/test_helpers.dart';
 
 void main() {
   group('BatteryAlertConfig', () {
-    test('defaults', () {
+    test('defaults (Q34/Q35: off at 10%)', () {
+      // Q34: enabled defaults to false (privacy-first opt-in since
+      // the alert auto-fires SMS).
+      // Q35: thresholdPercent defaults to 10 (closer to emergency).
       const c = BatteryAlertConfig();
-      check(c.enabled).isTrue();
-      check(c.thresholdPercent).equals(15);
+      check(c.enabled).isFalse();
+      check(c.thresholdPercent).equals(10);
       check(c.chain).isEmpty();
     });
 

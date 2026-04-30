@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/utils/pin_hasher.dart';
+import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -182,14 +183,34 @@ class _DuressTestKeypad extends StatefulWidget {
 class _DuressTestKeypadState extends State<_DuressTestKeypad> {
   final StringBuffer _buffer = StringBuffer();
 
+  void _onDigit(int d) {
+    setState(() => _buffer.write(d));
+  }
+
+  void _onBackspace() {
+    final current = _buffer.toString();
+    if (current.isEmpty) return;
+    setState(() {
+      _buffer.clear();
+      _buffer.write(current.substring(0, current.length - 1));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     return AlertDialog(
       title: Text(l.securityDuressTest),
-      content: Text(
-        '•' * _buffer.length,
-        style: Theme.of(context).textTheme.displaySmall,
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            '•' * _buffer.length,
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
+          const SizedBox(height: 12),
+          PinKeypad(onDigit: _onDigit, onBackspace: _onBackspace),
+        ],
       ),
       actions: [
         TextButton(

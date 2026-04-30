@@ -81,11 +81,13 @@ void main() {
     ).isNotNull();
   });
 
-  test('default battery alert config is enabled at 15%', () async {
+  test('default battery alert config is OFF at 10% (Q34/Q35)', () async {
+    // Q34: battery alert defaults to OFF (privacy-first opt-in).
+    // Q35: threshold defaults to 10% (closer to actual emergency).
     await runSeed();
     final cfg = await container.read(batteryAlertRepositoryProvider).get();
-    check(cfg!.enabled).isTrue();
-    check(cfg.thresholdPercent).equals(15);
+    check(cfg!.enabled).isFalse();
+    check(cfg.thresholdPercent).equals(10);
   });
 
   test('walk mode uses holdButton check-in', () async {
