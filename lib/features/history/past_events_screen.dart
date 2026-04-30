@@ -1,4 +1,4 @@
-/// Past sessions list with search + mode filter.
+/// Past sessions list with search + mode filter + date range.
 library;
 
 import 'package:flutter/material.dart';
@@ -22,12 +22,31 @@ class PastEventsScreen extends ConsumerStatefulWidget {
 class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
   final TextEditingController _searchCtrl = TextEditingController();
   String? _modeFilter;
+  DateTimeRange? _dateRange;
 
   @override
   void dispose() {
     _searchCtrl.dispose();
     super.dispose();
   }
+
+  Future<void> _pickDateRange() async {
+    final now = DateTime.now();
+    final picked = await showDateRangePicker(
+      context: context,
+      firstDate: DateTime(now.year - 5),
+      lastDate: DateTime(now.year + 1),
+      initialDateRange: _dateRange,
+    );
+    if (picked != null) {
+      setState(() => _dateRange = picked);
+    }
+  }
+
+  String _fmt(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-'
+      '${d.month.toString().padLeft(2, '0')}-'
+      '${d.day.toString().padLeft(2, '0')}';
 
   @override
   Widget build(BuildContext context) {
@@ -44,6 +63,14 @@ class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
           final filtered = logs.where((log) {
             if (_modeFilter != null && log.modeName != _modeFilter) {
               return false;
+            }
+            if (_dateRange != null) {
+              final start = _dateRange!.start;
+              final endInclusive = _dateRange!.end
+                  .add(const Duration(days: 1))
+                  .subtract(const Duration(microseconds: 1));
+              if (log.startedAt.isBefore(start)) return false;
+              if (log.startedAt.isAfter(endInclusive)) return false;
             }
             if (query.isEmpty) return true;
             return log.modeName.toLowerCase().contains(query);
@@ -65,7 +92,7 @@ class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
               ),
               if (modeNames.isNotEmpty)
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                  padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                   child: DropdownButtonFormField<String?>(
                     initialValue: _modeFilter,
                     decoration: InputDecoration(
@@ -86,6 +113,25 @@ class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
                     onChanged: (v) => setState(() => _modeFilter = v),
                   ),
                 ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
+                child: _dateRange == null
+                    ? OutlinedButton.icon(
+                        icon: const Icon(Icons.date_range),
+                        label: Text(l.historyDateRangePick),
+                        onPressed: _pickDateRange,
+                      )
+                    : InputChip(
+                        label: Text(
+                          '${_fmt(_dateRange!.start)} – '
+                          '${_fmt(_dateRange!.end)}',
+                        ),
+                        avatar: const Icon(Icons.date_range, size: 18),
+                        onPressed: _pickDateRange,
+                        onDeleted: () =>
+                            setState(() => _dateRange = null),
+                      ),
+              ),
               Expanded(
                 child: filtered.isEmpty
                     ? Center(child: Text(l.historyEmpty))

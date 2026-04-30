@@ -123,11 +123,53 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
     );
   }
 
-  void _onDisarmRequested() {
-    // Triggered by GPS arrival or timer disarm: open the disarm UI
-    // confirmation. Currently a no-op — the timer / GPS auto-disarm
-    // path runs through `_confirmDisarmTrigger` driven by the
-    // `pendingDisarmTrigger` field on the active session.
+  /// Called by `TriggerManager` when a GPS-arrival or timer disarm
+  /// trigger fires. Spec 04 §Disarm Triggers line 1635: "Both
+  /// disarm triggers require the standard disarm confirmation (PIN
+  /// if configured) when they fire." Opens a confirmation dialog;
+  /// on confirm, gates on the session-end PIN if one is set.
+  Future<void> _onDisarmRequested() async {
+    if (!mounted) return;
+    final l = AppLocalizations.of(context);
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.sessionDisarmTriggerTitle),
+        content: Text(l.sessionDisarmTriggerBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.sessionDisarmTriggerConfirm),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+    if (!mounted) return;
+    final settings = await ref.read(settingsControllerProvider.future);
+    if (!mounted) return;
+    final controller = ref.read(sessionControllerProvider.notifier);
+    final sessionEndHash = settings.sessionEndPinHash;
+    if (sessionEndHash == null) {
+      await controller.disarm();
+      return;
+    }
+    final result = await showPinEntryDialog(
+      context: context,
+      sessionEndHash: sessionEndHash,
+      duressHash: settings.duressPinHash,
+      timeout: settings.pinTimeoutSeconds,
+      biometric: settings.sessionEndPinBiometricEnabled
+          ? ref.read(biometricServiceProvider)
+          : null,
+    );
+    if (controller.handlePinResult(result)) {
+      await controller.disarm();
+    }
   }
 
   Future<bool> _confirmDistress() async {

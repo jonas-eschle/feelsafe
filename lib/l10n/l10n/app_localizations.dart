@@ -163,6 +163,24 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get commonCancel;
 
+  /// Generic confirm/OK action.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get commonOk;
+
+  /// Title shown when the user tries to save a profile name containing 'Angela'.
+  ///
+  /// In en, this message translates to:
+  /// **'Heads up about the name \"Angela\"'**
+  String get profileAngelaWarningTitle;
+
+  /// Body of the Angela-name warning dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?'**
+  String get profileAngelaWarningBody;
+
   /// Generic delete action.
   ///
   /// In en, this message translates to:
@@ -1955,6 +1973,36 @@ abstract class AppLocalizations {
   /// **'Duress PIN'**
   String get securityDuressPin;
 
+  /// Toggle: enable biometric prompt before App PIN keypad.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics for App PIN'**
+  String get securityAppPinBiometric;
+
+  /// Toggle: enable biometric prompt before session-end PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics for Session-end PIN'**
+  String get securitySessionEndPinBiometric;
+
+  /// Toggle: biometric path for distress-trigger cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics to cancel distress'**
+  String get securityDistressCancelBiometric;
+
+  /// Row that opens a keypad to verify the duress PIN was entered correctly.
+  ///
+  /// In en, this message translates to:
+  /// **'Test duress PIN'**
+  String get securityDuressTest;
+
+  /// Subtitle for the duress-test row.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify your duress PIN works.'**
+  String get securityDuressTestSubtitle;
+
   /// PIN timeout slider.
   ///
   /// In en, this message translates to:
@@ -2398,6 +2446,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mode'**
   String get historyFilterModeLabel;
+
+  /// Button label that opens the date-range picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Date range'**
+  String get historyDateRangePick;
 
   /// Title of the session-detail screen.
   ///

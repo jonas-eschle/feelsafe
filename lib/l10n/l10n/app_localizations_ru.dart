@@ -31,6 +31,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonCancel => 'Отмена';
 
   @override
+  String get commonOk => 'OK';
+
+  @override
+  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+
+  @override
+  String get profileAngelaWarningBody =>
+      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+
+  @override
   String get commonDelete => 'Удалить';
 
   @override
@@ -984,6 +994,23 @@ class AppLocalizationsRu extends AppLocalizations {
   String get securityDuressPin => 'PIN принуждения';
 
   @override
+  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+
+  @override
+  String get securitySessionEndPinBiometric =>
+      'Use biometrics for Session-end PIN';
+
+  @override
+  String get securityDistressCancelBiometric =>
+      'Use biometrics to cancel distress';
+
+  @override
+  String get securityDuressTest => 'Test duress PIN';
+
+  @override
+  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+
+  @override
   String get securityPinTimeout => 'Таймаут PIN (секунды)';
 
   @override
@@ -1217,6 +1244,9 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get historyFilterModeLabel => 'Mode';
+
+  @override
+  String get historyDateRangePick => 'Date range';
 
   @override
   String get historyDetailTitle => 'Сведения о сессии';

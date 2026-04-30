@@ -51,9 +51,40 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
     super.dispose();
   }
 
+  /// Word-boundary case-insensitive check for "angela" / "angelas".
+  /// Spec 06 §"Angela" Safety Keyword: a name containing the
+  /// "Ask for Angela" code-word as a standalone word would clash
+  /// with the safety convention if used as a real personal name,
+  /// so we warn the user before persisting.
+  static final RegExp _angelaPattern =
+      RegExp(r'\bangelas?\b', caseSensitive: false);
+
   Future<void> _save() async {
+    final name = _nameCtrl.text.trim();
+    if (name.isNotEmpty && _angelaPattern.hasMatch(name)) {
+      final l = AppLocalizations.of(context);
+      final ok = await showDialog<bool>(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          title: Text(l.profileAngelaWarningTitle),
+          content: Text(l.profileAngelaWarningBody),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(l.commonCancel),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              child: Text(l.commonOk),
+            ),
+          ],
+        ),
+      );
+      if (ok != true) return;
+      if (!mounted) return;
+    }
     final profile = UserProfile(
-      name: _nameCtrl.text.trim().isEmpty ? null : _nameCtrl.text.trim(),
+      name: name.isEmpty ? null : name,
       age: int.tryParse(_ageCtrl.text),
       bloodType: _bloodCtrl.text.trim().isEmpty ? null : _bloodCtrl.text.trim(),
       allergies: List.unmodifiable(_allergies),

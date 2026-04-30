@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/features/settings/stealth_screen.dart';
 
 import '../fake_repositories.dart';
@@ -64,23 +65,27 @@ void main() {
     check(repo.stored!.defaults.stealth.notificationDisguise).isFalse();
   });
 
-  testWidgets('StealthScreen timerDisplay toggle persists', (tester) async {
+  testWidgets('StealthScreen timerDisplay selector persists', (tester) async {
+    // Spec Q26: timerDisplay is an enum (normal / small / none),
+    // surfaced via a PopupMenuButton in the settings screen.
     final repo = FakeSettingsRepository();
     await tester.pumpWidget(hostScreen(
       overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
       child: const StealthScreen(),
     ));
     await tester.pumpAndSettle();
-    final tile = find.widgetWithText(SwitchListTile, 'Show timer in stealth');
     final list = find.descendant(
       of: find.byType(StealthScreen),
       matching: find.byType(Scrollable),
     );
+    final tile = find.widgetWithText(ListTile, 'Timer display');
     await tester.dragUntilVisible(tile, list.first, const Offset(0, -100));
-    // Default timerDisplay is false; tapping flips it to true.
-    await tester.tap(tile);
+    await tester.tap(find.byType(PopupMenuButton<StealthTimerDisplay>));
     await tester.pumpAndSettle();
-    check(repo.stored!.defaults.stealth.timerDisplay).isTrue();
+    await tester.tap(find.text('Hide timer').last);
+    await tester.pumpAndSettle();
+    check(repo.stored!.defaults.stealth.timerDisplay)
+        .equals(StealthTimerDisplay.none);
   });
 
   testWidgets('StealthScreen sessionScreenStealth toggle persists',
