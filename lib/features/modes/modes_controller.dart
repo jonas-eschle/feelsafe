@@ -7,8 +7,10 @@ library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/utils/session_locked_error.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 
 /// Async controller exposing the list of session modes.
 class ModesController extends AsyncNotifier<List<SessionMode>> {
@@ -18,8 +20,16 @@ class ModesController extends AsyncNotifier<List<SessionMode>> {
     return repo.getAll();
   }
 
+  void _ensureNotLocked(String action) {
+    final session = ref.read(sessionControllerProvider.notifier);
+    if (session.isSessionActive) {
+      throw SessionLockedError(action);
+    }
+  }
+
   /// Upserts [mode] and refreshes [state].
   Future<void> save(SessionMode mode) async {
+    _ensureNotLocked('save mode');
     final repo = ref.read(modesRepositoryProvider);
     await repo.save(mode);
     state = AsyncValue.data(await repo.getAll());
@@ -27,6 +37,7 @@ class ModesController extends AsyncNotifier<List<SessionMode>> {
 
   /// Deletes the mode with [id] and refreshes [state].
   Future<void> delete(String id) async {
+    _ensureNotLocked('delete mode');
     final repo = ref.read(modesRepositoryProvider);
     await repo.delete(id);
     state = AsyncValue.data(await repo.getAll());
@@ -35,6 +46,7 @@ class ModesController extends AsyncNotifier<List<SessionMode>> {
   /// Reorders modes in-place, moving the mode at [oldIndex] to
   /// [newIndex]. Persists the new ordering via `saveAll`.
   Future<void> reorder(int oldIndex, int newIndex) async {
+    _ensureNotLocked('reorder modes');
     final current = state.value ?? const <SessionMode>[];
     if (oldIndex < 0 || oldIndex >= current.length) {
       throw RangeError.range(oldIndex, 0, current.length - 1, 'oldIndex');

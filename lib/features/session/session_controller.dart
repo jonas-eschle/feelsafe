@@ -97,6 +97,12 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     return runtime.mode.pauseAllowed;
   }
 
+  /// True while an interactive user safety session is running. Used
+  /// by repository-touching controllers (Modes, Templates, Backup,
+  /// BatteryAlert, Contacts) to refuse mutations mid-session — the
+  /// safety chain must NOT be edited while it is firing.
+  bool get isSessionActive => _runtime != null;
+
   /// Current app lifecycle state. Updated by the SessionScreen's
   /// `WidgetsBindingObserver`. Default = resumed. Read by feature
   /// code that needs to know whether the app is foregrounded

@@ -6,8 +6,10 @@ library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/utils/session_locked_error.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 
 /// Async controller exposing the current battery-alert config.
 class BatteryAlertController extends AsyncNotifier<BatteryAlertConfig> {
@@ -18,8 +20,16 @@ class BatteryAlertController extends AsyncNotifier<BatteryAlertConfig> {
     return stored ?? const BatteryAlertConfig();
   }
 
+  void _ensureNotLocked(String action) {
+    final session = ref.read(sessionControllerProvider.notifier);
+    if (session.isSessionActive) {
+      throw SessionLockedError(action);
+    }
+  }
+
   /// Overwrites the current config with [value] and persists it.
   Future<void> save(BatteryAlertConfig value) async {
+    _ensureNotLocked('save battery alert');
     final repo = ref.read(batteryAlertRepositoryProvider);
     await repo.save(value);
     state = AsyncValue.data(value);
