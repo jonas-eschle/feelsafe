@@ -240,6 +240,8 @@ final class SessionMode {
     }
     if (other.trackingBufferSize != trackingBufferSize) return false;
     if (other.iconName != iconName) return false;
+    if (other.pauseAllowed != pauseAllowed) return false;
+    if (other.maxPauseMinutes != maxPauseMinutes) return false;
     if (!_listEquals(other.chainSteps, chainSteps)) return false;
     if (!_listEquals(other.distressTriggers, distressTriggers)) return false;
     if (!_listEquals(other.disarmTriggers, disarmTriggers)) return false;
@@ -260,6 +262,8 @@ final class SessionMode {
     trackingIntervalSeconds,
     trackingBufferSize,
     iconName,
+    pauseAllowed,
+    maxPauseMinutes,
   );
 
   @override

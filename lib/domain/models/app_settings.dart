@@ -283,7 +283,12 @@ final class AppSettings {
           other.isFirstLaunch == isFirstLaunch &&
           other.telemetryOptOut == telemetryOptOut &&
           other.sessionLogRetentionDays == sessionLogRetentionDays &&
-          other.wrongPinThreshold == wrongPinThreshold;
+          other.wrongPinThreshold == wrongPinThreshold &&
+          other.appPinBiometricEnabled == appPinBiometricEnabled &&
+          other.sessionEndPinBiometricEnabled ==
+              sessionEndPinBiometricEnabled &&
+          other.distressCancelBiometricEnabled ==
+              distressCancelBiometricEnabled;
 
   @override
   int get hashCode => Object.hash(
@@ -301,6 +306,11 @@ final class AppSettings {
     telemetryOptOut,
     sessionLogRetentionDays,
     wrongPinThreshold,
+    Object.hash(
+      appPinBiometricEnabled,
+      sessionEndPinBiometricEnabled,
+      distressCancelBiometricEnabled,
+    ),
   );
 
   @override

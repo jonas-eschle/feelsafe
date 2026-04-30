@@ -10,6 +10,8 @@ import 'package:guardianangela/domain/models/models.dart';
 void main() {
   group('ChainEvent', () {
     test('enum contains all expected values', () {
+      // Spec 01 §Events Emitted plus userDisarmed introduced by the
+      // disarm-as-rearm change (spec 01 §Disarm/Check-in).
       check(ChainEvent.values.map((e) => e.name).toList()).unorderedEquals([
         'sessionStarted',
         'stepStarted',
@@ -23,6 +25,7 @@ void main() {
         'distressCompleted',
         'sessionPaused',
         'sessionResumed',
+        'userDisarmed',
         'sessionEnded',
       ]);
     });
