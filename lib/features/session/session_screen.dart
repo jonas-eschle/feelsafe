@@ -44,10 +44,12 @@ class SessionScreen extends ConsumerStatefulWidget {
   ConsumerState<SessionScreen> createState() => _SessionScreenState();
 }
 
-class _SessionScreenState extends ConsumerState<SessionScreen> {
+class _SessionScreenState extends ConsumerState<SessionScreen>
+    with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     // Wire the distress-confirmation callback so TriggerManager can
     // ask the UI to gate a hardware-panic trigger behind the
     // countdown overlay. The closure captures `ref` rather than
@@ -69,7 +71,25 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   SessionController? _attachedController;
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    final controller = _attachedController;
+    if (controller == null) return;
+    controller.setAppLifecycleState(state);
+    // For simulation sessions only, engage / disengage the engine's
+    // background clamp to match OS doze reality.
+    final session = ref.read(sessionControllerProvider).value;
+    if (session?.isSimulation ?? false) {
+      final isPaused = state == AppLifecycleState.paused ||
+          state == AppLifecycleState.hidden ||
+          state == AppLifecycleState.inactive;
+      controller.setSimulationBackgroundClamp(isPaused);
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     // Detach the closure so the controller does not hold a stale
     // reference to this State. Use the cached notifier ref; calling
     // `ref.read(...)` here would throw because the ConsumerElement
@@ -235,7 +255,7 @@ class _SessionBody extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.all(16),
       child: Column(
         children: [
@@ -268,14 +288,14 @@ class _SessionBody extends ConsumerWidget {
           const SizedBox(height: 24),
           if (session.phase is SessionPhasePaused)
             Chip(label: Text(l.sessionPausedBadge)),
-          const Spacer(),
+          const SizedBox(height: 24),
           // Per spec 04 §Step-Specific UI: each ChainStepType
           // renders its own widget. _StepWidget dispatches on
           // session.currentStepType. fakeCall is handled via the
           // ref.listen route-push above; its widget branch is
           // intentionally an empty placeholder.
           _StepWidget(session: session),
-          const Spacer(),
+          const SizedBox(height: 24),
           if (ref.read(sessionControllerProvider.notifier).isPauseAllowed)
             Row(
               mainAxisAlignment: MainAxisAlignment.start,

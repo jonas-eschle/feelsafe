@@ -27,6 +27,7 @@ library;
 
 import 'dart:async';
 
+import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/core/utils/pin_result.dart';
@@ -39,6 +40,7 @@ import 'package:guardianangela/domain/engine/trigger_manager.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
+import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -94,6 +96,35 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     if (runtime == null) return true;
     return runtime.mode.pauseAllowed;
   }
+
+  /// Current app lifecycle state. Updated by the SessionScreen's
+  /// `WidgetsBindingObserver`. Default = resumed. Read by feature
+  /// code that needs to know whether the app is foregrounded
+  /// (e.g. distress confirmation should suppress its dialog when
+  /// the app is hidden).
+  AppLifecycleState appLifecycleState = AppLifecycleState.resumed;
+
+  /// Updates the cached lifecycle state. Called from the SessionScreen
+  /// observer when the OS pushes the app to background / foreground.
+  void setAppLifecycleState(AppLifecycleState state) {
+    appLifecycleState = state;
+  }
+
+  /// Engages / disengages the engine's effective-speed clamp when the
+  /// app lifecycle transitions to background / foreground during a
+  /// simulation. Per spec 01 §Speed Multiplier.
+  void setSimulationBackgroundClamp(bool enabled) {
+    final runtime = _runtime;
+    if (runtime == null) return;
+    runtime.engine.setBackgroundClamp(enabled);
+  }
+
+  /// Broadcast stream of emergency-call confirmation requests.
+  Stream<EmergencyConfirmRequest> get emergencyConfirmationRequests =>
+      _emergencyConfirmCtrl.stream;
+
+  final StreamController<EmergencyConfirmRequest> _emergencyConfirmCtrl =
+      StreamController<EmergencyConfirmRequest>.broadcast();
 
   /// Wrong-PIN attempts observed on the currently-active prompt.
   /// Reset every time a new PIN dialog opens by the UI.
