@@ -46,6 +46,10 @@ List<Override> _backupOverrides() => [
       .overrideWithValue(FakeBatteryAlertRepository()),
   sessionLogsRepositoryProvider
       .overrideWithValue(FakeSessionLogsRepository()),
+  // BackupService.exportAll reads from this; without an override the
+  // export crashes and the test sees an empty AlertDialog count.
+  distressChainsRepositoryProvider
+      .overrideWithValue(FakeDistressChainsRepository()),
 ];
 
 // ---------------------------------------------------------------------------

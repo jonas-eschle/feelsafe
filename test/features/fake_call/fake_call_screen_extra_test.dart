@@ -12,12 +12,15 @@ import 'package:checks/checks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/fake_call/fake_call_controller.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 import '../widget_test_helpers.dart';
 
@@ -67,6 +70,38 @@ class _FakeFakeCallController extends FakeCallController {
 
   @override
   Future<void> declineWithDistress() async => _sess.triggerDistressChain();
+}
+
+/// A no-op AudioService — keeps the FakeCallScreen's audio paths
+/// from reaching real platform plugins (which throw / hang in tests).
+class _NoopAudio implements AudioServiceProtocol {
+  @override
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false})
+      async {}
+  @override
+  Future<void> stopAlarm() async {}
+  @override
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
+  @override
+  Future<void> stopRingtone() async {}
+  @override
+  Future<void> playVoiceRecording({
+    required String assetPath,
+    bool isSimulation = false,
+  }) async {}
+  @override
+  Future<void> stopVoiceRecording() async {}
+}
+
+/// A no-op TTS factory so `_speakTtsFallback` never touches
+/// `flutter_tts` (which requires the platform channel and hangs
+/// in `pumpAndSettle`).
+FakeCallTtsFactory _noopTtsFactory() => () => _NoopTts();
+
+class _NoopTts implements FlutterTts {
+  @override
+  dynamic noSuchMethod(Invocation i) async => 1;
 }
 
 // ---------------------------------------------------------------------------
@@ -134,6 +169,10 @@ void main() {
     testWidgets('HangUp after answer records hangUp and pops',
         (tester) async {
       final sess = _FakeSessionController();
+      // Override the audio + TTS factories so _onAnswerTap's audio
+      // pipeline doesn't try to talk to real platform plugins (which
+      // hang in pumpAndSettle and prevent the hangUp button from
+      // being hit-tested).
       await tester.pumpWidget(
         hostScreenPushed(
           overrides: [
@@ -141,6 +180,9 @@ void main() {
             fakeCallControllerProvider.overrideWith(
               () => _FakeFakeCallController(sess),
             ),
+            audioServiceProvider.overrideWithValue(_NoopAudio()),
+            simulationAudioProvider.overrideWithValue(_NoopAudio()),
+            fakeCallTtsFactoryProvider.overrideWithValue(_noopTtsFactory()),
           ],
           child: const FakeCallScreen(),
         ),
