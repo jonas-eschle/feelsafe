@@ -66,14 +66,16 @@ final class RepeatPressTrigger extends HardwareTrigger {
   /// Creates a repeat-press trigger.
   ///
   /// [pressCount] — required press count; defaults to 5.
-  /// [pressWindowMs] — max window in milliseconds; defaults to 500.
-  const RepeatPressTrigger({this.pressCount = 5, this.pressWindowMs = 500});
+  /// [pressWindowMs] — max window in milliseconds; defaults to 1500
+  /// (D-HARDWARE-1: 5 presses in 1.5s is comfortable in-pocket while
+  /// still resisting false-fire from quick music-control taps).
+  const RepeatPressTrigger({this.pressCount = 5, this.pressWindowMs = 1500});
 
   /// Deserializes from JSON.
   factory RepeatPressTrigger.fromJson(Map<String, Object?> json) =>
       RepeatPressTrigger(
         pressCount: (json['pressCount'] as num?)?.toInt() ?? 5,
-        pressWindowMs: (json['pressWindowMs'] as num?)?.toInt() ?? 500,
+        pressWindowMs: (json['pressWindowMs'] as num?)?.toInt() ?? 1500,
       );
 
   /// Required presses. Defaults to 5.
@@ -247,7 +249,11 @@ sealed class DisarmTrigger extends Trigger {
     return switch (tag) {
       'gpsArrival' => GpsArrivalDisarmTrigger.fromJson(json),
       'timer' => TimerDisarmTrigger.fromJson(json),
-      'wrongPinThreshold' => WrongPinThresholdDisarmTrigger.fromJson(json),
+      // Q9: WrongPinThresholdDisarmTrigger was DELETED — its
+      // threshold now lives on `AppSettings.wrongPinThreshold`.
+      // The legacy tag is rejected so a stale config from disk
+      // surfaces as an explicit error rather than silently
+      // round-tripping a phantom field.
       _ => throw ArgumentError.value(tag, 'type', 'unknown DisarmTrigger tag'),
     };
   }
@@ -360,45 +366,10 @@ final class TimerDisarmTrigger extends DisarmTrigger {
   String toString() => 'TimerDisarmTrigger(${durationSeconds}s)';
 }
 
-/// Disarm once the user has entered the wrong PIN enough times.
-final class WrongPinThresholdDisarmTrigger extends DisarmTrigger {
-  /// Creates a wrong-PIN-threshold trigger.
-  ///
-  /// [threshold] — number of wrong attempts before auto-disarm;
-  /// defaults to 5.
-  const WrongPinThresholdDisarmTrigger({this.threshold = 5});
-
-  /// Deserializes from JSON.
-  factory WrongPinThresholdDisarmTrigger.fromJson(Map<String, Object?> json) =>
-      WrongPinThresholdDisarmTrigger(
-        threshold: (json['threshold'] as num?)?.toInt() ?? 5,
-      );
-
-  /// Wrong-attempt threshold. Defaults to 5.
-  final int threshold;
-
-  /// Returns a new trigger with the given fields replaced.
-  WrongPinThresholdDisarmTrigger copyWith({int? threshold}) =>
-      WrongPinThresholdDisarmTrigger(threshold: threshold ?? this.threshold);
-
-  @override
-  Map<String, Object?> toJson() => {
-    'kind': 'disarm',
-    'type': 'wrongPinThreshold',
-    'threshold': threshold,
-  };
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is WrongPinThresholdDisarmTrigger && other.threshold == threshold;
-
-  @override
-  int get hashCode => threshold.hashCode;
-
-  @override
-  String toString() => 'WrongPinThresholdDisarmTrigger($threshold)';
-}
+// Q9: `WrongPinThresholdDisarmTrigger` was deleted. The threshold
+// is now sourced from `AppSettings.wrongPinThreshold`, configured
+// in the Security screen (slider 2–10). Stale persisted configs
+// referencing the legacy `'wrongPinThreshold'` tag throw on load.
 
 ButtonType _buttonTypeFromJson(Object? raw) => switch (raw) {
   'volumeUp' => ButtonType.volumeUp,

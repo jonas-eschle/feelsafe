@@ -47,6 +47,17 @@ final class NotificationService implements NotificationServiceProtocol {
   /// Persistent-session notification id.
   static const int _sessionNotificationId = 1;
 
+  /// Disarm-trigger notification id (single-slot — overrides the
+  /// previous one if a new disarm trigger fires).
+  static const int _disarmTriggerNotificationId = 2;
+
+  /// Disarm-trigger end-session action id (forwarded on actionTaps).
+  static const String _disarmTriggerEndActionId = 'disarmTriggerEnd';
+
+  /// Disarm-trigger continue action id (forwarded on actionTaps).
+  static const String _disarmTriggerContinueActionId =
+      'disarmTriggerContinue';
+
   /// Reminder-channel id.
   static const String _reminderChannelId = 'ga_reminders';
 
@@ -292,9 +303,31 @@ final class NotificationService implements NotificationServiceProtocol {
     required String endSessionLabel,
     required String continueLabel,
   }) async {
-    developer.log(
-      'showDisarmTriggerNotification: title=$title body=$body '
-      'end=$endSessionLabel continue=$continueLabel',
+    await _ensureInit();
+    await _plugin.show(
+      id: _disarmTriggerNotificationId,
+      title: title,
+      body: body,
+      notificationDetails: NotificationDetails(
+        android: AndroidNotificationDetails(
+          _sessionChannelId,
+          'Guardian Angela session',
+          importance: Importance.high,
+          priority: Priority.high,
+          ongoing: false,
+          actions: <AndroidNotificationAction>[
+            AndroidNotificationAction(
+              _disarmTriggerEndActionId,
+              endSessionLabel,
+            ),
+            AndroidNotificationAction(
+              _disarmTriggerContinueActionId,
+              continueLabel,
+            ),
+          ],
+        ),
+        iOS: const DarwinNotificationDetails(),
+      ),
     );
   }
 

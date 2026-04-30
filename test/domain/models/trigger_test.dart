@@ -125,9 +125,15 @@ void main() {
       check(DisarmTrigger.fromJson(t.toJson())).equals(t);
     });
 
-    test('WrongPinThresholdDisarmTrigger round-trip', () {
-      const t = WrongPinThresholdDisarmTrigger(threshold: 3);
-      check(DisarmTrigger.fromJson(t.toJson())).equals(t);
+    test('legacy wrongPinThreshold tag is rejected', () {
+      // Q9: WrongPinThresholdDisarmTrigger was deleted; the
+      // threshold lives on AppSettings.wrongPinThreshold now.
+      check(
+        () => DisarmTrigger.fromJson(const {
+          'type': 'wrongPinThreshold',
+          'threshold': 3,
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('unknown DisarmTrigger type throws', () {
@@ -158,16 +164,6 @@ void main() {
       check(t.copyWith(durationSeconds: 10).durationSeconds).equals(10);
     });
 
-    test('WrongPinThresholdDisarmTrigger defaults to 5', () {
-      const t = WrongPinThresholdDisarmTrigger();
-      check(t.threshold).equals(5);
-    });
-
-    test('WrongPinThresholdDisarmTrigger copyWith', () {
-      const t = WrongPinThresholdDisarmTrigger();
-      check(t.copyWith(threshold: 3).threshold).equals(3);
-    });
-
     test('null copyWith preserves fields across subtypes', () {
       const r = RepeatPressTrigger(pressCount: 7, pressWindowMs: 123);
       check(r.copyWith()).equals(r);
@@ -186,8 +182,6 @@ void main() {
       check(g.copyWith()).equals(g);
       const tt = TimerDisarmTrigger(durationSeconds: 42);
       check(tt.copyWith()).equals(tt);
-      const w = WrongPinThresholdDisarmTrigger(threshold: 9);
-      check(w.copyWith()).equals(w);
     });
   });
 

@@ -8,14 +8,16 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 final class BatteryAlertConfig {
   /// Creates a battery-alert config.
   ///
-  /// [enabled] — master toggle; defaults to true.
+  /// [enabled] — master toggle; defaults to **false** (Q34: opt-in,
+  /// privacy-first since the alert auto-fires SMS).
   /// [thresholdPercent] — battery percentage at which the alert
-  /// fires, 0–100; defaults to 15.
+  /// fires, 0–100; defaults to **10** (Q35: closer to actual
+  /// emergency, fewer false fires).
   /// [chain] — configurable escalation chain executed when the
   /// threshold is reached; defaults to empty.
   const BatteryAlertConfig({
-    this.enabled = true,
-    this.thresholdPercent = 15,
+    this.enabled = false,
+    this.thresholdPercent = 10,
     this.chain = const [],
   });
 
@@ -23,8 +25,8 @@ final class BatteryAlertConfig {
   factory BatteryAlertConfig.fromJson(Map<String, Object?> json) {
     final raw = json['chain'];
     return BatteryAlertConfig(
-      enabled: json['enabled'] as bool? ?? true,
-      thresholdPercent: (json['thresholdPercent'] as num?)?.toInt() ?? 15,
+      enabled: json['enabled'] as bool? ?? false,
+      thresholdPercent: (json['thresholdPercent'] as num?)?.toInt() ?? 10,
       chain: raw is List
           ? List<ChainStep>.unmodifiable(
               raw.map((e) => ChainStep.fromJson(e as Map<String, Object?>)),

@@ -129,37 +129,44 @@ class _HomeBody extends ConsumerWidget {
                 ),
               ),
           const SizedBox(height: 16),
-          if (mode != null && active == null)
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Expanded(
-                  child: FilledButton.icon(
-                    icon: const Icon(Icons.play_arrow),
-                    label: Text(l.homeStartSession),
-                    onPressed: () => _onStart(
-                      context: context,
-                      ref: ref,
-                      modeId: mode.id,
-                      isSimulation: false,
-                      l: l,
-                    ),
-                  ),
+          // Spec 04 §Selected Mode Card: Start + Simulate are always
+          // present; Start is disabled (onPressed=null) when no mode
+          // is selected or a session is already running, so the user
+          // gets a clear "can't start now" affordance.
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.play_arrow),
+                  label: Text(l.homeStartSession),
+                  onPressed: (mode == null || active != null)
+                      ? null
+                      : () => _onStart(
+                            context: context,
+                            ref: ref,
+                            modeId: mode.id,
+                            isSimulation: false,
+                            l: l,
+                          ),
                 ),
-                const SizedBox(width: 12),
-                TextButton.icon(
-                  icon: const Icon(Icons.science_outlined),
-                  label: Text(l.homeSimulate),
-                  onPressed: () => _onStart(
-                    context: context,
-                    ref: ref,
-                    modeId: mode.id,
-                    isSimulation: true,
-                    l: l,
-                  ),
-                ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              TextButton.icon(
+                icon: const Icon(Icons.science_outlined),
+                label: Text(l.homeSimulate),
+                onPressed: (mode == null || active != null)
+                    ? null
+                    : () => _onStart(
+                          context: context,
+                          ref: ref,
+                          modeId: mode.id,
+                          isSimulation: true,
+                          l: l,
+                        ),
+              ),
+            ],
+          ),
           const Spacer(),
           Wrap(
             alignment: WrapAlignment.spaceEvenly,

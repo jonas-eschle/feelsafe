@@ -72,7 +72,8 @@ void main() {
             longitude: 8.0,
             radiusMeters: 50,
           ),
-          WrongPinThresholdDisarmTrigger(threshold: 5),
+          // Q9: WrongPinThresholdDisarmTrigger was deleted; threshold
+          // lives on AppSettings.wrongPinThreshold instead.
         ],
       );
       check(SessionMode.fromJson(m.toJson())).equals(m);

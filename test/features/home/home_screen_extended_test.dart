@@ -87,8 +87,10 @@ void main() {
   );
 
   testWidgets(
-    'HomeScreen dropdown change updates selected mode in settings',
+    'HomeScreen tapping a mode tile updates selected mode in settings',
     (tester) async {
+      // Spec 04 §Mode Selector: tap-to-select on the Card+InkWell
+      // tile updates the persisted selectedModeId.
       final settings = FakeSettingsRepository();
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
@@ -105,11 +107,8 @@ void main() {
         child: const HomeScreen(),
       ));
       await tester.pumpAndSettle();
-      final dropdown = find.byType(DropdownButtonFormField<String>);
-      await tester.tap(dropdown);
-      await tester.pumpAndSettle();
-      // Two entries in the dropdown. Tap the second (Date).
-      await tester.tap(find.text('Date').last);
+      // Two cards (one per mode). Tap the Date one.
+      await tester.tap(find.text('Date'));
       await tester.pumpAndSettle();
       check(settings.stored).isNotNull();
       check(settings.stored!.selectedModeId).equals('m2');
@@ -168,8 +167,11 @@ void main() {
   );
 
   testWidgets(
-    'HomeScreen simulate toggle flips back when tapped twice',
+    'HomeScreen simulate button is rendered as a TextButton next to Start',
     (tester) async {
+      // Spec 04 §Simulate Button: outlined TextButton (less
+      // prominent), not a switch. The home screen now uses a
+      // TextButton with the science_outlined icon.
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
           modesRepositoryProvider.overrideWithValue(
@@ -183,12 +185,11 @@ void main() {
         child: const HomeScreen(),
       ));
       await tester.pumpAndSettle();
-      await tester.tap(find.byType(SwitchListTile));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(SwitchListTile));
-      await tester.pumpAndSettle();
-      final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
-      check(tile.value).equals(false);
+      check(
+        find.widgetWithIcon(TextButton, Icons.science_outlined)
+            .evaluate()
+            .length,
+      ).equals(1);
     },
   );
 
