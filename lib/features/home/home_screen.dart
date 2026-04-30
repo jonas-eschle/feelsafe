@@ -116,13 +116,11 @@ class _HomeBody extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       children: [
-                        Icon(
-                          mode?.id == m.id
-                              ? Icons.radio_button_checked
-                              : Icons.radio_button_unchecked,
-                        ),
+                        Icon(_iconForModeName(m.name)),
                         const SizedBox(width: 12),
                         Expanded(child: Text(m.name)),
+                        if (mode?.id == m.id)
+                          const Icon(Icons.check_circle),
                       ],
                     ),
                   ),
@@ -194,6 +192,22 @@ class _HomeBody extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Picks a mode-specific icon based on the mode name. Used by the
+/// mode tile in [HomeScreen]. Falls back to `tune` for unknown
+/// names so every tile gets a visual; `shield` is reserved for the
+/// active-session card so the two never collide.
+IconData _iconForModeName(String name) {
+  final n = name.toLowerCase();
+  if (n.contains('walk')) return Icons.directions_walk;
+  if (n.contains('date')) return Icons.favorite;
+  if (n.contains('run')) return Icons.directions_run;
+  if (n.contains('bike') || n.contains('cycle')) {
+    return Icons.directions_bike;
+  }
+  if (n.contains('night')) return Icons.nightlight_round;
+  return Icons.tune;
 }
 
 class _HomeShortcut extends StatelessWidget {

@@ -91,7 +91,10 @@ void main() {
     },
   );
 
-  testWidgets('HomeScreen simulate toggle flips the switch', (tester) async {
+  testWidgets('HomeScreen simulate is a TextButton next to Start',
+      (tester) async {
+    // Spec 04 §Simulate Button: outlined TextButton, less prominent
+    // — replaces the older switch-style simulate toggle.
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: [
         modesRepositoryProvider.overrideWithValue(
@@ -105,9 +108,10 @@ void main() {
       child: const HomeScreen(),
     ));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
-    final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
-    check(tile.value).isTrue();
+    check(
+      find.widgetWithIcon(TextButton, Icons.science_outlined)
+          .evaluate()
+          .length,
+    ).equals(1);
   });
 }
