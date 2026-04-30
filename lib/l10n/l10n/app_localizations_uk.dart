@@ -15,6 +15,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonSave => 'Зберегти';
 
   @override
+  String get angelaDialogTitle => 'Old PIN entered';
+
+  @override
+  String get angelaDialogBody =>
+      'It looks like you used an old PIN. Are you sure you want to proceed?';
+
+  @override
+  String get angelaDialogCancel => 'Cancel';
+
+  @override
+  String get angelaDialogConfirm => 'Continue';
+
+  @override
   String get commonCancel => 'Скасувати';
 
   @override
@@ -66,10 +79,20 @@ class AppLocalizationsUk extends AppLocalizations {
   String get cancel => 'Скасувати';
 
   @override
+  String get pinSubmit => 'Submit';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => 'Почати сесію';
+
+  @override
+  String get homeStartConfirmTitle => 'Start a session?';
+
+  @override
+  String get homeStartConfirmBody =>
+      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
   String get homeSimulate => 'Симуляція';
@@ -86,6 +109,14 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get homeNoContacts =>
       'Ще немає екстрених контактів. Натисніть «Контакти», щоб додати.';
+
+  @override
+  String get homeContactsBannerNone => 'No emergency contacts configured.';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '$count contact(s) configured. We recommend at least 3.';
+  }
 
   @override
   String get homeMenuSettings => 'Налаштування';
@@ -977,6 +1008,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get pinEntrySubtitle => 'Введіть свій PIN, щоб продовжити.';
 
   @override
+  String get pinEntryBiometricReason => 'Authenticate to continue';
+
+  @override
   String get stealthTitle => 'Прихований режим';
 
   @override
@@ -993,6 +1027,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get stealthTimerDisplay => 'Показувати таймер у прихованому режимі';
+
+  @override
+  String get stealthTimerDisplayNormal => 'Show full text';
+
+  @override
+  String get stealthTimerDisplaySmall => 'Show numbers only';
+
+  @override
+  String get stealthTimerDisplayNone => 'Hide timer';
 
   @override
   String get stealthSessionScreen => 'Прибрати брендинг з екрана сесії';
@@ -1158,6 +1201,15 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get historyEmpty => 'Ще немає минулих сесій.';
+
+  @override
+  String get historySearchHint => 'Search by mode name';
+
+  @override
+  String get historyFilterModeAll => 'All modes';
+
+  @override
+  String get historyFilterModeLabel => 'Mode';
 
   @override
   String get historyDetailTitle => 'Деталі сесії';
@@ -1344,7 +1396,4 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
-
-  @override
-  String get pinSubmit => 'Submit';
 }

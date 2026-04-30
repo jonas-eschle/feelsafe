@@ -1,10 +1,12 @@
 /// `PinHasher` — Argon2id PIN hashing for Guardian Angela.
 ///
-/// Honors **D-SEC-10**: PINs are hashed with Argon2id at
-/// m=65536 KiB (64 MiB), t=3 iterations, p=4 parallelism (lanes),
+/// Honors **D-SEC-10 / Q16**: PINs are hashed with Argon2id at
+/// m=32768 KiB (32 MiB), t=3 iterations, p=4 parallelism (lanes),
 /// a 16-byte random salt from `Random.secure`, and a 32-byte digest.
+/// Q16 picked 32 MiB (down from the original 64 MiB) for universal
+/// device support; ~0.65s/attempt on a mid-range Android phone.
 /// The stored value is a self-describing PHC-style string
-/// `\$argon2id\$v=19\$m=65536,t=3,p=4\$<base64-salt>\$<base64-hash>`,
+/// `\$argon2id\$v=19\$m=32768,t=3,p=4\$<base64-salt>\$<base64-hash>`,
 /// so [verify] re-derives with the exact parameters used to hash.
 ///
 /// Implementation uses `package:argon2` (pure Dart). It is slower than
@@ -32,8 +34,8 @@ import 'package:argon2/argon2.dart';
 
 /// Hashes and verifies PINs using Argon2id per D-SEC-10.
 abstract final class PinHasher {
-  /// Memory cost in KiB. 65536 = 64 MiB (D-SEC-10).
-  static const int _memoryKib = 65536;
+  /// Memory cost in KiB. 32768 = 32 MiB (Q16).
+  static const int _memoryKib = 32768;
 
   /// Iterations / time cost (D-SEC-10).
   static const int _iterations = 3;

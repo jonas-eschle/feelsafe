@@ -15,6 +15,19 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commonSave => 'Guardar';
 
   @override
+  String get angelaDialogTitle => 'Old PIN entered';
+
+  @override
+  String get angelaDialogBody =>
+      'It looks like you used an old PIN. Are you sure you want to proceed?';
+
+  @override
+  String get angelaDialogCancel => 'Cancel';
+
+  @override
+  String get angelaDialogConfirm => 'Continue';
+
+  @override
   String get commonCancel => 'Cancelar';
 
   @override
@@ -66,10 +79,20 @@ class AppLocalizationsEs extends AppLocalizations {
   String get cancel => 'Cancelar';
 
   @override
+  String get pinSubmit => 'Submit';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => 'Iniciar sesión';
+
+  @override
+  String get homeStartConfirmTitle => 'Start a session?';
+
+  @override
+  String get homeStartConfirmBody =>
+      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
   String get homeSimulate => 'Simular';
@@ -86,6 +109,14 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get homeNoContacts =>
       'Aún no hay contactos de emergencia. Toca Contactos para agregar uno.';
+
+  @override
+  String get homeContactsBannerNone => 'No emergency contacts configured.';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '$count contact(s) configured. We recommend at least 3.';
+  }
 
   @override
   String get homeMenuSettings => 'Ajustes';
@@ -980,6 +1011,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get pinEntrySubtitle => 'Introduce tu PIN para continuar.';
 
   @override
+  String get pinEntryBiometricReason => 'Authenticate to continue';
+
+  @override
   String get stealthTitle => 'Modo sigiloso';
 
   @override
@@ -996,6 +1030,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stealthTimerDisplay => 'Mostrar temporizador en modo sigiloso';
+
+  @override
+  String get stealthTimerDisplayNormal => 'Show full text';
+
+  @override
+  String get stealthTimerDisplaySmall => 'Show numbers only';
+
+  @override
+  String get stealthTimerDisplayNone => 'Hide timer';
 
   @override
   String get stealthSessionScreen =>
@@ -1161,6 +1204,15 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get historyEmpty => 'Aún no hay sesiones anteriores.';
+
+  @override
+  String get historySearchHint => 'Search by mode name';
+
+  @override
+  String get historyFilterModeAll => 'All modes';
+
+  @override
+  String get historyFilterModeLabel => 'Mode';
 
   @override
   String get historyDetailTitle => 'Detalles de la sesión';
@@ -1347,7 +1399,4 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
-
-  @override
-  String get pinSubmit => 'Submit';
 }

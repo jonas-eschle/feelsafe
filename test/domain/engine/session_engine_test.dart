@@ -175,15 +175,17 @@ void main() {
   });
 
   group('SessionEngine.disarm', () {
-    test('disarm from Idle transitions to Ended(disarm)', () {
+    test('disarm from Idle is a no-op', () {
+      // Spec 01: disarm only acts on a Running engine. Idle stays Idle.
       final e = _mk([holdStep()]);
       e.disarm();
-      check(e.state).isA<EngineEnded>();
-      check((e.state as EngineEnded).reason).equals(EndReason.disarm);
+      check(e.state).isA<EngineIdle>();
       e.dispose();
     });
 
-    test('disarm emits sessionEnded', () {
+    test('disarm emits userDisarmed (not sessionEnded)', () {
+      // Spec 01 §Disarm/Check-in: disarm = re-arm to step 0 + emit
+      // userDisarmed. The session continues running.
       fakeAsync((async) {
         final e = _mk([holdStep()]);
         final events = <ChainEvent>[];
@@ -192,29 +194,36 @@ void main() {
         async.flushMicrotasks();
         e.disarm();
         async.flushMicrotasks();
-        check(events).contains(ChainEvent.sessionEnded);
+        check(events).contains(ChainEvent.userDisarmed);
+        check(events.contains(ChainEvent.sessionEnded)).isFalse();
         e.dispose();
       });
     });
 
     test('disarm is idempotent', () {
-      final e = _mk([holdStep()]);
-      e.disarm();
-      e.disarm();
-      e.disarm();
-      check(e.state).isA<EngineEnded>();
-      check((e.state as EngineEnded).reason).equals(EndReason.disarm);
-      e.dispose();
+      // Each disarm call re-enters step 0; state stays Running at 0.
+      fakeAsync((async) {
+        final e = _mk([holdStep()]);
+        e.start();
+        async.flushMicrotasks();
+        e.disarm();
+        e.disarm();
+        e.disarm();
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
+        e.dispose();
+      });
     });
 
-    test('disarm from Running transitions to Ended', () {
+    test('disarm from Running re-arms to step 0 (still Running)', () {
       fakeAsync((async) {
         final e = _mk([smsStep()]);
         e.start();
         async.flushMicrotasks();
         e.disarm();
         async.flushMicrotasks();
-        check(e.state).isA<EngineEnded>();
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });
@@ -224,7 +233,7 @@ void main() {
         final e = _mk([smsStep(durationSeconds: 10)]);
         e.start();
         async.flushMicrotasks();
-        e.disarm();
+        e.endSession(reason: EndReason.userQuit);
         async.flushMicrotasks();
         var after = 0;
         e.events.listen((ev) => after++);
@@ -401,9 +410,10 @@ void main() {
     });
   });
 
-  // Spec 01 §Engine API: new methods required by spec-alignment.
+  // Spec 01 §Engine API line 542-543: `checkIn()` is an alias for
+  // `disarm()` — both re-arm the chain to step 0.
   group('SessionEngine.checkIn / earlyCheckIn', () {
-    test('checkIn advances past a disguisedReminder step', () {
+    test('checkIn re-arms to step 0 (alias for disarm)', () {
       fakeAsync((async) {
         final e = _mk([
           step(
@@ -415,28 +425,35 @@ void main() {
         ]);
         e.start();
         async.flushMicrotasks();
+        // Advance into step 1 first, then check that checkIn resets
+        // back to step 0.
+        async.elapse(const Duration(seconds: 35));
+        async.flushMicrotasks();
+        check((e.state as EngineRunning).stepIndex).equals(1);
         e.checkIn();
         async.flushMicrotasks();
-        final state = e.state as EngineRunning;
-        check(state.stepIndex).equals(1);
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });
 
-    test('checkIn is no-op on non-disguisedReminder steps', () {
+    test('checkIn re-arms even on non-disguisedReminder steps', () {
+      // Spec 01: checkIn = disarm; works from any phase of any step.
       fakeAsync((async) {
         final e = _mk([smsStep(durationSeconds: 30)]);
         e.start();
         async.flushMicrotasks();
-        final before = e.state;
+        final beforeIdx = (e.state as EngineRunning).stepIndex;
         e.checkIn();
         async.flushMicrotasks();
-        check(e.state).equals(before);
+        check((e.state as EngineRunning).stepIndex).equals(beforeIdx);
+        // Engine still Running (re-armed at step 0).
+        check(e.state).isA<EngineRunning>();
         e.dispose();
       });
     });
 
-    test('earlyCheckIn behaves like checkIn', () {
+    test('earlyCheckIn behaves like checkIn (re-arms to step 0)', () {
       fakeAsync((async) {
         final e = _mk([
           step(
@@ -450,8 +467,8 @@ void main() {
         async.flushMicrotasks();
         e.earlyCheckIn();
         async.flushMicrotasks();
-        final state = e.state as EngineRunning;
-        check(state.stepIndex).equals(1);
+        // earlyCheckIn=disarm so we stay at step 0 (false-alarm reset).
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });

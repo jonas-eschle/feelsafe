@@ -74,7 +74,7 @@ final class StealthConfig {
     this.fakeName = 'Calendar',
     this.fakeIcon = StealthIconPreset.calendar,
     this.notificationDisguise = true,
-    this.timerDisplay = false,
+    this.timerDisplay = StealthTimerDisplay.normal,
     this.sessionScreenStealth = true,
   });
 
@@ -84,7 +84,7 @@ final class StealthConfig {
     fakeName: json['fakeName'] as String? ?? 'Calendar',
     fakeIcon: _iconFromJson(json['fakeIcon']),
     notificationDisguise: json['notificationDisguise'] as bool? ?? true,
-    timerDisplay: json['timerDisplay'] as bool? ?? false,
+    timerDisplay: _timerDisplayFromJson(json['timerDisplay']),
     sessionScreenStealth: json['sessionScreenStealth'] as bool? ?? true,
   );
 
@@ -102,9 +102,9 @@ final class StealthConfig {
   /// true.
   final bool notificationDisguise;
 
-  /// Whether the session timer is still displayed in stealth.
-  /// Defaults to false.
-  final bool timerDisplay;
+  /// How the session timer is rendered while stealth is active.
+  /// Defaults to [StealthTimerDisplay.normal].
+  final StealthTimerDisplay timerDisplay;
 
   /// Whether the session screen hides Guardian-Angela branding.
   /// Defaults to true.
@@ -116,7 +116,7 @@ final class StealthConfig {
     String? fakeName,
     StealthIconPreset? fakeIcon,
     bool? notificationDisguise,
-    bool? timerDisplay,
+    StealthTimerDisplay? timerDisplay,
     bool? sessionScreenStealth,
   }) => StealthConfig(
     enabled: enabled ?? this.enabled,
@@ -133,7 +133,7 @@ final class StealthConfig {
     'fakeName': fakeName,
     'fakeIcon': fakeIcon.name,
     'notificationDisguise': notificationDisguise,
-    'timerDisplay': timerDisplay,
+    'timerDisplay': timerDisplay.name,
     'sessionScreenStealth': sessionScreenStealth,
   };
 
@@ -173,6 +173,23 @@ StealthIconPreset _iconFromJson(Object? raw) => switch (raw) {
   'photos' => StealthIconPreset.photos,
   'notes' => StealthIconPreset.notes,
   'clock' => StealthIconPreset.clock,
+  'podcast' => StealthIconPreset.podcast,
+  'none' => StealthIconPreset.none,
   null => StealthIconPreset.calendar,
   _ => throw ArgumentError.value(raw, 'fakeIcon', 'unknown StealthIconPreset'),
+};
+
+StealthTimerDisplay _timerDisplayFromJson(Object? raw) => switch (raw) {
+  'normal' => StealthTimerDisplay.normal,
+  'small' => StealthTimerDisplay.small,
+  'none' => StealthTimerDisplay.none,
+  // Pre-enum bool persistence: true → normal, false → none.
+  true => StealthTimerDisplay.normal,
+  false => StealthTimerDisplay.none,
+  null => StealthTimerDisplay.normal,
+  _ => throw ArgumentError.value(
+    raw,
+    'timerDisplay',
+    'unknown StealthTimerDisplay',
+  ),
 };

@@ -16,7 +16,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';

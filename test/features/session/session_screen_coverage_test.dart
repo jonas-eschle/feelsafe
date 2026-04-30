@@ -17,7 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/core/widgets/im_safe_slider.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
 import 'package:guardianangela/domain/models/models.dart';

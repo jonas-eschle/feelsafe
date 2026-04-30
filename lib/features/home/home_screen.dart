@@ -18,19 +18,12 @@ import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Landing screen for returning users.
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   /// Creates the home screen.
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  bool _simulate = false;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final state = ref.watch(homeControllerProvider);
     // Fix for specs.json Block #3 (StealthConfig has no consumers):
@@ -68,26 +61,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: state.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (err, stack) => Center(child: Text('$err')),
-        data: (data) => _HomeBody(
-          state: data,
-          simulate: _simulate,
-          onSimulateChanged: (v) => setState(() => _simulate = v),
-        ),
+        data: (data) => _HomeBody(state: data),
       ),
     );
   }
 }
 
 class _HomeBody extends ConsumerWidget {
-  const _HomeBody({
-    required this.state,
-    required this.simulate,
-    required this.onSimulateChanged,
-  });
+  const _HomeBody({required this.state});
 
   final HomeState state;
-  final bool simulate;
-  final ValueChanged<bool> onSimulateChanged;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -114,47 +97,69 @@ class _HomeBody extends ConsumerWidget {
             ),
             const SizedBox(height: 16),
           ],
+          _ContactBanner(contactCount: state.contacts.length),
+          if (state.contacts.isEmpty) ...[
+            const SizedBox(height: 4),
+            Text(l.homeNoContacts),
+          ],
+          const SizedBox(height: 16),
           if (state.modes.isEmpty)
             Text(l.homeNoModes)
           else
-            DropdownButtonFormField<String>(
-              initialValue: mode?.id,
-              decoration: InputDecoration(labelText: l.homeSelectMode),
-              items: [
-                for (final m in state.modes)
-                  DropdownMenuItem(value: m.id, child: Text(m.name)),
-              ],
-              onChanged: (id) {
-                if (id != null) {
-                  ref
+            for (final m in state.modes)
+              Card(
+                child: InkWell(
+                  onTap: () => ref
                       .read(settingsControllerProvider.notifier)
-                      .setSelectedModeId(id);
-                }
-              },
+                      .setSelectedModeId(m.id),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12),
+                    child: Row(
+                      children: [
+                        Icon(
+                          mode?.id == m.id
+                              ? Icons.radio_button_checked
+                              : Icons.radio_button_unchecked,
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(child: Text(m.name)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+          const SizedBox(height: 16),
+          if (mode != null && active == null)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Expanded(
+                  child: FilledButton.icon(
+                    icon: const Icon(Icons.play_arrow),
+                    label: Text(l.homeStartSession),
+                    onPressed: () => _onStart(
+                      context: context,
+                      ref: ref,
+                      modeId: mode.id,
+                      isSimulation: false,
+                      l: l,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                TextButton.icon(
+                  icon: const Icon(Icons.science_outlined),
+                  label: Text(l.homeSimulate),
+                  onPressed: () => _onStart(
+                    context: context,
+                    ref: ref,
+                    modeId: mode.id,
+                    isSimulation: true,
+                    l: l,
+                  ),
+                ),
+              ],
             ),
-          const SizedBox(height: 24),
-          SwitchListTile(
-            value: simulate,
-            onChanged: onSimulateChanged,
-            title: Text(l.homeSimulate),
-          ),
-          const SizedBox(height: 24),
-          FilledButton.icon(
-            icon: const Icon(Icons.play_arrow),
-            label: Text(l.homeStartSession),
-            onPressed: mode == null || active != null
-                ? null
-                : () async {
-                    await ref
-                        .read(sessionControllerProvider.notifier)
-                        .startSession(modeId: mode.id, isSimulation: simulate);
-                    if (context.mounted) {
-                      context.push(RouteNames.session);
-                    }
-                  },
-          ),
-          const SizedBox(height: 8),
-          if (state.contacts.isEmpty) Text(l.homeNoContacts),
           const Spacer(),
           Wrap(
             alignment: WrapAlignment.spaceEvenly,
@@ -201,4 +206,72 @@ class _HomeShortcut extends StatelessWidget {
     icon: Icon(icon),
     label: Text(label),
   );
+}
+
+class _ContactBanner extends StatelessWidget {
+  const _ContactBanner({required this.contactCount});
+
+  /// Number of configured emergency contacts.
+  final int contactCount;
+
+  @override
+  Widget build(BuildContext context) {
+    if (contactCount >= 3) return const SizedBox.shrink();
+    final l = AppLocalizations.of(context);
+    final scheme = Theme.of(context).colorScheme;
+    final isError = contactCount == 0;
+    final color = isError ? scheme.errorContainer : scheme.tertiaryContainer;
+    final iconData = isError ? Icons.error_outline : Icons.info_outline;
+    final text = isError
+        ? l.homeContactsBannerNone
+        : l.homeContactsBannerFew(contactCount);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color,
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(iconData),
+          const SizedBox(width: 8),
+          Expanded(child: Text(text)),
+        ],
+      ),
+    );
+  }
+}
+
+Future<void> _onStart({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String modeId,
+  required bool isSimulation,
+  required AppLocalizations l,
+}) async {
+  final confirmed = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.homeStartConfirmTitle),
+      content: Text(l.homeStartConfirmBody),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l.commonCancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l.homeStartSession),
+        ),
+      ],
+    ),
+  );
+  if (confirmed != true) return;
+  if (!context.mounted) return;
+  await ref
+      .read(sessionControllerProvider.notifier)
+      .startSession(modeId: modeId, isSimulation: isSimulation);
+  if (context.mounted) {
+    context.push(RouteNames.session);
+  }
 }

@@ -76,6 +76,14 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   /// fires and asks the UI to request PIN entry.
   void Function()? onDisarmRequested;
 
+  /// Callback fired right before the wrong-PIN-threshold distress
+  /// chain is triggered. The UI presents the deceptive
+  /// "Old PIN from Angela — are you sure you want to proceed?"
+  /// dialog per spec 06 §Wrong PIN Behavior. Awaited for visual
+  /// completeness; the return value is IGNORED — distress fires
+  /// regardless. Null = skip dialog and fire immediately.
+  Future<void> Function()? onAngelaDeceptiveDialog;
+
   /// Wrong-PIN attempts observed on the currently-active prompt.
   /// Reset every time a new PIN dialog opens by the UI.
   int _wrongPinCount = 0;
@@ -210,13 +218,18 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     );
   }
 
-  /// Disarms the active session. Requires a valid session-end PIN
-  /// only at the UI layer; this method assumes the PIN gate has
-  /// already been passed.
+  /// Ends the active session via the user-initiated disarm path.
+  /// Requires a valid session-end PIN only at the UI layer; this
+  /// method assumes the PIN gate has already been passed.
+  ///
+  /// Per spec 01 the engine's `disarm()` is a check-in/re-arm and
+  /// does NOT terminate the session. The UI's "End Session" intent
+  /// translates here to `engine.endSession(EndReason.disarm)` so
+  /// the user actually exits the session.
   Future<void> disarm() async {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.disarm();
+    runtime.engine.endSession(reason: EndReason.disarm);
   }
 
   /// Pauses the active session (stops timers without ending it).
@@ -342,6 +355,19 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   }
 
   Future<void> _fireDistressBecauseOfPin(EndReason reason) async {
+    if (reason == EndReason.wrongPinExhausted) {
+      final dialog = onAngelaDeceptiveDialog;
+      if (dialog != null) {
+        // Safety-critical: any exception inside the modal route is
+        // swallowed so the OS dismissing the dialog cannot leave an
+        // attacker with a working PIN attempt and no escalation.
+        try {
+          await dialog();
+        } on Object catch (_) {
+          // Intentionally swallowed.
+        }
+      }
+    }
     final runtime = _runtime;
     if (runtime == null) return;
     runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps());

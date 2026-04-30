@@ -15,6 +15,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get commonSave => 'ذخیره';
 
   @override
+  String get angelaDialogTitle => 'Old PIN entered';
+
+  @override
+  String get angelaDialogBody =>
+      'It looks like you used an old PIN. Are you sure you want to proceed?';
+
+  @override
+  String get angelaDialogCancel => 'Cancel';
+
+  @override
+  String get angelaDialogConfirm => 'Continue';
+
+  @override
   String get commonCancel => 'انصراف';
 
   @override
@@ -66,10 +79,20 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cancel => 'انصراف';
 
   @override
+  String get pinSubmit => 'Submit';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => 'شروع جلسه';
+
+  @override
+  String get homeStartConfirmTitle => 'Start a session?';
+
+  @override
+  String get homeStartConfirmBody =>
+      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
   String get homeSimulate => 'شبیه‌سازی';
@@ -87,6 +110,14 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get homeNoContacts =>
       'هنوز هیچ مخاطب اضطراری وجود ندارد. برای افزودن، روی مخاطبین بزنید.';
+
+  @override
+  String get homeContactsBannerNone => 'No emergency contacts configured.';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '$count contact(s) configured. We recommend at least 3.';
+  }
 
   @override
   String get homeMenuSettings => 'تنظیمات';
@@ -977,6 +1008,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pinEntrySubtitle => 'برای ادامه، پین خود را وارد کنید.';
 
   @override
+  String get pinEntryBiometricReason => 'Authenticate to continue';
+
+  @override
   String get stealthTitle => 'حالت مخفی';
 
   @override
@@ -993,6 +1027,15 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get stealthTimerDisplay => 'نمایش تایمر در حالت مخفی';
+
+  @override
+  String get stealthTimerDisplayNormal => 'Show full text';
+
+  @override
+  String get stealthTimerDisplaySmall => 'Show numbers only';
+
+  @override
+  String get stealthTimerDisplayNone => 'Hide timer';
 
   @override
   String get stealthSessionScreen => 'حذف نشانه‌ها در صفحه جلسه';
@@ -1157,6 +1200,15 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get historyEmpty => 'هنوز هیچ جلسه گذشته‌ای وجود ندارد.';
+
+  @override
+  String get historySearchHint => 'Search by mode name';
+
+  @override
+  String get historyFilterModeAll => 'All modes';
+
+  @override
+  String get historyFilterModeLabel => 'Mode';
 
   @override
   String get historyDetailTitle => 'جزئیات جلسه';
@@ -1343,7 +1395,4 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
-
-  @override
-  String get pinSubmit => 'Submit';
 }

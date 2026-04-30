@@ -22,7 +22,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -773,7 +773,9 @@ void main() {
         async.flushMicrotasks();
 
         check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.userQuit);
+        // Spec engine_state.dart §EndReason.disarm: GPS arrival is a
+        // user-initiated disarm path, so the EndReason is `disarm`.
+        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
         mgr.dispose();
         hw.dispose();
@@ -815,7 +817,9 @@ void main() {
         async.flushMicrotasks();
 
         check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.userQuit);
+        // Spec engine_state.dart §EndReason.disarm: GPS arrival is a
+        // user-initiated disarm path, so the EndReason is `disarm`.
+        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
         mgr.dispose();
         hw.dispose();

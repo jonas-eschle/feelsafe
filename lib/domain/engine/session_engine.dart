@@ -172,12 +172,30 @@ final class SessionEngine {
     _enterStep(0);
   }
 
-  /// User-initiated disarm. Ends the session with
-  /// [EndReason.disarm].
+  /// User check-in / re-arm. Per spec 01 §Disarm/Check-in:
   ///
-  /// Idempotent when already ended — the same
-  /// [EndReason.disarm] is preserved.
-  void disarm() => endSession(reason: EndReason.disarm);
+  /// - Resets the chain to step 0.
+  /// - Clears the miss count.
+  /// - Emits [ChainEvent.userDisarmed] carrying the step the user
+  ///   was on at the moment of disarm (so the log records *where*
+  ///   the user re-armed from).
+  /// - Re-executes step 0.
+  ///
+  /// Does **not** end the session — for that, callers fire
+  /// [endSession] explicitly. No-op when the engine is idle, paused,
+  /// or already ended (callers must `resume()` a paused engine first
+  /// to make the disarm effective).
+  void disarm() {
+    final current = _state;
+    if (current is! EngineRunning) {
+      return;
+    }
+    _cancelTimer();
+    _emit(ChainEvent.userDisarmed, stepIndex: current.stepIndex);
+    // missCount is reset implicitly because _enterStep(0) constructs
+    // a fresh EngineRunning with missCount: 0.
+    _enterStep(0);
+  }
 
   /// Pauses a running session.
   ///
@@ -291,15 +309,15 @@ final class SessionEngine {
     _scheduleTimer(TimerPhase.sensitivity, sensitivity);
   }
 
-  /// User answered a fake call; the chain pauses in
-  /// [PauseReason.fakeCallAnswered] while the voice clip plays.
+  /// User answered a fake call.
   ///
-  /// No-op outside a `fakeCall` step.
+  /// Per cross-cutting Pivot 2 ("fakeCall is event, not pause") the
+  /// engine timer keeps running while the voice clip plays — the
+  /// FakeCallScreen is a route push, not a pause-and-overlay. This
+  /// method is therefore a no-op at the engine level; the UI layer
+  /// performs the navigation and audio playback.
   void answerFakeCall() {
-    final current = _state;
-    if (current is! EngineRunning) return;
-    if (_steps[current.stepIndex].type != ChainStepType.fakeCall) return;
-    pause(reason: PauseReason.fakeCallAnswered);
+    // Intentional no-op (Pivot 2).
   }
 
   /// User hung up an answered fake call — disarms the session.
@@ -330,7 +348,9 @@ final class SessionEngine {
     final step = _steps[current.stepIndex];
     if (step.type != ChainStepType.fakeCall) return;
     final cfg = step.config;
-    final declineIsSafe = cfg is FakeCallConfig ? cfg.declineIsSafe : false;
+    // FakeCallConfig.declineIsSafe defaults to true; preserve that
+    // when the step has no explicit config.
+    final declineIsSafe = cfg is FakeCallConfig ? cfg.declineIsSafe : true;
     if (declineIsSafe) {
       disarm();
       return;
@@ -414,27 +434,20 @@ final class SessionEngine {
 
   /// Explicit user check-in during a `disguisedReminder` step.
   ///
-  /// Spec 01 §Engine API: advances past the current step without
-  /// waiting for the grace period to expire. No-op outside
-  /// [EngineRunning] or on non-disguisedReminder steps.
-  void checkIn() {
-    final current = _state;
-    if (current is! EngineRunning) return;
-    if (_steps[current.stepIndex].type !=
-        ChainStepType.disguisedReminder) {
-      return;
-    }
-    _cancelTimer();
-    _advanceOrComplete(current.stepIndex);
-  }
+  /// Spec 01 §Engine API: alias for [disarm] — used by
+  /// `SessionController` and `disguisedReminder` UI to express the
+  /// "I'm safe" intent. Re-arms the chain to step 0 (does NOT
+  /// advance to the next step).
+  void checkIn() => disarm();
 
-  /// Early check-in: user responds BEFORE grace expires on a
-  /// `disguisedReminder` step.
+  /// Early check-in: user responds BEFORE the reminder fires (during
+  /// wait phase) on a `disguisedReminder` step.
   ///
-  /// Spec 01 §Engine API / D-UX-4: advances immediately. Behaves like
-  /// [checkIn] for disguisedReminder steps; kept as a distinct entry
-  /// point for UI semantics ("early" vs on-grace).
-  void earlyCheckIn() => checkIn();
+  /// Spec 01 §Engine API / Q6 / D-UX-4: re-arms to step 0 (false-alarm
+  /// reset). Equivalent to [disarm] semantically — kept as a distinct
+  /// entry point so the UI can disambiguate "tapped the reminder
+  /// before it surfaced" from "tapped the reminder after it surfaced".
+  void earlyCheckIn() => disarm();
 
   /// Simulation-only: adjust [speedMultiplier] mid-run.
   ///
@@ -462,32 +475,27 @@ final class SessionEngine {
 
   /// Effective speed multiplier accounting for background clamp.
   ///
-  /// In real sessions, the background clamp can reduce wall-clock
-  /// progress while the OS throttles us; tests inspect this getter
-  /// to verify the effective rate. Computed as
-  /// `_speedMultiplier * _backgroundClamp`, both of which default
-  /// to 1.0.
+  /// Spec 01 §Speed Multiplier (D-UX-2026-04-23 #4): when the app is
+  /// pushed to background during a simulation, the OS doze layer
+  /// won't actually let the wall clock tick faster than ~60×, so we
+  /// cap the *effective* rate at 60× while leaving the stored
+  /// `speedMultiplier` untouched. Real sessions are always 1×, so
+  /// the cap is effectively a no-op there.
   double get effectiveSpeedMultiplier =>
-      _speedMultiplier * _backgroundClamp;
+      _backgroundClamp ? min(_speedMultiplier, 60.0) : _speedMultiplier;
 
-  /// Background-clamp factor in (0, 1]. Defaults to 1.0 (no clamp).
-  double get backgroundClamp => _backgroundClamp;
+  /// Whether the background clamp is currently engaged. Defaults to
+  /// `false`.
+  bool get backgroundClamp => _backgroundClamp;
 
-  double _backgroundClamp = 1.0;
+  bool _backgroundClamp = false;
 
-  /// Sets the background-clamp factor. Used by the lifecycle
-  /// controller when the OS pushes the app into the background and
-  /// we need to slow timer progression to match doze-mode reality.
-  ///
-  /// [value] must be in `(0, 1]`. Throws [ArgumentError] otherwise.
-  void setBackgroundClamp(double value) {
-    if (value.isNaN || value.isInfinite || value <= 0 || value > 1) {
-      throw ArgumentError.value(
-        value,
-        'value',
-        'background clamp must be in (0, 1]',
-      );
-    }
+  /// Engages / disengages the background clamp. Used by the
+  /// lifecycle controller when the OS pushes the simulation app
+  /// into the background. No-op for real (non-simulation) sessions —
+  /// real timers are already wall-clock-driven and need no clamp.
+  void setBackgroundClamp(bool value) {
+    if (!isSimulation) return;
     _backgroundClamp = value;
   }
 
@@ -643,7 +651,9 @@ final class SessionEngine {
       // End of chain.
       if (_isDistressChain) {
         _emit(ChainEvent.distressCompleted, stepIndex: index);
-        endSession(reason: EndReason.chainExhausted);
+        // Q19: forensic reason propagation — the distress trigger
+        // dictates how the session is recorded.
+        endSession(reason: _endReasonForDistress(_distressTriggerReason));
         return;
       }
       _emit(ChainEvent.stepAdvancing, stepIndex: index, nextStep: null);
@@ -654,6 +664,14 @@ final class SessionEngine {
     _emit(ChainEvent.stepAdvancing, stepIndex: index, nextStep: nextStep);
     _enterStep(next);
   }
+
+  static EndReason _endReasonForDistress(TriggerReason? trigger) =>
+      switch (trigger) {
+        TriggerReason.hardwarePanic => EndReason.hardwarePanic,
+        TriggerReason.duressPin => EndReason.duressPin,
+        TriggerReason.wrongPinExhausted => EndReason.wrongPinExhausted,
+        null => EndReason.chainExhausted,
+      };
 
   // ----- Internal: timer plumbing -----------------------------------
 
@@ -721,7 +739,9 @@ final class SessionEngine {
     };
     if (baseSeconds <= 0) return Duration.zero;
     final jitterFactor = _jitterFactor(step.randomize);
-    final scaled = (baseSeconds * jitterFactor) / speedMultiplier;
+    // Use the *effective* multiplier so the background clamp caps
+    // simulation speed at 60× (spec 01 §Speed Multiplier).
+    final scaled = (baseSeconds * jitterFactor) / effectiveSpeedMultiplier;
     // Quantize to microseconds to avoid rounding noise.
     final microseconds = (scaled * Duration.microsecondsPerSecond).round();
     return Duration(microseconds: microseconds);
@@ -729,7 +749,7 @@ final class SessionEngine {
 
   Duration _holdSensitivityDuration(ChainStep step) {
     final seconds = _holdSensitivitySeconds(step);
-    final scaled = seconds / speedMultiplier;
+    final scaled = seconds / effectiveSpeedMultiplier;
     final microseconds = (scaled * Duration.microsecondsPerSecond).round();
     return Duration(microseconds: microseconds);
   }

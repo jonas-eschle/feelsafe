@@ -20,16 +20,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/core/widgets/im_safe_slider.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
-import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
+import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 import '../widget_test_helpers.dart';
 

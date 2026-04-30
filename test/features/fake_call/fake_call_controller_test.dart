@@ -75,6 +75,13 @@ class _N implements NotificationServiceProtocol {
   Stream<String> get actionTaps => const Stream.empty();
   @override
   Future<void> showToast(String message) async {}
+  @override
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {}
 }
 
 class _V implements VibrationServiceProtocol {
@@ -141,6 +148,8 @@ class _L implements LocationServiceProtocol {
   List<LocationPoint> get history => const [];
   @override
   void clearHistory() {}
+  @override
+  Future<LocationPoint?> getCurrentPosition() async => null;
 }
 
 class _IC implements IncomingCallServiceProtocol {

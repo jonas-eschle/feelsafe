@@ -8,7 +8,7 @@ import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 
 // ---------------------------------------------------------------------------

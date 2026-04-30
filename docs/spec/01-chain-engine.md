@@ -378,9 +378,14 @@ Ring → Timeout → miss
 void answerFakeCall()
 ```
 - Called when user answers the fake call.
-- Pauses chain timers (same as `pause()` method).
-- Does NOT disarm — the chain is suspended, not ended.
-- Voice recording/playback continues while paused.
+- **Pivot 2 — fakeCall is event, not pause.** The engine timer keeps
+  running while the voice clip plays — `FakeCallScreen` is a route
+  push, not a pause-and-overlay. This method is a no-op at the
+  engine level; the UI layer performs the navigation and audio
+  playback. Rationale: pausing on every fake call would create gaps
+  in the escalation that an attacker could exploit by quickly
+  declining/answering to delay the chain.
+- Does NOT disarm — the chain is not ended.
 
 ```dart
 void hangUp()
@@ -569,9 +574,14 @@ When a step has `retryCount = 0` (single attempt only) and the user disarms **du
 void answerFakeCall()
 ```
 - Called when user answers the fake call.
-- Pauses chain timers (same as `pause()` method).
-- Does NOT disarm — the chain is suspended, not ended.
-- Voice recording/playback continues while paused.
+- **Pivot 2 — fakeCall is event, not pause.** The engine timer keeps
+  running while the voice clip plays — `FakeCallScreen` is a route
+  push, not a pause-and-overlay. This method is a no-op at the
+  engine level; the UI layer performs the navigation and audio
+  playback. Rationale: pausing on every fake call would create gaps
+  in the escalation that an attacker could exploit by quickly
+  declining/answering to delay the chain.
+- Does NOT disarm — the chain is not ended.
 
 ```dart
 void hangUp()

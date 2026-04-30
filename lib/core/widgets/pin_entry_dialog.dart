@@ -22,6 +22,7 @@ import 'package:guardianangela/core/utils/pin_hasher.dart';
 import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 
 /// Presents a modal PIN dialog. Returns the [PinResult] outcome.
 ///
@@ -39,6 +40,8 @@ Future<PinResult> showPinEntryDialog({
   Object? biometric,
 }) async {
   final l = AppLocalizations.of(context);
+  final bio =
+      biometric is BiometricServiceProtocol ? biometric : null;
   final result = await showDialog<PinResult>(
     context: context,
     barrierDismissible: true,
@@ -48,6 +51,8 @@ Future<PinResult> showPinEntryDialog({
       timeout: timeout,
       title: l.pinEntryTitle,
       subtitle: l.pinEntrySubtitle,
+      biometric: bio,
+      biometricReason: l.pinEntryBiometricReason,
     ),
   );
   return result ?? PinResult.cancelled;
@@ -67,6 +72,8 @@ class _PinDialog extends StatefulWidget {
     required this.timeout,
     required this.title,
     required this.subtitle,
+    required this.biometric,
+    required this.biometricReason,
   });
 
   final String? sessionEndHash;
@@ -74,6 +81,8 @@ class _PinDialog extends StatefulWidget {
   final int timeout;
   final String title;
   final String subtitle;
+  final BiometricServiceProtocol? biometric;
+  final String biometricReason;
 
   @override
   State<_PinDialog> createState() => _PinDialogState();
@@ -89,6 +98,11 @@ class _PinDialogState extends State<_PinDialog> {
   /// Argon2 verification, amplifying cost 5x for an 8-digit PIN.
   bool _inFlight = false;
 
+  /// Whether biometric auth is currently being attempted. While true,
+  /// the keypad is hidden so the user does not see a flash of the
+  /// number pad before the platform biometric prompt appears.
+  bool _bioInFlight = false;
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +110,35 @@ class _PinDialogState extends State<_PinDialog> {
       _timeoutTimer = Timer(Duration(seconds: widget.timeout), () {
         if (mounted) Navigator.of(context).pop(PinResult.timeout);
       });
+    }
+    final bio = widget.biometric;
+    if (bio != null && widget.sessionEndHash != null) {
+      _bioInFlight = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(_tryBiometric(bio));
+      });
+    }
+  }
+
+  Future<void> _tryBiometric(BiometricServiceProtocol bio) async {
+    try {
+      if (!await bio.isAvailable()) {
+        if (!mounted) return;
+        setState(() => _bioInFlight = false);
+        return;
+      }
+      final result = await bio.authenticate(reason: widget.biometricReason);
+      if (!mounted) return;
+      if (result == BiometricResult.success) {
+        Navigator.of(context).pop(PinResult.correct);
+        return;
+      }
+      // Cancelled / unavailable / failed → fall back to keypad.
+      setState(() => _bioInFlight = false);
+    } on Object catch (_) {
+      // Defensive: any platform error → fall back to keypad.
+      if (!mounted) return;
+      setState(() => _bioInFlight = false);
     }
   }
 
@@ -106,9 +149,9 @@ class _PinDialogState extends State<_PinDialog> {
   }
 
   void _onDigit(int d) {
-    if (_buffer.length >= 8) return;
+    // Q12: no length cap on the buffer. Long PINs are accepted; the
+    // user just keeps typing until they press Submit.
     setState(() => _buffer.write(d));
-    unawaited(_maybeSubmit());
   }
 
   void _onBackspace() {
@@ -121,15 +164,15 @@ class _PinDialogState extends State<_PinDialog> {
   }
 
   Future<void> _maybeSubmit() async {
+    // Q12 / B4: this runs when the user presses the Submit button.
+    // No auto-submit on digit entry — the dialog stays open until the
+    // user explicitly confirms.
     if (_inFlight) return;
     _inFlight = true;
     try {
-      // We may have absorbed more digits while a previous verify
-      // was in flight; loop until the buffer is stable between
-      // iterations or the length drops below 4.
       while (true) {
         final pin = _buffer.toString();
-        if (pin.length < 4) return;
+        if (pin.isEmpty) return;
         // Fix for bugs.json Block (PIN Argon2id upgrade) + Warn
         // (timing attack): PinHasher.verify is salted + constant-
         // time — no prefix-byte timing oracle. Duress is checked
@@ -152,7 +195,7 @@ class _PinDialogState extends State<_PinDialog> {
         // Buffer mutated during verify — re-check against the new
         // string rather than popping based on stale data.
         if (_buffer.toString() != pin) continue;
-        if (pin.length >= 8 && mounted) {
+        if (mounted) {
           Navigator.of(context).pop(PinResult.wrong);
         }
         return;
@@ -170,12 +213,22 @@ class _PinDialogState extends State<_PinDialog> {
       children: [
         Text(widget.subtitle),
         const SizedBox(height: 12),
-        Text(
-          '\u2022' * _buffer.length,
-          style: Theme.of(context).textTheme.displaySmall,
-        ),
-        const SizedBox(height: 12),
-        PinKeypad(onDigit: _onDigit, onBackspace: _onBackspace),
+        if (_bioInFlight)
+          // While biometric prompt is in flight, render a slim
+          // placeholder so the keypad does not flash beneath the
+          // OS biometric sheet.
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: CircularProgressIndicator(),
+          )
+        else ...[
+          Text(
+            '\u2022' * _buffer.length,
+            style: Theme.of(context).textTheme.displaySmall,
+          ),
+          const SizedBox(height: 12),
+          PinKeypad(onDigit: _onDigit, onBackspace: _onBackspace),
+        ],
       ],
     ),
     actions: [
@@ -183,6 +236,12 @@ class _PinDialogState extends State<_PinDialog> {
         onPressed: () => Navigator.of(context).pop(PinResult.cancelled),
         child: Text(AppLocalizations.of(context).cancel),
       ),
+      if (!_bioInFlight)
+        FilledButton(
+          key: const Key('pin-submit'),
+          onPressed: _buffer.isEmpty ? null : _maybeSubmit,
+          child: Text(AppLocalizations.of(context).pinSubmit),
+        ),
     ],
   );
 }

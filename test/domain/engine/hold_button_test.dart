@@ -177,7 +177,9 @@ void main() {
       });
     });
 
-    test('re-hold during grace fires disarm', () {
+    test('re-hold during grace fires disarm (resets to step 0)', () {
+      // Spec 01 §Disarm/Check-in: re-hold during grace == disarm,
+      // and disarm is now a re-arm to step 0 (not a session end).
       fakeAsync((async) {
         final e = _holdEngine(
           durationSeconds: 3,
@@ -193,8 +195,8 @@ void main() {
         async.flushMicrotasks();
         e.holdStart();
         async.flushMicrotasks();
-        check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(EndReason.disarm);
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });

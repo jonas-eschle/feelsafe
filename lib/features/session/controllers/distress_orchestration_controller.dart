@@ -20,7 +20,6 @@ library;
 import 'dart:async';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/features/session/controllers/session_lifecycle_controller.dart';
 
 /// Plain-Dart helper that fires the distress chain. Composed by the

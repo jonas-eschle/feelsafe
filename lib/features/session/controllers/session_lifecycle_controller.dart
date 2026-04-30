@@ -414,9 +414,7 @@ class SessionLifecycleController {
   void setSimulationBackgroundClamp(bool enabled) {
     final runtime = _runtime;
     if (runtime == null) return;
-    // Map bool to clamp factor: enabled = 0.1 (10× slowdown when
-    // backgrounded matches the OS doze-mode reality), disabled = 1.0.
-    runtime.engine.setBackgroundClamp(enabled ? 0.1 : 1.0);
+    runtime.engine.setBackgroundClamp(enabled);
   }
 
   /// Simulation-only thin wrapper around

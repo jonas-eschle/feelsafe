@@ -68,7 +68,11 @@ void main() {
       });
     });
 
-    test('distress chain completion ends with chainExhausted', () {
+    test('distress chain completion ends with the trigger reason', () {
+      // Spec 01 §Q19: when the distress chain completes, the
+      // EndReason on EngineEnded is the trigger that fired the
+      // distress chain (hardwarePanic by default), so the session
+      // log records the forensic cause distinctly.
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [_mainHold(), _mainSms()],
@@ -82,7 +86,8 @@ void main() {
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(EndReason.chainExhausted);
+        check((e.state as EngineEnded).reason)
+            .equals(EndReason.hardwarePanic);
         check(events).contains(ChainEvent.distressCompleted);
         e.dispose();
       });

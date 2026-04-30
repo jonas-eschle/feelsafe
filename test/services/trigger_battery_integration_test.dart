@@ -24,7 +24,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -435,10 +435,11 @@ void main() {
         async.flushMicrotasks();
         check(engine.state).isA<EngineEnded>();
 
-        // Timer fires later — engine.disarm() is idempotent.
+        // Timer fires later — engine.endSession() is idempotent;
+        // first disarm path wins and the reason is preserved.
         async.elapse(const Duration(seconds: 65));
         check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.userQuit);
+        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
         mgr.dispose();
         hw.dispose();

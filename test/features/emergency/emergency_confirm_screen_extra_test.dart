@@ -16,6 +16,7 @@ import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/emergency/emergency_confirm_screen.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 import '../fake_repositories.dart';

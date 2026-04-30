@@ -25,6 +25,7 @@ import 'package:guardianangela/core/widgets/im_safe_slider.dart';
 import 'package:guardianangela/core/widgets/pin_entry_dialog.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/models/walk_session.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
@@ -56,6 +57,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       final controller = ref.read(sessionControllerProvider.notifier);
       _attachedController = controller;
       controller.onDistressConfirmation = _confirmDistress;
+      controller.onAngelaDeceptiveDialog = _showAngelaDeceptiveDialog;
+      controller.onDisarmRequested = _onDisarmRequested;
     });
   }
 
@@ -71,8 +74,39 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     // `ref.read(...)` here would throw because the ConsumerElement
     // is already disposed.
     _attachedController?.onDistressConfirmation = null;
+    _attachedController?.onAngelaDeceptiveDialog = null;
+    _attachedController?.onDisarmRequested = null;
     _attachedController = null;
     super.dispose();
+  }
+
+  Future<void> _showAngelaDeceptiveDialog() async {
+    if (!mounted) return;
+    final l = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.angelaDialogTitle),
+        content: Text(l.angelaDialogBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.angelaDialogCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.angelaDialogConfirm),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _onDisarmRequested() {
+    // Triggered by GPS arrival or timer disarm: open the disarm UI
+    // confirmation. Currently a no-op — the timer / GPS auto-disarm
+    // path runs through `_confirmDisarmTrigger` driven by the
+    // `pendingDisarmTrigger` field on the active session.
   }
 
   Future<bool> _confirmDistress() async {
@@ -140,8 +174,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     // remaining-seconds text AND the hold-button countdown when
     // stealth is active and `timerDisplay` is false. Settings UI has
     // always persisted this flag; until now nothing consumed it.
-    final hideTimer =
-        stealth != null && stealth.enabled && !stealth.timerDisplay;
+    final hideTimer = stealth != null &&
+        stealth.enabled &&
+        stealth.timerDisplay == StealthTimerDisplay.none;
     return Scaffold(
       appBar: AppBar(title: Text(hideBranding ? '' : l.sessionTitle)),
       body: async.when(

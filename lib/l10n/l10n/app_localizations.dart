@@ -133,6 +133,30 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get commonSave;
 
+  /// Deceptive Angela dialog title (after wrong-PIN threshold).
+  ///
+  /// In en, this message translates to:
+  /// **'Old PIN entered'**
+  String get angelaDialogTitle;
+
+  /// Deceptive Angela dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'It looks like you used an old PIN. Are you sure you want to proceed?'**
+  String get angelaDialogBody;
+
+  /// Deceptive Angela dialog cancel button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get angelaDialogCancel;
+
+  /// Deceptive Angela dialog confirm button.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get angelaDialogConfirm;
+
   /// Generic cancel action.
   ///
   /// In en, this message translates to:
@@ -235,6 +259,12 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get cancel;
 
+  /// Submit button used by the launch-gate PIN entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get pinSubmit;
+
   /// Title of the home screen.
   ///
   /// In en, this message translates to:
@@ -246,6 +276,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Start session'**
   String get homeStartSession;
+
+  /// Title for the start-session confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a session?'**
+  String get homeStartConfirmTitle;
+
+  /// Body for the start-session confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.'**
+  String get homeStartConfirmBody;
 
   /// Toggle that switches between a real and a simulated session.
   ///
@@ -276,6 +318,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No emergency contacts yet. Tap Contacts to add one.'**
   String get homeNoContacts;
+
+  /// Banner shown when zero contacts are configured.
+  ///
+  /// In en, this message translates to:
+  /// **'No emergency contacts configured.'**
+  String get homeContactsBannerNone;
+
+  /// Banner shown when 1–2 contacts are configured.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} contact(s) configured. We recommend at least 3.'**
+  String homeContactsBannerFew(int count);
 
   /// Settings button on home.
   ///
@@ -1955,6 +2009,12 @@ abstract class AppLocalizations {
   /// **'Enter your PIN to continue.'**
   String get pinEntrySubtitle;
 
+  /// Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service.
+  ///
+  /// In en, this message translates to:
+  /// **'Authenticate to continue'**
+  String get pinEntryBiometricReason;
+
   /// Title of stealth screen.
   ///
   /// In en, this message translates to:
@@ -1985,11 +2045,29 @@ abstract class AppLocalizations {
   /// **'Disguise notifications'**
   String get stealthNotificationDisguise;
 
-  /// Timer display toggle.
+  /// Timer display selector label.
   ///
   /// In en, this message translates to:
-  /// **'Show timer in stealth'**
+  /// **'Timer display'**
   String get stealthTimerDisplay;
+
+  /// Stealth timer normal option.
+  ///
+  /// In en, this message translates to:
+  /// **'Show full text'**
+  String get stealthTimerDisplayNormal;
+
+  /// Stealth timer small option.
+  ///
+  /// In en, this message translates to:
+  /// **'Show numbers only'**
+  String get stealthTimerDisplaySmall;
+
+  /// Stealth timer hidden option.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide timer'**
+  String get stealthTimerDisplayNone;
 
   /// Session screen stealth toggle.
   ///
@@ -2296,6 +2374,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No past sessions yet.'**
   String get historyEmpty;
+
+  /// Hint text for the history search field.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by mode name'**
+  String get historySearchHint;
+
+  /// Mode filter dropdown — all option.
+  ///
+  /// In en, this message translates to:
+  /// **'All modes'**
+  String get historyFilterModeAll;
+
+  /// Mode filter dropdown label.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode'**
+  String get historyFilterModeLabel;
 
   /// Title of the session-detail screen.
   ///
@@ -2650,12 +2746,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use biometrics'**
   String get launchGateUseBiometric;
-
-  /// Submit button used by the launch-gate PIN entry.
-  ///
-  /// In en, this message translates to:
-  /// **'Submit'**
-  String get pinSubmit;
 }
 
 class _AppLocalizationsDelegate

@@ -20,7 +20,7 @@ import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/models/enums.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -230,7 +230,10 @@ void main() {
         async.elapse(const Duration(seconds: 6));
 
         check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.userQuit);
+        // Spec engine_state.dart §EndReason.disarm — timer disarm is
+        // a user-initiated disarm path (the user pre-configured the
+        // timeout), so EndReason is `disarm`.
+        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
         mgr.dispose();
         engine.dispose();
@@ -255,7 +258,10 @@ void main() {
         async.elapse(const Duration(seconds: 5)); // second fires; no-op
         // State should still be EngineEnded with original reason.
         check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.userQuit);
+        // Spec engine_state.dart §EndReason.disarm — timer disarm is
+        // a user-initiated disarm path (the user pre-configured the
+        // timeout), so EndReason is `disarm`.
+        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
         mgr.dispose();
         engine.dispose();

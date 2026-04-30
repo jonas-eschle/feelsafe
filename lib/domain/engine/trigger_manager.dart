@@ -8,6 +8,7 @@ library;
 import 'dart:async';
 import 'dart:math' as math;
 
+import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/location_point.dart';
@@ -80,12 +81,15 @@ final class TriggerManager {
 
   StreamSubscription<HardwarePanicEvent>? _panicSub;
   StreamSubscription<LocationPoint>? _arrivalSub;
+  final List<Timer> _disarmTimers = [];
 
   DateTime? _lastPanicFiredAt;
   DateTime? _lastArrivalFiredAt;
+  DateTime? _lastTimerFiredAt;
 
   /// True iff this manager has subscribed to its streams.
-  bool get isStarted => _panicSub != null || _arrivalSub != null;
+  bool get isStarted =>
+      _panicSub != null || _arrivalSub != null || _disarmTimers.isNotEmpty;
 
   /// Subscribes to all trigger streams.
   ///
@@ -103,6 +107,11 @@ final class TriggerManager {
     if (hasGpsTrigger) {
       _arrivalSub = geofenceService.arrivals.listen(_onArrival);
     }
+    // Timer disarm triggers — schedule one Timer per configured trigger.
+    for (final trigger in mode.disarmTriggers.whereType<TimerDisarmTrigger>()) {
+      final duration = Duration(seconds: trigger.durationSeconds);
+      _disarmTimers.add(Timer(duration, _onTimerDisarm));
+    }
   }
 
   /// Unsubscribes and releases resources.
@@ -111,8 +120,27 @@ final class TriggerManager {
     final arrival = _arrivalSub;
     _panicSub = null;
     _arrivalSub = null;
+    for (final t in _disarmTimers) {
+      t.cancel();
+    }
+    _disarmTimers.clear();
     await panic?.cancel();
     await arrival?.cancel();
+  }
+
+  void _onTimerDisarm() {
+    final now = _clock();
+    final last = _lastTimerFiredAt;
+    if (last != null && now.difference(last) < cooldown) {
+      return;
+    }
+    _lastTimerFiredAt = now;
+    final cb = onDisarmRequested;
+    if (cb != null) {
+      cb();
+    } else {
+      engine.endSession(reason: EndReason.disarm);
+    }
   }
 
   Future<void> _onPanic(HardwarePanicEvent event) async {
@@ -150,7 +178,7 @@ final class TriggerManager {
     if (cb != null) {
       cb();
     } else {
-      engine.disarm();
+      engine.endSession(reason: EndReason.disarm);
     }
   }
 

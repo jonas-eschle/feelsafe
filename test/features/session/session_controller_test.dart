@@ -348,6 +348,14 @@ class _FakeNotification implements NotificationServiceProtocol {
 
   @override
   Future<void> showToast(String message) async {}
+
+  @override
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {}
 }
 
 class _FakeVibration implements VibrationServiceProtocol {
@@ -459,6 +467,9 @@ class _FakeLocation implements LocationServiceProtocol {
 
   @override
   void clearHistory() {}
+
+  @override
+  Future<LocationPoint?> getCurrentPosition() async => null;
 }
 
 class _FakeIncomingCall implements IncomingCallServiceProtocol {

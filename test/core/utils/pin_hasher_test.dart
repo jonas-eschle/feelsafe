@@ -1,8 +1,8 @@
-/// Tests for [PinHasher] — Argon2id PIN primitive per D-SEC-10.
+/// Tests for [PinHasher] — Argon2id PIN primitive per D-SEC-10 / Q16.
 ///
 /// Covers round-trip, wrong-pin rejection, per-call salt randomness,
 /// empty-pin guard, malformed-stored tolerance, PHC parse, param
-/// embedding (m=65536, t=3, p=4), and a loose CI timing ceiling.
+/// embedding (m=32768, t=3, p=4), and a loose CI timing ceiling.
 ///
 /// Fix for bugs.json Block (Argon2id UI-thread freeze): the
 /// primitive is now async (hash/verify dispatch the derivation to a
@@ -34,7 +34,7 @@ void main() {
       await check(PinHasher.hash('')).throws<ArgumentError>();
     });
 
-    test('PHC string embeds D-SEC-10 parameters (m=65536,t=3,p=4)', () async {
+    test('PHC string embeds Q16 parameters (m=32768,t=3,p=4)', () async {
       final hash = await PinHasher.hash('4321');
       // Split PHC segments: ['', 'argon2id', 'v=19', 'm=..,t=..,p=..',
       // salt, hash].
@@ -42,7 +42,7 @@ void main() {
       check(parts.length).equals(6);
       check(parts[1]).equals('argon2id');
       check(parts[2]).equals('v=19');
-      check(parts[3]).equals('m=65536,t=3,p=4');
+      check(parts[3]).equals('m=32768,t=3,p=4');
       // Salt and hash segments must be non-empty base64 blobs.
       check(parts[4]).isNotEmpty();
       check(parts[5]).isNotEmpty();

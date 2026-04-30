@@ -56,6 +56,10 @@ enum ChainEvent {
   /// The session was resumed from pause.
   sessionResumed,
 
+  /// The user disarmed/checked-in: chain was reset to step 0 without
+  /// ending the session. Per spec 01 §Disarm/Check-in.
+  userDisarmed,
+
   /// The session ended (any reason).
   sessionEnded,
 }
@@ -281,6 +285,7 @@ ChainEvent _eventFromJson(Object? raw) => switch (raw) {
   'distressCompleted' => ChainEvent.distressCompleted,
   'sessionPaused' => ChainEvent.sessionPaused,
   'sessionResumed' => ChainEvent.sessionResumed,
+  'userDisarmed' => ChainEvent.userDisarmed,
   'sessionEnded' => ChainEvent.sessionEnded,
   _ => throw ArgumentError.value(raw, 'event', 'unknown ChainEvent'),
 };

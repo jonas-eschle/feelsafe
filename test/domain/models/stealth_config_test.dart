@@ -14,7 +14,7 @@ void main() {
       check(c.fakeName).equals('Calendar');
       check(c.fakeIcon).equals(StealthIconPreset.calendar);
       check(c.notificationDisguise).isTrue();
-      check(c.timerDisplay).isFalse();
+      check(c.timerDisplay).equals(StealthTimerDisplay.normal);
       check(c.sessionScreenStealth).isTrue();
     });
 
@@ -41,7 +41,7 @@ void main() {
         fakeName: 'News',
         fakeIcon: StealthIconPreset.news,
         notificationDisguise: false,
-        timerDisplay: true,
+        timerDisplay: StealthTimerDisplay.small,
         sessionScreenStealth: false,
       );
       check(StealthConfig.fromJson(c.toJson())).equals(c);

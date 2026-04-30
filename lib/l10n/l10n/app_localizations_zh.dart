@@ -15,6 +15,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonSave => '保存';
 
   @override
+  String get angelaDialogTitle => 'Old PIN entered';
+
+  @override
+  String get angelaDialogBody =>
+      'It looks like you used an old PIN. Are you sure you want to proceed?';
+
+  @override
+  String get angelaDialogCancel => 'Cancel';
+
+  @override
+  String get angelaDialogConfirm => 'Continue';
+
+  @override
   String get commonCancel => '取消';
 
   @override
@@ -66,10 +79,20 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
+  String get pinSubmit => 'Submit';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => '开始会话';
+
+  @override
+  String get homeStartConfirmTitle => 'Start a session?';
+
+  @override
+  String get homeStartConfirmBody =>
+      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
   String get homeSimulate => '模拟';
@@ -85,6 +108,14 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeNoContacts => '尚无紧急联系人。点击“联系人”添加一个。';
+
+  @override
+  String get homeContactsBannerNone => 'No emergency contacts configured.';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '$count contact(s) configured. We recommend at least 3.';
+  }
 
   @override
   String get homeMenuSettings => '设置';
@@ -967,6 +998,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pinEntrySubtitle => '请输入您的 PIN 码以继续。';
 
   @override
+  String get pinEntryBiometricReason => 'Authenticate to continue';
+
+  @override
   String get stealthTitle => '隐身';
 
   @override
@@ -983,6 +1017,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stealthTimerDisplay => '在隐身模式下显示计时器';
+
+  @override
+  String get stealthTimerDisplayNormal => 'Show full text';
+
+  @override
+  String get stealthTimerDisplaySmall => 'Show numbers only';
+
+  @override
+  String get stealthTimerDisplayNone => 'Hide timer';
 
   @override
   String get stealthSessionScreen => '隐藏会话界面品牌标识';
@@ -1143,6 +1186,15 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get historyEmpty => '尚无历史会话。';
+
+  @override
+  String get historySearchHint => 'Search by mode name';
+
+  @override
+  String get historyFilterModeAll => 'All modes';
+
+  @override
+  String get historyFilterModeLabel => 'Mode';
 
   @override
   String get historyDetailTitle => '会话详情';
@@ -1328,9 +1380,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
-
-  @override
-  String get pinSubmit => 'Submit';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

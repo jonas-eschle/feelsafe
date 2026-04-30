@@ -20,8 +20,11 @@ SessionEngine _mkEngine(List<ChainStep> steps, {bool isSimulation = false}) =>
     );
 
 void main() {
-  group('answerFakeCall', () {
-    test('answer during fakeCall duration pauses with fakeCallAnswered', () {
+  group('answerFakeCall (Pivot 2 — no pause)', () {
+    test('answer during fakeCall keeps engine Running', () {
+      // Cross-cutting Pivot 2: fakeCall is event, not pause. The
+      // engine timer keeps running while the voice plays — the
+      // FakeCallScreen is a route push, not a pause-and-overlay.
       fakeAsync((async) {
         final e = _mkEngine([
           fakeCallStep(durationSeconds: 30, gracePeriodSeconds: 5),
@@ -30,14 +33,12 @@ void main() {
         async.flushMicrotasks();
         e.answerFakeCall();
         async.flushMicrotasks();
-        check(e.state).isA<EnginePaused>();
-        final p = e.state as EnginePaused;
-        check(p.reason).equals(PauseReason.fakeCallAnswered);
+        check(e.state).isA<EngineRunning>();
         e.dispose();
       });
     });
 
-    test('answer emits sessionPaused', () {
+    test('answer does NOT emit sessionPaused', () {
       fakeAsync((async) {
         final e = _mkEngine([
           fakeCallStep(durationSeconds: 30, gracePeriodSeconds: 5),
@@ -48,7 +49,7 @@ void main() {
         async.flushMicrotasks();
         e.answerFakeCall();
         async.flushMicrotasks();
-        check(names).contains(ChainEvent.sessionPaused);
+        check(names.contains(ChainEvent.sessionPaused)).isFalse();
         e.dispose();
       });
     });
@@ -76,7 +77,9 @@ void main() {
   });
 
   group('hangUp', () {
-    test('hangUp after answer disarms', () {
+    test('hangUp after answer re-arms to step 0', () {
+      // Per spec line 580: "Fires disarm (resets chain to step 0)."
+      // disarm is now a re-arm, not an end-session.
       fakeAsync((async) {
         final e = _mkEngine([
           fakeCallStep(durationSeconds: 30, gracePeriodSeconds: 5),
@@ -87,13 +90,13 @@ void main() {
         async.flushMicrotasks();
         e.hangUp();
         async.flushMicrotasks();
-        check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(EndReason.disarm);
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });
 
-    test('hangUp during ringing (no answer) still disarms', () {
+    test('hangUp during ringing (no answer) still re-arms', () {
       fakeAsync((async) {
         final e = _mkEngine([
           fakeCallStep(durationSeconds: 30, gracePeriodSeconds: 5),
@@ -102,7 +105,8 @@ void main() {
         async.flushMicrotasks();
         e.hangUp();
         async.flushMicrotasks();
-        check(e.state).isA<EngineEnded>();
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });
@@ -130,7 +134,9 @@ void main() {
   });
 
   group('declineFakeCall', () {
-    test('decline with declineIsSafe=true disarms', () {
+    test('decline with declineIsSafe=true re-arms to step 0', () {
+      // Per spec 01 §Decline-is-safe: declines reset the chain to
+      // step 0 (re-arm), not end the session.
       fakeAsync((async) {
         final e = _mkEngine([
           fakeCallStep(
@@ -143,8 +149,8 @@ void main() {
         async.flushMicrotasks();
         e.declineFakeCall();
         async.flushMicrotasks();
-        check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason).equals(EndReason.disarm);
+        check(e.state).isA<EngineRunning>();
+        check((e.state as EngineRunning).stepIndex).equals(0);
         e.dispose();
       });
     });

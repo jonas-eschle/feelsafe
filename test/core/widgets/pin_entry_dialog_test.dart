@@ -107,6 +107,8 @@ void main() {
       await tester.tap(find.text(d));
       await tester.pump();
     }
+    // Q12: dialog requires explicit Submit; no auto-submit on length.
+    await tester.tap(find.byKey(const Key('pin-submit')));
     await _settleRealAsync(tester, seconds: 5);
     check(resolved).equals(PinResult.correct);
   });
@@ -129,9 +131,8 @@ void main() {
       await tester.tap(find.text(d));
       await tester.pump();
     }
-    // Verify runs for each 200ms tap under real time. With the
-    // _inFlight guard, multiple verifies can still pile up as digits
-    // are absorbed — give plenty of headroom.
+    // Q12: dialog requires explicit Submit.
+    await tester.tap(find.byKey(const Key('pin-submit')));
     await _settleRealAsync(tester, seconds: 15);
     check(resolved).equals(PinResult.wrong);
   });
@@ -175,6 +176,8 @@ void main() {
       await tester.tap(find.text(d));
       await tester.pump();
     }
+    // Q12: dialog requires explicit Submit.
+    await tester.tap(find.byKey(const Key('pin-submit')));
     await _settleRealAsync(tester, seconds: 5);
     check(resolved).equals(PinResult.duress);
   });

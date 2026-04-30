@@ -15,6 +15,19 @@ class AppLocalizationsHi extends AppLocalizations {
   String get commonSave => 'सहेजें';
 
   @override
+  String get angelaDialogTitle => 'Old PIN entered';
+
+  @override
+  String get angelaDialogBody =>
+      'It looks like you used an old PIN. Are you sure you want to proceed?';
+
+  @override
+  String get angelaDialogCancel => 'Cancel';
+
+  @override
+  String get angelaDialogConfirm => 'Continue';
+
+  @override
   String get commonCancel => 'रद्द करें';
 
   @override
@@ -66,10 +79,20 @@ class AppLocalizationsHi extends AppLocalizations {
   String get cancel => 'रद्द करें';
 
   @override
+  String get pinSubmit => 'Submit';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => 'सत्र आरंभ करें';
+
+  @override
+  String get homeStartConfirmTitle => 'Start a session?';
+
+  @override
+  String get homeStartConfirmBody =>
+      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
   String get homeSimulate => 'सिमुलेट करें';
@@ -87,6 +110,14 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get homeNoContacts =>
       'अभी तक कोई आपातकालीन संपर्क नहीं। एक जोड़ने के लिए Contacts पर टैप करें।';
+
+  @override
+  String get homeContactsBannerNone => 'No emergency contacts configured.';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '$count contact(s) configured. We recommend at least 3.';
+  }
 
   @override
   String get homeMenuSettings => 'सेटिंग्स';
@@ -976,6 +1007,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get pinEntrySubtitle => 'जारी रखने के लिए अपना PIN दर्ज करें।';
 
   @override
+  String get pinEntryBiometricReason => 'Authenticate to continue';
+
+  @override
   String get stealthTitle => 'गोपन';
 
   @override
@@ -992,6 +1026,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get stealthTimerDisplay => 'गोपन में टाइमर दिखाएँ';
+
+  @override
+  String get stealthTimerDisplayNormal => 'Show full text';
+
+  @override
+  String get stealthTimerDisplaySmall => 'Show numbers only';
+
+  @override
+  String get stealthTimerDisplayNone => 'Hide timer';
 
   @override
   String get stealthSessionScreen => 'सत्र स्क्रीन से ब्रांडिंग हटाएँ';
@@ -1156,6 +1199,15 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get historyEmpty => 'अभी तक कोई पिछला सत्र नहीं।';
+
+  @override
+  String get historySearchHint => 'Search by mode name';
+
+  @override
+  String get historyFilterModeAll => 'All modes';
+
+  @override
+  String get historyFilterModeLabel => 'Mode';
 
   @override
   String get historyDetailTitle => 'सत्र विवरण';
@@ -1342,7 +1394,4 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
-
-  @override
-  String get pinSubmit => 'Submit';
 }

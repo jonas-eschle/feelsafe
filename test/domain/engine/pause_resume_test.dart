@@ -95,7 +95,7 @@ void main() {
 
     test('pause from Ended is a no-op', () {
       final e = _mk();
-      e.disarm();
+      e.endSession(reason: EndReason.userQuit);
       e.pause();
       check(e.state).isA<EngineEnded>();
       e.dispose();

@@ -11,6 +11,13 @@ import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
+String _timerDisplayLabel(AppLocalizations l, StealthTimerDisplay v) =>
+    switch (v) {
+      StealthTimerDisplay.normal => l.stealthTimerDisplayNormal,
+      StealthTimerDisplay.small => l.stealthTimerDisplaySmall,
+      StealthTimerDisplay.none => l.stealthTimerDisplayNone,
+    };
+
 /// Stealth screen.
 class StealthScreen extends ConsumerWidget {
   /// Creates the stealth screen.
@@ -60,10 +67,36 @@ class StealthScreen extends ConsumerWidget {
             value: stealth.notificationDisguise,
             onChanged: (v) => update(stealth.copyWith(notificationDisguise: v)),
           ),
-          SwitchListTile(
+          ListTile(
             title: Text(l.stealthTimerDisplay),
-            value: stealth.timerDisplay,
-            onChanged: (v) => update(stealth.copyWith(timerDisplay: v)),
+            subtitle: Text(_timerDisplayLabel(l, stealth.timerDisplay)),
+            trailing: PopupMenuButton<StealthTimerDisplay>(
+              initialValue: stealth.timerDisplay,
+              onSelected: (v) =>
+                  update(stealth.copyWith(timerDisplay: v)),
+              itemBuilder: (_) => StealthTimerDisplay.values
+                  .map(
+                    (v) => PopupMenuItem<StealthTimerDisplay>(
+                      value: v,
+                      child: Text(_timerDisplayLabel(l, v)),
+                    ),
+                  )
+                  .toList(growable: false),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(_timerDisplayLabel(l, stealth.timerDisplay)),
+                    const SizedBox(width: 4),
+                    const Icon(Icons.arrow_drop_down),
+                  ],
+                ),
+              ),
+            ),
           ),
           SwitchListTile(
             title: Text(l.stealthSessionScreen),
