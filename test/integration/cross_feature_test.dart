@@ -600,8 +600,12 @@ void main() {
         addTearDown(fx.container.dispose);
         final ctrl = fx.container.read(sessionControllerProvider.notifier);
         await fx.container.read(sessionControllerProvider.future);
+        // Q34: BatteryAlertConfig defaults to enabled=false. The
+        // alert path early-returns when disabled, so we must
+        // explicitly set enabled=true here to actually bootstrap.
         await ctrl.startBatteryAlertSession(
           BatteryAlertConfig(
+            enabled: true,
             chain: [
               smsStep(order: 0, durationSeconds: 5, gracePeriodSeconds: 0),
             ],
@@ -741,7 +745,10 @@ void main() {
       final ctrl = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await ctrl.startBatteryAlertSession(
-        BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 10)]),
+        BatteryAlertConfig(
+          enabled: true,
+          chain: [smsStep(order: 0, durationSeconds: 10)],
+        ),
       );
       await ctrl.startSession(modeId: 'mode-1');
       final ws = fx.container.read(sessionControllerProvider).value;

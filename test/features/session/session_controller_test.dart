@@ -898,7 +898,10 @@ void main() {
       final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
       await controller.startBatteryAlertSession(
-        BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 0)]),
+        BatteryAlertConfig(
+          enabled: true,
+          chain: [smsStep(order: 0, durationSeconds: 0)],
+        ),
       );
       final ws = fx.container.read(sessionControllerProvider).value;
       check(ws).isNotNull();
@@ -915,7 +918,10 @@ void main() {
         );
         await fx.container.read(sessionControllerProvider.future);
         await controller.startBatteryAlertSession(
-          BatteryAlertConfig(chain: [smsStep(order: 0, durationSeconds: 10)]),
+          BatteryAlertConfig(
+            enabled: true,
+            chain: [smsStep(order: 0, durationSeconds: 10)],
+          ),
         );
         await controller.startSession(modeId: 'mode-1');
         final ws = fx.container.read(sessionControllerProvider).value;
