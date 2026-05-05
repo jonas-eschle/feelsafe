@@ -32,6 +32,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/data/models/enums.dart';
+import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
@@ -182,17 +183,17 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       );
     }
 
-    // Distress chain resolution:
-    // mode.distressModeId explicit -> that chain; else first entry.
-    final distressRepo = ref.read(distressChainsRepositoryProvider);
-    final distressChains = await distressRepo.getAll();
-    final distressChain = _resolveDistressChain(
-      distressChains: distressChains,
-      modeDistressChainId: mode.distressModeId,
+    // Phase 2.4: distress steps resolved from the modes table.
+    // mode.distressModeId explicit → that mode; else AppDefaults
+    // .defaultDistressModeId; else the first distress-flagged mode.
+    final distressSteps = await _resolveDistressModeSteps(
+      modesRepo: modesRepo,
+      modeDistressModeId: mode.distressModeId,
+      defaultDistressModeId: settings.defaults.defaultDistressModeId,
     );
-    if (distressChain.steps.isEmpty) {
+    if (distressSteps.isEmpty) {
       throw StateError(
-        'SessionController: resolved distress chain has no steps '
+        'SessionController: resolved distress mode has no steps '
         '(D-SAFETY-17)',
       );
     }
@@ -210,7 +211,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       contacts: contacts,
       profile: profile,
       templates: _resolveTemplates(mode: mode, global: globalTemplates),
-      distressChain: distressChain,
+      distressSteps: distressSteps,
       isSimulation: isSimulation,
       isBackgroundAlert: false,
     );
@@ -237,12 +238,11 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final settings = await ref.read(settingsControllerProvider.future);
     final contacts = await ref.read(contactsRepositoryProvider).getAll();
     final profile = await ref.read(userProfileRepositoryProvider).get();
-    final distressChains = await ref
-        .read(distressChainsRepositoryProvider)
-        .getAll();
-    final distressChain = _resolveDistressChain(
-      distressChains: distressChains,
-      modeDistressChainId: null,
+    final modesRepo = ref.read(modesRepositoryProvider);
+    final distressSteps = await _resolveDistressModeSteps(
+      modesRepo: modesRepo,
+      modeDistressModeId: null,
+      defaultDistressModeId: settings.defaults.defaultDistressModeId,
     );
 
     // Build a synthetic mode whose chainSteps are the alert's chain.
@@ -251,7 +251,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       name: 'Battery Alert',
       checkInType: config.chain.first.type,
       chainSteps: config.chain,
-      distressModeId: distressChain.id,
+      distressModeId: settings.defaults.defaultDistressModeId,
     );
 
     await _bootstrapSession(
@@ -260,7 +260,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       contacts: contacts,
       profile: profile,
       templates: const <ReminderTemplate>[],
-      distressChain: distressChain,
+      distressSteps: distressSteps,
       isSimulation: false,
       isBackgroundAlert: true,
     );
@@ -422,13 +422,13 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   }
 
   Future<List<ChainStep>> _currentDistressChainSteps() async {
-    final distressRepo = ref.read(distressChainsRepositoryProvider);
-    final allChains = await distressRepo.getAll();
-    final resolved = _resolveDistressChain(
-      distressChains: allChains,
-      modeDistressChainId: null,
+    final modesRepo = ref.read(modesRepositoryProvider);
+    final settings = await ref.read(settingsControllerProvider.future);
+    return _resolveDistressModeSteps(
+      modesRepo: modesRepo,
+      modeDistressModeId: null,
+      defaultDistressModeId: settings.defaults.defaultDistressModeId,
     );
-    return resolved.steps;
   }
 
   // ----- Internal: bootstrapping -------------------------------------
@@ -439,7 +439,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     required List<EmergencyContact> contacts,
     required UserProfile? profile,
     required List<ReminderTemplate> templates,
-    required DistressChain distressChain,
+    required List<ChainStep> distressSteps,
     required bool isSimulation,
     required bool isBackgroundAlert,
   }) async {
@@ -505,7 +505,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
         batteryMonitorService: services.batteryMonitor,
         onDisarmRequested: onDisarmRequested,
         onDistressConfirmation: onDistressConfirmation,
-        distressStepsResolver: () => distressChain.steps,
+        distressStepsResolver: () => distressSteps,
       );
       await triggerManager.start();
     }
@@ -666,23 +666,37 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     return [...global, ...local];
   }
 
-  DistressChain _resolveDistressChain({
-    required List<DistressChain> distressChains,
-    required String? modeDistressChainId,
-  }) {
-    if (distressChains.isEmpty) {
+  /// Phase 2.4 — resolves the distress chain to fire when a distress
+  /// trigger goes off, sourced from the modes table.
+  ///
+  /// Lookup order:
+  /// 1. The mode being started has an explicit `distressModeId` →
+  ///    use that distress-flagged mode's chain.
+  /// 2. Else, `AppDefaults.defaultDistressModeId` → that mode's chain.
+  /// 3. Else, the first distress-flagged mode in the modes table.
+  ///
+  /// Throws `StateError` if no distress-flagged modes exist
+  /// (D-SAFETY-17).
+  Future<List<ChainStep>> _resolveDistressModeSteps({
+    required ModesRepository modesRepo,
+    required String? modeDistressModeId,
+    required String? defaultDistressModeId,
+  }) async {
+    final allModes = await modesRepo.getAll();
+    final distressModes = allModes.where((m) => m.isDistressMode).toList();
+    if (distressModes.isEmpty) {
       throw StateError(
-        'No distress chains configured; at least one chain must '
-        'exist to handle distress triggers (D-SAFETY-17).',
+        'No distress modes configured; at least one distress-flagged '
+        'mode must exist to handle distress triggers (D-SAFETY-17).',
       );
     }
-    if (modeDistressChainId == null) {
-      return distressChains.first;
+    final wanted = modeDistressModeId ?? defaultDistressModeId;
+    if (wanted != null) {
+      for (final m in distressModes) {
+        if (m.id == wanted) return m.chainSteps;
+      }
     }
-    for (final chain in distressChains) {
-      if (chain.id == modeDistressChainId) return chain;
-    }
-    return distressChains.first;
+    return distressModes.first.chainSteps;
   }
 
   _SessionServices _resolveServices({required bool isSimulation}) {

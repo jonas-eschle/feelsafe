@@ -33,9 +33,11 @@ import '../../helpers/test_helpers.dart';
 // -------- in-memory fake repositories (subclass the real ones) -----
 
 class _FakeModesRepository extends ModesRepository {
-  _FakeModesRepository(List<SessionMode> initial)
-    : _items = List<SessionMode>.of(initial),
-      super.forTesting();
+  _FakeModesRepository(
+    List<SessionMode> initial, {
+    List<SessionMode> extraModes = const [],
+  })  : _items = [...initial, ...extraModes],
+        super.forTesting();
   final List<SessionMode> _items;
 
   @override
@@ -518,19 +520,32 @@ _Fixture _makeFixture({
   List<EmergencyContact>? contacts,
   BatteryAlertConfig? batteryAlert,
 }) {
+  // Phase 2.4: the engine resolves distress steps from the modes
+  // table (not distress_chains). For each DistressChain the test
+  // configures, we mirror it as a distress-flagged SessionMode in
+  // the modes repo so the resolver finds it. The distress-chains
+  // repo override is still wired up for any consumer that still
+  // reads it (UI controllers etc.); 2.5 deletes the class entirely.
+  final effectiveDistressChains =
+      distressChains ?? [makeDistressChain(steps: [smsStep(order: 0)])];
+  final mirroredDistressModes = [
+    for (final c in effectiveDistressChains)
+      SessionMode(
+        id: c.id,
+        name: c.name,
+        checkInType: c.steps.isEmpty
+            ? ChainStepType.smsContact
+            : c.steps.first.type,
+        chainSteps: c.steps,
+        isDistressMode: true,
+      ),
+  ];
   final modesRepo = _FakeModesRepository(
-    modes ??
-        [
-          makeMode(id: 'mode-1', steps: [holdStep()]),
-        ],
+    modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
+    extraModes: mirroredDistressModes,
   );
   final contactsRepo = _FakeContactsRepository(contacts ?? const []);
-  final distressRepo = _FakeDistressChainsRepository(
-    distressChains ??
-        [
-          makeDistressChain(steps: [smsStep(order: 0)]),
-        ],
-  );
+  final distressRepo = _FakeDistressChainsRepository(effectiveDistressChains);
   final settingsRepo = _FakeSettingsRepository(
     settings ?? const AppSettings(defaults: AppDefaults()),
   );

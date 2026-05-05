@@ -30,9 +30,11 @@ import '../helpers/test_helpers.dart';
 // ---------- minimal in-memory repository fakes ---------------------
 
 class _FakeModesRepo extends ModesRepository {
-  _FakeModesRepo(List<SessionMode> initial)
-    : _items = List<SessionMode>.of(initial),
-      super.forTesting();
+  _FakeModesRepo(
+    List<SessionMode> initial, {
+    List<SessionMode> extraModes = const [],
+  })  : _items = [...initial, ...extraModes],
+        super.forTesting();
   final List<SessionMode> _items;
 
   @override
@@ -405,19 +407,26 @@ _Fx _fx({
   AppSettings? settings,
   List<EmergencyContact>? contacts,
 }) {
+  // Phase 2.4: mirror the test distress chain as a distress-flagged
+  // SessionMode so the engine resolver (now modes-based) finds it.
+  final defaultDistressChain = makeDistressChain(
+    steps: [smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0)],
+  );
   final modesRepo = _FakeModesRepo(
-    modes ??
-        [
-          makeMode(id: 'mode-1', steps: [holdStep()]),
-        ],
+    modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
+    extraModes: [
+      SessionMode(
+        id: defaultDistressChain.id,
+        name: defaultDistressChain.name,
+        checkInType: defaultDistressChain.steps.first.type,
+        chainSteps: defaultDistressChain.steps,
+        isDistressMode: true,
+      ),
+    ],
   );
   final contactsRepo = _FakeContactsRepo(contacts ?? const []);
   final templatesRepo = _FakeTemplatesRepo();
-  final distressRepo = _FakeDistressRepo([
-    makeDistressChain(
-      steps: [smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0)],
-    ),
-  ]);
+  final distressRepo = _FakeDistressRepo([defaultDistressChain]);
   final settingsRepo = _FakeSettingsRepo(
     settings ?? const AppSettings(defaults: AppDefaults()),
   );
