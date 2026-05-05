@@ -670,6 +670,24 @@ dart run import_sorter:main --no-comments
 - **Git hooks:** `lefthook` runs format + import sort on pre-commit; analyze + test on pre-push
 - **CI/CD:** `.github/workflows/ci.yml` enforces format, imports, analysis, tests
 
+### Dependency Policy
+
+- **No EOL or discontinued packages.** A package marked `+eol`,
+  `discontinued`, or otherwise officially abandoned by its
+  maintainers MUST NOT be a direct or transitive runtime dependency
+  of the app. When `flutter pub outdated` flags an EOL package, the
+  next reasonable maintenance pass MUST migrate to the upstream
+  replacement (or remove the package if unused).
+- **Why:** EOL packages stop receiving security fixes, cease
+  shipping platform-binary updates, and silently rot the build —
+  e.g., the `sqlcipher_flutter_libs 0.7.0+eol` migration to
+  `package:sqlite3 ^3.x` with the SQLite3MultipleCiphers build hook
+  was driven by this rule.
+- **How to enforce:** `flutter pub outdated` is reviewed during
+  every dependency upgrade pass; any line tagged `+eol` or marked
+  `discontinued` is treated as a release-blocker for the next
+  maintenance commit, not a "later" item.
+
 ### Documentation
 
 - Add `///` doc comments to all public APIs

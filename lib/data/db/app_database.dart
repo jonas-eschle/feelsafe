@@ -4,10 +4,13 @@
 /// mismatch (opened with a newer schema than we ship) throws so the
 /// caller layer can nuke-and-reseed.
 ///
-/// The underlying database is encrypted with SQLCipher. The
-/// passphrase is loaded via [EncryptionKey.load] from platform
-/// secure storage and is applied through `PRAGMA key` in the drift
-/// `setup` hook before any schema migrations run.
+/// The underlying database is encrypted via SQLite3MultipleCiphers
+/// (selected through the `hooks` block in `pubspec.yaml`, which
+/// instructs `package:sqlite3` to bundle the cipher-capable build for
+/// every target platform). The passphrase is loaded via
+/// [EncryptionKey.load] from platform secure storage and applied
+/// through `PRAGMA key` in the drift `setup` hook before any schema
+/// migrations run.
 library;
 
 import 'dart:io';
@@ -17,10 +20,7 @@ import 'package:drift/native.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
-import 'package:sqlcipher_flutter_libs/sqlcipher_flutter_libs.dart';
-import 'package:sqlite3/open.dart';
 
-import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/data/db/encryption.dart';
 import 'package:guardianangela/data/db/schema/tables.dart';
 
@@ -42,17 +42,10 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   /// Creates an app database using [executor].
   ///
-  /// When [executor] is null the default lazy SQLCipher connection
-  /// (file in the application documents directory) is used.
-  ///
-  /// [platform] injects host-platform detection. Defaults to
-  /// `const PlatformInfo()` (reads `dart:io` `Platform.isAndroid`).
-  /// Tests can pass a [FakePlatformInfo] to force either branch of
-  /// [_openConnection].
-  AppDatabase({
-    QueryExecutor? executor,
-    PlatformInfo platform = const PlatformInfo(),
-  }) : super(executor ?? _openConnection(platform));
+  /// When [executor] is null the default lazy connection (encrypted
+  /// file in the application documents directory) is used.
+  AppDatabase({QueryExecutor? executor})
+    : super(executor ?? _openConnection());
 
   /// Creates an in-memory test instance. Not used by production code.
   @visibleForTesting
@@ -82,15 +75,8 @@ class AppDatabase extends _$AppDatabase {
   /// to delete the file as part of a nuke-and-reseed.
   static const String dbFileName = 'guardian_angela.sqlite';
 
-  static LazyDatabase _openConnection(PlatformInfo platform) {
+  static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
-      // On Android, `sqlite3` opens the system sqlite by default.
-      // Route it to the bundled SQLCipher binary instead.
-      if (platform.isAndroid) {
-        await applyWorkaroundToOpenSqlCipherOnOldAndroidVersions();
-        open.overrideFor(OperatingSystem.android, openCipherOnAndroid);
-      }
-
       final dir = await getApplicationDocumentsDirectory();
       final file = File(p.join(dir.path, dbFileName));
       final passphrase = await EncryptionKey.load();
@@ -98,13 +84,15 @@ class AppDatabase extends _$AppDatabase {
       return NativeDatabase(
         file,
         setup: (db) {
-          // Verify we actually loaded SQLCipher (not plaintext
-          // sqlite3 masquerading), then apply the key.
+          // Verify we loaded the cipher-capable build (sqlite3mc /
+          // SQLCipher) before binding the key. A plaintext sqlite3
+          // returns no rows for this PRAGMA.
           final cipherRows = db.select('PRAGMA cipher_version;');
           if (cipherRows.isEmpty) {
             throw StateError(
-              'SQLCipher library is not available — check '
-              'sqlcipher_flutter_libs / iOS pod setup.',
+              'Cipher-capable sqlite3 build is not loaded — verify the '
+              '`hooks: user_defines: sqlite3: source: sqlite3mc` block '
+              'in pubspec.yaml.',
             );
           }
           // `PRAGMA key` must be run before any data read/write.

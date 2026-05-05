@@ -357,5 +357,172 @@
   "stepCategoryAll": "Tout",
   "stepCategoryAction": "Action",
   "stepCategoryReminder": "Rappel",
-  "stepCategoryDisarm": "Vérification"
+  "stepCategoryDisarm": "Vérification",
+
+  "angelaDialogTitle": "Ancien PIN saisi",
+  "angelaDialogBody": "Il semble que vous ayez utilisé un ancien PIN. Voulez-vous vraiment continuer ?",
+  "angelaDialogCancel": "Annuler",
+  "angelaDialogConfirm": "Continuer",
+  "commonOk": "OK",
+  "profileAngelaWarningTitle": "À propos du nom « Angela »",
+  "profileAngelaWarningBody": "Guardian Angela utilise « Angela » comme mot-clé de sécurité. Utiliser ce nom comme le vôtre pourrait prêter à confusion. Enregistrer quand même ?",
+  "pinSubmit": "Valider",
+  "homeStartConfirmTitle": "Démarrer une session ?",
+  "homeStartConfirmBody": "Vérifiez que vos contacts et votre PIN sont configurés. La session s'exécutera au premier plan et le mode sélectionné guidera les validations.",
+  "homeContactsBannerNone": "Aucun contact d'urgence configuré.",
+  "homeContactsBannerFew": "{count} contact(s) configuré(s). Nous en recommandons au moins 3.",
+  "@homeContactsBannerFew": {
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "sessionCheckIn": "Je suis en sécurité",
+  "sessionDisarmTriggerTitle": "Déclencheur de désactivation activé",
+  "sessionDisarmTriggerBody": "Un déclencheur de désactivation s'est activé. Terminer la session ?",
+  "sessionDisarmTriggerConfirm": "Terminer la session",
+  "sessionDisarmTriggerCancel": "Continuer",
+  "wrongPinAngelaTitle": "Ancien PIN d'Angela",
+  "wrongPinAngelaBody": "Voulez-vous vraiment continuer avec cet ancien PIN ?",
+  "wrongPinAngelaConfirm": "OK",
+  "wrongPinAngelaCancel": "Annuler",
+  "sessionStepCountdownTitle": "Avertissement",
+  "sessionStepCountdownBody": "La prochaine escalade se déclenche à la fin du compte à rebours. Faites glisser « Je suis en sécurité » ci-dessous pour désactiver.",
+  "sessionStepDisguisedDefaultTitle": "Rappel",
+  "sessionStepDisguisedDefaultBody": "Appuyez sur « Je suis en sécurité » pour confirmer que tout va bien.",
+  "sessionStepSmsStatus": "Envoi du message aux contacts…",
+  "sessionStepSmsDelivered": "Délivré",
+  "sessionStepSmsSent": "Envoyé",
+  "sessionStepSmsQueued": "En file d'attente",
+  "sessionStepSmsFailed": "Échec",
+  "sessionStepPhoneCallStatus": "Appel du contact d'urgence…",
+  "sessionStepPhoneCallCancel": "Annuler l'appel",
+  "sessionStepLoudAlarmTitle": "Alarme en cours",
+  "sessionStepLoudAlarmBody": "L'alarme retentit pour attirer l'attention.",
+  "sessionStepLoudAlarmFlashWarning": "Avertissement photosensibilité : l'écran clignote.",
+  "sessionStepCallEmergencyStatus": "Appel des services d'urgence…",
+  "sessionStepCallEmergencyNumber": "Numéro : {number}",
+  "@sessionStepCallEmergencyNumber": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "sessionStepHardwareButtonRepeat": "Appuyez sur {button} {count} fois en {windowMs} ms",
+  "@sessionStepHardwareButtonRepeat": {
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
+  "sessionStepHardwareButtonLong": "Maintenez {button} pendant {seconds} secondes",
+  "@sessionStepHardwareButtonLong": {
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "sessionStepHardwareButtonVolumeUp": "volume haut",
+  "sessionStepHardwareButtonVolumeDown": "volume bas",
+  "sessionStepHardwareButtonPower": "marche/arrêt",
+  "fakeCallSlideToAnswer": "glisser pour répondre",
+  "fakeCallUnknownCaller": "Inconnu",
+  "fakeCallIncomingWhatsapp": "Appel vocal WhatsApp",
+  "fakeCallIncomingTelegram": "Appel vocal Telegram",
+  "fakeCallIncomingSignal": "Appel vocal Signal",
+  "fakeCallBrandWhatsapp": "WHATSAPP",
+  "fakeCallBrandTelegram": "TELEGRAM",
+  "fakeCallBrandSignal": "SIGNAL",
+  "contactLanguageDefault": "Par défaut (langue de l'application)",
+  "stepTypePickerLabel": "Type d'étape",
+  "securityAppPinBiometric": "Utiliser la biométrie pour le PIN de l'application",
+  "securitySessionEndPinBiometric": "Utiliser la biométrie pour le PIN de fin de session",
+  "securityDistressCancelBiometric": "Utiliser la biométrie pour annuler la détresse",
+  "securityDuressTest": "Tester le PIN sous contrainte",
+  "securityDuressTestSubtitle": "Vérifiez que votre PIN sous contrainte fonctionne.",
+  "pinEntryBiometricReason": "Authentifiez-vous pour continuer",
+  "stealthTimerDisplayNormal": "Afficher le texte complet",
+  "stealthTimerDisplaySmall": "Afficher uniquement les chiffres",
+  "stealthTimerDisplayNone": "Masquer le minuteur",
+  "backupSelectionHeader": "Inclure dans l'export",
+  "backupToggleSettings": "Paramètres",
+  "backupToggleSettingsSubtitle": "Toujours inclus pour permettre la restauration de la sauvegarde.",
+  "backupToggleContacts": "Contacts d'urgence",
+  "backupToggleModes": "Modes",
+  "backupToggleDistressModes": "Modes de détresse",
+  "backupToggleTemplates": "Modèles de rappel",
+  "backupToggleSessionLogs": "Historique des sessions",
+  "backupToggleRecordings": "Enregistrements audio",
+  "historySearchHint": "Rechercher par nom de mode",
+  "historyFilterModeAll": "Tous les modes",
+  "historyFilterModeLabel": "Mode",
+  "historyDateRangePick": "Plage de dates",
+  "emergencyConfirmTitle": "Appel de {number}",
+  "@emergencyConfirmTitle": {
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "emergencyConfirmSubtitle": "Maintenez le bouton d'annulation pour interrompre.",
+  "emergencyConfirmCountdown": "Appel dans {seconds} s",
+  "@emergencyConfirmCountdown": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "emergencyConfirmCancel": "Annuler",
+  "stealthCalendarUpcoming": "À venir",
+  "stealthCalendarUpcomingEvent": "Réunion",
+  "stealthCalendarUntilEvent": "dans {minutes} min",
+  "@stealthCalendarUntilEvent": {
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "stealthCalendarToday": "Aujourd'hui",
+  "stealthCalendarEvent1": "Café avec Alex",
+  "stealthCalendarEvent2": "Réunion d'équipe",
+  "stealthCalendarEvent3": "Déjeuner",
+  "stealthCalendarEvent4": "Sport",
+  "stealthCalendarEvent5": "Dîner avec Sam",
+  "stealthDisarmGestureHint": "Glisser vers le haut pour terminer",
+  "stealthMusicTrackTitle": "Titre inconnu",
+  "stealthMusicArtist": "Artiste inconnu",
+  "stealthMusicAlbum": "Album inconnu",
+  "stealthMusicNowPlaying": "Lecture en cours",
+  "stealthMusicSwipeHint": "Glisser pour désactiver",
+  "stealthMusicPrevious": "Précédent",
+  "stealthMusicPause": "Pause",
+  "stealthMusicNext": "Suivant",
+  "stealthPodcastShowName": "Podcast",
+  "stealthPodcastEpisodeTitle": "Épisode",
+  "stealthPodcastEpisodesHeader": "Épisodes",
+  "stealthPodcastSpeedLabel": "1x",
+  "stealthPodcastEpisode1": "Épisode 1",
+  "stealthPodcastEpisode2": "Épisode 2",
+  "stealthPodcastEpisode3": "Épisode 3",
+  "stealthPodcastEpisode4": "Épisode 4",
+  "stealthPresetPodcast": "Podcast",
+  "stealthPresetNone": "Aucun",
+  "sessionSimSpeedLabel": "Vitesse",
+  "sessionSimSpeedValue": "{value}x",
+  "@sessionSimSpeedValue": {
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "sessionSimSpeedBackgroundCap": "Limité à 60× en arrière-plan",
+  "sessionSimAdvancedLabel": "Avancé",
+  "sessionSimTriggerPanic": "Déclencher la panique",
+  "sessionSimTriggerArrival": "Simuler l'arrivée",
+  "sessionSimTriggerBattery": "Simuler une batterie faible",
+  "simulateGpsArrival": "Simuler l'arrivée",
+  "simulateLowBattery": "Simuler une batterie faible",
+  "launchGateTitle": "Déverrouiller Guardian Angela",
+  "launchGateSubtitle": "Saisissez votre PIN ou utilisez la biométrie.",
+  "launchGateWrong": "PIN incorrect",
+  "launchGateBiometricReason": "Déverrouiller Guardian Angela",
+  "launchGateUseBiometric": "Utiliser la biométrie"
 }

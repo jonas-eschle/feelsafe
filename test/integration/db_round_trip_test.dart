@@ -5,13 +5,9 @@
 /// reconstructed domain object.
 library;
 
-import 'dart:ffi';
-import 'dart:io';
-
 import 'package:checks/checks.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:sqlite3/open.dart';
 
 import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/db/daos/battery_alert_dao.dart';
@@ -36,28 +32,8 @@ import '../helpers/test_helpers.dart';
 
 AppDatabase _makeDb() => AppDatabase.forTesting(NativeDatabase.memory());
 
-/// Point the sqlite3 loader at the system-packaged so.0 when the test
-/// host does not have a bare libsqlite3.so installed (common on
-/// Debian/Ubuntu CI).
-void _overrideSqliteOpen() {
-  if (!Platform.isLinux) return;
-  const candidates = [
-    '/usr/lib/x86_64-linux-gnu/libsqlite3.so.0',
-    '/usr/lib/aarch64-linux-gnu/libsqlite3.so.0',
-    '/usr/lib/libsqlite3.so.0',
-  ];
-  for (final path in candidates) {
-    if (File(path).existsSync()) {
-      open.overrideFor(OperatingSystem.linux, () => DynamicLibrary.open(path));
-      return;
-    }
-  }
-}
-
 void main() {
   late AppDatabase db;
-
-  setUpAll(_overrideSqliteOpen);
 
   setUp(() {
     db = _makeDb();

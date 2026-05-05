@@ -357,5 +357,516 @@
   "stepCategoryAll": "全部",
   "stepCategoryAction": "动作",
   "stepCategoryReminder": "提醒",
-  "stepCategoryDisarm": "签到"
+  "stepCategoryDisarm": "签到",
+
+  "angelaDialogTitle": "已输入旧 PIN 码",
+  "@angelaDialogTitle": {
+    "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
+  },
+  "angelaDialogBody": "您似乎使用了旧的 PIN 码。确定要继续吗？",
+  "@angelaDialogBody": {
+    "description": "Deceptive Angela dialog body."
+  },
+  "angelaDialogCancel": "取消",
+  "@angelaDialogCancel": {
+    "description": "Deceptive Angela dialog cancel button."
+  },
+  "angelaDialogConfirm": "继续",
+  "@angelaDialogConfirm": {
+    "description": "Deceptive Angela dialog confirm button."
+  },
+  "commonOk": "确定",
+  "@commonOk": {
+    "description": "Generic confirm/OK action."
+  },
+  "profileAngelaWarningTitle": "关于名称“Angela”的提示",
+  "@profileAngelaWarningTitle": {
+    "description": "Title shown when the user tries to save a profile name containing 'Angela'."
+  },
+  "profileAngelaWarningBody": "Guardian Angela 将“Angela”用作安全关键词。把它作为您自己的姓名可能会造成混淆。仍要保存吗？",
+  "@profileAngelaWarningBody": {
+    "description": "Body of the Angela-name warning dialog."
+  },
+  "pinSubmit": "提交",
+  "@pinSubmit": {
+    "description": "Submit button used by the launch-gate PIN entry."
+  },
+  "homeStartConfirmTitle": "开始一次会话？",
+  "@homeStartConfirmTitle": {
+    "description": "Title for the start-session confirmation dialog."
+  },
+  "homeStartConfirmBody": "请确认您的联系人和 PIN 码已配置。会话将在前台运行，所选模式将引导签到。",
+  "@homeStartConfirmBody": {
+    "description": "Body for the start-session confirmation dialog."
+  },
+  "homeContactsBannerNone": "尚未配置紧急联系人。",
+  "@homeContactsBannerNone": {
+    "description": "Banner shown when zero contacts are configured."
+  },
+  "homeContactsBannerFew": "已配置 {count} 位联系人。建议至少 3 位。",
+  "@homeContactsBannerFew": {
+    "description": "Banner shown when 1–2 contacts are configured.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "sessionCheckIn": "我已签到",
+  "@sessionCheckIn": {
+    "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
+  },
+  "sessionDisarmTriggerTitle": "解除触发器已触发",
+  "@sessionDisarmTriggerTitle": {
+    "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)."
+  },
+  "sessionDisarmTriggerBody": "解除触发器已触发。结束会话吗？",
+  "@sessionDisarmTriggerBody": {
+    "description": "Body of the disarm-trigger confirmation dialog."
+  },
+  "sessionDisarmTriggerConfirm": "结束会话",
+  "@sessionDisarmTriggerConfirm": {
+    "description": "Confirm button on the disarm-trigger dialog."
+  },
+  "sessionDisarmTriggerCancel": "继续",
+  "@sessionDisarmTriggerCancel": {
+    "description": "Cancel button on the disarm-trigger dialog."
+  },
+  "wrongPinAngelaTitle": "Angela 的旧 PIN 码",
+  "@wrongPinAngelaTitle": {
+    "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations."
+  },
+  "wrongPinAngelaBody": "确定要使用此旧 PIN 码继续吗？",
+  "@wrongPinAngelaBody": {
+    "description": "Body of the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaConfirm": "确定",
+  "@wrongPinAngelaConfirm": {
+    "description": "Primary button on the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaCancel": "取消",
+  "@wrongPinAngelaCancel": {
+    "description": "Secondary button on the deceptive wrong-PIN dialog."
+  },
+  "sessionStepCountdownTitle": "警告",
+  "@sessionStepCountdownTitle": {
+    "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires."
+  },
+  "sessionStepCountdownBody": "倒计时结束后将触发下一次升级。在下方滑动“我安全”以解除。",
+  "@sessionStepCountdownBody": {
+    "description": "Subtitle on the countdown-warning step UI."
+  },
+  "sessionStepDisguisedDefaultTitle": "提醒",
+  "@sessionStepDisguisedDefaultTitle": {
+    "description": "Fallback title shown on a disguisedReminder step when no template title is resolved."
+  },
+  "sessionStepDisguisedDefaultBody": "点击“我已签到”以确认安全。",
+  "@sessionStepDisguisedDefaultBody": {
+    "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
+  },
+  "sessionStepSmsStatus": "正在向联系人发送消息……",
+  "@sessionStepSmsStatus": {
+    "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
+  },
+  "sessionStepSmsDelivered": "已送达",
+  "@sessionStepSmsDelivered": {
+    "description": "Per-message status label shown when the messaging service reports the message was delivered."
+  },
+  "sessionStepSmsSent": "已发送",
+  "@sessionStepSmsSent": {
+    "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)."
+  },
+  "sessionStepSmsQueued": "排队中",
+  "@sessionStepSmsQueued": {
+    "description": "Per-message status label shown while a message is queued for delivery."
+  },
+  "sessionStepSmsFailed": "失败",
+  "@sessionStepSmsFailed": {
+    "description": "Per-message status label shown when the messaging service reports a delivery failure."
+  },
+  "sessionStepPhoneCallStatus": "正在呼叫紧急联系人……",
+  "@sessionStepPhoneCallStatus": {
+    "description": "Status text shown during a phoneCallContact step while the contact is being called."
+  },
+  "sessionStepPhoneCallCancel": "取消通话",
+  "@sessionStepPhoneCallCancel": {
+    "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)."
+  },
+  "sessionStepLoudAlarmTitle": "警报响起中",
+  "@sessionStepLoudAlarmTitle": {
+    "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider."
+  },
+  "sessionStepLoudAlarmBody": "警报正在响起以引起他人注意。",
+  "@sessionStepLoudAlarmBody": {
+    "description": "Subtitle shown during a loudAlarm step."
+  },
+  "sessionStepLoudAlarmFlashWarning": "光敏警告：屏幕将闪烁。",
+  "@sessionStepLoudAlarmFlashWarning": {
+    "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true."
+  },
+  "sessionStepCallEmergencyStatus": "正在呼叫紧急服务……",
+  "@sessionStepCallEmergencyStatus": {
+    "description": "Status text shown during a callEmergency step before / while the emergency number is dialed."
+  },
+  "sessionStepCallEmergencyNumber": "号码：{number}",
+  "@sessionStepCallEmergencyNumber": {
+    "description": "Display of the emergency number being dialed.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "sessionStepHardwareButtonRepeat": "在 {windowMs} 毫秒内按 {button} {count} 次",
+  "@sessionStepHardwareButtonRepeat": {
+    "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.",
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
+  "sessionStepHardwareButtonLong": "按住 {button} {seconds} 秒",
+  "@sessionStepHardwareButtonLong": {
+    "description": "Instruction text shown during a hardwareButton step with long-press pattern.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "sessionStepHardwareButtonVolumeUp": "音量加键",
+  "@sessionStepHardwareButtonVolumeUp": {
+    "description": "Lowercase noun for the volume-up hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonVolumeDown": "音量减键",
+  "@sessionStepHardwareButtonVolumeDown": {
+    "description": "Lowercase noun for the volume-down hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonPower": "电源键",
+  "@sessionStepHardwareButtonPower": {
+    "description": "Lowercase noun for the power hardware button used in step instructions."
+  },
+  "fakeCallSlideToAnswer": "滑动以接听",
+  "@fakeCallSlideToAnswer": {
+    "description": "Hint text inside the iOS-style slide-to-answer track."
+  },
+  "fakeCallUnknownCaller": "未知",
+  "@fakeCallUnknownCaller": {
+    "description": "Fallback caller name when the configured callerName is empty."
+  },
+  "fakeCallIncomingWhatsapp": "WhatsApp 语音通话",
+  "@fakeCallIncomingWhatsapp": {
+    "description": "Incoming-call header for the WhatsApp call style."
+  },
+  "fakeCallIncomingTelegram": "Telegram 语音通话",
+  "@fakeCallIncomingTelegram": {
+    "description": "Incoming-call header for the Telegram call style."
+  },
+  "fakeCallIncomingSignal": "Signal 语音通话",
+  "@fakeCallIncomingSignal": {
+    "description": "Incoming-call header for the Signal call style."
+  },
+  "fakeCallBrandWhatsapp": "WHATSAPP",
+  "@fakeCallBrandWhatsapp": {
+    "description": "Top-of-screen brand badge in the WhatsApp fake-call style."
+  },
+  "fakeCallBrandTelegram": "TELEGRAM",
+  "@fakeCallBrandTelegram": {
+    "description": "Top-of-screen brand badge in the Telegram fake-call style."
+  },
+  "fakeCallBrandSignal": "SIGNAL",
+  "@fakeCallBrandSignal": {
+    "description": "Top-of-screen brand badge in the Signal fake-call style."
+  },
+  "contactLanguageDefault": "默认（使用应用语言）",
+  "@contactLanguageDefault": {
+    "description": "Default option in the per-contact language dropdown."
+  },
+  "stepTypePickerLabel": "步骤类型",
+  "@stepTypePickerLabel": {
+    "description": "Label for the step-type dropdown in the mode editor."
+  },
+  "securityAppPinBiometric": "为应用 PIN 码启用生物识别",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric prompt before App PIN keypad."
+  },
+  "securitySessionEndPinBiometric": "为会话结束 PIN 码启用生物识别",
+  "@securitySessionEndPinBiometric": {
+    "description": "Toggle: enable biometric prompt before session-end PIN."
+  },
+  "securityDistressCancelBiometric": "使用生物识别取消求救",
+  "@securityDistressCancelBiometric": {
+    "description": "Toggle: biometric path for distress-trigger cancel."
+  },
+  "securityDuressTest": "测试胁迫 PIN 码",
+  "@securityDuressTest": {
+    "description": "Row that opens a keypad to verify the duress PIN was entered correctly."
+  },
+  "securityDuressTestSubtitle": "验证您的胁迫 PIN 码是否正常。",
+  "@securityDuressTestSubtitle": {
+    "description": "Subtitle for the duress-test row."
+  },
+  "pinEntryBiometricReason": "请验证身份以继续",
+  "@pinEntryBiometricReason": {
+    "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service."
+  },
+  "stealthTimerDisplayNormal": "显示完整文字",
+  "@stealthTimerDisplayNormal": {
+    "description": "Stealth timer normal option."
+  },
+  "stealthTimerDisplaySmall": "仅显示数字",
+  "@stealthTimerDisplaySmall": {
+    "description": "Stealth timer small option."
+  },
+  "stealthTimerDisplayNone": "隐藏计时器",
+  "@stealthTimerDisplayNone": {
+    "description": "Stealth timer hidden option."
+  },
+  "backupSelectionHeader": "包含在导出中",
+  "@backupSelectionHeader": {
+    "description": "Section header above the per-element backup toggles."
+  },
+  "backupToggleSettings": "设置",
+  "@backupToggleSettings": {
+    "description": "Always-on toggle showing that settings are always exported."
+  },
+  "backupToggleSettingsSubtitle": "始终包含，以便备份可恢复。",
+  "@backupToggleSettingsSubtitle": {
+    "description": "Explanation under the disabled Settings toggle."
+  },
+  "backupToggleContacts": "紧急联系人",
+  "@backupToggleContacts": {
+    "description": "Toggle to include contacts in the export."
+  },
+  "backupToggleModes": "模式",
+  "@backupToggleModes": {
+    "description": "Toggle to include user-facing modes in the export."
+  },
+  "backupToggleDistressModes": "求救模式",
+  "@backupToggleDistressModes": {
+    "description": "Toggle to include distress-flagged modes in the export."
+  },
+  "backupToggleTemplates": "提醒模板",
+  "@backupToggleTemplates": {
+    "description": "Toggle to include reminder templates in the export."
+  },
+  "backupToggleSessionLogs": "会话历史",
+  "@backupToggleSessionLogs": {
+    "description": "Toggle to include session logs in the export."
+  },
+  "backupToggleRecordings": "录音文件",
+  "@backupToggleRecordings": {
+    "description": "Toggle to include audio-evidence recordings in the export."
+  },
+  "historySearchHint": "按模式名称搜索",
+  "@historySearchHint": {
+    "description": "Hint text for the history search field."
+  },
+  "historyFilterModeAll": "全部模式",
+  "@historyFilterModeAll": {
+    "description": "Mode filter dropdown — all option."
+  },
+  "historyFilterModeLabel": "模式",
+  "@historyFilterModeLabel": {
+    "description": "Mode filter dropdown label."
+  },
+  "historyDateRangePick": "日期范围",
+  "@historyDateRangePick": {
+    "description": "Button label that opens the date-range picker."
+  },
+  "emergencyConfirmTitle": "正在拨打 {number}",
+  "@emergencyConfirmTitle": {
+    "description": "Title of the emergency-confirm pre-dial screen.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "emergencyConfirmSubtitle": "按住取消按钮以中止。",
+  "@emergencyConfirmSubtitle": {
+    "description": "Subtitle of the emergency-confirm pre-dial screen."
+  },
+  "emergencyConfirmCountdown": "{seconds} 秒后拨打",
+  "@emergencyConfirmCountdown": {
+    "description": "Countdown line on the pre-dial screen.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "emergencyConfirmCancel": "取消",
+  "@emergencyConfirmCancel": {
+    "description": "Cancel button on the pre-dial screen."
+  },
+  "stealthCalendarUpcoming": "即将到来",
+  "@stealthCalendarUpcoming": {
+    "description": "Header in the calendar stealth UI."
+  },
+  "stealthCalendarUpcomingEvent": "会议",
+  "@stealthCalendarUpcomingEvent": {
+    "description": "Stealth calendar event title placeholder."
+  },
+  "stealthCalendarUntilEvent": "{minutes} 分钟后",
+  "@stealthCalendarUntilEvent": {
+    "description": "Stealth calendar countdown.",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "stealthCalendarToday": "今天",
+  "@stealthCalendarToday": {
+    "description": "Today header in the stealth calendar."
+  },
+  "stealthCalendarEvent1": "与 Alex 喝咖啡",
+  "@stealthCalendarEvent1": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent2": "站会",
+  "@stealthCalendarEvent2": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent3": "午餐",
+  "@stealthCalendarEvent3": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent4": "健身",
+  "@stealthCalendarEvent4": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent5": "与 Sam 共进晚餐",
+  "@stealthCalendarEvent5": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthDisarmGestureHint": "向上滑动以结束",
+  "@stealthDisarmGestureHint": {
+    "description": "Hint shown on stealth screens for the disarm gesture."
+  },
+  "stealthMusicTrackTitle": "未命名曲目",
+  "@stealthMusicTrackTitle": {
+    "description": "Default track title on the stealth music screen."
+  },
+  "stealthMusicArtist": "未知艺术家",
+  "@stealthMusicArtist": {
+    "description": "Default artist on the stealth music screen."
+  },
+  "stealthMusicAlbum": "未知专辑",
+  "@stealthMusicAlbum": {
+    "description": "Default album on the stealth music screen."
+  },
+  "stealthMusicNowPlaying": "正在播放",
+  "@stealthMusicNowPlaying": {
+    "description": "Now-playing label on the stealth music screen."
+  },
+  "stealthMusicSwipeHint": "滑动以解除",
+  "@stealthMusicSwipeHint": {
+    "description": "Disarm-gesture hint on the stealth music screen."
+  },
+  "stealthMusicPrevious": "上一首",
+  "@stealthMusicPrevious": {
+    "description": "Previous-track button label."
+  },
+  "stealthMusicPause": "暂停",
+  "@stealthMusicPause": {
+    "description": "Pause button label."
+  },
+  "stealthMusicNext": "下一首",
+  "@stealthMusicNext": {
+    "description": "Next-track button label."
+  },
+  "stealthPodcastShowName": "播客",
+  "@stealthPodcastShowName": {
+    "description": "Podcast show name placeholder."
+  },
+  "stealthPodcastEpisodeTitle": "单集",
+  "@stealthPodcastEpisodeTitle": {
+    "description": "Podcast episode title placeholder."
+  },
+  "stealthPodcastEpisodesHeader": "单集列表",
+  "@stealthPodcastEpisodesHeader": {
+    "description": "Episodes-list header on the stealth podcast screen."
+  },
+  "stealthPodcastSpeedLabel": "1x",
+  "@stealthPodcastSpeedLabel": {
+    "description": "Speed-toggle label on the stealth podcast screen."
+  },
+  "stealthPodcastEpisode1": "第 1 集",
+  "@stealthPodcastEpisode1": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode2": "第 2 集",
+  "@stealthPodcastEpisode2": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode3": "第 3 集",
+  "@stealthPodcastEpisode3": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode4": "第 4 集",
+  "@stealthPodcastEpisode4": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPresetPodcast": "播客",
+  "@stealthPresetPodcast": {
+    "description": "Stealth preset name shown in the picker."
+  },
+  "stealthPresetNone": "无",
+  "@stealthPresetNone": {
+    "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionSimSpeedLabel": "速度",
+  "@sessionSimSpeedLabel": {
+    "description": "Label of the simulation speed slider."
+  },
+  "sessionSimSpeedValue": "{value}x",
+  "@sessionSimSpeedValue": {
+    "description": "Simulation speed value display.",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "sessionSimSpeedBackgroundCap": "后台时上限为 60×",
+  "@sessionSimSpeedBackgroundCap": {
+    "description": "Indicator that simulation speed is capped at 60x while app is backgrounded."
+  },
+  "sessionSimAdvancedLabel": "高级",
+  "@sessionSimAdvancedLabel": {
+    "description": "Label of the advanced-controls toggle in simulation."
+  },
+  "sessionSimTriggerPanic": "触发求救",
+  "@sessionSimTriggerPanic": {
+    "description": "Simulation button — fires the distress chain."
+  },
+  "sessionSimTriggerArrival": "触发到达",
+  "@sessionSimTriggerArrival": {
+    "description": "Simulation button — fakes a GPS arrival event."
+  },
+  "sessionSimTriggerBattery": "触发低电量",
+  "@sessionSimTriggerBattery": {
+    "description": "Simulation button — fakes a low-battery event."
+  },
+  "simulateGpsArrival": "模拟到达",
+  "@simulateGpsArrival": {
+    "description": "Top-level simulate-arrival action."
+  },
+  "simulateLowBattery": "模拟低电量",
+  "@simulateLowBattery": {
+    "description": "Top-level simulate-low-battery action."
+  },
+  "launchGateTitle": "解锁 Guardian Angela",
+  "@launchGateTitle": {
+    "description": "Title of the Q14 launch-gate screen."
+  },
+  "launchGateSubtitle": "请输入 PIN 码或使用生物识别。",
+  "@launchGateSubtitle": {
+    "description": "Subtitle of the Q14 launch-gate screen."
+  },
+  "launchGateWrong": "PIN 码错误",
+  "@launchGateWrong": {
+    "description": "Error label on the Q14 launch-gate screen."
+  },
+  "launchGateBiometricReason": "解锁 Guardian Angela",
+  "@launchGateBiometricReason": {
+    "description": "Reason string for biometric prompt."
+  },
+  "launchGateUseBiometric": "使用生物识别",
+  "@launchGateUseBiometric": {
+    "description": "Button to fall back to biometric auth on the launch gate."
+  }
 }

@@ -15,30 +15,29 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonSave => '保存';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => '已输入旧 PIN 码';
 
   @override
-  String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+  String get angelaDialogBody => '您似乎使用了旧的 PIN 码。确定要继续吗？';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => '取消';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => '继续';
 
   @override
   String get commonCancel => '取消';
 
   @override
-  String get commonOk => 'OK';
+  String get commonOk => '确定';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle => '关于名称“Angela”的提示';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Guardian Angela 将“Angela”用作安全关键词。把它作为您自己的姓名可能会造成混淆。仍要保存吗？';
 
   @override
   String get commonDelete => '删除';
@@ -89,7 +88,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get cancel => '取消';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => '提交';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +97,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeStartSession => '开始会话';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => '开始一次会话？';
 
   @override
-  String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+  String get homeStartConfirmBody => '请确认您的联系人和 PIN 码已配置。会话将在前台运行，所选模式将引导签到。';
 
   @override
   String get homeSimulate => '模拟';
@@ -120,11 +118,11 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeNoContacts => '尚无紧急联系人。点击“联系人”添加一个。';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone => '尚未配置紧急联系人。';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return '已配置 $count 位联系人。建议至少 3 位。';
   }
 
   @override
@@ -215,86 +213,80 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionSimulationBanner => '模拟';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => '我已签到';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => '解除触发器已触发';
 
   @override
-  String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+  String get sessionDisarmTriggerBody => '解除触发器已触发。结束会话吗？';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => '结束会话';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => '继续';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'Angela 的旧 PIN 码';
 
   @override
-  String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+  String get wrongPinAngelaBody => '确定要使用此旧 PIN 码继续吗？';
 
   @override
-  String get wrongPinAngelaConfirm => 'OK';
+  String get wrongPinAngelaConfirm => '确定';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => '取消';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => '警告';
 
   @override
-  String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+  String get sessionStepCountdownBody => '倒计时结束后将触发下一次升级。在下方滑动“我安全”以解除。';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => '提醒';
 
   @override
-  String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+  String get sessionStepDisguisedDefaultBody => '点击“我已签到”以确认安全。';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => '正在向联系人发送消息……';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => '已送达';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => '已发送';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => '排队中';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => '失败';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => '正在呼叫紧急联系人……';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => '取消通话';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => '警报响起中';
 
   @override
-  String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+  String get sessionStepLoudAlarmBody => '警报正在响起以引起他人注意。';
 
   @override
-  String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+  String get sessionStepLoudAlarmFlashWarning => '光敏警告：屏幕将闪烁。';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus => '正在呼叫紧急服务……';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return '号码：$number';
   }
 
   @override
@@ -303,22 +295,22 @@ class AppLocalizationsZh extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return '在 $windowMs 毫秒内按 $button $count 次';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return '按住 $button $seconds 秒';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => '音量加键';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => '音量减键';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => '电源键';
 
   @override
   String get sessionCompletedTitle => '会话已完成';
@@ -351,19 +343,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fakeCallHangUp => '挂断';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => '滑动以接听';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => '未知';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'WhatsApp 语音通话';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'Telegram 语音通话';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'Signal 语音通话';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -402,7 +394,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get contactFieldLanguage => '短信语言（可选）';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => '默认（使用应用语言）';
 
   @override
   String get contactChannelsHeader => '消息渠道';
@@ -650,7 +642,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => '步骤类型';
 
   @override
   String get stepTypeHoldButton => '按住按钮';
@@ -981,21 +973,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityDuressPin => '胁迫 PIN 码';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric => '为应用 PIN 码启用生物识别';
 
   @override
-  String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+  String get securitySessionEndPinBiometric => '为会话结束 PIN 码启用生物识别';
 
   @override
-  String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+  String get securityDistressCancelBiometric => '使用生物识别取消求救';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => '测试胁迫 PIN 码';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle => '验证您的胁迫 PIN 码是否正常。';
 
   @override
   String get securityPinTimeout => 'PIN 码超时（秒）';
@@ -1028,7 +1018,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pinEntrySubtitle => '请输入您的 PIN 码以继续。';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason => '请验证身份以继续';
 
   @override
   String get stealthTitle => '隐身';
@@ -1049,13 +1039,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stealthTimerDisplay => '在隐身模式下显示计时器';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => '显示完整文字';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => '仅显示数字';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => '隐藏计时器';
 
   @override
   String get stealthSessionScreen => '隐藏会话界面品牌标识';
@@ -1184,32 +1174,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get backupImportOk => '备份导入成功。';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => '包含在导出中';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => '设置';
 
   @override
-  String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+  String get backupToggleSettingsSubtitle => '始终包含，以便备份可恢复。';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => '紧急联系人';
 
   @override
-  String get backupToggleModes => 'Modes';
+  String get backupToggleModes => '模式';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => '求救模式';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => '提醒模板';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => '会话历史';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => '录音文件';
 
   @override
   String get historyTitle => '历史会话';
@@ -1218,16 +1207,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historyEmpty => '尚无历史会话。';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => '按模式名称搜索';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => '全部模式';
 
   @override
-  String get historyFilterModeLabel => 'Mode';
+  String get historyFilterModeLabel => '模式';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => '日期范围';
 
   @override
   String get historyDetailTitle => '会话详情';
@@ -1270,108 +1259,108 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return '正在拨打 $number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle => '按住取消按钮以中止。';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return '$seconds 秒后拨打';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => '取消';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => '即将到来';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => '会议';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return '$minutes 分钟后';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => '今天';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => '与 Alex 喝咖啡';
 
   @override
-  String get stealthCalendarEvent2 => 'Standup';
+  String get stealthCalendarEvent2 => '站会';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => '午餐';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => '健身';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => '与 Sam 共进晚餐';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => '向上滑动以结束';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => '未命名曲目';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => '未知艺术家';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => '未知专辑';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => '正在播放';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => '滑动以解除';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => '上一首';
 
   @override
-  String get stealthMusicPause => 'Pause';
+  String get stealthMusicPause => '暂停';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => '下一首';
 
   @override
-  String get stealthPodcastShowName => 'Podcast';
+  String get stealthPodcastShowName => '播客';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => '单集';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => '单集列表';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => '第 1 集';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => '第 2 集';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => '第 3 集';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => '第 4 集';
 
   @override
-  String get stealthPresetPodcast => 'Podcast';
+  String get stealthPresetPodcast => '播客';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => '无';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => '速度';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1379,40 +1368,40 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap => '后台时上限为 60×';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => '高级';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => '触发求救';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => '触发到达';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => '触发低电量';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => '模拟到达';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => '模拟低电量';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => '解锁 Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle => '请输入 PIN 码或使用生物识别。';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'PIN 码错误';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => '解锁 Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => '使用生物识别';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1426,7 +1415,29 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get commonSave => '儲存';
 
   @override
+  String get angelaDialogTitle => '已輸入舊 PIN';
+
+  @override
+  String get angelaDialogBody => '看起來你使用了舊的 PIN。確定要繼續嗎?';
+
+  @override
+  String get angelaDialogCancel => '取消';
+
+  @override
+  String get angelaDialogConfirm => '繼續';
+
+  @override
   String get commonCancel => '取消';
+
+  @override
+  String get commonOk => '確定';
+
+  @override
+  String get profileAngelaWarningTitle => '關於使用「Angela」一名的提醒';
+
+  @override
+  String get profileAngelaWarningBody =>
+      'Guardian Angela 將「Angela」作為安全暗號使用。把它當作你自己的名字可能會造成混淆。仍要儲存嗎?';
 
   @override
   String get commonDelete => '刪除';
@@ -1477,10 +1488,20 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get cancel => '取消';
 
   @override
+  String get pinSubmit => '送出';
+
+  @override
   String get homeTitle => 'Guardian Angela';
 
   @override
   String get homeStartSession => '開始守護';
+
+  @override
+  String get homeStartConfirmTitle => '開始守護?';
+
+  @override
+  String get homeStartConfirmBody =>
+      '請確認你的聯絡人與 PIN 已設定完成。守護將在前景執行,並由你選擇的模式引導報平安。';
 
   @override
   String get homeSimulate => '模擬';
@@ -1496,6 +1517,14 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get homeNoContacts => '尚未新增緊急聯絡人。點選「聯絡人」新增一位。';
+
+  @override
+  String get homeContactsBannerNone => '尚未設定緊急聯絡人。';
+
+  @override
+  String homeContactsBannerFew(int count) {
+    return '已設定 $count 位聯絡人。建議至少 3 位。';
+  }
 
   @override
   String get homeMenuSettings => '設定';
@@ -1585,6 +1614,106 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get sessionSimulationBanner => '模擬';
 
   @override
+  String get sessionCheckIn => '我已報平安';
+
+  @override
+  String get sessionDisarmTriggerTitle => '解除觸發器已啟動';
+
+  @override
+  String get sessionDisarmTriggerBody => '解除觸發器已啟動。要結束守護嗎?';
+
+  @override
+  String get sessionDisarmTriggerConfirm => '結束守護';
+
+  @override
+  String get sessionDisarmTriggerCancel => '繼續';
+
+  @override
+  String get wrongPinAngelaTitle => '來自 Angela 的舊 PIN';
+
+  @override
+  String get wrongPinAngelaBody => '確定要使用這組舊 PIN 繼續嗎?';
+
+  @override
+  String get wrongPinAngelaConfirm => '確定';
+
+  @override
+  String get wrongPinAngelaCancel => '取消';
+
+  @override
+  String get sessionStepCountdownTitle => '警告';
+
+  @override
+  String get sessionStepCountdownBody => '倒數結束時將觸發下一個升級步驟。請於下方滑動「我很安全」以解除。';
+
+  @override
+  String get sessionStepDisguisedDefaultTitle => '提醒';
+
+  @override
+  String get sessionStepDisguisedDefaultBody => '請點按「我已報平安」以確認你安全無虞。';
+
+  @override
+  String get sessionStepSmsStatus => '正在傳送訊息給聯絡人…';
+
+  @override
+  String get sessionStepSmsDelivered => '已送達';
+
+  @override
+  String get sessionStepSmsSent => '已送出';
+
+  @override
+  String get sessionStepSmsQueued => '排隊中';
+
+  @override
+  String get sessionStepSmsFailed => '失敗';
+
+  @override
+  String get sessionStepPhoneCallStatus => '正在致電緊急聯絡人…';
+
+  @override
+  String get sessionStepPhoneCallCancel => '取消通話';
+
+  @override
+  String get sessionStepLoudAlarmTitle => '警報播放中';
+
+  @override
+  String get sessionStepLoudAlarmBody => '警報正在發出聲響以引起注意。';
+
+  @override
+  String get sessionStepLoudAlarmFlashWarning => '光敏警告:螢幕將會閃爍。';
+
+  @override
+  String get sessionStepCallEmergencyStatus => '正在撥打緊急電話…';
+
+  @override
+  String sessionStepCallEmergencyNumber(Object number) {
+    return '號碼:$number';
+  }
+
+  @override
+  String sessionStepHardwareButtonRepeat(
+    Object button,
+    Object count,
+    Object windowMs,
+  ) {
+    return '於 $windowMs 毫秒內按下$button $count 次';
+  }
+
+  @override
+  String sessionStepHardwareButtonLong(Object button, Object seconds) {
+    return '按住$button $seconds 秒';
+  }
+
+  @override
+  String get sessionStepHardwareButtonVolumeUp => '音量增加鍵';
+
+  @override
+  String get sessionStepHardwareButtonVolumeDown => '音量減少鍵';
+
+  @override
+  String get sessionStepHardwareButtonPower => '電源鍵';
+
+  @override
   String get sessionCompletedTitle => '守護完成';
 
   @override
@@ -1615,6 +1744,30 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get fakeCallHangUp => '掛斷';
 
   @override
+  String get fakeCallSlideToAnswer => '滑動以接聽';
+
+  @override
+  String get fakeCallUnknownCaller => '未知';
+
+  @override
+  String get fakeCallIncomingWhatsapp => 'WhatsApp 語音通話';
+
+  @override
+  String get fakeCallIncomingTelegram => 'Telegram 語音通話';
+
+  @override
+  String get fakeCallIncomingSignal => 'Signal 語音通話';
+
+  @override
+  String get fakeCallBrandWhatsapp => 'WHATSAPP';
+
+  @override
+  String get fakeCallBrandTelegram => 'TELEGRAM';
+
+  @override
+  String get fakeCallBrandSignal => 'SIGNAL';
+
+  @override
   String get contactsTitle => '緊急聯絡人';
 
   @override
@@ -1640,6 +1793,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get contactFieldLanguage => '簡訊語言(選填)';
+
+  @override
+  String get contactLanguageDefault => '預設(使用應用程式語言)';
 
   @override
   String get contactChannelsHeader => '通訊管道';
@@ -1885,6 +2041,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String moreSettingsHeaderCustomized(int count) {
     return '更多設定（已自訂 $count 項）';
   }
+
+  @override
+  String get stepTypePickerLabel => '步驟類型';
 
   @override
   String get stepTypeHoldButton => '按住按鈕';
@@ -2215,6 +2374,21 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get securityDuressPin => '脅迫 PIN';
 
   @override
+  String get securityAppPinBiometric => '使用生物辨識解鎖應用程式 PIN';
+
+  @override
+  String get securitySessionEndPinBiometric => '使用生物辨識解鎖結束守護 PIN';
+
+  @override
+  String get securityDistressCancelBiometric => '使用生物辨識取消求救';
+
+  @override
+  String get securityDuressTest => '測試脅迫 PIN';
+
+  @override
+  String get securityDuressTestSubtitle => '驗證你的脅迫 PIN 是否可用。';
+
+  @override
   String get securityPinTimeout => 'PIN 逾時(秒)';
 
   @override
@@ -2245,6 +2419,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get pinEntrySubtitle => '請輸入 PIN 以繼續。';
 
   @override
+  String get pinEntryBiometricReason => '請驗證身分以繼續';
+
+  @override
   String get stealthTitle => '隱匿模式';
 
   @override
@@ -2261,6 +2438,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stealthTimerDisplay => '隱匿模式下顯示計時器';
+
+  @override
+  String get stealthTimerDisplayNormal => '顯示完整文字';
+
+  @override
+  String get stealthTimerDisplaySmall => '僅顯示數字';
+
+  @override
+  String get stealthTimerDisplayNone => '隱藏計時器';
 
   @override
   String get stealthSessionScreen => '移除守護畫面的品牌標示';
@@ -2389,10 +2575,49 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get backupImportOk => '備份匯入成功。';
 
   @override
+  String get backupSelectionHeader => '包含於匯出';
+
+  @override
+  String get backupToggleSettings => '設定';
+
+  @override
+  String get backupToggleSettingsSubtitle => '設定一律包含,以便還原備份。';
+
+  @override
+  String get backupToggleContacts => '緊急聯絡人';
+
+  @override
+  String get backupToggleModes => '模式';
+
+  @override
+  String get backupToggleDistressModes => '求救模式';
+
+  @override
+  String get backupToggleTemplates => '提醒範本';
+
+  @override
+  String get backupToggleSessionLogs => '守護紀錄';
+
+  @override
+  String get backupToggleRecordings => '音訊錄音';
+
+  @override
   String get historyTitle => '過往紀錄';
 
   @override
   String get historyEmpty => '尚無過往紀錄。';
+
+  @override
+  String get historySearchHint => '依模式名稱搜尋';
+
+  @override
+  String get historyFilterModeAll => '所有模式';
+
+  @override
+  String get historyFilterModeLabel => '模式';
+
+  @override
+  String get historyDateRangePick => '日期範圍';
 
   @override
   String get historyDetailTitle => '守護詳情';
@@ -2432,4 +2657,150 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get pickerNoneLabel => '— 無 —';
+
+  @override
+  String emergencyConfirmTitle(Object number) {
+    return '正在撥打 $number';
+  }
+
+  @override
+  String get emergencyConfirmSubtitle => '按住取消按鈕以中止。';
+
+  @override
+  String emergencyConfirmCountdown(Object seconds) {
+    return '$seconds 秒後撥出';
+  }
+
+  @override
+  String get emergencyConfirmCancel => '取消';
+
+  @override
+  String get stealthCalendarUpcoming => '即將開始';
+
+  @override
+  String get stealthCalendarUpcomingEvent => '會議';
+
+  @override
+  String stealthCalendarUntilEvent(Object minutes) {
+    return '$minutes 分鐘後';
+  }
+
+  @override
+  String get stealthCalendarToday => '今天';
+
+  @override
+  String get stealthCalendarEvent1 => '與 Alex 喝咖啡';
+
+  @override
+  String get stealthCalendarEvent2 => '站立會議';
+
+  @override
+  String get stealthCalendarEvent3 => '午餐';
+
+  @override
+  String get stealthCalendarEvent4 => '健身';
+
+  @override
+  String get stealthCalendarEvent5 => '與 Sam 共進晚餐';
+
+  @override
+  String get stealthDisarmGestureHint => '向上滑動以結束';
+
+  @override
+  String get stealthMusicTrackTitle => '未命名曲目';
+
+  @override
+  String get stealthMusicArtist => '未知藝人';
+
+  @override
+  String get stealthMusicAlbum => '未知專輯';
+
+  @override
+  String get stealthMusicNowPlaying => '正在播放';
+
+  @override
+  String get stealthMusicSwipeHint => '滑動以解除';
+
+  @override
+  String get stealthMusicPrevious => '上一首';
+
+  @override
+  String get stealthMusicPause => '暫停';
+
+  @override
+  String get stealthMusicNext => '下一首';
+
+  @override
+  String get stealthPodcastShowName => 'Podcast';
+
+  @override
+  String get stealthPodcastEpisodeTitle => '單集';
+
+  @override
+  String get stealthPodcastEpisodesHeader => '單集';
+
+  @override
+  String get stealthPodcastSpeedLabel => '1x';
+
+  @override
+  String get stealthPodcastEpisode1 => '第 1 集';
+
+  @override
+  String get stealthPodcastEpisode2 => '第 2 集';
+
+  @override
+  String get stealthPodcastEpisode3 => '第 3 集';
+
+  @override
+  String get stealthPodcastEpisode4 => '第 4 集';
+
+  @override
+  String get stealthPresetPodcast => 'Podcast';
+
+  @override
+  String get stealthPresetNone => '無';
+
+  @override
+  String get sessionSimSpeedLabel => '速度';
+
+  @override
+  String sessionSimSpeedValue(Object value) {
+    return '${value}x';
+  }
+
+  @override
+  String get sessionSimSpeedBackgroundCap => '在背景時上限為 60×';
+
+  @override
+  String get sessionSimAdvancedLabel => '進階';
+
+  @override
+  String get sessionSimTriggerPanic => '觸發求救';
+
+  @override
+  String get sessionSimTriggerArrival => '觸發抵達';
+
+  @override
+  String get sessionSimTriggerBattery => '觸發低電量';
+
+  @override
+  String get simulateGpsArrival => '模擬抵達';
+
+  @override
+  String get simulateLowBattery => '模擬低電量';
+
+  @override
+  String get launchGateTitle => '解鎖 Guardian Angela';
+
+  @override
+  String get launchGateSubtitle => '請輸入 PIN 或使用生物辨識。';
+
+  @override
+  String get launchGateWrong => 'PIN 錯誤';
+
+  @override
+  String get launchGateBiometricReason => '解鎖 Guardian Angela';
+
+  @override
+  String get launchGateUseBiometric => '使用生物辨識';
 }

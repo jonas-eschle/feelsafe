@@ -15,17 +15,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonSave => 'Зберегти';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => 'Введено старий PIN-код';
 
   @override
   String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+      'Схоже, Ви використали старий PIN-код. Ви впевнені, що бажаєте продовжити?';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => 'Скасувати';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => 'Продовжити';
 
   @override
   String get commonCancel => 'Скасувати';
@@ -34,11 +34,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonOk => 'OK';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle => 'Зверніть увагу на ім\'я «Angela»';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Guardian Angela використовує «Angela» як ключове слово безпеки. Використання його як власного імені може спричинити плутанину. Зберегти попри це?';
 
   @override
   String get commonDelete => 'Видалити';
@@ -89,7 +89,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get cancel => 'Скасувати';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => 'Підтвердити';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +98,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get homeStartSession => 'Почати сесію';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => 'Розпочати сесію?';
 
   @override
   String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+      'Переконайтеся, що Ваші контакти та PIN-код налаштовано. Сесія працюватиме у фоновому режимі, і обраний режим керуватиме реєстраціями.';
 
   @override
   String get homeSimulate => 'Симуляція';
@@ -121,11 +121,12 @@ class AppLocalizationsUk extends AppLocalizations {
       'Ще немає екстрених контактів. Натисніть «Контакти», щоб додати.';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone =>
+      'Не налаштовано жодного екстреного контакту.';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return 'Налаштовано $count контакт(ів). Рекомендуємо щонайменше 3.';
   }
 
   @override
@@ -217,86 +218,86 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionSimulationBanner => 'Симуляція';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => 'Я зареєструвався';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => 'Спрацював тригер знеактивування';
 
   @override
   String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+      'Спрацював тригер знеактивування. Завершити сесію?';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => 'Завершити сесію';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => 'Продовжити';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'Старий PIN-код від Angela';
 
   @override
   String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+      'Ви впевнені, що бажаєте продовжити з цим старим PIN-кодом?';
 
   @override
   String get wrongPinAngelaConfirm => 'OK';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => 'Скасувати';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => 'Попередження';
 
   @override
   String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+      'Наступна ескалація спрацює, коли відлік завершиться. Проведіть «Я в безпеці» нижче, щоб знеактивувати.';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => 'Нагадування';
 
   @override
   String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+      'Натисніть «Я зареєструвався», щоб підтвердити, що Ви в безпеці.';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => 'Надсилання повідомлення контактам…';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => 'Доставлено';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => 'Надіслано';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => 'У черзі';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => 'Не вдалося';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => 'Виклик екстреного контакту…';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => 'Скасувати дзвінок';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => 'Сирена ввімкнено';
 
   @override
   String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+      'Сирена звучить, щоб привернути увагу.';
 
   @override
   String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+      'Попередження для людей із фоточутливістю: екран блимає.';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus => 'Виклик екстрених служб…';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return 'Номер: $number';
   }
 
   @override
@@ -305,22 +306,22 @@ class AppLocalizationsUk extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return 'Натисніть $button $count раз(ів) протягом $windowMs мс';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return 'Утримуйте $button протягом $seconds с';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => 'збільшення гучності';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => 'зменшення гучності';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => 'живлення';
 
   @override
   String get sessionCompletedTitle => 'Сесію завершено';
@@ -355,19 +356,19 @@ class AppLocalizationsUk extends AppLocalizations {
   String get fakeCallHangUp => 'Завершити';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => 'проведіть, щоб відповісти';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => 'Невідомий';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'Голосовий виклик WhatsApp';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'Голосовий виклик Telegram';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'Голосовий виклик Signal';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -407,7 +408,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get contactFieldLanguage => 'Мова SMS (необов\'язково)';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => 'За замовчуванням (мова застосунку)';
 
   @override
   String get contactChannelsHeader => 'Канали зв\'язку';
@@ -659,7 +660,7 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => 'Тип кроку';
 
   @override
   String get stepTypeHoldButton => 'Кнопка утримання';
@@ -991,21 +992,23 @@ class AppLocalizationsUk extends AppLocalizations {
   String get securityDuressPin => 'PIN-код примусу';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric =>
+      'Використовувати біометрію для PIN-коду застосунку';
 
   @override
   String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+      'Використовувати біометрію для PIN-коду завершення сесії';
 
   @override
   String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+      'Використовувати біометрію для скасування сигналу тривоги';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => 'Перевірити PIN-код примусу';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle =>
+      'Переконайтеся, що PIN-код примусу працює.';
 
   @override
   String get securityPinTimeout => 'Тайм-аут PIN (секунди)';
@@ -1038,7 +1041,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get pinEntrySubtitle => 'Введіть свій PIN, щоб продовжити.';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason => 'Автентифікуйтеся, щоб продовжити';
 
   @override
   String get stealthTitle => 'Прихований режим';
@@ -1059,13 +1062,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get stealthTimerDisplay => 'Показувати таймер у прихованому режимі';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => 'Показати повний текст';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => 'Показувати лише цифри';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => 'Сховати таймер';
 
   @override
   String get stealthSessionScreen => 'Прибрати брендинг з екрана сесії';
@@ -1199,32 +1202,32 @@ class AppLocalizationsUk extends AppLocalizations {
   String get backupImportOk => 'Резервну копію успішно імпортовано.';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => 'Включити в експорт';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => 'Налаштування';
 
   @override
   String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+      'Завжди включено, щоб резервну копію можна було відновити.';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => 'Екстрені контакти';
 
   @override
-  String get backupToggleModes => 'Modes';
+  String get backupToggleModes => 'Режими';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => 'Режими тривоги';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => 'Шаблони нагадувань';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => 'Історія сесій';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => 'Аудіозаписи';
 
   @override
   String get historyTitle => 'Минулі сесії';
@@ -1233,16 +1236,16 @@ class AppLocalizationsUk extends AppLocalizations {
   String get historyEmpty => 'Ще немає минулих сесій.';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => 'Пошук за назвою режиму';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => 'Усі режими';
 
   @override
-  String get historyFilterModeLabel => 'Mode';
+  String get historyFilterModeLabel => 'Режим';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => 'Діапазон дат';
 
   @override
   String get historyDetailTitle => 'Деталі сесії';
@@ -1286,108 +1289,109 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return 'Виклик $number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle =>
+      'Утримуйте кнопку скасування, щоб перервати.';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return 'Виклик через $seconds с';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => 'Скасувати';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => 'Найближчі';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => 'Зустріч';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return 'через $minutes хв';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => 'Сьогодні';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => 'Кава з Олексієм';
 
   @override
-  String get stealthCalendarEvent2 => 'Standup';
+  String get stealthCalendarEvent2 => 'Стендап';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => 'Обід';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => 'Тренування';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => 'Вечеря з Сашком';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => 'Проведіть угору, щоб завершити';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => 'Без назви';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => 'Невідомий виконавець';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => 'Невідомий альбом';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => 'Зараз грає';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => 'Проведіть, щоб знеактивувати';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => 'Попередній';
 
   @override
-  String get stealthMusicPause => 'Pause';
+  String get stealthMusicPause => 'Пауза';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => 'Наступний';
 
   @override
-  String get stealthPodcastShowName => 'Podcast';
+  String get stealthPodcastShowName => 'Подкаст';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => 'Епізод';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => 'Епізоди';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => 'Епізод 1';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => 'Епізод 2';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => 'Епізод 3';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => 'Епізод 4';
 
   @override
-  String get stealthPresetPodcast => 'Podcast';
+  String get stealthPresetPodcast => 'Подкаст';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => 'Немає';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => 'Швидкість';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1395,38 +1399,40 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap =>
+      'Обмежено до 60× у фоновому режимі';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => 'Розширені';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => 'Викликати паніку';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => 'Симулювати прибуття';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => 'Симулювати низький заряд';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => 'Симулювати прибуття';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => 'Симулювати низький заряд';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => 'Розблокувати Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle =>
+      'Введіть PIN-код або скористайтеся біометрією.';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'Неправильний PIN-код';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => 'Розблокуйте Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => 'Використати біометрію';
 }

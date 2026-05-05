@@ -357,5 +357,516 @@
   "stepCategoryAll": "Todos",
   "stepCategoryAction": "Acción",
   "stepCategoryReminder": "Recordatorio",
-  "stepCategoryDisarm": "Comprobación"
+  "stepCategoryDisarm": "Comprobación",
+
+  "angelaDialogTitle": "PIN antiguo introducido",
+  "@angelaDialogTitle": {
+    "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
+  },
+  "angelaDialogBody": "Parece que ha utilizado un PIN antiguo. ¿Seguro que desea continuar?",
+  "@angelaDialogBody": {
+    "description": "Deceptive Angela dialog body."
+  },
+  "angelaDialogCancel": "Cancelar",
+  "@angelaDialogCancel": {
+    "description": "Deceptive Angela dialog cancel button."
+  },
+  "angelaDialogConfirm": "Continuar",
+  "@angelaDialogConfirm": {
+    "description": "Deceptive Angela dialog confirm button."
+  },
+  "commonOk": "Aceptar",
+  "@commonOk": {
+    "description": "Generic confirm/OK action."
+  },
+  "profileAngelaWarningTitle": "Aviso sobre el nombre «Angela»",
+  "@profileAngelaWarningTitle": {
+    "description": "Title shown when the user tries to save a profile name containing 'Angela'."
+  },
+  "profileAngelaWarningBody": "Guardian Angela utiliza «Angela» como palabra clave de seguridad. Usarla como su propio nombre puede causar confusión. ¿Guardar de todos modos?",
+  "@profileAngelaWarningBody": {
+    "description": "Body of the Angela-name warning dialog."
+  },
+  "pinSubmit": "Enviar",
+  "@pinSubmit": {
+    "description": "Submit button used by the launch-gate PIN entry."
+  },
+  "homeStartConfirmTitle": "¿Iniciar una sesión?",
+  "@homeStartConfirmTitle": {
+    "description": "Title for the start-session confirmation dialog."
+  },
+  "homeStartConfirmBody": "Asegúrese de tener configurados sus contactos y su PIN. La sesión se ejecutará en primer plano y el modo seleccionado guiará las confirmaciones.",
+  "@homeStartConfirmBody": {
+    "description": "Body for the start-session confirmation dialog."
+  },
+  "homeContactsBannerNone": "No hay contactos de emergencia configurados.",
+  "@homeContactsBannerNone": {
+    "description": "Banner shown when zero contacts are configured."
+  },
+  "homeContactsBannerFew": "{count} contacto(s) configurado(s). Recomendamos al menos 3.",
+  "@homeContactsBannerFew": {
+    "description": "Banner shown when 1–2 contacts are configured.",
+    "placeholders": {
+      "count": {
+        "type": "int",
+        "example": "1"
+      }
+    }
+  },
+  "sessionCheckIn": "Estoy a salvo",
+  "@sessionCheckIn": {
+    "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
+  },
+  "sessionDisarmTriggerTitle": "Disparador de desactivación activado",
+  "@sessionDisarmTriggerTitle": {
+    "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)."
+  },
+  "sessionDisarmTriggerBody": "Se activó un disparador de desactivación. ¿Finalizar la sesión?",
+  "@sessionDisarmTriggerBody": {
+    "description": "Body of the disarm-trigger confirmation dialog."
+  },
+  "sessionDisarmTriggerConfirm": "Finalizar sesión",
+  "@sessionDisarmTriggerConfirm": {
+    "description": "Confirm button on the disarm-trigger dialog."
+  },
+  "sessionDisarmTriggerCancel": "Continuar",
+  "@sessionDisarmTriggerCancel": {
+    "description": "Cancel button on the disarm-trigger dialog."
+  },
+  "wrongPinAngelaTitle": "PIN antiguo de Angela",
+  "@wrongPinAngelaTitle": {
+    "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations."
+  },
+  "wrongPinAngelaBody": "¿Seguro que desea continuar con este PIN antiguo?",
+  "@wrongPinAngelaBody": {
+    "description": "Body of the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaConfirm": "Aceptar",
+  "@wrongPinAngelaConfirm": {
+    "description": "Primary button on the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaCancel": "Cancelar",
+  "@wrongPinAngelaCancel": {
+    "description": "Secondary button on the deceptive wrong-PIN dialog."
+  },
+  "sessionStepCountdownTitle": "Aviso",
+  "@sessionStepCountdownTitle": {
+    "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires."
+  },
+  "sessionStepCountdownBody": "La próxima escalada se activará cuando termine la cuenta regresiva. Deslice «Estoy a salvo» abajo para desactivar.",
+  "@sessionStepCountdownBody": {
+    "description": "Subtitle on the countdown-warning step UI."
+  },
+  "sessionStepDisguisedDefaultTitle": "Recordatorio",
+  "@sessionStepDisguisedDefaultTitle": {
+    "description": "Fallback title shown on a disguisedReminder step when no template title is resolved."
+  },
+  "sessionStepDisguisedDefaultBody": "Toque «Estoy a salvo» para confirmar que está bien.",
+  "@sessionStepDisguisedDefaultBody": {
+    "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
+  },
+  "sessionStepSmsStatus": "Enviando mensaje a contactos…",
+  "@sessionStepSmsStatus": {
+    "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
+  },
+  "sessionStepSmsDelivered": "Entregado",
+  "@sessionStepSmsDelivered": {
+    "description": "Per-message status label shown when the messaging service reports the message was delivered."
+  },
+  "sessionStepSmsSent": "Enviado",
+  "@sessionStepSmsSent": {
+    "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)."
+  },
+  "sessionStepSmsQueued": "En cola",
+  "@sessionStepSmsQueued": {
+    "description": "Per-message status label shown while a message is queued for delivery."
+  },
+  "sessionStepSmsFailed": "Error",
+  "@sessionStepSmsFailed": {
+    "description": "Per-message status label shown when the messaging service reports a delivery failure."
+  },
+  "sessionStepPhoneCallStatus": "Llamando al contacto de emergencia…",
+  "@sessionStepPhoneCallStatus": {
+    "description": "Status text shown during a phoneCallContact step while the contact is being called."
+  },
+  "sessionStepPhoneCallCancel": "Cancelar llamada",
+  "@sessionStepPhoneCallCancel": {
+    "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)."
+  },
+  "sessionStepLoudAlarmTitle": "Alarma sonando",
+  "@sessionStepLoudAlarmTitle": {
+    "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider."
+  },
+  "sessionStepLoudAlarmBody": "La alarma está sonando para llamar la atención.",
+  "@sessionStepLoudAlarmBody": {
+    "description": "Subtitle shown during a loudAlarm step."
+  },
+  "sessionStepLoudAlarmFlashWarning": "Aviso para personas fotosensibles: la pantalla está parpadeando.",
+  "@sessionStepLoudAlarmFlashWarning": {
+    "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true."
+  },
+  "sessionStepCallEmergencyStatus": "Llamando a los servicios de emergencia…",
+  "@sessionStepCallEmergencyStatus": {
+    "description": "Status text shown during a callEmergency step before / while the emergency number is dialed."
+  },
+  "sessionStepCallEmergencyNumber": "Número: {number}",
+  "@sessionStepCallEmergencyNumber": {
+    "description": "Display of the emergency number being dialed.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "sessionStepHardwareButtonRepeat": "Pulse {button} {count} veces en {windowMs} ms",
+  "@sessionStepHardwareButtonRepeat": {
+    "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.",
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
+  "sessionStepHardwareButtonLong": "Mantenga pulsado {button} durante {seconds} segundos",
+  "@sessionStepHardwareButtonLong": {
+    "description": "Instruction text shown during a hardwareButton step with long-press pattern.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "sessionStepHardwareButtonVolumeUp": "subir volumen",
+  "@sessionStepHardwareButtonVolumeUp": {
+    "description": "Lowercase noun for the volume-up hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonVolumeDown": "bajar volumen",
+  "@sessionStepHardwareButtonVolumeDown": {
+    "description": "Lowercase noun for the volume-down hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonPower": "encendido",
+  "@sessionStepHardwareButtonPower": {
+    "description": "Lowercase noun for the power hardware button used in step instructions."
+  },
+  "fakeCallSlideToAnswer": "deslice para contestar",
+  "@fakeCallSlideToAnswer": {
+    "description": "Hint text inside the iOS-style slide-to-answer track."
+  },
+  "fakeCallUnknownCaller": "Desconocido",
+  "@fakeCallUnknownCaller": {
+    "description": "Fallback caller name when the configured callerName is empty."
+  },
+  "fakeCallIncomingWhatsapp": "Llamada de voz de WhatsApp",
+  "@fakeCallIncomingWhatsapp": {
+    "description": "Incoming-call header for the WhatsApp call style."
+  },
+  "fakeCallIncomingTelegram": "Llamada de voz de Telegram",
+  "@fakeCallIncomingTelegram": {
+    "description": "Incoming-call header for the Telegram call style."
+  },
+  "fakeCallIncomingSignal": "Llamada de voz de Signal",
+  "@fakeCallIncomingSignal": {
+    "description": "Incoming-call header for the Signal call style."
+  },
+  "fakeCallBrandWhatsapp": "WHATSAPP",
+  "@fakeCallBrandWhatsapp": {
+    "description": "Top-of-screen brand badge in the WhatsApp fake-call style."
+  },
+  "fakeCallBrandTelegram": "TELEGRAM",
+  "@fakeCallBrandTelegram": {
+    "description": "Top-of-screen brand badge in the Telegram fake-call style."
+  },
+  "fakeCallBrandSignal": "SIGNAL",
+  "@fakeCallBrandSignal": {
+    "description": "Top-of-screen brand badge in the Signal fake-call style."
+  },
+  "contactLanguageDefault": "Predeterminado (usar idioma de la app)",
+  "@contactLanguageDefault": {
+    "description": "Default option in the per-contact language dropdown."
+  },
+  "stepTypePickerLabel": "Tipo de paso",
+  "@stepTypePickerLabel": {
+    "description": "Label for the step-type dropdown in the mode editor."
+  },
+  "securityAppPinBiometric": "Usar biometría para el PIN de la app",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric prompt before App PIN keypad."
+  },
+  "securitySessionEndPinBiometric": "Usar biometría para el PIN de fin de sesión",
+  "@securitySessionEndPinBiometric": {
+    "description": "Toggle: enable biometric prompt before session-end PIN."
+  },
+  "securityDistressCancelBiometric": "Usar biometría para cancelar emergencia",
+  "@securityDistressCancelBiometric": {
+    "description": "Toggle: biometric path for distress-trigger cancel."
+  },
+  "securityDuressTest": "Probar PIN de coacción",
+  "@securityDuressTest": {
+    "description": "Row that opens a keypad to verify the duress PIN was entered correctly."
+  },
+  "securityDuressTestSubtitle": "Compruebe que su PIN de coacción funciona.",
+  "@securityDuressTestSubtitle": {
+    "description": "Subtitle for the duress-test row."
+  },
+  "pinEntryBiometricReason": "Autentíquese para continuar",
+  "@pinEntryBiometricReason": {
+    "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service."
+  },
+  "stealthTimerDisplayNormal": "Mostrar texto completo",
+  "@stealthTimerDisplayNormal": {
+    "description": "Stealth timer normal option."
+  },
+  "stealthTimerDisplaySmall": "Mostrar solo números",
+  "@stealthTimerDisplaySmall": {
+    "description": "Stealth timer small option."
+  },
+  "stealthTimerDisplayNone": "Ocultar temporizador",
+  "@stealthTimerDisplayNone": {
+    "description": "Stealth timer hidden option."
+  },
+  "backupSelectionHeader": "Incluir en la exportación",
+  "@backupSelectionHeader": {
+    "description": "Section header above the per-element backup toggles."
+  },
+  "backupToggleSettings": "Ajustes",
+  "@backupToggleSettings": {
+    "description": "Always-on toggle showing that settings are always exported."
+  },
+  "backupToggleSettingsSubtitle": "Siempre incluidos para que la copia se pueda restaurar.",
+  "@backupToggleSettingsSubtitle": {
+    "description": "Explanation under the disabled Settings toggle."
+  },
+  "backupToggleContacts": "Contactos de emergencia",
+  "@backupToggleContacts": {
+    "description": "Toggle to include contacts in the export."
+  },
+  "backupToggleModes": "Modos",
+  "@backupToggleModes": {
+    "description": "Toggle to include user-facing modes in the export."
+  },
+  "backupToggleDistressModes": "Modos de auxilio",
+  "@backupToggleDistressModes": {
+    "description": "Toggle to include distress-flagged modes in the export."
+  },
+  "backupToggleTemplates": "Plantillas de recordatorio",
+  "@backupToggleTemplates": {
+    "description": "Toggle to include reminder templates in the export."
+  },
+  "backupToggleSessionLogs": "Historial de sesiones",
+  "@backupToggleSessionLogs": {
+    "description": "Toggle to include session logs in the export."
+  },
+  "backupToggleRecordings": "Grabaciones de audio",
+  "@backupToggleRecordings": {
+    "description": "Toggle to include audio-evidence recordings in the export."
+  },
+  "historySearchHint": "Buscar por nombre de modo",
+  "@historySearchHint": {
+    "description": "Hint text for the history search field."
+  },
+  "historyFilterModeAll": "Todos los modos",
+  "@historyFilterModeAll": {
+    "description": "Mode filter dropdown — all option."
+  },
+  "historyFilterModeLabel": "Modo",
+  "@historyFilterModeLabel": {
+    "description": "Mode filter dropdown label."
+  },
+  "historyDateRangePick": "Rango de fechas",
+  "@historyDateRangePick": {
+    "description": "Button label that opens the date-range picker."
+  },
+  "emergencyConfirmTitle": "Llamando al {number}",
+  "@emergencyConfirmTitle": {
+    "description": "Title of the emergency-confirm pre-dial screen.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "emergencyConfirmSubtitle": "Mantenga pulsado el botón de cancelar para abortar.",
+  "@emergencyConfirmSubtitle": {
+    "description": "Subtitle of the emergency-confirm pre-dial screen."
+  },
+  "emergencyConfirmCountdown": "Llamando en {seconds} s",
+  "@emergencyConfirmCountdown": {
+    "description": "Countdown line on the pre-dial screen.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "emergencyConfirmCancel": "Cancelar",
+  "@emergencyConfirmCancel": {
+    "description": "Cancel button on the pre-dial screen."
+  },
+  "stealthCalendarUpcoming": "Próximamente",
+  "@stealthCalendarUpcoming": {
+    "description": "Header in the calendar stealth UI."
+  },
+  "stealthCalendarUpcomingEvent": "Reunión",
+  "@stealthCalendarUpcomingEvent": {
+    "description": "Stealth calendar event title placeholder."
+  },
+  "stealthCalendarUntilEvent": "en {minutes} min",
+  "@stealthCalendarUntilEvent": {
+    "description": "Stealth calendar countdown.",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "stealthCalendarToday": "Hoy",
+  "@stealthCalendarToday": {
+    "description": "Today header in the stealth calendar."
+  },
+  "stealthCalendarEvent1": "Café con Alex",
+  "@stealthCalendarEvent1": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent2": "Reunión diaria",
+  "@stealthCalendarEvent2": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent3": "Almuerzo",
+  "@stealthCalendarEvent3": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent4": "Entrenamiento",
+  "@stealthCalendarEvent4": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent5": "Cena con Sam",
+  "@stealthCalendarEvent5": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthDisarmGestureHint": "Deslice hacia arriba para finalizar",
+  "@stealthDisarmGestureHint": {
+    "description": "Hint shown on stealth screens for the disarm gesture."
+  },
+  "stealthMusicTrackTitle": "Pista sin título",
+  "@stealthMusicTrackTitle": {
+    "description": "Default track title on the stealth music screen."
+  },
+  "stealthMusicArtist": "Artista desconocido",
+  "@stealthMusicArtist": {
+    "description": "Default artist on the stealth music screen."
+  },
+  "stealthMusicAlbum": "Álbum desconocido",
+  "@stealthMusicAlbum": {
+    "description": "Default album on the stealth music screen."
+  },
+  "stealthMusicNowPlaying": "Reproduciendo ahora",
+  "@stealthMusicNowPlaying": {
+    "description": "Now-playing label on the stealth music screen."
+  },
+  "stealthMusicSwipeHint": "Deslice para desactivar",
+  "@stealthMusicSwipeHint": {
+    "description": "Disarm-gesture hint on the stealth music screen."
+  },
+  "stealthMusicPrevious": "Anterior",
+  "@stealthMusicPrevious": {
+    "description": "Previous-track button label."
+  },
+  "stealthMusicPause": "Pausar",
+  "@stealthMusicPause": {
+    "description": "Pause button label."
+  },
+  "stealthMusicNext": "Siguiente",
+  "@stealthMusicNext": {
+    "description": "Next-track button label."
+  },
+  "stealthPodcastShowName": "Pódcast",
+  "@stealthPodcastShowName": {
+    "description": "Podcast show name placeholder."
+  },
+  "stealthPodcastEpisodeTitle": "Episodio",
+  "@stealthPodcastEpisodeTitle": {
+    "description": "Podcast episode title placeholder."
+  },
+  "stealthPodcastEpisodesHeader": "Episodios",
+  "@stealthPodcastEpisodesHeader": {
+    "description": "Episodes-list header on the stealth podcast screen."
+  },
+  "stealthPodcastSpeedLabel": "1x",
+  "@stealthPodcastSpeedLabel": {
+    "description": "Speed-toggle label on the stealth podcast screen."
+  },
+  "stealthPodcastEpisode1": "Episodio 1",
+  "@stealthPodcastEpisode1": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode2": "Episodio 2",
+  "@stealthPodcastEpisode2": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode3": "Episodio 3",
+  "@stealthPodcastEpisode3": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode4": "Episodio 4",
+  "@stealthPodcastEpisode4": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPresetPodcast": "Pódcast",
+  "@stealthPresetPodcast": {
+    "description": "Stealth preset name shown in the picker."
+  },
+  "stealthPresetNone": "Ninguno",
+  "@stealthPresetNone": {
+    "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionSimSpeedLabel": "Velocidad",
+  "@sessionSimSpeedLabel": {
+    "description": "Label of the simulation speed slider."
+  },
+  "sessionSimSpeedValue": "{value}x",
+  "@sessionSimSpeedValue": {
+    "description": "Simulation speed value display.",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "sessionSimSpeedBackgroundCap": "Limitada a 60× en segundo plano",
+  "@sessionSimSpeedBackgroundCap": {
+    "description": "Indicator that simulation speed is capped at 60x while app is backgrounded."
+  },
+  "sessionSimAdvancedLabel": "Avanzado",
+  "@sessionSimAdvancedLabel": {
+    "description": "Label of the advanced-controls toggle in simulation."
+  },
+  "sessionSimTriggerPanic": "Activar pánico",
+  "@sessionSimTriggerPanic": {
+    "description": "Simulation button — fires the distress chain."
+  },
+  "sessionSimTriggerArrival": "Activar llegada",
+  "@sessionSimTriggerArrival": {
+    "description": "Simulation button — fakes a GPS arrival event."
+  },
+  "sessionSimTriggerBattery": "Activar batería baja",
+  "@sessionSimTriggerBattery": {
+    "description": "Simulation button — fakes a low-battery event."
+  },
+  "simulateGpsArrival": "Simular llegada",
+  "@simulateGpsArrival": {
+    "description": "Top-level simulate-arrival action."
+  },
+  "simulateLowBattery": "Simular batería baja",
+  "@simulateLowBattery": {
+    "description": "Top-level simulate-low-battery action."
+  },
+  "launchGateTitle": "Desbloquear Guardian Angela",
+  "@launchGateTitle": {
+    "description": "Title of the Q14 launch-gate screen."
+  },
+  "launchGateSubtitle": "Introduzca su PIN o utilice biometría.",
+  "@launchGateSubtitle": {
+    "description": "Subtitle of the Q14 launch-gate screen."
+  },
+  "launchGateWrong": "PIN incorrecto",
+  "@launchGateWrong": {
+    "description": "Error label on the Q14 launch-gate screen."
+  },
+  "launchGateBiometricReason": "Desbloquear Guardian Angela",
+  "@launchGateBiometricReason": {
+    "description": "Reason string for biometric prompt."
+  },
+  "launchGateUseBiometric": "Usar biometría",
+  "@launchGateUseBiometric": {
+    "description": "Button to fall back to biometric auth on the launch gate."
+  }
 }

@@ -15,30 +15,30 @@ class AppLocalizationsHe extends AppLocalizations {
   String get commonSave => 'שמור';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => 'הוזן PIN ישן';
 
   @override
   String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+      'נראה שהשתמשת ב-PIN ישן. את/ה בטוח/ה שברצונך להמשיך?';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => 'ביטול';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => 'המשך';
 
   @override
   String get commonCancel => 'ביטול';
 
   @override
-  String get commonOk => 'OK';
+  String get commonOk => 'אישור';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle => 'שים/י לב לשם „Angela”';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Guardian Angela משתמשת ב-„Angela” כמילת בטיחות. שימוש בשם זה כשמך עלול לבלבל. לשמור בכל זאת?';
 
   @override
   String get commonDelete => 'מחק';
@@ -89,7 +89,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get cancel => 'ביטול';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => 'שלח';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +98,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get homeStartSession => 'התחל מושב';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => 'להתחיל מושב?';
 
   @override
   String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+      'ודא/י שאנשי הקשר וה-PIN מוגדרים. המושב יפעל בחזית והמצב שבחרת ינחה את הצ\'ק-אינים.';
 
   @override
   String get homeSimulate => 'סימולציה';
@@ -121,11 +121,11 @@ class AppLocalizationsHe extends AppLocalizations {
       'אין אנשי קשר לשעת חירום. הקש על אנשי קשר כדי להוסיף.';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone => 'לא הוגדרו אנשי קשר לחירום.';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return '$count אנשי קשר מוגדרים. אנו ממליצים על 3 לפחות.';
   }
 
   @override
@@ -216,86 +216,84 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionSimulationBanner => 'סימולציה';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => 'ביצעתי צ\'ק-אין';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => 'טריגר נטרול הופעל';
 
   @override
-  String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+  String get sessionDisarmTriggerBody => 'טריגר נטרול הופעל. לסיים את המושב?';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => 'סיים מושב';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => 'המשך';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'PIN ישן מ-Angela';
 
   @override
   String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+      'את/ה בטוח/ה שברצונך להמשיך עם ה-PIN הישן הזה?';
 
   @override
-  String get wrongPinAngelaConfirm => 'OK';
+  String get wrongPinAngelaConfirm => 'אישור';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => 'ביטול';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => 'אזהרה';
 
   @override
   String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+      'ההסלמה הבאה תופעל בסיום הספירה לאחור. החלק/י „אני בטוח/ה” למטה כדי לנטרל.';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => 'תזכורת';
 
   @override
   String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+      'הקש/י על „ביצעתי צ\'ק-אין” כדי לאשר שאת/ה בטוח/ה.';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => 'שולח הודעה לאנשי קשר…';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => 'נמסרה';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => 'נשלחה';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => 'בתור';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => 'נכשלה';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => 'מתקשר לאיש קשר חירום…';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => 'בטל שיחה';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => 'האזעקה פועלת';
 
   @override
-  String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+  String get sessionStepLoudAlarmBody => 'האזעקה צופרת כדי למשוך תשומת לב.';
 
   @override
   String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+      'אזהרה לרגישים לאור: המסך מהבהב.';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus => 'מתקשר לשירותי חירום…';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return 'מספר: $number';
   }
 
   @override
@@ -304,22 +302,22 @@ class AppLocalizationsHe extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return 'לחץ/י $button $count פעמים בתוך $windowMs מ״ש';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return 'החזק/י את $button למשך $seconds שניות';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => 'עוצמה למעלה';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => 'עוצמה למטה';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => 'הפעלה';
 
   @override
   String get sessionCompletedTitle => 'המושב הושלם';
@@ -353,19 +351,19 @@ class AppLocalizationsHe extends AppLocalizations {
   String get fakeCallHangUp => 'נתק';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => 'החלק/י כדי לענות';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => 'לא ידוע';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'שיחה קולית ב-WhatsApp';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'שיחה קולית ב-Telegram';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'שיחה קולית ב-Signal';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -405,7 +403,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get contactFieldLanguage => 'שפת SMS (אופציונלי)';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => 'ברירת מחדל (השתמש בשפת האפליקציה)';
 
   @override
   String get contactChannelsHeader => 'ערוצי התכתבות';
@@ -654,7 +652,7 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => 'סוג שלב';
 
   @override
   String get stepTypeHoldButton => 'לחצן החזקה';
@@ -985,21 +983,20 @@ class AppLocalizationsHe extends AppLocalizations {
   String get securityDuressPin => 'קוד כפייה';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric => 'השתמש בביומטריה ל-PIN של האפליקציה';
 
   @override
   String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+      'השתמש בביומטריה ל-PIN של סיום מושב';
 
   @override
-  String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+  String get securityDistressCancelBiometric => 'השתמש בביומטריה לביטול מצוקה';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => 'בדוק PIN של כפייה';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle => 'ודא/י של-PIN הכפייה שלך עובד.';
 
   @override
   String get securityPinTimeout => 'תפוגת קוד (שניות)';
@@ -1032,7 +1029,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get pinEntrySubtitle => 'הזינו את הקוד שלכם כדי להמשיך.';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason => 'אמת/י כדי להמשיך';
 
   @override
   String get stealthTitle => 'מצב סמוי';
@@ -1053,13 +1050,13 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stealthTimerDisplay => 'הצג טיימר במצב סמוי';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => 'הצג טקסט מלא';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => 'הצג מספרים בלבד';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => 'הסתר טיימר';
 
   @override
   String get stealthSessionScreen => 'הסתר מיתוג במסך המושב';
@@ -1191,32 +1188,32 @@ class AppLocalizationsHe extends AppLocalizations {
   String get backupImportOk => 'הגיבוי יובא בהצלחה.';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => 'כלול בייצוא';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => 'הגדרות';
 
   @override
   String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+      'תמיד נכלל כדי שניתן יהיה לשחזר את הגיבוי.';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => 'אנשי קשר לחירום';
 
   @override
-  String get backupToggleModes => 'Modes';
+  String get backupToggleModes => 'מצבים';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => 'מצבי מצוקה';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => 'תבניות תזכורת';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => 'היסטוריית מושבים';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => 'הקלטות שמע';
 
   @override
   String get historyTitle => 'מושבים קודמים';
@@ -1225,16 +1222,16 @@ class AppLocalizationsHe extends AppLocalizations {
   String get historyEmpty => 'אין מושבים קודמים עדיין.';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => 'חיפוש לפי שם מצב';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => 'כל המצבים';
 
   @override
-  String get historyFilterModeLabel => 'Mode';
+  String get historyFilterModeLabel => 'מצב';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => 'טווח תאריכים';
 
   @override
   String get historyDetailTitle => 'פרטי מושב';
@@ -1277,108 +1274,108 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return 'מתקשר ל-$number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle => 'החזק/י את כפתור הביטול כדי לבטל.';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return 'מתקשר בעוד $seconds שניות';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => 'ביטול';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => 'אירועים קרובים';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => 'פגישה';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return 'בעוד $minutes דק׳';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => 'היום';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => 'קפה עם אלכס';
 
   @override
-  String get stealthCalendarEvent2 => 'Standup';
+  String get stealthCalendarEvent2 => 'ישיבת בוקר';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => 'ארוחת צהריים';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => 'אימון';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => 'ארוחת ערב עם סם';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => 'החלק/י למעלה כדי לסיים';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => 'רצועה ללא שם';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => 'אמן לא ידוע';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => 'אלבום לא ידוע';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => 'מתנגן עכשיו';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => 'החלק/י לנטרול';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => 'הקודם';
 
   @override
-  String get stealthMusicPause => 'Pause';
+  String get stealthMusicPause => 'השהה';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => 'הבא';
 
   @override
-  String get stealthPodcastShowName => 'Podcast';
+  String get stealthPodcastShowName => 'פודקאסט';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => 'פרק';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => 'פרקים';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => 'פרק 1';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => 'פרק 2';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => 'פרק 3';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => 'פרק 4';
 
   @override
-  String get stealthPresetPodcast => 'Podcast';
+  String get stealthPresetPodcast => 'פודקאסט';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => 'ללא';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => 'מהירות';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1386,38 +1383,38 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap => 'מוגבל ל-60× ברקע';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => 'מתקדם';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => 'הפעל פאניקה';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => 'הפעל הגעה';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => 'הפעל סוללה חלשה';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => 'סימולציית הגעה';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => 'סימולציית סוללה חלשה';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => 'פתח/י את Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle => 'הזן/י את ה-PIN שלך או השתמש/י בביומטריה.';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'PIN שגוי';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => 'פתח/י את Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => 'השתמש/י בביומטריה';
 }

@@ -15,30 +15,30 @@ class AppLocalizationsFa extends AppLocalizations {
   String get commonSave => 'ذخیره';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => 'پین قدیمی وارد شد';
 
   @override
   String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+      'به نظر می‌رسد از پین قدیمی استفاده کرده‌اید. آیا مطمئن هستید که می‌خواهید ادامه دهید؟';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => 'انصراف';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => 'ادامه';
 
   @override
   String get commonCancel => 'انصراف';
 
   @override
-  String get commonOk => 'OK';
+  String get commonOk => 'تأیید';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle => 'هشدار درباره نام «Angela»';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Guardian Angela از «Angela» به‌عنوان کلیدواژه ایمنی استفاده می‌کند. استفاده از آن به‌عنوان نام خودتان می‌تواند گیج‌کننده باشد. به هر حال ذخیره شود؟';
 
   @override
   String get commonDelete => 'حذف';
@@ -89,7 +89,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cancel => 'انصراف';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => 'ثبت';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +98,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get homeStartSession => 'شروع جلسه';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => 'آغاز یک جلسه؟';
 
   @override
   String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+      'اطمینان حاصل کنید که مخاطبین و پین شما پیکربندی شده‌اند. جلسه در پیش‌زمینه اجرا می‌شود و حالت انتخابی شما گزارش‌های وضعیت را راهنمایی می‌کند.';
 
   @override
   String get homeSimulate => 'شبیه‌سازی';
@@ -122,11 +122,11 @@ class AppLocalizationsFa extends AppLocalizations {
       'هنوز هیچ مخاطب اضطراری وجود ندارد. برای افزودن، روی مخاطبین بزنید.';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone => 'هیچ مخاطب اضطراری پیکربندی نشده است.';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return '$count مخاطب پیکربندی شده است. حداقل ۳ مخاطب توصیه می‌شود.';
   }
 
   @override
@@ -218,86 +218,86 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionSimulationBanner => 'شبیه‌سازی';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => 'من حاضرم';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => 'ماشه غیرفعال‌سازی فعال شد';
 
   @override
   String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+      'یک ماشه غیرفعال‌سازی فعال شد. جلسه پایان یابد؟';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => 'پایان جلسه';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => 'ادامه';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'پین قدیمی از Angela';
 
   @override
   String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+      'آیا مطمئن هستید که می‌خواهید با این پین قدیمی ادامه دهید؟';
 
   @override
-  String get wrongPinAngelaConfirm => 'OK';
+  String get wrongPinAngelaConfirm => 'تأیید';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => 'انصراف';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => 'هشدار';
 
   @override
   String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+      'با پایان شمارش معکوس، تشدید بعدی فعال می‌شود. برای غیرفعال‌سازی، «من در امانم» را در پایین بکشید.';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => 'یادآور';
 
   @override
   String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+      'برای تأیید ایمنی خود روی «من حاضرم» بزنید.';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => 'ارسال پیام به مخاطبین…';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => 'تحویل شد';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => 'ارسال شد';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => 'در صف';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => 'ناموفق';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => 'در حال تماس با مخاطب اضطراری…';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => 'لغو تماس';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => 'آژیر در حال پخش';
 
   @override
   String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+      'آژیر برای جلب توجه به صدا درآمده است.';
 
   @override
   String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+      'هشدار حساسیت نوری: صفحه چشمک می‌زند.';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus => 'در حال تماس با خدمات اضطراری…';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return 'شماره: $number';
   }
 
   @override
@@ -306,22 +306,22 @@ class AppLocalizationsFa extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return 'دکمه $button را در عرض $windowMs میلی‌ثانیه $count بار فشار دهید';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return 'دکمه $button را به مدت $seconds ثانیه نگه دارید';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => 'افزایش صدا';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => 'کاهش صدا';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => 'روشن/خاموش';
 
   @override
   String get sessionCompletedTitle => 'جلسه کامل شد';
@@ -355,19 +355,19 @@ class AppLocalizationsFa extends AppLocalizations {
   String get fakeCallHangUp => 'قطع تماس';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => 'برای پاسخ بکشید';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => 'ناشناس';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'تماس صوتی WhatsApp';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'تماس صوتی Telegram';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'تماس صوتی Signal';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -407,7 +407,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get contactFieldLanguage => 'زبان پیامک (اختیاری)';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => 'پیش‌فرض (استفاده از زبان برنامه)';
 
   @override
   String get contactChannelsHeader => 'کانال‌های پیام‌رسانی';
@@ -660,7 +660,7 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => 'نوع گام';
 
   @override
   String get stepTypeHoldButton => 'دکمه نگه‌داشتن';
@@ -991,21 +991,22 @@ class AppLocalizationsFa extends AppLocalizations {
   String get securityDuressPin => 'پین اجباری';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric => 'استفاده از زیست‌سنجی برای پین برنامه';
 
   @override
   String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+      'استفاده از زیست‌سنجی برای پین پایان جلسه';
 
   @override
   String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+      'استفاده از زیست‌سنجی برای لغو اضطرار';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => 'آزمایش پین اجبار';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle =>
+      'صحت عملکرد پین اجبار خود را بررسی کنید.';
 
   @override
   String get securityPinTimeout => 'مهلت پین (ثانیه)';
@@ -1038,7 +1039,7 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pinEntrySubtitle => 'برای ادامه، پین خود را وارد کنید.';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason => 'برای ادامه احراز هویت کنید';
 
   @override
   String get stealthTitle => 'حالت مخفی';
@@ -1059,13 +1060,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get stealthTimerDisplay => 'نمایش تایمر در حالت مخفی';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => 'نمایش متن کامل';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => 'نمایش فقط اعداد';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => 'پنهان کردن تایمر';
 
   @override
   String get stealthSessionScreen => 'حذف نشانه‌ها در صفحه جلسه';
@@ -1198,32 +1199,32 @@ class AppLocalizationsFa extends AppLocalizations {
   String get backupImportOk => 'پشتیبان با موفقیت وارد شد.';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => 'موارد گنجانده در خروجی';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => 'تنظیمات';
 
   @override
   String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+      'همیشه گنجانده می‌شود تا بازیابی پشتیبان ممکن باشد.';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => 'مخاطبین اضطراری';
 
   @override
-  String get backupToggleModes => 'Modes';
+  String get backupToggleModes => 'حالت‌ها';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => 'حالت‌های اضطرار';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => 'قالب‌های یادآور';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => 'تاریخچه جلسات';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => 'ضبط‌های صوتی';
 
   @override
   String get historyTitle => 'جلسات گذشته';
@@ -1232,16 +1233,16 @@ class AppLocalizationsFa extends AppLocalizations {
   String get historyEmpty => 'هنوز هیچ جلسه گذشته‌ای وجود ندارد.';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => 'جستجو بر اساس نام حالت';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => 'همه حالت‌ها';
 
   @override
-  String get historyFilterModeLabel => 'Mode';
+  String get historyFilterModeLabel => 'حالت';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => 'بازه تاریخ';
 
   @override
   String get historyDetailTitle => 'جزئیات جلسه';
@@ -1285,108 +1286,108 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return 'در حال تماس با $number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle => 'برای لغو، دکمه انصراف را نگه دارید.';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return 'تماس در $seconds ثانیه';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => 'انصراف';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => 'رویدادهای پیش رو';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => 'جلسه';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return 'تا $minutes دقیقه دیگر';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => 'امروز';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => 'قهوه با Alex';
 
   @override
-  String get stealthCalendarEvent2 => 'Standup';
+  String get stealthCalendarEvent2 => 'جلسه ایستاده';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => 'ناهار';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => 'تمرین ورزشی';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => 'شام با Sam';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => 'برای پایان به بالا بکشید';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => 'آهنگ بدون نام';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => 'هنرمند ناشناس';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => 'آلبوم ناشناس';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => 'در حال پخش';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => 'برای غیرفعال‌سازی بکشید';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => 'قبلی';
 
   @override
-  String get stealthMusicPause => 'Pause';
+  String get stealthMusicPause => 'توقف';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => 'بعدی';
 
   @override
-  String get stealthPodcastShowName => 'Podcast';
+  String get stealthPodcastShowName => 'پادکست';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => 'قسمت';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => 'قسمت‌ها';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => 'قسمت ۱';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => 'قسمت ۲';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => 'قسمت ۳';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => 'قسمت ۴';
 
   @override
-  String get stealthPresetPodcast => 'Podcast';
+  String get stealthPresetPodcast => 'پادکست';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => 'هیچ‌کدام';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => 'سرعت';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1394,38 +1395,39 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap => 'در پس‌زمینه به ۶۰× محدود شده است';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => 'پیشرفته';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => 'فعال‌سازی هراس';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => 'فعال‌سازی رسیدن';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => 'فعال‌سازی باتری ضعیف';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => 'شبیه‌سازی رسیدن';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => 'شبیه‌سازی باتری ضعیف';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => 'بازگشایی Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle =>
+      'پین خود را وارد کنید یا از زیست‌سنجی استفاده کنید.';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'پین اشتباه';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => 'بازگشایی Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => 'استفاده از زیست‌سنجی';
 }

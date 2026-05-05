@@ -15,17 +15,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get commonSave => 'Αποθήκευση';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => 'Εισήχθη παλιό PIN';
 
   @override
   String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+      'Φαίνεται ότι χρησιμοποιήσατε ένα παλιό PIN. Είστε σίγουροι ότι θέλετε να συνεχίσετε;';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => 'Άκυρο';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => 'Συνέχεια';
 
   @override
   String get commonCancel => 'Άκυρο';
@@ -34,11 +34,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get commonOk => 'OK';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle =>
+      'Προσοχή σχετικά με το όνομα «Angela»';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Το Guardian Angela χρησιμοποιεί το «Angela» ως λέξη-κλειδί ασφαλείας. Η χρήση του ως δικού σας ονόματος θα μπορούσε να προκαλέσει σύγχυση. Αποθήκευση παρ\' όλα αυτά;';
 
   @override
   String get commonDelete => 'Διαγραφή';
@@ -89,7 +90,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get cancel => 'Άκυρο';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => 'Υποβολή';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +99,11 @@ class AppLocalizationsEl extends AppLocalizations {
   String get homeStartSession => 'Έναρξη συνεδρίας';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => 'Έναρξη συνεδρίας;';
 
   @override
   String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+      'Βεβαιωθείτε ότι οι επαφές και το PIN σας έχουν ρυθμιστεί. Η συνεδρία θα εκτελείται στο προσκήνιο και η επιλεγμένη λειτουργία θα καθοδηγεί τους ελέγχους.';
 
   @override
   String get homeSimulate => 'Προσομοίωση';
@@ -122,11 +123,12 @@ class AppLocalizationsEl extends AppLocalizations {
       'Δεν υπάρχουν ακόμη επαφές έκτακτης ανάγκης. Πατήστε Επαφές για να προσθέσετε μία.';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone =>
+      'Δεν έχουν ρυθμιστεί επαφές έκτακτης ανάγκης.';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return '$count επαφές έχουν ρυθμιστεί. Συνιστούμε τουλάχιστον 3.';
   }
 
   @override
@@ -219,86 +221,87 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionSimulationBanner => 'Προσομοίωση';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => 'Είμαι σε ασφάλεια';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => 'Ενεργοποίηση σκανδάλης αποδέσμευσης';
 
   @override
   String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+      'Ενεργοποιήθηκε σκανδάλη αποδέσμευσης. Τερματισμός συνεδρίας;';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => 'Τερματισμός συνεδρίας';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => 'Συνέχεια';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'Παλιό PIN από Angela';
 
   @override
   String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+      'Είστε σίγουροι ότι θέλετε να συνεχίσετε με αυτό το παλιό PIN;';
 
   @override
   String get wrongPinAngelaConfirm => 'OK';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => 'Άκυρο';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => 'Προειδοποίηση';
 
   @override
   String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+      'Η επόμενη κλιμάκωση ενεργοποιείται όταν λήξει η αντίστροφη μέτρηση. Σύρετε «Είμαι ασφαλής» παρακάτω για αποδέσμευση.';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => 'Υπενθύμιση';
 
   @override
   String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+      'Πατήστε «Είμαι σε ασφάλεια» για να επιβεβαιώσετε ότι είστε ασφαλείς.';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => 'Αποστολή μηνύματος στις επαφές…';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => 'Παραδόθηκε';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => 'Στάλθηκε';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => 'Σε αναμονή';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => 'Απέτυχε';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => 'Κλήση επαφής έκτακτης ανάγκης…';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => 'Ακύρωση κλήσης';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => 'Ηχεί συναγερμός';
 
   @override
   String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+      'Ο συναγερμός ηχεί για να τραβήξει την προσοχή.';
 
   @override
   String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+      'Προειδοποίηση φωτοευαισθησίας: η οθόνη αναβοσβήνει.';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus =>
+      'Κλήση υπηρεσιών έκτακτης ανάγκης…';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return 'Αριθμός: $number';
   }
 
   @override
@@ -307,22 +310,22 @@ class AppLocalizationsEl extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return 'Πατήστε $button $count φορές μέσα σε ${windowMs}ms';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return 'Κρατήστε $button για $seconds δευτερόλεπτα';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => 'αύξηση έντασης';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => 'μείωση έντασης';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => 'λειτουργίας';
 
   @override
   String get sessionCompletedTitle => 'Η συνεδρία ολοκληρώθηκε';
@@ -357,19 +360,19 @@ class AppLocalizationsEl extends AppLocalizations {
   String get fakeCallHangUp => 'Τερματισμός';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => 'σύρετε για απάντηση';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => 'Άγνωστος';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'Φωνητική κλήση WhatsApp';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'Φωνητική κλήση Telegram';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'Φωνητική κλήση Signal';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -409,7 +412,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get contactFieldLanguage => 'Γλώσσα SMS (προαιρετικό)';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => 'Προεπιλογή (γλώσσα εφαρμογής)';
 
   @override
   String get contactChannelsHeader => 'Κανάλια επικοινωνίας';
@@ -663,7 +666,7 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => 'Τύπος βήματος';
 
   @override
   String get stepTypeHoldButton => 'Κουμπί κράτησης';
@@ -995,21 +998,23 @@ class AppLocalizationsEl extends AppLocalizations {
   String get securityDuressPin => 'PIN εξαναγκασμού';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric =>
+      'Χρήση βιομετρικών για το PIN εφαρμογής';
 
   @override
   String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+      'Χρήση βιομετρικών για το PIN τερματισμού συνεδρίας';
 
   @override
   String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+      'Χρήση βιομετρικών για ακύρωση κινδύνου';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => 'Δοκιμή PIN εξαναγκασμού';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle =>
+      'Επαληθεύστε ότι το PIN εξαναγκασμού λειτουργεί.';
 
   @override
   String get securityPinTimeout => 'Χρονικό όριο PIN (δευτερόλεπτα)';
@@ -1042,7 +1047,8 @@ class AppLocalizationsEl extends AppLocalizations {
   String get pinEntrySubtitle => 'Εισαγάγετε το PIN σας για να συνεχίσετε.';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason =>
+      'Πιστοποιήστε ταυτότητα για να συνεχίσετε';
 
   @override
   String get stealthTitle => 'Κρυφή λειτουργία';
@@ -1063,13 +1069,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stealthTimerDisplay => 'Εμφάνιση χρονομέτρου σε κρυφή λειτουργία';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => 'Εμφάνιση πλήρους κειμένου';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => 'Εμφάνιση μόνο αριθμών';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => 'Απόκρυψη χρονομέτρου';
 
   @override
   String get stealthSessionScreen =>
@@ -1204,32 +1210,32 @@ class AppLocalizationsEl extends AppLocalizations {
   String get backupImportOk => 'Η εισαγωγή αντιγράφου ασφαλείας ολοκληρώθηκε.';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => 'Συμπερίληψη στην εξαγωγή';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => 'Ρυθμίσεις';
 
   @override
   String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+      'Πάντα συμπεριλαμβάνονται ώστε το αντίγραφο να μπορεί να αποκατασταθεί.';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => 'Επαφές έκτακτης ανάγκης';
 
   @override
-  String get backupToggleModes => 'Modes';
+  String get backupToggleModes => 'Λειτουργίες';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => 'Λειτουργίες κινδύνου';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => 'Πρότυπα υπενθύμισης';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => 'Ιστορικό συνεδριών';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => 'Ηχογραφήσεις';
 
   @override
   String get historyTitle => 'Προηγούμενες συνεδρίες';
@@ -1238,16 +1244,16 @@ class AppLocalizationsEl extends AppLocalizations {
   String get historyEmpty => 'Δεν υπάρχουν ακόμη προηγούμενες συνεδρίες.';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => 'Αναζήτηση κατά όνομα λειτουργίας';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => 'Όλες οι λειτουργίες';
 
   @override
-  String get historyFilterModeLabel => 'Mode';
+  String get historyFilterModeLabel => 'Λειτουργία';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => 'Εύρος ημερομηνιών';
 
   @override
   String get historyDetailTitle => 'Λεπτομέρειες συνεδρίας';
@@ -1291,108 +1297,109 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return 'Κλήση $number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle =>
+      'Κρατήστε το κουμπί ακύρωσης για ματαίωση.';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return 'Κλήση σε $secondsδ';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => 'Άκυρο';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => 'Επερχόμενα';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => 'Συνάντηση';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return 'σε $minutes λεπ';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => 'Σήμερα';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => 'Καφές με τον Άλεξ';
 
   @override
   String get stealthCalendarEvent2 => 'Standup';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => 'Μεσημεριανό';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => 'Γυμναστική';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => 'Δείπνο με τον Σαμ';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => 'Σύρετε προς τα πάνω για τερματισμό';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => 'Κομμάτι χωρίς τίτλο';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => 'Άγνωστος καλλιτέχνης';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => 'Άγνωστο άλμπουμ';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => 'Παίζει τώρα';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => 'Σύρετε για αποδέσμευση';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => 'Προηγούμενο';
 
   @override
-  String get stealthMusicPause => 'Pause';
+  String get stealthMusicPause => 'Παύση';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => 'Επόμενο';
 
   @override
   String get stealthPodcastShowName => 'Podcast';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => 'Επεισόδιο';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => 'Επεισόδια';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => 'Επεισόδιο 1';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => 'Επεισόδιο 2';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => 'Επεισόδιο 3';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => 'Επεισόδιο 4';
 
   @override
   String get stealthPresetPodcast => 'Podcast';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => 'Καμία';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => 'Ταχύτητα';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1400,38 +1407,40 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap =>
+      'Περιορισμός στα 60× στο παρασκήνιο';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => 'Για προχωρημένους';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => 'Ενεργοποίηση πανικού';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => 'Ενεργοποίηση άφιξης';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => 'Ενεργοποίηση χαμηλής μπαταρίας';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => 'Προσομοίωση άφιξης';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => 'Προσομοίωση χαμηλής μπαταρίας';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => 'Ξεκλείδωμα Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle =>
+      'Εισαγάγετε το PIN ή χρησιμοποιήστε βιομετρικά.';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'Λανθασμένο PIN';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => 'Ξεκλειδώστε το Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => 'Χρήση βιομετρικών';
 }

@@ -15,17 +15,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonSave => 'Enregistrer';
 
   @override
-  String get angelaDialogTitle => 'Old PIN entered';
+  String get angelaDialogTitle => 'Ancien PIN saisi';
 
   @override
   String get angelaDialogBody =>
-      'It looks like you used an old PIN. Are you sure you want to proceed?';
+      'Il semble que vous ayez utilisé un ancien PIN. Voulez-vous vraiment continuer ?';
 
   @override
-  String get angelaDialogCancel => 'Cancel';
+  String get angelaDialogCancel => 'Annuler';
 
   @override
-  String get angelaDialogConfirm => 'Continue';
+  String get angelaDialogConfirm => 'Continuer';
 
   @override
   String get commonCancel => 'Annuler';
@@ -34,11 +34,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonOk => 'OK';
 
   @override
-  String get profileAngelaWarningTitle => 'Heads up about the name \"Angela\"';
+  String get profileAngelaWarningTitle => 'À propos du nom « Angela »';
 
   @override
   String get profileAngelaWarningBody =>
-      'Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?';
+      'Guardian Angela utilise « Angela » comme mot-clé de sécurité. Utiliser ce nom comme le vôtre pourrait prêter à confusion. Enregistrer quand même ?';
 
   @override
   String get commonDelete => 'Supprimer';
@@ -89,7 +89,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get cancel => 'Annuler';
 
   @override
-  String get pinSubmit => 'Submit';
+  String get pinSubmit => 'Valider';
 
   @override
   String get homeTitle => 'Guardian Angela';
@@ -98,11 +98,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeStartSession => 'Démarrer la session';
 
   @override
-  String get homeStartConfirmTitle => 'Start a session?';
+  String get homeStartConfirmTitle => 'Démarrer une session ?';
 
   @override
   String get homeStartConfirmBody =>
-      'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
+      'Vérifiez que vos contacts et votre PIN sont configurés. La session s\'exécutera au premier plan et le mode sélectionné guidera les validations.';
 
   @override
   String get homeSimulate => 'Simuler';
@@ -122,11 +122,11 @@ class AppLocalizationsFr extends AppLocalizations {
       'Aucun contact d\'urgence pour le moment. Appuyez sur Contacts pour en ajouter un.';
 
   @override
-  String get homeContactsBannerNone => 'No emergency contacts configured.';
+  String get homeContactsBannerNone => 'Aucun contact d\'urgence configuré.';
 
   @override
   String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
+    return '$count contact(s) configuré(s). Nous en recommandons au moins 3.';
   }
 
   @override
@@ -218,86 +218,86 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionSimulationBanner => 'Simulation';
 
   @override
-  String get sessionCheckIn => 'I\'m checked in';
+  String get sessionCheckIn => 'Je suis en sécurité';
 
   @override
-  String get sessionDisarmTriggerTitle => 'Disarm trigger fired';
+  String get sessionDisarmTriggerTitle => 'Déclencheur de désactivation activé';
 
   @override
   String get sessionDisarmTriggerBody =>
-      'A disarm trigger fired. End the session?';
+      'Un déclencheur de désactivation s\'est activé. Terminer la session ?';
 
   @override
-  String get sessionDisarmTriggerConfirm => 'End session';
+  String get sessionDisarmTriggerConfirm => 'Terminer la session';
 
   @override
-  String get sessionDisarmTriggerCancel => 'Continue';
+  String get sessionDisarmTriggerCancel => 'Continuer';
 
   @override
-  String get wrongPinAngelaTitle => 'Old PIN from Angela';
+  String get wrongPinAngelaTitle => 'Ancien PIN d\'Angela';
 
   @override
   String get wrongPinAngelaBody =>
-      'Are you sure you want to proceed with this old PIN?';
+      'Voulez-vous vraiment continuer avec cet ancien PIN ?';
 
   @override
   String get wrongPinAngelaConfirm => 'OK';
 
   @override
-  String get wrongPinAngelaCancel => 'Cancel';
+  String get wrongPinAngelaCancel => 'Annuler';
 
   @override
-  String get sessionStepCountdownTitle => 'Warning';
+  String get sessionStepCountdownTitle => 'Avertissement';
 
   @override
   String get sessionStepCountdownBody =>
-      'The next escalation fires when the countdown ends. Swipe \'I\'m safe\' below to disarm.';
+      'La prochaine escalade se déclenche à la fin du compte à rebours. Faites glisser « Je suis en sécurité » ci-dessous pour désactiver.';
 
   @override
-  String get sessionStepDisguisedDefaultTitle => 'Reminder';
+  String get sessionStepDisguisedDefaultTitle => 'Rappel';
 
   @override
   String get sessionStepDisguisedDefaultBody =>
-      'Tap \'I\'m checked in\' to confirm you\'re safe.';
+      'Appuyez sur « Je suis en sécurité » pour confirmer que tout va bien.';
 
   @override
-  String get sessionStepSmsStatus => 'Sending message to contacts…';
+  String get sessionStepSmsStatus => 'Envoi du message aux contacts…';
 
   @override
-  String get sessionStepSmsDelivered => 'Delivered';
+  String get sessionStepSmsDelivered => 'Délivré';
 
   @override
-  String get sessionStepSmsSent => 'Sent';
+  String get sessionStepSmsSent => 'Envoyé';
 
   @override
-  String get sessionStepSmsQueued => 'Queued';
+  String get sessionStepSmsQueued => 'En file d\'attente';
 
   @override
-  String get sessionStepSmsFailed => 'Failed';
+  String get sessionStepSmsFailed => 'Échec';
 
   @override
-  String get sessionStepPhoneCallStatus => 'Calling emergency contact…';
+  String get sessionStepPhoneCallStatus => 'Appel du contact d\'urgence…';
 
   @override
-  String get sessionStepPhoneCallCancel => 'Cancel call';
+  String get sessionStepPhoneCallCancel => 'Annuler l\'appel';
 
   @override
-  String get sessionStepLoudAlarmTitle => 'Alarm playing';
+  String get sessionStepLoudAlarmTitle => 'Alarme en cours';
 
   @override
   String get sessionStepLoudAlarmBody =>
-      'The alarm is sounding to attract attention.';
+      'L\'alarme retentit pour attirer l\'attention.';
 
   @override
   String get sessionStepLoudAlarmFlashWarning =>
-      'Photosensitive warning: screen is flashing.';
+      'Avertissement photosensibilité : l\'écran clignote.';
 
   @override
-  String get sessionStepCallEmergencyStatus => 'Calling emergency services…';
+  String get sessionStepCallEmergencyStatus => 'Appel des services d\'urgence…';
 
   @override
   String sessionStepCallEmergencyNumber(Object number) {
-    return 'Number: $number';
+    return 'Numéro : $number';
   }
 
   @override
@@ -306,22 +306,22 @@ class AppLocalizationsFr extends AppLocalizations {
     Object count,
     Object windowMs,
   ) {
-    return 'Press $button $count times within ${windowMs}ms';
+    return 'Appuyez sur $button $count fois en $windowMs ms';
   }
 
   @override
   String sessionStepHardwareButtonLong(Object button, Object seconds) {
-    return 'Hold $button for $seconds seconds';
+    return 'Maintenez $button pendant $seconds secondes';
   }
 
   @override
-  String get sessionStepHardwareButtonVolumeUp => 'volume up';
+  String get sessionStepHardwareButtonVolumeUp => 'volume haut';
 
   @override
-  String get sessionStepHardwareButtonVolumeDown => 'volume down';
+  String get sessionStepHardwareButtonVolumeDown => 'volume bas';
 
   @override
-  String get sessionStepHardwareButtonPower => 'power';
+  String get sessionStepHardwareButtonPower => 'marche/arrêt';
 
   @override
   String get sessionCompletedTitle => 'Session terminée';
@@ -356,19 +356,19 @@ class AppLocalizationsFr extends AppLocalizations {
   String get fakeCallHangUp => 'Raccrocher';
 
   @override
-  String get fakeCallSlideToAnswer => 'slide to answer';
+  String get fakeCallSlideToAnswer => 'glisser pour répondre';
 
   @override
-  String get fakeCallUnknownCaller => 'Unknown';
+  String get fakeCallUnknownCaller => 'Inconnu';
 
   @override
-  String get fakeCallIncomingWhatsapp => 'WhatsApp voice call';
+  String get fakeCallIncomingWhatsapp => 'Appel vocal WhatsApp';
 
   @override
-  String get fakeCallIncomingTelegram => 'Telegram voice call';
+  String get fakeCallIncomingTelegram => 'Appel vocal Telegram';
 
   @override
-  String get fakeCallIncomingSignal => 'Signal voice call';
+  String get fakeCallIncomingSignal => 'Appel vocal Signal';
 
   @override
   String get fakeCallBrandWhatsapp => 'WHATSAPP';
@@ -408,7 +408,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get contactFieldLanguage => 'Langue des SMS (facultatif)';
 
   @override
-  String get contactLanguageDefault => 'Default (use app language)';
+  String get contactLanguageDefault => 'Par défaut (langue de l\'application)';
 
   @override
   String get contactChannelsHeader => 'Canaux de messagerie';
@@ -664,7 +664,7 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get stepTypePickerLabel => 'Step type';
+  String get stepTypePickerLabel => 'Type d\'étape';
 
   @override
   String get stepTypeHoldButton => 'Bouton à maintenir';
@@ -997,21 +997,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get securityDuressPin => 'Code PIN de contrainte';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App PIN';
+  String get securityAppPinBiometric =>
+      'Utiliser la biométrie pour le PIN de l\'application';
 
   @override
   String get securitySessionEndPinBiometric =>
-      'Use biometrics for Session-end PIN';
+      'Utiliser la biométrie pour le PIN de fin de session';
 
   @override
   String get securityDistressCancelBiometric =>
-      'Use biometrics to cancel distress';
+      'Utiliser la biométrie pour annuler la détresse';
 
   @override
-  String get securityDuressTest => 'Test duress PIN';
+  String get securityDuressTest => 'Tester le PIN sous contrainte';
 
   @override
-  String get securityDuressTestSubtitle => 'Verify your duress PIN works.';
+  String get securityDuressTestSubtitle =>
+      'Vérifiez que votre PIN sous contrainte fonctionne.';
 
   @override
   String get securityPinTimeout => 'Délai d\'expiration du PIN (secondes)';
@@ -1045,7 +1047,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get pinEntrySubtitle => 'Saisissez votre PIN pour continuer.';
 
   @override
-  String get pinEntryBiometricReason => 'Authenticate to continue';
+  String get pinEntryBiometricReason => 'Authentifiez-vous pour continuer';
 
   @override
   String get stealthTitle => 'Mode furtif';
@@ -1066,13 +1068,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stealthTimerDisplay => 'Afficher le minuteur en mode furtif';
 
   @override
-  String get stealthTimerDisplayNormal => 'Show full text';
+  String get stealthTimerDisplayNormal => 'Afficher le texte complet';
 
   @override
-  String get stealthTimerDisplaySmall => 'Show numbers only';
+  String get stealthTimerDisplaySmall => 'Afficher uniquement les chiffres';
 
   @override
-  String get stealthTimerDisplayNone => 'Hide timer';
+  String get stealthTimerDisplayNone => 'Masquer le minuteur';
 
   @override
   String get stealthSessionScreen =>
@@ -1208,32 +1210,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get backupImportOk => 'Sauvegarde importée avec succès.';
 
   @override
-  String get backupSelectionHeader => 'Include in export';
+  String get backupSelectionHeader => 'Inclure dans l\'export';
 
   @override
-  String get backupToggleSettings => 'Settings';
+  String get backupToggleSettings => 'Paramètres';
 
   @override
   String get backupToggleSettingsSubtitle =>
-      'Always included so the backup can be restored.';
+      'Toujours inclus pour permettre la restauration de la sauvegarde.';
 
   @override
-  String get backupToggleContacts => 'Emergency contacts';
+  String get backupToggleContacts => 'Contacts d\'urgence';
 
   @override
   String get backupToggleModes => 'Modes';
 
   @override
-  String get backupToggleDistressModes => 'Distress modes';
+  String get backupToggleDistressModes => 'Modes de détresse';
 
   @override
-  String get backupToggleTemplates => 'Reminder templates';
+  String get backupToggleTemplates => 'Modèles de rappel';
 
   @override
-  String get backupToggleSessionLogs => 'Session history';
+  String get backupToggleSessionLogs => 'Historique des sessions';
 
   @override
-  String get backupToggleRecordings => 'Audio recordings';
+  String get backupToggleRecordings => 'Enregistrements audio';
 
   @override
   String get historyTitle => 'Sessions passées';
@@ -1242,16 +1244,16 @@ class AppLocalizationsFr extends AppLocalizations {
   String get historyEmpty => 'Aucune session passée pour le moment.';
 
   @override
-  String get historySearchHint => 'Search by mode name';
+  String get historySearchHint => 'Rechercher par nom de mode';
 
   @override
-  String get historyFilterModeAll => 'All modes';
+  String get historyFilterModeAll => 'Tous les modes';
 
   @override
   String get historyFilterModeLabel => 'Mode';
 
   @override
-  String get historyDateRangePick => 'Date range';
+  String get historyDateRangePick => 'Plage de dates';
 
   @override
   String get historyDetailTitle => 'Détails de la session';
@@ -1295,108 +1297,109 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String emergencyConfirmTitle(Object number) {
-    return 'Calling $number';
+    return 'Appel de $number';
   }
 
   @override
-  String get emergencyConfirmSubtitle => 'Hold the cancel button to abort.';
+  String get emergencyConfirmSubtitle =>
+      'Maintenez le bouton d\'annulation pour interrompre.';
 
   @override
   String emergencyConfirmCountdown(Object seconds) {
-    return 'Calling in ${seconds}s';
+    return 'Appel dans $seconds s';
   }
 
   @override
-  String get emergencyConfirmCancel => 'Cancel';
+  String get emergencyConfirmCancel => 'Annuler';
 
   @override
-  String get stealthCalendarUpcoming => 'Upcoming';
+  String get stealthCalendarUpcoming => 'À venir';
 
   @override
-  String get stealthCalendarUpcomingEvent => 'Meeting';
+  String get stealthCalendarUpcomingEvent => 'Réunion';
 
   @override
   String stealthCalendarUntilEvent(Object minutes) {
-    return 'in $minutes min';
+    return 'dans $minutes min';
   }
 
   @override
-  String get stealthCalendarToday => 'Today';
+  String get stealthCalendarToday => 'Aujourd\'hui';
 
   @override
-  String get stealthCalendarEvent1 => 'Coffee with Alex';
+  String get stealthCalendarEvent1 => 'Café avec Alex';
 
   @override
-  String get stealthCalendarEvent2 => 'Standup';
+  String get stealthCalendarEvent2 => 'Réunion d\'équipe';
 
   @override
-  String get stealthCalendarEvent3 => 'Lunch';
+  String get stealthCalendarEvent3 => 'Déjeuner';
 
   @override
-  String get stealthCalendarEvent4 => 'Workout';
+  String get stealthCalendarEvent4 => 'Sport';
 
   @override
-  String get stealthCalendarEvent5 => 'Dinner with Sam';
+  String get stealthCalendarEvent5 => 'Dîner avec Sam';
 
   @override
-  String get stealthDisarmGestureHint => 'Swipe up to end';
+  String get stealthDisarmGestureHint => 'Glisser vers le haut pour terminer';
 
   @override
-  String get stealthMusicTrackTitle => 'Untitled Track';
+  String get stealthMusicTrackTitle => 'Titre inconnu';
 
   @override
-  String get stealthMusicArtist => 'Unknown Artist';
+  String get stealthMusicArtist => 'Artiste inconnu';
 
   @override
-  String get stealthMusicAlbum => 'Unknown Album';
+  String get stealthMusicAlbum => 'Album inconnu';
 
   @override
-  String get stealthMusicNowPlaying => 'Now playing';
+  String get stealthMusicNowPlaying => 'Lecture en cours';
 
   @override
-  String get stealthMusicSwipeHint => 'Swipe to disarm';
+  String get stealthMusicSwipeHint => 'Glisser pour désactiver';
 
   @override
-  String get stealthMusicPrevious => 'Previous';
+  String get stealthMusicPrevious => 'Précédent';
 
   @override
   String get stealthMusicPause => 'Pause';
 
   @override
-  String get stealthMusicNext => 'Next';
+  String get stealthMusicNext => 'Suivant';
 
   @override
   String get stealthPodcastShowName => 'Podcast';
 
   @override
-  String get stealthPodcastEpisodeTitle => 'Episode';
+  String get stealthPodcastEpisodeTitle => 'Épisode';
 
   @override
-  String get stealthPodcastEpisodesHeader => 'Episodes';
+  String get stealthPodcastEpisodesHeader => 'Épisodes';
 
   @override
   String get stealthPodcastSpeedLabel => '1x';
 
   @override
-  String get stealthPodcastEpisode1 => 'Episode 1';
+  String get stealthPodcastEpisode1 => 'Épisode 1';
 
   @override
-  String get stealthPodcastEpisode2 => 'Episode 2';
+  String get stealthPodcastEpisode2 => 'Épisode 2';
 
   @override
-  String get stealthPodcastEpisode3 => 'Episode 3';
+  String get stealthPodcastEpisode3 => 'Épisode 3';
 
   @override
-  String get stealthPodcastEpisode4 => 'Episode 4';
+  String get stealthPodcastEpisode4 => 'Épisode 4';
 
   @override
   String get stealthPresetPodcast => 'Podcast';
 
   @override
-  String get stealthPresetNone => 'None';
+  String get stealthPresetNone => 'Aucun';
 
   @override
-  String get sessionSimSpeedLabel => 'Speed';
+  String get sessionSimSpeedLabel => 'Vitesse';
 
   @override
   String sessionSimSpeedValue(Object value) {
@@ -1404,38 +1407,39 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get sessionSimSpeedBackgroundCap => 'Capped at 60× in background';
+  String get sessionSimSpeedBackgroundCap => 'Limité à 60× en arrière-plan';
 
   @override
-  String get sessionSimAdvancedLabel => 'Advanced';
+  String get sessionSimAdvancedLabel => 'Avancé';
 
   @override
-  String get sessionSimTriggerPanic => 'Trigger panic';
+  String get sessionSimTriggerPanic => 'Déclencher la panique';
 
   @override
-  String get sessionSimTriggerArrival => 'Trigger arrival';
+  String get sessionSimTriggerArrival => 'Simuler l\'arrivée';
 
   @override
-  String get sessionSimTriggerBattery => 'Trigger low battery';
+  String get sessionSimTriggerBattery => 'Simuler une batterie faible';
 
   @override
-  String get simulateGpsArrival => 'Simulate arrival';
+  String get simulateGpsArrival => 'Simuler l\'arrivée';
 
   @override
-  String get simulateLowBattery => 'Simulate low battery';
+  String get simulateLowBattery => 'Simuler une batterie faible';
 
   @override
-  String get launchGateTitle => 'Unlock Guardian Angela';
+  String get launchGateTitle => 'Déverrouiller Guardian Angela';
 
   @override
-  String get launchGateSubtitle => 'Enter your PIN or use biometrics.';
+  String get launchGateSubtitle =>
+      'Saisissez votre PIN ou utilisez la biométrie.';
 
   @override
-  String get launchGateWrong => 'Wrong PIN';
+  String get launchGateWrong => 'PIN incorrect';
 
   @override
-  String get launchGateBiometricReason => 'Unlock Guardian Angela';
+  String get launchGateBiometricReason => 'Déverrouiller Guardian Angela';
 
   @override
-  String get launchGateUseBiometric => 'Use biometrics';
+  String get launchGateUseBiometric => 'Utiliser la biométrie';
 }

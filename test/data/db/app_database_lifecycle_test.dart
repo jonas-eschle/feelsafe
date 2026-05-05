@@ -2,17 +2,14 @@
 /// the constructor and migration strategy.
 ///
 /// The [_openConnection] body can only be exercised on a host with
-/// SQLCipher + path_provider wired up; production uses it via
-/// `AppDatabase()` with no args. We cover:
+/// the cipher-capable sqlite3 build + path_provider wired up;
+/// production uses it via `AppDatabase()` with no args. We cover:
 ///   * Constructor default path runs (see `main()` — instantiating
 ///     with `executor: NativeDatabase.memory()` forces the injected
-///     path so the `PlatformInfo` default branch is reached).
+///     path so the default branch is reached without hitting the
+///     real `_openConnection` closure).
 ///   * `onUpgrade` throws a `StateError` per the pre-alpha
 ///     nuke-and-reseed policy.
-///   * `FakePlatformInfo(isAndroid: true)` exercises the Android arm
-///     of the `_openConnection` static — the closure itself is lazy,
-///     so we can only assert it builds a [LazyDatabase] without
-///     executing the cipher setup.
 ///   * `close()` on a fresh in-memory instance completes cleanly.
 library;
 
@@ -21,7 +18,6 @@ import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/core/platform/platform_info.dart';
 import 'package:guardianangela/data/db/app_database.dart';
 import 'dao_test_support.dart';
 
@@ -31,41 +27,9 @@ void main() {
   test(
     'AppDatabase default constructor accepts injected executor',
     () async {
-      // Injecting NativeDatabase.memory() bypasses the lazy
-      // SQLCipher-on-Android path while still covering the
-      // constructor's default-argument branch.
       final db = AppDatabase(executor: NativeDatabase.memory());
       check(db.schemaVersion).equals(1);
       await db.close();
-    },
-  );
-
-  test(
-    'AppDatabase Android platform default still yields an AppDatabase',
-    () {
-      // We cannot actually run the cipher path from a Linux host.
-      // But we can verify that the ctor accepts the fake-platform
-      // kwarg without blowing up (the actual LazyDatabase closure
-      // only runs when a query is issued, which we skip here by
-      // passing an in-memory executor).
-      final db = AppDatabase(
-        executor: NativeDatabase.memory(),
-        platform: const FakePlatformInfo(isAndroid: true),
-      );
-      check(db.schemaVersion).equals(1);
-      unawaited(db.close());
-    },
-  );
-
-  test(
-    'AppDatabase iOS platform default still yields an AppDatabase',
-    () {
-      final db = AppDatabase(
-        executor: NativeDatabase.memory(),
-        platform: const FakePlatformInfo(isIOS: true),
-      );
-      check(db.schemaVersion).equals(1);
-      unawaited(db.close());
     },
   );
 
