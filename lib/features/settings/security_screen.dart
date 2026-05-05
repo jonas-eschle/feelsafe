@@ -96,8 +96,8 @@ class SecurityScreen extends ConsumerWidget {
           Slider(
             value: (settings?.pinTimeoutSeconds ?? 15).toDouble(),
             min: 5,
-            max: 60,
-            divisions: 11,
+            max: 120,
+            divisions: 23,
             label: '${settings?.pinTimeoutSeconds ?? 15}s',
             onChanged: (v) =>
                 notifier.setPinTimeoutSeconds(v.round()),

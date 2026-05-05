@@ -35,7 +35,8 @@ final class BatteryAlertConfig {
     );
   }
 
-  /// Master toggle. Defaults to true.
+  /// Master toggle. Defaults to **false** — opt-in by design so a
+  /// safety app does not surprise users with new automatic alerts.
   final bool enabled;
 
   /// Battery percentage that triggers the alert (0–100). Defaults

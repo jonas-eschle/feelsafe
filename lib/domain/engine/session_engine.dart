@@ -57,7 +57,10 @@ final class SessionEngine {
     Random? random,
     DateTime Function()? clock,
   }) : _steps = List.of(chainSteps),
-       _speedMultiplier = speedMultiplier,
+       _speedMultiplier = speedMultiplier.clamp(
+         _speedMultiplierMin,
+         _speedMultiplierMax,
+       ),
        _random = random ?? Random(),
        _clock = clock ?? (() => pkg_clock.clock.now()) {
     if (speedMultiplier.isNaN ||
@@ -77,6 +80,9 @@ final class SessionEngine {
       );
     }
   }
+
+  static const double _speedMultiplierMin = 0.01;
+  static const double _speedMultiplierMax = 1000.0;
 
   /// The active chain (may be replaced by a distress chain).
   List<ChainStep> get steps => List.unmodifiable(_steps);
@@ -459,9 +465,7 @@ final class SessionEngine {
   /// [ArgumentError] on NaN / infinity / non-positive values.
   void setSpeedMultiplier(double value) {
     if (!isSimulation) {
-      throw StateError(
-        'setSpeedMultiplier() requires isSimulation == true',
-      );
+      throw StateError('setSpeedMultiplier() requires isSimulation == true');
     }
     if (value.isNaN || value.isInfinite || value <= 0) {
       throw ArgumentError.value(
@@ -470,7 +474,7 @@ final class SessionEngine {
         'must be a finite positive number',
       );
     }
-    _speedMultiplier = value;
+    _speedMultiplier = value.clamp(_speedMultiplierMin, _speedMultiplierMax);
   }
 
   /// Effective speed multiplier accounting for background clamp.

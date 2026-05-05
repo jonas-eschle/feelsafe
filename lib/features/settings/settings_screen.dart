@@ -44,11 +44,6 @@ class SettingsScreen extends ConsumerWidget {
             route: RouteNames.settingsStealth,
           ),
           const Divider(),
-          ListTile(
-            title: Text(l.settingsSectionDefaults),
-            subtitle: Text(l.commonNone),
-            enabled: false,
-          ),
           _NavTile(
             label: l.settingsSectionEventDefaults,
             route: RouteNames.eventDefaults,
