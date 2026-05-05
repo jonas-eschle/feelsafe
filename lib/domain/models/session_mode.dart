@@ -18,7 +18,7 @@ final class SessionMode {
   /// (holdButton / disguisedReminder).
   /// [chainSteps] — main escalation chain; first step determines
   /// check-in behaviour. Defaults to empty.
-  /// [distressChainId] — id of a chain in the distress repository;
+  /// [distressModeId] — id of a chain in the distress repository;
   /// null = use default (first in repo).
   /// [distressTriggers] — triggers that switch to the distress
   /// chain. Defaults to empty.
@@ -49,7 +49,7 @@ final class SessionMode {
     required this.name,
     required this.checkInType,
     this.chainSteps = const [],
-    this.distressChainId,
+    this.distressModeId,
     this.distressTriggers = const [],
     this.disarmTriggers = const [],
     this.overrides,
@@ -79,7 +79,7 @@ final class SessionMode {
               ),
             )
           : const [],
-      distressChainId: json['distressChainId'] as String?,
+      distressModeId: json['distressModeId'] as String?,
       distressTriggers: rawDistress is List
           ? List<DistressTrigger>.unmodifiable(
               rawDistress.map(
@@ -123,7 +123,7 @@ final class SessionMode {
 
   /// Id of the distress chain to use. Null = use the default (first
   /// entry in the distress-chain repository).
-  final String? distressChainId;
+  final String? distressModeId;
 
   /// Triggers that switch to the distress chain.
   final List<DistressTrigger> distressTriggers;
@@ -167,20 +167,13 @@ final class SessionMode {
   /// managed separately in the UI. Default `false`.
   final bool isDistressMode;
 
-  /// Pivot 3 alias for [distressChainId]. The unification under
-  /// "distress mode" (deleting the standalone DistressChain class)
-  /// is in progress; until it lands, this getter exposes the same
-  /// id under the spec-canonical name so call sites can use the new
-  /// terminology without waiting for the model split.
-  String? get distressModeId => distressChainId;
-
   /// Returns a new mode with the given fields replaced.
   SessionMode copyWith({
     String? id,
     String? name,
     ChainStepType? checkInType,
     List<ChainStep>? chainSteps,
-    String? distressChainId,
+    String? distressModeId,
     List<DistressTrigger>? distressTriggers,
     List<DisarmTrigger>? disarmTriggers,
     ModeOverrides? overrides,
@@ -192,15 +185,13 @@ final class SessionMode {
     bool? pauseAllowed,
     int? maxPauseMinutes,
     bool clearMaxPauseMinutes = false,
-    String? distressModeId,
     bool? isDistressMode,
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
     checkInType: checkInType ?? this.checkInType,
     chainSteps: chainSteps ?? this.chainSteps,
-    distressChainId:
-        distressChainId ?? distressModeId ?? this.distressChainId,
+    distressModeId: distressModeId ?? this.distressModeId,
     distressTriggers: distressTriggers ?? this.distressTriggers,
     disarmTriggers: disarmTriggers ?? this.disarmTriggers,
     overrides: overrides ?? this.overrides,
@@ -222,7 +213,7 @@ final class SessionMode {
     'name': name,
     'checkInType': checkInType.name,
     'chainSteps': chainSteps.map((s) => s.toJson()).toList(growable: false),
-    'distressChainId': distressChainId,
+    'distressModeId': distressModeId,
     'distressTriggers': distressTriggers
         .map((t) => t.toJson())
         .toList(growable: false),
@@ -246,7 +237,7 @@ final class SessionMode {
     if (other.id != id) return false;
     if (other.name != name) return false;
     if (other.checkInType != checkInType) return false;
-    if (other.distressChainId != distressChainId) return false;
+    if (other.distressModeId != distressModeId) return false;
     if (other.overrides != overrides) return false;
     if (other.trackingEnabled != trackingEnabled) return false;
     if (other.trackingIntervalSeconds != trackingIntervalSeconds) {
@@ -269,7 +260,7 @@ final class SessionMode {
     name,
     checkInType,
     Object.hashAll(chainSteps),
-    distressChainId,
+    distressModeId,
     Object.hashAll(distressTriggers),
     Object.hashAll(disarmTriggers),
     overrides,

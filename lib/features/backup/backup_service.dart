@@ -363,11 +363,11 @@ final class BackupService {
   List<Object?> _listOf(Object? raw) => raw is List ? raw : const [];
 
   /// Returns the set of mode-ids that are referenced as a distress
-  /// mode by any saved mode's `distressChainId`.
+  /// mode by any saved mode's `distressModeId`.
   ///
   /// *Why this heuristic:* a "distress mode" in the current codebase
   /// is structurally a `SessionMode` whose id is referenced from
-  /// another mode's `distressChainId` field. Once the Q52 unification
+  /// another mode's `distressModeId` field. Once the Q52 unification
   /// lands and `SessionMode.isDistressMode` exists, this helper can
   /// be replaced with `m.isDistressMode == true`.
   Set<String> _resolveDistressModeIds(
@@ -376,7 +376,7 @@ final class BackupService {
   ) {
     final ids = <String>{};
     for (final m in allModes) {
-      final id = m.distressChainId;
+      final id = m.distressModeId;
       if (id != null && id.isNotEmpty) ids.add(id);
     }
     return ids;

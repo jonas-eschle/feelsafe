@@ -66,7 +66,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   SessionMode? _mode;
   final TextEditingController _nameCtrl = TextEditingController();
   ChainStepType _checkInType = ChainStepType.holdButton;
-  String? _distressChainId;
+  String? _distressModeId;
   String? _iconName;
   List<ChainStep> _chain = const [];
   List<DistressTrigger> _distressTriggers = const [];
@@ -89,7 +89,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         _mode = m;
         _nameCtrl.text = m.name;
         _checkInType = m.checkInType;
-        _distressChainId = m.distressChainId;
+        _distressModeId = m.distressModeId;
         _iconName = m.iconName;
         _chain = List.of(m.chainSteps);
         _distressTriggers = List.of(m.distressTriggers);
@@ -114,10 +114,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final loadedDistress = m?.distressTriggers ?? const <DistressTrigger>[];
     final loadedOverrides = m?.overrides;
     final loadedIcon = m?.iconName;
-    final loadedDistressChainId = m?.distressChainId;
+    final loadedDistressChainId = m?.distressModeId;
     if (_nameCtrl.text.trim() != loadedName) return true;
     if (_checkInType != loadedCheckIn) return true;
-    if (_distressChainId != loadedDistressChainId) return true;
+    if (_distressModeId != loadedDistressChainId) return true;
     if (_iconName != loadedIcon) return true;
     if (!_listEquals(_chain, loadedChain)) return true;
     if (!_listEquals(_distressTriggers, loadedDistress)) return true;
@@ -138,7 +138,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       name: _nameCtrl.text.trim().isEmpty ? 'Mode' : _nameCtrl.text.trim(),
       checkInType: _checkInType,
       chainSteps: List.of(_chain),
-      distressChainId: _distressChainId,
+      distressModeId: _distressModeId,
       distressTriggers: List.of(_distressTriggers),
       disarmTriggers: mode?.disarmTriggers ?? const [],
       overrides: _overrides,
@@ -346,7 +346,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
             ),
             const SizedBox(height: 12),
             DropdownButtonFormField<String?>(
-              initialValue: _distressChainId,
+              initialValue: _distressModeId,
               decoration: InputDecoration(labelText: l.modeFieldDistressChain),
               items: [
                 DropdownMenuItem<String?>(
@@ -356,7 +356,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                 for (final c in distressChains)
                   DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
               ],
-              onChanged: (v) => setState(() => _distressChainId = v),
+              onChanged: (v) => setState(() => _distressModeId = v),
             ),
             const SizedBox(height: 24),
             Text(
@@ -869,7 +869,7 @@ class _ModeOverridesSection extends ConsumerWidget {
         ov.stealth == null &&
         ov.eventDefaults == null &&
         ov.localTemplates.isEmpty &&
-        ov.distressChainId == null) {
+        ov.distressModeId == null) {
       return null;
     }
     return ov;
@@ -898,7 +898,7 @@ class _ModeOverridesSection extends ConsumerWidget {
               final next = active
                   ? cur.copyWith(gpsLogging: base)
                   : ModeOverrides(
-                      distressChainId: cur.distressChainId,
+                      distressModeId: cur.distressModeId,
                       stealth: cur.stealth,
                       localTemplates: cur.localTemplates,
                       eventDefaults: cur.eventDefaults,
@@ -924,7 +924,7 @@ class _ModeOverridesSection extends ConsumerWidget {
               final next = active
                   ? cur.copyWith(stealth: base)
                   : ModeOverrides(
-                      distressChainId: cur.distressChainId,
+                      distressModeId: cur.distressModeId,
                       gpsLogging: cur.gpsLogging,
                       localTemplates: cur.localTemplates,
                       eventDefaults: cur.eventDefaults,
@@ -951,7 +951,7 @@ class _ModeOverridesSection extends ConsumerWidget {
               final next = active
                   ? cur.copyWith(eventDefaults: base)
                   : ModeOverrides(
-                      distressChainId: cur.distressChainId,
+                      distressModeId: cur.distressModeId,
                       gpsLogging: cur.gpsLogging,
                       stealth: cur.stealth,
                       localTemplates: cur.localTemplates,

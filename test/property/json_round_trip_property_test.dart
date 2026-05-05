@@ -216,7 +216,7 @@ void main() {
           smsStep(order: 1, durationSeconds: 3),
           step(type: ChainStepType.loudAlarm, order: 2, durationSeconds: 2),
         ],
-        distressChainId: 'd1',
+        distressModeId: 'd1',
       );
       final restored = SessionMode.fromJson(m.toJson());
       check(restored.id).equals(m.id);

@@ -183,12 +183,12 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     }
 
     // Distress chain resolution:
-    // mode.distressChainId explicit -> that chain; else first entry.
+    // mode.distressModeId explicit -> that chain; else first entry.
     final distressRepo = ref.read(distressChainsRepositoryProvider);
     final distressChains = await distressRepo.getAll();
     final distressChain = _resolveDistressChain(
       distressChains: distressChains,
-      modeDistressChainId: mode.distressChainId,
+      modeDistressChainId: mode.distressModeId,
     );
     if (distressChain.steps.isEmpty) {
       throw StateError(
@@ -251,7 +251,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       name: 'Battery Alert',
       checkInType: config.chain.first.type,
       chainSteps: config.chain,
-      distressChainId: distressChain.id,
+      distressModeId: distressChain.id,
     );
 
     await _bootstrapSession(

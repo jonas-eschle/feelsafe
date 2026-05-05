@@ -970,7 +970,7 @@ void main() {
   });
 
   group('SessionController distress-chain resolution', () {
-    test('uses mode.distressChainId when set', () async {
+    test('uses mode.distressModeId when set', () async {
       final chains = [
         makeDistressChain(id: 'a', steps: [smsStep(order: 0)]),
         makeDistressChain(
@@ -979,7 +979,7 @@ void main() {
         ),
       ];
       final modes = [
-        makeMode(id: 'mode-b', distressChainId: 'b', steps: [holdStep()]),
+        makeMode(id: 'mode-b', distressModeId: 'b', steps: [holdStep()]),
       ];
       final fx = _makeFixture(modes: modes, distressChains: chains);
       addTearDown(fx.container.dispose);
@@ -990,7 +990,7 @@ void main() {
       check(fx.container.read(sessionControllerProvider).value).isNotNull();
     });
 
-    test('falls back to first chain when distressChainId is null', () async {
+    test('falls back to first chain when distressModeId is null', () async {
       final chains = [
         makeDistressChain(id: 'first', steps: [smsStep(order: 0)]),
         makeDistressChain(id: 'second', steps: [smsStep(order: 0)]),

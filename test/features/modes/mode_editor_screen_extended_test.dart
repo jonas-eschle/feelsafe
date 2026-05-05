@@ -2,7 +2,7 @@
 ///   * Add-step bottom sheet flow adds a new [ChainStep] to the chain.
 ///   * Delete-step trashes the selected step.
 ///   * Check-in type dropdown persists chosen [ChainStepType].
-///   * Distress-chain dropdown binds `distressChainId` on save.
+///   * Distress-chain dropdown binds `distressModeId` on save.
 ///   * Editing an existing mode with a populated chain renders the
 ///     [ReorderableListView].
 library;
@@ -112,7 +112,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();
       final saved = await repo.getAll();
-      check(saved.single.distressChainId).equals('dc-1');
+      check(saved.single.distressModeId).equals('dc-1');
     },
   );
 

@@ -14,8 +14,8 @@ import 'package:guardianangela/domain/models/stealth_config.dart';
 final class ModeOverrides {
   /// Creates mode overrides.
   ///
-  /// [distressChainId] — override the mode's distress-chain
-  /// selection; null = inherit from `SessionMode.distressChainId`
+  /// [distressModeId] — override the mode's distress-chain
+  /// selection; null = inherit from `SessionMode.distressModeId`
   /// (which itself defaults to the first chain in the repository).
   /// [gpsLogging] — override `AppDefaults.gpsLogging`; null =
   /// inherit.
@@ -25,7 +25,7 @@ final class ModeOverrides {
   /// [eventDefaults] — override `AppDefaults.eventDefaults`; null =
   /// inherit.
   const ModeOverrides({
-    this.distressChainId,
+    this.distressModeId,
     this.gpsLogging,
     this.stealth,
     this.localTemplates = const [],
@@ -36,7 +36,7 @@ final class ModeOverrides {
   factory ModeOverrides.fromJson(Map<String, Object?> json) {
     final rawTemplates = json['localTemplates'];
     return ModeOverrides(
-      distressChainId: json['distressChainId'] as String?,
+      distressModeId: json['distressModeId'] as String?,
       gpsLogging: json['gpsLogging'] is Map<String, Object?>
           ? GpsLoggingConfig.fromJson(
               json['gpsLogging']! as Map<String, Object?>,
@@ -61,7 +61,7 @@ final class ModeOverrides {
   }
 
   /// Override mode's distress-chain id; null = inherit.
-  final String? distressChainId;
+  final String? distressModeId;
 
   /// Per-mode GPS-logging override; null = inherit.
   final GpsLoggingConfig? gpsLogging;
@@ -78,13 +78,13 @@ final class ModeOverrides {
 
   /// Returns a new `ModeOverrides` with the given fields replaced.
   ModeOverrides copyWith({
-    String? distressChainId,
+    String? distressModeId,
     GpsLoggingConfig? gpsLogging,
     StealthConfig? stealth,
     List<ReminderTemplate>? localTemplates,
     EventDefaults? eventDefaults,
   }) => ModeOverrides(
-    distressChainId: distressChainId ?? this.distressChainId,
+    distressModeId: distressModeId ?? this.distressModeId,
     gpsLogging: gpsLogging ?? this.gpsLogging,
     stealth: stealth ?? this.stealth,
     localTemplates: localTemplates ?? this.localTemplates,
@@ -93,7 +93,7 @@ final class ModeOverrides {
 
   /// Serializes to JSON.
   Map<String, Object?> toJson() => {
-    'distressChainId': distressChainId,
+    'distressModeId': distressModeId,
     'gpsLogging': gpsLogging?.toJson(),
     'stealth': stealth?.toJson(),
     'localTemplates': localTemplates
@@ -106,7 +106,7 @@ final class ModeOverrides {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other is! ModeOverrides) return false;
-    if (other.distressChainId != distressChainId) return false;
+    if (other.distressModeId != distressModeId) return false;
     if (other.gpsLogging != gpsLogging) return false;
     if (other.stealth != stealth) return false;
     if (other.eventDefaults != eventDefaults) return false;
@@ -119,7 +119,7 @@ final class ModeOverrides {
 
   @override
   int get hashCode => Object.hash(
-    distressChainId,
+    distressModeId,
     gpsLogging,
     stealth,
     Object.hashAll(localTemplates),
@@ -127,5 +127,5 @@ final class ModeOverrides {
   );
 
   @override
-  String toString() => 'ModeOverrides(distressChainId: $distressChainId)';
+  String toString() => 'ModeOverrides(distressModeId: $distressModeId)';
 }

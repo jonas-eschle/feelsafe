@@ -354,7 +354,7 @@ class SessionLifecycleController {
       name: 'Battery Alert',
       checkInType: config.chain.first.type,
       chainSteps: config.chain,
-      distressChainId: settings.defaults.defaultDistressModeId,
+      distressModeId: settings.defaults.defaultDistressModeId,
     );
 
     await _bootstrapSession(

@@ -12,7 +12,7 @@ void main() {
   group('ModeOverrides', () {
     test('all fields null by default', () {
       const o = ModeOverrides();
-      check(o.distressChainId).isNull();
+      check(o.distressModeId).isNull();
       check(o.gpsLogging).isNull();
       check(o.stealth).isNull();
       check(o.localTemplates).isEmpty();
@@ -58,15 +58,15 @@ void main() {
       check(ModeOverrides.fromJson(o.toJson())).equals(o);
     });
 
-    test('round-trip with distressChainId', () {
-      const o = ModeOverrides(distressChainId: 'dc-1');
+    test('round-trip with distressModeId', () {
+      const o = ModeOverrides(distressModeId: 'dc-1');
       check(ModeOverrides.fromJson(o.toJson())).equals(o);
     });
 
     test('copyWith replaces targeted fields', () {
       const o = ModeOverrides();
-      final o2 = o.copyWith(distressChainId: 'x');
-      check(o2.distressChainId).equals('x');
+      final o2 = o.copyWith(distressModeId: 'x');
+      check(o2.distressModeId).equals('x');
     });
 
     test('copyWith replaces every field', () {
@@ -81,13 +81,13 @@ void main() {
         isGlobal: false,
       );
       final o2 = o.copyWith(
-        distressChainId: 'x',
+        distressModeId: 'x',
         gpsLogging: const GpsLoggingConfig(enabled: false),
         stealth: const StealthConfig(enabled: true),
         localTemplates: const [tpl],
         eventDefaults: const EventDefaults(),
       );
-      check(o2.distressChainId).equals('x');
+      check(o2.distressModeId).equals('x');
       check(o2.gpsLogging).isNotNull();
       check(o2.stealth).isNotNull();
       check(o2.localTemplates).deepEquals(const [tpl]);
@@ -105,15 +105,15 @@ void main() {
     });
 
     test('equal values equal', () {
-      const a = ModeOverrides(distressChainId: 'x');
-      const b = ModeOverrides(distressChainId: 'x');
+      const a = ModeOverrides(distressModeId: 'x');
+      const b = ModeOverrides(distressModeId: 'x');
       check(a).equals(b);
       check(a.hashCode).equals(b.hashCode);
     });
 
-    test('differ by distressChainId unequal', () {
+    test('differ by distressModeId unequal', () {
       check(
-        const ModeOverrides() == const ModeOverrides(distressChainId: 'x'),
+        const ModeOverrides() == const ModeOverrides(distressModeId: 'x'),
       ).isFalse();
     });
 
@@ -178,8 +178,8 @@ void main() {
       ).isFalse();
     });
 
-    test('toString includes distressChainId', () {
-      check(const ModeOverrides(distressChainId: 'abc').toString())
+    test('toString includes distressModeId', () {
+      check(const ModeOverrides(distressModeId: 'abc').toString())
           .contains('abc');
     });
   });

@@ -146,19 +146,19 @@ ChainStep fakeCallStep({
 /// [name] — defaults to 'Test'.
 /// [checkInType] — defaults to [ChainStepType.holdButton].
 /// [steps] — defaults to a single [holdStep] at order 0.
-/// [distressChainId] — defaults to null (use repo's first chain).
+/// [distressModeId] — defaults to null (use repo's first chain).
 SessionMode makeMode({
   String? id,
   String name = 'Test',
   ChainStepType checkInType = ChainStepType.holdButton,
   List<ChainStep>? steps,
-  String? distressChainId,
+  String? distressModeId,
 }) => SessionMode(
   id: id ?? 'mode-$name',
   name: name,
   checkInType: checkInType,
   chainSteps: steps ?? [holdStep()],
-  distressChainId: distressChainId,
+  distressModeId: distressModeId,
 );
 
 /// Builds an [EmergencyContact] for tests.

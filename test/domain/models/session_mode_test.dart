@@ -16,7 +16,7 @@ void main() {
       check(m.id).isNotNull();
       check(m.name).equals('Test');
       check(m.checkInType).equals(ChainStepType.holdButton);
-      check(m.distressChainId).isNull();
+      check(m.distressModeId).isNull();
       check(m.distressTriggers).isEmpty();
       check(m.disarmTriggers).isEmpty();
       check(m.overrides).isNull();
@@ -33,10 +33,10 @@ void main() {
       check(m2.id).equals(m.id);
     });
 
-    test('copyWith replaces distressChainId', () {
+    test('copyWith replaces distressModeId', () {
       final m = makeMode();
-      final m2 = m.copyWith(distressChainId: 'dc1');
-      check(m2.distressChainId).equals('dc1');
+      final m2 = m.copyWith(distressModeId: 'dc1');
+      check(m2.distressModeId).equals('dc1');
     });
 
     test('JSON round-trip (minimal)', () {
@@ -82,7 +82,7 @@ void main() {
     test('JSON round-trip with ModeOverrides', () {
       final m = makeMode().copyWith(
         overrides: const ModeOverrides(
-          distressChainId: 'dc-other',
+          distressModeId: 'dc-other',
           gpsLogging: GpsLoggingConfig(enabled: false),
         ),
       );
