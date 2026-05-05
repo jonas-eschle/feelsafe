@@ -219,5 +219,32 @@ void main() {
         (it) => it.equals(a.copyWith(iconName: 'fitness_center')),
       );
     });
+
+    test('isDistressMode defaults to false', () {
+      final m = makeMode();
+      check(m.isDistressMode).isFalse();
+    });
+
+    test('JSON round-trip preserves isDistressMode', () {
+      final m = makeMode().copyWith(isDistressMode: true);
+      check(SessionMode.fromJson(m.toJson())).equals(m);
+      check(SessionMode.fromJson(m.toJson()).isDistressMode).isTrue();
+    });
+
+    test('fromJson defaults missing isDistressMode to false', () {
+      final json = {
+        'id': 'm1',
+        'name': 'X',
+        'checkInType': 'holdButton',
+      };
+      check(SessionMode.fromJson(json).isDistressMode).isFalse();
+    });
+
+    test('inequality when isDistressMode differs', () {
+      final a = makeMode();
+      check(a).not(
+        (it) => it.equals(a.copyWith(isDistressMode: true)),
+      );
+    });
   });
 }

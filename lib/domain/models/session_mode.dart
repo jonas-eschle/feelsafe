@@ -40,6 +40,10 @@ final class SessionMode {
   /// use when rendering this mode (e.g. on the Home tile or in the
   /// modes list). Resolved via `kModeIconLibrary` on the UI side.
   /// `null` = the UI falls back to its name-based heuristic.
+  /// [isDistressMode] — when true, this mode is a distress mode that
+  /// other modes can reference via [distressModeId]. Distress modes
+  /// are managed separately in the UI from regular session modes.
+  /// Default `false`.
   const SessionMode({
     required this.id,
     required this.name,
@@ -55,6 +59,7 @@ final class SessionMode {
     this.iconName,
     this.pauseAllowed = true,
     this.maxPauseMinutes,
+    this.isDistressMode = false,
   });
 
   /// Deserializes a `SessionMode` from JSON.
@@ -100,6 +105,7 @@ final class SessionMode {
       iconName: json['iconName'] as String?,
       pauseAllowed: json['pauseAllowed'] as bool? ?? true,
       maxPauseMinutes: (json['maxPauseMinutes'] as num?)?.toInt(),
+      isDistressMode: json['isDistressMode'] as bool? ?? false,
     );
   }
 
@@ -156,6 +162,11 @@ final class SessionMode {
   /// in minutes. `null` = unlimited. Defaults to null.
   final int? maxPauseMinutes;
 
+  /// Whether this mode is a distress mode. Distress modes are the
+  /// targets of `distressModeId` references on regular modes and are
+  /// managed separately in the UI. Default `false`.
+  final bool isDistressMode;
+
   /// Pivot 3 alias for [distressChainId]. The unification under
   /// "distress mode" (deleting the standalone DistressChain class)
   /// is in progress; until it lands, this getter exposes the same
@@ -182,6 +193,7 @@ final class SessionMode {
     int? maxPauseMinutes,
     bool clearMaxPauseMinutes = false,
     String? distressModeId,
+    bool? isDistressMode,
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -201,6 +213,7 @@ final class SessionMode {
     maxPauseMinutes: clearMaxPauseMinutes
         ? null
         : (maxPauseMinutes ?? this.maxPauseMinutes),
+    isDistressMode: isDistressMode ?? this.isDistressMode,
   );
 
   /// Serializes to JSON.
@@ -223,6 +236,7 @@ final class SessionMode {
     if (iconName != null) 'iconName': iconName,
     'pauseAllowed': pauseAllowed,
     'maxPauseMinutes': maxPauseMinutes,
+    'isDistressMode': isDistressMode,
   };
 
   @override
@@ -242,6 +256,7 @@ final class SessionMode {
     if (other.iconName != iconName) return false;
     if (other.pauseAllowed != pauseAllowed) return false;
     if (other.maxPauseMinutes != maxPauseMinutes) return false;
+    if (other.isDistressMode != isDistressMode) return false;
     if (!_listEquals(other.chainSteps, chainSteps)) return false;
     if (!_listEquals(other.distressTriggers, distressTriggers)) return false;
     if (!_listEquals(other.disarmTriggers, disarmTriggers)) return false;
@@ -264,6 +279,7 @@ final class SessionMode {
     iconName,
     pauseAllowed,
     maxPauseMinutes,
+    isDistressMode,
   );
 
   @override
