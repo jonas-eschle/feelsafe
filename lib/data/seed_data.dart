@@ -29,7 +29,7 @@ class SeedModeIds {
 }
 
 /// Stable id of the default distress chain.
-const String seedDefaultDistressChainId = 'seed.distress.default';
+const String seedDefaultDistressModeId = 'seed.distress.default';
 
 /// Idempotent first-launch seeding. Writes built-in modes,
 /// templates, the default distress chain, default app settings, the
@@ -46,7 +46,7 @@ Future<void> seedData(Ref ref) async {
   final batteryRepo = ref.read(batteryAlertRepositoryProvider);
 
   // Distress chain — seed first so modes can reference it by id.
-  if (await distressRepo.getById(seedDefaultDistressChainId) == null) {
+  if (await distressRepo.getById(seedDefaultDistressModeId) == null) {
     await distressRepo.save(_defaultDistressChain());
   }
 
@@ -57,12 +57,20 @@ Future<void> seedData(Ref ref) async {
     }
   }
 
-  // Built-in modes.
+  // Built-in modes (regular + distress-flagged).
   if (await modesRepo.getById(SeedModeIds.walk) == null) {
     await modesRepo.save(_walkMode());
   }
   if (await modesRepo.getById(SeedModeIds.date) == null) {
     await modesRepo.save(_dateMode());
+  }
+  // Phase 2.3: dual-seed the default distress chain as a distress-
+  // flagged SessionMode (same id, lives in the modes table). The
+  // legacy DistressChain row is still seeded above for the engine —
+  // 2.4 swaps the engine over to read this mode and 2.5 deletes the
+  // standalone DistressChain class.
+  if (await modesRepo.getById(seedDefaultDistressModeId) == null) {
+    await modesRepo.save(_defaultDistressMode());
   }
 
   // App settings (includes AppDefaults + EventDefaults).
@@ -85,38 +93,52 @@ Future<void> seedData(Ref ref) async {
 // Distress chain
 // ---------------------------------------------------------------------
 
-DistressChain _defaultDistressChain() => const DistressChain(
-  id: seedDefaultDistressChainId,
+DistressChain _defaultDistressChain() => DistressChain(
+  id: seedDefaultDistressModeId,
   name: 'Default Distress Chain',
-  steps: [
-    ChainStep(
-      id: 'seed.distress.step.sms',
-      type: ChainStepType.smsContact,
-      order: 0,
-      durationSeconds: 5,
-      gracePeriodSeconds: 0,
-      config: SmsContactConfig(
-        contactSelection: SmsContactSelection.firstContact,
-        includeLocation: true,
-      ),
-    ),
-    ChainStep(
-      id: 'seed.distress.step.wait',
-      type: ChainStepType.countdownWarning,
-      order: 1,
-      durationSeconds: 15,
-      gracePeriodSeconds: 0,
-    ),
-    ChainStep(
-      id: 'seed.distress.step.emergency',
-      type: ChainStepType.callEmergency,
-      order: 2,
-      durationSeconds: 30,
-      gracePeriodSeconds: 0,
-      config: CallEmergencyConfig(showConfirmation: false),
-    ),
-  ],
+  steps: _defaultDistressSteps(),
 );
+
+/// Phase 2.3: distress-mode mirror of [_defaultDistressChain]. Same
+/// id, same chain steps, but stored in the modes table with
+/// `isDistressMode=true`. Engine reads this in 2.4; the standalone
+/// DistressChain class is deleted in 2.5.
+SessionMode _defaultDistressMode() => SessionMode(
+  id: seedDefaultDistressModeId,
+  name: 'Default Distress Chain',
+  checkInType: ChainStepType.smsContact,
+  chainSteps: _defaultDistressSteps(),
+  isDistressMode: true,
+);
+
+List<ChainStep> _defaultDistressSteps() => const [
+  ChainStep(
+    id: 'seed.distress.step.sms',
+    type: ChainStepType.smsContact,
+    order: 0,
+    durationSeconds: 5,
+    gracePeriodSeconds: 0,
+    config: SmsContactConfig(
+      contactSelection: SmsContactSelection.firstContact,
+      includeLocation: true,
+    ),
+  ),
+  ChainStep(
+    id: 'seed.distress.step.wait',
+    type: ChainStepType.countdownWarning,
+    order: 1,
+    durationSeconds: 15,
+    gracePeriodSeconds: 0,
+  ),
+  ChainStep(
+    id: 'seed.distress.step.emergency',
+    type: ChainStepType.callEmergency,
+    order: 2,
+    durationSeconds: 30,
+    gracePeriodSeconds: 0,
+    config: CallEmergencyConfig(showConfirmation: false),
+  ),
+];
 
 // ---------------------------------------------------------------------
 // Built-in modes

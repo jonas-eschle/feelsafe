@@ -42,14 +42,18 @@ void main() {
     await container.read(refProvider);
   }
 
-  test('seeds exactly 2 built-in modes', () async {
+  test('seeds 2 regular built-in modes + 1 distress mode', () async {
     await runSeed();
     final modes = await container.read(modesRepositoryProvider).getAll();
-    check(modes.length).equals(2);
+    // Phase 2.3: walk + date + dual-seeded default distress mode.
+    check(modes.length).equals(3);
     check(modes.map((m) => m.id).toSet()).deepEquals({
       SeedModeIds.walk,
       SeedModeIds.date,
+      seedDefaultDistressModeId,
     });
+    final regular = modes.where((m) => !m.isDistressMode).toList();
+    check(regular.length).equals(2);
   });
 
   test('seeds exactly 8 built-in templates, all global', () async {
@@ -67,7 +71,7 @@ void main() {
         .read(distressChainsRepositoryProvider)
         .getAll();
     check(chains.length).equals(1);
-    check(chains.first.id).equals(seedDefaultDistressChainId);
+    check(chains.first.id).equals(seedDefaultDistressModeId);
   });
 
   test('seeds AppSettings / UserProfile / BatteryAlert singletons', () async {
@@ -118,9 +122,24 @@ void main() {
     final chains = await container
         .read(distressChainsRepositoryProvider)
         .getAll();
-    check(modes.length).equals(2);
+    // Phase 2.3: walk + date + dual-seeded distress mode = 3.
+    check(modes.length).equals(3);
     check(templates.length).equals(8);
     check(chains.length).equals(1);
+  });
+
+  test('Phase 2.3: distress-flagged mode is dual-seeded', () async {
+    await runSeed();
+    final mode = await container
+        .read(modesRepositoryProvider)
+        .getById(seedDefaultDistressModeId);
+    check(mode).isNotNull();
+    check(mode!.isDistressMode).isTrue();
+    check(mode.chainSteps.length).equals(3);
+    final flagged = (await container.read(modesRepositoryProvider).getAll())
+        .where((m) => m.isDistressMode)
+        .toList();
+    check(flagged.length).equals(1);
   });
 
   test('seedData does not clobber user-customized settings', () async {
@@ -151,7 +170,7 @@ void main() {
     await runSeed();
     final chain = await container
         .read(distressChainsRepositoryProvider)
-        .getById(seedDefaultDistressChainId);
+        .getById(seedDefaultDistressModeId);
     check(chain!.steps.length).equals(3);
   });
 
