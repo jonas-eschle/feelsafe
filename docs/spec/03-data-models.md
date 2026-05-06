@@ -4,6 +4,24 @@
 
 # 03 - Data Models Specification
 
+> **Implementation update — May 2026 (Phase 2.5).** `DistressChain` has
+> been removed as a standalone aggregate. Distress modes are now
+> persisted as `SessionMode`s with `isDistressMode = true` in the
+> single `modes` table. `SessionMode.distressChainId` was renamed to
+> `distressModeId` and references another mode by id. Anywhere this
+> document still uses "DistressChain", read it as "distress-flagged
+> SessionMode (`isDistressMode = true`)". The `distress_chains` table
+> and its DAO/repository have been deleted; the schema version is now
+> 2 and pre-alpha policy is nuke-and-reseed on mismatch.
+>
+> **Implementation update — May 2026 (storage rewrite).** The Hive
+> CE story below is aspirational. The current code uses a
+> SQLCipher-encrypted SQLite database (via `drift` + `sqlite3mc`) and
+> serializes each model as a JSON string keyed by id. Each
+> `@HiveType` annotation in the snippets below corresponds to a
+> column in the relevant drift table; runtime behavior is the same
+> from the application's point of view.
+
 Guardian Angela's data models are built on **Hive CE** (Community Edition), a lightweight local NoSQL database optimized for mobile. All persistent data is encrypted at rest and supports automatic cloud backup on both Android and iOS.
 
 ## Storage Architecture

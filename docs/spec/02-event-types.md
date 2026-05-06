@@ -59,7 +59,7 @@ Sensitivity delay (1s) → Grace countdown (10s) → Advance to next step
 | vibrateOnRelease | bool | true | Vibrate when countdown begins |
 | soundOnRelease | bool | false | Play warning sound on release |
 
-**Timing Defaults:** waitSeconds=0, durationSeconds=10, gracePeriodSeconds=5, retryCount=0
+**Timing Defaults:** waitSeconds=0, durationSeconds=10, gracePeriodSeconds=0 (issues-v4 #16 — was 5; user-test feedback was that the extra wait after the countdown ends doesn't aid recovery), retryCount=0
 
 **Real Mode:** No service action — purely UI-driven.
 **Simulation:** No toast needed — UI shows hold button.

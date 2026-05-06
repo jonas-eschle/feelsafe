@@ -1,12 +1,21 @@
-> **Status:** DEFERRED — these enhancements are specified here for future
-> implementation. They are NOT part of the current release scope. Each
-> section is self-contained and can be implemented independently.
+> **Status:** DE-1, DE-2, DE-3, DE-4, DE-5 are now LANDED. Each
+> section retains its original specification text below for
+> reference; an "Implemented" callout at the top of each section
+> summarises what shipped and where to look in the code.
 
 # 11 — Deferred Enhancements
 
 ---
 
 ## DE-1: Timer Sliders — Minimum Zero, Extended Range, Logarithmic Scale
+
+> **Implemented (2026-05-06).** `lib/core/widgets/timing_slider.dart`
+> provides snap-stops over the full 0s–1y range, an "0s (immediate)"
+> label, and a tap-to-edit numeric chip. Used in
+> `step_config_form.dart` for wait/duration/grace; the disguised
+> reminder's `intervalSeconds` retains a TextFormField since it's
+> already deprecated in favour of `ChainStep.waitSeconds` (see
+> docstring on `DisguisedReminderConfig.intervalSeconds`).
 
 ### Problem
 
@@ -63,6 +72,13 @@ integer value in seconds. Validation: 0 ≤ value ≤ 31 536 000.
 
 ## DE-2: Per-Event GPS Logging with Global Default
 
+> **Implemented (already in code).** Every step config now exposes a
+> `LogGpsOverride logGps` field (`useDefault` / `alwaysOn` /
+> `alwaysOff`). The orchestration layer resolves it via
+> `LocationResolver` in the order specified below: per-step config →
+> per-type EventDefaults → AppDefaults.gpsLogging. The UI tri-state
+> selector lives inside the MoreSettingsPanel (DE-4).
+
 ### Problem
 
 GPS logging is currently configured globally via `GpsLoggingConfig`
@@ -117,6 +133,12 @@ When set to "Default", show the effective resolved value in muted text
 ---
 
 ## DE-3: Session Tracking — Interval-Based GPS Recording
+
+> **Implemented (Phase 1).** `SessionMode` carries `trackingEnabled`,
+> `trackingIntervalSeconds`, and `trackingBufferSize`. The mode
+> editor exposes a "Tracking" section with an interval slider
+> (snap-stops 10s–1h) and a buffer-size slider. The runtime sampler
+> hands the latest fix to SMS/call placeholder resolution.
 
 ### Problem
 
@@ -197,6 +219,13 @@ added) or a list of timestamped coordinates.
 ---
 
 ## DE-4: "More Settings" Pattern for Step Configuration
+
+> **Implemented (already in code).**
+> `lib/features/modes/widgets/more_settings_panel.dart` provides the
+> collapsible host. Each step's config form mounts its rare-toggle
+> subset (currently the GPS logging tri-state) inside the panel; the
+> collapsed header shows a "(N customized)" badge when any of the
+> wrapped fields differs from its default.
 
 ### Problem
 
