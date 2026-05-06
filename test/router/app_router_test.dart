@@ -37,6 +37,7 @@ const List<String> _allRouteNames = [
   RouteNames.contactForm,
   RouteNames.modes,
   RouteNames.modeEditor,
+  RouteNames.stepPreview,
   RouteNames.distressModes,
   RouteNames.distressModeEditor,
   RouteNames.templates,

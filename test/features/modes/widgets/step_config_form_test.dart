@@ -246,7 +246,12 @@ void main() {
       );
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.byType(SwitchListTile).evaluate().length).equals(1);
+      // Target the randomize switch by its keyed presence — other
+      // step-type forms (fakeCall declineIsSafe, smsContact auto-record)
+      // also render SwitchListTiles inside this same panel.
+      check(
+        find.byKey(const ValueKey('randomize-step-0')).evaluate().length,
+      ).equals(1);
     },
   );
 
@@ -256,7 +261,12 @@ void main() {
       await tester.pumpWidget(_host(_step(type: ChainStepType.fakeCall)));
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.byType(SwitchListTile).evaluate().length).equals(1);
+      // Target the randomize switch by its keyed presence — other
+      // step-type forms (fakeCall declineIsSafe, smsContact auto-record)
+      // also render SwitchListTiles inside this same panel.
+      check(
+        find.byKey(const ValueKey('randomize-step-0')).evaluate().length,
+      ).equals(1);
     },
   );
 
@@ -270,7 +280,8 @@ void main() {
       );
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.byType(SwitchListTile).evaluate()).isEmpty();
+      check(find.byKey(const ValueKey('randomize-step-0')).evaluate())
+          .isEmpty();
     },
   );
 
@@ -280,7 +291,8 @@ void main() {
       await tester.pumpWidget(_host(_step(type: ChainStepType.loudAlarm)));
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.byType(SwitchListTile).evaluate()).isEmpty();
+      check(find.byKey(const ValueKey('randomize-step-0')).evaluate())
+          .isEmpty();
     },
   );
 
@@ -290,7 +302,8 @@ void main() {
       await tester.pumpWidget(_host(_step(type: ChainStepType.callEmergency)));
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.byType(SwitchListTile).evaluate()).isEmpty();
+      check(find.byKey(const ValueKey('randomize-step-0')).evaluate())
+          .isEmpty();
     },
   );
 
@@ -308,10 +321,10 @@ void main() {
       await _expandTiming(tester);
       // Initial value is 0.0 -> switch is off.
       final switchTile = tester.widget<SwitchListTile>(
-        find.byType(SwitchListTile),
+        find.byKey(const ValueKey('randomize-step-0')),
       );
       check(switchTile.value).isFalse();
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byKey(const ValueKey('randomize-step-0')));
       await tester.pumpAndSettle();
       check(latest).isNotNull();
       check(latest!.randomize).equals(0.2);
@@ -341,10 +354,10 @@ void main() {
       await tester.pumpAndSettle();
       await _expandTiming(tester);
       final switchTile = tester.widget<SwitchListTile>(
-        find.byType(SwitchListTile),
+        find.byKey(const ValueKey('randomize-step-0')),
       );
       check(switchTile.value).isTrue();
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.tap(find.byKey(const ValueKey('randomize-step-0')));
       await tester.pumpAndSettle();
       check(latest).isNotNull();
       check(latest!.randomize).equals(0.0);

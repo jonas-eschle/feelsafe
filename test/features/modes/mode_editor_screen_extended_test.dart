@@ -38,10 +38,11 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      // The bottom sheet lists nine step types — tap the first.
-      final tiles = find.byType(ListTile);
-      check(tiles.evaluate().length).isGreaterOrEqual(1);
-      await tester.tap(tiles.first);
+      // Issues-v4 #8: the picker now shows 3 prominent step types up
+      // top + a "More options..." entry. Tap the first prominent entry
+      // by its ChainStepType label rather than the unscoped ListTile
+      // ordering (other ListTiles live in the editor body too).
+      await tester.tap(find.text('Hold button').last);
       await tester.pumpAndSettle();
       // Save to persist the new step.
       await tester.tap(find.byIcon(Icons.check));
