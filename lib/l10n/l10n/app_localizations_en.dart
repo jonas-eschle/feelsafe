@@ -600,6 +600,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepCategoryAll => 'All';
 
   @override
+  String get stepPickerMore => 'More options...';
+
+  @override
   String get stepCategoryAction => 'Action';
 
   @override
@@ -695,10 +698,37 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepFieldWait => 'Wait (seconds)';
 
   @override
-  String get stepFieldRetryCount => 'Retries';
+  String get stepFieldRetryCount => 'Number of retries';
 
   @override
   String get stepFieldRandomize => 'Timing jitter';
+
+  @override
+  String get stepFieldRandomizeToggle => 'Randomize timing (±20%)';
+
+  @override
+  String get stepFieldWaitTooltip =>
+      'How long to wait before this step starts.';
+
+  @override
+  String get stepFieldDurationTooltip =>
+      'How long the step is active before the grace window starts.';
+
+  @override
+  String get stepFieldGraceTooltip =>
+      'Time after the active phase to confirm safety before the next step fires.';
+
+  @override
+  String get stepFieldRetryCountTooltip =>
+      'How many times to repeat this step before escalating.';
+
+  @override
+  String get stepFieldReminderIntervalTooltip =>
+      'How often the disguised reminder fires while waiting for a check-in.';
+
+  @override
+  String get stepFieldReminderGraceTooltip =>
+      'How long the user has to confirm safety after the reminder appears.';
 
   @override
   String get stepPreview => 'Preview in simulation';
@@ -755,6 +785,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get stepConfigHardwarePressCount => 'Press count';
+
+  @override
+  String get stepConfigHardwarePressWindow => 'Press window (ms)';
+
+  @override
+  String get stepConfigHardwareLongDuration => 'Long-press duration (s)';
 
   @override
   String get stepConfigHardwareButton => 'Button';
@@ -1428,4 +1464,78 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Use biometrics';
+
+  @override
+  String get audioRunningLatePhrase =>
+      'Hi, I am running late. I will call you back soon.';
+
+  @override
+  String smsDefaultTemplate(Object name, Object location, Object time) {
+    return '$name may need help. Location: $location. Time: $time.';
+  }
+
+  @override
+  String smsDefaultPreCallTemplate(Object name) {
+    return '$name is trying to reach you. Please expect a call.';
+  }
+
+  @override
+  String simLoudAlarm(Object tail) {
+    return '[SIM] Loud alarm + $tail';
+  }
+
+  @override
+  String get simLoudAlarmTailFlash => 'flash';
+
+  @override
+  String get simLoudAlarmTailVibrate => 'vibrate';
+
+  @override
+  String simSmsContact(Object channel, int count) {
+    return '[SIM] Would send $channel to $count contacts';
+  }
+
+  @override
+  String simFakeCallRing(Object caller) {
+    return '[SIM] Incoming call from $caller';
+  }
+
+  @override
+  String simCountdownWarning(int seconds) {
+    return '[SIM] ${seconds}s countdown warning';
+  }
+
+  @override
+  String simPhoneCall(Object name) {
+    return '[SIM] Would call $name';
+  }
+
+  @override
+  String get simNoContactToCall => '[SIM] No contact to call';
+
+  @override
+  String simCallEmergency(Object number) {
+    return '[SIM] Would dial $number';
+  }
+
+  @override
+  String get simHardwareButton => '[SIM] Hardware trigger armed';
+
+  @override
+  String get simHoldButton => '[SIM] Waiting for hold button';
+
+  @override
+  String simDisguisedReminder(Object title) {
+    return '[SIM] Would show \"$title\"';
+  }
+
+  @override
+  String get simDisguisedReminderEmpty =>
+      '[SIM] No reminder template available';
+
+  @override
+  String get simGpsArrivalTrigger => '[SIM] GPS arrival trigger fired';
+
+  @override
+  String get simLowBatteryAlert => '[SIM] Low-battery alert fired';
 }

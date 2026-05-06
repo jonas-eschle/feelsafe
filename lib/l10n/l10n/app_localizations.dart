@@ -1217,6 +1217,12 @@ abstract class AppLocalizations {
   /// **'All'**
   String get stepCategoryAll;
 
+  /// Step-type picker: shows the rest of the step types when the top three (hold button, disguised reminder, hardware trigger) are not enough (Issues-v4 #8).
+  ///
+  /// In en, this message translates to:
+  /// **'More options...'**
+  String get stepPickerMore;
+
   /// Step-type picker filter: outgoing-action steps (SMS, calls, alarm).
   ///
   /// In en, this message translates to:
@@ -1397,10 +1403,10 @@ abstract class AppLocalizations {
   /// **'Wait (seconds)'**
   String get stepFieldWait;
 
-  /// Retry-count field.
+  /// Retry-count field. Renamed per Issues-v4 #4 from 'Retries' to clarify the count semantics.
   ///
   /// In en, this message translates to:
-  /// **'Retries'**
+  /// **'Number of retries'**
   String get stepFieldRetryCount;
 
   /// Randomize field.
@@ -1408,6 +1414,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Timing jitter'**
   String get stepFieldRandomize;
+
+  /// Per-step randomize switch label (Issues-v4 #11).
+  ///
+  /// In en, this message translates to:
+  /// **'Randomize timing (±20%)'**
+  String get stepFieldRandomizeToggle;
+
+  /// Tooltip for the wait-seconds field.
+  ///
+  /// In en, this message translates to:
+  /// **'How long to wait before this step starts.'**
+  String get stepFieldWaitTooltip;
+
+  /// Tooltip for the duration-seconds field.
+  ///
+  /// In en, this message translates to:
+  /// **'How long the step is active before the grace window starts.'**
+  String get stepFieldDurationTooltip;
+
+  /// Tooltip for the grace-period field.
+  ///
+  /// In en, this message translates to:
+  /// **'Time after the active phase to confirm safety before the next step fires.'**
+  String get stepFieldGraceTooltip;
+
+  /// Tooltip for the retry-count field.
+  ///
+  /// In en, this message translates to:
+  /// **'How many times to repeat this step before escalating.'**
+  String get stepFieldRetryCountTooltip;
+
+  /// Tooltip for the reminder repeat-interval field (Issues-v4 #4).
+  ///
+  /// In en, this message translates to:
+  /// **'How often the disguised reminder fires while waiting for a check-in.'**
+  String get stepFieldReminderIntervalTooltip;
+
+  /// Tooltip for the reminder grace-period field (Issues-v4 #4).
+  ///
+  /// In en, this message translates to:
+  /// **'How long the user has to confirm safety after the reminder appears.'**
+  String get stepFieldReminderGraceTooltip;
 
   /// Label for the preview button on step config forms.
   ///
@@ -1516,6 +1564,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Press count'**
   String get stepConfigHardwarePressCount;
+
+  /// Maximum gap between presses for the repeat-press pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Press window (ms)'**
+  String get stepConfigHardwarePressWindow;
+
+  /// Threshold seconds for the long-press pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Long-press duration (s)'**
+  String get stepConfigHardwareLongDuration;
 
   /// Hardware button field.
   ///
@@ -2818,6 +2878,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use biometrics'**
   String get launchGateUseBiometric;
+
+  /// TTS fallback phrase spoken when the bundled fake-call voice asset is missing. Read aloud, so plain spoken language.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, I am running late. I will call you back soon.'**
+  String get audioRunningLatePhrase;
+
+  /// Default SMS body template used by smsContact steps when no per-step template is set. Placeholders: {name}, {location}, {time}.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} may need help. Location: {location}. Time: {time}.'**
+  String smsDefaultTemplate(Object name, Object location, Object time);
+
+  /// Default pre-call SMS body sent ahead of a phone-call-contact step. Placeholders: {name}.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is trying to reach you. Please expect a call.'**
+  String smsDefaultPreCallTemplate(Object name);
+
+  /// Simulation summary for a loud-alarm step. {tail} is either the localized 'flash' or 'vibrate' word.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Loud alarm + {tail}'**
+  String simLoudAlarm(Object tail);
+
+  /// Word substituted into simLoudAlarm when the step's flashScreen=true.
+  ///
+  /// In en, this message translates to:
+  /// **'flash'**
+  String get simLoudAlarmTailFlash;
+
+  /// Word substituted into simLoudAlarm when the step's flashScreen=false.
+  ///
+  /// In en, this message translates to:
+  /// **'vibrate'**
+  String get simLoudAlarmTailVibrate;
+
+  /// Simulation summary for an smsContact step. {channel} is sms/whatsapp/telegram, {count} is the number of contacts that match the step's channel.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would send {channel} to {count} contacts'**
+  String simSmsContact(Object channel, int count);
+
+  /// Simulation summary for a fakeCall step. {caller} is the configured caller name (defaults to 'Angela').
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Incoming call from {caller}'**
+  String simFakeCallRing(Object caller);
+
+  /// Simulation summary for a countdownWarning step. {seconds} is the step duration.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] {seconds}s countdown warning'**
+  String simCountdownWarning(int seconds);
+
+  /// Simulation summary for a phoneCallContact step when a contact resolves. {name} is the target contact's name.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would call {name}'**
+  String simPhoneCall(Object name);
+
+  /// Simulation summary for a phoneCallContact step that has no resolvable contact.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] No contact to call'**
+  String get simNoContactToCall;
+
+  /// Simulation summary for a callEmergency step. {number} is the resolved emergency number.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would dial {number}'**
+  String simCallEmergency(Object number);
+
+  /// Simulation summary for a hardwareButton step (no-op strategy).
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Hardware trigger armed'**
+  String get simHardwareButton;
+
+  /// Simulation summary for a holdButton step (no-op strategy).
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Waiting for hold button'**
+  String get simHoldButton;
+
+  /// Simulation summary for a disguisedReminder step that resolves a template. {title} is the template title.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would show \"{title}\"'**
+  String simDisguisedReminder(Object title);
+
+  /// Simulation summary for a disguisedReminder step when no templates are available.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] No reminder template available'**
+  String get simDisguisedReminderEmpty;
+
+  /// Simulation summary toast emitted when the user invokes simulateGpsArrival().
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] GPS arrival trigger fired'**
+  String get simGpsArrivalTrigger;
+
+  /// Simulation summary toast emitted when the user invokes simulateLowBattery().
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Low-battery alert fired'**
+  String get simLowBatteryAlert;
 }
 
 class _AppLocalizationsDelegate

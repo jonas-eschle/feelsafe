@@ -1,9 +1,12 @@
 /// `LoudAlarmStrategy` — strategy for `ChainStepType.loudAlarm`.
 ///
 /// Plays the loud alarm tone (optionally forcing max system volume)
-/// and the high-intensity alarm vibration pattern. Screen-flashing
-/// is UI-driven and rendered in `SessionScreen`; this strategy does
-/// not reach the display layer from pure-Dart code.
+/// and the high-intensity alarm vibration pattern. When configured
+/// (`flashLight = true`) the strategy also strobes the camera LED
+/// via the injected [FlashServiceProtocol] (audit Q2 extraction).
+/// Screen-flashing remains UI-driven and is rendered in
+/// `SessionScreen` — this strategy does not reach the display layer
+/// from pure-Dart code.
 library;
 
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -25,6 +28,17 @@ final class LoudAlarmStrategy extends EventStrategy {
       isSimulation: isSim,
     );
     await services.vibration.alarmPattern(isSimulation: isSim);
+    // Camera-LED strobe — Q2 extraction. The flash service is
+    // optional on EventServices so older test wirings still work;
+    // when missing we skip the leg silently. The simulation flash
+    // service is a no-op so an isSimulation guard here would be
+    // redundant.
+    final flash = services.flash;
+    if (flash != null && config.flashLight) {
+      await flash.startStrobe(
+        interval: Duration(milliseconds: config.flashSpeedMs),
+      );
+    }
     // Screen flashing is deliberately a UI concern — no service call
     // here. The config's `flashScreen` flag is surfaced in the sim
     // description so users can still observe the decision.

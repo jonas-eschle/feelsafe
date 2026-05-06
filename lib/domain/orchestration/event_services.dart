@@ -11,6 +11,7 @@ import 'package:guardianangela/domain/engine/tracking_buffer.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
+import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
@@ -43,6 +44,9 @@ final class EventServices {
   /// When non-null AND non-empty, strategies that resolve the
   /// `{location}` placeholder prefer the buffer's `latest` point
   /// over a fresh live-GPS fix.
+  /// [flash] — optional camera-LED strobe service. When null,
+  /// `LoudAlarmStrategy` skips the flash leg of its execution and
+  /// proceeds with audio + vibration only. Audit Q2.
   const EventServices({
     required this.audio,
     required this.messaging,
@@ -55,6 +59,7 @@ final class EventServices {
     this.location,
     this.registerSmsWorkId,
     this.trackingBuffer,
+    this.flash,
   });
 
   /// Audio playback service.
@@ -95,4 +100,10 @@ final class EventServices {
   /// over a live GPS fix when resolving the `{location}` placeholder.
   /// Null when tracking is disabled for the active mode.
   final TrackingBuffer? trackingBuffer;
+
+  /// Optional camera-LED strobe service. Used by `LoudAlarmStrategy`
+  /// when `LoudAlarmConfig.flashLight = true`. Null when the loud-
+  /// alarm flash leg is disabled for the platform or the test wiring
+  /// did not provide one.
+  final FlashServiceProtocol? flash;
 }
