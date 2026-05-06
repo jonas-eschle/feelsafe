@@ -3,6 +3,9 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'package:go_router/go_router.dart';
+
+import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_form.dart';
@@ -12,12 +15,18 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// One-tile view of a [ChainStep] inside a reorderable list.
 class ChainStepTile extends StatelessWidget {
   /// Creates the tile.
+  ///
+  /// [modeId] — when supplied, the tile shows the issues-v4 #10
+  /// preview button which pushes [RouteNames.stepPreview] with the
+  /// step + mode ids encoded as query parameters. Hidden when null
+  /// to keep existing fixtures working without an outer mode.
   const ChainStepTile({
     super.key,
     required this.step,
     required this.onChanged,
     required this.onDelete,
     this.onDuplicate,
+    this.modeId,
   });
 
   /// The step rendered.
@@ -34,9 +43,15 @@ class ChainStepTile extends StatelessWidget {
   /// supply a duplicator working.
   final VoidCallback? onDuplicate;
 
+  /// Owning mode id; used for the issues-v4 #10 preview button.
+  /// When null, the preview icon is hidden — useful for unit tests
+  /// that pump a tile in isolation without a backing mode.
+  final String? modeId;
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final mId = modeId;
     return Card(
       child: ExpansionTile(
         title: Text(stepTypeLabel(context, step.type)),
@@ -48,6 +63,12 @@ class ChainStepTile extends StatelessWidget {
         trailing: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (mId != null)
+              IconButton(
+                icon: const Icon(Icons.play_arrow_outlined),
+                tooltip: l.stepPreview,
+                onPressed: () => _openPreview(context, mId),
+              ),
             if (onDuplicate != null)
               IconButton(
                 icon: const Icon(Icons.content_copy_outlined),
@@ -97,5 +118,16 @@ class ChainStepTile extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Pushes the per-step preview route (issues-v4 #10) with the
+  /// owning mode + step encoded as query parameters so the screen
+  /// can hydrate from the modes repository.
+  void _openPreview(BuildContext context, String modeId) {
+    final uri = Uri(
+      path: RouteNames.stepPreview,
+      queryParameters: {'stepId': step.id, 'modeId': modeId},
+    );
+    GoRouter.of(context).push(uri.toString());
   }
 }

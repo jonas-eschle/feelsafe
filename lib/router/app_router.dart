@@ -26,6 +26,7 @@ import 'package:guardianangela/features/home/home_screen.dart';
 import 'package:guardianangela/features/modes/mode_editor_screen.dart';
 import 'package:guardianangela/features/modes/modes_screen.dart';
 import 'package:guardianangela/features/onboarding/onboarding_screen.dart';
+import 'package:guardianangela/features/preview/step_preview_screen.dart';
 import 'package:guardianangela/features/profile/profile_screen.dart';
 import 'package:guardianangela/features/session/session_completed_screen.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
@@ -115,6 +116,11 @@ final GoRouter appRouter = GoRouter(
       name: 'modeEditor',
       path: RouteNames.modeEditor,
       builder: (context, state) => const ModeEditorScreen(),
+    ),
+    GoRoute(
+      name: 'stepPreview',
+      path: RouteNames.stepPreview,
+      builder: (context, state) => const StepPreviewScreen(),
     ),
     GoRoute(
       name: 'distressModes',

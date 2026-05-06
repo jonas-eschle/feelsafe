@@ -43,6 +43,14 @@ abstract class RouteNames {
   /// Session mode create / edit form.
   static const String modeEditor = '/modes/edit';
 
+  /// Per-step preview screen (issues-v4 #10/#13/#14).
+  ///
+  /// Hydrates from `?stepId=...&modeId=...` query parameters and
+  /// dispatches to a step-type-specific preview body that shows the
+  /// real UI (e.g. hold-button, fake-call) in simulation mode so the
+  /// user can try a single step without running the full session.
+  static const String stepPreview = '/modes/step-preview';
+
   // ------------------------------- distress modes
   /// Global distress modes list.
   static const String distressModes = '/distress-modes';

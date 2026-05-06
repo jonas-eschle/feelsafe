@@ -427,6 +427,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                     ChainStepTile(
                       key: ValueKey(_chain[i].id),
                       step: _chain[i],
+                      modeId: _mode?.id,
                       onChanged: (s) => setState(() {
                         _chain = [..._chain]..[i] = s;
                       }),

@@ -69,9 +69,27 @@ final fakeCallTtsFactoryProvider = Provider<FakeCallTtsFactory>(
 );
 
 /// Simulated incoming-call overlay.
+///
+/// Two operating modes:
+/// * **Live (default)** — wired to the active session via
+///   [fakeCallControllerProvider]; answer/decline/distress dispatch
+///   to the real session controller and the ringtone uses the audio
+///   service appropriate for the session's `isSimulation` flag.
+/// * **Preview** (`previewConfig != null`) — used by issue #13/#14
+///   step-preview from the mode editor and by simulation runs that
+///   want the real call UI without a real phone call. The screen
+///   skips the controller, plays the ringtone via the simulation
+///   audio service, and just pops on answer/decline/distress.
 class FakeCallScreen extends ConsumerStatefulWidget {
   /// Creates the fake-call screen.
-  const FakeCallScreen({super.key});
+  ///
+  /// [previewConfig] — when non-null, switches the screen to preview
+  /// mode (issues-v4 #13/#14). The config is used directly instead
+  /// of being resolved from the active session.
+  const FakeCallScreen({super.key, this.previewConfig});
+
+  /// Optional preview-mode config. Non-null forces preview mode.
+  final FakeCallConfig? previewConfig;
 
   @override
   ConsumerState<FakeCallScreen> createState() => _FakeCallScreenState();
@@ -81,6 +99,12 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
     with SingleTickerProviderStateMixin {
   bool _answered = false;
   bool _distressFired = false;
+
+  /// True when the screen is hosted from the mode-editor preview
+  /// (issues-v4 #13/#14). In preview mode the controller is not
+  /// invoked and the screen plays the ringtone via the simulation
+  /// audio service so it doesn't blast at full volume.
+  bool get _isPreview => widget.previewConfig != null;
 
   /// Resolved hold duration for the current step. Hydrated from
   /// `cfg.declineWithDistressHoldSeconds` once the FakeCallConfig is
@@ -116,8 +140,13 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
   }
 
   Future<void> _hydrateFromConfig() async {
-    final controller = ref.read(fakeCallControllerProvider.notifier);
-    final FakeCallConfig cfg = await controller.currentFakeCallConfig();
+    final FakeCallConfig cfg;
+    if (_isPreview) {
+      cfg = widget.previewConfig!;
+    } else {
+      final controller = ref.read(fakeCallControllerProvider.notifier);
+      cfg = await controller.currentFakeCallConfig();
+    }
     if (!mounted) return;
     final seconds = cfg.declineWithDistressHoldSeconds;
     final next = Duration(milliseconds: (seconds * 1000).round());
@@ -131,12 +160,22 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
     await _startRingtone();
   }
 
+  /// True when the active session (or preview) is in simulation
+  /// mode. Preview mode is always simulation per issues-v4 #14.
+  bool get _isSimulation =>
+      _isPreview ||
+      (ref.read(sessionControllerProvider).value?.isSimulation ?? false);
+
   /// Starts the ringtone via the appropriate (real / simulation)
   /// audio service. Failures are swallowed — UI must remain usable
   /// even when audio backends are missing in tests.
+  ///
+  /// Issue #14 — in simulation and preview the ringtone reuses
+  /// `assets/audio/ringtone.wav` via the simulation audio service so
+  /// it doesn't blast at full volume; in real mode the live audio
+  /// service plays the asset normally.
   Future<void> _startRingtone() async {
-    final isSim = ref.read(sessionControllerProvider).value?.isSimulation
-        ?? false;
+    final isSim = _isSimulation;
     final audio = isSim
         ? ref.read(simulationAudioProvider)
         : ref.read(audioServiceProvider);
@@ -153,8 +192,7 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
 
   /// Stops the ringtone if it is still playing.
   Future<void> _stopRingtone() async {
-    final isSim = ref.read(sessionControllerProvider).value?.isSimulation
-        ?? false;
+    final isSim = _isSimulation;
     final audio = isSim
         ? ref.read(simulationAudioProvider)
         : ref.read(audioServiceProvider);
@@ -174,8 +212,7 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
   /// platform layer of the audio service (AudioContext on Android,
   /// AVAudioSession on iOS).
   Future<void> _playAnswerAudio() async {
-    final isSim = ref.read(sessionControllerProvider).value?.isSimulation
-        ?? false;
+    final isSim = _isSimulation;
     final audio = isSim
         ? ref.read(simulationAudioProvider)
         : ref.read(audioServiceProvider);
@@ -255,37 +292,45 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
     if (_distressFired) return;
     _distressFired = true;
     await _stopRingtone();
-    final controller = ref.read(fakeCallControllerProvider.notifier);
-    await controller.declineWithDistress();
+    if (!_isPreview) {
+      final controller = ref.read(fakeCallControllerProvider.notifier);
+      await controller.declineWithDistress();
+    }
     if (mounted) context.pop();
   }
 
   Future<void> _onDeclineTap() async {
     if (_distressFired) return;
     await _stopRingtone();
-    final controller = ref.read(fakeCallControllerProvider.notifier);
-    await controller.decline();
+    if (!_isPreview) {
+      final controller = ref.read(fakeCallControllerProvider.notifier);
+      await controller.decline();
+    }
     if (mounted) context.pop();
   }
 
   Future<void> _onAnswerTap() async {
-    final controller = ref.read(fakeCallControllerProvider.notifier);
     await _stopRingtone();
-    await controller.answer();
+    if (!_isPreview) {
+      final controller = ref.read(fakeCallControllerProvider.notifier);
+      await controller.answer();
+    }
     if (!mounted) return;
     setState(() => _answered = true);
     await _playAnswerAudio();
   }
 
   Future<void> _onHangUpTap() async {
-    final controller = ref.read(fakeCallControllerProvider.notifier);
     try {
       await ref.read(audioServiceProvider).stopVoiceRecording();
     } on Object {
       // Best-effort.
     }
     await _tts?.stop();
-    await controller.hangUp();
+    if (!_isPreview) {
+      final controller = ref.read(fakeCallControllerProvider.notifier);
+      await controller.hangUp();
+    }
     if (mounted && context.mounted) context.pop();
   }
 
