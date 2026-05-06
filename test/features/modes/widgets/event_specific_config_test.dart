@@ -163,20 +163,25 @@ void main() {
         .equals(3.5);
   });
 
-  testWidgets('disguisedReminder: edit intervalSeconds TextField',
+  // bugs.json Note 3 — the disguisedReminder form no longer renders
+  // the legacy intervalSeconds text input. The field stays on the
+  // model for round-trip but the engine drives reminder cadence
+  // from ChainStep.waitSeconds. The form body is empty, so this
+  // smoke test verifies it renders without crashing.
+  testWidgets('disguisedReminder form renders (no interval input)',
       (tester) async {
-    ChainStep? latest;
     final step = _step(
       ChainStepType.disguisedReminder,
       config: const DisguisedReminderConfig(intervalSeconds: 45),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), '120');
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as DisguisedReminderConfig).intervalSeconds)
-        .equals(120);
+    // The legacy interval input is gone — the form should NOT render
+    // any TextFormField. The "Preview in simulation" button is the
+    // only interactive surface left.
+    check(find.byType(EventSpecificConfig).evaluate().length).equals(1);
+    // Sanity: no intervalSeconds-specific field is present.
+    check(find.byType(TextFormField).evaluate()).isEmpty();
   });
 
   testWidgets('countdownWarning: toggle vibrate switch',
@@ -354,7 +359,7 @@ void main() {
         .isTrue();
   });
 
-  testWidgets('hardwareButton: edit press count TextField',
+  testWidgets('hardwareButton: edit press count TextField (#9)',
       (tester) async {
     ChainStep? latest;
     final step = _step(
@@ -363,11 +368,86 @@ void main() {
     );
     await tester.pumpWidget(hostWith(step, (s) => latest = s));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), '7');
+    // Issues-v4 #9 — the repeat-press pattern now also renders a
+    // press-window TextFormField, so enter into the FIRST field
+    // (press count) explicitly.
+    await tester.enterText(find.byType(TextFormField).first, '7');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check((latest!.config! as HardwareButtonConfig).pressCount).equals(7);
   });
+
+  testWidgets('hardwareButton: edit press window (#9)', (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.hardwareButton,
+      config: const HardwareButtonConfig(
+        pattern: HardwarePattern.repeatPress,
+        pressWindowMs: 500,
+      ),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    // Two TextFormFields in repeat-press mode: count + window.
+    final fields = find.byType(TextFormField);
+    check(fields.evaluate().length).equals(2);
+    await tester.enterText(fields.last, '1500');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HardwareButtonConfig).pressWindowMs)
+        .equals(1500);
+  });
+
+  testWidgets('hardwareButton: long-press shows long-duration field (#9)',
+      (tester) async {
+    ChainStep? latest;
+    final step = _step(
+      ChainStepType.hardwareButton,
+      config: const HardwareButtonConfig(
+        pattern: HardwarePattern.longPress,
+        longPressDurationSeconds: 2.5,
+      ),
+    );
+    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpAndSettle();
+    // Long-press: only ONE TextFormField (long duration).
+    final fields = find.byType(TextFormField);
+    check(fields.evaluate().length).equals(1);
+    await tester.enterText(fields.first, '4.0');
+    await tester.pumpAndSettle();
+    check(latest).isNotNull();
+    check((latest!.config! as HardwareButtonConfig).longPressDurationSeconds)
+        .equals(4.0);
+  });
+
+  testWidgets(
+    'hardwareButton: switching to long-press hides count + window (#9)',
+    (tester) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.hardwareButton,
+        config: const HardwareButtonConfig(
+          pattern: HardwarePattern.repeatPress,
+        ),
+      );
+      await tester.pumpWidget(hostWith(step, (s) => latest = s));
+      await tester.pumpAndSettle();
+      // Two fields in repeat-press mode.
+      check(find.byType(TextFormField).evaluate().length).equals(2);
+      // Tap the pattern dropdown and pick long-press.
+      await tester.tap(find.byType(DropdownButtonFormField<HardwarePattern>));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byType(DropdownMenuItem<HardwarePattern>).last,
+      );
+      await tester.pumpAndSettle();
+      check(latest).isNotNull();
+      // Re-pump with the updated step so the form rebuilds.
+      await tester.pumpWidget(hostWith(latest!, (s) => latest = s));
+      await tester.pumpAndSettle();
+      check(find.byType(TextFormField).evaluate().length).equals(1);
+    },
+  );
 
   testWidgets('smsContact: dropdown selects specificIds', (tester) async {
     ChainStep? latest;
