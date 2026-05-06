@@ -27,6 +27,7 @@ import 'package:guardianangela/services/implementations/messaging_service.dart';
 import 'package:guardianangela/services/implementations/notification_service.dart';
 import 'package:guardianangela/services/implementations/phone_service.dart';
 import 'package:guardianangela/services/implementations/recording_service.dart';
+import 'package:guardianangela/services/implementations/screen_flash_service.dart';
 import 'package:guardianangela/services/implementations/stealth_icon_service.dart';
 import 'package:guardianangela/services/implementations/system_ui_service.dart';
 import 'package:guardianangela/services/implementations/vibration_service.dart';
@@ -45,6 +46,7 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
+import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -62,6 +64,7 @@ import 'package:guardianangela/services/simulation/simulation_messaging_service.
 import 'package:guardianangela/services/simulation/simulation_notification_service.dart';
 import 'package:guardianangela/services/simulation/simulation_phone_service.dart';
 import 'package:guardianangela/services/simulation/simulation_recording_service.dart';
+import 'package:guardianangela/services/simulation/simulation_screen_flash_service.dart';
 import 'package:guardianangela/services/simulation/simulation_stealth_icon_service.dart';
 import 'package:guardianangela/services/simulation/simulation_system_ui_service.dart';
 import 'package:guardianangela/services/simulation/simulation_vibration_service.dart';
@@ -80,6 +83,7 @@ export 'package:guardianangela/services/implementations/messaging_service.dart';
 export 'package:guardianangela/services/implementations/notification_service.dart';
 export 'package:guardianangela/services/implementations/phone_service.dart';
 export 'package:guardianangela/services/implementations/recording_service.dart';
+export 'package:guardianangela/services/implementations/screen_flash_service.dart';
 export 'package:guardianangela/services/implementations/stealth_icon_service.dart';
 export 'package:guardianangela/services/implementations/system_ui_service.dart';
 export 'package:guardianangela/services/implementations/vibration_service.dart';
@@ -97,6 +101,7 @@ export 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 export 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 export 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 export 'package:guardianangela/services/protocols/recording_service_protocol.dart';
+export 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
 export 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 export 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 export 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -176,6 +181,19 @@ final flashServiceProvider = Provider<FlashServiceProtocol>((ref) {
 /// Simulation flash service.
 final simulationFlashProvider = Provider<FlashServiceProtocol>(
   (_) => SimulationFlashService(),
+);
+
+/// Real screen-flash service. Owns a broadcast stream of on/off
+/// ticks the `ScreenFlashOverlay` widget subscribes to. Audit Q2.
+final screenFlashServiceProvider = Provider<ScreenFlashServiceProtocol>((ref) {
+  final service = ScreenFlashService();
+  ref.onDispose(service.dispose);
+  return service;
+});
+
+/// Simulation screen-flash service.
+final simulationScreenFlashProvider = Provider<ScreenFlashServiceProtocol>(
+  (_) => SimulationScreenFlashService(),
 );
 
 /// Real location service.
