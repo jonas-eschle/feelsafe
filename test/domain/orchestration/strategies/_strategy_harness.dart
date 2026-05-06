@@ -21,6 +21,11 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 /// off the respective `fake*.calls` lists.
 final class StrategyHarness {
   /// Creates the harness with optional overrides.
+  ///
+  /// [defaultSmsTemplate] / [defaultPreSmsTemplate] /
+  /// [smsTemplateForLanguage] / [preSmsTemplateForLanguage] thread
+  /// the new i18n facade fields onto [SessionContext] so tests can
+  /// exercise per-contact SMS-language template selection.
   StrategyHarness({
     SessionMode? mode,
     List<EmergencyContact>? contacts,
@@ -28,6 +33,10 @@ final class StrategyHarness {
     bool isSimulation = false,
     List<ReminderTemplate>? reminderTemplates,
     EventDefaults? eventDefaults,
+    String? defaultSmsTemplate,
+    String? defaultPreSmsTemplate,
+    SmsTemplateResolver? smsTemplateForLanguage,
+    SmsTemplateResolver? preSmsTemplateForLanguage,
   }) : context = SessionContext(
          mode: mode,
          contacts: contacts ?? const [],
@@ -35,6 +44,12 @@ final class StrategyHarness {
          isSimulation: isSimulation,
          reminderTemplates: reminderTemplates ?? const [],
          eventDefaults: eventDefaults,
+         defaultSmsTemplate:
+             defaultSmsTemplate ?? kFallbackSmsTemplate,
+         defaultPreSmsTemplate:
+             defaultPreSmsTemplate ?? kFallbackPreSmsTemplate,
+         smsTemplateForLanguage: smsTemplateForLanguage,
+         preSmsTemplateForLanguage: preSmsTemplateForLanguage,
        );
 
   /// Fake audio service.

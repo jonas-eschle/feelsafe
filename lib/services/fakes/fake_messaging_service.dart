@@ -17,6 +17,12 @@ final class FakeMessagingService implements MessagingServiceProtocol {
   /// Invocation log: one entry per method call.
   final List<String> calls = [];
 
+  /// Captured `sendMessage` invocations with full body. Useful when
+  /// asserting that a per-contact template (selected via
+  /// `SessionContext.smsTemplateForLanguage`) was the one rendered.
+  final List<({EmergencyContact contact, String message, MessageChannel channel})>
+      sentMessages = [];
+
   /// Counter used to assign opaque work ids.
   int _nextWorkId = 0;
 
@@ -39,6 +45,9 @@ final class FakeMessagingService implements MessagingServiceProtocol {
     bool isSimulation = false,
   }) async {
     calls.add('sendMessage:${contact.phoneNumber}/${channel.name}');
+    sentMessages.add(
+      (contact: contact, message: message, channel: channel),
+    );
     return MessageWorkId('fake-${_nextWorkId++}');
   }
 

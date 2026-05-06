@@ -174,12 +174,14 @@ EmergencyContact makeContact({
   String phoneNumber = '+15551234567',
   int sortOrder = 0,
   List<MessageChannel>? channels,
+  String? languageCode,
 }) => EmergencyContact(
   id: id ?? 'contact-$name',
   name: name,
   phoneNumber: phoneNumber,
   sortOrder: sortOrder,
   channels: channels ?? const [MessageChannel.sms],
+  languageCode: languageCode,
 );
 
 /// Builds a distress-flagged [SessionMode] for tests.

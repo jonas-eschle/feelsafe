@@ -254,6 +254,49 @@ void main() {
       verifyNever(() => voice.setAsset(any()));
       verifyNever(voice.play);
     });
+
+    // Bugs.json Warn 3 — caller supplies the TTS phrase.
+    test(
+      'TTS fallback speaks the supplied ttsFallbackPhrase verbatim',
+      () async {
+        final tts = makeTts();
+        final s = AudioService(
+          playerFactory: _PlayerQueue(
+            [makePlayer(), makePlayer(), makePlayer()],
+          ).next,
+          ttsFactory: () => tts,
+        );
+        const localized = 'Hallo, ich verspäte mich.';
+        await s.playVoiceRecording(
+          assetPath: 'assets/voice/missing.wav',
+          ttsFallbackPhrase: localized,
+        );
+        verify(() => tts.speak(localized)).called(1);
+      },
+    );
+
+    test(
+      'TTS fallback uses the universal English fallback when '
+      'ttsFallbackPhrase is null',
+      () async {
+        final tts = makeTts();
+        final s = AudioService(
+          playerFactory: _PlayerQueue(
+            [makePlayer(), makePlayer(), makePlayer()],
+          ).next,
+          ttsFactory: () => tts,
+        );
+        await s.playVoiceRecording(
+          assetPath: 'assets/voice/missing.wav',
+          // ttsFallbackPhrase intentionally omitted
+        );
+        verify(
+          () => tts.speak(
+            'Hi, I am running late. I will call you back soon.',
+          ),
+        ).called(1);
+      },
+    );
   });
 
   group('AudioService.stopVoiceRecording', () {
