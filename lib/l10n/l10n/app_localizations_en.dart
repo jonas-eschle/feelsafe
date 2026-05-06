@@ -739,6 +739,44 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get stepPreviewTitle => 'Step preview';
+
+  @override
+  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+
+  @override
+  String get stepPreviewModeNotFound => 'Mode not found.';
+
+  @override
+  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+
+  @override
+  String stepPreviewError(Object error) {
+    return 'Preview failed: $error';
+  }
+
+  @override
+  String get stepPreviewReplay => 'Replay';
+
+  @override
+  String get stepPreviewHoldButtonHint =>
+      'Press and hold the button to feel the live response.';
+
+  @override
+  String get stepPreviewHoldButtonLabel => 'Hold';
+
+  @override
+  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+
+  @override
+  String get stepPreviewHoldButtonReleased =>
+      'Released. The session would now enter the grace window.';
+
+  @override
+  String get stepPreviewFakeCallHint =>
+      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+
+  @override
   String get stepConfigFakeCallCaller => 'Caller name';
 
   @override

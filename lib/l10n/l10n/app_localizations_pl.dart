@@ -603,6 +603,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get stepCategoryAll => 'Wszystkie';
 
   @override
+  String get stepPickerMore => 'Więcej opcji...';
+
+  @override
   String get stepCategoryAction => 'Działanie';
 
   @override
@@ -698,10 +701,37 @@ class AppLocalizationsPl extends AppLocalizations {
   String get stepFieldWait => 'Oczekiwanie (sekundy)';
 
   @override
-  String get stepFieldRetryCount => 'Powtórzenia';
+  String get stepFieldRetryCount => 'Liczba powtórzeń';
 
   @override
   String get stepFieldRandomize => 'Losowa zmienność czasu';
+
+  @override
+  String get stepFieldRandomizeToggle => 'Losowy czas (±20%)';
+
+  @override
+  String get stepFieldWaitTooltip =>
+      'Jak długo czekać przed rozpoczęciem tego kroku.';
+
+  @override
+  String get stepFieldDurationTooltip =>
+      'Jak długo krok jest aktywny przed rozpoczęciem okresu karencji.';
+
+  @override
+  String get stepFieldGraceTooltip =>
+      'Czas po fazie aktywnej na potwierdzenie bezpieczeństwa przed kolejnym krokiem.';
+
+  @override
+  String get stepFieldRetryCountTooltip =>
+      'Ile razy powtórzyć ten krok przed eskalacją.';
+
+  @override
+  String get stepFieldReminderIntervalTooltip =>
+      'Jak często wyzwala się ukryte przypomnienie podczas oczekiwania na potwierdzenie.';
+
+  @override
+  String get stepFieldReminderGraceTooltip =>
+      'Ile czasu ma użytkownik na potwierdzenie bezpieczeństwa po pojawieniu się przypomnienia.';
 
   @override
   String get stepPreview => 'Podgląd w symulacji';
@@ -710,6 +740,44 @@ class AppLocalizationsPl extends AppLocalizations {
   String stepPreviewFired(Object description) {
     return 'Podgląd uruchomiony: $description';
   }
+
+  @override
+  String get stepPreviewTitle => 'Step preview';
+
+  @override
+  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+
+  @override
+  String get stepPreviewModeNotFound => 'Mode not found.';
+
+  @override
+  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+
+  @override
+  String stepPreviewError(Object error) {
+    return 'Preview failed: $error';
+  }
+
+  @override
+  String get stepPreviewReplay => 'Replay';
+
+  @override
+  String get stepPreviewHoldButtonHint =>
+      'Press and hold the button to feel the live response.';
+
+  @override
+  String get stepPreviewHoldButtonLabel => 'Hold';
+
+  @override
+  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+
+  @override
+  String get stepPreviewHoldButtonReleased =>
+      'Released. The session would now enter the grace window.';
+
+  @override
+  String get stepPreviewFakeCallHint =>
+      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
 
   @override
   String get stepConfigFakeCallCaller => 'Nazwa dzwoniącego';
@@ -759,6 +827,12 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get stepConfigHardwarePressCount => 'Liczba naciśnięć';
+
+  @override
+  String get stepConfigHardwarePressWindow => 'Okno między naciśnięciami (ms)';
+
+  @override
+  String get stepConfigHardwareLongDuration => 'Czas długiego naciśnięcia (s)';
 
   @override
   String get stepConfigHardwareButton => 'Przycisk';
@@ -1435,4 +1509,78 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => 'Użyj biometrii';
+
+  @override
+  String get audioRunningLatePhrase =>
+      'Hi, I am running late. I will call you back soon.';
+
+  @override
+  String smsDefaultTemplate(Object name, Object location, Object time) {
+    return '$name may need help. Location: $location. Time: $time.';
+  }
+
+  @override
+  String smsDefaultPreCallTemplate(Object name) {
+    return '$name is trying to reach you. Please expect a call.';
+  }
+
+  @override
+  String simLoudAlarm(Object tail) {
+    return '[SIM] Loud alarm + $tail';
+  }
+
+  @override
+  String get simLoudAlarmTailFlash => 'flash';
+
+  @override
+  String get simLoudAlarmTailVibrate => 'vibrate';
+
+  @override
+  String simSmsContact(Object channel, int count) {
+    return '[SIM] Would send $channel to $count contacts';
+  }
+
+  @override
+  String simFakeCallRing(Object caller) {
+    return '[SIM] Incoming call from $caller';
+  }
+
+  @override
+  String simCountdownWarning(int seconds) {
+    return '[SIM] ${seconds}s countdown warning';
+  }
+
+  @override
+  String simPhoneCall(Object name) {
+    return '[SIM] Would call $name';
+  }
+
+  @override
+  String get simNoContactToCall => '[SIM] No contact to call';
+
+  @override
+  String simCallEmergency(Object number) {
+    return '[SIM] Would dial $number';
+  }
+
+  @override
+  String get simHardwareButton => '[SIM] Hardware trigger armed';
+
+  @override
+  String get simHoldButton => '[SIM] Waiting for hold button';
+
+  @override
+  String simDisguisedReminder(Object title) {
+    return '[SIM] Would show \"$title\"';
+  }
+
+  @override
+  String get simDisguisedReminderEmpty =>
+      '[SIM] No reminder template available';
+
+  @override
+  String get simGpsArrivalTrigger => '[SIM] GPS arrival trigger fired';
+
+  @override
+  String get simLowBatteryAlert => '[SIM] Low-battery alert fired';
 }

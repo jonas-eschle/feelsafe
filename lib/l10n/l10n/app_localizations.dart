@@ -1469,6 +1469,72 @@ abstract class AppLocalizations {
   /// **'Preview ran: {description}'**
   String stepPreviewFired(Object description);
 
+  /// AppBar title for the per-step preview screen (issues-v4 #10).
+  ///
+  /// In en, this message translates to:
+  /// **'Step preview'**
+  String get stepPreviewTitle;
+
+  /// Shown when the preview screen is opened without the required query parameters.
+  ///
+  /// In en, this message translates to:
+  /// **'Missing step or mode reference.'**
+  String get stepPreviewMissingParams;
+
+  /// Shown when the modeId in the preview URL does not resolve to a saved mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode not found.'**
+  String get stepPreviewModeNotFound;
+
+  /// Shown when the stepId in the preview URL does not exist in the resolved mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Step not found in this mode.'**
+  String get stepPreviewStepNotFound;
+
+  /// Shown when running the simulation strategy threw.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview failed: {error}'**
+  String stepPreviewError(Object error);
+
+  /// Button on the preview screen that re-runs the strategy.
+  ///
+  /// In en, this message translates to:
+  /// **'Replay'**
+  String get stepPreviewReplay;
+
+  /// Caption above the preview hold button.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold the button to feel the live response.'**
+  String get stepPreviewHoldButtonHint;
+
+  /// Visible label inside the preview hold button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold'**
+  String get stepPreviewHoldButtonLabel;
+
+  /// Semantics label for the preview hold button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to preview'**
+  String get stepPreviewHoldButtonSemantic;
+
+  /// Confirmation shown after the user releases the preview hold button.
+  ///
+  /// In en, this message translates to:
+  /// **'Released. The session would now enter the grace window.'**
+  String get stepPreviewHoldButtonReleased;
+
+  /// Caption shown beneath the Replay button on the fake-call preview.
+  ///
+  /// In en, this message translates to:
+  /// **'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.'**
+  String get stepPreviewFakeCallHint;
+
   /// Fake-call caller name.
   ///
   /// In en, this message translates to:

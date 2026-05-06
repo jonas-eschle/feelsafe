@@ -587,6 +587,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepCategoryAll => '全部';
 
   @override
+  String get stepPickerMore => '更多选项...';
+
+  @override
   String get stepCategoryAction => '动作';
 
   @override
@@ -687,12 +690,71 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepFieldRandomize => '时间抖动';
 
   @override
+  String get stepFieldRandomizeToggle => '随机化时间（±20%）';
+
+  @override
+  String get stepFieldWaitTooltip => '此步骤开始前等待多长时间。';
+
+  @override
+  String get stepFieldDurationTooltip => '此步骤在宽限期开始前活跃多长时间。';
+
+  @override
+  String get stepFieldGraceTooltip => '在下一步骤启动前确认安全的活动阶段后时间。';
+
+  @override
+  String get stepFieldRetryCountTooltip => '升级前重复此步骤多少次。';
+
+  @override
+  String get stepFieldReminderIntervalTooltip => '在等待签到时伪装提醒触发的频率。';
+
+  @override
+  String get stepFieldReminderGraceTooltip => '提醒出现后用户确认安全的时间。';
+
+  @override
   String get stepPreview => '在模拟中预览';
 
   @override
   String stepPreviewFired(Object description) {
     return '已运行预览：$description';
   }
+
+  @override
+  String get stepPreviewTitle => 'Step preview';
+
+  @override
+  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+
+  @override
+  String get stepPreviewModeNotFound => 'Mode not found.';
+
+  @override
+  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+
+  @override
+  String stepPreviewError(Object error) {
+    return 'Preview failed: $error';
+  }
+
+  @override
+  String get stepPreviewReplay => 'Replay';
+
+  @override
+  String get stepPreviewHoldButtonHint =>
+      'Press and hold the button to feel the live response.';
+
+  @override
+  String get stepPreviewHoldButtonLabel => 'Hold';
+
+  @override
+  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+
+  @override
+  String get stepPreviewHoldButtonReleased =>
+      'Released. The session would now enter the grace window.';
+
+  @override
+  String get stepPreviewFakeCallHint =>
+      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
 
   @override
   String get stepConfigFakeCallCaller => '来电者姓名';
@@ -741,6 +803,12 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stepConfigHardwarePressCount => '按压次数';
+
+  @override
+  String get stepConfigHardwarePressWindow => '按压间隔（毫秒）';
+
+  @override
+  String get stepConfigHardwareLongDuration => '长按时长（秒）';
 
   @override
   String get stepConfigHardwareButton => '按键';
@@ -1408,6 +1476,78 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get launchGateUseBiometric => '使用生物识别';
+
+  @override
+  String get audioRunningLatePhrase => '你好，我要迟到了，我会尽快回电。';
+
+  @override
+  String smsDefaultTemplate(Object name, Object location, Object time) {
+    return '$name 可能需要帮助。位置：$location。时间：$time。';
+  }
+
+  @override
+  String smsDefaultPreCallTemplate(Object name) {
+    return '$name 正在尝试联系你。请等待来电。';
+  }
+
+  @override
+  String simLoudAlarm(Object tail) {
+    return '[SIM] 响亮警报 + $tail';
+  }
+
+  @override
+  String get simLoudAlarmTailFlash => '闪光';
+
+  @override
+  String get simLoudAlarmTailVibrate => '振动';
+
+  @override
+  String simSmsContact(Object channel, int count) {
+    return '[SIM] 将通过 $channel 发送给 $count 位联系人';
+  }
+
+  @override
+  String simFakeCallRing(Object caller) {
+    return '[SIM] 来自 $caller 的来电';
+  }
+
+  @override
+  String simCountdownWarning(int seconds) {
+    return '[SIM] $seconds秒倒计时警告';
+  }
+
+  @override
+  String simPhoneCall(Object name) {
+    return '[SIM] 将拨打 $name';
+  }
+
+  @override
+  String get simNoContactToCall => '[SIM] 没有可拨打的联系人';
+
+  @override
+  String simCallEmergency(Object number) {
+    return '[SIM] 将拨打 $number';
+  }
+
+  @override
+  String get simHardwareButton => '[SIM] 已启用硬件触发';
+
+  @override
+  String get simHoldButton => '[SIM] 等待按住按钮';
+
+  @override
+  String simDisguisedReminder(Object title) {
+    return '[SIM] 将显示\"$title\"';
+  }
+
+  @override
+  String get simDisguisedReminderEmpty => '[SIM] 没有可用的提醒模板';
+
+  @override
+  String get simGpsArrivalTrigger => '[SIM] GPS 到达触发已激活';
+
+  @override
+  String get simLowBatteryAlert => '[SIM] 低电量警报已激活';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1994,6 +2134,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stepCategoryAll => '全部';
 
   @override
+  String get stepPickerMore => '更多選項...';
+
+  @override
   String get stepCategoryAction => '動作';
 
   @override
@@ -2094,6 +2237,27 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stepFieldRandomize => '時間抖動';
 
   @override
+  String get stepFieldRandomizeToggle => '隨機化時間 (±20%)';
+
+  @override
+  String get stepFieldWaitTooltip => '此步驟開始前等待多久。';
+
+  @override
+  String get stepFieldDurationTooltip => '此步驟在寬限期開始前活躍多久。';
+
+  @override
+  String get stepFieldGraceTooltip => '活躍階段後在下一步驟啟動前確認安全的時間。';
+
+  @override
+  String get stepFieldRetryCountTooltip => '升級前重複此步驟多少次。';
+
+  @override
+  String get stepFieldReminderIntervalTooltip => '等候簽到時偽裝提醒觸發的頻率。';
+
+  @override
+  String get stepFieldReminderGraceTooltip => '提醒出現後使用者確認安全的時間。';
+
+  @override
   String get stepPreview => '模擬預覽';
 
   @override
@@ -2148,6 +2312,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stepConfigHardwarePressCount => '按壓次數';
+
+  @override
+  String get stepConfigHardwarePressWindow => '按壓間隔 (毫秒)';
+
+  @override
+  String get stepConfigHardwareLongDuration => '長按時長 (秒)';
 
   @override
   String get stepConfigHardwareButton => '按鍵';
@@ -2815,4 +2985,76 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get launchGateUseBiometric => '使用生物辨識';
+
+  @override
+  String get audioRunningLatePhrase => '你好，我會遲到，我會盡快回電。';
+
+  @override
+  String smsDefaultTemplate(Object name, Object location, Object time) {
+    return '$name 可能需要協助。位置：$location。時間：$time。';
+  }
+
+  @override
+  String smsDefaultPreCallTemplate(Object name) {
+    return '$name 正在嘗試聯絡你。請等待來電。';
+  }
+
+  @override
+  String simLoudAlarm(Object tail) {
+    return '[SIM] 響亮警報 + $tail';
+  }
+
+  @override
+  String get simLoudAlarmTailFlash => '閃光';
+
+  @override
+  String get simLoudAlarmTailVibrate => '震動';
+
+  @override
+  String simSmsContact(Object channel, int count) {
+    return '[SIM] 將透過 $channel 發送給 $count 位聯絡人';
+  }
+
+  @override
+  String simFakeCallRing(Object caller) {
+    return '[SIM] 來自 $caller 的來電';
+  }
+
+  @override
+  String simCountdownWarning(int seconds) {
+    return '[SIM] $seconds秒倒數警告';
+  }
+
+  @override
+  String simPhoneCall(Object name) {
+    return '[SIM] 將撥打 $name';
+  }
+
+  @override
+  String get simNoContactToCall => '[SIM] 沒有可撥打的聯絡人';
+
+  @override
+  String simCallEmergency(Object number) {
+    return '[SIM] 將撥打 $number';
+  }
+
+  @override
+  String get simHardwareButton => '[SIM] 已啟用硬體觸發';
+
+  @override
+  String get simHoldButton => '[SIM] 等待按住按鈕';
+
+  @override
+  String simDisguisedReminder(Object title) {
+    return '[SIM] 將顯示「$title」';
+  }
+
+  @override
+  String get simDisguisedReminderEmpty => '[SIM] 沒有可用的提醒範本';
+
+  @override
+  String get simGpsArrivalTrigger => '[SIM] GPS 到達觸發已啟動';
+
+  @override
+  String get simLowBatteryAlert => '[SIM] 低電量警報已啟動';
 }
