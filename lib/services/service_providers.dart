@@ -25,6 +25,7 @@ import 'package:guardianangela/services/implementations/incoming_call_service.da
 import 'package:guardianangela/services/implementations/location_service.dart';
 import 'package:guardianangela/services/implementations/messaging_service.dart';
 import 'package:guardianangela/services/implementations/notification_service.dart';
+import 'package:guardianangela/services/implementations/permission_service.dart';
 import 'package:guardianangela/services/implementations/phone_service.dart';
 import 'package:guardianangela/services/implementations/recording_service.dart';
 import 'package:guardianangela/services/implementations/screen_flash_service.dart';
@@ -44,6 +45,7 @@ import 'package:guardianangela/services/protocols/incoming_call_service_protocol
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
+import 'package:guardianangela/services/protocols/permission_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
@@ -81,6 +83,7 @@ export 'package:guardianangela/services/implementations/incoming_call_service.da
 export 'package:guardianangela/services/implementations/location_service.dart';
 export 'package:guardianangela/services/implementations/messaging_service.dart';
 export 'package:guardianangela/services/implementations/notification_service.dart';
+export 'package:guardianangela/services/implementations/permission_service.dart';
 export 'package:guardianangela/services/implementations/phone_service.dart';
 export 'package:guardianangela/services/implementations/recording_service.dart';
 export 'package:guardianangela/services/implementations/screen_flash_service.dart';
@@ -99,6 +102,7 @@ export 'package:guardianangela/services/protocols/incoming_call_service_protocol
 export 'package:guardianangela/services/protocols/location_service_protocol.dart';
 export 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 export 'package:guardianangela/services/protocols/notification_service_protocol.dart';
+export 'package:guardianangela/services/protocols/permission_service_protocol.dart';
 export 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 export 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 export 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
@@ -194,6 +198,16 @@ final screenFlashServiceProvider = Provider<ScreenFlashServiceProtocol>((ref) {
 /// Simulation screen-flash service.
 final simulationScreenFlashProvider = Provider<ScreenFlashServiceProtocol>(
   (_) => SimulationScreenFlashService(),
+);
+
+/// Real permission service. Wraps the helpers in
+/// `lib/core/utils/permission_utils.dart`. There is no simulation
+/// variant — permissions are user-presence checks, not session-side
+/// effects, so simulation flows reuse the same real implementation.
+/// Tests substitute a `FakePermissionService` via Riverpod overrides
+/// (audit Q5).
+final permissionServiceProvider = Provider<PermissionServiceProtocol>(
+  (_) => const PermissionService(),
 );
 
 /// Real location service.
