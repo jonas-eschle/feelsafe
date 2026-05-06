@@ -456,10 +456,10 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       Locale(settings.languageCode),
     );
     final smsResolver = _buildSmsTemplateResolver(
-      pick: (l) => l.smsDefaultTemplate,
+      pick: _smsDefaultTemplateOf,
     );
     final preSmsResolver = _buildSmsTemplateResolver(
-      pick: (l) => l.smsDefaultPreCallTemplate,
+      pick: _preSmsDefaultTemplateOf,
     );
     final context = SessionContext(
       mode: mode,
@@ -473,8 +473,8 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       // CallEmergencyStrategy no longer hardcodes '112'.
       emergencyNumber: settings.emergencyCallNumber,
       ttsLatePhrase: appL.audioRunningLatePhrase,
-      defaultSmsTemplate: appL.smsDefaultTemplate,
-      defaultPreSmsTemplate: appL.smsDefaultPreCallTemplate,
+      defaultSmsTemplate: _smsDefaultTemplateOf(appL),
+      defaultPreSmsTemplate: _preSmsDefaultTemplateOf(appL),
       smsTemplateForLanguage: smsResolver,
       preSmsTemplateForLanguage: preSmsResolver,
     );
@@ -690,6 +690,20 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final override = mode.overrides?.eventDefaults;
     return override ?? settings.defaults.eventDefaults;
   }
+
+  /// Returns the localized SMS body template with `{name}`,
+  /// `{location}`, `{time}` placeholders preserved so
+  /// [SessionContext.resolvePlaceholders] can substitute them at
+  /// dispatch time. Calling the generated message function with the
+  /// literal placeholder strings is the standard trick to retrieve
+  /// the unresolved template — the generated code is plain
+  /// `${name}` interpolation, so it round-trips losslessly.
+  static String _smsDefaultTemplateOf(AppLocalizations l) =>
+      l.smsDefaultTemplate('{name}', '{location}', '{time}');
+
+  /// As [_smsDefaultTemplateOf] but for the pre-call SMS body.
+  static String _preSmsDefaultTemplateOf(AppLocalizations l) =>
+      l.smsDefaultPreCallTemplate('{name}');
 
   /// Builds an [SmsTemplateResolver] backed by [AppLocalizations].
   /// See `SessionLifecycleController._buildSmsTemplateResolver` for
