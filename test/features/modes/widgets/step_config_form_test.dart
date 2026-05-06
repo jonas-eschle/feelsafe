@@ -1,13 +1,8 @@
 /// Smoke tests for [StepConfigForm].
 ///
-/// Covers the timing block (wait/duration/grace/retryCount fields)
-/// and rendering for a handful of [ChainStepType] variants. Deeper
-/// per-subtype assertions live in event_specific_config_test.dart.
-///
-/// Note: the timing block now lives inside a collapsible
-/// [ExpansionTile] that defaults to closed. Tests that need to read
-/// or interact with the timing inputs must expand the panel first
-/// via the helper [_expandTiming].
+/// Covers the timing block (wait/duration/grace TimingSliders +
+/// retryCount TextFormField) and rendering for a handful of
+/// [ChainStepType] variants.
 library;
 
 import 'package:checks/checks.dart';
@@ -15,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_form.dart';
@@ -50,8 +46,6 @@ Widget _host(ChainStep step, {ValueChanged<ChainStep>? onChanged}) =>
       ),
     );
 
-/// Expands the collapsible Timing panel so its TextFormFields are
-/// in the widget tree (ExpansionTile lazy-builds children).
 Future<void> _expandTiming(WidgetTester tester) async {
   await tester.tap(find.byType(ExpansionTile).first);
   await tester.pumpAndSettle();
@@ -59,28 +53,30 @@ Future<void> _expandTiming(WidgetTester tester) async {
 
 void main() {
   testWidgets(
-    'StepConfigForm renders 4 timing TextFormFields when expanded',
+    'StepConfigForm renders 3 TimingSliders + retry field when expanded',
     (tester) async {
       await tester.pumpWidget(_host(_step()));
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      // wait / duration / grace / retryCount = 4 timing fields; the
-      // hold-button event-specific form adds one more for sensitivity.
-      check(find.byType(TextFormField).evaluate().length).isGreaterOrEqual(4);
+      // Phase 4.2: wait/duration/grace are TimingSliders. Retry stays
+      // a TextFormField for now.
+      check(find.byType(TimingSlider).evaluate().length).equals(3);
+      check(find.byType(TextFormField).evaluate().length).isGreaterOrEqual(1);
     },
   );
 
   testWidgets(
-    'StepConfigForm duration field echoes the step value when expanded',
+    'StepConfigForm duration slider receives the step value',
     (tester) async {
       await tester.pumpWidget(_host(_step(duration: 77)));
       await tester.pumpAndSettle();
       await _expandTiming(tester);
-      check(find.text('77').evaluate().length).isGreaterOrEqual(1);
+      final sliders = tester.widgetList<TimingSlider>(find.byType(TimingSlider));
+      check(sliders.elementAt(1).seconds).equals(77);
     },
   );
 
-  testWidgets('StepConfigForm fires onChanged when wait is edited',
+  testWidgets('StepConfigForm fires onChanged when wait slider changes',
       (tester) async {
     ChainStep? latest;
     await tester.pumpWidget(
@@ -88,7 +84,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _expandTiming(tester);
-    await tester.enterText(find.byType(TextFormField).first, '42');
+    final waitSlider = tester.widget<TimingSlider>(
+      find.byType(TimingSlider).first,
+    );
+    waitSlider.onChanged(42);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check(latest!.waitSeconds).equals(42);
@@ -97,8 +96,6 @@ void main() {
   testWidgets('StepConfigForm renders for disguisedReminder without error',
       (tester) async {
     await tester.pumpWidget(
-      // Riverpod scope needed: the disguisedReminder form is a
-      // ConsumerWidget via EventSpecificConfig.
       ProviderScope(
         child: _host(_step(type: ChainStepType.disguisedReminder)),
       ),
@@ -118,7 +115,7 @@ void main() {
     check(find.byType(StepConfigForm).evaluate().length).equals(1);
   });
 
-  testWidgets('StepConfigForm fires onChanged when duration is edited',
+  testWidgets('StepConfigForm fires onChanged when duration slider changes',
       (tester) async {
     ChainStep? latest;
     await tester.pumpWidget(
@@ -126,15 +123,16 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _expandTiming(tester);
-    // Field order inside the timing panel: wait, duration, grace,
-    // retryCount.
-    await tester.enterText(find.byType(TextFormField).at(1), '99');
+    final durationSlider = tester
+        .widgetList<TimingSlider>(find.byType(TimingSlider))
+        .elementAt(1);
+    durationSlider.onChanged(99);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check(latest!.durationSeconds).equals(99);
   });
 
-  testWidgets('StepConfigForm fires onChanged when grace is edited',
+  testWidgets('StepConfigForm fires onChanged when grace slider changes',
       (tester) async {
     ChainStep? latest;
     await tester.pumpWidget(
@@ -142,7 +140,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _expandTiming(tester);
-    await tester.enterText(find.byType(TextFormField).at(2), '17');
+    final graceSlider = tester
+        .widgetList<TimingSlider>(find.byType(TimingSlider))
+        .elementAt(2);
+    graceSlider.onChanged(17);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check(latest!.gracePeriodSeconds).equals(17);
@@ -156,7 +157,10 @@ void main() {
     );
     await tester.pumpAndSettle();
     await _expandTiming(tester);
-    await tester.enterText(find.byType(TextFormField).at(3), '4');
+    // The only TextFormField in the timing panel is retryCount (after
+    // 4.2, wait/duration/grace are TimingSliders).
+    final retryField = find.byType(TextFormField).first;
+    await tester.enterText(retryField, '4');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check(latest!.retryCount).equals(4);
@@ -167,10 +171,9 @@ void main() {
     (tester) async {
       await tester.pumpWidget(_host(_step()));
       await tester.pumpAndSettle();
-      // Without expansion, the four timing TextFormFields are not in
-      // the tree (lazy-built by ExpansionTile). The hold-button
-      // event-specific form contributes exactly one TextFormField.
-      check(find.byType(TextFormField).evaluate().length).equals(1);
+      // Without expansion, no TimingSliders are in the tree
+      // (lazy-built by ExpansionTile).
+      check(find.byType(TimingSlider).evaluate().length).equals(0);
     },
   );
 }

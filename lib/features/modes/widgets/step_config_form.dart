@@ -7,6 +7,7 @@ library;
 
 import 'package:flutter/material.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -61,48 +62,31 @@ class _TimingPanel extends StatelessWidget {
         title: Text(l.stepTimingHeader),
         subtitle: Text(
           l.stepTimingSummary(
-            step.waitSeconds.toString(),
-            step.durationSeconds.toString(),
-            step.gracePeriodSeconds.toString(),
+            formatTimingLabel(step.waitSeconds),
+            formatTimingLabel(step.durationSeconds),
+            formatTimingLabel(step.gracePeriodSeconds),
           ),
         ),
         initiallyExpanded: false,
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
         children: [
-          TextFormField(
-            // Force rebuild on type-swap so the displayed value
-            // reflects the current step (TextFormField caches
-            // initialValue otherwise).
-            key: ValueKey('wait-${step.id}-${step.waitSeconds}'),
-            initialValue: step.waitSeconds.toString(),
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: l.stepFieldWait),
-            onChanged: (v) => onChanged(
-              step.copyWith(waitSeconds: int.tryParse(v) ?? step.waitSeconds),
-            ),
+          // Phase 4.2: timing fields use TimingSlider (DE-1) — log
+          // snap stops + 0 minimum + numeric entry chip.
+          TimingSlider(
+            label: l.stepFieldWait,
+            seconds: step.waitSeconds,
+            onChanged: (v) => onChanged(step.copyWith(waitSeconds: v)),
           ),
-          TextFormField(
-            key: ValueKey('dur-${step.id}-${step.durationSeconds}'),
-            initialValue: step.durationSeconds.toString(),
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: l.stepFieldDuration),
-            onChanged: (v) => onChanged(
-              step.copyWith(
-                durationSeconds: int.tryParse(v) ?? step.durationSeconds,
-              ),
-            ),
+          TimingSlider(
+            label: l.stepFieldDuration,
+            seconds: step.durationSeconds,
+            onChanged: (v) => onChanged(step.copyWith(durationSeconds: v)),
           ),
-          TextFormField(
-            key: ValueKey('grace-${step.id}-${step.gracePeriodSeconds}'),
-            initialValue: step.gracePeriodSeconds.toString(),
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(labelText: l.stepFieldGrace),
-            onChanged: (v) => onChanged(
-              step.copyWith(
-                gracePeriodSeconds:
-                    int.tryParse(v) ?? step.gracePeriodSeconds,
-              ),
-            ),
+          TimingSlider(
+            label: l.stepFieldGrace,
+            seconds: step.gracePeriodSeconds,
+            onChanged: (v) =>
+                onChanged(step.copyWith(gracePeriodSeconds: v)),
           ),
           TextFormField(
             key: ValueKey('retry-${step.id}-${step.retryCount}'),
