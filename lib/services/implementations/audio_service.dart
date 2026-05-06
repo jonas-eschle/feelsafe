@@ -135,6 +135,21 @@ final class AudioService implements AudioServiceProtocol {
     await _tts?.stop();
   }
 
+  /// Releases every lazily-allocated player and shuts the TTS engine
+  /// down. Wired via `ref.onDispose(audioService.dispose)` in
+  /// `service_providers.dart` so a hot-reload or container teardown
+  /// doesn't leak platform resources (bugs.json Warn 1).
+  Future<void> dispose() async {
+    await _alarmPlayer?.dispose();
+    await _ringtonePlayer?.dispose();
+    await _voicePlayer?.dispose();
+    await _tts?.stop();
+    _alarmPlayer = null;
+    _ringtonePlayer = null;
+    _voicePlayer = null;
+    _tts = null;
+  }
+
   /// Checks whether a bundled asset exists. Used to decide TTS
   /// fallback for voice recordings.
   Future<bool> _assetExists(String assetPath) async {

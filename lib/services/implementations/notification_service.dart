@@ -250,7 +250,14 @@ final class NotificationService implements NotificationServiceProtocol {
       ),
     );
     // Auto-dismiss after 3 seconds so the toast stays transient.
-    Timer(const Duration(seconds: 3), () => _plugin.cancel(id: id));
+    // bugs.json Warn 2: track the timer in _scheduledTimers so
+    // dispose() cancels it. Otherwise toasts fired in the 3s before
+    // teardown would still call _plugin.cancel after the plugin is
+    // closed.
+    _scheduledTimers[id] = Timer(const Duration(seconds: 3), () {
+      _scheduledTimers.remove(id);
+      _plugin.cancel(id: id);
+    });
   }
 
   /// Builds [NotificationDetails] for a given channel.

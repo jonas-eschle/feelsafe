@@ -94,7 +94,11 @@ export 'package:guardianangela/services/protocols/wakelock_service_protocol.dart
 
 /// Real audio service.
 final audioServiceProvider = Provider<AudioServiceProtocol>(
-  (_) => AudioService(),
+  (ref) {
+    final service = AudioService();
+    ref.onDispose(service.dispose);
+    return service;
+  },
 );
 
 /// Simulation audio service.
