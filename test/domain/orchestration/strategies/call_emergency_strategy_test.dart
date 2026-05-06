@@ -91,7 +91,8 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('911'));
+      expect(desc.templateKey, 'simCallEmergency');
+      expect(desc.args['number'], '911');
     });
 
     test('simulationDescription includes 112 default', () {
@@ -99,23 +100,8 @@ void main() {
         step(type: ChainStepType.callEmergency),
         harness.build(),
       );
-      expect(desc, contains('112'));
-    });
-
-    test('simulationDescription starts with SIM prefix', () {
-      final desc = strategy.simulationDescription(
-        step(type: ChainStepType.callEmergency),
-        harness.build(),
-      );
-      expect(desc.startsWith('[SIM]'), isTrue);
-    });
-
-    test('simulationDescription mentions "dial"', () {
-      final desc = strategy.simulationDescription(
-        step(type: ChainStepType.callEmergency),
-        harness.build(),
-      );
-      expect(desc.toLowerCase(), contains('dial'));
+      expect(desc.templateKey, 'simCallEmergency');
+      expect(desc.args['number'], '112');
     });
 
     test('executeReal does not register SMS work ids', () async {

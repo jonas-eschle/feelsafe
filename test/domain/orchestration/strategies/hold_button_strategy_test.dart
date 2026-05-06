@@ -44,20 +44,20 @@ void main() {
       expect(desc, isNotEmpty);
     });
 
-    test('simulationDescription mentions holding', () {
+    test('simulationDescription uses simHoldButton template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.holdButton),
         harness.build(),
       );
-      expect(desc.toLowerCase(), contains('hold'));
+      expect(desc.templateKey, 'simHoldButton');
     });
 
-    test('simulationDescription carries SIM prefix', () {
+    test('simulationDescription carries no args', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.holdButton),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.args, isEmpty);
     });
 
     test('executeReal works with isSimulation=true as well', () async {

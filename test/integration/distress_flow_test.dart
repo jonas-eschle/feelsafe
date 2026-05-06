@@ -21,6 +21,7 @@ import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/services/fakes/fake_audio_service.dart';
 import 'package:guardianangela/services/fakes/fake_messaging_service.dart';
@@ -372,7 +373,7 @@ void main() {
   group('Distress flow: simulation mode', () {
     test('distress in simulation uses SIM branch, no real calls', () {
       fakeAsync((async) {
-        final descriptions = <String>[];
+        final descriptions = <SimulationDescription>[];
         final audio = FakeAudioService();
         final messaging = FakeMessagingService();
         final phone = FakePhoneService();

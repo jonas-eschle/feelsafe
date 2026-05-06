@@ -63,6 +63,7 @@ class _NoopAudio implements AudioServiceProtocol {
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
+    String? ttsFallbackPhrase,
   }) async {}
   @override
   Future<void> stopVoiceRecording() async {}

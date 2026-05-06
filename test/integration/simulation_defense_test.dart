@@ -23,6 +23,7 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/services/fakes/fake_audio_service.dart';
@@ -57,7 +58,7 @@ ChainEventData _event({
   FakeMessagingService messaging,
   FakeVibrationService vib,
   FakeNotificationService notif,
-  List<String> simDescriptions,
+  List<SimulationDescription> simDescriptions,
 })
 _buildOrchestrator({
   required bool isSimulation,
@@ -69,7 +70,7 @@ _buildOrchestrator({
   final messaging = FakeMessagingService();
   final vib = FakeVibrationService();
   final notif = FakeNotificationService();
-  final simDescriptions = <String>[];
+  final simDescriptions = <SimulationDescription>[];
   final orch = SessionOrchestrator(
     isSimulation: isSimulation,
     chainStepsResolver: () => steps,
@@ -220,8 +221,8 @@ void main() {
         final strategy = EventStrategyRegistry.forStep(s);
         final desc = strategy.simulationDescription(s, services);
         check(
-          desc,
-          because: 'each type should emit a non-empty SIM desc',
+          desc.templateKey,
+          because: 'each type should emit a non-empty template key',
         ).isNotEmpty();
       }
     });

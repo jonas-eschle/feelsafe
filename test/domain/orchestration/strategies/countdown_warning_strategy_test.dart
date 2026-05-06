@@ -115,26 +115,16 @@ void main() {
         step(type: ChainStepType.countdownWarning, durationSeconds: 42),
         harness.build(),
       );
-      expect(desc, contains('42'));
+      expect(desc.templateKey, 'simCountdownWarning');
+      expect(desc.args['seconds'], 42);
     });
 
-    test('simulationDescription carries SIM prefix', () {
+    test('simulationDescription uses simCountdownWarning template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.countdownWarning, durationSeconds: 10),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
-    });
-
-    test('simulationDescription mentions countdown/warning', () {
-      final desc = strategy.simulationDescription(
-        step(type: ChainStepType.countdownWarning, durationSeconds: 10),
-        harness.build(),
-      );
-      expect(
-        desc.toLowerCase(),
-        anyOf(contains('countdown'), contains('warning')),
-      );
+      expect(desc.templateKey, 'simCountdownWarning');
     });
 
     test('executeReal on wrong config type still fires defaults', () async {

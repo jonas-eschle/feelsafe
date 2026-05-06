@@ -22,6 +22,7 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/services/fakes/fake_audio_service.dart';
 import 'package:guardianangela/services/fakes/fake_messaging_service.dart';
@@ -53,7 +54,7 @@ final class _Harness {
   final FakePhoneService phone;
   final FakeNotificationService notif;
   final FakeVibrationService vib;
-  final List<String> descriptions;
+  final List<SimulationDescription> descriptions;
 
   void cleanup() {
     sub.cancel();
@@ -77,7 +78,7 @@ _Harness _wire({
   final phone = FakePhoneService();
   final notif = FakeNotificationService();
   final vib = FakeVibrationService();
-  final descriptions = <String>[];
+  final descriptions = <SimulationDescription>[];
   final engine = SessionEngine(
     chainSteps: chain,
     isSimulation: isSimulation,

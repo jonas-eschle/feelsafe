@@ -170,27 +170,18 @@ void main() {
         step(type: ChainStepType.phoneCallContact),
         harness.build(),
       );
-      expect(desc, contains('Alice'));
+      expect(desc.templateKey, 'simPhoneCall');
+      expect(desc.args['name'], 'Alice');
     });
 
-    test('simulationDescription states "no contact" when empty', () {
+    test('simulationDescription emits simNoContactToCall when empty', () {
       final harness = StrategyHarness();
       addTearDown(harness.dispose);
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.phoneCallContact),
         harness.build(),
       );
-      expect(desc.toLowerCase(), contains('no contact'));
-    });
-
-    test('simulationDescription starts with SIM prefix', () {
-      final harness = StrategyHarness();
-      addTearDown(harness.dispose);
-      final desc = strategy.simulationDescription(
-        step(type: ChainStepType.phoneCallContact),
-        harness.build(),
-      );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.templateKey, 'simNoContactToCall');
     });
 
     test('executeReal with wrong config type defaults to first', () async {

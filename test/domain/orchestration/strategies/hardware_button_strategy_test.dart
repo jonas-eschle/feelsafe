@@ -44,28 +44,28 @@ void main() {
       expect(h.audio.calls, isEmpty);
     });
 
-    test('simulationDescription is non-empty', () {
+    test('simulationDescription has a non-empty template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.hardwareButton),
         harness.build(),
       );
-      expect(desc, isNotEmpty);
+      expect(desc.templateKey, isNotEmpty);
     });
 
-    test('simulationDescription mentions hardware', () {
+    test('simulationDescription uses simHardwareButton template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.hardwareButton),
         harness.build(),
       );
-      expect(desc.toLowerCase(), contains('hardware'));
+      expect(desc.templateKey, 'simHardwareButton');
     });
 
-    test('simulationDescription carries SIM prefix', () {
+    test('simulationDescription carries no args', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.hardwareButton),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.args, isEmpty);
     });
 
     test('strategy is const', () {

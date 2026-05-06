@@ -9,6 +9,7 @@ import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/timer_phase.dart';
 import 'package:guardianangela/domain/models/models.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
 void main() {
   group('SessionPhase', () {
@@ -109,8 +110,11 @@ void main() {
         missCount: 1,
         remainingSeconds: 12,
         simulatedElapsed: const Duration(seconds: 30),
-        firedStepDescriptions: const ['one', 'two'],
-        lastSimulationDescription: 'sms sent',
+        firedStepDescriptions: const [
+          SimulationDescription('one'),
+          SimulationDescription('two'),
+        ],
+        lastSimulationDescription: const SimulationDescription('sms sent'),
         isBackgroundAlert: true,
       );
       check(WalkSession.fromJson(s.toJson())).equals(s);
@@ -189,8 +193,8 @@ void main() {
         missCount: 2,
         remainingSeconds: 9,
         simulatedElapsed: const Duration(seconds: 5),
-        firedStepDescriptions: const ['a'],
-        lastSimulationDescription: 'desc',
+        firedStepDescriptions: const [SimulationDescription('a')],
+        lastSimulationDescription: const SimulationDescription('desc'),
         isBackgroundAlert: true,
       );
       check(s2.id).equals('w2');
@@ -204,8 +208,12 @@ void main() {
       check(s2.missCount).equals(2);
       check(s2.remainingSeconds).equals(9);
       check(s2.simulatedElapsed).equals(const Duration(seconds: 5));
-      check(s2.firedStepDescriptions).deepEquals(const ['a']);
-      check(s2.lastSimulationDescription).equals('desc');
+      check(s2.firedStepDescriptions).deepEquals(
+        const [SimulationDescription('a')],
+      );
+      check(s2.lastSimulationDescription).equals(
+        const SimulationDescription('desc'),
+      );
       check(s2.isBackgroundAlert).isTrue();
     });
   });
@@ -326,7 +334,10 @@ void main() {
 
     test('different lastSimulationDescription unequal', () {
       check(
-        base() == base().copyWith(lastSimulationDescription: 'x'),
+        base() ==
+            base().copyWith(
+              lastSimulationDescription: const SimulationDescription('x'),
+            ),
       ).isFalse();
     });
 
@@ -336,13 +347,20 @@ void main() {
 
     test('different firedStepDescriptions length unequal', () {
       check(
-        base() == base().copyWith(firedStepDescriptions: const ['x']),
+        base() ==
+            base().copyWith(
+              firedStepDescriptions: const [SimulationDescription('x')],
+            ),
       ).isFalse();
     });
 
     test('different firedStepDescriptions at index unequal', () {
-      final a = base().copyWith(firedStepDescriptions: const ['a']);
-      final b = base().copyWith(firedStepDescriptions: const ['b']);
+      final a = base().copyWith(
+        firedStepDescriptions: const [SimulationDescription('a')],
+      );
+      final b = base().copyWith(
+        firedStepDescriptions: const [SimulationDescription('b')],
+      );
       check(a == b).isFalse();
     });
 

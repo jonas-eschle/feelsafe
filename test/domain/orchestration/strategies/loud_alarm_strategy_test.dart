@@ -57,7 +57,7 @@ void main() {
       expect(harness.notification.calls, isEmpty);
     });
 
-    test('simulationDescription mentions flash when flashScreen=true', () {
+    test('simulationDescription has flash=true when flashScreen=true', () {
       final desc = strategy.simulationDescription(
         step(
           type: ChainStepType.loudAlarm,
@@ -65,10 +65,11 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('flash'));
+      expect(desc.templateKey, 'simLoudAlarm');
+      expect(desc.args['flash'], isTrue);
     });
 
-    test('simulationDescription mentions vibrate when flashScreen=false', () {
+    test('simulationDescription has flash=false when flashScreen=false', () {
       final desc = strategy.simulationDescription(
         step(
           type: ChainStepType.loudAlarm,
@@ -76,23 +77,16 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('vibrate'));
+      expect(desc.templateKey, 'simLoudAlarm');
+      expect(desc.args['flash'], isFalse);
     });
 
-    test('simulationDescription starts with SIM prefix', () {
+    test('simulationDescription uses simLoudAlarm template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.loudAlarm),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
-    });
-
-    test('simulationDescription mentions alarm', () {
-      final desc = strategy.simulationDescription(
-        step(type: ChainStepType.loudAlarm),
-        harness.build(),
-      );
-      expect(desc.toLowerCase(), contains('alarm'));
+      expect(desc.templateKey, 'simLoudAlarm');
     });
 
     test('executeReal with wrong config type uses defaults', () async {

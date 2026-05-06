@@ -102,7 +102,7 @@ void main() {
       expect(harness.vibration.calls, isEmpty);
     });
 
-    test('simulationDescription mentions template title', () {
+    test('simulationDescription includes template title', () {
       final harness = StrategyHarness(
         reminderTemplates: [_tpl('x', title: 'Milk tomorrow')],
       );
@@ -111,7 +111,8 @@ void main() {
         step(type: ChainStepType.disguisedReminder),
         harness.build(),
       );
-      expect(desc, contains('Milk tomorrow'));
+      expect(desc.templateKey, 'simDisguisedReminder');
+      expect(desc.args['title'], 'Milk tomorrow');
     });
 
     test('simulationDescription without templates flags absence', () {
@@ -121,17 +122,17 @@ void main() {
         step(type: ChainStepType.disguisedReminder),
         harness.build(),
       );
-      expect(desc.toLowerCase(), contains('no reminder'));
+      expect(desc.templateKey, 'simDisguisedReminderEmpty');
     });
 
-    test('simulationDescription starts with SIM prefix', () {
+    test('simulationDescription uses simDisguisedReminder template key', () {
       final harness = StrategyHarness(reminderTemplates: [_tpl('x')]);
       addTearDown(harness.dispose);
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.disguisedReminder),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.templateKey, 'simDisguisedReminder');
     });
 
     test('executeReal propagates isSimulation to the service', () async {

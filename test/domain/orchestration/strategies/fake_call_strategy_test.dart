@@ -77,7 +77,8 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('Angela'));
+      expect(desc.templateKey, 'simFakeCallRing');
+      expect(desc.args['caller'], 'Angela');
     });
 
     test('simulationDescription defaults to Angela with no config', () {
@@ -85,15 +86,16 @@ void main() {
         step(type: ChainStepType.fakeCall),
         harness.build(),
       );
-      expect(desc, contains('Angela'));
+      expect(desc.templateKey, 'simFakeCallRing');
+      expect(desc.args['caller'], 'Angela');
     });
 
-    test('simulationDescription starts with SIM prefix', () {
+    test('simulationDescription uses simFakeCallRing template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.fakeCall),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.templateKey, 'simFakeCallRing');
     });
 
     test('executeReal does not register any SMS work id', () async {

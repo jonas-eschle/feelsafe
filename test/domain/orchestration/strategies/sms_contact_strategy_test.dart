@@ -194,7 +194,8 @@ void main() {
         step(type: ChainStepType.smsContact),
         harness.build(),
       );
-      expect(desc, contains('3'));
+      expect(desc.templateKey, 'simSmsContact');
+      expect(desc.args['count'], 3);
     });
 
     test('simulationDescription with zero contacts reports 0', () {
@@ -204,17 +205,19 @@ void main() {
         step(type: ChainStepType.smsContact),
         harness.build(),
       );
-      expect(desc, contains('0'));
+      expect(desc.templateKey, 'simSmsContact');
+      expect(desc.args['count'], 0);
     });
 
-    test('simulationDescription starts with SIM prefix', () {
+    test('simulationDescription includes channel name', () {
       final harness = StrategyHarness();
       addTearDown(harness.dispose);
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.smsContact),
         harness.build(),
       );
-      expect(desc.startsWith('[SIM]'), isTrue);
+      expect(desc.templateKey, 'simSmsContact');
+      expect(desc.args['channel'], 'sms');
     });
 
     test('executeReal touches no non-messaging service', () async {

@@ -30,7 +30,7 @@ class _NoopAudio implements AudioServiceProtocol {
   @override
   Future<void> stopRingtone() async {}
   @override
-  Future<void> playVoiceRecording({required String assetPath, bool isSimulation = false}) async {}
+  Future<void> playVoiceRecording({required String assetPath, bool isSimulation = false, String? ttsFallbackPhrase}) async {}
   @override
   Future<void> stopVoiceRecording() async {}
 }

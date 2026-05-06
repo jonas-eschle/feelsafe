@@ -24,6 +24,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/services/fakes/fake_audio_service.dart';
 import 'package:guardianangela/services/fakes/fake_messaging_service.dart';
@@ -65,7 +66,8 @@ class _OrchHarness {
   final FakeNotificationService notification = FakeNotificationService();
   final FakeVibrationService vibration = FakeVibrationService();
 
-  final List<String> simulationDescriptions = <String>[];
+  final List<SimulationDescription> simulationDescriptions =
+      <SimulationDescription>[];
   final List<({ChainStep step, Object error})> failures =
       <({ChainStep step, Object error})>[];
 
@@ -288,7 +290,7 @@ void main() {
         _event(event: ChainEvent.stepStarted, stepIndex: 0),
       );
       expect(harness.simulationDescriptions, isNotEmpty);
-      expect(harness.simulationDescriptions.first, startsWith('[SIM]'));
+      expect(harness.simulationDescriptions.first.templateKey, isNotEmpty);
     });
 
     test('simulation mode does not register SMS work ids', () async {

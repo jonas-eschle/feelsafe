@@ -217,7 +217,11 @@ class _FakeAudio implements AudioServiceProtocol {
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
-  }) async => calls.add('playVoiceRecording:$assetPath:sim=$isSimulation');
+    String? ttsFallbackPhrase,
+  }) async => calls.add(
+    'playVoiceRecording:$assetPath:sim=$isSimulation'
+    ':tts=${ttsFallbackPhrase ?? "<null>"}',
+  );
 
   @override
   Future<void> stopVoiceRecording() async => calls.add('stopVoiceRecording');
