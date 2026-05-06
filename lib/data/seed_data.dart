@@ -135,7 +135,11 @@ SessionMode _walkMode() => const SessionMode(
       type: ChainStepType.holdButton,
       order: 0,
       durationSeconds: 0,
-      gracePeriodSeconds: 10,
+      // Issues-v4 #16: hold-button grace defaults to 0 (escalate
+      // immediately when the countdown ends). Spec 02 § hold-button
+      // says 5s; updated per user-test feedback. Spec doc updated in
+      // Phase 14.
+      gracePeriodSeconds: 0,
     ),
     ChainStep(
       id: 'seed.mode.walk.step.countdown',

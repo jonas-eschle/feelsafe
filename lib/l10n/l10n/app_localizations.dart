@@ -2747,7 +2747,7 @@ abstract class AppLocalizations {
   /// **'Advanced'**
   String get sessionSimAdvancedLabel;
 
-  /// Simulation button — fires the distress chain.
+  /// Simulation button — fires the distress mode.
   ///
   /// In en, this message translates to:
   /// **'Trigger panic'**

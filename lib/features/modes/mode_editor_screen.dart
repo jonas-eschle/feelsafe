@@ -186,7 +186,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
           type: type,
           order: _chain.length,
           durationSeconds: 30,
-          gracePeriodSeconds: 15,
+          // Issues-v4 #16: hold-button grace defaults to 0 so the
+          // countdown escalates immediately when it elapses. Other
+          // step types keep the generic 15s grace.
+          gracePeriodSeconds: type == ChainStepType.holdButton ? 0 : 15,
         ),
       ];
     });
