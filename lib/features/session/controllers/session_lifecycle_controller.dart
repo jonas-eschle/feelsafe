@@ -33,6 +33,7 @@ import 'package:guardianangela/domain/engine/trigger_manager.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
@@ -431,7 +432,9 @@ class SessionLifecycleController {
     final runtime = _runtime;
     if (runtime == null) return;
     if (!runtime.engine.isSimulation) return;
-    appendFiredDescription('[SIM] GPS arrival trigger fired');
+    appendFiredDescription(
+      const SimulationDescription('simGpsArrivalTrigger'),
+    );
     final cb = disarmRequestedHandler();
     if (cb != null) {
       cb();
@@ -445,7 +448,9 @@ class SessionLifecycleController {
     final runtime = _runtime;
     if (runtime == null) return;
     if (!runtime.engine.isSimulation) return;
-    appendFiredDescription('[SIM] Low-battery alert fired');
+    appendFiredDescription(
+      const SimulationDescription('simLowBatteryAlert'),
+    );
   }
 
   /// Accepts the currently ringing simulated fake-call pretext.
@@ -813,7 +818,7 @@ class SessionLifecycleController {
 
   /// Appends a simulation-description toast to the live WalkSession.
   /// Public so DistressOrchestration / other helpers can append.
-  void appendFiredDescription(String description) {
+  void appendFiredDescription(SimulationDescription description) {
     final current = stateGetter();
     if (current == null) return;
     stateSetter(

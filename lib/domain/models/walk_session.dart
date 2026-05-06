@@ -7,6 +7,7 @@ library;
 
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
 /// The lifecycle phase of an ephemeral `WalkSession`.
 sealed class SessionPhase {
@@ -158,11 +159,14 @@ final class WalkSession {
   /// Simulated elapsed time. Defaults to `Duration.zero`.
   final Duration simulatedElapsed;
 
-  /// Log of fired-step descriptions. Defaults to empty.
-  final List<String> firedStepDescriptions;
+  /// Symbolic log of fired-step descriptions. Defaults to empty.
+  /// Each entry carries a template key + args; the UI layer resolves
+  /// it against `AppLocalizations` at render time.
+  /// Fix for bugs.json Warn 5.
+  final List<SimulationDescription> firedStepDescriptions;
 
-  /// Most-recent simulation-toast description.
-  final String? lastSimulationDescription;
+  /// Most-recent simulation-toast description (symbolic).
+  final SimulationDescription? lastSimulationDescription;
 
   /// True when the session is showing a background alert. Defaults
   /// to false.
@@ -192,8 +196,8 @@ final class WalkSession {
     int? missCount,
     int? remainingSeconds,
     Duration? simulatedElapsed,
-    List<String>? firedStepDescriptions,
-    String? lastSimulationDescription,
+    List<SimulationDescription>? firedStepDescriptions,
+    SimulationDescription? lastSimulationDescription,
     bool? isBackgroundAlert,
     int? totalSteps,
   }) => WalkSession(
@@ -228,8 +232,12 @@ final class WalkSession {
     'missCount': missCount,
     'remainingSeconds': remainingSeconds,
     'simulatedElapsedMicros': simulatedElapsed.inMicroseconds,
-    'firedStepDescriptions': firedStepDescriptions,
-    'lastSimulationDescription': lastSimulationDescription,
+    'firedStepDescriptions': [
+      for (final d in firedStepDescriptions) _simDescToJson(d),
+    ],
+    'lastSimulationDescription': lastSimulationDescription == null
+        ? null
+        : _simDescToJson(lastSimulationDescription!),
     'isBackgroundAlert': isBackgroundAlert,
   };
 
@@ -254,9 +262,17 @@ final class WalkSession {
         microseconds: (json['simulatedElapsedMicros'] as num?)?.toInt() ?? 0,
       ),
       firedStepDescriptions: raw is List
-          ? List<String>.unmodifiable(raw.map((e) => e as String))
+          ? List<SimulationDescription>.unmodifiable(
+              raw.map(
+                (e) => _simDescFromJson(e as Map<String, Object?>),
+              ),
+            )
           : const [],
-      lastSimulationDescription: json['lastSimulationDescription'] as String?,
+      lastSimulationDescription: json['lastSimulationDescription'] == null
+          ? null
+          : _simDescFromJson(
+              json['lastSimulationDescription']! as Map<String, Object?>,
+            ),
       isBackgroundAlert: json['isBackgroundAlert'] as bool? ?? false,
     );
   }
@@ -335,3 +351,23 @@ ChainStepType _stepTypeFromJson(String raw) => switch (raw) {
   'hardwareButton' => ChainStepType.hardwareButton,
   _ => throw ArgumentError.value(raw, 'stepType', 'unknown ChainStepType'),
 };
+
+Map<String, Object?> _simDescToJson(SimulationDescription d) => {
+  'templateKey': d.templateKey,
+  'args': d.args,
+};
+
+SimulationDescription _simDescFromJson(Map<String, Object?> json) {
+  final args = json['args'];
+  final argsMap = args is Map<String, Object?>
+      ? Map<String, Object?>.unmodifiable(args)
+      : args is Map
+          ? Map<String, Object?>.unmodifiable(
+              args.cast<String, Object?>(),
+            )
+          : const <String, Object?>{};
+  return SimulationDescription(
+    json['templateKey']! as String,
+    argsMap,
+  );
+}

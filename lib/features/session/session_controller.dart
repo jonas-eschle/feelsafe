@@ -41,6 +41,7 @@ import 'package:guardianangela/domain/engine/session_log_recorder.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
@@ -649,7 +650,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   /// sink for simulation descriptions, so SimulationSummaryScreen
   /// always showed an empty list. Called from
   /// `onSimulationDescription` inside [_bootstrapSession].
-  void _appendFiredDescription(String description) {
+  void _appendFiredDescription(SimulationDescription description) {
     final current = state.value;
     if (current == null) return;
     state = AsyncValue.data(
