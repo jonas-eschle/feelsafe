@@ -4,6 +4,7 @@
 
 ### 1. Profile picture MissingPluginException
 **Problem**: Loading a profile picture on web throws `MissingPluginException(No implementation found for method getApplicationDocumentsDirectory)`. `path_provider` doesn't work on web.
+**Status (phase-D.7)**: **moot** in current code. Searched for `ImagePicker`, `image_picker`, `XFile`, and `profilePicturePath` in `lib/` and `test/` — none exist. The profile screen (`lib/features/profile/profile_screen.dart`) edits text fields only (name, age, blood type, allergies, medications, etc.) and has no avatar/photo picker. The `_CallerAvatar` widget in `lib/features/fake_call/fake_call_screen.dart` uses `AssetImage` (bundled assets), not user-picked files. The only `path_provider` calls in `lib/` are in `lib/data/db/app_database.dart` (DB path) and `lib/services/implementations/recording_service.dart` (recording output) — neither runs on web. Re-open this issue if/when an `ImagePicker` flow is added; the fix at that point is to guard with `kIsWeb` and either use `XFile.readAsBytes()` to keep the bytes in memory or skip the file-copy path on web.
 **Fix**: Guard image picker behind platform check. On web, use in-memory or skip file copy. Add test that image picker gracefully handles missing platform.
 
 ### 2. Divider styling — double bars (grey + white)
