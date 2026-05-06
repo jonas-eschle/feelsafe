@@ -14,6 +14,7 @@ library;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/services/implementations/audio_service.dart';
+import 'package:guardianangela/services/implementations/background_session_service.dart';
 import 'package:guardianangela/services/implementations/battery_monitor_service.dart';
 import 'package:guardianangela/services/implementations/biometric_service.dart';
 import 'package:guardianangela/services/implementations/device_state_service.dart';
@@ -34,6 +35,7 @@ import 'package:guardianangela/services/implementations/system_ui_service.dart';
 import 'package:guardianangela/services/implementations/vibration_service.dart';
 import 'package:guardianangela/services/implementations/wakelock_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
@@ -73,6 +75,7 @@ import 'package:guardianangela/services/simulation/simulation_vibration_service.
 import 'package:guardianangela/services/simulation/simulation_wakelock_service.dart';
 
 export 'package:guardianangela/services/implementations/audio_service.dart';
+export 'package:guardianangela/services/implementations/background_session_service.dart';
 export 'package:guardianangela/services/implementations/battery_monitor_service.dart';
 export 'package:guardianangela/services/implementations/device_state_service.dart';
 export 'package:guardianangela/services/implementations/flash_service.dart';
@@ -92,6 +95,7 @@ export 'package:guardianangela/services/implementations/system_ui_service.dart';
 export 'package:guardianangela/services/implementations/vibration_service.dart';
 export 'package:guardianangela/services/implementations/wakelock_service.dart';
 export 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+export 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 export 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 export 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 export 'package:guardianangela/services/protocols/flash_service_protocol.dart';
@@ -209,6 +213,19 @@ final simulationScreenFlashProvider = Provider<ScreenFlashServiceProtocol>(
 final permissionServiceProvider = Provider<PermissionServiceProtocol>(
   (_) => const PermissionService(),
 );
+
+/// Real background-session service. Wraps the persistent session
+/// notification + foreground action stream into a typed
+/// [BackgroundAction] surface (audit Q3). Disposed on container
+/// teardown so the broadcast controller and the underlying
+/// notification subscription are released.
+final backgroundSessionServiceProvider =
+    Provider<BackgroundSessionServiceProtocol>((ref) {
+      final notification = ref.watch(notificationServiceProvider);
+      final service = BackgroundSessionService(notification: notification);
+      ref.onDispose(service.dispose);
+      return service;
+    });
 
 /// Real location service.
 final locationServiceProvider = Provider<LocationServiceProtocol>(
