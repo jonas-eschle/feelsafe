@@ -28,7 +28,7 @@ library;
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:flutter/widgets.dart' show AppLifecycleState;
+import 'package:flutter/widgets.dart' show AppLifecycleState, Locale;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/core/utils/pin_result.dart';
@@ -45,6 +45,7 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Internal bundle collecting the live session's runtime handles so
@@ -446,6 +447,20 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     required bool isBackgroundAlert,
   }) async {
     final services = _resolveServices(isSimulation: isSimulation);
+    // Fix for bugs.json Warn 3 / Warn 4: seed localized fallbacks
+    // (TTS phrase, default SMS body, default pre-call SMS body) for
+    // the user's app language plus a per-language resolver each
+    // contact uses to pick its own SMS body when the contact's
+    // `languageCode` differs.
+    final appL = await AppLocalizations.delegate.load(
+      Locale(settings.languageCode),
+    );
+    final smsResolver = _buildSmsTemplateResolver(
+      pick: (l) => l.smsDefaultTemplate,
+    );
+    final preSmsResolver = _buildSmsTemplateResolver(
+      pick: (l) => l.smsDefaultPreCallTemplate,
+    );
     final context = SessionContext(
       mode: mode,
       contacts: contacts,
@@ -457,6 +472,11 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       // emergency number into the session context so
       // CallEmergencyStrategy no longer hardcodes '112'.
       emergencyNumber: settings.emergencyCallNumber,
+      ttsLatePhrase: appL.audioRunningLatePhrase,
+      defaultSmsTemplate: appL.smsDefaultTemplate,
+      defaultPreSmsTemplate: appL.smsDefaultPreCallTemplate,
+      smsTemplateForLanguage: smsResolver,
+      preSmsTemplateForLanguage: preSmsResolver,
     );
     final engine = SessionEngine(
       chainSteps: mode.chainSteps,
@@ -669,6 +689,30 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   EventDefaults _effectiveDefaults(AppSettings settings, SessionMode mode) {
     final override = mode.overrides?.eventDefaults;
     return override ?? settings.defaults.eventDefaults;
+  }
+
+  /// Builds an [SmsTemplateResolver] backed by [AppLocalizations].
+  /// See `SessionLifecycleController._buildSmsTemplateResolver` for
+  /// the rationale; this duplicate exists because the legacy
+  /// `SessionController` facade still owns its own `_bootstrapSession`.
+  /// Fix for bugs.json Warn 4.
+  SmsTemplateResolver _buildSmsTemplateResolver({
+    required String Function(AppLocalizations) pick,
+  }) {
+    final cache = <String, String>{};
+    return (String? languageCode) {
+      if (languageCode == null || languageCode.isEmpty) return null;
+      final cached = cache[languageCode];
+      if (cached != null) return cached;
+      final locale = Locale(languageCode);
+      if (!AppLocalizations.delegate.isSupported(locale)) return null;
+      AppLocalizations? resolved;
+      AppLocalizations.delegate.load(locale).then((l) => resolved = l);
+      if (resolved == null) return null;
+      final value = pick(resolved!);
+      cache[languageCode] = value;
+      return value;
+    };
   }
 
   List<ReminderTemplate> _resolveTemplates({

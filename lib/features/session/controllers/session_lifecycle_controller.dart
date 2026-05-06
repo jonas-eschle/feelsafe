@@ -37,6 +37,7 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/session_orchestrator.dart';
 import 'package:guardianangela/features/session/emergency_confirm_request.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Bundle collecting the live session's runtime handles so
@@ -501,6 +502,23 @@ class SessionLifecycleController {
     required bool isBackgroundAlert,
   }) async {
     final services = _resolveServices(isSimulation: isSimulation);
+    // Fix for bugs.json Warn 3 / Warn 4: seed the localized strings
+    // strategies fall back to (TTS phrase, default SMS body, default
+    // pre-call SMS body) from `AppLocalizations` for the user's app
+    // language, plus a per-language resolver each contact uses to
+    // pick its own SMS body when the contact's `languageCode` differs.
+    // The resolver is built from the same delegate so any language
+    // the app supports can be pulled synchronously (delegate.load
+    // returns a SynchronousFuture).
+    final appL = await AppLocalizations.delegate.load(
+      Locale(settings.languageCode),
+    );
+    final smsResolver = _buildSmsTemplateResolver(
+      pick: (l) => l.smsDefaultTemplate,
+    );
+    final preSmsResolver = _buildSmsTemplateResolver(
+      pick: (l) => l.smsDefaultPreCallTemplate,
+    );
     final context = SessionContext(
       mode: mode,
       contacts: contacts,
@@ -514,6 +532,13 @@ class SessionLifecycleController {
       // so strategies can resolve per-step `logGps` overrides
       // without round-tripping through AppSettings.
       gpsLoggingEnabled: _effectiveGpsEnabled(settings, mode),
+      // Warn 3 / 4 fix: seed localized fallbacks + per-language
+      // resolver.
+      ttsLatePhrase: appL.audioRunningLatePhrase,
+      defaultSmsTemplate: appL.smsDefaultTemplate,
+      defaultPreSmsTemplate: appL.smsDefaultPreCallTemplate,
+      smsTemplateForLanguage: smsResolver,
+      preSmsTemplateForLanguage: preSmsResolver,
     );
     // Spec 11 §DE-3 — interval-based GPS recording. The buffer is
     // ephemeral: created at session-start, cleared at session-end,
@@ -839,6 +864,38 @@ class SessionLifecycleController {
   EventDefaults _effectiveDefaults(AppSettings settings, SessionMode mode) {
     final override = mode.overrides?.eventDefaults;
     return override ?? settings.defaults.eventDefaults;
+  }
+
+  /// Builds an [SmsTemplateResolver] that loads the
+  /// [AppLocalizations] delegate for the target language and returns
+  /// the localized template via [pick]. Cached so repeated calls for
+  /// the same language do not re-walk the delegate.
+  ///
+  /// Why: the delegate lookup is synchronous (`SynchronousFuture`
+  /// inside `_AppLocalizationsDelegate.load`) which lets us call this
+  /// inside a strategy's `executeReal` without blocking the engine
+  /// timer. Returns null when the language code is not supported, so
+  /// strategies fall back to `SessionContext.defaultSmsTemplate`.
+  /// Fix for bugs.json Warn 4.
+  SmsTemplateResolver _buildSmsTemplateResolver({
+    required String Function(AppLocalizations) pick,
+  }) {
+    final cache = <String, String>{};
+    return (String? languageCode) {
+      if (languageCode == null || languageCode.isEmpty) return null;
+      final cached = cache[languageCode];
+      if (cached != null) return cached;
+      final locale = Locale(languageCode);
+      if (!AppLocalizations.delegate.isSupported(locale)) return null;
+      // SynchronousFuture: `.load` returns immediately for the
+      // generated delegate.
+      AppLocalizations? resolved;
+      AppLocalizations.delegate.load(locale).then((l) => resolved = l);
+      if (resolved == null) return null;
+      final value = pick(resolved!);
+      cache[languageCode] = value;
+      return value;
+    };
   }
 
   /// Effective GPS-logging master toggle for the session (DE-2).
