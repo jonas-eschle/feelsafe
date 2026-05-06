@@ -91,14 +91,13 @@
   "modeChainHeader": "سلسلة التصعيد",
   "modeChainAddStep": "إضافة خطوة",
   "modeChainEmpty": "لا توجد خطوات بعد. اضغط على إضافة خطوة.",
-
-
   "modeTrackingHeader": "تتبع GPS",
   "modeTrackingEnabled": "تسجيل GPS أثناء الجلسة",
   "modeTrackingIntervalLabel": "فاصل المعاينة",
   "modeTrackingBufferSizeLabel": "حجم المخزن المؤقت",
   "modeTrackingBufferSizeValue": "{count} نقاط",
-  "modeTrackingBatteryNote": "تتبع GPS المتكرر يزيد من استهلاك البطارية.",  "stepTypeHoldButton": "زر الضغط المستمر",
+  "modeTrackingBatteryNote": "تتبع GPS المتكرر يزيد من استهلاك البطارية.",
+  "stepTypeHoldButton": "زر الضغط المستمر",
   "stepTypeDisguisedReminder": "تذكير مموّه",
   "stepTypeCountdownWarning": "تحذير العد التنازلي",
   "stepTypeFakeCall": "مكالمة وهمية",
@@ -277,7 +276,6 @@
   "feedbackFieldMessage": "الرسالة",
   "feedbackSend": "فتح البريد الإلكتروني",
   "pickerNoneLabel": "— لا شيء —",
-
   "moreSettingsHeader": "إعدادات إضافية",
   "moreSettingsHeaderCustomized": "إعدادات إضافية (تم تخصيص {count})",
   "stepConfigLogGpsLabel": "تسجيل GPS",
@@ -448,5 +446,7 @@
   "launchGateSubtitle": "أدخل رمز PIN أو استخدم القياسات الحيوية.",
   "launchGateWrong": "رمز PIN غير صحيح",
   "launchGateBiometricReason": "فتح Guardian Angela",
-  "launchGateUseBiometric": "استخدام القياسات الحيوية"
+  "launchGateUseBiometric": "استخدام القياسات الحيوية",
+  "historyTabReal": "حقيقي",
+  "historyTabSimulated": "محاكاة"
 }

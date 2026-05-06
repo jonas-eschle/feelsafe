@@ -2429,6 +2429,18 @@ abstract class AppLocalizations {
   /// **'No past sessions yet.'**
   String get historyEmpty;
 
+  /// Tab label for real (non-simulated) sessions on the past-events screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Real'**
+  String get historyTabReal;
+
+  /// Tab label for simulated sessions on the past-events screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated'**
+  String get historyTabSimulated;
+
   /// Hint text for the history search field.
   ///
   /// In en, this message translates to:

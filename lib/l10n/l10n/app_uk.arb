@@ -91,14 +91,13 @@
   "modeChainHeader": "Ланцюг ескалації",
   "modeChainAddStep": "Додати крок",
   "modeChainEmpty": "Ще немає кроків. Натисніть «Додати крок».",
-
-
   "modeTrackingHeader": "Відстеження GPS",
   "modeTrackingEnabled": "Записувати GPS під час сеансу",
   "modeTrackingIntervalLabel": "Інтервал вибірки",
   "modeTrackingBufferSizeLabel": "Розмір буфера",
   "modeTrackingBufferSizeValue": "{count} точок",
-  "modeTrackingBatteryNote": "Часте відстеження GPS збільшує витрати батареї.",  "stepTypeHoldButton": "Кнопка утримання",
+  "modeTrackingBatteryNote": "Часте відстеження GPS збільшує витрати батареї.",
+  "stepTypeHoldButton": "Кнопка утримання",
   "stepTypeDisguisedReminder": "Замаскований нагадування",
   "stepTypeCountdownWarning": "Попередження відліку",
   "stepTypeFakeCall": "Фальшивий дзвінок",
@@ -277,7 +276,6 @@
   "feedbackFieldMessage": "Повідомлення",
   "feedbackSend": "Відкрити пошту",
   "pickerNoneLabel": "— немає —",
-
   "moreSettingsHeader": "Додаткові налаштування",
   "moreSettingsHeaderCustomized": "Додаткові налаштування ({count} змінено)",
   "stepConfigLogGpsLabel": "Запис GPS",
@@ -838,5 +836,7 @@
   "launchGateUseBiometric": "Використати біометрію",
   "@launchGateUseBiometric": {
     "description": "Button to fall back to biometric auth on the launch gate."
-  }
+  },
+  "historyTabReal": "Реальні",
+  "historyTabSimulated": "Симуляція"
 }

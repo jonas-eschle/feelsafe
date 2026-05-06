@@ -1,7 +1,6 @@
 {
   "@@locale": "he",
   "appTitle": "Guardian Angela",
-
   "commonSave": "שמור",
   "commonCancel": "ביטול",
   "commonDelete": "מחק",
@@ -20,7 +19,6 @@
   "commonSeconds": "שניות",
   "commonMinutes": "דקות",
   "cancel": "ביטול",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "התחל מושב",
   "homeSimulate": "סימולציה",
@@ -33,7 +31,6 @@
   "homeMenuModes": "מצבים",
   "homeMenuHistory": "מושבים קודמים",
   "homeSelectMode": "בחר מצב",
-
   "onboardingWelcomeTitle": "ברוכים הבאים ל-Guardian Angela",
   "onboardingWelcomeBody": "מלווה ששומר עליכם בדרככם הביתה. Guardian Angela שומרת עליכם בזמן הליכה, ריצה או נסיעה, ויכולה להתריע לאנשי הקשר שבחרתם אם אתם זקוקים לעזרה.",
   "onboardingProfileTitle": "פרופיל ואיש קשר ראשון",
@@ -43,7 +40,6 @@
   "onboardingNext": "הבא",
   "onboardingSkip": "דלג",
   "onboardingFinish": "סיום",
-
   "sessionTitle": "מושב",
   "sessionDisarm": "אני בטוח",
   "sessionPause": "השהה",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "מושהה",
   "sessionPhaseEnded": "המושב הסתיים",
   "sessionSimulationBanner": "סימולציה",
-
   "sessionCompletedTitle": "המושב הושלם",
   "sessionCompletedBody": "הגעתם בבטחה. Guardian Angela סיימה את תפקידה.",
   "sessionCompletedReturnHome": "חזרה לדף הבית",
-
   "simulationSummaryTitle": "סיכום הסימולציה",
   "simulationSummaryEmpty": "לא הופעלו שלבים במהלך הסימולציה.",
   "simulationSummaryReturn": "חזרה לדף הבית",
-
   "fakeCallTitle": "שיחה נכנסת",
   "fakeCallAnswer": "ענה",
   "fakeCallDecline": "דחה",
   "fakeCallHangUp": "נתק",
-
   "contactsTitle": "אנשי קשר לשעת חירום",
   "contactsEmpty": "אין אנשי קשר עדיין. הוסיפו אחד כדי לקבל הודעות מצוקה.",
   "contactsAdd": "הוסף איש קשר",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "למחוק את איש הקשר?",
   "contactDeleteBody": "{name} יוסר מרשימת החירום שלך.",
   "contactRequiredError": "שם ומספר טלפון הם שדות חובה.",
-
   "modesTitle": "מצבים",
   "modesEmpty": "אין מצבים עדיין. הקישו על הוסף כדי ליצור מצב.",
   "modesAdd": "הוסף מצב",
@@ -100,8 +91,6 @@
   "modeChainHeader": "שרשרת הסלמה",
   "modeChainAddStep": "הוסף שלב",
   "modeChainEmpty": "אין שלבים עדיין. הקישו על הוסף שלב.",
-
-
   "modeTrackingHeader": "מעקב GPS",
   "modeTrackingEnabled": "הקלט GPS במהלך הסשן",
   "modeTrackingIntervalLabel": "מרווח דגימה",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "אזעקה רועשת",
   "stepTypeCallEmergency": "התקשר לחירום",
   "stepTypeHardwareButton": "לחצן פיזי",
-
   "stepFieldDuration": "משך (שניות)",
   "stepFieldGrace": "תקופת חסד (שניות)",
   "stepFieldWait": "המתנה (שניות)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "שונות בזמנים",
   "stepPreview": "תצוגה מקדימה בסימולציה",
   "stepPreviewFired": "התצוגה המקדימה הופעלה: {description}",
-
   "stepConfigFakeCallCaller": "שם המתקשר",
   "stepConfigFakeCallDecline": "דחייה נחשבת כביטול אזעקה",
   "stepConfigLoudAlarmFlash": "הבהוב מסך",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "עקיפת מספר החירום",
   "stepConfigEmergencyConfirm": "אשר לפני חיוג",
   "stepConfigPhonePreSms": "שלח SMS לפני השיחה",
-
   "distressModesTitle": "מצבי מצוקה",
   "distressModeInUseTitle": "מצב המצוקה בשימוש",
   "distressModeInUseBody": "מצב המצוקה הזה עדיין מקושר ל: {modes}. קשר את המצבים האלו למצב מצוקה אחר לפני מחיקה.",
@@ -162,7 +148,6 @@
   "distressModeName": "שם מצב המצוקה",
   "distressCountdown": "מפעיל מצב מצוקה...",
   "distressCountdownStealth": "אנא המתינו...",
-
   "templatesTitle": "תבניות תזכורת",
   "templatesEmpty": "אין תבניות עדיין.",
   "templatesAdd": "הוסף תבנית",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "בטל",
   "templateDisplayFullscreen": "מסך מלא",
   "templateDisplaySubtle": "עדין",
-
   "profileTitle": "פרופיל",
   "profileFieldName": "שם",
   "profileFieldAge": "גיל",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "מצבים רפואיים",
   "profileFieldInstructions": "הוראות חירום",
   "profileAddItem": "הוסף פריט",
-
   "settingsTitle": "הגדרות",
   "settingsSectionSecurity": "אבטחה",
   "settingsSectionStealth": "מצב סמוי",
@@ -218,7 +201,6 @@
   "settingsLanguage": "שפה",
   "settingsEmergencyNumber": "מספר חירום",
   "settingsAlarmDnd": "אזעקה עוקפת את מצב 'נא לא להפריע'",
-
   "securityTitle": "אבטחה",
   "securityAppPin": "קוד אפליקציה",
   "securitySessionEndPin": "קוד סיום מושב",
@@ -227,14 +209,12 @@
   "securityDisablePin": "השבת",
   "securitySetPin": "הגדר קוד",
   "securityChangePin": "שנה קוד",
-
   "pinSetupTitle": "הגדר קוד",
   "pinSetupEnter": "הזן קוד חדש",
   "pinSetupConfirm": "אשר קוד",
   "pinSetupMismatch": "הקודים אינם תואמים. נסו שוב.",
   "pinEntryTitle": "הזן קוד",
   "pinEntrySubtitle": "הזינו את הקוד שלכם כדי להמשיך.",
-
   "stealthTitle": "מצב סמוי",
   "stealthEnable": "הפעל מצב סמוי",
   "stealthFakeName": "שם אפליקציה מזויף",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "ביטול",
   "distressConfirmationCountdown": "שרשרת החירום תופעל בעוד {seconds} שניות",
   "imSafeSliderLabel": "החלק כדי לאשר „אני בטוח/ה”",
-
   "batteryAlertTitle": "התראת סוללה",
   "batteryAlertEnable": "הפעל התראת סוללה",
   "batteryAlertThreshold": "סף: {percent}%",
-
   "eventDefaultsTitle": "ברירות מחדל לשלבים",
   "eventDefaultsBody": "ברירות המחדל הללו חלות על כל שלב שאינו דורס אותן.",
-
   "gpsLoggingTitle": "תיעוד GPS",
   "gpsLoggingEnable": "הפעל תיעוד GPS",
   "gpsLoggingInterval": "מרווח דגימה (שניות)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "גבוה",
   "gpsLoggingIncludeSms": "צרף מיקום ל-SMS",
   "gpsLoggingHistoryDays": "שמירת היסטוריה (ימים)",
-
   "notificationSettingsTitle": "התראות",
   "notificationSettingsBody": "Guardian Angela משתמשת בהתראות כדי להסוות ולהפעיל תזכורות.",
-
   "historyRetentionTitle": "שמירת היסטוריה",
   "historyRetentionBody": "לכמה זמן Guardian Angela שומרת יומני מושבים קודמים.",
   "historyRetentionDays": "שמירה: {days} ימים",
-
   "backupTitle": "גיבוי",
   "backupExport": "ייצא נתונים",
   "backupImport": "ייבא נתונים",
   "backupNotReady": "הגיבוי עדיין אינו זמין. בקרוב.",
   "backupPinOptional": "PIN אופציונלי (מצפין את החבילה)",
   "backupImportOk": "הגיבוי יובא בהצלחה.",
-
   "historyTitle": "מושבים קודמים",
   "historyEmpty": "אין מושבים קודמים עדיין.",
   "historyDetailTitle": "פרטי מושב",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "העתק כטקסט",
   "evidenceExportAsJson": "העתק כ-JSON",
   "evidenceCopied": "הועתק ללוח.",
-
   "aboutTitle": "אודות",
   "aboutVersion": "גרסה",
   "aboutCredits": "נבנה באכפתיות לאנשים בדרך הביתה.",
-
   "feedbackTitle": "משוב",
   "feedbackBody": "נשמח לשמוע ממכם.",
   "feedbackFieldMessage": "הודעה",
   "feedbackSend": "פתח אימייל",
-
   "pickerNoneLabel": "— ללא —",
-
   "moreSettingsHeader": "הגדרות נוספות",
   "moreSettingsHeaderCustomized": "הגדרות נוספות ({count} מותאמים)",
   "stepConfigLogGpsLabel": "תיעוד GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "פעולה",
   "stepCategoryReminder": "תזכורת",
   "stepCategoryDisarm": "צ'ק-אין",
-
   "angelaDialogTitle": "הוזן PIN ישן",
   "angelaDialogBody": "נראה שהשתמשת ב-PIN ישן. את/ה בטוח/ה שברצונך להמשיך?",
   "angelaDialogCancel": "ביטול",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "הזן/י את ה-PIN שלך או השתמש/י בביומטריה.",
   "launchGateWrong": "PIN שגוי",
   "launchGateBiometricReason": "פתח/י את Guardian Angela",
-  "launchGateUseBiometric": "השתמש/י בביומטריה"
+  "launchGateUseBiometric": "השתמש/י בביומטריה",
+  "historyTabReal": "אמיתי",
+  "historyTabSimulated": "סימולציה"
 }

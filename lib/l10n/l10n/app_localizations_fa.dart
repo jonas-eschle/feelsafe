@@ -1233,6 +1233,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get historyEmpty => 'هنوز هیچ جلسه گذشته‌ای وجود ندارد.';
 
   @override
+  String get historyTabReal => 'واقعی';
+
+  @override
+  String get historyTabSimulated => 'شبیه‌سازی شده';
+
+  @override
   String get historySearchHint => 'جستجو بر اساس نام حالت';
 
   @override

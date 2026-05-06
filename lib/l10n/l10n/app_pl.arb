@@ -1,7 +1,6 @@
 {
   "@@locale": "pl",
   "appTitle": "Guardian Angela",
-
   "commonSave": "Zapisz",
   "commonCancel": "Anuluj",
   "commonDelete": "Usuń",
@@ -20,7 +19,6 @@
   "commonSeconds": "sekund",
   "commonMinutes": "minut",
   "cancel": "Anuluj",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "Rozpocznij sesję",
   "homeSimulate": "Symuluj",
@@ -33,7 +31,6 @@
   "homeMenuModes": "Tryby",
   "homeMenuHistory": "Poprzednie sesje",
   "homeSelectMode": "Wybierz tryb",
-
   "onboardingWelcomeTitle": "Witaj w Guardian Angela",
   "onboardingWelcomeBody": "Towarzysz, który zapewni Ci bezpieczeństwo w drodze do domu. Guardian Angela czuwa nad Tobą, gdy idziesz, biegniesz lub podróżujesz, i może powiadomić wybrane kontakty, jeśli potrzebujesz pomocy.",
   "onboardingProfileTitle": "Profil i pierwszy kontakt",
@@ -43,7 +40,6 @@
   "onboardingNext": "Dalej",
   "onboardingSkip": "Pomiń",
   "onboardingFinish": "Zakończ",
-
   "sessionTitle": "Sesja",
   "sessionDisarm": "Jestem bezpieczny",
   "sessionPause": "Wstrzymaj",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "Wstrzymano",
   "sessionPhaseEnded": "Sesja zakończona",
   "sessionSimulationBanner": "Symulacja",
-
   "sessionCompletedTitle": "Sesja zakończona",
   "sessionCompletedBody": "Dotarłeś bezpiecznie. Guardian Angela kończy czuwanie.",
   "sessionCompletedReturnHome": "Wróć do ekranu głównego",
-
   "simulationSummaryTitle": "Podsumowanie symulacji",
   "simulationSummaryEmpty": "Podczas tej symulacji nie uruchomiono żadnych kroków.",
   "simulationSummaryReturn": "Wróć do ekranu głównego",
-
   "fakeCallTitle": "Połączenie przychodzące",
   "fakeCallAnswer": "Odbierz",
   "fakeCallDecline": "Odrzuć",
   "fakeCallHangUp": "Rozłącz",
-
   "contactsTitle": "Kontakty alarmowe",
   "contactsEmpty": "Brak kontaktów. Dodaj kogoś, kto będzie otrzymywać wiadomości alarmowe.",
   "contactsAdd": "Dodaj kontakt",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "Usunąć kontakt?",
   "contactDeleteBody": "{name} zostanie usunięty z listy kontaktów alarmowych.",
   "contactRequiredError": "Imię i numer telefonu są wymagane.",
-
   "modesTitle": "Tryby",
   "modesEmpty": "Brak trybów. Dotknij Dodaj, aby utworzyć tryb.",
   "modesAdd": "Dodaj tryb",
@@ -100,8 +91,6 @@
   "modeChainHeader": "Łańcuch eskalacji",
   "modeChainAddStep": "Dodaj krok",
   "modeChainEmpty": "Brak kroków. Dotknij Dodaj krok.",
-
-
   "modeTrackingHeader": "Śledzenie GPS",
   "modeTrackingEnabled": "Rejestruj GPS podczas sesji",
   "modeTrackingIntervalLabel": "Interwał próbkowania",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "Głośny alarm",
   "stepTypeCallEmergency": "Zadzwoń na numer alarmowy",
   "stepTypeHardwareButton": "Przycisk sprzętowy",
-
   "stepFieldDuration": "Czas trwania (sekundy)",
   "stepFieldGrace": "Okres karencji (sekundy)",
   "stepFieldWait": "Oczekiwanie (sekundy)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "Losowa zmienność czasu",
   "stepPreview": "Podgląd w symulacji",
   "stepPreviewFired": "Podgląd uruchomiony: {description}",
-
   "stepConfigFakeCallCaller": "Nazwa dzwoniącego",
   "stepConfigFakeCallDecline": "Odrzucenie liczy się jako rozbrojenie",
   "stepConfigLoudAlarmFlash": "Migający ekran",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "Własny numer alarmowy",
   "stepConfigEmergencyConfirm": "Potwierdź przed wybraniem numeru",
   "stepConfigPhonePreSms": "Wyślij SMS przed połączeniem",
-
   "distressModesTitle": "Tryby alarmowe",
   "distressModeInUseTitle": "Tryb alarmowy jest używany",
   "distressModeInUseBody": "Ten tryb alarmowy jest nadal powiązany z: {modes}. Zanim go usuniesz, przypisz te tryby do innego trybu alarmowego.",
@@ -162,7 +148,6 @@
   "distressModeName": "Nazwa trybu alarmowego",
   "distressCountdown": "Uruchamianie trybu alarmowego...",
   "distressCountdownStealth": "Proszę czekać...",
-
   "templatesTitle": "Szablony przypomnień",
   "templatesEmpty": "Brak szablonów.",
   "templatesAdd": "Dodaj szablon",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "Odrzuć",
   "templateDisplayFullscreen": "Pełny ekran",
   "templateDisplaySubtle": "Dyskretny",
-
   "profileTitle": "Profil",
   "profileFieldName": "Imię",
   "profileFieldAge": "Wiek",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "Schorzenia",
   "profileFieldInstructions": "Instrukcje w nagłych przypadkach",
   "profileAddItem": "Dodaj pozycję",
-
   "settingsTitle": "Ustawienia",
   "settingsSectionSecurity": "Bezpieczeństwo",
   "settingsSectionStealth": "Tryb ukryty",
@@ -218,7 +201,6 @@
   "settingsLanguage": "Język",
   "settingsEmergencyNumber": "Numer alarmowy",
   "settingsAlarmDnd": "Alarm pomija tryb Nie przeszkadzać",
-
   "securityTitle": "Bezpieczeństwo",
   "securityAppPin": "PIN aplikacji",
   "securitySessionEndPin": "PIN zakończenia sesji",
@@ -227,14 +209,12 @@
   "securityDisablePin": "Wyłącz",
   "securitySetPin": "Ustaw PIN",
   "securityChangePin": "Zmień PIN",
-
   "pinSetupTitle": "Ustaw PIN",
   "pinSetupEnter": "Wprowadź nowy PIN",
   "pinSetupConfirm": "Potwierdź PIN",
   "pinSetupMismatch": "Kody PIN nie są zgodne. Spróbuj ponownie.",
   "pinEntryTitle": "Wprowadź PIN",
   "pinEntrySubtitle": "Wprowadź PIN, aby kontynuować.",
-
   "stealthTitle": "Tryb ukryty",
   "stealthEnable": "Włącz tryb ukryty",
   "stealthFakeName": "Fałszywa nazwa aplikacji",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "Anuluj",
   "distressConfirmationCountdown": "Tryb alarmowy zostanie uruchomiony za {seconds} s",
   "imSafeSliderLabel": "Przesuń, aby potwierdzić „Jestem bezpieczny/a”",
-
   "batteryAlertTitle": "Alarm baterii",
   "batteryAlertEnable": "Włącz alarm baterii",
   "batteryAlertThreshold": "Próg: {percent}%",
-
   "eventDefaultsTitle": "Domyślne kroki",
   "eventDefaultsBody": "Te wartości domyślne odnoszą się do każdego kroku, który ich nie nadpisuje.",
-
   "gpsLoggingTitle": "Rejestrowanie GPS",
   "gpsLoggingEnable": "Włącz rejestrowanie GPS",
   "gpsLoggingInterval": "Odstęp próbkowania (sekundy)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "Wysoka",
   "gpsLoggingIncludeSms": "Dołącz lokalizację do SMS",
   "gpsLoggingHistoryDays": "Przechowywanie historii (dni)",
-
   "notificationSettingsTitle": "Powiadomienia",
   "notificationSettingsBody": "Guardian Angela używa powiadomień do maskowania i wyświetlania przypomnień.",
-
   "historyRetentionTitle": "Przechowywanie historii",
   "historyRetentionBody": "Jak długo Guardian Angela przechowuje dzienniki poprzednich sesji.",
   "historyRetentionDays": "Przechowywanie: {days} dni",
-
   "backupTitle": "Kopia zapasowa",
   "backupExport": "Eksportuj dane",
   "backupImport": "Importuj dane",
   "backupNotReady": "Kopia zapasowa nie jest jeszcze dostępna. Wkrótce.",
   "backupPinOptional": "Opcjonalny PIN (szyfruje pakiet)",
   "backupImportOk": "Kopia zapasowa została zaimportowana.",
-
   "historyTitle": "Poprzednie sesje",
   "historyEmpty": "Brak poprzednich sesji.",
   "historyDetailTitle": "Szczegóły sesji",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "Kopiuj jako tekst",
   "evidenceExportAsJson": "Kopiuj jako JSON",
   "evidenceCopied": "Skopiowano do schowka.",
-
   "aboutTitle": "O aplikacji",
   "aboutVersion": "Wersja",
   "aboutCredits": "Stworzone z troską o osoby w drodze do domu.",
-
   "feedbackTitle": "Opinie",
   "feedbackBody": "Chętnie poznamy Twoją opinię.",
   "feedbackFieldMessage": "Wiadomość",
   "feedbackSend": "Otwórz e-mail",
-
   "pickerNoneLabel": "— brak —",
-
   "moreSettingsHeader": "Więcej ustawień",
   "moreSettingsHeaderCustomized": "Więcej ustawień (dostosowano {count})",
   "stepConfigLogGpsLabel": "Rejestrowanie GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "Działanie",
   "stepCategoryReminder": "Przypomnienie",
   "stepCategoryDisarm": "Zameldowanie",
-
   "angelaDialogTitle": "Wprowadzono stary PIN",
   "angelaDialogBody": "Wygląda na to, że użyto starego PIN-u. Czy na pewno kontynuować?",
   "angelaDialogCancel": "Anuluj",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "Wprowadź PIN lub użyj biometrii.",
   "launchGateWrong": "Błędny PIN",
   "launchGateBiometricReason": "Odblokuj Guardian Angela",
-  "launchGateUseBiometric": "Użyj biometrii"
+  "launchGateUseBiometric": "Użyj biometrii",
+  "historyTabReal": "Rzeczywiste",
+  "historyTabSimulated": "Symulacje"
 }

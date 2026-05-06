@@ -1229,6 +1229,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get historyEmpty => 'لا توجد جلسات سابقة بعد.';
 
   @override
+  String get historyTabReal => 'حقيقي';
+
+  @override
+  String get historyTabSimulated => 'محاكاة';
+
+  @override
   String get historySearchHint => 'البحث باسم الوضع';
 
   @override

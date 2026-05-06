@@ -19,7 +19,6 @@
   "commonSeconds": "秒",
   "commonMinutes": "分鐘",
   "cancel": "取消",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "開始守護",
   "homeSimulate": "模擬",
@@ -32,7 +31,6 @@
   "homeMenuModes": "模式",
   "homeMenuHistory": "過往紀錄",
   "homeSelectMode": "選擇模式",
-
   "onboardingWelcomeTitle": "歡迎使用 Guardian Angela",
   "onboardingWelcomeBody": "一位陪你平安回家的夥伴。無論你是走路、跑步或搭車,Guardian Angela 都會守護著你,並在你需要協助時通知你指定的聯絡人。",
   "onboardingProfileTitle": "個人資料與首位聯絡人",
@@ -42,7 +40,6 @@
   "onboardingNext": "下一步",
   "onboardingSkip": "略過",
   "onboardingFinish": "完成",
-
   "sessionTitle": "守護中",
   "sessionDisarm": "我很安全",
   "sessionPause": "暫停",
@@ -55,20 +52,16 @@
   "sessionPausedBadge": "已暫停",
   "sessionPhaseEnded": "守護已結束",
   "sessionSimulationBanner": "模擬",
-
   "sessionCompletedTitle": "守護完成",
   "sessionCompletedBody": "你已平安抵達。Guardian Angela 即將停止守護。",
   "sessionCompletedReturnHome": "返回首頁",
-
   "simulationSummaryTitle": "模擬摘要",
   "simulationSummaryEmpty": "本次模擬未觸發任何步驟。",
   "simulationSummaryReturn": "返回首頁",
-
   "fakeCallTitle": "來電中",
   "fakeCallAnswer": "接聽",
   "fakeCallDecline": "拒接",
   "fakeCallHangUp": "掛斷",
-
   "contactsTitle": "緊急聯絡人",
   "contactsEmpty": "尚未新增聯絡人。請新增一位以便接收你的求救訊息。",
   "contactsAdd": "新增聯絡人",
@@ -86,7 +79,6 @@
   "contactDeleteConfirm": "刪除聯絡人?",
   "contactDeleteBody": "{name} 將從你的緊急聯絡清單中移除。",
   "contactRequiredError": "姓名與電話號碼為必填。",
-
   "modesTitle": "模式",
   "modesEmpty": "尚未建立模式。點選「新增」以建立模式。",
   "modesAdd": "新增模式",
@@ -99,8 +91,6 @@
   "modeChainHeader": "警報升級流程",
   "modeChainAddStep": "新增步驟",
   "modeChainEmpty": "尚未有任何步驟。點選「新增步驟」。",
-
-
   "modeTrackingHeader": "GPS 追蹤",
   "modeTrackingEnabled": "工作階段期間記錄 GPS",
   "modeTrackingIntervalLabel": "取樣間隔",
@@ -116,7 +106,6 @@
   "stepTypeLoudAlarm": "大聲警報",
   "stepTypeCallEmergency": "撥打緊急電話",
   "stepTypeHardwareButton": "實體按鍵",
-
   "stepFieldDuration": "持續時間(秒)",
   "stepFieldGrace": "寬限時間(秒)",
   "stepFieldWait": "等待時間(秒)",
@@ -124,7 +113,6 @@
   "stepFieldRandomize": "時間抖動",
   "stepPreview": "模擬預覽",
   "stepPreviewFired": "預覽已執行:{description}",
-
   "stepConfigFakeCallCaller": "來電者姓名",
   "stepConfigFakeCallDecline": "拒接視為解除",
   "stepConfigLoudAlarmFlash": "螢幕閃爍",
@@ -150,7 +138,6 @@
   "stepConfigEmergencyNumber": "緊急號碼覆寫",
   "stepConfigEmergencyConfirm": "撥打前確認",
   "stepConfigPhonePreSms": "通話前先傳送簡訊",
-
   "distressModesTitle": "求救模式",
   "distressModeInUseTitle": "求救模式使用中",
   "distressModeInUseBody": "此求救模式仍繫結於:{modes}。請先將這些模式改為其他求救模式,再刪除本模式。",
@@ -161,7 +148,6 @@
   "distressModeName": "求救模式名稱",
   "distressCountdown": "正在觸發求救模式…",
   "distressCountdownStealth": "請稍候…",
-
   "templatesTitle": "提醒範本",
   "templatesEmpty": "尚未建立範本。",
   "templatesAdd": "新增範本",
@@ -180,7 +166,6 @@
   "templateConfirmDismiss": "關閉",
   "templateDisplayFullscreen": "全螢幕",
   "templateDisplaySubtle": "低調",
-
   "profileTitle": "個人資料",
   "profileFieldName": "姓名",
   "profileFieldAge": "年齡",
@@ -190,7 +175,6 @@
   "profileFieldConditions": "健康狀況",
   "profileFieldInstructions": "緊急指示",
   "profileAddItem": "新增項目",
-
   "settingsTitle": "設定",
   "settingsSectionSecurity": "安全性",
   "settingsSectionStealth": "隱匿模式",
@@ -217,7 +201,6 @@
   "settingsLanguage": "語言",
   "settingsEmergencyNumber": "緊急電話號碼",
   "settingsAlarmDnd": "警報覆寫勿擾模式",
-
   "securityTitle": "安全性",
   "securityAppPin": "應用程式 PIN",
   "securitySessionEndPin": "結束守護 PIN",
@@ -226,14 +209,12 @@
   "securityDisablePin": "停用",
   "securitySetPin": "設定 PIN",
   "securityChangePin": "變更 PIN",
-
   "pinSetupTitle": "設定 PIN",
   "pinSetupEnter": "請輸入新的 PIN",
   "pinSetupConfirm": "請再次輸入 PIN",
   "pinSetupMismatch": "兩次輸入的 PIN 不一致,請重試。",
   "pinEntryTitle": "輸入 PIN",
   "pinEntrySubtitle": "請輸入 PIN 以繼續。",
-
   "stealthTitle": "隱匿模式",
   "stealthEnable": "啟用隱匿模式",
   "stealthFakeName": "偽裝應用程式名稱",
@@ -255,14 +236,11 @@
   "distressConfirmationCancel": "取消",
   "distressConfirmationCountdown": "求救模式將在 {seconds} 秒後啟動",
   "imSafeSliderLabel": "滑動以確認「我安全」",
-
   "batteryAlertTitle": "電量警示",
   "batteryAlertEnable": "啟用電量警示",
   "batteryAlertThreshold": "門檻:{percent}%",
-
   "eventDefaultsTitle": "步驟預設值",
   "eventDefaultsBody": "這些預設值會套用到未覆寫這些設定的步驟。",
-
   "gpsLoggingTitle": "GPS 紀錄",
   "gpsLoggingEnable": "啟用 GPS 紀錄",
   "gpsLoggingInterval": "取樣間隔(秒)",
@@ -272,21 +250,17 @@
   "gpsAccuracyHigh": "高",
   "gpsLoggingIncludeSms": "於簡訊附上位置",
   "gpsLoggingHistoryDays": "紀錄保留天數",
-
   "notificationSettingsTitle": "通知",
   "notificationSettingsBody": "Guardian Angela 利用通知進行偽裝並驅動提醒。",
-
   "historyRetentionTitle": "紀錄保留",
   "historyRetentionBody": "Guardian Angela 會保留過往守護紀錄多久。",
   "historyRetentionDays": "保留:{days} 天",
-
   "backupTitle": "備份",
   "backupExport": "匯出資料",
   "backupImport": "匯入資料",
   "backupNotReady": "備份功能尚未提供,敬請期待。",
   "backupPinOptional": "可選 PIN（加密備份包）",
   "backupImportOk": "備份匯入成功。",
-
   "historyTitle": "過往紀錄",
   "historyEmpty": "尚無過往紀錄。",
   "historyDetailTitle": "守護詳情",
@@ -294,18 +268,14 @@
   "evidenceExportAsText": "複製為文字",
   "evidenceExportAsJson": "複製為 JSON",
   "evidenceCopied": "已複製至剪貼簿。",
-
   "aboutTitle": "關於",
   "aboutVersion": "版本",
   "aboutCredits": "為每一位平安回家的你,用心打造。",
-
   "feedbackTitle": "意見回饋",
   "feedbackBody": "我們非常期待聽見你的想法。",
   "feedbackFieldMessage": "訊息",
   "feedbackSend": "開啟電子郵件",
-
   "pickerNoneLabel": "— 無 —",
-
   "moreSettingsHeader": "更多設定",
   "moreSettingsHeaderCustomized": "更多設定（已自訂 {count} 項）",
   "stepConfigLogGpsLabel": "GPS 記錄",
@@ -357,7 +327,6 @@
   "stepCategoryAction": "動作",
   "stepCategoryReminder": "提醒",
   "stepCategoryDisarm": "簽到",
-
   "angelaDialogTitle": "已輸入舊 PIN",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
@@ -867,5 +836,7 @@
   "launchGateUseBiometric": "使用生物辨識",
   "@launchGateUseBiometric": {
     "description": "Button to fall back to biometric auth on the launch gate."
-  }
+  },
+  "historyTabReal": "真實",
+  "historyTabSimulated": "模擬"
 }

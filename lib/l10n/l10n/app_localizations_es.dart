@@ -1241,6 +1241,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get historyEmpty => 'Aún no hay sesiones anteriores.';
 
   @override
+  String get historyTabReal => 'Real';
+
+  @override
+  String get historyTabSimulated => 'Simulada';
+
+  @override
   String get historySearchHint => 'Buscar por nombre de modo';
 
   @override

@@ -1,7 +1,6 @@
 {
   "@@locale": "zh",
   "appTitle": "Guardian Angela",
-
   "commonSave": "保存",
   "commonCancel": "取消",
   "commonDelete": "删除",
@@ -20,7 +19,6 @@
   "commonSeconds": "秒",
   "commonMinutes": "分钟",
   "cancel": "取消",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "开始会话",
   "homeSimulate": "模拟",
@@ -33,7 +31,6 @@
   "homeMenuModes": "模式",
   "homeMenuHistory": "历史会话",
   "homeSelectMode": "选择模式",
-
   "onboardingWelcomeTitle": "欢迎使用 Guardian Angela",
   "onboardingWelcomeBody": "一位守护您回家路上的伙伴。无论您步行、跑步还是出行，Guardian Angela 都会时刻守护着您，并可在您需要帮助时通知您选定的联系人。",
   "onboardingProfileTitle": "个人资料和首位联系人",
@@ -43,7 +40,6 @@
   "onboardingNext": "下一步",
   "onboardingSkip": "跳过",
   "onboardingFinish": "完成",
-
   "sessionTitle": "会话",
   "sessionDisarm": "我安全",
   "sessionPause": "暂停",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "已暂停",
   "sessionPhaseEnded": "会话已结束",
   "sessionSimulationBanner": "模拟",
-
   "sessionCompletedTitle": "会话已完成",
   "sessionCompletedBody": "您已安全到达。Guardian Angela 正在撤防。",
   "sessionCompletedReturnHome": "返回主页",
-
   "simulationSummaryTitle": "模拟摘要",
   "simulationSummaryEmpty": "本次模拟未触发任何步骤。",
   "simulationSummaryReturn": "返回主页",
-
   "fakeCallTitle": "来电",
   "fakeCallAnswer": "接听",
   "fakeCallDecline": "拒接",
   "fakeCallHangUp": "挂断",
-
   "contactsTitle": "紧急联系人",
   "contactsEmpty": "尚无联系人。添加一位以接收您的求救信息。",
   "contactsAdd": "添加联系人",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "删除联系人？",
   "contactDeleteBody": "{name} 将从您的紧急联系人列表中移除。",
   "contactRequiredError": "姓名和电话号码为必填项。",
-
   "modesTitle": "模式",
   "modesEmpty": "尚无模式。点击“添加”创建一个模式。",
   "modesAdd": "添加模式",
@@ -100,8 +91,6 @@
   "modeChainHeader": "升级链",
   "modeChainAddStep": "添加步骤",
   "modeChainEmpty": "尚无步骤。点击“添加步骤”。",
-
-
   "modeTrackingHeader": "GPS 追踪",
   "modeTrackingEnabled": "会话期间记录 GPS",
   "modeTrackingIntervalLabel": "采样间隔",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "响亮警报",
   "stepTypeCallEmergency": "呼叫紧急电话",
   "stepTypeHardwareButton": "硬件按键",
-
   "stepFieldDuration": "持续时间（秒）",
   "stepFieldGrace": "宽限期（秒）",
   "stepFieldWait": "等待（秒）",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "时间抖动",
   "stepPreview": "在模拟中预览",
   "stepPreviewFired": "已运行预览：{description}",
-
   "stepConfigFakeCallCaller": "来电者姓名",
   "stepConfigFakeCallDecline": "拒接视为撤防",
   "stepConfigLoudAlarmFlash": "屏幕闪烁",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "覆盖紧急号码",
   "stepConfigEmergencyConfirm": "拨打前确认",
   "stepConfigPhonePreSms": "拨打前发送短信",
-
   "distressModesTitle": "求救模式",
   "distressModeInUseTitle": "求救模式正在使用中",
   "distressModeInUseBody": "此求救模式仍绑定到：{modes}。请先将这些模式改绑到其他求救模式，再删除本模式。",
@@ -162,7 +148,6 @@
   "distressModeName": "求救模式名称",
   "distressCountdown": "正在触发求救模式……",
   "distressCountdownStealth": "请稍候……",
-
   "templatesTitle": "提醒模板",
   "templatesEmpty": "尚无模板。",
   "templatesAdd": "添加模板",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "忽略",
   "templateDisplayFullscreen": "全屏",
   "templateDisplaySubtle": "低调",
-
   "profileTitle": "个人资料",
   "profileFieldName": "姓名",
   "profileFieldAge": "年龄",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "病史",
   "profileFieldInstructions": "紧急说明",
   "profileAddItem": "添加项",
-
   "settingsTitle": "设置",
   "settingsSectionSecurity": "安全",
   "settingsSectionStealth": "隐身",
@@ -218,7 +201,6 @@
   "settingsLanguage": "语言",
   "settingsEmergencyNumber": "紧急电话号码",
   "settingsAlarmDnd": "警报忽略勿扰模式",
-
   "securityTitle": "安全",
   "securityAppPin": "应用 PIN 码",
   "securitySessionEndPin": "会话结束 PIN 码",
@@ -227,14 +209,12 @@
   "securityDisablePin": "禁用",
   "securitySetPin": "设置 PIN 码",
   "securityChangePin": "更改 PIN 码",
-
   "pinSetupTitle": "设置 PIN 码",
   "pinSetupEnter": "输入新 PIN 码",
   "pinSetupConfirm": "确认 PIN 码",
   "pinSetupMismatch": "两次输入的 PIN 码不一致，请重试。",
   "pinEntryTitle": "输入 PIN 码",
   "pinEntrySubtitle": "请输入您的 PIN 码以继续。",
-
   "stealthTitle": "隐身",
   "stealthEnable": "启用隐身",
   "stealthFakeName": "伪装应用名称",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "取消",
   "distressConfirmationCountdown": "求救模式将在 {seconds} 秒后启动",
   "imSafeSliderLabel": "滑动以确认“我安全”",
-
   "batteryAlertTitle": "电量警报",
   "batteryAlertEnable": "启用电量警报",
   "batteryAlertThreshold": "阈值：{percent}%",
-
   "eventDefaultsTitle": "步骤默认值",
   "eventDefaultsBody": "这些默认值适用于任何未单独设置的步骤。",
-
   "gpsLoggingTitle": "GPS 记录",
   "gpsLoggingEnable": "启用 GPS 记录",
   "gpsLoggingInterval": "采样间隔（秒）",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "高",
   "gpsLoggingIncludeSms": "在短信中附加位置",
   "gpsLoggingHistoryDays": "历史保留（天）",
-
   "notificationSettingsTitle": "通知",
   "notificationSettingsBody": "Guardian Angela 使用通知来伪装和驱动提醒。",
-
   "historyRetentionTitle": "历史保留",
   "historyRetentionBody": "Guardian Angela 保留历史会话日志的时长。",
   "historyRetentionDays": "保留：{days} 天",
-
   "backupTitle": "备份",
   "backupExport": "导出数据",
   "backupImport": "导入数据",
   "backupNotReady": "备份功能尚未可用，敬请期待。",
   "backupPinOptional": "可选 PIN（加密备份包）",
   "backupImportOk": "备份导入成功。",
-
   "historyTitle": "历史会话",
   "historyEmpty": "尚无历史会话。",
   "historyDetailTitle": "会话详情",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "复制为文本",
   "evidenceExportAsJson": "复制为 JSON",
   "evidenceCopied": "已复制到剪贴板。",
-
   "aboutTitle": "关于",
   "aboutVersion": "版本",
   "aboutCredits": "为回家路上的人们倾心打造。",
-
   "feedbackTitle": "反馈",
   "feedbackBody": "我们期待您的反馈。",
   "feedbackFieldMessage": "留言",
   "feedbackSend": "打开邮箱",
-
   "pickerNoneLabel": "— 无 —",
-
   "moreSettingsHeader": "更多设置",
   "moreSettingsHeaderCustomized": "更多设置（已自定义 {count} 项）",
   "stepConfigLogGpsLabel": "GPS 记录",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "动作",
   "stepCategoryReminder": "提醒",
   "stepCategoryDisarm": "签到",
-
   "angelaDialogTitle": "已输入旧 PIN 码",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
@@ -868,5 +836,7 @@
   "launchGateUseBiometric": "使用生物识别",
   "@launchGateUseBiometric": {
     "description": "Button to fall back to biometric auth on the launch gate."
-  }
+  },
+  "historyTabReal": "真实",
+  "historyTabSimulated": "模拟"
 }

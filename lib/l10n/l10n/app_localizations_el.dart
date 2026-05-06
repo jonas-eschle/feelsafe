@@ -1244,6 +1244,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get historyEmpty => 'Δεν υπάρχουν ακόμη προηγούμενες συνεδρίες.';
 
   @override
+  String get historyTabReal => 'Πραγματικά';
+
+  @override
+  String get historyTabSimulated => 'Προσομοίωση';
+
+  @override
   String get historySearchHint => 'Αναζήτηση κατά όνομα λειτουργίας';
 
   @override

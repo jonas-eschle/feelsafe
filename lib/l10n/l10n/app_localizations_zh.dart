@@ -1207,6 +1207,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get historyEmpty => '尚无历史会话。';
 
   @override
+  String get historyTabReal => '真实';
+
+  @override
+  String get historyTabSimulated => '模拟';
+
+  @override
   String get historySearchHint => '按模式名称搜索';
 
   @override
@@ -2606,6 +2612,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get historyEmpty => '尚無過往紀錄。';
+
+  @override
+  String get historyTabReal => '真實';
+
+  @override
+  String get historyTabSimulated => '模擬';
 
   @override
   String get historySearchHint => '依模式名稱搜尋';

@@ -1,7 +1,6 @@
 {
   "@@locale": "fr",
   "appTitle": "Guardian Angela",
-
   "commonSave": "Enregistrer",
   "commonCancel": "Annuler",
   "commonDelete": "Supprimer",
@@ -20,7 +19,6 @@
   "commonSeconds": "secondes",
   "commonMinutes": "minutes",
   "cancel": "Annuler",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "Démarrer la session",
   "homeSimulate": "Simuler",
@@ -33,7 +31,6 @@
   "homeMenuModes": "Modes",
   "homeMenuHistory": "Sessions passées",
   "homeSelectMode": "Choisir le mode",
-
   "onboardingWelcomeTitle": "Bienvenue sur Guardian Angela",
   "onboardingWelcomeBody": "Un compagnon qui veille sur votre sécurité sur le chemin du retour. Guardian Angela vous accompagne pendant que vous marchez, courez ou voyagez, et peut alerter vos contacts en cas de besoin.",
   "onboardingProfileTitle": "Profil et premier contact",
@@ -43,7 +40,6 @@
   "onboardingNext": "Suivant",
   "onboardingSkip": "Passer",
   "onboardingFinish": "Terminer",
-
   "sessionTitle": "Session",
   "sessionDisarm": "Je suis en sécurité",
   "sessionPause": "Pause",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "En pause",
   "sessionPhaseEnded": "Session terminée",
   "sessionSimulationBanner": "Simulation",
-
   "sessionCompletedTitle": "Session terminée",
   "sessionCompletedBody": "Vous êtes arrivé(e) en sécurité. Guardian Angela se met en veille.",
   "sessionCompletedReturnHome": "Retour à l'accueil",
-
   "simulationSummaryTitle": "Résumé de la simulation",
   "simulationSummaryEmpty": "Aucune étape déclenchée pendant cette simulation.",
   "simulationSummaryReturn": "Retour à l'accueil",
-
   "fakeCallTitle": "Appel entrant",
   "fakeCallAnswer": "Répondre",
   "fakeCallDecline": "Refuser",
   "fakeCallHangUp": "Raccrocher",
-
   "contactsTitle": "Contacts d'urgence",
   "contactsEmpty": "Aucun contact pour le moment. Ajoutez-en un pour recevoir vos messages de détresse.",
   "contactsAdd": "Ajouter un contact",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "Supprimer le contact ?",
   "contactDeleteBody": "{name} sera retiré de votre liste d'urgence.",
   "contactRequiredError": "Le nom et le numéro de téléphone sont obligatoires.",
-
   "modesTitle": "Modes",
   "modesEmpty": "Aucun mode pour le moment. Appuyez sur Ajouter pour créer un mode.",
   "modesAdd": "Ajouter un mode",
@@ -100,8 +91,6 @@
   "modeChainHeader": "Chaîne d'escalade",
   "modeChainAddStep": "Ajouter une étape",
   "modeChainEmpty": "Aucune étape pour le moment. Appuyez sur Ajouter une étape.",
-
-
   "modeTrackingHeader": "Suivi GPS",
   "modeTrackingEnabled": "Enregistrer le GPS pendant la session",
   "modeTrackingIntervalLabel": "Intervalle d'échantillonnage",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "Alarme sonore",
   "stepTypeCallEmergency": "Appel d'urgence",
   "stepTypeHardwareButton": "Bouton physique",
-
   "stepFieldDuration": "Durée (secondes)",
   "stepFieldGrace": "Délai de grâce (secondes)",
   "stepFieldWait": "Attente (secondes)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "Variation temporelle",
   "stepPreview": "Aperçu en simulation",
   "stepPreviewFired": "Aperçu exécuté : {description}",
-
   "stepConfigFakeCallCaller": "Nom de l'appelant",
   "stepConfigFakeCallDecline": "Refuser compte comme désarmer",
   "stepConfigLoudAlarmFlash": "Écran stroboscopique",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "Remplacer le numéro d'urgence",
   "stepConfigEmergencyConfirm": "Confirmer avant d'appeler",
   "stepConfigPhonePreSms": "Envoyer un SMS avant l'appel",
-
   "distressModesTitle": "Modes de détresse",
   "distressModeInUseTitle": "Mode de détresse utilisé",
   "distressModeInUseBody": "Ce mode de détresse est encore lié à : {modes}. Associez ces modes à un autre mode de détresse avant de le supprimer.",
@@ -162,7 +148,6 @@
   "distressModeName": "Nom du mode de détresse",
   "distressCountdown": "Déclenchement du mode de détresse...",
   "distressCountdownStealth": "Veuillez patienter...",
-
   "templatesTitle": "Modèles de rappel",
   "templatesEmpty": "Aucun modèle pour le moment.",
   "templatesAdd": "Ajouter un modèle",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "Ignorer",
   "templateDisplayFullscreen": "Plein écran",
   "templateDisplaySubtle": "Discret",
-
   "profileTitle": "Profil",
   "profileFieldName": "Nom",
   "profileFieldAge": "Âge",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "Antécédents médicaux",
   "profileFieldInstructions": "Instructions d'urgence",
   "profileAddItem": "Ajouter un élément",
-
   "settingsTitle": "Paramètres",
   "settingsSectionSecurity": "Sécurité",
   "settingsSectionStealth": "Mode furtif",
@@ -218,7 +201,6 @@
   "settingsLanguage": "Langue",
   "settingsEmergencyNumber": "Numéro d'urgence",
   "settingsAlarmDnd": "L'alarme contourne le mode Ne pas déranger",
-
   "securityTitle": "Sécurité",
   "securityAppPin": "Code PIN de l'application",
   "securitySessionEndPin": "Code PIN de fin de session",
@@ -227,14 +209,12 @@
   "securityDisablePin": "Désactiver",
   "securitySetPin": "Définir le PIN",
   "securityChangePin": "Modifier le PIN",
-
   "pinSetupTitle": "Définir le PIN",
   "pinSetupEnter": "Saisir le nouveau PIN",
   "pinSetupConfirm": "Confirmer le PIN",
   "pinSetupMismatch": "Les codes PIN ne correspondent pas. Réessayez.",
   "pinEntryTitle": "Saisir le PIN",
   "pinEntrySubtitle": "Saisissez votre PIN pour continuer.",
-
   "stealthTitle": "Mode furtif",
   "stealthEnable": "Activer le mode furtif",
   "stealthFakeName": "Faux nom de l'application",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "Annuler",
   "distressConfirmationCountdown": "Mode de détresse dans {seconds} s",
   "imSafeSliderLabel": "Glissez pour confirmer « Je suis en sécurité »",
-
   "batteryAlertTitle": "Alerte batterie",
   "batteryAlertEnable": "Activer l'alerte batterie",
   "batteryAlertThreshold": "Seuil : {percent} %",
-
   "eventDefaultsTitle": "Valeurs par défaut des étapes",
   "eventDefaultsBody": "Ces valeurs par défaut s'appliquent à toute étape qui ne les remplace pas.",
-
   "gpsLoggingTitle": "Journalisation GPS",
   "gpsLoggingEnable": "Activer la journalisation GPS",
   "gpsLoggingInterval": "Intervalle d'échantillonnage (secondes)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "Élevée",
   "gpsLoggingIncludeSms": "Joindre la localisation aux SMS",
   "gpsLoggingHistoryDays": "Conservation de l'historique (jours)",
-
   "notificationSettingsTitle": "Notifications",
   "notificationSettingsBody": "Guardian Angela utilise les notifications pour déguiser et déclencher les rappels.",
-
   "historyRetentionTitle": "Conservation de l'historique",
   "historyRetentionBody": "Durée de conservation des journaux de sessions passées par Guardian Angela.",
   "historyRetentionDays": "Conservation : {days} jours",
-
   "backupTitle": "Sauvegarde",
   "backupExport": "Exporter les données",
   "backupImport": "Importer les données",
   "backupNotReady": "La sauvegarde n'est pas encore disponible. Bientôt disponible.",
   "backupPinOptional": "PIN facultatif (chiffre le paquet)",
   "backupImportOk": "Sauvegarde importée avec succès.",
-
   "historyTitle": "Sessions passées",
   "historyEmpty": "Aucune session passée pour le moment.",
   "historyDetailTitle": "Détails de la session",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "Copier en texte",
   "evidenceExportAsJson": "Copier en JSON",
   "evidenceCopied": "Copié dans le presse-papiers.",
-
   "aboutTitle": "À propos",
   "aboutVersion": "Version",
   "aboutCredits": "Conçu avec soin pour celles et ceux qui rentrent chez eux.",
-
   "feedbackTitle": "Commentaires",
   "feedbackBody": "Nous serions ravis d'avoir de vos nouvelles.",
   "feedbackFieldMessage": "Message",
   "feedbackSend": "Ouvrir l'e-mail",
-
   "pickerNoneLabel": "— aucun —",
-
   "moreSettingsHeader": "Autres paramètres",
   "moreSettingsHeaderCustomized": "Autres paramètres ({count} personnalisés)",
   "stepConfigLogGpsLabel": "Suivi GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "Action",
   "stepCategoryReminder": "Rappel",
   "stepCategoryDisarm": "Vérification",
-
   "angelaDialogTitle": "Ancien PIN saisi",
   "angelaDialogBody": "Il semble que vous ayez utilisé un ancien PIN. Voulez-vous vraiment continuer ?",
   "angelaDialogCancel": "Annuler",
@@ -524,5 +492,7 @@
   "launchGateSubtitle": "Saisissez votre PIN ou utilisez la biométrie.",
   "launchGateWrong": "PIN incorrect",
   "launchGateBiometricReason": "Déverrouiller Guardian Angela",
-  "launchGateUseBiometric": "Utiliser la biométrie"
+  "launchGateUseBiometric": "Utiliser la biométrie",
+  "historyTabReal": "Réel",
+  "historyTabSimulated": "Simulé"
 }

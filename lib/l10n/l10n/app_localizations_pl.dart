@@ -1233,6 +1233,12 @@ class AppLocalizationsPl extends AppLocalizations {
   String get historyEmpty => 'Brak poprzednich sesji.';
 
   @override
+  String get historyTabReal => 'Rzeczywiste';
+
+  @override
+  String get historyTabSimulated => 'Symulacje';
+
+  @override
   String get historySearchHint => 'Szukaj według nazwy trybu';
 
   @override

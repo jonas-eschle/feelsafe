@@ -1222,6 +1222,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get historyEmpty => 'אין מושבים קודמים עדיין.';
 
   @override
+  String get historyTabReal => 'אמיתי';
+
+  @override
+  String get historyTabSimulated => 'סימולציה';
+
+  @override
   String get historySearchHint => 'חיפוש לפי שם מצב';
 
   @override

@@ -1236,6 +1236,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get historyEmpty => 'Ще немає минулих сесій.';
 
   @override
+  String get historyTabReal => 'Реальні';
+
+  @override
+  String get historyTabSimulated => 'Симуляція';
+
+  @override
   String get historySearchHint => 'Пошук за назвою режиму';
 
   @override

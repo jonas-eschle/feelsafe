@@ -26,6 +26,7 @@
 library;
 
 import 'dart:async';
+import 'dart:developer' as developer;
 
 import 'package:flutter/widgets.dart' show AppLifecycleState;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -564,7 +565,18 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     required SessionLogRecorder recorder,
   }) {
     recorder.recordEvent(event);
-    unawaited(orchestrator.handleEvent(event));
+    // bugs.json Note 4: orchestrator.handleEvent is fire-and-forget;
+    // log any failure rather than letting it disappear into the
+    // microtask queue. Strategies must not propagate exceptions
+    // upward — but if one does, we want a breadcrumb in the log.
+    unawaited(
+      orchestrator.handleEvent(event).onError((e, s) {
+        developer.log(
+          'orchestrator.handleEvent failed for ${event.event}: $e',
+          stackTrace: s,
+        );
+      }),
+    );
     _updateWalkSession(event: event);
     if (event.event == ChainEvent.sessionEnded) {
       _persistSessionLog(recorder.log);

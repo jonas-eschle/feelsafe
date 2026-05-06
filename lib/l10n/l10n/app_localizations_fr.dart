@@ -1244,6 +1244,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get historyEmpty => 'Aucune session passée pour le moment.';
 
   @override
+  String get historyTabReal => 'Réel';
+
+  @override
+  String get historyTabSimulated => 'Simulé';
+
+  @override
   String get historySearchHint => 'Rechercher par nom de mode';
 
   @override

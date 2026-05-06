@@ -1,7 +1,6 @@
 {
   "@@locale": "el",
   "appTitle": "Guardian Angela",
-
   "commonSave": "Αποθήκευση",
   "commonCancel": "Άκυρο",
   "commonDelete": "Διαγραφή",
@@ -20,7 +19,6 @@
   "commonSeconds": "δευτερόλεπτα",
   "commonMinutes": "λεπτά",
   "cancel": "Άκυρο",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "Έναρξη συνεδρίας",
   "homeSimulate": "Προσομοίωση",
@@ -33,7 +31,6 @@
   "homeMenuModes": "Λειτουργίες",
   "homeMenuHistory": "Προηγούμενες συνεδρίες",
   "homeSelectMode": "Επιλογή λειτουργίας",
-
   "onboardingWelcomeTitle": "Καλώς ήρθατε στο Guardian Angela",
   "onboardingWelcomeBody": "Ένας σύντροφος που σας κρατά ασφαλείς στο δρόμο για το σπίτι. Το Guardian Angela σας επιτηρεί όσο περπατάτε, τρέχετε ή ταξιδεύετε, και μπορεί να ειδοποιήσει τις επαφές που έχετε επιλέξει αν χρειαστείτε βοήθεια.",
   "onboardingProfileTitle": "Προφίλ και πρώτη επαφή",
@@ -43,7 +40,6 @@
   "onboardingNext": "Επόμενο",
   "onboardingSkip": "Παράλειψη",
   "onboardingFinish": "Τέλος",
-
   "sessionTitle": "Συνεδρία",
   "sessionDisarm": "Είμαι ασφαλής",
   "sessionPause": "Παύση",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "Σε παύση",
   "sessionPhaseEnded": "Η συνεδρία τερματίστηκε",
   "sessionSimulationBanner": "Προσομοίωση",
-
   "sessionCompletedTitle": "Η συνεδρία ολοκληρώθηκε",
   "sessionCompletedBody": "Φτάσατε με ασφάλεια. Το Guardian Angela αποδεσμεύεται.",
   "sessionCompletedReturnHome": "Επιστροφή στην αρχική",
-
   "simulationSummaryTitle": "Σύνοψη προσομοίωσης",
   "simulationSummaryEmpty": "Δεν ενεργοποιήθηκαν βήματα κατά την προσομοίωση.",
   "simulationSummaryReturn": "Επιστροφή στην αρχική",
-
   "fakeCallTitle": "Εισερχόμενη κλήση",
   "fakeCallAnswer": "Απάντηση",
   "fakeCallDecline": "Απόρριψη",
   "fakeCallHangUp": "Τερματισμός",
-
   "contactsTitle": "Επαφές έκτακτης ανάγκης",
   "contactsEmpty": "Δεν υπάρχουν ακόμη επαφές. Προσθέστε μία για να λαμβάνει τα μηνύματα κινδύνου.",
   "contactsAdd": "Προσθήκη επαφής",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "Διαγραφή επαφής;",
   "contactDeleteBody": "Η επαφή {name} θα αφαιρεθεί από τη λίστα έκτακτης ανάγκης.",
   "contactRequiredError": "Το όνομα και ο αριθμός τηλεφώνου είναι υποχρεωτικά.",
-
   "modesTitle": "Λειτουργίες",
   "modesEmpty": "Δεν υπάρχουν ακόμη λειτουργίες. Πατήστε Προσθήκη για να δημιουργήσετε μία.",
   "modesAdd": "Προσθήκη λειτουργίας",
@@ -100,8 +91,6 @@
   "modeChainHeader": "Αλυσίδα κλιμάκωσης",
   "modeChainAddStep": "Προσθήκη βήματος",
   "modeChainEmpty": "Δεν υπάρχουν ακόμη βήματα. Πατήστε Προσθήκη βήματος.",
-
-
   "modeTrackingHeader": "Εντοπισμός θέσης",
   "modeTrackingEnabled": "Καταγραφή GPS κατά τη συνεδρία",
   "modeTrackingIntervalLabel": "Διάστημα δειγματοληψίας",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "Δυνατός συναγερμός",
   "stepTypeCallEmergency": "Κλήση έκτακτης ανάγκης",
   "stepTypeHardwareButton": "Κουμπί συσκευής",
-
   "stepFieldDuration": "Διάρκεια (δευτερόλεπτα)",
   "stepFieldGrace": "Περίοδος χάριτος (δευτερόλεπτα)",
   "stepFieldWait": "Αναμονή (δευτερόλεπτα)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "Διακύμανση χρονισμού",
   "stepPreview": "Προεπισκόπηση σε προσομοίωση",
   "stepPreviewFired": "Η προεπισκόπηση εκτελέστηκε: {description}",
-
   "stepConfigFakeCallCaller": "Όνομα καλούντος",
   "stepConfigFakeCallDecline": "Η απόρριψη μετρά ως αποδέσμευση",
   "stepConfigLoudAlarmFlash": "Αναλαμπή οθόνης",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "Παράκαμψη αριθμού έκτακτης ανάγκης",
   "stepConfigEmergencyConfirm": "Επιβεβαίωση πριν την κλήση",
   "stepConfigPhonePreSms": "Αποστολή SMS πριν την κλήση",
-
   "distressModesTitle": "Λειτουργίες κινδύνου",
   "distressModeInUseTitle": "Η λειτουργία κινδύνου χρησιμοποιείται",
   "distressModeInUseBody": "Αυτή η λειτουργία κινδύνου είναι ακόμη συνδεδεμένη με: {modes}. Συνδέστε αυτές τις λειτουργίες με άλλη λειτουργία κινδύνου πριν τη διαγράψετε.",
@@ -162,7 +148,6 @@
   "distressModeName": "Όνομα λειτουργίας κινδύνου",
   "distressCountdown": "Ενεργοποίηση λειτουργίας κινδύνου...",
   "distressCountdownStealth": "Παρακαλώ περιμένετε...",
-
   "templatesTitle": "Πρότυπα υπενθύμισης",
   "templatesEmpty": "Δεν υπάρχουν ακόμη πρότυπα.",
   "templatesAdd": "Προσθήκη προτύπου",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "Απόρριψη",
   "templateDisplayFullscreen": "Πλήρης οθόνη",
   "templateDisplaySubtle": "Διακριτική",
-
   "profileTitle": "Προφίλ",
   "profileFieldName": "Όνομα",
   "profileFieldAge": "Ηλικία",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "Παθήσεις",
   "profileFieldInstructions": "Οδηγίες έκτακτης ανάγκης",
   "profileAddItem": "Προσθήκη στοιχείου",
-
   "settingsTitle": "Ρυθμίσεις",
   "settingsSectionSecurity": "Ασφάλεια",
   "settingsSectionStealth": "Κρυφή λειτουργία",
@@ -218,7 +201,6 @@
   "settingsLanguage": "Γλώσσα",
   "settingsEmergencyNumber": "Αριθμός έκτακτης ανάγκης",
   "settingsAlarmDnd": "Ο συναγερμός παρακάμπτει το Μην Ενοχλείτε",
-
   "securityTitle": "Ασφάλεια",
   "securityAppPin": "PIN εφαρμογής",
   "securitySessionEndPin": "PIN τερματισμού συνεδρίας",
@@ -227,14 +209,12 @@
   "securityDisablePin": "Απενεργοποίηση",
   "securitySetPin": "Ορισμός PIN",
   "securityChangePin": "Αλλαγή PIN",
-
   "pinSetupTitle": "Ορισμός PIN",
   "pinSetupEnter": "Εισαγάγετε νέο PIN",
   "pinSetupConfirm": "Επιβεβαιώστε το PIN",
   "pinSetupMismatch": "Τα PIN δεν ταιριάζουν. Δοκιμάστε ξανά.",
   "pinEntryTitle": "Εισαγωγή PIN",
   "pinEntrySubtitle": "Εισαγάγετε το PIN σας για να συνεχίσετε.",
-
   "stealthTitle": "Κρυφή λειτουργία",
   "stealthEnable": "Ενεργοποίηση κρυφής λειτουργίας",
   "stealthFakeName": "Ψεύτικο όνομα εφαρμογής",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "Άκυρο",
   "distressConfirmationCountdown": "Η αλυσίδα κινδύνου ξεκινά σε {seconds} δευτ.",
   "imSafeSliderLabel": "Σύρε για να επιβεβαιώσεις «Είμαι ασφαλής»",
-
   "batteryAlertTitle": "Ειδοποίηση μπαταρίας",
   "batteryAlertEnable": "Ενεργοποίηση ειδοποίησης μπαταρίας",
   "batteryAlertThreshold": "Όριο: {percent}%",
-
   "eventDefaultsTitle": "Προεπιλογές βημάτων",
   "eventDefaultsBody": "Αυτές οι προεπιλογές ισχύουν για κάθε βήμα που δεν τις παρακάμπτει.",
-
   "gpsLoggingTitle": "Καταγραφή GPS",
   "gpsLoggingEnable": "Ενεργοποίηση καταγραφής GPS",
   "gpsLoggingInterval": "Διάστημα δειγματοληψίας (δευτερόλεπτα)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "Υψηλή",
   "gpsLoggingIncludeSms": "Επισύναψη τοποθεσίας στο SMS",
   "gpsLoggingHistoryDays": "Διατήρηση ιστορικού (ημέρες)",
-
   "notificationSettingsTitle": "Ειδοποιήσεις",
   "notificationSettingsBody": "Το Guardian Angela χρησιμοποιεί ειδοποιήσεις για τη μεταμφίεση και την προώθηση υπενθυμίσεων.",
-
   "historyRetentionTitle": "Διατήρηση ιστορικού",
   "historyRetentionBody": "Για πόσο καιρό το Guardian Angela διατηρεί τα αρχεία προηγούμενων συνεδριών.",
   "historyRetentionDays": "Διατήρηση: {days} ημέρες",
-
   "backupTitle": "Αντίγραφο ασφαλείας",
   "backupExport": "Εξαγωγή δεδομένων",
   "backupImport": "Εισαγωγή δεδομένων",
   "backupNotReady": "Το αντίγραφο ασφαλείας δεν είναι ακόμη διαθέσιμο. Σύντομα διαθέσιμο.",
   "backupPinOptional": "Προαιρετικό PIN (κρυπτογραφεί το πακέτο)",
   "backupImportOk": "Η εισαγωγή αντιγράφου ασφαλείας ολοκληρώθηκε.",
-
   "historyTitle": "Προηγούμενες συνεδρίες",
   "historyEmpty": "Δεν υπάρχουν ακόμη προηγούμενες συνεδρίες.",
   "historyDetailTitle": "Λεπτομέρειες συνεδρίας",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "Αντιγραφή ως κείμενο",
   "evidenceExportAsJson": "Αντιγραφή ως JSON",
   "evidenceCopied": "Αντιγράφηκε στο πρόχειρο.",
-
   "aboutTitle": "Σχετικά",
   "aboutVersion": "Έκδοση",
   "aboutCredits": "Φτιαγμένο με φροντίδα για ανθρώπους στο δρόμο προς το σπίτι.",
-
   "feedbackTitle": "Σχόλια",
   "feedbackBody": "Θα θέλαμε πολύ να ακούσουμε τα σχόλιά σας.",
   "feedbackFieldMessage": "Μήνυμα",
   "feedbackSend": "Άνοιγμα email",
-
   "pickerNoneLabel": "— κανένα —",
-
   "moreSettingsHeader": "Περισσότερες ρυθμίσεις",
   "moreSettingsHeaderCustomized": "Περισσότερες ρυθμίσεις ({count} προσαρμοσμένες)",
   "stepConfigLogGpsLabel": "Καταγραφή GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "Ενέργεια",
   "stepCategoryReminder": "Υπενθύμιση",
   "stepCategoryDisarm": "Επιβεβαίωση",
-
   "angelaDialogTitle": "Εισήχθη παλιό PIN",
   "angelaDialogBody": "Φαίνεται ότι χρησιμοποιήσατε ένα παλιό PIN. Είστε σίγουροι ότι θέλετε να συνεχίσετε;",
   "angelaDialogCancel": "Άκυρο",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "Εισαγάγετε το PIN ή χρησιμοποιήστε βιομετρικά.",
   "launchGateWrong": "Λανθασμένο PIN",
   "launchGateBiometricReason": "Ξεκλειδώστε το Guardian Angela",
-  "launchGateUseBiometric": "Χρήση βιομετρικών"
+  "launchGateUseBiometric": "Χρήση βιομετρικών",
+  "historyTabReal": "Πραγματικά",
+  "historyTabSimulated": "Προσομοίωση"
 }

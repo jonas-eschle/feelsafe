@@ -1236,6 +1236,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get historyEmpty => 'अभी तक कोई पिछला सत्र नहीं।';
 
   @override
+  String get historyTabReal => 'वास्तविक';
+
+  @override
+  String get historyTabSimulated => 'सिम्युलेटेड';
+
+  @override
   String get historySearchHint => 'मोड नाम से खोजें';
 
   @override

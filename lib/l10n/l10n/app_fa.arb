@@ -1,7 +1,6 @@
 {
   "@@locale": "fa",
   "appTitle": "Guardian Angela",
-
   "commonSave": "ذخیره",
   "commonCancel": "انصراف",
   "commonDelete": "حذف",
@@ -20,7 +19,6 @@
   "commonSeconds": "ثانیه",
   "commonMinutes": "دقیقه",
   "cancel": "انصراف",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "شروع جلسه",
   "homeSimulate": "شبیه‌سازی",
@@ -33,7 +31,6 @@
   "homeMenuModes": "حالت‌ها",
   "homeMenuHistory": "جلسات گذشته",
   "homeSelectMode": "انتخاب حالت",
-
   "onboardingWelcomeTitle": "به Guardian Angela خوش آمدید",
   "onboardingWelcomeBody": "همراهی که در مسیر خانه از شما مراقبت می‌کند. Guardian Angela هنگام پیاده‌روی، دویدن یا سفر مراقب شماست و در صورت نیاز به کمک می‌تواند به مخاطبین منتخب شما هشدار دهد.",
   "onboardingProfileTitle": "پروفایل و اولین مخاطب",
@@ -43,7 +40,6 @@
   "onboardingNext": "بعدی",
   "onboardingSkip": "رد کردن",
   "onboardingFinish": "پایان",
-
   "sessionTitle": "جلسه",
   "sessionDisarm": "من در امانم",
   "sessionPause": "توقف",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "متوقف شده",
   "sessionPhaseEnded": "جلسه پایان یافت",
   "sessionSimulationBanner": "شبیه‌سازی",
-
   "sessionCompletedTitle": "جلسه کامل شد",
   "sessionCompletedBody": "شما به‌سلامت رسیدید. Guardian Angela آماده‌باش را لغو می‌کند.",
   "sessionCompletedReturnHome": "بازگشت به خانه",
-
   "simulationSummaryTitle": "خلاصه شبیه‌سازی",
   "simulationSummaryEmpty": "در این شبیه‌سازی هیچ گامی اجرا نشد.",
   "simulationSummaryReturn": "بازگشت به خانه",
-
   "fakeCallTitle": "تماس ورودی",
   "fakeCallAnswer": "پاسخ",
   "fakeCallDecline": "رد کردن",
   "fakeCallHangUp": "قطع تماس",
-
   "contactsTitle": "مخاطبین اضطراری",
   "contactsEmpty": "هنوز هیچ مخاطبی وجود ندارد. یکی اضافه کنید تا پیام‌های اضطراری شما را دریافت کند.",
   "contactsAdd": "افزودن مخاطب",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "مخاطب حذف شود؟",
   "contactDeleteBody": "{name} از فهرست اضطراری شما حذف خواهد شد.",
   "contactRequiredError": "نام و شماره تلفن الزامی است.",
-
   "modesTitle": "حالت‌ها",
   "modesEmpty": "هنوز هیچ حالتی وجود ندارد. برای ایجاد حالت، روی افزودن بزنید.",
   "modesAdd": "افزودن حالت",
@@ -100,8 +91,6 @@
   "modeChainHeader": "زنجیره تشدید",
   "modeChainAddStep": "افزودن گام",
   "modeChainEmpty": "هنوز هیچ گامی وجود ندارد. روی افزودن گام بزنید.",
-
-
   "modeTrackingHeader": "ردیابی GPS",
   "modeTrackingEnabled": "ضبط GPS در طول جلسه",
   "modeTrackingIntervalLabel": "فاصله نمونه‌برداری",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "آژیر بلند",
   "stepTypeCallEmergency": "تماس اضطراری",
   "stepTypeHardwareButton": "دکمه سخت‌افزاری",
-
   "stepFieldDuration": "مدت‌زمان (ثانیه)",
   "stepFieldGrace": "دوره مهلت (ثانیه)",
   "stepFieldWait": "انتظار (ثانیه)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "پراکندگی زمانی",
   "stepPreview": "پیش‌نمایش در شبیه‌سازی",
   "stepPreviewFired": "پیش‌نمایش اجرا شد: {description}",
-
   "stepConfigFakeCallCaller": "نام تماس‌گیرنده",
   "stepConfigFakeCallDecline": "رد تماس به معنی لغو آماده‌باش است",
   "stepConfigLoudAlarmFlash": "چشمک زدن صفحه",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "جایگزینی شماره اضطراری",
   "stepConfigEmergencyConfirm": "تأیید پیش از تماس",
   "stepConfigPhonePreSms": "ارسال پیامک پیش از تماس",
-
   "distressModesTitle": "حالت‌های اضطرار",
   "distressModeInUseTitle": "حالت اضطرار در حال استفاده است",
   "distressModeInUseBody": "این حالت اضطرار هنوز به این حالت‌ها متصل است: {modes}. پیش از حذف، آن حالت‌ها را به حالت اضطرار دیگری متصل کنید.",
@@ -162,7 +148,6 @@
   "distressModeName": "نام حالت اضطرار",
   "distressCountdown": "در حال فعال‌سازی حالت اضطرار...",
   "distressCountdownStealth": "لطفاً منتظر بمانید...",
-
   "templatesTitle": "الگوهای یادآور",
   "templatesEmpty": "هنوز هیچ الگویی وجود ندارد.",
   "templatesAdd": "افزودن الگو",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "نادیده گرفتن",
   "templateDisplayFullscreen": "تمام‌صفحه",
   "templateDisplaySubtle": "ظریف",
-
   "profileTitle": "پروفایل",
   "profileFieldName": "نام",
   "profileFieldAge": "سن",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "بیماری‌ها",
   "profileFieldInstructions": "دستورالعمل‌های اضطراری",
   "profileAddItem": "افزودن مورد",
-
   "settingsTitle": "تنظیمات",
   "settingsSectionSecurity": "امنیت",
   "settingsSectionStealth": "حالت مخفی",
@@ -218,7 +201,6 @@
   "settingsLanguage": "زبان",
   "settingsEmergencyNumber": "شماره اضطراری",
   "settingsAlarmDnd": "آژیر، حالت مزاحم نشوید را نادیده می‌گیرد",
-
   "securityTitle": "امنیت",
   "securityAppPin": "پین برنامه",
   "securitySessionEndPin": "پین پایان جلسه",
@@ -227,14 +209,12 @@
   "securityDisablePin": "غیرفعال کردن",
   "securitySetPin": "تنظیم پین",
   "securityChangePin": "تغییر پین",
-
   "pinSetupTitle": "تنظیم پین",
   "pinSetupEnter": "پین جدید را وارد کنید",
   "pinSetupConfirm": "پین را تأیید کنید",
   "pinSetupMismatch": "پین‌ها مطابقت ندارند. دوباره تلاش کنید.",
   "pinEntryTitle": "وارد کردن پین",
   "pinEntrySubtitle": "برای ادامه، پین خود را وارد کنید.",
-
   "stealthTitle": "حالت مخفی",
   "stealthEnable": "فعال‌سازی حالت مخفی",
   "stealthFakeName": "نام ساختگی برنامه",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "انصراف",
   "distressConfirmationCountdown": "حالت اضطراری در {seconds} ثانیه آغاز می‌شود",
   "imSafeSliderLabel": "برای تأیید «من در امانم» بکشید",
-
   "batteryAlertTitle": "هشدار باتری",
   "batteryAlertEnable": "فعال‌سازی هشدار باتری",
   "batteryAlertThreshold": "آستانه: {percent}٪",
-
   "eventDefaultsTitle": "پیش‌فرض‌های گام",
   "eventDefaultsBody": "این پیش‌فرض‌ها برای هر گامی که آن‌ها را بازنویسی نکند، اعمال می‌شوند.",
-
   "gpsLoggingTitle": "ثبت GPS",
   "gpsLoggingEnable": "فعال‌سازی ثبت GPS",
   "gpsLoggingInterval": "فاصله نمونه‌برداری (ثانیه)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "زیاد",
   "gpsLoggingIncludeSms": "پیوست موقعیت به پیامک",
   "gpsLoggingHistoryDays": "نگهداری تاریخچه (روز)",
-
   "notificationSettingsTitle": "اعلان‌ها",
   "notificationSettingsBody": "Guardian Angela از اعلان‌ها برای پنهان‌سازی و اجرای یادآورها استفاده می‌کند.",
-
   "historyRetentionTitle": "نگهداری تاریخچه",
   "historyRetentionBody": "مدت زمانی که Guardian Angela گزارش جلسات گذشته را نگه می‌دارد.",
   "historyRetentionDays": "نگهداری: {days} روز",
-
   "backupTitle": "پشتیبان‌گیری",
   "backupExport": "خروجی گرفتن از داده‌ها",
   "backupImport": "وارد کردن داده‌ها",
   "backupNotReady": "پشتیبان‌گیری هنوز در دسترس نیست. به‌زودی اضافه می‌شود.",
   "backupPinOptional": "رمز اختیاری (بسته را رمزگذاری می‌کند)",
   "backupImportOk": "پشتیبان با موفقیت وارد شد.",
-
   "historyTitle": "جلسات گذشته",
   "historyEmpty": "هنوز هیچ جلسه گذشته‌ای وجود ندارد.",
   "historyDetailTitle": "جزئیات جلسه",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "کپی به‌صورت متن",
   "evidenceExportAsJson": "کپی به‌صورت JSON",
   "evidenceCopied": "در کلیپ‌بورد کپی شد.",
-
   "aboutTitle": "درباره",
   "aboutVersion": "نسخه",
   "aboutCredits": "با دقت برای کسانی ساخته شده که در مسیر خانه هستند.",
-
   "feedbackTitle": "بازخورد",
   "feedbackBody": "ما خوشحال می‌شویم نظر شما را بشنویم.",
   "feedbackFieldMessage": "پیام",
   "feedbackSend": "باز کردن ایمیل",
-
   "pickerNoneLabel": "— هیچ‌کدام —",
-
   "moreSettingsHeader": "تنظیمات بیشتر",
   "moreSettingsHeaderCustomized": "تنظیمات بیشتر ({count} مورد سفارشی)",
   "stepConfigLogGpsLabel": "ثبت GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "کنش",
   "stepCategoryReminder": "یادآور",
   "stepCategoryDisarm": "ثبت ورود",
-
   "angelaDialogTitle": "پین قدیمی وارد شد",
   "angelaDialogBody": "به نظر می‌رسد از پین قدیمی استفاده کرده‌اید. آیا مطمئن هستید که می‌خواهید ادامه دهید؟",
   "angelaDialogCancel": "انصراف",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "پین خود را وارد کنید یا از زیست‌سنجی استفاده کنید.",
   "launchGateWrong": "پین اشتباه",
   "launchGateBiometricReason": "بازگشایی Guardian Angela",
-  "launchGateUseBiometric": "استفاده از زیست‌سنجی"
+  "launchGateUseBiometric": "استفاده از زیست‌سنجی",
+  "historyTabReal": "واقعی",
+  "historyTabSimulated": "شبیه‌سازی شده"
 }

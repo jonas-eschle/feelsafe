@@ -1,7 +1,6 @@
 {
   "@@locale": "es",
   "appTitle": "Guardian Angela",
-
   "commonSave": "Guardar",
   "commonCancel": "Cancelar",
   "commonDelete": "Eliminar",
@@ -20,7 +19,6 @@
   "commonSeconds": "segundos",
   "commonMinutes": "minutos",
   "cancel": "Cancelar",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "Iniciar sesión",
   "homeSimulate": "Simular",
@@ -33,7 +31,6 @@
   "homeMenuModes": "Modos",
   "homeMenuHistory": "Sesiones anteriores",
   "homeSelectMode": "Seleccionar modo",
-
   "onboardingWelcomeTitle": "Bienvenido a Guardian Angela",
   "onboardingWelcomeBody": "Una compañera que te mantiene a salvo camino a casa. Guardian Angela te cuida mientras caminas, corres o viajas, y puede avisar a tus contactos de confianza si necesitas ayuda.",
   "onboardingProfileTitle": "Perfil y primer contacto",
@@ -43,7 +40,6 @@
   "onboardingNext": "Siguiente",
   "onboardingSkip": "Omitir",
   "onboardingFinish": "Finalizar",
-
   "sessionTitle": "Sesión",
   "sessionDisarm": "Estoy a salvo",
   "sessionPause": "Pausar",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "En pausa",
   "sessionPhaseEnded": "Sesión finalizada",
   "sessionSimulationBanner": "Simulación",
-
   "sessionCompletedTitle": "Sesión completada",
   "sessionCompletedBody": "Has llegado a salvo. Guardian Angela se desactiva.",
   "sessionCompletedReturnHome": "Volver al inicio",
-
   "simulationSummaryTitle": "Resumen de la simulación",
   "simulationSummaryEmpty": "No se activó ningún paso durante esta simulación.",
   "simulationSummaryReturn": "Volver al inicio",
-
   "fakeCallTitle": "Llamada entrante",
   "fakeCallAnswer": "Contestar",
   "fakeCallDecline": "Rechazar",
   "fakeCallHangUp": "Colgar",
-
   "contactsTitle": "Contactos de emergencia",
   "contactsEmpty": "Aún no hay contactos. Añade uno para recibir tus mensajes de auxilio.",
   "contactsAdd": "Añadir contacto",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "¿Eliminar contacto?",
   "contactDeleteBody": "{name} será eliminado de tu lista de emergencia.",
   "contactRequiredError": "El nombre y el número de teléfono son obligatorios.",
-
   "modesTitle": "Modos",
   "modesEmpty": "Aún no hay modos. Toca Añadir para crear un modo.",
   "modesAdd": "Añadir modo",
@@ -100,8 +91,6 @@
   "modeChainHeader": "Cadena de escalada",
   "modeChainAddStep": "Añadir paso",
   "modeChainEmpty": "Aún no hay pasos. Toca Añadir paso.",
-
-
   "modeTrackingHeader": "Seguimiento GPS",
   "modeTrackingEnabled": "Registrar GPS durante la sesión",
   "modeTrackingIntervalLabel": "Intervalo de muestreo",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "Alarma sonora",
   "stepTypeCallEmergency": "Llamar a emergencias",
   "stepTypeHardwareButton": "Botón físico",
-
   "stepFieldDuration": "Duración (segundos)",
   "stepFieldGrace": "Periodo de gracia (segundos)",
   "stepFieldWait": "Espera (segundos)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "Variación del temporizador",
   "stepPreview": "Previsualizar en simulación",
   "stepPreviewFired": "Previsualización ejecutada: {description}",
-
   "stepConfigFakeCallCaller": "Nombre de quien llama",
   "stepConfigFakeCallDecline": "Rechazar cuenta como desactivación",
   "stepConfigLoudAlarmFlash": "Pantalla estroboscópica",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "Anular número de emergencia",
   "stepConfigEmergencyConfirm": "Confirmar antes de llamar",
   "stepConfigPhonePreSms": "Enviar SMS antes de llamar",
-
   "distressModesTitle": "Modos de auxilio",
   "distressModeInUseTitle": "El modo de auxilio está en uso",
   "distressModeInUseBody": "Este modo de auxilio aún está vinculado a: {modes}. Vincula esos modos a otro modo de auxilio antes de eliminarlo.",
@@ -162,7 +148,6 @@
   "distressModeName": "Nombre del modo de auxilio",
   "distressCountdown": "Activando modo de auxilio...",
   "distressCountdownStealth": "Espera un momento...",
-
   "templatesTitle": "Plantillas de recordatorio",
   "templatesEmpty": "Aún no hay plantillas.",
   "templatesAdd": "Añadir plantilla",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "Descartar",
   "templateDisplayFullscreen": "Pantalla completa",
   "templateDisplaySubtle": "Sutil",
-
   "profileTitle": "Perfil",
   "profileFieldName": "Nombre",
   "profileFieldAge": "Edad",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "Condiciones médicas",
   "profileFieldInstructions": "Instrucciones de emergencia",
   "profileAddItem": "Añadir elemento",
-
   "settingsTitle": "Ajustes",
   "settingsSectionSecurity": "Seguridad",
   "settingsSectionStealth": "Modo sigiloso",
@@ -218,7 +201,6 @@
   "settingsLanguage": "Idioma",
   "settingsEmergencyNumber": "Número de emergencia",
   "settingsAlarmDnd": "La alarma anula No molestar",
-
   "securityTitle": "Seguridad",
   "securityAppPin": "PIN de la app",
   "securitySessionEndPin": "PIN de fin de sesión",
@@ -227,14 +209,12 @@
   "securityDisablePin": "Desactivar",
   "securitySetPin": "Establecer PIN",
   "securityChangePin": "Cambiar PIN",
-
   "pinSetupTitle": "Establecer PIN",
   "pinSetupEnter": "Introduce el nuevo PIN",
   "pinSetupConfirm": "Confirma el PIN",
   "pinSetupMismatch": "Los PIN no coinciden. Inténtalo de nuevo.",
   "pinEntryTitle": "Introduce el PIN",
   "pinEntrySubtitle": "Introduce tu PIN para continuar.",
-
   "stealthTitle": "Modo sigiloso",
   "stealthEnable": "Activar modo sigiloso",
   "stealthFakeName": "Nombre falso de la app",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "Cancelar",
   "distressConfirmationCountdown": "Modo de emergencia en {seconds} s",
   "imSafeSliderLabel": "Desliza para confirmar «Estoy a salvo»",
-
   "batteryAlertTitle": "Alerta de batería",
   "batteryAlertEnable": "Activar alerta de batería",
   "batteryAlertThreshold": "Umbral: {percent} %",
-
   "eventDefaultsTitle": "Valores predeterminados de pasos",
   "eventDefaultsBody": "Estos valores se aplican a cualquier paso que no los anule.",
-
   "gpsLoggingTitle": "Registro GPS",
   "gpsLoggingEnable": "Activar registro GPS",
   "gpsLoggingInterval": "Intervalo de muestreo (segundos)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "Alta",
   "gpsLoggingIncludeSms": "Adjuntar ubicación al SMS",
   "gpsLoggingHistoryDays": "Retención del historial (días)",
-
   "notificationSettingsTitle": "Notificaciones",
   "notificationSettingsBody": "Guardian Angela utiliza notificaciones para disfrazar y gestionar recordatorios.",
-
   "historyRetentionTitle": "Retención del historial",
   "historyRetentionBody": "Durante cuánto tiempo conserva Guardian Angela los registros de sesiones anteriores.",
   "historyRetentionDays": "Retención: {days} días",
-
   "backupTitle": "Copia de seguridad",
   "backupExport": "Exportar datos",
   "backupImport": "Importar datos",
   "backupNotReady": "La copia de seguridad aún no está disponible. Próximamente.",
   "backupPinOptional": "PIN opcional (cifra el paquete)",
   "backupImportOk": "Copia de seguridad importada correctamente.",
-
   "historyTitle": "Sesiones anteriores",
   "historyEmpty": "Aún no hay sesiones anteriores.",
   "historyDetailTitle": "Detalles de la sesión",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "Copiar como texto",
   "evidenceExportAsJson": "Copiar como JSON",
   "evidenceCopied": "Copiado al portapapeles.",
-
   "aboutTitle": "Acerca de",
   "aboutVersion": "Versión",
   "aboutCredits": "Creada con cariño para las personas de camino a casa.",
-
   "feedbackTitle": "Comentarios",
   "feedbackBody": "Nos encantaría saber de ti.",
   "feedbackFieldMessage": "Mensaje",
   "feedbackSend": "Abrir correo",
-
   "pickerNoneLabel": "— ninguno —",
-
   "moreSettingsHeader": "Más ajustes",
   "moreSettingsHeaderCustomized": "Más ajustes ({count} personalizados)",
   "stepConfigLogGpsLabel": "Registro de GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "Acción",
   "stepCategoryReminder": "Recordatorio",
   "stepCategoryDisarm": "Comprobación",
-
   "angelaDialogTitle": "PIN antiguo introducido",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
@@ -868,5 +836,7 @@
   "launchGateUseBiometric": "Usar biometría",
   "@launchGateUseBiometric": {
     "description": "Button to fall back to biometric auth on the launch gate."
-  }
+  },
+  "historyTabReal": "Real",
+  "historyTabSimulated": "Simulada"
 }

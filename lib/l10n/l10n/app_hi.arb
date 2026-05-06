@@ -1,7 +1,6 @@
 {
   "@@locale": "hi",
   "appTitle": "Guardian Angela",
-
   "commonSave": "सहेजें",
   "commonCancel": "रद्द करें",
   "commonDelete": "हटाएँ",
@@ -20,7 +19,6 @@
   "commonSeconds": "सेकंड",
   "commonMinutes": "मिनट",
   "cancel": "रद्द करें",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "सत्र आरंभ करें",
   "homeSimulate": "सिमुलेट करें",
@@ -33,7 +31,6 @@
   "homeMenuModes": "मोड",
   "homeMenuHistory": "पिछले सत्र",
   "homeSelectMode": "मोड चुनें",
-
   "onboardingWelcomeTitle": "Guardian Angela में आपका स्वागत है",
   "onboardingWelcomeBody": "एक साथी जो आपको घर के रास्ते में सुरक्षित रखता है। Guardian Angela आपके चलने, दौड़ने या यात्रा करने के दौरान आपकी देखभाल करता है, और ज़रूरत पड़ने पर आपके चुने हुए संपर्कों को सूचित कर सकता है।",
   "onboardingProfileTitle": "प्रोफ़ाइल और पहला संपर्क",
@@ -43,7 +40,6 @@
   "onboardingNext": "आगे",
   "onboardingSkip": "छोड़ें",
   "onboardingFinish": "समाप्त",
-
   "sessionTitle": "सत्र",
   "sessionDisarm": "मैं सुरक्षित हूँ",
   "sessionPause": "रोकें",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "रुका हुआ",
   "sessionPhaseEnded": "सत्र समाप्त",
   "sessionSimulationBanner": "सिमुलेशन",
-
   "sessionCompletedTitle": "सत्र पूर्ण",
   "sessionCompletedBody": "आप सुरक्षित पहुँच गए। Guardian Angela अब विश्राम में है।",
   "sessionCompletedReturnHome": "होम पर लौटें",
-
   "simulationSummaryTitle": "सिमुलेशन सारांश",
   "simulationSummaryEmpty": "इस सिमुलेशन में कोई चरण नहीं चला।",
   "simulationSummaryReturn": "होम पर वापस",
-
   "fakeCallTitle": "आने वाली कॉल",
   "fakeCallAnswer": "उत्तर दें",
   "fakeCallDecline": "अस्वीकार करें",
   "fakeCallHangUp": "कॉल काटें",
-
   "contactsTitle": "आपातकालीन संपर्क",
   "contactsEmpty": "अभी तक कोई संपर्क नहीं। अपने संकट संदेश पाने के लिए एक जोड़ें।",
   "contactsAdd": "संपर्क जोड़ें",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "संपर्क हटाएँ?",
   "contactDeleteBody": "{name} को आपकी आपातकालीन सूची से हटा दिया जाएगा।",
   "contactRequiredError": "नाम और फ़ोन नंबर आवश्यक हैं।",
-
   "modesTitle": "मोड",
   "modesEmpty": "अभी तक कोई मोड नहीं। मोड बनाने के लिए Add पर टैप करें।",
   "modesAdd": "मोड जोड़ें",
@@ -100,8 +91,6 @@
   "modeChainHeader": "वृद्धि शृंखला",
   "modeChainAddStep": "चरण जोड़ें",
   "modeChainEmpty": "अभी तक कोई चरण नहीं। Add step पर टैप करें।",
-
-
   "modeTrackingHeader": "GPS ट्रैकिंग",
   "modeTrackingEnabled": "सत्र के दौरान GPS रिकॉर्ड करें",
   "modeTrackingIntervalLabel": "नमूना अंतराल",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "तेज़ अलार्म",
   "stepTypeCallEmergency": "आपातकाल कॉल करें",
   "stepTypeHardwareButton": "हार्डवेयर बटन",
-
   "stepFieldDuration": "अवधि (सेकंड)",
   "stepFieldGrace": "छूट अवधि (सेकंड)",
   "stepFieldWait": "प्रतीक्षा (सेकंड)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "समय में भिन्नता",
   "stepPreview": "सिमुलेशन में पूर्वावलोकन",
   "stepPreviewFired": "पूर्वावलोकन चला: {description}",
-
   "stepConfigFakeCallCaller": "कॉलर का नाम",
   "stepConfigFakeCallDecline": "अस्वीकार करना निरस्त्रीकरण माना जाए",
   "stepConfigLoudAlarmFlash": "स्क्रीन चमकाएँ",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "आपातकालीन नंबर अधिरोहण",
   "stepConfigEmergencyConfirm": "कॉल से पहले पुष्टि करें",
   "stepConfigPhonePreSms": "कॉल से पहले SMS भेजें",
-
   "distressModesTitle": "संकट मोड",
   "distressModeInUseTitle": "संकट मोड उपयोग में है",
   "distressModeInUseBody": "यह संकट मोड अभी भी इनसे जुड़ा है: {modes}। हटाने से पहले उन मोड को किसी अन्य संकट मोड से जोड़ें।",
@@ -162,7 +148,6 @@
   "distressModeName": "संकट मोड का नाम",
   "distressCountdown": "संकट मोड शुरू हो रहा है...",
   "distressCountdownStealth": "कृपया प्रतीक्षा करें...",
-
   "templatesTitle": "अनुस्मारक टेम्पलेट",
   "templatesEmpty": "अभी तक कोई टेम्पलेट नहीं।",
   "templatesAdd": "टेम्पलेट जोड़ें",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "खारिज करें",
   "templateDisplayFullscreen": "पूर्ण स्क्रीन",
   "templateDisplaySubtle": "सूक्ष्म",
-
   "profileTitle": "प्रोफ़ाइल",
   "profileFieldName": "नाम",
   "profileFieldAge": "आयु",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "चिकित्सीय स्थितियाँ",
   "profileFieldInstructions": "आपातकालीन निर्देश",
   "profileAddItem": "आइटम जोड़ें",
-
   "settingsTitle": "सेटिंग्स",
   "settingsSectionSecurity": "सुरक्षा",
   "settingsSectionStealth": "गोपन",
@@ -218,7 +201,6 @@
   "settingsLanguage": "भाषा",
   "settingsEmergencyNumber": "आपातकालीन नंबर",
   "settingsAlarmDnd": "अलार्म Do Not Disturb को रद्द करे",
-
   "securityTitle": "सुरक्षा",
   "securityAppPin": "ऐप PIN",
   "securitySessionEndPin": "सत्र-समाप्ति PIN",
@@ -227,14 +209,12 @@
   "securityDisablePin": "अक्षम करें",
   "securitySetPin": "PIN सेट करें",
   "securityChangePin": "PIN बदलें",
-
   "pinSetupTitle": "PIN सेट करें",
   "pinSetupEnter": "नया PIN दर्ज करें",
   "pinSetupConfirm": "PIN की पुष्टि करें",
   "pinSetupMismatch": "PIN मेल नहीं खाते। फिर से कोशिश करें।",
   "pinEntryTitle": "PIN दर्ज करें",
   "pinEntrySubtitle": "जारी रखने के लिए अपना PIN दर्ज करें।",
-
   "stealthTitle": "गोपन",
   "stealthEnable": "गोपन सक्षम करें",
   "stealthFakeName": "नकली ऐप नाम",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "रद्द करें",
   "distressConfirmationCountdown": "संकट मोड {seconds} सेकंड में शुरू होगा",
   "imSafeSliderLabel": "“मैं सुरक्षित हूँ” पुष्टि के लिए स्वाइप करें",
-
   "batteryAlertTitle": "बैटरी चेतावनी",
   "batteryAlertEnable": "बैटरी चेतावनी सक्षम करें",
   "batteryAlertThreshold": "सीमा: {percent}%",
-
   "eventDefaultsTitle": "चरण डिफ़ॉल्ट",
   "eventDefaultsBody": "ये डिफ़ॉल्ट उन सभी चरणों पर लागू होते हैं जो इन्हें अधिरोहण नहीं करते।",
-
   "gpsLoggingTitle": "GPS लॉगिंग",
   "gpsLoggingEnable": "GPS लॉगिंग सक्षम करें",
   "gpsLoggingInterval": "नमूना अंतराल (सेकंड)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "उच्च",
   "gpsLoggingIncludeSms": "SMS में स्थान जोड़ें",
   "gpsLoggingHistoryDays": "इतिहास रखरखाव (दिन)",
-
   "notificationSettingsTitle": "सूचनाएँ",
   "notificationSettingsBody": "Guardian Angela अनुस्मारकों को छुपाने और संचालित करने के लिए सूचनाओं का उपयोग करता है।",
-
   "historyRetentionTitle": "इतिहास रखरखाव",
   "historyRetentionBody": "Guardian Angela पिछले सत्र लॉग को कितने समय तक रखता है।",
   "historyRetentionDays": "रखरखाव: {days} दिन",
-
   "backupTitle": "बैकअप",
   "backupExport": "डेटा निर्यात करें",
   "backupImport": "डेटा आयात करें",
   "backupNotReady": "बैकअप अभी उपलब्ध नहीं है। जल्द आ रहा है।",
   "backupPinOptional": "वैकल्पिक PIN (पैकेज को एन्क्रिप्ट करता है)",
   "backupImportOk": "बैकअप सफलतापूर्वक आयात किया गया।",
-
   "historyTitle": "पिछले सत्र",
   "historyEmpty": "अभी तक कोई पिछला सत्र नहीं।",
   "historyDetailTitle": "सत्र विवरण",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "टेक्स्ट के रूप में कॉपी करें",
   "evidenceExportAsJson": "JSON के रूप में कॉपी करें",
   "evidenceCopied": "क्लिपबोर्ड पर कॉपी किया गया।",
-
   "aboutTitle": "के बारे में",
   "aboutVersion": "संस्करण",
   "aboutCredits": "घर के रास्ते में लोगों के लिए देखभाल के साथ निर्मित।",
-
   "feedbackTitle": "प्रतिक्रिया",
   "feedbackBody": "हम आपसे सुनना चाहेंगे।",
   "feedbackFieldMessage": "संदेश",
   "feedbackSend": "ईमेल खोलें",
-
   "pickerNoneLabel": "— कोई नहीं —",
-
   "moreSettingsHeader": "अधिक सेटिंग्स",
   "moreSettingsHeaderCustomized": "अधिक सेटिंग्स ({count} अनुकूलित)",
   "stepConfigLogGpsLabel": "GPS लॉगिंग",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "क्रिया",
   "stepCategoryReminder": "रिमाइंडर",
   "stepCategoryDisarm": "चेक-इन",
-
   "angelaDialogTitle": "पुराना PIN दर्ज किया गया",
   "angelaDialogBody": "लगता है आपने पुराना PIN इस्तेमाल किया है। क्या आप वाकई आगे बढ़ना चाहते हैं?",
   "angelaDialogCancel": "रद्द करें",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "अपना PIN दर्ज करें या बायोमेट्रिक्स का उपयोग करें।",
   "launchGateWrong": "गलत PIN",
   "launchGateBiometricReason": "Guardian Angela अनलॉक करें",
-  "launchGateUseBiometric": "बायोमेट्रिक्स का उपयोग करें"
+  "launchGateUseBiometric": "बायोमेट्रिक्स का उपयोग करें",
+  "historyTabReal": "वास्तविक",
+  "historyTabSimulated": "सिम्युलेटेड"
 }

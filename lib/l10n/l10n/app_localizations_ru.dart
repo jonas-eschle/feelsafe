@@ -1240,6 +1240,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get historyEmpty => 'Прошлых сессий пока нет.';
 
   @override
+  String get historyTabReal => 'Реальные';
+
+  @override
+  String get historyTabSimulated => 'Симуляция';
+
+  @override
   String get historySearchHint => 'Поиск по названию режима';
 
   @override

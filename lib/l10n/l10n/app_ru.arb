@@ -1,7 +1,6 @@
 {
   "@@locale": "ru",
   "appTitle": "Guardian Angela",
-
   "commonSave": "Сохранить",
   "commonCancel": "Отмена",
   "commonDelete": "Удалить",
@@ -20,7 +19,6 @@
   "commonSeconds": "секунд",
   "commonMinutes": "минут",
   "cancel": "Отмена",
-
   "homeTitle": "Guardian Angela",
   "homeStartSession": "Начать сессию",
   "homeSimulate": "Симуляция",
@@ -33,7 +31,6 @@
   "homeMenuModes": "Режимы",
   "homeMenuHistory": "Прошлые сессии",
   "homeSelectMode": "Выберите режим",
-
   "onboardingWelcomeTitle": "Добро пожаловать в Guardian Angela",
   "onboardingWelcomeBody": "Спутник, который помогает вам безопасно добраться домой. Guardian Angela присматривает за вами, пока вы идёте, бегаете или путешествуете, и может предупредить выбранных вами контактов, если вам понадобится помощь.",
   "onboardingProfileTitle": "Профиль и первый контакт",
@@ -43,7 +40,6 @@
   "onboardingNext": "Далее",
   "onboardingSkip": "Пропустить",
   "onboardingFinish": "Завершить",
-
   "sessionTitle": "Сессия",
   "sessionDisarm": "Я в безопасности",
   "sessionPause": "Пауза",
@@ -56,20 +52,16 @@
   "sessionPausedBadge": "Пауза",
   "sessionPhaseEnded": "Сессия завершена",
   "sessionSimulationBanner": "Симуляция",
-
   "sessionCompletedTitle": "Сессия завершена",
   "sessionCompletedBody": "Вы благополучно добрались. Guardian Angela отключается.",
   "sessionCompletedReturnHome": "Вернуться на главную",
-
   "simulationSummaryTitle": "Итоги симуляции",
   "simulationSummaryEmpty": "Во время этой симуляции шаги не сработали.",
   "simulationSummaryReturn": "Вернуться на главную",
-
   "fakeCallTitle": "Входящий вызов",
   "fakeCallAnswer": "Ответить",
   "fakeCallDecline": "Отклонить",
   "fakeCallHangUp": "Завершить вызов",
-
   "contactsTitle": "Экстренные контакты",
   "contactsEmpty": "Контактов пока нет. Добавьте один, чтобы получать сообщения о помощи.",
   "contactsAdd": "Добавить контакт",
@@ -87,7 +79,6 @@
   "contactDeleteConfirm": "Удалить контакт?",
   "contactDeleteBody": "{name} будет удалён из списка экстренных контактов.",
   "contactRequiredError": "Имя и номер телефона обязательны.",
-
   "modesTitle": "Режимы",
   "modesEmpty": "Режимов пока нет. Нажмите «Добавить», чтобы создать режим.",
   "modesAdd": "Добавить режим",
@@ -100,8 +91,6 @@
   "modeChainHeader": "Цепочка эскалации",
   "modeChainAddStep": "Добавить шаг",
   "modeChainEmpty": "Шагов пока нет. Нажмите «Добавить шаг».",
-
-
   "modeTrackingHeader": "Отслеживание GPS",
   "modeTrackingEnabled": "Записывать GPS во время сеанса",
   "modeTrackingIntervalLabel": "Интервал записи",
@@ -117,7 +106,6 @@
   "stepTypeLoudAlarm": "Громкая тревога",
   "stepTypeCallEmergency": "Экстренный вызов",
   "stepTypeHardwareButton": "Аппаратная кнопка",
-
   "stepFieldDuration": "Длительность (секунды)",
   "stepFieldGrace": "Льготный период (секунды)",
   "stepFieldWait": "Ожидание (секунды)",
@@ -125,7 +113,6 @@
   "stepFieldRandomize": "Случайные колебания",
   "stepPreview": "Предпросмотр в симуляции",
   "stepPreviewFired": "Предпросмотр выполнен: {description}",
-
   "stepConfigFakeCallCaller": "Имя вызывающего",
   "stepConfigFakeCallDecline": "Отклонение считается отменой",
   "stepConfigLoudAlarmFlash": "Мигание экрана",
@@ -151,7 +138,6 @@
   "stepConfigEmergencyNumber": "Переопределение экстренного номера",
   "stepConfigEmergencyConfirm": "Подтвердить перед вызовом",
   "stepConfigPhonePreSms": "Отправить SMS перед звонком",
-
   "distressModesTitle": "Режимы тревоги",
   "distressModeInUseTitle": "Режим тревоги используется",
   "distressModeInUseBody": "Этот режим тревоги по-прежнему привязан к: {modes}. Прежде чем удалить, привяжите эти режимы к другому режиму тревоги.",
@@ -162,7 +148,6 @@
   "distressModeName": "Название режима тревоги",
   "distressCountdown": "Запуск режима тревоги...",
   "distressCountdownStealth": "Пожалуйста, подождите...",
-
   "templatesTitle": "Шаблоны напоминаний",
   "templatesEmpty": "Шаблонов пока нет.",
   "templatesAdd": "Добавить шаблон",
@@ -181,7 +166,6 @@
   "templateConfirmDismiss": "Отклонить",
   "templateDisplayFullscreen": "На весь экран",
   "templateDisplaySubtle": "Незаметно",
-
   "profileTitle": "Профиль",
   "profileFieldName": "Имя",
   "profileFieldAge": "Возраст",
@@ -191,7 +175,6 @@
   "profileFieldConditions": "Медицинские состояния",
   "profileFieldInstructions": "Экстренные инструкции",
   "profileAddItem": "Добавить пункт",
-
   "settingsTitle": "Настройки",
   "settingsSectionSecurity": "Безопасность",
   "settingsSectionStealth": "Скрытность",
@@ -218,7 +201,6 @@
   "settingsLanguage": "Язык",
   "settingsEmergencyNumber": "Экстренный номер",
   "settingsAlarmDnd": "Тревога игнорирует режим «Не беспокоить»",
-
   "securityTitle": "Безопасность",
   "securityAppPin": "PIN приложения",
   "securitySessionEndPin": "PIN завершения сессии",
@@ -227,14 +209,12 @@
   "securityDisablePin": "Отключить",
   "securitySetPin": "Задать PIN",
   "securityChangePin": "Изменить PIN",
-
   "pinSetupTitle": "Задать PIN",
   "pinSetupEnter": "Введите новый PIN",
   "pinSetupConfirm": "Подтвердите PIN",
   "pinSetupMismatch": "PIN-коды не совпадают. Попробуйте снова.",
   "pinEntryTitle": "Введите PIN",
   "pinEntrySubtitle": "Введите PIN, чтобы продолжить.",
-
   "stealthTitle": "Скрытность",
   "stealthEnable": "Включить скрытный режим",
   "stealthFakeName": "Ложное имя приложения",
@@ -256,14 +236,11 @@
   "distressConfirmationCancel": "Отмена",
   "distressConfirmationCountdown": "Режим тревоги сработает через {seconds} с",
   "imSafeSliderLabel": "Проведите, чтобы подтвердить «Я в безопасности»",
-
   "batteryAlertTitle": "Оповещение о батарее",
   "batteryAlertEnable": "Включить оповещение о батарее",
   "batteryAlertThreshold": "Порог: {percent}%",
-
   "eventDefaultsTitle": "Шаги по умолчанию",
   "eventDefaultsBody": "Эти значения применяются к любому шагу, который их не переопределяет.",
-
   "gpsLoggingTitle": "Запись GPS",
   "gpsLoggingEnable": "Включить запись GPS",
   "gpsLoggingInterval": "Интервал замеров (секунды)",
@@ -273,21 +250,17 @@
   "gpsAccuracyHigh": "Высокая",
   "gpsLoggingIncludeSms": "Прикреплять местоположение к SMS",
   "gpsLoggingHistoryDays": "Хранение истории (дней)",
-
   "notificationSettingsTitle": "Уведомления",
   "notificationSettingsBody": "Guardian Angela использует уведомления для маскировки и напоминаний.",
-
   "historyRetentionTitle": "Хранение истории",
   "historyRetentionBody": "Как долго Guardian Angela хранит журналы прошлых сессий.",
   "historyRetentionDays": "Хранение: {days} дн.",
-
   "backupTitle": "Резервное копирование",
   "backupExport": "Экспорт данных",
   "backupImport": "Импорт данных",
   "backupNotReady": "Резервное копирование пока недоступно. Скоро появится.",
   "backupPinOptional": "Необязательный PIN (шифрует пакет)",
   "backupImportOk": "Резервная копия успешно импортирована.",
-
   "historyTitle": "Прошлые сессии",
   "historyEmpty": "Прошлых сессий пока нет.",
   "historyDetailTitle": "Сведения о сессии",
@@ -295,18 +268,14 @@
   "evidenceExportAsText": "Скопировать как текст",
   "evidenceExportAsJson": "Скопировать как JSON",
   "evidenceCopied": "Скопировано в буфер обмена.",
-
   "aboutTitle": "О приложении",
   "aboutVersion": "Версия",
   "aboutCredits": "Сделано с заботой о тех, кто возвращается домой.",
-
   "feedbackTitle": "Отзывы",
   "feedbackBody": "Мы будем рады услышать от вас.",
   "feedbackFieldMessage": "Сообщение",
   "feedbackSend": "Открыть email",
-
   "pickerNoneLabel": "— нет —",
-
   "moreSettingsHeader": "Дополнительные настройки",
   "moreSettingsHeaderCustomized": "Дополнительные настройки ({count} изменено)",
   "stepConfigLogGpsLabel": "Запись GPS",
@@ -358,7 +327,6 @@
   "stepCategoryAction": "Действие",
   "stepCategoryReminder": "Напоминание",
   "stepCategoryDisarm": "Регистрация",
-
   "angelaDialogTitle": "Введён старый PIN",
   "angelaDialogBody": "Похоже, вы использовали старый PIN. Вы уверены, что хотите продолжить?",
   "angelaDialogCancel": "Отмена",
@@ -478,5 +446,7 @@
   "launchGateSubtitle": "Введите PIN или используйте биометрию.",
   "launchGateWrong": "Неверный PIN",
   "launchGateBiometricReason": "Разблокировать Guardian Angela",
-  "launchGateUseBiometric": "Использовать биометрию"
+  "launchGateUseBiometric": "Использовать биометрию",
+  "historyTabReal": "Реальные",
+  "historyTabSimulated": "Симуляция"
 }
