@@ -13,6 +13,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/modes/widgets/mode_icon_library.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -116,7 +117,14 @@ class _HomeBody extends ConsumerWidget {
                     padding: const EdgeInsets.all(12),
                     child: Row(
                       children: [
-                        Icon(_iconForModeName(m.name)),
+                        // Issues-v4 #12 — prefer the user-selected
+                        // mode icon (from the mode-editor picker).
+                        // Fall back to the legacy name-heuristic for
+                        // unnamed user modes that pre-date the
+                        // iconName field.
+                        Icon(
+                          iconForName(m.iconName) ?? _iconForModeName(m.name),
+                        ),
                         const SizedBox(width: 12),
                         Expanded(child: Text(m.name)),
                         if (mode?.id == m.id)

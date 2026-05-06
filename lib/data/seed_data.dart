@@ -128,6 +128,11 @@ SessionMode _defaultDistressMode() => const SessionMode(
 SessionMode _walkMode() => const SessionMode(
   id: SeedModeIds.walk,
   name: 'Walk Mode',
+  // Issues-v4 #12 — seed an iconName so the Walk tile matches its
+  // mode-editor selection on Home + Modes list. The legacy
+  // name-heuristic in `home_screen._iconForModeName` is kept as a
+  // fallback for unnamed user modes.
+  iconName: 'directions_walk',
   checkInType: ChainStepType.holdButton,
   chainSteps: [
     ChainStep(
@@ -167,6 +172,9 @@ SessionMode _walkMode() => const SessionMode(
 SessionMode _dateMode() => const SessionMode(
   id: SeedModeIds.date,
   name: 'Date Mode',
+  // Issues-v4 #12 — seed an iconName so the Date tile matches its
+  // mode-editor selection on Home + Modes list.
+  iconName: 'favorite',
   checkInType: ChainStepType.disguisedReminder,
   chainSteps: [
     ChainStep(
