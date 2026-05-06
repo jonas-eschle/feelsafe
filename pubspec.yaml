@@ -143,6 +143,7 @@ flutter:
 
   assets:
     - assets/audio/
+    - assets/voice/
 
 # Build hooks (Dart 3.11+) — select the SQLite3MultipleCiphers build of
 # sqlite3 so the database is SQLCipher-compatible without depending on
