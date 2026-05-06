@@ -433,17 +433,84 @@ class _EmergencyForm extends StatelessWidget {
   }
 }
 
-class _HardwareForm extends StatelessWidget {
+/// Issues-v4 #9 — full inline hardware-button config.
+///
+/// Surfaces every persisted [HardwareButtonConfig] field:
+/// * [HardwareButtonConfig.buttonType] — volume up/down or power.
+/// * [HardwareButtonConfig.pattern] — repeat-press or long-press.
+/// * [HardwareButtonConfig.pressCount] — visible only when pattern
+///   is repeat-press (a longPress count is meaningless).
+/// * [HardwareButtonConfig.pressWindowMs] — visible only when
+///   pattern is repeat-press.
+/// * [HardwareButtonConfig.longPressDurationSeconds] — visible only
+///   when pattern is long-press.
+///
+/// *Why visibility is conditional:* mixing pattern-specific fields
+/// in the same view makes the form hard to scan; users editing a
+/// repeat-press shouldn't see the long-press duration.
+class _HardwareForm extends StatefulWidget {
   const _HardwareForm({required this.step, required this.onChanged});
   final ChainStep step;
   final ValueChanged<ChainStep> onChanged;
 
   @override
+  State<_HardwareForm> createState() => _HardwareFormState();
+}
+
+class _HardwareFormState extends State<_HardwareForm> {
+  late TextEditingController _pressCountCtrl;
+  late TextEditingController _pressWindowCtrl;
+  late TextEditingController _longDurationCtrl;
+
+  HardwareButtonConfig get _cfg => (widget.step.config is HardwareButtonConfig)
+      ? widget.step.config! as HardwareButtonConfig
+      : const HardwareButtonConfig();
+
+  @override
+  void initState() {
+    super.initState();
+    final cfg = _cfg;
+    _pressCountCtrl = TextEditingController(text: cfg.pressCount.toString());
+    _pressWindowCtrl = TextEditingController(
+      text: cfg.pressWindowMs.toString(),
+    );
+    _longDurationCtrl = TextEditingController(
+      text: cfg.longPressDurationSeconds.toStringAsFixed(1),
+    );
+  }
+
+  @override
+  void didUpdateWidget(covariant _HardwareForm oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final cfg = _cfg;
+    if (_pressCountCtrl.text != cfg.pressCount.toString()) {
+      _pressCountCtrl.text = cfg.pressCount.toString();
+    }
+    if (_pressWindowCtrl.text != cfg.pressWindowMs.toString()) {
+      _pressWindowCtrl.text = cfg.pressWindowMs.toString();
+    }
+    final newDuration = cfg.longPressDurationSeconds.toStringAsFixed(1);
+    if (_longDurationCtrl.text != newDuration) {
+      _longDurationCtrl.text = newDuration;
+    }
+  }
+
+  @override
+  void dispose() {
+    _pressCountCtrl.dispose();
+    _pressWindowCtrl.dispose();
+    _longDurationCtrl.dispose();
+    super.dispose();
+  }
+
+  void _emit(HardwareButtonConfig next) =>
+      widget.onChanged(widget.step.copyWith(config: next));
+
+  @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final cfg = (step.config is HardwareButtonConfig)
-        ? step.config! as HardwareButtonConfig
-        : const HardwareButtonConfig();
+    final cfg = _cfg;
+    final isRepeat = cfg.pattern == HardwarePattern.repeatPress;
     return Column(
       children: [
         DropdownButtonFormField<ButtonType>(
@@ -465,7 +532,7 @@ class _HardwareForm extends StatelessWidget {
           ],
           onChanged: (v) {
             if (v == null) return;
-            onChanged(step.copyWith(config: cfg.copyWith(buttonType: v)));
+            _emit(cfg.copyWith(buttonType: v));
           },
         ),
         DropdownButtonFormField<HardwarePattern>(
@@ -483,23 +550,47 @@ class _HardwareForm extends StatelessWidget {
           ],
           onChanged: (v) {
             if (v == null) return;
-            onChanged(step.copyWith(config: cfg.copyWith(pattern: v)));
+            _emit(cfg.copyWith(pattern: v));
           },
         ),
-        TextFormField(
-          initialValue: cfg.pressCount.toString(),
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: l.stepConfigHardwarePressCount,
+        if (isRepeat) ...[
+          TextFormField(
+            controller: _pressCountCtrl,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: l.stepConfigHardwarePressCount,
+            ),
+            onChanged: (v) => _emit(
+              cfg.copyWith(pressCount: int.tryParse(v) ?? cfg.pressCount),
+            ),
           ),
-          onChanged: (v) => onChanged(
-            step.copyWith(
-              config: cfg.copyWith(
-                pressCount: int.tryParse(v) ?? cfg.pressCount,
+          TextFormField(
+            controller: _pressWindowCtrl,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: l.stepConfigHardwarePressWindow,
+            ),
+            onChanged: (v) => _emit(
+              cfg.copyWith(
+                pressWindowMs: int.tryParse(v) ?? cfg.pressWindowMs,
               ),
             ),
           ),
-        ),
+        ] else ...[
+          TextFormField(
+            controller: _longDurationCtrl,
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
+            decoration: InputDecoration(
+              labelText: l.stepConfigHardwareLongDuration,
+            ),
+            onChanged: (v) => _emit(
+              cfg.copyWith(
+                longPressDurationSeconds:
+                    double.tryParse(v) ?? cfg.longPressDurationSeconds,
+              ),
+            ),
+          ),
+        ],
       ],
     );
   }
