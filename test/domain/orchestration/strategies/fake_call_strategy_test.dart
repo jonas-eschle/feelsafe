@@ -65,7 +65,8 @@ void main() {
         ),
         harness.build(),
       );
-      expect(desc, contains('Alice'));
+      expect(desc.templateKey, 'simFakeCallRing');
+      expect(desc.args['caller'], 'Alice');
     });
 
     test('simulationDescription defaults to Angela when name null', () {
@@ -120,7 +121,8 @@ void main() {
         step(type: ChainStepType.fakeCall, config: const LoudAlarmConfig()),
         harness.build(),
       );
-      expect(desc, contains('Angela'));
+      expect(desc.templateKey, 'simFakeCallRing');
+      expect(desc.args['caller'], 'Angela');
     });
 
     test('executeReal is order-stable: ringtone before vibration', () async {

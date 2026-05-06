@@ -190,7 +190,8 @@ void main() {
         step(type: ChainStepType.disguisedReminder),
         harness.build(),
       );
-      expect(desc, contains('First'));
+      expect(desc.templateKey, 'simDisguisedReminder');
+      expect(desc.args['title'], 'First');
     });
   });
 }

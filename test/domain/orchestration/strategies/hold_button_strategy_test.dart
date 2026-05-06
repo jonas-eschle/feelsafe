@@ -36,12 +36,12 @@ void main() {
       expect(harness.vibration.calls, isEmpty);
     });
 
-    test('simulationDescription is non-empty', () {
+    test('simulationDescription has a non-empty template key', () {
       final desc = strategy.simulationDescription(
         step(type: ChainStepType.holdButton),
         harness.build(),
       );
-      expect(desc, isNotEmpty);
+      expect(desc.templateKey, isNotEmpty);
     });
 
     test('simulationDescription uses simHoldButton template key', () {
