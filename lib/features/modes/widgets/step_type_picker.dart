@@ -39,11 +39,24 @@ StepCategory categoryOf(ChainStepType type) => switch (type) {
   ChainStepType.callEmergency => StepCategory.action,
 };
 
+/// Issues-v4 #8 — top-3 step types surfaced as primary options on
+/// initial picker open. Hold + Disguised Reminder + Hardware Button
+/// covers the canonical "I want to start a session" entry-points;
+/// the rest sit behind "More options...".
+const List<ChainStepType> kTopStepTypes = [
+  ChainStepType.holdButton,
+  ChainStepType.disguisedReminder,
+  ChainStepType.hardwareButton,
+];
+
 /// Opens a modal bottom sheet; returns the chosen [ChainStepType]
 /// or null if cancelled.
 ///
-/// The picker exposes a [StepCategory] filter so a user adding a
-/// fifth SMS step doesn't have to scroll past every reminder type.
+/// Issues-v4 #8: the picker opens with three prominent rows (the
+/// [kTopStepTypes] set) plus a "More options..." trigger that
+/// reveals the full nine-row catalogue + category filter. Most users
+/// pick from the top three, so the cluttered initial layout is
+/// avoided.
 Future<ChainStepType?> showStepTypePicker(BuildContext context) =>
     showModalBottomSheet<ChainStepType>(
       context: context,
@@ -87,62 +100,95 @@ class _StepTypePickerSheet extends StatefulWidget {
 class _StepTypePickerSheetState extends State<_StepTypePickerSheet> {
   StepCategory _filter = StepCategory.all;
 
+  /// Issues-v4 #8 — when true, render the legacy nine-row catalogue.
+  /// On open this is `false` so the user sees only the top three
+  /// choices + a "More options..." trigger; tapping the trigger
+  /// switches to the full list.
+  bool _showAll = false;
+
+  /// All entries with their picker icon, in the canonical order.
+  static const List<(ChainStepType, IconData)> _entries = [
+    (ChainStepType.holdButton, Icons.touch_app),
+    (ChainStepType.disguisedReminder, Icons.notifications),
+    (ChainStepType.countdownWarning, Icons.timer),
+    (ChainStepType.fakeCall, Icons.call),
+    (ChainStepType.smsContact, Icons.sms),
+    (ChainStepType.phoneCallContact, Icons.phone_forwarded),
+    (ChainStepType.loudAlarm, Icons.alarm),
+    (ChainStepType.callEmergency, Icons.emergency),
+    (ChainStepType.hardwareButton, Icons.power_settings_new),
+  ];
+
   @override
   Widget build(BuildContext context) {
-    final entries = <(ChainStepType, IconData)>[
-      (ChainStepType.holdButton, Icons.touch_app),
-      (ChainStepType.disguisedReminder, Icons.notifications),
-      (ChainStepType.countdownWarning, Icons.timer),
-      (ChainStepType.fakeCall, Icons.call),
-      (ChainStepType.smsContact, Icons.sms),
-      (ChainStepType.phoneCallContact, Icons.phone_forwarded),
-      (ChainStepType.loudAlarm, Icons.alarm),
-      (ChainStepType.callEmergency, Icons.emergency),
-      (ChainStepType.hardwareButton, Icons.power_settings_new),
-    ];
-    final filtered = _filter == StepCategory.all
-        ? entries
-        : [for (final e in entries) if (categoryOf(e.$1) == _filter) e];
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (final cat in StepCategory.values)
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: ChoiceChip(
-                        label: Text(stepCategoryLabel(context, cat)),
-                        selected: _filter == cat,
-                        onSelected: (sel) {
-                          if (sel) setState(() => _filter = cat);
-                        },
+          if (_showAll)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    for (final cat in StepCategory.values)
+                      Padding(
+                        padding: const EdgeInsets.only(right: 8),
+                        child: ChoiceChip(
+                          label: Text(stepCategoryLabel(context, cat)),
+                          selected: _filter == cat,
+                          onSelected: (sel) {
+                            if (sel) setState(() => _filter = cat);
+                          },
+                        ),
                       ),
-                    ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ),
           Flexible(
             child: ListView(
               shrinkWrap: true,
               children: [
-                for (final e in filtered)
+                if (!_showAll) ...[
+                  // Issues-v4 #8: prominent top-3 entries.
+                  for (final type in kTopStepTypes)
+                    _entryTile(context, type),
                   ListTile(
-                    leading: Icon(e.$2),
-                    title: Text(stepTypeLabel(context, e.$1)),
-                    onTap: () => Navigator.of(context).pop(e.$1),
+                    leading: const Icon(Icons.more_horiz),
+                    title: Text(l.stepPickerMore),
+                    onTap: () => setState(() => _showAll = true),
                   ),
+                ] else
+                  for (final e in _filteredEntries) _entryTile(context, e.$1),
               ],
             ),
           ),
         ],
       ),
+    );
+  }
+
+  /// Returns entries filtered by the active category.
+  List<(ChainStepType, IconData)> get _filteredEntries =>
+      _filter == StepCategory.all
+          ? _entries
+          : [for (final e in _entries) if (categoryOf(e.$1) == _filter) e];
+
+  /// Renders one ListTile entry. Looks up the icon from [_entries].
+  Widget _entryTile(BuildContext context, ChainStepType type) {
+    final icon = _entries
+        .firstWhere(
+          (e) => e.$1 == type,
+          orElse: () => (type, Icons.help_outline),
+        )
+        .$2;
+    return ListTile(
+      leading: Icon(icon),
+      title: Text(stepTypeLabel(context, type)),
+      onTap: () => Navigator.of(context).pop(type),
     );
   }
 }

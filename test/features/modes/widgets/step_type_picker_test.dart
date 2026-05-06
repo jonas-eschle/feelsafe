@@ -1,8 +1,10 @@
 /// Tests for [StepTypePicker] bottom-sheet + [stepTypeLabel].
 ///
-/// Covers: all 9 step types render a ListTile, the picker pops the
-/// selected enum back via `Navigator.pop`, and the label helper is
-/// total for every [ChainStepType].
+/// Covers: all 9 step types render after expanding the "More
+/// options..." trigger, the picker pops the selected enum back via
+/// `Navigator.pop`, the label helper is total for every
+/// [ChainStepType], and (issues-v4 #8) the initial picker view shows
+/// only the top-3 plus the "More options..." trigger.
 library;
 
 import 'package:checks/checks.dart';
@@ -41,6 +43,11 @@ Widget _appWithPicker({
 
 Future<void> _openPicker(WidgetTester tester) async {
   await tester.tap(find.text('open'));
+  await tester.pumpAndSettle();
+}
+
+Future<void> _expandToAll(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.more_horiz));
   await tester.pumpAndSettle();
 }
 
@@ -90,8 +97,8 @@ void main() {
     await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
     await _openPicker(tester);
-    // loudAlarm sits near the bottom of the list — scroll the sheet
-    // list until the icon is in the hit-testable viewport.
+    // Issues-v4 #8: loudAlarm is hidden behind "More options..."
+    await _expandToAll(tester);
     await tester.scrollUntilVisible(
       find.byIcon(Icons.alarm),
       60,
@@ -103,14 +110,50 @@ void main() {
     check(chosen).equals(ChainStepType.loudAlarm);
   });
 
-  testWidgets('picker lists all 9 step-type icons', (tester) async {
+  testWidgets('initial picker view shows only the top-3 plus More options',
+      (tester) async {
+    await tester.pumpWidget(_appWithPicker());
+    await tester.pumpAndSettle();
+    await _openPicker(tester);
+    // The top three (holdButton, disguisedReminder, hardwareButton)
+    // should be visible as ListTiles, plus the More-options trigger.
+    check(find.byIcon(Icons.touch_app).evaluate().length).equals(1);
+    check(find.byIcon(Icons.notifications).evaluate().length).equals(1);
+    check(find.byIcon(Icons.power_settings_new).evaluate().length).equals(1);
+    check(find.byIcon(Icons.more_horiz).evaluate().length).equals(1);
+    // Hidden until "More options..." is tapped.
+    check(find.byIcon(Icons.timer).evaluate()).isEmpty();
+    check(find.byIcon(Icons.call).evaluate()).isEmpty();
+    check(find.byIcon(Icons.sms).evaluate()).isEmpty();
+    check(find.byIcon(Icons.alarm).evaluate()).isEmpty();
+    check(find.byIcon(Icons.emergency).evaluate()).isEmpty();
+  });
+
+  testWidgets('expanding to "More options..." reveals the rest',
+      (tester) async {
+    await tester.pumpWidget(_appWithPicker());
+    await tester.pumpAndSettle();
+    await _openPicker(tester);
+    await _expandToAll(tester);
+    // After expanding all 9 entries should be reachable (some via
+    // scrolling). At minimum the previously-hidden timer + emergency
+    // icons should now exist somewhere in the tree.
+    final scrollable = find.byType(Scrollable).last;
+    for (final icon in const [Icons.timer, Icons.emergency, Icons.alarm]) {
+      await tester.scrollUntilVisible(find.byIcon(icon), 60,
+          scrollable: scrollable);
+      await tester.pumpAndSettle();
+      check(find.byIcon(icon).evaluate().length).isGreaterOrEqual(1);
+    }
+  });
+
+  testWidgets('picker lists all 9 step-type icons after expanding',
+      (tester) async {
     ChainStepType? chosen;
     await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
     await _openPicker(tester);
-    // Scroll from top-to-bottom assert each icon can be brought into
-    // view. scrollUntilVisible no-ops if the icon is already in the
-    // viewport, so this works whether the list is lazily building.
+    await _expandToAll(tester);
     const expected = [
       Icons.touch_app,
       Icons.notifications,
@@ -139,5 +182,12 @@ void main() {
     await tester.tap(find.byIcon(Icons.touch_app));
     await tester.pumpAndSettle();
     check(chosen).equals(ChainStepType.holdButton);
+  });
+
+  test('kTopStepTypes contains exactly three entries', () {
+    check(kTopStepTypes.length).equals(3);
+    check(kTopStepTypes).contains(ChainStepType.holdButton);
+    check(kTopStepTypes).contains(ChainStepType.disguisedReminder);
+    check(kTopStepTypes).contains(ChainStepType.hardwareButton);
   });
 }
