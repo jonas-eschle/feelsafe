@@ -28,11 +28,6 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/location_resolver.dart';
 import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';
 
-/// Default message body when neither the step config nor any global
-/// template provides one.
-const String _defaultSmsTemplate =
-    '{name} may need help. Location: {location}. Time: {time}.';
-
 /// Strategy for SMS-to-contact steps.
 final class SmsContactStrategy extends EventStrategy {
   /// Const constructor.
@@ -81,13 +76,44 @@ final class SmsContactStrategy extends EventStrategy {
       services,
       logGpsEnabled: logGps,
     );
-    final message = services.context.resolvePlaceholders(
-      config.messageTemplate ?? _defaultSmsTemplate,
-      location: locationUrl,
-    );
     final isSim = services.context.isSimulation;
     final register = services.registerSmsWorkId;
+    final stepTemplate = config.messageTemplate;
+    // Bugs.json Note 1 — `autoRecordAudio` / `autoRecordVideo` /
+    // `recordDurationSeconds` are persisted on `SmsContactConfig`
+    // and exposed in the mode-editor SMS form, but the audio /
+    // recording services do not yet expose a record-with-cap entry
+    // point. *Why we don't implement here:* extending
+    // `AudioServiceProtocol` (and its real-platform implementation)
+    // sits in Bucket D's `lib/services/` territory; cross-bucket
+    // edits would race their concurrent work. Until the protocol
+    // gains a `startVoiceRecordingWithCap(Duration)` method, log
+    // when the user has the toggles on so the gap is visible at
+    // runtime. Once available, drive a `services.audio` recording
+    // call here, gated on `!isSim`.
+    if (!isSim &&
+        (config.autoRecordAudio || config.autoRecordVideo)) {
+      developer.log(
+        'SmsContactStrategy: auto-record toggles set '
+        '(audio=${config.autoRecordAudio}, '
+        'video=${config.autoRecordVideo}, '
+        'duration=${config.recordDurationSeconds}s) '
+        'but no recording service is wired yet — TODO bucket-D.',
+        name: 'orchestration.smsContact',
+      );
+    }
     for (final contact in contacts) {
+      // Per-contact SMS template lookup: when the user did NOT
+      // override the template at the step level, pick the localized
+      // default for the contact's `languageCode`, falling back to
+      // `SessionContext.defaultSmsTemplate` when the language is
+      // unknown. Fix for bugs.json Warn 4.
+      final template = stepTemplate ??
+          services.context.resolveSmsTemplateForContact(contact);
+      final message = services.context.resolvePlaceholders(
+        template,
+        location: locationUrl,
+      );
       final id = await services.messaging.sendMessage(
         contact: contact,
         message: message,
@@ -101,7 +127,10 @@ final class SmsContactStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) {
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) {
     final config = _resolveConfig(step, services);
     final candidates = _resolveContacts(services, config);
     final channel = config.channel;
@@ -109,8 +138,10 @@ final class SmsContactStrategy extends EventStrategy {
       for (final c in candidates)
         if (c.channels.contains(channel)) c,
     ];
-    return '[SIM] Would send ${channel.name} to '
-        '${contacts.length} contacts';
+    return SimulationDescription(
+      'simSmsContact',
+      {'channel': channel.name, 'count': contacts.length},
+    );
   }
 
   /// Resolves the step config.
