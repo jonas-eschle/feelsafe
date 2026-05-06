@@ -460,10 +460,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get modeFieldCheckInType => 'Type de vérification';
 
   @override
-  String get modeFieldDistressChain => 'Mode de détresse';
+  String get modeFieldDistressMode => 'Mode de détresse';
 
   @override
-  String get modeFieldDistressChainDefault => 'Utiliser par défaut';
+  String get modeFieldDistressModeDefault => 'Utiliser par défaut';
 
   @override
   String get modeChainHeader => 'Chaîne d\'escalade';

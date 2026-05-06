@@ -456,10 +456,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modeFieldCheckInType => 'نوع تسجيل الوصول';
 
   @override
-  String get modeFieldDistressChain => 'وضع الاستغاثة';
+  String get modeFieldDistressMode => 'وضع الاستغاثة';
 
   @override
-  String get modeFieldDistressChainDefault => 'استخدام الافتراضي';
+  String get modeFieldDistressModeDefault => 'استخدام الافتراضي';
 
   @override
   String get modeChainHeader => 'سلسلة التصعيد';

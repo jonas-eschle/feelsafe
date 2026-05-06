@@ -460,10 +460,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get modeFieldCheckInType => 'Тип реєстрації';
 
   @override
-  String get modeFieldDistressChain => 'Режим тривоги';
+  String get modeFieldDistressMode => 'Режим тривоги';
 
   @override
-  String get modeFieldDistressChainDefault => 'Використати типовий';
+  String get modeFieldDistressModeDefault => 'Використати типовий';
 
   @override
   String get modeChainHeader => 'Ланцюг ескалації';

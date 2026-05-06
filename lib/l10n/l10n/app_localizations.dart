@@ -947,17 +947,17 @@ abstract class AppLocalizations {
   /// **'Check-in type'**
   String get modeFieldCheckInType;
 
-  /// Distress-chain selector.
+  /// Distress-mode selector.
   ///
   /// In en, this message translates to:
-  /// **'Distress chain'**
-  String get modeFieldDistressChain;
+  /// **'Distress mode'**
+  String get modeFieldDistressMode;
 
-  /// Default option in distress-chain selector.
+  /// Default option in distress-mode selector.
   ///
   /// In en, this message translates to:
   /// **'Use default'**
-  String get modeFieldDistressChainDefault;
+  String get modeFieldDistressModeDefault;
 
   /// Header above the chain-step list.
   ///

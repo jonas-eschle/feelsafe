@@ -462,10 +462,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get modeFieldCheckInType => 'Tipo de confirmación';
 
   @override
-  String get modeFieldDistressChain => 'Modo de auxilio';
+  String get modeFieldDistressMode => 'Modo de auxilio';
 
   @override
-  String get modeFieldDistressChainDefault => 'Usar predeterminada';
+  String get modeFieldDistressModeDefault => 'Usar predeterminada';
 
   @override
   String get modeChainHeader => 'Cadena de escalada';

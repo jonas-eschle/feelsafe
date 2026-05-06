@@ -460,10 +460,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get modeFieldCheckInType => 'Check-in-Art';
 
   @override
-  String get modeFieldDistressChain => 'Notfallmodus';
+  String get modeFieldDistressMode => 'Notfallmodus';
 
   @override
-  String get modeFieldDistressChainDefault => 'Standard verwenden';
+  String get modeFieldDistressModeDefault => 'Standard verwenden';
 
   @override
   String get modeChainHeader => 'Eskalationskette';

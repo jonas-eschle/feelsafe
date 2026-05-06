@@ -461,10 +461,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get modeFieldCheckInType => 'चेक-इन प्रकार';
 
   @override
-  String get modeFieldDistressChain => 'संकट मोड';
+  String get modeFieldDistressMode => 'संकट मोड';
 
   @override
-  String get modeFieldDistressChainDefault => 'डिफ़ॉल्ट उपयोग करें';
+  String get modeFieldDistressModeDefault => 'डिफ़ॉल्ट उपयोग करें';
 
   @override
   String get modeChainHeader => 'वृद्धि शृंखला';

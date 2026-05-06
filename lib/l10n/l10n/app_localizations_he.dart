@@ -453,10 +453,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get modeFieldCheckInType => 'סוג צ\'ק-אין';
 
   @override
-  String get modeFieldDistressChain => 'מצב מצוקה';
+  String get modeFieldDistressMode => 'מצב מצוקה';
 
   @override
-  String get modeFieldDistressChainDefault => 'השתמש בברירת המחדל';
+  String get modeFieldDistressModeDefault => 'השתמש בברירת המחדל';
 
   @override
   String get modeChainHeader => 'שרשרת הסלמה';

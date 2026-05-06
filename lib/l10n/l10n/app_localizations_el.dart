@@ -464,10 +464,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get modeFieldCheckInType => 'Τύπος ελέγχου';
 
   @override
-  String get modeFieldDistressChain => 'Λειτουργία κινδύνου';
+  String get modeFieldDistressMode => 'Λειτουργία κινδύνου';
 
   @override
-  String get modeFieldDistressChainDefault => 'Χρήση προεπιλογής';
+  String get modeFieldDistressModeDefault => 'Χρήση προεπιλογής';
 
   @override
   String get modeChainHeader => 'Αλυσίδα κλιμάκωσης';

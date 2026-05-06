@@ -385,11 +385,11 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
               DropdownButtonFormField<String?>(
                 initialValue: _distressModeId,
                 decoration:
-                    InputDecoration(labelText: l.modeFieldDistressChain),
+                    InputDecoration(labelText: l.modeFieldDistressMode),
                 items: [
                   DropdownMenuItem<String?>(
                     value: null,
-                    child: Text(l.modeFieldDistressChainDefault),
+                    child: Text(l.modeFieldDistressModeDefault),
                   ),
                   for (final c in distressChains)
                     DropdownMenuItem<String?>(

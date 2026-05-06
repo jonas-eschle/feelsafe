@@ -458,10 +458,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get modeFieldCheckInType => 'Typ potwierdzenia';
 
   @override
-  String get modeFieldDistressChain => 'Tryb alarmowy';
+  String get modeFieldDistressMode => 'Tryb alarmowy';
 
   @override
-  String get modeFieldDistressChainDefault => 'Użyj domyślnego';
+  String get modeFieldDistressModeDefault => 'Użyj domyślnego';
 
   @override
   String get modeChainHeader => 'Łańcuch eskalacji';

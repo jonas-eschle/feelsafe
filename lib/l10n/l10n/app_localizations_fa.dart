@@ -458,10 +458,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get modeFieldCheckInType => 'نوع گزارش وضعیت';
 
   @override
-  String get modeFieldDistressChain => 'حالت اضطرار';
+  String get modeFieldDistressMode => 'حالت اضطرار';
 
   @override
-  String get modeFieldDistressChainDefault => 'استفاده از پیش‌فرض';
+  String get modeFieldDistressModeDefault => 'استفاده از پیش‌فرض';
 
   @override
   String get modeChainHeader => 'زنجیره تشدید';

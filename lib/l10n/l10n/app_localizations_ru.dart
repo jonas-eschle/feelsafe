@@ -459,10 +459,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modeFieldCheckInType => 'Тип проверки';
 
   @override
-  String get modeFieldDistressChain => 'Режим тревоги';
+  String get modeFieldDistressMode => 'Режим тревоги';
 
   @override
-  String get modeFieldDistressChainDefault => 'По умолчанию';
+  String get modeFieldDistressModeDefault => 'По умолчанию';
 
   @override
   String get modeChainHeader => 'Цепочка эскалации';

@@ -444,10 +444,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modeFieldCheckInType => '签到类型';
 
   @override
-  String get modeFieldDistressChain => '求救模式';
+  String get modeFieldDistressMode => '求救模式';
 
   @override
-  String get modeFieldDistressChainDefault => '使用默认';
+  String get modeFieldDistressModeDefault => '使用默认';
 
   @override
   String get modeChainHeader => '升级链';
@@ -1845,10 +1845,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get modeFieldCheckInType => '報平安方式';
 
   @override
-  String get modeFieldDistressChain => '求救模式';
+  String get modeFieldDistressMode => '求救模式';
 
   @override
-  String get modeFieldDistressChainDefault => '使用預設';
+  String get modeFieldDistressModeDefault => '使用預設';
 
   @override
   String get modeChainHeader => '警報升級流程';
