@@ -52,7 +52,7 @@ dependencies:
   vibration: ^3.1.8
 
   # Screen wake lock
-  wakelock_plus: ^1.5.1
+  wakelock_plus: ^1.5.2
 
   # UUID generation
   uuid: ^4.5.3
@@ -87,10 +87,10 @@ dependencies:
   local_auth: ^3.0.1
   clock: ^1.1.2
   package_info_plus: ^9.0.1
-  device_info_plus: ^12.0.0
+  device_info_plus: ^12.4.0
   flutter_contacts: ^2.0.2
   # @visibleForTesting / other static annotations
-  meta: ^1.15.0
+  meta: ^1.17.0
   home_widget: ^0.9.1
 
   # Telemetry (Phase 15) — Sentry EU host, opt-out-by-default. See
@@ -113,7 +113,7 @@ dev_dependencies:
   test: ^1.30.0
   # Golden-image regression tests (D-TEST-12). Framework + helpers for
   # pixel-match goldens across a device matrix.
-  golden_toolkit: ^0.15.0
+  alchemist: ^0.14.0
   # Patrol end-to-end testing (Phase 16 test-strategy.md §7.4).
   # Flutter-aware runner with native-interaction helpers. Runs on
   # Android emulator / iOS simulator — NOT in the unit test pass.

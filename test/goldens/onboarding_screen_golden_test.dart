@@ -3,7 +3,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 import 'goldens_setup.dart';
 
@@ -97,18 +97,11 @@ void main() {
   for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
     pages.forEach((pageName, pageWidget) {
-      testGoldens('onboarding_${pageName}_$themeName', (tester) async {
-        final builder = buildDevices(
-          child: pageWidget,
-          themeMode: themeMode,
-          scenarioName: pageName,
-        );
-        await tester.pumpDeviceBuilder(
-          builder,
-          wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-        );
-        await screenMatchesGolden(tester, 'onboarding_${pageName}_$themeName');
-      });
+      goldenTest(
+      'onboarding_${pageName}_$themeName',
+      fileName: 'onboarding_${pageName}_$themeName',
+      builder: () => goldenWrapper(child: pageWidget, themeMode: themeMode),
+    );
     });
   }
 }

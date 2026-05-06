@@ -2,7 +2,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 import 'goldens_setup.dart';
 
@@ -46,17 +46,10 @@ Widget _navTile(String label) => ListTile(
 void main() {
   for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
-    testGoldens('settings_screen_$themeName', (tester) async {
-      final builder = buildDevices(
-        child: _settingsStandin(),
-        themeMode: themeMode,
-        scenarioName: 'settings',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(tester, 'settings_screen_$themeName');
-    });
+    goldenTest(
+      'settings_screen_$themeName',
+      fileName: 'settings_screen_$themeName',
+      builder: () => goldenWrapper(child: _settingsStandin(), themeMode: themeMode),
+    );
   }
 }

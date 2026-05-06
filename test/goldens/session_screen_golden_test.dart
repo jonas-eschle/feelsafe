@@ -5,7 +5,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 import 'package:guardianangela/core/widgets/hold_to_trigger_button.dart';
 import 'package:guardianangela/core/widgets/im_safe_slider.dart';
@@ -68,21 +68,14 @@ void main() {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
     for (final phase in _Phase.values) {
       final phaseName = phase.name;
-      testGoldens('session_screen_${phaseName}_$themeName', (tester) async {
-        final builder = buildDevices(
+      goldenTest(
+        'session_screen_${phaseName}_$themeName',
+        fileName: 'session_screen_${phaseName}_$themeName',
+        builder: () => goldenWrapper(
           child: _sessionStandin(phase),
           themeMode: themeMode,
-          scenarioName: phaseName,
-        );
-        await tester.pumpDeviceBuilder(
-          builder,
-          wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-        );
-        await screenMatchesGolden(
-          tester,
-          'session_screen_${phaseName}_$themeName',
-        );
-      });
+        ),
+      );
     }
   }
 }

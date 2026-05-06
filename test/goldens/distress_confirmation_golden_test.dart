@@ -7,7 +7,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 import 'package:guardianangela/core/widgets/distress_confirmation.dart';
 
@@ -17,26 +17,21 @@ void main() {
   for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
 
-    testGoldens('distress_confirmation_normal_$themeName', (tester) async {
-      final builder = buildDevices(
+    goldenTest(
+      'distress_confirmation_normal_$themeName',
+      fileName: 'distress_confirmation_normal_$themeName',
+      builder: () => goldenWrapper(
         child: Scaffold(
           body: DistressConfirmation(onConfirmed: () {}, onCancelled: () {}),
         ),
         themeMode: themeMode,
-        scenarioName: 'normal',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(
-        tester,
-        'distress_confirmation_normal_$themeName',
-      );
-    });
+      ),
+    );
 
-    testGoldens('distress_confirmation_stealth_$themeName', (tester) async {
-      final builder = buildDevices(
+    goldenTest(
+      'distress_confirmation_stealth_$themeName',
+      fileName: 'distress_confirmation_stealth_$themeName',
+      builder: () => goldenWrapper(
         child: Scaffold(
           body: DistressConfirmation(
             onConfirmed: () {},
@@ -45,16 +40,7 @@ void main() {
           ),
         ),
         themeMode: themeMode,
-        scenarioName: 'stealth',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(
-        tester,
-        'distress_confirmation_stealth_$themeName',
-      );
-    });
+      ),
+    );
   }
 }

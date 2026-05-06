@@ -4,7 +4,7 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 import 'goldens_setup.dart';
 
@@ -57,17 +57,10 @@ Widget _callButton({
 void main() {
   for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
-    testGoldens('fake_call_screen_$themeName', (tester) async {
-      final builder = buildDevices(
-        child: _fakeCallStandin(),
-        themeMode: themeMode,
-        scenarioName: 'fake_call',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(tester, 'fake_call_screen_$themeName');
-    });
+    goldenTest(
+      'fake_call_screen_$themeName',
+      fileName: 'fake_call_screen_$themeName',
+      builder: () => goldenWrapper(child: _fakeCallStandin(), themeMode: themeMode),
+    );
   }
 }

@@ -189,7 +189,29 @@ RTL languages supported: fa (Farsi), ar (Arabic), he (Hebrew).
 
 - **Strict analysis**: `strict-casts`, `strict-inference`, `strict-raw-types` all enabled
 - **Git hooks** (lefthook): pre-commit runs `dart format` + `import_sorter`; pre-push runs `flutter analyze` + `flutter test`
-- **CI** (.github/workflows/ci.yml): format check, import sort, build_runner, analyze, test
+- **CI** (.github/workflows/ci.yml): format check, import sort, build_runner, analyze, test, **dep audit (no discontinued direct deps)**
+
+## Dependency policy
+
+Pre-alpha rules:
+
+- No backwards compatibility. Replace any direct dependency whose
+  pub.dev `isDiscontinued` flag is `true` in the **same cycle** the
+  flag is detected — don't carry an EOL package across releases.
+  CI's "Audit for discontinued packages" step in `ci.yml` enforces
+  this with a hard fail.
+- Run `flutter pub outdated` before opening any PR that touches
+  `pubspec.yaml`. Bumping major versions of direct deps is preferred
+  over staying on a behind-by-major release; document any major bump
+  blocked by a transitive constraint (e.g. `flutter_secure_storage_windows`
+  pinning `win32 ^5.5.4` blocks `share_plus 13` / `package_info_plus 10`
+  / `device_info_plus 13` until a newer `flutter_secure_storage`
+  releases).
+- Migrations history (so future-you remembers what bit us last):
+  - `e67f082` (May 2026): dropped `sqlcipher_flutter_libs` (EOL),
+    moved to `sqlite3 3.x` + `sqlite3mc` via Dart 3.11 build hooks.
+  - Phase-deps (May 2026): swapped `golden_toolkit` (discontinued)
+    for `alchemist`. Goldens regenerated under `test/goldens/goldens/`.
 
 ## Native Platform Channels
 

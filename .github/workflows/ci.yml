@@ -44,6 +44,33 @@ jobs:
       - name: Test
         run: flutter test
 
+      # Pre-alpha dep policy: any direct dependency flagged as
+      # `isDiscontinued: true` on pub.dev fails the build. The Phase 0
+      # commit `e67f082` had to bail off `sqlcipher_flutter_libs` after
+      # it was already rotting in the tree; this gate prevents another
+      # silent EOL slip. See CLAUDE.md §"Dependency policy".
+      - name: Audit for discontinued packages
+        run: |
+          set -euo pipefail
+          flutter pub outdated --json > /tmp/outdated.json
+          python3 - <<'PY'
+          import json, sys
+          with open('/tmp/outdated.json') as fh:
+              data = json.load(fh)
+          discontinued = [
+              p['package']
+              for p in data.get('packages', [])
+              if p.get('isDiscontinued')
+          ]
+          if discontinued:
+              names = ', '.join(discontinued)
+              print(f'::error::Discontinued dependencies in pubspec: {names}.')
+              print('Replace each with a maintained alternative; see '
+                    'CLAUDE.md §Dependency policy for the recipe.')
+              sys.exit(1)
+          print('No discontinued dependencies detected.')
+          PY
+
   # Phase 16 E2E pipeline — runs Patrol integration tests on an
   # Android 14 emulator. Gated on `v*` tags so PRs don't pay the
   # ~10-minute emulator boot cost. Manual dispatch is also allowed

@@ -1,24 +1,21 @@
-/// Flutter test-suite configuration hook.
+/// Test runner config — alchemist hooks for the golden tests under
+/// `test/goldens/`.
 ///
-/// Called once per test process. Used to load application fonts so
-/// goldens render with real glyphs instead of `Ahem`-style boxes.
+/// alchemist replaces the discontinued `golden_toolkit` package here.
+/// CI runs the "ci" goldens (deterministic; produced via Flutter's
+/// built-in renderer). Platform-specific goldens are disabled because
+/// we don't run the goldens against real devices.
 library;
 
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
+import 'package:alchemist/alchemist.dart';
 
 Future<void> testExecutable(FutureOr<void> Function() testMain) async {
-  TestWidgetsFlutterBinding.ensureInitialized();
-  await loadAppFonts();
-  return GoldenToolkit.runWithConfiguration(
-    () async => testMain(),
-    config: GoldenToolkitConfiguration(
-      // Only enforce pixel-match on Linux host, as CI and developer
-      // machines generate platform-specific anti-aliasing.
-      skipGoldenAssertion: () => false,
-      enableRealShadows: true,
+  return AlchemistConfig.runWithConfig(
+    config: const AlchemistConfig(
+      platformGoldensConfig: PlatformGoldensConfig(enabled: false),
     ),
+    run: testMain,
   );
 }

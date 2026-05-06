@@ -1,14 +1,8 @@
 /// Goldens for the home screen (normal and stealth appearance).
-///
-/// The real `HomeScreen` hydrates multiple Riverpod providers that in
-/// turn depend on repositories and platform services. For the
-/// pragmatic golden matrix we render a representative stand-in
-/// scaffold that mirrors the screen's AppBar + CTA layout. Full
-/// provider-wired end-to-end goldens are an ongoing task.
 library;
 
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
-import 'package:golden_toolkit/golden_toolkit.dart';
 
 import 'goldens_setup.dart';
 
@@ -60,30 +54,21 @@ Widget _homeStandin({required bool stealth}) => Scaffold(
 void main() {
   for (final themeMode in [ThemeMode.light, ThemeMode.dark]) {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
-    testGoldens('home_screen_normal_$themeName', (tester) async {
-      final builder = buildDevices(
+    goldenTest(
+      'home_screen normal $themeName',
+      fileName: 'home_screen_normal_$themeName',
+      builder: () => goldenWrapper(
         child: _homeStandin(stealth: false),
         themeMode: themeMode,
-        scenarioName: 'normal',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(tester, 'home_screen_normal_$themeName');
-    });
-
-    testGoldens('home_screen_stealth_$themeName', (tester) async {
-      final builder = buildDevices(
+      ),
+    );
+    goldenTest(
+      'home_screen stealth $themeName',
+      fileName: 'home_screen_stealth_$themeName',
+      builder: () => goldenWrapper(
         child: _homeStandin(stealth: true),
         themeMode: themeMode,
-        scenarioName: 'stealth',
-      );
-      await tester.pumpDeviceBuilder(
-        builder,
-        wrapper: (child) => goldenWrapper(child: child, themeMode: themeMode),
-      );
-      await screenMatchesGolden(tester, 'home_screen_stealth_$themeName');
-    });
+      ),
+    );
   }
 }
