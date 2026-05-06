@@ -25,6 +25,7 @@ import 'package:guardianangela/services/implementations/location_service.dart';
 import 'package:guardianangela/services/implementations/messaging_service.dart';
 import 'package:guardianangela/services/implementations/notification_service.dart';
 import 'package:guardianangela/services/implementations/phone_service.dart';
+import 'package:guardianangela/services/implementations/recording_service.dart';
 import 'package:guardianangela/services/implementations/stealth_icon_service.dart';
 import 'package:guardianangela/services/implementations/system_ui_service.dart';
 import 'package:guardianangela/services/implementations/vibration_service.dart';
@@ -41,6 +42,7 @@ import 'package:guardianangela/services/protocols/location_service_protocol.dart
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
+import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -56,6 +58,7 @@ import 'package:guardianangela/services/simulation/simulation_location_service.d
 import 'package:guardianangela/services/simulation/simulation_messaging_service.dart';
 import 'package:guardianangela/services/simulation/simulation_notification_service.dart';
 import 'package:guardianangela/services/simulation/simulation_phone_service.dart';
+import 'package:guardianangela/services/simulation/simulation_recording_service.dart';
 import 'package:guardianangela/services/simulation/simulation_stealth_icon_service.dart';
 import 'package:guardianangela/services/simulation/simulation_system_ui_service.dart';
 import 'package:guardianangela/services/simulation/simulation_vibration_service.dart';
@@ -72,6 +75,7 @@ export 'package:guardianangela/services/implementations/location_service.dart';
 export 'package:guardianangela/services/implementations/messaging_service.dart';
 export 'package:guardianangela/services/implementations/notification_service.dart';
 export 'package:guardianangela/services/implementations/phone_service.dart';
+export 'package:guardianangela/services/implementations/recording_service.dart';
 export 'package:guardianangela/services/implementations/stealth_icon_service.dart';
 export 'package:guardianangela/services/implementations/system_ui_service.dart';
 export 'package:guardianangela/services/implementations/vibration_service.dart';
@@ -87,6 +91,7 @@ export 'package:guardianangela/services/protocols/location_service_protocol.dart
 export 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 export 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 export 'package:guardianangela/services/protocols/phone_service_protocol.dart';
+export 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 export 'package:guardianangela/services/protocols/stealth_icon_service_protocol.dart';
 export 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 export 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -140,6 +145,19 @@ final phoneServiceProvider = Provider<PhoneServiceProtocol>(
 /// Simulation phone service.
 final simulationPhoneProvider = Provider<PhoneServiceProtocol>(
   (_) => SimulationPhoneService(),
+);
+
+/// Real recording service. Single-slot mic-capture wrapper extracted
+/// from `AudioService` (audit Q2). New code should depend on this
+/// provider directly; `AudioService.playVoiceRecording` remains for
+/// playback only.
+final recordingServiceProvider = Provider<RecordingServiceProtocol>(
+  (_) => RecordingService(),
+);
+
+/// Simulation recording service.
+final simulationRecordingProvider = Provider<RecordingServiceProtocol>(
+  (_) => SimulationRecordingService(),
 );
 
 /// Real location service.

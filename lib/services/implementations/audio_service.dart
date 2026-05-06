@@ -9,6 +9,13 @@
 /// created lazily so the constructor can be called safely from
 /// Riverpod provider graphs before `WidgetsFlutterBinding` is
 /// initialized (e.g., in tests and at boot time).
+///
+/// **Audio capture lives in [RecordingService] now** — this class is
+/// playback-only. The capped mic-record API (`startVoiceRecording…`)
+/// previously discussed in audit Q2 was extracted into
+/// `lib/services/implementations/recording_service.dart` and exposed
+/// via `recordingServiceProvider`. New code should depend on the
+/// recording service for capture and on this class only for playback.
 library;
 
 import 'dart:developer' as developer;
