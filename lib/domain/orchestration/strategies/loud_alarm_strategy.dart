@@ -45,10 +45,15 @@ final class LoudAlarmStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) {
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) {
     final config = _resolveConfig(step, services);
-    final tail = config.flashScreen ? 'flash' : 'vibrate';
-    return '[SIM] Loud alarm + $tail';
+    return SimulationDescription(
+      'simLoudAlarm',
+      {'flash': config.flashScreen},
+    );
   }
 
   /// Resolves the step config.

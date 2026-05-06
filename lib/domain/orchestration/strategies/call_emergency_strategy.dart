@@ -48,8 +48,13 @@ final class CallEmergencyStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) =>
-      '[SIM] Would dial ${_resolveNumber(step, services)}';
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) => SimulationDescription(
+    'simCallEmergency',
+    {'number': _resolveNumber(step, services)},
+  );
 
   /// Resolves the number to dial.
   ///

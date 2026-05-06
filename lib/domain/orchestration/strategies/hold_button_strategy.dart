@@ -25,6 +25,8 @@ final class HoldButtonStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) =>
-      '[SIM] Waiting for hold button';
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) => const SimulationDescription('simHoldButton');
 }

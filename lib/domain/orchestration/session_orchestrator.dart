@@ -33,6 +33,7 @@ import 'dart:async';
 import 'package:guardianangela/domain/models/chain_event.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
@@ -77,8 +78,10 @@ final class SessionOrchestrator {
   /// Optional messaging service used to cancel pending SMS work.
   final MessagingServiceProtocol? messagingService;
 
-  /// Optional simulation-description sink.
-  final void Function(String)? onSimulationDescription;
+  /// Optional simulation-description sink. Receives the symbolic
+  /// [SimulationDescription] returned by the strategy; the UI layer
+  /// resolves it to a localized string. Fix for bugs.json Warn 5.
+  final void Function(SimulationDescription)? onSimulationDescription;
 
   /// Optional error hook for strategy-execution failures.
   final void Function({

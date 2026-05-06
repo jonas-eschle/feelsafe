@@ -118,11 +118,19 @@ final class PhoneCallContactStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) {
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) {
     final config = _resolveConfig(step, services);
     final targets = _resolveTargets(services, config);
-    if (targets.isEmpty) return '[SIM] No contact to call';
-    return '[SIM] Would call ${targets.first.name}';
+    if (targets.isEmpty) {
+      return const SimulationDescription('simNoContactToCall');
+    }
+    return SimulationDescription(
+      'simPhoneCall',
+      {'name': targets.first.name},
+    );
   }
 
   /// Resolves the step config.
