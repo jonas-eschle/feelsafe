@@ -1,63 +1,67 @@
 /// Distress-modes feature controller.
 ///
-/// Per Q52 / pivot 3, distress chains are conceptually unified into
-/// Mode in the spec, but the codebase still ships a dedicated
-/// `DistressChain` aggregate (with its own repository / DAO) — this
-/// controller wraps that legacy storage while presenting the
-/// "distress modes" terminology to the UI.
+/// Phase 2.5: distress modes are stored in the modes table as
+/// `SessionMode`s with `isDistressMode = true`. This controller
+/// surfaces just that subset to the UI.
 library;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
-import 'package:guardianangela/domain/models/distress_chain.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
 
-/// Async controller exposing every persisted distress chain (the
-/// underlying storage). The UI surfaces them as "distress modes" per
-/// the project's renamed terminology (Q52).
-class DistressModesController extends AsyncNotifier<List<DistressChain>> {
+/// Async controller exposing the distress-flagged modes.
+class DistressModesController extends AsyncNotifier<List<SessionMode>> {
   @override
-  Future<List<DistressChain>> build() async {
-    final repo = ref.read(distressChainsRepositoryProvider);
-    return repo.getAll();
+  Future<List<SessionMode>> build() async {
+    final repo = ref.read(modesRepositoryProvider);
+    final all = await repo.getAll();
+    return all.where((m) => m.isDistressMode).toList();
   }
 
-  /// Upserts [chain] and refreshes [state].
+  /// Upserts [mode] (forced `isDistressMode = true`) and refreshes
+  /// [state].
   ///
-  /// Throws [ArgumentError] when the chain has no steps — empty
+  /// Throws [ArgumentError] when the mode has no chain steps — empty
   /// distress modes would leave distress triggers toothless
   /// (D-SAFETY-17).
-  Future<void> save(DistressChain chain) async {
-    if (chain.steps.isEmpty) {
+  Future<void> save(SessionMode mode) async {
+    if (mode.chainSteps.isEmpty) {
       throw ArgumentError.value(
-        chain,
-        'chain',
+        mode,
+        'mode',
         'distress mode must not be empty',
       );
     }
-    final repo = ref.read(distressChainsRepositoryProvider);
-    await repo.save(chain);
-    state = AsyncValue.data(await repo.getAll());
+    final repo = ref.read(modesRepositoryProvider);
+    final flagged = mode.isDistressMode
+        ? mode
+        : mode.copyWith(isDistressMode: true);
+    await repo.save(flagged);
+    final all = await repo.getAll();
+    state = AsyncValue.data(all.where((m) => m.isDistressMode).toList());
   }
 
   /// Deletes the distress mode with [id] and refreshes [state].
   Future<void> delete(String id) async {
-    final repo = ref.read(distressChainsRepositoryProvider);
+    final repo = ref.read(modesRepositoryProvider);
     await repo.delete(id);
-    state = AsyncValue.data(await repo.getAll());
+    final all = await repo.getAll();
+    state = AsyncValue.data(all.where((m) => m.isDistressMode).toList());
   }
 
   /// Forces a reload from the repository.
   Future<void> reload() async {
     state = const AsyncValue.loading();
-    final repo = ref.read(distressChainsRepositoryProvider);
-    state = AsyncValue.data(await repo.getAll());
+    final repo = ref.read(modesRepositoryProvider);
+    final all = await repo.getAll();
+    state = AsyncValue.data(all.where((m) => m.isDistressMode).toList());
   }
 }
 
 /// Provider for `DistressModesController`.
-final AsyncNotifierProvider<DistressModesController, List<DistressChain>>
+final AsyncNotifierProvider<DistressModesController, List<SessionMode>>
 distressModesControllerProvider =
-    AsyncNotifierProvider<DistressModesController, List<DistressChain>>(
+    AsyncNotifierProvider<DistressModesController, List<SessionMode>>(
       DistressModesController.new,
     );

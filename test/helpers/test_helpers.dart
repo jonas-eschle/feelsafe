@@ -5,7 +5,7 @@
 ///   D-TEST-1.
 /// - [step] / [holdStep] / [smsStep] / [fakeCallStep] — `ChainStep`
 ///   factories that cover the boilerplate (`id`, ordering, type).
-/// - [makeMode] / [makeContact] / [makeDistressChain] — small model
+/// - [makeMode] / [makeContact] / [makeDistressMode] — small model
 ///   factories with reasonable defaults.
 /// - [makeContainer] — returns a configured `ProviderContainer`; the
 ///   caller is responsible for disposing it in `addTearDown`.
@@ -182,16 +182,25 @@ EmergencyContact makeContact({
   channels: channels ?? const [MessageChannel.sms],
 );
 
-/// Builds a [DistressChain] for tests.
+/// Builds a distress-flagged [SessionMode] for tests.
 ///
 /// [id] — defaults to 'default'.
 /// [name] — defaults to 'Default'.
 /// [steps] — defaults to a single [smsStep].
-DistressChain makeDistressChain({
+SessionMode makeDistressMode({
   String id = 'default',
   String name = 'Default',
   List<ChainStep>? steps,
-}) => DistressChain(id: id, name: name, steps: steps ?? [smsStep()]);
+}) {
+  final s = steps ?? [smsStep()];
+  return SessionMode(
+    id: id,
+    name: name,
+    checkInType: s.first.type,
+    chainSteps: s,
+    isDistressMode: true,
+  );
+}
 
 /// Builds a configured [ProviderContainer].
 ///

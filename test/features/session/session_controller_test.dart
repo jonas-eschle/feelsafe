@@ -18,7 +18,6 @@ import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
@@ -135,36 +134,6 @@ class _FakeSettingsRepository extends SettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async => _stored = value;
-}
-
-class _FakeDistressChainsRepository extends DistressChainsRepository {
-  _FakeDistressChainsRepository(List<DistressChain> initial)
-    : _items = List<DistressChain>.of(initial),
-      super.forTesting();
-  final List<DistressChain> _items;
-
-  @override
-  Future<List<DistressChain>> getAll() async => List<DistressChain>.of(_items);
-
-  @override
-  Future<DistressChain?> getById(String id) async {
-    for (final c in _items) {
-      if (c.id == id) return c;
-    }
-    return null;
-  }
-
-  @override
-  Future<void> save(DistressChain value) async {
-    _items.removeWhere((c) => c.id == value.id);
-    _items.add(value);
-  }
-
-  @override
-  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
-
-  @override
-  Future<void> deleteAll() async => _items.clear();
 }
 
 class _FakeUserProfileRepository extends UserProfileRepository {
@@ -494,7 +463,6 @@ class _FakeIncomingCall implements IncomingCallServiceProtocol {
 class _Fixture {
   _Fixture({
     required this.modesRepo,
-    required this.distressRepo,
     required this.settingsRepo,
     required this.sessionLogsRepo,
     required this.messaging,
@@ -504,7 +472,6 @@ class _Fixture {
   });
 
   final _FakeModesRepository modesRepo;
-  final _FakeDistressChainsRepository distressRepo;
   final _FakeSettingsRepository settingsRepo;
   final _FakeSessionLogsRepository sessionLogsRepo;
   final _FakeMessaging messaging;
@@ -515,37 +482,20 @@ class _Fixture {
 
 _Fixture _makeFixture({
   List<SessionMode>? modes,
-  List<DistressChain>? distressChains,
+  List<SessionMode>? distressModes,
   AppSettings? settings,
   List<EmergencyContact>? contacts,
   BatteryAlertConfig? batteryAlert,
 }) {
-  // Phase 2.4: the engine resolves distress steps from the modes
-  // table (not distress_chains). For each DistressChain the test
-  // configures, we mirror it as a distress-flagged SessionMode in
-  // the modes repo so the resolver finds it. The distress-chains
-  // repo override is still wired up for any consumer that still
-  // reads it (UI controllers etc.); 2.5 deletes the class entirely.
-  final effectiveDistressChains =
-      distressChains ?? [makeDistressChain(steps: [smsStep(order: 0)])];
-  final mirroredDistressModes = [
-    for (final c in effectiveDistressChains)
-      SessionMode(
-        id: c.id,
-        name: c.name,
-        checkInType: c.steps.isEmpty
-            ? ChainStepType.smsContact
-            : c.steps.first.type,
-        chainSteps: c.steps,
-        isDistressMode: true,
-      ),
-  ];
+  // Phase 2.5: distress modes live in the modes repo with
+  // isDistressMode=true. Tests pass them via [distressModes].
+  final effectiveDistressModes =
+      distressModes ?? [makeDistressMode(steps: [smsStep(order: 0)])];
   final modesRepo = _FakeModesRepository(
     modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
-    extraModes: mirroredDistressModes,
+    extraModes: effectiveDistressModes,
   );
   final contactsRepo = _FakeContactsRepository(contacts ?? const []);
-  final distressRepo = _FakeDistressChainsRepository(effectiveDistressChains);
   final settingsRepo = _FakeSettingsRepository(
     settings ?? const AppSettings(defaults: AppDefaults()),
   );
@@ -561,7 +511,6 @@ _Fixture _makeFixture({
       modesRepositoryProvider.overrideWithValue(modesRepo),
       contactsRepositoryProvider.overrideWithValue(contactsRepo),
       templatesRepositoryProvider.overrideWithValue(_FakeTemplatesRepository()),
-      distressChainsRepositoryProvider.overrideWithValue(distressRepo),
       settingsRepositoryProvider.overrideWithValue(settingsRepo),
       userProfileRepositoryProvider.overrideWithValue(
         _FakeUserProfileRepository(),
@@ -595,7 +544,6 @@ _Fixture _makeFixture({
 
   return _Fixture(
     modesRepo: modesRepo,
-    distressRepo: distressRepo,
     settingsRepo: settingsRepo,
     sessionLogsRepo: sessionLogsRepo,
     messaging: messaging,
@@ -636,11 +584,16 @@ void main() {
     });
 
     test(
-      'blocks start when the resolved distress chain has no steps (D-SAFETY-17)',
+      'blocks start when the resolved distress mode has no steps (D-SAFETY-17)',
       () async {
         final fx = _makeFixture(
-          distressChains: [
-            const DistressChain(id: 'empty', name: 'Empty', steps: []),
+          distressModes: [
+            const SessionMode(
+              id: 'empty',
+              name: 'Empty',
+              checkInType: ChainStepType.smsContact,
+              isDistressMode: true,
+            ),
           ],
         );
         addTearDown(fx.container.dispose);
@@ -654,8 +607,8 @@ void main() {
       },
     );
 
-    test('blocks start when the distress-chain repository is empty', () async {
-      final fx = _makeFixture(distressChains: const []);
+    test('blocks start when no distress mode is configured', () async {
+      final fx = _makeFixture(distressModes: const []);
       addTearDown(fx.container.dispose);
       final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
@@ -984,11 +937,11 @@ void main() {
     });
   });
 
-  group('SessionController distress-chain resolution', () {
+  group('SessionController distress-mode resolution', () {
     test('uses mode.distressModeId when set', () async {
-      final chains = [
-        makeDistressChain(id: 'a', steps: [smsStep(order: 0)]),
-        makeDistressChain(
+      final distressModes = [
+        makeDistressMode(id: 'a', steps: [smsStep(order: 0)]),
+        makeDistressMode(
           id: 'b',
           steps: [smsStep(order: 0, id: 'b-s')],
         ),
@@ -996,7 +949,7 @@ void main() {
       final modes = [
         makeMode(id: 'mode-b', distressModeId: 'b', steps: [holdStep()]),
       ];
-      final fx = _makeFixture(modes: modes, distressChains: chains);
+      final fx = _makeFixture(modes: modes, distressModes: distressModes);
       addTearDown(fx.container.dispose);
       final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);
@@ -1005,12 +958,12 @@ void main() {
       check(fx.container.read(sessionControllerProvider).value).isNotNull();
     });
 
-    test('falls back to first chain when distressModeId is null', () async {
-      final chains = [
-        makeDistressChain(id: 'first', steps: [smsStep(order: 0)]),
-        makeDistressChain(id: 'second', steps: [smsStep(order: 0)]),
+    test('falls back to first distress mode when distressModeId is null', () async {
+      final distressModes = [
+        makeDistressMode(id: 'first', steps: [smsStep(order: 0)]),
+        makeDistressMode(id: 'second', steps: [smsStep(order: 0)]),
       ];
-      final fx = _makeFixture(distressChains: chains);
+      final fx = _makeFixture(distressModes: distressModes);
       addTearDown(fx.container.dispose);
       final controller = fx.container.read(sessionControllerProvider.notifier);
       await fx.container.read(sessionControllerProvider.future);

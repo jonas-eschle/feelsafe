@@ -28,7 +28,7 @@ void main() {
     'AppDatabase default constructor accepts injected executor',
     () async {
       final db = AppDatabase(executor: NativeDatabase.memory());
-      check(db.schemaVersion).equals(1);
+      check(db.schemaVersion).equals(2);
       await db.close();
     },
   );

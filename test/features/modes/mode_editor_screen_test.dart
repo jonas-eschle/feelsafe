@@ -17,10 +17,7 @@ void main() {
       (tester) async {
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: [
-        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-        distressChainsRepositoryProvider
-            .overrideWithValue(FakeDistressChainsRepository()),
-      ],
+        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),      ],
       child: const ModeEditorScreen(),
     ));
     await tester.pumpAndSettle();
@@ -31,10 +28,7 @@ void main() {
   testWidgets('ModeEditorScreen shows a name TextField', (tester) async {
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: [
-        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-        distressChainsRepositoryProvider
-            .overrideWithValue(FakeDistressChainsRepository()),
-      ],
+        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),      ],
       child: const ModeEditorScreen(),
     ));
     await tester.pumpAndSettle();
@@ -44,10 +38,7 @@ void main() {
   testWidgets('ModeEditorScreen shows an add-step button', (tester) async {
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: [
-        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-        distressChainsRepositoryProvider
-            .overrideWithValue(FakeDistressChainsRepository()),
-      ],
+        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),      ],
       child: const ModeEditorScreen(),
     ));
     await tester.pumpAndSettle();
@@ -60,10 +51,7 @@ void main() {
     await tester.pumpWidget(hostScreenPushed(
       overrides: [
         modesRepositoryProvider
-            .overrideWithValue(FakeModesRepository([mode])),
-        distressChainsRepositoryProvider
-            .overrideWithValue(FakeDistressChainsRepository()),
-      ],
+            .overrideWithValue(FakeModesRepository([mode])),      ],
       initialQuery: 'id=mode-7',
       child: const ModeEditorScreen(),
     ));
@@ -79,10 +67,7 @@ void main() {
       final repo = FakeModesRepository();
       await tester.pumpWidget(hostScreenPushed(
         overrides: [
-          modesRepositoryProvider.overrideWithValue(repo),
-          distressChainsRepositoryProvider
-              .overrideWithValue(FakeDistressChainsRepository()),
-        ],
+          modesRepositoryProvider.overrideWithValue(repo),        ],
         child: const ModeEditorScreen(),
       ));
       await tester.pumpAndSettle();
@@ -101,10 +86,7 @@ void main() {
     final repo = FakeModesRepository();
     await tester.pumpWidget(hostScreenPushed(
       overrides: [
-        modesRepositoryProvider.overrideWithValue(repo),
-        distressChainsRepositoryProvider
-            .overrideWithValue(FakeDistressChainsRepository()),
-      ],
+        modesRepositoryProvider.overrideWithValue(repo),      ],
       child: const ModeEditorScreen(),
     ));
     await tester.pumpAndSettle();

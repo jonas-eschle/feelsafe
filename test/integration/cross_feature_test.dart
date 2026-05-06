@@ -15,7 +15,6 @@ import 'package:guardianangela/core/utils/pin_result.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
@@ -107,28 +106,6 @@ class _FakeSettingsRepo extends SettingsRepository {
   Future<AppSettings?> get() async => _stored;
   @override
   Future<void> save(AppSettings value) async => _stored = value;
-}
-
-class _FakeDistressRepo extends DistressChainsRepository {
-  _FakeDistressRepo(List<DistressChain> initial)
-    : _items = List<DistressChain>.of(initial),
-      super.forTesting();
-  final List<DistressChain> _items;
-  @override
-  Future<List<DistressChain>> getAll() async => List<DistressChain>.of(_items);
-  @override
-  Future<DistressChain?> getById(String id) async =>
-      _items.where((c) => c.id == id).firstOrNull;
-  @override
-  Future<void> save(DistressChain value) async {
-    _items.removeWhere((c) => c.id == value.id);
-    _items.add(value);
-  }
-
-  @override
-  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
-  @override
-  Future<void> deleteAll() async => _items.clear();
 }
 
 class _FakeUserProfileRepo extends UserProfileRepository {
@@ -407,26 +384,17 @@ _Fx _fx({
   AppSettings? settings,
   List<EmergencyContact>? contacts,
 }) {
-  // Phase 2.4: mirror the test distress chain as a distress-flagged
-  // SessionMode so the engine resolver (now modes-based) finds it.
-  final defaultDistressChain = makeDistressChain(
+  // Phase 2.5: distress is just a flagged SessionMode in the modes
+  // repo. No separate distress repository.
+  final defaultDistressMode = makeDistressMode(
     steps: [smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0)],
   );
   final modesRepo = _FakeModesRepo(
     modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
-    extraModes: [
-      SessionMode(
-        id: defaultDistressChain.id,
-        name: defaultDistressChain.name,
-        checkInType: defaultDistressChain.steps.first.type,
-        chainSteps: defaultDistressChain.steps,
-        isDistressMode: true,
-      ),
-    ],
+    extraModes: [defaultDistressMode],
   );
   final contactsRepo = _FakeContactsRepo(contacts ?? const []);
   final templatesRepo = _FakeTemplatesRepo();
-  final distressRepo = _FakeDistressRepo([defaultDistressChain]);
   final settingsRepo = _FakeSettingsRepo(
     settings ?? const AppSettings(defaults: AppDefaults()),
   );
@@ -442,7 +410,6 @@ _Fx _fx({
       modesRepositoryProvider.overrideWithValue(modesRepo),
       contactsRepositoryProvider.overrideWithValue(contactsRepo),
       templatesRepositoryProvider.overrideWithValue(templatesRepo),
-      distressChainsRepositoryProvider.overrideWithValue(distressRepo),
       settingsRepositoryProvider.overrideWithValue(settingsRepo),
       userProfileRepositoryProvider.overrideWithValue(profileRepo),
       batteryAlertRepositoryProvider.overrideWithValue(batteryRepo),

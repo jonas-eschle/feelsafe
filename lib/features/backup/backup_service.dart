@@ -41,7 +41,6 @@ import 'package:crypto/crypto.dart';
 
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
@@ -49,7 +48,6 @@ import 'package:guardianangela/data/repositories/templates_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/battery_alert_config.dart';
-import 'package:guardianangela/domain/models/distress_chain.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
@@ -198,7 +196,6 @@ final class BackupService {
     required ModesRepository modesRepository,
     required ContactsRepository contactsRepository,
     required TemplatesRepository templatesRepository,
-    required DistressChainsRepository distressChainsRepository,
     required SettingsRepository settingsRepository,
     required UserProfileRepository userProfileRepository,
     required BatteryAlertRepository batteryAlertRepository,
@@ -207,7 +204,6 @@ final class BackupService {
   }) : _modes = modesRepository,
        _contacts = contactsRepository,
        _templates = templatesRepository,
-       _distressChains = distressChainsRepository,
        _settings = settingsRepository,
        _userProfile = userProfileRepository,
        _batteryAlert = batteryAlertRepository,
@@ -217,7 +213,6 @@ final class BackupService {
   final ModesRepository _modes;
   final ContactsRepository _contacts;
   final TemplatesRepository _templates;
-  final DistressChainsRepository _distressChains;
   final SettingsRepository _settings;
   final UserProfileRepository _userProfile;
   final BatteryAlertRepository _batteryAlert;
@@ -244,11 +239,9 @@ final class BackupService {
     // sections via [selection]. `settings` is always exported.
     final allModes = await _modes.getAll();
     final settings = await _settings.get();
-    final distressIds = _resolveDistressModeIds(allModes, settings);
-    final filteredModes = allModes.where((m) {
-      final isDistress = distressIds.contains(m.id);
-      return isDistress ? selection.distressModes : selection.modes;
-    });
+    final filteredModes = allModes.where(
+      (m) => m.isDistressMode ? selection.distressModes : selection.modes,
+    );
 
     final sections = <String, Object?>{
       'modes': filteredModes.map((m) => m.toJson()).toList(),
@@ -258,9 +251,6 @@ final class BackupService {
       'templates': selection.templates
           ? (await _templates.getAll()).map((t) => t.toJson()).toList()
           : const <Map<String, Object?>>[],
-      'distressChains': (await _distressChains.getAll())
-          .map((d) => d.toJson())
-          .toList(),
       'settings': settings?.toJson(),
       'userProfile': (await _userProfile.get())?.toJson(),
       'batteryAlertConfig': (await _batteryAlert.get())?.toJson(),
@@ -320,7 +310,6 @@ final class BackupService {
     await _modes.deleteAll();
     await _contacts.deleteAll();
     await _templates.deleteAll();
-    await _distressChains.deleteAll();
     await _sessionLogs.deleteAll();
 
     for (final raw in _listOf(sections['modes']).cast<Map<String, Object?>>()) {
@@ -335,11 +324,6 @@ final class BackupService {
       sections['templates'],
     ).cast<Map<String, Object?>>()) {
       await _templates.save(ReminderTemplate.fromJson(raw));
-    }
-    for (final raw in _listOf(
-      sections['distressChains'],
-    ).cast<Map<String, Object?>>()) {
-      await _distressChains.save(DistressChain.fromJson(raw));
     }
     for (final raw in _listOf(
       sections['sessionLogs'],
@@ -361,26 +345,6 @@ final class BackupService {
   }
 
   List<Object?> _listOf(Object? raw) => raw is List ? raw : const [];
-
-  /// Returns the set of mode-ids that are referenced as a distress
-  /// mode by any saved mode's `distressModeId`.
-  ///
-  /// *Why this heuristic:* a "distress mode" in the current codebase
-  /// is structurally a `SessionMode` whose id is referenced from
-  /// another mode's `distressModeId` field. Once the Q52 unification
-  /// lands and `SessionMode.isDistressMode` exists, this helper can
-  /// be replaced with `m.isDistressMode == true`.
-  Set<String> _resolveDistressModeIds(
-    Iterable<SessionMode> allModes,
-    AppSettings? settings,
-  ) {
-    final ids = <String>{};
-    for (final m in allModes) {
-      final id = m.distressModeId;
-      if (id != null && id.isNotEmpty) ids.add(id);
-    }
-    return ids;
-  }
 
   _EncryptedBlob _encryptBody(String plaintext, String pin) {
     final salt = _randomBytes(_saltLength);

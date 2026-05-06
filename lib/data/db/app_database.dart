@@ -32,7 +32,6 @@ part 'app_database.g.dart';
     ModesTable,
     ContactsTable,
     TemplatesTable,
-    DistressChainsTable,
     SessionLogsTable,
     SettingsTable,
     UserProfileTable,
@@ -52,7 +51,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -60,10 +59,11 @@ class AppDatabase extends _$AppDatabase {
       await m.createAll();
     },
     onUpgrade: (m, from, to) async {
-      // Pre-alpha: schema v1 is the only supported version. Any
-      // upgrade attempt indicates a schema mismatch the caller
-      // layer must resolve with a nuke-and-reseed (see the
-      // `AppDatabase` doc).
+      // Pre-alpha: each schema version is the only supported one.
+      // v2 (Phase 2.5) drops the distress_chains table — distress
+      // modes now live in the modes table with isDistressMode=true.
+      // Any upgrade attempt indicates a schema mismatch the caller
+      // layer must resolve with a nuke-and-reseed.
       throw StateError(
         'Schema mismatch: expected v$to but opened v$from. '
         'Pre-alpha policy requires a nuke-and-reseed.',

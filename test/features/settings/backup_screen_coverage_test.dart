@@ -39,11 +39,6 @@ List<Override> _allRepoOverrides({ModesRepository? modes}) => [
       .overrideWithValue(FakeBatteryAlertRepository()),
   sessionLogsRepositoryProvider
       .overrideWithValue(FakeSessionLogsRepository()),
-  // BackupService.exportAll iterates `_distressChains.getAll()` so
-  // we must supply a fake or the export crashes (which surfaces as
-  // a SnackBar instead of the JSON dialog the tests expect).
-  distressChainsRepositoryProvider
-      .overrideWithValue(FakeDistressChainsRepository()),
 ];
 
 void main() {

@@ -1,9 +1,10 @@
 /// First-run seeding for Guardian Angela's persistent store.
 ///
-/// Seeds the two built-in modes (Walk Mode + Date Mode), the
-/// 8 disguised-reminder templates, the default distress chain, the
-/// default app settings / user profile / battery alert, and the
-/// per-step-type event defaults (via `AppSettings.defaults`).
+/// Seeds the two built-in modes (Walk Mode + Date Mode), the default
+/// distress mode (a SessionMode with isDistressMode=true), the
+/// 8 disguised-reminder templates, the default app settings /
+/// user profile / battery alert, and the per-step-type event
+/// defaults (via `AppSettings.defaults`).
 ///
 /// The entry point [seedData] is idempotent: it inspects each
 /// repository and only writes entries that do not yet exist. Pre-
@@ -28,27 +29,21 @@ class SeedModeIds {
   static const String date = 'seed.mode.date';
 }
 
-/// Stable id of the default distress chain.
+/// Stable id of the default distress-flagged mode.
 const String seedDefaultDistressModeId = 'seed.distress.default';
 
-/// Idempotent first-launch seeding. Writes built-in modes,
-/// templates, the default distress chain, default app settings, the
-/// empty user profile, and the default battery-alert config — only
-/// for entries that are not already persisted.
+/// Idempotent first-launch seeding. Writes built-in modes (regular
+/// + distress-flagged), templates, default app settings, the empty
+/// user profile, and the default battery-alert config — only for
+/// entries that are not already persisted.
 ///
 /// [ref] — the Riverpod handle used to resolve repository providers.
 Future<void> seedData(Ref ref) async {
-  final distressRepo = ref.read(distressChainsRepositoryProvider);
   final templatesRepo = ref.read(templatesRepositoryProvider);
   final modesRepo = ref.read(modesRepositoryProvider);
   final settingsRepo = ref.read(settingsRepositoryProvider);
   final profileRepo = ref.read(userProfileRepositoryProvider);
   final batteryRepo = ref.read(batteryAlertRepositoryProvider);
-
-  // Distress chain — seed first so modes can reference it by id.
-  if (await distressRepo.getById(seedDefaultDistressModeId) == null) {
-    await distressRepo.save(_defaultDistressChain());
-  }
 
   // Reminder templates.
   for (final template in _builtInTemplates()) {
@@ -57,18 +52,13 @@ Future<void> seedData(Ref ref) async {
     }
   }
 
-  // Built-in modes (regular + distress-flagged).
+  // Built-in modes: walk + date + the default distress-flagged mode.
   if (await modesRepo.getById(SeedModeIds.walk) == null) {
     await modesRepo.save(_walkMode());
   }
   if (await modesRepo.getById(SeedModeIds.date) == null) {
     await modesRepo.save(_dateMode());
   }
-  // Phase 2.3: dual-seed the default distress chain as a distress-
-  // flagged SessionMode (same id, lives in the modes table). The
-  // legacy DistressChain row is still seeded above for the engine —
-  // 2.4 swaps the engine over to read this mode and 2.5 deletes the
-  // standalone DistressChain class.
   if (await modesRepo.getById(seedDefaultDistressModeId) == null) {
     await modesRepo.save(_defaultDistressMode());
   }
@@ -90,55 +80,46 @@ Future<void> seedData(Ref ref) async {
 }
 
 // ---------------------------------------------------------------------
-// Distress chain
+// Default distress mode
 // ---------------------------------------------------------------------
 
-DistressChain _defaultDistressChain() => DistressChain(
-  id: seedDefaultDistressModeId,
-  name: 'Default Distress Chain',
-  steps: _defaultDistressSteps(),
-);
-
-/// Phase 2.3: distress-mode mirror of [_defaultDistressChain]. Same
-/// id, same chain steps, but stored in the modes table with
-/// `isDistressMode=true`. Engine reads this in 2.4; the standalone
-/// DistressChain class is deleted in 2.5.
-SessionMode _defaultDistressMode() => SessionMode(
+/// The built-in fallback distress mode — a `SessionMode` with
+/// `isDistressMode=true`, referenced by every regular mode that
+/// doesn't override `distressModeId`.
+SessionMode _defaultDistressMode() => const SessionMode(
   id: seedDefaultDistressModeId,
   name: 'Default Distress Chain',
   checkInType: ChainStepType.smsContact,
-  chainSteps: _defaultDistressSteps(),
   isDistressMode: true,
-);
-
-List<ChainStep> _defaultDistressSteps() => const [
-  ChainStep(
-    id: 'seed.distress.step.sms',
-    type: ChainStepType.smsContact,
-    order: 0,
-    durationSeconds: 5,
-    gracePeriodSeconds: 0,
-    config: SmsContactConfig(
-      contactSelection: SmsContactSelection.firstContact,
-      includeLocation: true,
+  chainSteps: [
+    ChainStep(
+      id: 'seed.distress.step.sms',
+      type: ChainStepType.smsContact,
+      order: 0,
+      durationSeconds: 5,
+      gracePeriodSeconds: 0,
+      config: SmsContactConfig(
+        contactSelection: SmsContactSelection.firstContact,
+        includeLocation: true,
+      ),
     ),
-  ),
-  ChainStep(
-    id: 'seed.distress.step.wait',
-    type: ChainStepType.countdownWarning,
-    order: 1,
-    durationSeconds: 15,
-    gracePeriodSeconds: 0,
-  ),
-  ChainStep(
-    id: 'seed.distress.step.emergency',
-    type: ChainStepType.callEmergency,
-    order: 2,
-    durationSeconds: 30,
-    gracePeriodSeconds: 0,
-    config: CallEmergencyConfig(showConfirmation: false),
-  ),
-];
+    ChainStep(
+      id: 'seed.distress.step.wait',
+      type: ChainStepType.countdownWarning,
+      order: 1,
+      durationSeconds: 15,
+      gracePeriodSeconds: 0,
+    ),
+    ChainStep(
+      id: 'seed.distress.step.emergency',
+      type: ChainStepType.callEmergency,
+      order: 2,
+      durationSeconds: 30,
+      gracePeriodSeconds: 0,
+      config: CallEmergencyConfig(showConfirmation: false),
+    ),
+  ],
+);
 
 // ---------------------------------------------------------------------
 // Built-in modes

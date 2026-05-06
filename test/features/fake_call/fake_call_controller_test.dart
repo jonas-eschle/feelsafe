@@ -165,11 +165,6 @@ List<Override> _overrides() => [
   modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
   contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
-  distressChainsRepositoryProvider.overrideWithValue(
-    FakeDistressChainsRepository([
-      makeDistressChain(steps: [smsStep()]),
-    ]),
-  ),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
   userProfileRepositoryProvider.overrideWithValue(FakeUserProfileRepository()),
   batteryAlertRepositoryProvider.overrideWithValue(FakeBatteryAlertRepository()),

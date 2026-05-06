@@ -15,7 +15,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
@@ -25,7 +24,6 @@ import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/battery_alert_config.dart';
-import 'package:guardianangela/domain/models/distress_chain.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
@@ -39,7 +37,6 @@ void main() {
     late _FakeModesRepo modes;
     late _FakeContactsRepo contacts;
     late _FakeTemplatesRepo templates;
-    late _FakeDistressRepo distressChains;
     late _FakeSettingsRepo settings;
     late _FakeUserProfileRepo userProfile;
     late _FakeBatteryAlertRepo batteryAlert;
@@ -50,7 +47,6 @@ void main() {
       modes = _FakeModesRepo();
       contacts = _FakeContactsRepo();
       templates = _FakeTemplatesRepo();
-      distressChains = _FakeDistressRepo();
       settings = _FakeSettingsRepo();
       userProfile = _FakeUserProfileRepo();
       batteryAlert = _FakeBatteryAlertRepo();
@@ -59,7 +55,6 @@ void main() {
         modesRepository: modes,
         contactsRepository: contacts,
         templatesRepository: templates,
-        distressChainsRepository: distressChains,
         settingsRepository: settings,
         userProfileRepository: userProfile,
         batteryAlertRepository: batteryAlert,
@@ -81,7 +76,6 @@ void main() {
         'modes',
         'contacts',
         'templates',
-        'distressChains',
         'sessionLogs',
       ]) {
         check(payload.containsKey(key)).isTrue();
@@ -92,7 +86,6 @@ void main() {
       modes.items[_modeA.id] = _modeA;
       contacts.items[_contactA.id] = _contactA;
       templates.items[_templateA.id] = _templateA;
-      distressChains.items[_chainA.id] = _chainA;
       settings.value = _settingsA;
       userProfile.value = _profileA;
       batteryAlert.value = _batteryA;
@@ -103,7 +96,6 @@ void main() {
       modes.items.clear();
       contacts.items.clear();
       templates.items.clear();
-      distressChains.items.clear();
       sessionLogs.items.clear();
       settings.value = null;
       userProfile.value = null;
@@ -114,7 +106,6 @@ void main() {
       check(modes.items[_modeA.id]).equals(_modeA);
       check(contacts.items[_contactA.id]).equals(_contactA);
       check(templates.items[_templateA.id]).equals(_templateA);
-      check(distressChains.items[_chainA.id]).equals(_chainA);
       check(settings.value).equals(_settingsA);
       check(userProfile.value).equals(_profileA);
       check(batteryAlert.value).equals(_batteryA);
@@ -241,7 +232,6 @@ void main() {
 
 final _modeA = makeMode(id: 'mode-a', name: 'Walk Mode');
 final _contactA = makeContact(id: 'contact-a', name: 'Alice');
-final _chainA = makeDistressChain(id: 'chain-a', name: 'Primary');
 final _templateA = ReminderTemplate(
   id: 'tpl-a',
   name: 'Calendar',
@@ -325,21 +315,6 @@ class _FakeTemplatesRepo extends TemplatesRepository {
   Future<ReminderTemplate?> getById(String id) async => items[id];
   @override
   Future<void> save(ReminderTemplate value) async => items[value.id] = value;
-  @override
-  Future<void> delete(String id) async => items.remove(id);
-  @override
-  Future<void> deleteAll() async => items.clear();
-}
-
-class _FakeDistressRepo extends DistressChainsRepository {
-  _FakeDistressRepo() : super.forTesting();
-  final Map<String, DistressChain> items = {};
-  @override
-  Future<List<DistressChain>> getAll() async => items.values.toList();
-  @override
-  Future<DistressChain?> getById(String id) async => items[id];
-  @override
-  Future<void> save(DistressChain value) async => items[value.id] = value;
   @override
   Future<void> delete(String id) async => items.remove(id);
   @override

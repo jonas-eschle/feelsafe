@@ -33,7 +33,7 @@ class DistressModesScreen extends ConsumerWidget {
                   return ListTile(
                     leading: const Icon(Icons.warning),
                     title: Text(m.name),
-                    subtitle: Text('${m.steps.length} steps'),
+                    subtitle: Text('${m.chainSteps.length} steps'),
                     onTap: () => context.push(
                       '${RouteNames.distressModeEditor}?id=${m.id}',
                     ),

@@ -36,7 +36,7 @@ Each row in the table below documents one wiring chain:
 | `SessionMode.chainSteps[countdownWarning]` | `modesRepositoryProvider` | `NotificationServiceProtocol.showWarning` | Shows a visible countdown warning before escalation | L1 |
 | `SessionMode.distressTriggers[hardwareButton]` | `hardwareButtonServiceProvider` | `HardwareButtonServiceProtocol.panicEvents` | Volume-up × 5 → `SessionEngine.replaceWithDistressChain` | L4 |
 | `SessionMode.disarmTriggers[gpsArrival]` | `geofenceServiceProvider` | `GeofenceServiceProtocol.arrivals` | GPS arrival inside configured radius disarms the session | L4 |
-| `SessionMode.distressChainId` | `distressChainsRepositoryProvider` | `SessionEngine.replaceWithDistressChain` | Resolves to the chain fired by distress triggers (first in repo when null) | L9 |
+| `SessionMode.distressModeId` | `modesRepositoryProvider` | `SessionEngine.replaceWithDistressChain` | Resolves to a distress-flagged mode (`isDistressMode=true`) — its `chainSteps` fire on distress triggers | L9 |
 | `BatteryAlertConfig.thresholdPercent` | `batteryAlertControllerProvider` | `BatteryMonitorServiceProtocol.alerts` | Fires one-shot alert when battery drops below threshold | L1 |
 | `BatteryAlertConfig.chain` | `batteryAlertControllerProvider` | `SessionEngine` + `SessionOrchestrator` | Runs configured chain in a background session (same pipeline as user sessions) | L14 |
 | `StealthConfig.enabled` | `settingsControllerProvider` | `StealthIconServiceProtocol.setPreset` | Toggles UI to stealth mode + activates icon alias | L8 |

@@ -10,7 +10,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/db/daos/battery_alert_dao.dart';
 import 'package:guardianangela/data/db/daos/contacts_dao.dart';
-import 'package:guardianangela/data/db/daos/distress_chains_dao.dart';
 import 'package:guardianangela/data/db/daos/modes_dao.dart';
 import 'package:guardianangela/data/db/daos/session_logs_dao.dart';
 import 'package:guardianangela/data/db/daos/settings_dao.dart';
@@ -18,7 +17,6 @@ import 'package:guardianangela/data/db/daos/templates_dao.dart';
 import 'package:guardianangela/data/db/daos/user_profile_dao.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
@@ -54,13 +52,6 @@ final templatesRepositoryProvider = Provider<TemplatesRepository>(
 /// Settings repository provider.
 final settingsRepositoryProvider = Provider<SettingsRepository>(
   (ref) => SettingsRepository(SettingsDao(ref.watch(appDatabaseProvider))),
-);
-
-/// Distress-chains repository provider.
-final distressChainsRepositoryProvider = Provider<DistressChainsRepository>(
-  (ref) => DistressChainsRepository(
-    DistressChainsDao(ref.watch(appDatabaseProvider)),
-  ),
 );
 
 /// User-profile repository provider.

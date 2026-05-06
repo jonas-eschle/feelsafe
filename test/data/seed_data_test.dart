@@ -65,15 +65,6 @@ void main() {
     check(templates.every((t) => t.isGlobal)).isTrue();
   });
 
-  test('seeds exactly 1 distress chain (the default)', () async {
-    await runSeed();
-    final chains = await container
-        .read(distressChainsRepositoryProvider)
-        .getAll();
-    check(chains.length).equals(1);
-    check(chains.first.id).equals(seedDefaultDistressModeId);
-  });
-
   test('seeds AppSettings / UserProfile / BatteryAlert singletons', () async {
     await runSeed();
     check(await container.read(settingsRepositoryProvider).get()).isNotNull();
@@ -119,13 +110,9 @@ void main() {
     final templates = await container
         .read(templatesRepositoryProvider)
         .getAll();
-    final chains = await container
-        .read(distressChainsRepositoryProvider)
-        .getAll();
-    // Phase 2.3: walk + date + dual-seeded distress mode = 3.
+    // Phase 2.5: walk + date + default distress mode = 3.
     check(modes.length).equals(3);
     check(templates.length).equals(8);
-    check(chains.length).equals(1);
   });
 
   test('Phase 2.3: distress-flagged mode is dual-seeded', () async {
@@ -166,12 +153,12 @@ void main() {
     check(quiz!.keyword).equals('continue');
   });
 
-  test('default distress chain has 3 steps', () async {
+  test('default distress mode has 3 steps', () async {
     await runSeed();
-    final chain = await container
-        .read(distressChainsRepositoryProvider)
+    final mode = await container
+        .read(modesRepositoryProvider)
         .getById(seedDefaultDistressModeId);
-    check(chain!.steps.length).equals(3);
+    check(mode!.chainSteps.length).equals(3);
   });
 
   test(

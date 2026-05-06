@@ -15,7 +15,6 @@ import 'package:test/test.dart';
 
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
@@ -367,12 +366,6 @@ void main() {
       check(
         container.read(settingsRepositoryProvider),
       ).isA<SettingsRepository>();
-    });
-
-    test('distressChainsRepositoryProvider', () {
-      check(
-        container.read(distressChainsRepositoryProvider),
-      ).isA<DistressChainsRepository>();
     });
 
     test('userProfileRepositoryProvider', () {

@@ -1,8 +1,9 @@
 /// Distress-mode create / edit screen; reuses the mode-editor
 /// widgets for chain-step editing.
 ///
-/// Per Q52, "distress modes" are the user-facing rename of the
-/// underlying `DistressChain` aggregate.
+/// Phase 2.5: distress modes are `SessionMode`s with
+/// `isDistressMode = true`. 2.6 collapses this editor into the
+/// generic ModeEditor.
 library;
 
 import 'package:flutter/material.dart';
@@ -12,7 +13,7 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:guardianangela/domain/models/chain_step.dart';
-import 'package:guardianangela/domain/models/distress_chain.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/distress_modes/distress_modes_controller.dart';
 import 'package:guardianangela/features/modes/widgets/chain_step_tile.dart';
 import 'package:guardianangela/features/modes/widgets/step_type_picker.dart';
@@ -30,21 +31,21 @@ class DistressModeEditorScreen extends ConsumerStatefulWidget {
 
 class _DistressModeEditorScreenState
     extends ConsumerState<DistressModeEditorScreen> {
-  DistressChain? _chain;
+  SessionMode? _mode;
   final TextEditingController _nameCtrl = TextEditingController();
   List<ChainStep> _steps = const [];
   bool _hydrated = false;
 
-  void _hydrate(List<DistressChain> all) {
+  void _hydrate(List<SessionMode> all) {
     if (_hydrated) return;
     _hydrated = true;
     final id = GoRouterState.of(context).uri.queryParameters['id'];
     if (id == null) return;
-    for (final c in all) {
-      if (c.id == id) {
-        _chain = c;
-        _nameCtrl.text = c.name;
-        _steps = List.of(c.steps);
+    for (final m in all) {
+      if (m.id == id) {
+        _mode = m;
+        _nameCtrl.text = m.name;
+        _steps = List.of(m.chainSteps);
         break;
       }
     }
@@ -58,13 +59,15 @@ class _DistressModeEditorScreenState
 
   Future<void> _save() async {
     if (_steps.isEmpty) return;
-    final base = _chain;
-    final chain = DistressChain(
+    final base = _mode;
+    final mode = SessionMode(
       id: base?.id ?? const Uuid().v4(),
       name: _nameCtrl.text.trim().isEmpty ? 'Mode' : _nameCtrl.text.trim(),
-      steps: List.of(_steps),
+      checkInType: _steps.first.type,
+      chainSteps: List.of(_steps),
+      isDistressMode: true,
     );
-    await ref.read(distressModesControllerProvider.notifier).save(chain);
+    await ref.read(distressModesControllerProvider.notifier).save(mode);
     if (mounted) context.pop();
   }
 
@@ -95,7 +98,7 @@ class _DistressModeEditorScreenState
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          _chain == null
+          _mode == null
               ? l.distressModeEditorTitleCreate
               : l.distressModeEditorTitleEdit,
         ),

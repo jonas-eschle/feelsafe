@@ -293,10 +293,9 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     if (!_hydrated) {
       modesAsync.whenData(_hydrate);
     }
-    // The legacy `DistressChain` aggregate still ships in the
-    // codebase; the editor surfaces them via the
-    // `distressModesControllerProvider` so existing tests + screens
-    // keep working until pivot-3 unification finishes landing.
+    // Distress modes are SessionModes with isDistressMode=true,
+    // surfaced via distressModesControllerProvider (filtered view of
+    // the modes table).
     final distressChains =
         ref.watch(distressModesControllerProvider).value ?? const [];
     return PopScope<Object?>(

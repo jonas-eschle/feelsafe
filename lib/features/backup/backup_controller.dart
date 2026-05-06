@@ -19,7 +19,6 @@ final backupServiceProvider = Provider<BackupService>(
     modesRepository: ref.watch(modesRepositoryProvider),
     contactsRepository: ref.watch(contactsRepositoryProvider),
     templatesRepository: ref.watch(templatesRepositoryProvider),
-    distressChainsRepository: ref.watch(distressChainsRepositoryProvider),
     settingsRepository: ref.watch(settingsRepositoryProvider),
     userProfileRepository: ref.watch(userProfileRepositoryProvider),
     batteryAlertRepository: ref.watch(batteryAlertRepositoryProvider),

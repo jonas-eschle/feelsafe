@@ -19,8 +19,6 @@ List<Override> _allRepoOverrides() => [
   modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
   contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
-  distressChainsRepositoryProvider
-      .overrideWithValue(FakeDistressChainsRepository()),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
   userProfileRepositoryProvider
       .overrideWithValue(FakeUserProfileRepository()),

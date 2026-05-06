@@ -6,7 +6,6 @@ library;
 
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
@@ -111,39 +110,6 @@ class FakeSettingsRepository extends SettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async => _stored = value;
-}
-
-/// In-memory fake of [DistressChainsRepository].
-class FakeDistressChainsRepository extends DistressChainsRepository {
-  /// Creates a fake seeded with [initial].
-  FakeDistressChainsRepository([List<DistressChain> initial = const []])
-    : _items = List<DistressChain>.of(initial),
-      super.forTesting();
-  final List<DistressChain> _items;
-
-  @override
-  Future<List<DistressChain>> getAll() async => List<DistressChain>.of(_items);
-
-  @override
-  Future<DistressChain?> getById(String id) async {
-    for (final c in _items) {
-      if (c.id == id) return c;
-    }
-    return null;
-  }
-
-  @override
-  Future<void> save(DistressChain value) async {
-    _items.removeWhere((c) => c.id == value.id);
-    _items.add(value);
-  }
-
-  @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
-
-  @override
-  Future<void> deleteAll() async => _items.clear();
 }
 
 /// In-memory fake of [TemplatesRepository].

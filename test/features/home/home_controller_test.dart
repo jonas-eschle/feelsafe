@@ -199,10 +199,6 @@ ProviderContainer _makeContainer({
         .overrideWithValue(FakeContactsRepository(contacts)),
     templatesRepositoryProvider
         .overrideWithValue(FakeTemplatesRepository()),
-    distressChainsRepositoryProvider
-        .overrideWithValue(FakeDistressChainsRepository([
-          makeDistressChain(steps: [smsStep()]),
-        ])),
     settingsRepositoryProvider
         .overrideWithValue(FakeSettingsRepository(settings)),
     userProfileRepositoryProvider

@@ -17,7 +17,6 @@ import '../fake_repositories.dart';
 ProviderContainer _makeContainer({
   List<SessionMode> modes = const [],
   List<EmergencyContact> contacts = const [],
-  List<DistressChain> chains = const [],
   AppSettings? settings,
 }) {
   return ProviderContainer(
@@ -28,8 +27,6 @@ ProviderContainer _makeContainer({
           .overrideWithValue(FakeContactsRepository(contacts)),
       templatesRepositoryProvider
           .overrideWithValue(FakeTemplatesRepository()),
-      distressChainsRepositoryProvider.overrideWithValue(
-          FakeDistressChainsRepository(chains)),
       settingsRepositoryProvider
           .overrideWithValue(FakeSettingsRepository(settings)),
       userProfileRepositoryProvider

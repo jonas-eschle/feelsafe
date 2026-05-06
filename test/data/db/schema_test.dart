@@ -23,8 +23,8 @@ void main() {
     await db.close();
   });
 
-  test('schema version is 1', () {
-    check(db.schemaVersion).equals(1);
+  test('schema version is 2', () {
+    check(db.schemaVersion).equals(2);
   });
 
   test('dbFileName is the documented value', () {
@@ -37,14 +37,13 @@ void main() {
     check(await db.select(db.modesTable).get()).isEmpty();
     check(await db.select(db.contactsTable).get()).isEmpty();
     check(await db.select(db.templatesTable).get()).isEmpty();
-    check(await db.select(db.distressChainsTable).get()).isEmpty();
     check(await db.select(db.sessionLogsTable).get()).isEmpty();
     check(await db.select(db.settingsTable).get()).isEmpty();
     check(await db.select(db.userProfileTable).get()).isEmpty();
     check(await db.select(db.batteryAlertTable).get()).isEmpty();
   });
 
-  test('all 8 expected tables exist in sqlite_master', () async {
+  test('all 7 expected tables exist in sqlite_master', () async {
     final rows = await db
         .customSelect(
           "SELECT name FROM sqlite_master WHERE type = 'table'",
@@ -55,7 +54,6 @@ void main() {
       'modes',
       'contacts',
       'templates',
-      'distress_chains',
       'session_logs',
       'settings',
       'user_profile',

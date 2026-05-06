@@ -68,14 +68,6 @@ void main() {
       check(t.tableName).equals('templates');
     });
 
-    test('DistressChainsTable — id + jsonPayload + primaryKey', () {
-      final t = DistressChainsTable();
-      check(_executesAndThrows(() => t.id)).isTrue();
-      check(_executesAndThrows(() => t.jsonPayload)).isTrue();
-      check(_executesAndThrows(() => t.primaryKey)).isTrue();
-      check(t.tableName).equals('distress_chains');
-    });
-
     test('SessionLogsTable — id + jsonPayload + startedAt + primaryKey',
         () {
       final t = SessionLogsTable();
@@ -115,13 +107,12 @@ void main() {
         ModesTable(),
         ContactsTable(),
         TemplatesTable(),
-        DistressChainsTable(),
         SessionLogsTable(),
         SettingsTable(),
         UserProfileTable(),
         BatteryAlertTable(),
       ];
-      check(tables.length).equals(8);
+      check(tables.length).equals(7);
       for (final t in tables) {
         check(t).isA<Table>();
       }

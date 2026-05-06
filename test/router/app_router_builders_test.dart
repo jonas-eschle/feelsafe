@@ -97,9 +97,6 @@ class _BuilderHarness extends StatelessWidget {
         templatesRepositoryProvider.overrideWithValue(
           FakeTemplatesRepository(),
         ),
-        distressChainsRepositoryProvider.overrideWithValue(
-          FakeDistressChainsRepository(),
-        ),
         sessionLogsRepositoryProvider.overrideWithValue(
           FakeSessionLogsRepository(),
         ),

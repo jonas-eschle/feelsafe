@@ -6,7 +6,6 @@
 library;
 
 import 'package:guardianangela/domain/models/app_settings.dart';
-import 'package:guardianangela/domain/models/distress_chain.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
@@ -38,13 +37,13 @@ final class ValidationResult {
 final class SessionValidator {
   const SessionValidator._();
 
-  /// Validates [mode] against the supplied contacts, distress chains,
+  /// Validates [mode] against the supplied contacts, distress modes,
   /// user profile, and app settings. Returns a [ValidationResult].
   ///
   /// [mode] — the mode about to start.
   /// [contacts] — the user's emergency contacts.
-  /// [distressChains] — the available distress chains (first entry
-  /// is treated as the default).
+  /// [distressModes] — the available distress-flagged modes (first
+  /// entry is treated as the default).
   /// [userProfile] — optional user profile; absence may yield a
   /// warning but not an error.
   /// [settings] — optional app settings; used to cross-check
@@ -52,7 +51,7 @@ final class SessionValidator {
   static ValidationResult validate({
     required SessionMode mode,
     required List<EmergencyContact> contacts,
-    required List<DistressChain> distressChains,
+    required List<SessionMode> distressModes,
     UserProfile? userProfile,
     AppSettings? settings,
   }) {

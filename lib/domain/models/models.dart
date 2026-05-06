@@ -10,7 +10,6 @@ export 'app_settings.dart';
 export 'battery_alert_config.dart';
 export 'chain_event.dart';
 export 'chain_step.dart';
-export 'distress_chain.dart';
 export 'emergency_contact.dart';
 export 'event_defaults.dart';
 export 'gps_logging_config.dart';

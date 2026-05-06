@@ -12,7 +12,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/db/daos/battery_alert_dao.dart';
 import 'package:guardianangela/data/db/daos/contacts_dao.dart';
-import 'package:guardianangela/data/db/daos/distress_chains_dao.dart';
 import 'package:guardianangela/data/db/daos/modes_dao.dart';
 import 'package:guardianangela/data/db/daos/session_logs_dao.dart';
 import 'package:guardianangela/data/db/daos/settings_dao.dart';
@@ -21,7 +20,6 @@ import 'package:guardianangela/data/db/daos/user_profile_dao.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/battery_alert_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/data/repositories/distress_chains_repository.dart';
 import 'package:guardianangela/data/repositories/modes_repository.dart';
 import 'package:guardianangela/data/repositories/session_logs_repository.dart';
 import 'package:guardianangela/data/repositories/settings_repository.dart';
@@ -105,21 +103,19 @@ void main() {
     });
   });
 
-  group('Distress chains round-trip', () {
-    test('non-empty-chain invariant: empty steps still persists', () async {
-      // The schema/repository does not enforce non-empty chains on
-      // persistence — that's a controller-layer invariant. Verify
-      // round-trip is lossless even for a 1-step chain.
-      final repo = DistressChainsRepository(DistressChainsDao(db));
-      final chain = makeDistressChain(id: 'd1', steps: [smsStep(order: 0)]);
-      await repo.save(chain);
+  group('Distress modes round-trip (Phase 2.5: in modes table)', () {
+    test('distress-flagged mode round-trips with isDistressMode=true', () async {
+      final repo = ModesRepository(ModesDao(db));
+      final mode = makeDistressMode(id: 'd1', steps: [smsStep(order: 0)]);
+      await repo.save(mode);
       final read = await repo.getById('d1');
-      check(read!.steps.length).equals(1);
+      check(read!.chainSteps.length).equals(1);
+      check(read.isDistressMode).isTrue();
     });
 
-    test('distress chain with multi-step round-trip', () async {
-      final repo = DistressChainsRepository(DistressChainsDao(db));
-      final chain = DistressChain(
+    test('multi-step distress mode round-trips', () async {
+      final repo = ModesRepository(ModesDao(db));
+      final mode = makeDistressMode(
         id: 'big',
         name: 'Big',
         steps: [
@@ -128,10 +124,10 @@ void main() {
           step(type: ChainStepType.callEmergency, order: 2, durationSeconds: 5),
         ],
       );
-      await repo.save(chain);
+      await repo.save(mode);
       final read = await repo.getById('big');
-      check(read!.steps.length).equals(3);
-      check(read.steps[2].type).equals(ChainStepType.callEmergency);
+      check(read!.chainSteps.length).equals(3);
+      check(read.chainSteps[2].type).equals(ChainStepType.callEmergency);
     });
   });
 

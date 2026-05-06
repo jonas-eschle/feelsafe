@@ -72,23 +72,6 @@ class TemplatesTable extends Table {
   String? get tableName => 'templates';
 }
 
-/// Global distress chains keyed by id. Per D-DATA-21 these live in
-/// their own repository (not inside `AppDefaults`).
-@DataClassName('DistressChainRow')
-class DistressChainsTable extends Table {
-  /// Stable UUID from `DistressChain.id`.
-  TextColumn get id => text()();
-
-  /// Serialized `DistressChain.toJson()` payload.
-  TextColumn get jsonPayload => text()();
-
-  @override
-  Set<Column<Object>> get primaryKey => {id};
-
-  @override
-  String? get tableName => 'distress_chains';
-}
-
 /// Completed-session records keyed by id. `startedAt` is mirrored
 /// into a native DATETIME column so the history list can sort
 /// newest-first without parsing every blob.
