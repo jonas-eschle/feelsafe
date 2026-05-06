@@ -17,7 +17,6 @@ import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/about/feedback_screen.dart';
 import 'package:guardianangela/features/contacts/contact_form_screen.dart';
 import 'package:guardianangela/features/contacts/contacts_screen.dart';
-import 'package:guardianangela/features/distress_modes/distress_mode_editor_screen.dart';
 import 'package:guardianangela/features/distress_modes/distress_modes_screen.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
 import 'package:guardianangela/features/history/evidence_export_screen.dart';
@@ -125,7 +124,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       name: 'distressModeEditor',
       path: RouteNames.distressModeEditor,
-      builder: (context, state) => const DistressModeEditorScreen(),
+      builder: (context, state) => const ModeEditorScreen(isDistress: true),
     ),
     GoRoute(
       name: 'templates',

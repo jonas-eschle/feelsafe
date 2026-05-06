@@ -32,9 +32,22 @@ import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Mode create / edit screen.
+///
+/// Phase 2.6: this screen now handles both regular session modes and
+/// distress-flagged modes (`isDistress=true`). For distress modes
+/// the irrelevant fields (icon, check-in type, distress reference,
+/// triggers, tracking, overrides) are hidden — distress modes only
+/// expose the name and the chain steps.
 class ModeEditorScreen extends ConsumerStatefulWidget {
   /// Creates the mode editor.
-  const ModeEditorScreen({super.key});
+  ///
+  /// [isDistress] — when true, the editor reads/writes a
+  /// distress-flagged `SessionMode` (`isDistressMode=true`) and shows
+  /// the simplified UI. Default `false`.
+  const ModeEditorScreen({super.key, this.isDistress = false});
+
+  /// True when this editor is used to manage a distress mode.
+  final bool isDistress;
 
   @override
   ConsumerState<ModeEditorScreen> createState() => _ModeEditorScreenState();
@@ -133,21 +146,32 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
 
   Future<void> _save() async {
     final mode = _mode;
+    final isDistress = widget.isDistress;
     final current = SessionMode(
       id: mode?.id ?? const Uuid().v4(),
       name: _nameCtrl.text.trim().isEmpty ? 'Mode' : _nameCtrl.text.trim(),
-      checkInType: _checkInType,
+      // Distress modes don't carry a check-in type — pin it to the
+      // first step's type (or smsContact when empty) so the field
+      // stays meaningful even though the UI doesn't expose it.
+      checkInType: isDistress
+          ? (_chain.isEmpty ? ChainStepType.smsContact : _chain.first.type)
+          : _checkInType,
       chainSteps: List.of(_chain),
-      distressModeId: _distressModeId,
-      distressTriggers: List.of(_distressTriggers),
+      distressModeId: isDistress ? null : _distressModeId,
+      distressTriggers: isDistress ? const [] : List.of(_distressTriggers),
       disarmTriggers: mode?.disarmTriggers ?? const [],
-      overrides: _overrides,
-      trackingEnabled: _trackingEnabled,
+      overrides: isDistress ? null : _overrides,
+      trackingEnabled: isDistress ? false : _trackingEnabled,
       trackingIntervalSeconds: _trackingIntervalSeconds,
       trackingBufferSize: _trackingBufferSize,
-      iconName: _iconName,
+      iconName: isDistress ? null : _iconName,
+      isDistressMode: isDistress,
     );
-    await ref.read(modesControllerProvider.notifier).save(current);
+    if (isDistress) {
+      await ref.read(distressModesControllerProvider.notifier).save(current);
+    } else {
+      await ref.read(modesControllerProvider.notifier).save(current);
+    }
     if (mounted) context.pop();
   }
 
@@ -289,15 +313,23 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
+    final isDistress = widget.isDistress;
     final modesAsync = ref.watch(modesControllerProvider);
     if (!_hydrated) {
       modesAsync.whenData(_hydrate);
     }
     // Distress modes are SessionModes with isDistressMode=true,
     // surfaced via distressModesControllerProvider (filtered view of
-    // the modes table).
-    final distressChains =
-        ref.watch(distressModesControllerProvider).value ?? const [];
+    // the modes table). Only the regular-mode UI consumes this.
+    final distressChains = isDistress
+        ? const <SessionMode>[]
+        : ref.watch(distressModesControllerProvider).value ?? const [];
+    final createTitle = isDistress
+        ? l.distressModeEditorTitleCreate
+        : l.modeEditorTitleCreate;
+    final editTitle = isDistress
+        ? l.distressModeEditorTitleEdit
+        : l.modeEditorTitleEdit;
     return PopScope<Object?>(
       canPop: !_isDirty,
       onPopInvokedWithResult: (didPop, _) async {
@@ -309,9 +341,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       },
       child: Scaffold(
         appBar: AppBar(
-          title: Text(
-            _mode == null ? l.modeEditorTitleCreate : l.modeEditorTitleEdit,
-          ),
+          title: Text(_mode == null ? createTitle : editTitle),
           actions: [
             IconButton(icon: const Icon(Icons.check), onPressed: _save),
           ],
@@ -319,44 +349,57 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         body: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            _NameAndIconRow(
-              nameCtrl: _nameCtrl,
-              iconName: _iconName,
-              onIconTap: _pickIcon,
-              onNameChanged: () => setState(() {}),
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<ChainStepType>(
-              initialValue: _checkInType,
-              decoration: InputDecoration(labelText: l.modeFieldCheckInType),
-              items: [
-                DropdownMenuItem(
-                  value: ChainStepType.holdButton,
-                  child: Text(l.stepTypeHoldButton),
-                ),
-                DropdownMenuItem(
-                  value: ChainStepType.disguisedReminder,
-                  child: Text(l.stepTypeDisguisedReminder),
-                ),
-              ],
-              onChanged: (v) {
-                if (v != null) setState(() => _checkInType = v);
-              },
-            ),
-            const SizedBox(height: 12),
-            DropdownButtonFormField<String?>(
-              initialValue: _distressModeId,
-              decoration: InputDecoration(labelText: l.modeFieldDistressChain),
-              items: [
-                DropdownMenuItem<String?>(
-                  value: null,
-                  child: Text(l.modeFieldDistressChainDefault),
-                ),
-                for (final c in distressChains)
-                  DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
-              ],
-              onChanged: (v) => setState(() => _distressModeId = v),
-            ),
+            if (isDistress)
+              TextField(
+                controller: _nameCtrl,
+                decoration: InputDecoration(labelText: l.distressModeName),
+                onChanged: (_) => setState(() {}),
+              )
+            else
+              _NameAndIconRow(
+                nameCtrl: _nameCtrl,
+                iconName: _iconName,
+                onIconTap: _pickIcon,
+                onNameChanged: () => setState(() {}),
+              ),
+            if (!isDistress) ...[
+              const SizedBox(height: 12),
+              DropdownButtonFormField<ChainStepType>(
+                initialValue: _checkInType,
+                decoration: InputDecoration(labelText: l.modeFieldCheckInType),
+                items: [
+                  DropdownMenuItem(
+                    value: ChainStepType.holdButton,
+                    child: Text(l.stepTypeHoldButton),
+                  ),
+                  DropdownMenuItem(
+                    value: ChainStepType.disguisedReminder,
+                    child: Text(l.stepTypeDisguisedReminder),
+                  ),
+                ],
+                onChanged: (v) {
+                  if (v != null) setState(() => _checkInType = v);
+                },
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String?>(
+                initialValue: _distressModeId,
+                decoration:
+                    InputDecoration(labelText: l.modeFieldDistressChain),
+                items: [
+                  DropdownMenuItem<String?>(
+                    value: null,
+                    child: Text(l.modeFieldDistressChainDefault),
+                  ),
+                  for (final c in distressChains)
+                    DropdownMenuItem<String?>(
+                      value: c.id,
+                      child: Text(c.name),
+                    ),
+                ],
+                onChanged: (v) => setState(() => _distressModeId = v),
+              ),
+            ],
             const SizedBox(height: 24),
             Text(
               l.modeChainHeader,
@@ -397,33 +440,35 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
               label: Text(l.modeChainAddStep),
               onPressed: _addStep,
             ),
-            const SizedBox(height: 24),
-            // ---- Distress triggers ----
-            _DistressTriggersSection(
-              triggers: _distressTriggers,
-              onAdd: _addDistressTrigger,
-              onChanged: _replaceDistressTrigger,
-              onRemove: _removeDistressTrigger,
-            ),
-            const SizedBox(height: 16),
-            // ---- Mode overrides ----
-            _ModeOverridesSection(
-              overrides: _overrides,
-              onChanged: (next) => setState(() => _overrides = next),
-            ),
-            const SizedBox(height: 16),
-            // ---- Tracking (DE-3 — interval GPS recording) ----
-            _TrackingSection(
-              enabled: _trackingEnabled,
-              intervalSeconds: _trackingIntervalSeconds,
-              bufferSize: _trackingBufferSize,
-              onEnabledChanged: (v) =>
-                  setState(() => _trackingEnabled = v),
-              onIntervalChanged: (v) =>
-                  setState(() => _trackingIntervalSeconds = v),
-              onBufferSizeChanged: (v) =>
-                  setState(() => _trackingBufferSize = v),
-            ),
+            if (!isDistress) ...[
+              const SizedBox(height: 24),
+              // ---- Distress triggers ----
+              _DistressTriggersSection(
+                triggers: _distressTriggers,
+                onAdd: _addDistressTrigger,
+                onChanged: _replaceDistressTrigger,
+                onRemove: _removeDistressTrigger,
+              ),
+              const SizedBox(height: 16),
+              // ---- Mode overrides ----
+              _ModeOverridesSection(
+                overrides: _overrides,
+                onChanged: (next) => setState(() => _overrides = next),
+              ),
+              const SizedBox(height: 16),
+              // ---- Tracking (DE-3 — interval GPS recording) ----
+              _TrackingSection(
+                enabled: _trackingEnabled,
+                intervalSeconds: _trackingIntervalSeconds,
+                bufferSize: _trackingBufferSize,
+                onEnabledChanged: (v) =>
+                    setState(() => _trackingEnabled = v),
+                onIntervalChanged: (v) =>
+                    setState(() => _trackingIntervalSeconds = v),
+                onBufferSizeChanged: (v) =>
+                    setState(() => _trackingBufferSize = v),
+              ),
+            ],
             const SizedBox(height: 24),
           ],
         ),
