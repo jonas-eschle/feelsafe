@@ -11,6 +11,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
@@ -161,6 +162,15 @@ class _HoldButtonForm extends StatelessWidget {
   }
 }
 
+/// Disguised reminder event-specific form.
+///
+/// Bugs.json Note 3: `DisguisedReminderConfig.intervalSeconds` is
+/// stored only for legacy round-trip — the engine drives reminder
+/// cadence from `ChainStep.waitSeconds`. The interval input was
+/// previously rendered here; it has been removed (the field stays on
+/// the model so already-saved configs still deserialize). The
+/// configurable timing for a disguised reminder now lives on the
+/// timing panel above this widget.
 class _DisguisedReminderForm extends StatelessWidget {
   const _DisguisedReminderForm({required this.step, required this.onChanged});
   final ChainStep step;
@@ -168,22 +178,9 @@ class _DisguisedReminderForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final cfg = (step.config is DisguisedReminderConfig)
-        ? step.config! as DisguisedReminderConfig
-        : const DisguisedReminderConfig();
-    return TextFormField(
-      initialValue: cfg.intervalSeconds.toString(),
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(labelText: l.stepConfigReminderInterval),
-      onChanged: (v) => onChanged(
-        step.copyWith(
-          config: cfg.copyWith(
-            intervalSeconds: int.tryParse(v) ?? cfg.intervalSeconds,
-          ),
-        ),
-      ),
-    );
+    // [step] / [onChanged] are unused while the form is empty but
+    // kept so the constructor signature stays uniform with siblings.
+    return const SizedBox.shrink();
   }
 }
 
@@ -258,6 +255,11 @@ class _SmsForm extends StatelessWidget {
     final cfg = (step.config is SmsContactConfig)
         ? step.config! as SmsContactConfig
         : const SmsContactConfig();
+    // Issue-v4 #6 — show the duration slider only when at least one
+    // of the auto-record toggles is on. Surfacing the slider when
+    // both are off would clutter the form with a value that has no
+    // effect on the step's behaviour.
+    final showRecordDuration = cfg.autoRecordAudio || cfg.autoRecordVideo;
     return Column(
       children: [
         DropdownButtonFormField<SmsContactSelection>(
@@ -292,10 +294,55 @@ class _SmsForm extends StatelessWidget {
             step.copyWith(config: cfg.copyWith(includeMedicalInfo: v)),
           ),
         ),
+        SwitchListTile(
+          value: cfg.autoRecordAudio,
+          title: Text(l.stepConfigSmsAutoRecordAudio),
+          onChanged: (v) => onChanged(
+            step.copyWith(config: cfg.copyWith(autoRecordAudio: v)),
+          ),
+        ),
+        SwitchListTile(
+          value: cfg.autoRecordVideo,
+          title: Text(l.stepConfigSmsAutoRecordVideo),
+          onChanged: (v) => onChanged(
+            step.copyWith(config: cfg.copyWith(autoRecordVideo: v)),
+          ),
+        ),
+        if (showRecordDuration)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+            child: TimingSlider(
+              label: l.stepConfigSmsRecordDuration,
+              seconds: cfg.recordDurationSeconds.clamp(
+                _kMinRecordDurationSeconds,
+                _kMaxRecordDurationSeconds,
+              ),
+              onChanged: (v) {
+                final clamped = v.clamp(
+                  _kMinRecordDurationSeconds,
+                  _kMaxRecordDurationSeconds,
+                );
+                onChanged(
+                  step.copyWith(
+                    config: cfg.copyWith(recordDurationSeconds: clamped),
+                  ),
+                );
+              },
+            ),
+          ),
       ],
     );
   }
 }
+
+/// Issues-v4 #6 — minimum auto-record duration in seconds. Below 5 s
+/// most platforms produce unusable clips (audio init lag, video
+/// codec warm-up).
+const int _kMinRecordDurationSeconds = 5;
+
+/// Issues-v4 #6 — maximum auto-record duration in seconds. 5 minutes
+/// keeps the on-disk file size bounded.
+const int _kMaxRecordDurationSeconds = 300;
 
 class _PhoneForm extends StatelessWidget {
   const _PhoneForm({required this.step, required this.onChanged});
