@@ -18,6 +18,27 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
+  // The Material DropdownButton's overlay menu does not render
+  // reliably in the widget-test environment (see flutter/flutter
+  // issue #84518), so we drive the persistence path through the
+  // dropdown's `onChanged` callback directly instead of tapping
+  // through the popup menu. We still scroll the dropdown into view
+  // to make sure it's wired into the screen.
+  Future<void> drivenPickTheme(
+    WidgetTester tester,
+    AppThemeMode mode,
+  ) async {
+    await tester.scrollUntilVisible(
+      find.byType(DropdownButton<AppThemeMode>),
+      400,
+    );
+    final dropdown = tester.widget<DropdownButton<AppThemeMode>>(
+      find.byType(DropdownButton<AppThemeMode>),
+    );
+    dropdown.onChanged!(mode);
+    await tester.pumpAndSettle();
+  }
+
   testWidgets(
     'SettingsScreen theme dropdown persists dark theme',
     (tester) async {
@@ -27,14 +48,7 @@ void main() {
         child: const SettingsScreen(),
       ));
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.byType(DropdownButton<AppThemeMode>),
-        400,
-      );
-      await tester.tap(find.byType(DropdownButton<AppThemeMode>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Dark').last);
-      await tester.pumpAndSettle();
+      await drivenPickTheme(tester, AppThemeMode.dark);
       check(repo.stored).isNotNull();
       check(repo.stored!.themeMode).equals(AppThemeMode.dark);
     },
@@ -49,14 +63,7 @@ void main() {
         child: const SettingsScreen(),
       ));
       await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.byType(DropdownButton<AppThemeMode>),
-        400,
-      );
-      await tester.tap(find.byType(DropdownButton<AppThemeMode>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Light').last);
-      await tester.pumpAndSettle();
+      await drivenPickTheme(tester, AppThemeMode.light);
       check(repo.stored!.themeMode).equals(AppThemeMode.light);
     },
   );

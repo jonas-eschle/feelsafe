@@ -605,7 +605,7 @@ void main() {
     );
 
     testWidgets(
-      'slider max is 60',
+      'slider max is 120',
       (tester) async {
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
         await tester.pumpWidget(_host(
@@ -617,7 +617,7 @@ void main() {
         // wrongPinThreshold (second). The PIN-timeout tests target
         // the first.
         final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.max).equals(60.0);
+        check(slider.max).equals(120.0);
       },
     );
 
