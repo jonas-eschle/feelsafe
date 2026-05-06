@@ -17,7 +17,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/core/widgets/logarithmic_slider.dart';
-import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/models/walk_session.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/simulation_advanced_controls.dart';

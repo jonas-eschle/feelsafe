@@ -119,6 +119,7 @@ dev_dependencies:
     sdk: flutter
   patrol: ^4.5.0
 
+  vibration_platform_interface: any
 flutter_launcher_icons:
   android: true
   ios: true

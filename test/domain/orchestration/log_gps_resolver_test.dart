@@ -7,8 +7,6 @@ import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/domain/models/chain_step.dart';
-import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';

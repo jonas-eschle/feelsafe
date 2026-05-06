@@ -6,7 +6,6 @@ import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/strategies/hardware_button_strategy.dart';
 

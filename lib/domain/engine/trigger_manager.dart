@@ -42,13 +42,12 @@ final class TriggerManager {
     required this.mode,
     required this.hardwareButtonService,
     required this.geofenceService,
-    BatteryMonitorServiceProtocol? batteryMonitorService,
+    this.batteryMonitorService,
     this.onDisarmRequested,
     this.onDistressConfirmation,
     this.distressStepsResolver,
     DateTime Function()? clock,
-  })  : batteryMonitorService = batteryMonitorService,
-        _clock = clock ?? DateTime.now;
+  })  : _clock = clock ?? DateTime.now;
 
   /// Minimum time between successive trigger fires.
   static const Duration cooldown = Duration(milliseconds: 500);

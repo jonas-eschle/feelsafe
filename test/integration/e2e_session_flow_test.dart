@@ -14,7 +14,6 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/core/widgets/hold_to_trigger_button.dart';
 import 'package:guardianangela/core/widgets/im_safe_slider.dart';
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/session/session_controller.dart';

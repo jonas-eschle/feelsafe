@@ -17,7 +17,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/models/enums.dart';
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/settings/event_defaults_screen.dart';
