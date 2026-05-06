@@ -39,10 +39,18 @@ final class DisguisedReminderStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) {
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) {
     final template = _resolveTemplate(step, services);
-    if (template == null) return '[SIM] No reminder template available';
-    return '[SIM] Would show "${template.title}"';
+    if (template == null) {
+      return const SimulationDescription('simDisguisedReminderEmpty');
+    }
+    return SimulationDescription(
+      'simDisguisedReminder',
+      {'title': template.title},
+    );
   }
 
   /// Resolves the template for [step] from [services.context].
