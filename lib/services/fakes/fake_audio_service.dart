@@ -42,8 +42,12 @@ final class FakeAudioService implements AudioServiceProtocol {
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
+    String? ttsFallbackPhrase,
   }) async {
-    calls.add('playVoiceRecording:$assetPath');
+    final tag = ttsFallbackPhrase == null
+        ? 'playVoiceRecording:$assetPath'
+        : 'playVoiceRecording:$assetPath/tts=$ttsFallbackPhrase';
+    calls.add(tag);
   }
 
   @override

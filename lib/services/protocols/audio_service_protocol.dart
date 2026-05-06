@@ -31,9 +31,16 @@ abstract class AudioServiceProtocol {
   ///
   /// [assetPath] — bundled asset to play.
   /// [isSimulation] — if true, may short-circuit.
+  /// [ttsFallbackPhrase] — when the bundled asset is missing, the
+  /// implementation speaks this phrase via TTS instead of playing an
+  /// audio file. Pre-localized by the caller (the session controller
+  /// seeds it from `AppLocalizations.audioRunningLatePhrase` onto
+  /// the [SessionContext]). Null = use a hard-coded English fallback.
+  /// Fix for bugs.json Warn 3.
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
+    String? ttsFallbackPhrase,
   });
 
   /// Stops the voice recording (no-op if not playing).

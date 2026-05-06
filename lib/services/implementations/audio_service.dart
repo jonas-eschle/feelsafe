@@ -117,6 +117,7 @@ final class AudioService implements AudioServiceProtocol {
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
+    String? ttsFallbackPhrase,
   }) async {
     if (isSimulation) {
       developer.log('[SIM-BLOCK] audio.playVoiceRecording path=$assetPath');
@@ -125,8 +126,15 @@ final class AudioService implements AudioServiceProtocol {
     final exists = await _assetExists(assetPath);
     if (!exists) {
       developer.log('voice asset missing: $assetPath — falling back to TTS');
+      // Fix for bugs.json Warn 3: the TTS fallback phrase comes from
+      // the caller (session controller seeds it from
+      // `AppLocalizations.audioRunningLatePhrase`). When no phrase
+      // is supplied (bare-bones tests), use the universal English
+      // fallback rather than asserting — the audio service must not
+      // crash if a future call site forgets to wire it.
       await _ttsEngine.speak(
-        'Hi, I am running late. I will call you back soon.',
+        ttsFallbackPhrase ??
+            'Hi, I am running late. I will call you back soon.',
       );
       return;
     }

@@ -41,8 +41,12 @@ final class SimulationAudioService implements AudioServiceProtocol {
   Future<void> playVoiceRecording({
     required String assetPath,
     bool isSimulation = false,
+    String? ttsFallbackPhrase,
   }) async {
-    developer.log('[SIM] audio.playVoiceRecording $assetPath');
+    developer.log(
+      '[SIM] audio.playVoiceRecording $assetPath '
+      'tts=${ttsFallbackPhrase ?? '<null>'}',
+    );
   }
 
   @override
