@@ -31,8 +31,13 @@ final class CountdownWarningStrategy extends EventStrategy {
   }
 
   @override
-  String simulationDescription(ChainStep step, EventServices services) =>
-      '[SIM] ${step.durationSeconds}s countdown warning';
+  SimulationDescription simulationDescription(
+    ChainStep step,
+    EventServices services,
+  ) => SimulationDescription(
+    'simCountdownWarning',
+    {'seconds': step.durationSeconds},
+  );
 
   /// Resolves the step's config.
   ///
