@@ -744,42 +744,42 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => 'Предпросмотр шага';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams => 'Отсутствует ссылка на шаг или режим.';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => 'Режим не найден.';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound => 'Шаг не найден в этом режиме.';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return 'Сбой предпросмотра: $error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => 'Повторить';
 
   @override
   String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+      'Удерживайте кнопку, чтобы почувствовать реальный отклик.';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => 'Удерживать';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic => 'Удерживайте для предпросмотра';
 
   @override
   String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+      'Отпущено. Сейчас сессия перешла бы в окно отсрочки.';
 
   @override
   String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+      'Появится экран ложного звонка. Проведите для ответа или удерживайте красную кнопку, чтобы имитировать тревогу.';
 
   @override
   String get stepConfigFakeCallCaller => 'Имя вызывающего';
@@ -815,13 +815,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Включить медицинскую информацию';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => 'Автозапись аудио';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => 'Автозапись видео';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => 'Длительность записи';
 
   @override
   String get stepConfigHoldReleaseSensitivity =>

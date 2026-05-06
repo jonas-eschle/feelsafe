@@ -749,42 +749,44 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => 'Προεπισκόπηση βήματος';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams => 'Λείπει αναφορά σε βήμα ή λειτουργία.';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => 'Δεν βρέθηκε η λειτουργία.';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound =>
+      'Το βήμα δεν βρέθηκε σε αυτή τη λειτουργία.';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return 'Η προεπισκόπηση απέτυχε: $error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => 'Επανάληψη';
 
   @override
   String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+      'Κράτησε πατημένο το κουμπί για να νιώσεις τη ζωντανή απόκριση.';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => 'Κράτα';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic =>
+      'Κράτα πατημένο για προεπισκόπηση';
 
   @override
   String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+      'Απελευθερώθηκε. Η συνεδρία θα εισέλθει τώρα στο παράθυρο χάριτος.';
 
   @override
   String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+      'Θα εμφανιστεί η ψεύτικη οθόνη κλήσης. Σύρε για απάντηση ή κράτα το κόκκινο κουμπί για να προσομοιώσεις κίνδυνο.';
 
   @override
   String get stepConfigFakeCallCaller => 'Όνομα καλούντος';
@@ -820,13 +822,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Συμπερίληψη ιατρικών πληροφοριών';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => 'Αυτόματη ηχογράφηση';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => 'Αυτόματη βιντεοσκόπηση';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => 'Διάρκεια εγγραφής';
 
   @override
   String get stepConfigHoldReleaseSensitivity => 'Ευαισθησία απελευθέρωσης (δ)';

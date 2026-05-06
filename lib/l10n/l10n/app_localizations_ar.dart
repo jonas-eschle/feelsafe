@@ -739,42 +739,42 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => 'معاينة الخطوة';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams => 'مرجع الخطوة أو الوضع مفقود.';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => 'لم يُعثر على الوضع.';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound => 'لم يُعثر على الخطوة في هذا الوضع.';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return 'فشلت المعاينة: $error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => 'إعادة التشغيل';
 
   @override
   String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+      'اضغط مع الاستمرار على الزر لتشعر بالاستجابة الحية.';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => 'استمر بالضغط';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic => 'اضغط مع الاستمرار للمعاينة';
 
   @override
   String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+      'تم الإفلات. ستدخل الجلسة الآن نافذة المهلة.';
 
   @override
   String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+      'ستظهر شاشة المكالمة الوهمية. اسحب للرد أو اضغط مع الاستمرار على الزر الأحمر لمحاكاة الاستغاثة.';
 
   @override
   String get stepConfigFakeCallCaller => 'اسم المتصل';
@@ -810,13 +810,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'تضمين المعلومات الطبية';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => 'تسجيل الصوت تلقائيًا';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => 'تسجيل الفيديو تلقائيًا';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => 'مدة التسجيل';
 
   @override
   String get stepConfigHoldReleaseSensitivity => 'حساسية الإفلات (ث)';

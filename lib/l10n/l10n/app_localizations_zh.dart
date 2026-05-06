@@ -719,42 +719,39 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => '步骤预览';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams => '缺少步骤或模式引用。';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => '未找到该模式。';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound => '在该模式中未找到此步骤。';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return '预览失败：$error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => '重新播放';
 
   @override
-  String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+  String get stepPreviewHoldButtonHint => '按住按钮以感受真实响应。';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => '按住';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic => '按住以预览';
 
   @override
-  String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+  String get stepPreviewHoldButtonReleased => '已松开。会话现在将进入宽限窗口。';
 
   @override
-  String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+  String get stepPreviewFakeCallHint => '将出现伪装来电界面。滑动接听或按住红色按钮以模拟求助。';
 
   @override
   String get stepConfigFakeCallCaller => '来电者姓名';
@@ -790,13 +787,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => '包含医疗信息';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => '自动录音';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => '自动录像';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => '录制时长';
 
   @override
   String get stepConfigHoldReleaseSensitivity => '松开灵敏度（秒）';
@@ -2275,6 +2272,41 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   }
 
   @override
+  String get stepPreviewTitle => '步驟預覽';
+
+  @override
+  String get stepPreviewMissingParams => '缺少步驟或模式參照。';
+
+  @override
+  String get stepPreviewModeNotFound => '找不到此模式。';
+
+  @override
+  String get stepPreviewStepNotFound => '此模式中找不到此步驟。';
+
+  @override
+  String stepPreviewError(Object error) {
+    return '預覽失敗:$error';
+  }
+
+  @override
+  String get stepPreviewReplay => '重播';
+
+  @override
+  String get stepPreviewHoldButtonHint => '按住按鈕以感受真實回應。';
+
+  @override
+  String get stepPreviewHoldButtonLabel => '按住';
+
+  @override
+  String get stepPreviewHoldButtonSemantic => '按住以預覽';
+
+  @override
+  String get stepPreviewHoldButtonReleased => '已放開。工作階段現在將進入寬限視窗。';
+
+  @override
+  String get stepPreviewFakeCallHint => '將出現偽裝來電畫面。滑動接聽或按住紅色按鈕以模擬求救。';
+
+  @override
   String get stepConfigFakeCallCaller => '來電者姓名';
 
   @override
@@ -2306,6 +2338,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stepConfigSmsIncludeMedical => '附上醫療資訊';
+
+  @override
+  String get stepConfigSmsAutoRecordAudio => '自動錄音';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => '自動錄影';
+
+  @override
+  String get stepConfigSmsRecordDuration => '錄製時長';
 
   @override
   String get stepConfigHoldReleaseSensitivity => '放開靈敏度(秒)';

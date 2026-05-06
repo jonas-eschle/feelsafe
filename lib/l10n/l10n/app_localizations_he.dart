@@ -734,42 +734,41 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => 'תצוגה מקדימה לשלב';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams => 'חסרה הפניה לשלב או למצב.';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => 'המצב לא נמצא.';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound => 'השלב לא נמצא במצב הזה.';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return 'התצוגה המקדימה נכשלה: $error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => 'הפעל שוב';
 
   @override
-  String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+  String get stepPreviewHoldButtonHint => 'החזק את הלחצן לחוש את התגובה החיה.';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => 'החזק';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic => 'החזק לתצוגה מקדימה';
 
   @override
   String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+      'שוחרר. הסשן ייכנס כעת לחלון הארכה.';
 
   @override
   String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+      'מסך השיחה המזויפת יופיע. החלק לענות או החזק את הלחצן האדום כדי לדמות מצוקה.';
 
   @override
   String get stepConfigFakeCallCaller => 'שם המתקשר';
@@ -805,13 +804,13 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'כלול מידע רפואי';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => 'הקלט אודיו אוטומטית';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => 'הקלט וידאו אוטומטית';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => 'משך ההקלטה';
 
   @override
   String get stepConfigHoldReleaseSensitivity => 'רגישות שחרור (שניות)';

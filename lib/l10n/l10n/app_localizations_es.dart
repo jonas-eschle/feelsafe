@@ -749,42 +749,44 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
-  String get stepPreviewTitle => 'Step preview';
+  String get stepPreviewTitle => 'Vista previa del paso';
 
   @override
-  String get stepPreviewMissingParams => 'Missing step or mode reference.';
+  String get stepPreviewMissingParams =>
+      'Falta la referencia al paso o al modo.';
 
   @override
-  String get stepPreviewModeNotFound => 'Mode not found.';
+  String get stepPreviewModeNotFound => 'Modo no encontrado.';
 
   @override
-  String get stepPreviewStepNotFound => 'Step not found in this mode.';
+  String get stepPreviewStepNotFound => 'Paso no encontrado en este modo.';
 
   @override
   String stepPreviewError(Object error) {
-    return 'Preview failed: $error';
+    return 'La vista previa falló: $error';
   }
 
   @override
-  String get stepPreviewReplay => 'Replay';
+  String get stepPreviewReplay => 'Repetir';
 
   @override
   String get stepPreviewHoldButtonHint =>
-      'Press and hold the button to feel the live response.';
+      'Mantén pulsado el botón para sentir la respuesta real.';
 
   @override
-  String get stepPreviewHoldButtonLabel => 'Hold';
+  String get stepPreviewHoldButtonLabel => 'Mantener';
 
   @override
-  String get stepPreviewHoldButtonSemantic => 'Hold to preview';
+  String get stepPreviewHoldButtonSemantic =>
+      'Mantén pulsado para previsualizar';
 
   @override
   String get stepPreviewHoldButtonReleased =>
-      'Released. The session would now enter the grace window.';
+      'Soltado. La sesión entraría ahora en el periodo de gracia.';
 
   @override
   String get stepPreviewFakeCallHint =>
-      'The fake call screen will appear. Slide to answer or hold the red button to simulate distress.';
+      'Aparecerá la pantalla de llamada falsa. Desliza para responder o mantén pulsado el botón rojo para simular angustia.';
 
   @override
   String get stepConfigFakeCallCaller => 'Nombre de quien llama';
@@ -820,13 +822,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Incluir información médica';
 
   @override
-  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+  String get stepConfigSmsAutoRecordAudio => 'Grabar audio automáticamente';
 
   @override
-  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+  String get stepConfigSmsAutoRecordVideo => 'Grabar vídeo automáticamente';
 
   @override
-  String get stepConfigSmsRecordDuration => 'Recording duration';
+  String get stepConfigSmsRecordDuration => 'Duración de la grabación';
 
   @override
   String get stepConfigHoldReleaseSensitivity => 'Sensibilidad al soltar (s)';
