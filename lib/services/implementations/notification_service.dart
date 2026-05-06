@@ -90,7 +90,18 @@ final class NotificationService implements NotificationServiceProtocol {
       requestBadgePermission: true,
       requestSoundPermission: true,
     );
-    const settings = InitializationSettings(android: androidInit, iOS: iosInit);
+    // Linux desktop is non-shipping but we want `flutter run -d linux`
+    // to boot for development. The default-icon name is required by
+    // flutter_local_notifications even when it is never invoked.
+    const linuxInit = LinuxInitializationSettings(
+      defaultActionName: 'Open',
+    );
+    const settings = InitializationSettings(
+      android: androidInit,
+      iOS: iosInit,
+      macOS: iosInit,
+      linux: linuxInit,
+    );
     await _plugin.initialize(
       settings: settings,
       onDidReceiveNotificationResponse: _onResponse,

@@ -84,15 +84,18 @@ class AppDatabase extends _$AppDatabase {
       return NativeDatabase(
         file,
         setup: (db) {
-          // Verify we loaded the cipher-capable build (sqlite3mc /
-          // SQLCipher) before binding the key. A plaintext sqlite3
-          // returns no rows for this PRAGMA.
-          final cipherRows = db.select('PRAGMA cipher_version;');
-          if (cipherRows.isEmpty) {
+          // Verify we loaded the cipher-capable build (sqlite3mc).
+          // SQLite3MultipleCiphers exposes `sqlite3mc_version()` as a
+          // SQL function — plaintext sqlite3 will throw
+          // "no such function" instead of returning a row, which is
+          // how we detect that the wrong build is linked.
+          try {
+            db.select('SELECT sqlite3mc_version()');
+          } on Object catch (e) {
             throw StateError(
               'Cipher-capable sqlite3 build is not loaded — verify the '
               '`hooks: user_defines: sqlite3: source: sqlite3mc` block '
-              'in pubspec.yaml.',
+              'in pubspec.yaml. Underlying error: $e',
             );
           }
           // `PRAGMA key` must be run before any data read/write.
