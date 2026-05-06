@@ -458,5 +458,25 @@
   "launchGateBiometricReason": "Ξεκλειδώστε το Guardian Angela",
   "launchGateUseBiometric": "Χρήση βιομετρικών",
   "historyTabReal": "Πραγματικά",
-  "historyTabSimulated": "Προσομοίωση"
+  "historyTabSimulated": "Προσομοίωση",
+
+  "audioRunningLatePhrase": "Γεια, αργώ. Θα σε καλέσω σύντομα.",
+  "smsDefaultTemplate": "{name} ίσως χρειάζεται βοήθεια. Τοποθεσία: {location}. Ώρα: {time}.",
+  "smsDefaultPreCallTemplate": "{name} προσπαθεί να σε καλέσει. Παρακαλώ περίμενε κλήση.",
+
+  "simLoudAlarm": "[SIM] Δυνατός συναγερμός + {tail}",
+  "simLoudAlarmTailFlash": "φλας",
+  "simLoudAlarmTailVibrate": "δόνηση",
+  "simSmsContact": "[SIM] Θα έστελνε {channel} σε {count} επαφές",
+  "simFakeCallRing": "[SIM] Εισερχόμενη κλήση από {caller}",
+  "simCountdownWarning": "[SIM] Προειδοποίηση αντίστροφης μέτρησης {seconds}δ",
+  "simPhoneCall": "[SIM] Θα καλούσε {name}",
+  "simNoContactToCall": "[SIM] Καμία επαφή για κλήση",
+  "simCallEmergency": "[SIM] Θα καλούσε {number}",
+  "simHardwareButton": "[SIM] Σκανδαλισμός υλικού οπλισμένος",
+  "simHoldButton": "[SIM] Αναμονή κρατήματος κουμπιού",
+  "simDisguisedReminder": "[SIM] Θα εμφάνιζε «{title}»",
+  "simDisguisedReminderEmpty": "[SIM] Δεν υπάρχει διαθέσιμο πρότυπο υπενθύμισης",
+  "simGpsArrivalTrigger": "[SIM] Ενεργοποιήθηκε ο σκανδαλισμός άφιξης GPS",
+  "simLowBatteryAlert": "[SIM] Ενεργοποιήθηκε ειδοποίηση χαμηλής μπαταρίας"
 }

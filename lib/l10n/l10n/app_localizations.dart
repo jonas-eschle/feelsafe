@@ -1601,6 +1601,24 @@ abstract class AppLocalizations {
   /// **'Include medical info'**
   String get stepConfigSmsIncludeMedical;
 
+  /// Auto-record-audio toggle (issues-v4 #6).
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-record audio'**
+  String get stepConfigSmsAutoRecordAudio;
+
+  /// Auto-record-video toggle (issues-v4 #6).
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-record video'**
+  String get stepConfigSmsAutoRecordVideo;
+
+  /// Slider label for the recording duration when auto-record is on (issues-v4 #6).
+  ///
+  /// In en, this message translates to:
+  /// **'Recording duration'**
+  String get stepConfigSmsRecordDuration;
+
   /// Hold release sensitivity.
   ///
   /// In en, this message translates to:

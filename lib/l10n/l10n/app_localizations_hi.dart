@@ -816,6 +816,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'चिकित्सीय जानकारी शामिल करें';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity => 'रिलीज़ संवेदनशीलता (से.)';
 
   @override

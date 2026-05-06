@@ -814,6 +814,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Додати медичну інформацію';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity => 'Чутливість відпускання (с)';
 
   @override
@@ -1519,75 +1528,76 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get audioRunningLatePhrase =>
-      'Hi, I am running late. I will call you back soon.';
+      'Привіт, я запізнююсь. Скоро передзвоню.';
 
   @override
   String smsDefaultTemplate(Object name, Object location, Object time) {
-    return '$name may need help. Location: $location. Time: $time.';
+    return '$name може потребувати допомоги. Місцезнаходження: $location. Час: $time.';
   }
 
   @override
   String smsDefaultPreCallTemplate(Object name) {
-    return '$name is trying to reach you. Please expect a call.';
+    return '$name намагається з вами зв\'язатися. Очікуйте дзвінка.';
   }
 
   @override
   String simLoudAlarm(Object tail) {
-    return '[SIM] Loud alarm + $tail';
+    return '[SIM] Гучна тривога + $tail';
   }
 
   @override
-  String get simLoudAlarmTailFlash => 'flash';
+  String get simLoudAlarmTailFlash => 'спалах';
 
   @override
-  String get simLoudAlarmTailVibrate => 'vibrate';
+  String get simLoudAlarmTailVibrate => 'вібрація';
 
   @override
   String simSmsContact(Object channel, int count) {
-    return '[SIM] Would send $channel to $count contacts';
+    return '[SIM] Надіслав би $channel $count контактам';
   }
 
   @override
   String simFakeCallRing(Object caller) {
-    return '[SIM] Incoming call from $caller';
+    return '[SIM] Вхідний виклик від $caller';
   }
 
   @override
   String simCountdownWarning(int seconds) {
-    return '[SIM] ${seconds}s countdown warning';
+    return '[SIM] Попередження зворотного відліку $secondsс';
   }
 
   @override
   String simPhoneCall(Object name) {
-    return '[SIM] Would call $name';
+    return '[SIM] Зателефонував би $name';
   }
 
   @override
-  String get simNoContactToCall => '[SIM] No contact to call';
+  String get simNoContactToCall => '[SIM] Немає контакту для дзвінка';
 
   @override
   String simCallEmergency(Object number) {
-    return '[SIM] Would dial $number';
+    return '[SIM] Набрав би $number';
   }
 
   @override
-  String get simHardwareButton => '[SIM] Hardware trigger armed';
+  String get simHardwareButton => '[SIM] Апаратний тригер активовано';
 
   @override
-  String get simHoldButton => '[SIM] Waiting for hold button';
+  String get simHoldButton => '[SIM] Очікування утримання кнопки';
 
   @override
   String simDisguisedReminder(Object title) {
-    return '[SIM] Would show \"$title\"';
+    return '[SIM] Показав би «$title»';
   }
 
   @override
   String get simDisguisedReminderEmpty =>
-      '[SIM] No reminder template available';
+      '[SIM] Шаблон нагадування недоступний';
 
   @override
-  String get simGpsArrivalTrigger => '[SIM] GPS arrival trigger fired';
+  String get simGpsArrivalTrigger => '[SIM] Тригер прибуття GPS активовано';
 
   @override
-  String get simLowBatteryAlert => '[SIM] Low-battery alert fired';
+  String get simLowBatteryAlert =>
+      '[SIM] Активовано сповіщення про низький заряд';
 }

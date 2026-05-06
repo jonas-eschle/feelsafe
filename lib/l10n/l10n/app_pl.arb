@@ -458,5 +458,25 @@
   "launchGateBiometricReason": "Odblokuj Guardian Angela",
   "launchGateUseBiometric": "Użyj biometrii",
   "historyTabReal": "Rzeczywiste",
-  "historyTabSimulated": "Symulacje"
+  "historyTabSimulated": "Symulacje",
+
+  "audioRunningLatePhrase": "Cześć, spóźnię się. Wkrótce oddzwonię.",
+  "smsDefaultTemplate": "{name} może potrzebować pomocy. Lokalizacja: {location}. Czas: {time}.",
+  "smsDefaultPreCallTemplate": "{name} próbuje się z tobą skontaktować. Spodziewaj się telefonu.",
+
+  "simLoudAlarm": "[SIM] Głośny alarm + {tail}",
+  "simLoudAlarmTailFlash": "błysk",
+  "simLoudAlarmTailVibrate": "wibracja",
+  "simSmsContact": "[SIM] Wysłałby {channel} do {count} kontaktów",
+  "simFakeCallRing": "[SIM] Połączenie przychodzące od {caller}",
+  "simCountdownWarning": "[SIM] Ostrzeżenie odliczania {seconds}s",
+  "simPhoneCall": "[SIM] Zadzwoniłby do {name}",
+  "simNoContactToCall": "[SIM] Brak kontaktu do połączenia",
+  "simCallEmergency": "[SIM] Wybrałby {number}",
+  "simHardwareButton": "[SIM] Wyzwalacz sprzętowy uzbrojony",
+  "simHoldButton": "[SIM] Oczekiwanie na przytrzymanie przycisku",
+  "simDisguisedReminder": "[SIM] Pokazałby \"{title}\"",
+  "simDisguisedReminderEmpty": "[SIM] Brak dostępnego szablonu przypomnienia",
+  "simGpsArrivalTrigger": "[SIM] Wyzwalacz przybycia GPS uruchomiony",
+  "simLowBatteryAlert": "[SIM] Alarm niskiego poziomu baterii uruchomiony"
 }

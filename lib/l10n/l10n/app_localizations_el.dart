@@ -820,6 +820,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Συμπερίληψη ιατρικών πληροφοριών';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity => 'Ευαισθησία απελευθέρωσης (δ)';
 
   @override
@@ -1526,76 +1535,77 @@ class AppLocalizationsEl extends AppLocalizations {
   String get launchGateUseBiometric => 'Χρήση βιομετρικών';
 
   @override
-  String get audioRunningLatePhrase =>
-      'Hi, I am running late. I will call you back soon.';
+  String get audioRunningLatePhrase => 'Γεια, αργώ. Θα σε καλέσω σύντομα.';
 
   @override
   String smsDefaultTemplate(Object name, Object location, Object time) {
-    return '$name may need help. Location: $location. Time: $time.';
+    return '$name ίσως χρειάζεται βοήθεια. Τοποθεσία: $location. Ώρα: $time.';
   }
 
   @override
   String smsDefaultPreCallTemplate(Object name) {
-    return '$name is trying to reach you. Please expect a call.';
+    return '$name προσπαθεί να σε καλέσει. Παρακαλώ περίμενε κλήση.';
   }
 
   @override
   String simLoudAlarm(Object tail) {
-    return '[SIM] Loud alarm + $tail';
+    return '[SIM] Δυνατός συναγερμός + $tail';
   }
 
   @override
-  String get simLoudAlarmTailFlash => 'flash';
+  String get simLoudAlarmTailFlash => 'φλας';
 
   @override
-  String get simLoudAlarmTailVibrate => 'vibrate';
+  String get simLoudAlarmTailVibrate => 'δόνηση';
 
   @override
   String simSmsContact(Object channel, int count) {
-    return '[SIM] Would send $channel to $count contacts';
+    return '[SIM] Θα έστελνε $channel σε $count επαφές';
   }
 
   @override
   String simFakeCallRing(Object caller) {
-    return '[SIM] Incoming call from $caller';
+    return '[SIM] Εισερχόμενη κλήση από $caller';
   }
 
   @override
   String simCountdownWarning(int seconds) {
-    return '[SIM] ${seconds}s countdown warning';
+    return '[SIM] Προειδοποίηση αντίστροφης μέτρησης $secondsδ';
   }
 
   @override
   String simPhoneCall(Object name) {
-    return '[SIM] Would call $name';
+    return '[SIM] Θα καλούσε $name';
   }
 
   @override
-  String get simNoContactToCall => '[SIM] No contact to call';
+  String get simNoContactToCall => '[SIM] Καμία επαφή για κλήση';
 
   @override
   String simCallEmergency(Object number) {
-    return '[SIM] Would dial $number';
+    return '[SIM] Θα καλούσε $number';
   }
 
   @override
-  String get simHardwareButton => '[SIM] Hardware trigger armed';
+  String get simHardwareButton => '[SIM] Σκανδαλισμός υλικού οπλισμένος';
 
   @override
-  String get simHoldButton => '[SIM] Waiting for hold button';
+  String get simHoldButton => '[SIM] Αναμονή κρατήματος κουμπιού';
 
   @override
   String simDisguisedReminder(Object title) {
-    return '[SIM] Would show \"$title\"';
+    return '[SIM] Θα εμφάνιζε «$title»';
   }
 
   @override
   String get simDisguisedReminderEmpty =>
-      '[SIM] No reminder template available';
+      '[SIM] Δεν υπάρχει διαθέσιμο πρότυπο υπενθύμισης';
 
   @override
-  String get simGpsArrivalTrigger => '[SIM] GPS arrival trigger fired';
+  String get simGpsArrivalTrigger =>
+      '[SIM] Ενεργοποιήθηκε ο σκανδαλισμός άφιξης GPS';
 
   @override
-  String get simLowBatteryAlert => '[SIM] Low-battery alert fired';
+  String get simLowBatteryAlert =>
+      '[SIM] Ενεργοποιήθηκε ειδοποίηση χαμηλής μπαταρίας';
 }

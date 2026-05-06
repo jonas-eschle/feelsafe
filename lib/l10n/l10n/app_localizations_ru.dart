@@ -815,6 +815,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'Включить медицинскую информацию';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity =>
       'Чувствительность отпускания (с)';
 

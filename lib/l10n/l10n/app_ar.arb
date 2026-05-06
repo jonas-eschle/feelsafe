@@ -458,5 +458,25 @@
   "launchGateBiometricReason": "فتح Guardian Angela",
   "launchGateUseBiometric": "استخدام القياسات الحيوية",
   "historyTabReal": "حقيقي",
-  "historyTabSimulated": "محاكاة"
+  "historyTabSimulated": "محاكاة",
+
+  "audioRunningLatePhrase": "مرحبًا، أنا متأخر. سأعاود الاتصال بك قريبًا.",
+  "smsDefaultTemplate": "{name} قد يحتاج إلى المساعدة. الموقع: {location}. الوقت: {time}.",
+  "smsDefaultPreCallTemplate": "{name} يحاول الاتصال بك. يرجى توقع مكالمة.",
+
+  "simLoudAlarm": "[SIM] إنذار مرتفع + {tail}",
+  "simLoudAlarmTailFlash": "وميض",
+  "simLoudAlarmTailVibrate": "اهتزاز",
+  "simSmsContact": "[SIM] سيُرسل {channel} إلى {count} جهات اتصال",
+  "simFakeCallRing": "[SIM] مكالمة واردة من {caller}",
+  "simCountdownWarning": "[SIM] تحذير العد التنازلي {seconds}ث",
+  "simPhoneCall": "[SIM] سيتصل بـ {name}",
+  "simNoContactToCall": "[SIM] لا توجد جهة اتصال للاتصال بها",
+  "simCallEmergency": "[SIM] سيطلب {number}",
+  "simHardwareButton": "[SIM] مُشغّل الأجهزة جاهز",
+  "simHoldButton": "[SIM] في انتظار الضغط المستمر",
+  "simDisguisedReminder": "[SIM] سيعرض \"{title}\"",
+  "simDisguisedReminderEmpty": "[SIM] لا يوجد قالب تذكير متاح",
+  "simGpsArrivalTrigger": "[SIM] تم تشغيل مُشغّل وصول GPS",
+  "simLowBatteryAlert": "[SIM] تم تشغيل تنبيه انخفاض البطارية"
 }

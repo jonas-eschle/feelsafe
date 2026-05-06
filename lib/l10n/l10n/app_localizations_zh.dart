@@ -790,6 +790,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => '包含医疗信息';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity => '松开灵敏度（秒）';
 
   @override

@@ -458,5 +458,25 @@
   "launchGateBiometricReason": "פתח/י את Guardian Angela",
   "launchGateUseBiometric": "השתמש/י בביומטריה",
   "historyTabReal": "אמיתי",
-  "historyTabSimulated": "סימולציה"
+  "historyTabSimulated": "סימולציה",
+
+  "audioRunningLatePhrase": "היי, אני מאחר. אחזור אליך בקרוב.",
+  "smsDefaultTemplate": "{name} עשוי להזדקק לעזרה. מיקום: {location}. שעה: {time}.",
+  "smsDefaultPreCallTemplate": "{name} מנסה ליצור איתך קשר. אנא צפה לשיחה.",
+
+  "simLoudAlarm": "[SIM] אזעקה רועשת + {tail}",
+  "simLoudAlarmTailFlash": "הבזק",
+  "simLoudAlarmTailVibrate": "רטט",
+  "simSmsContact": "[SIM] ישלח {channel} ל-{count} אנשי קשר",
+  "simFakeCallRing": "[SIM] שיחה נכנסת מ-{caller}",
+  "simCountdownWarning": "[SIM] אזהרת ספירה לאחור {seconds}ש'",
+  "simPhoneCall": "[SIM] יתקשר ל-{name}",
+  "simNoContactToCall": "[SIM] אין איש קשר להתקשר אליו",
+  "simCallEmergency": "[SIM] יחייג {number}",
+  "simHardwareButton": "[SIM] טריגר חומרה דרוך",
+  "simHoldButton": "[SIM] ממתין ללחיצה ארוכה",
+  "simDisguisedReminder": "[SIM] יציג את \"{title}\"",
+  "simDisguisedReminderEmpty": "[SIM] אין תבנית תזכורת זמינה",
+  "simGpsArrivalTrigger": "[SIM] טריגר הגעת GPS הופעל",
+  "simLowBatteryAlert": "[SIM] התראת סוללה חלשה הופעלה"
 }

@@ -819,6 +819,15 @@ class AppLocalizationsFr extends AppLocalizations {
       'Inclure les informations médicales';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity =>
       'Sensibilité au relâchement (s)';
 

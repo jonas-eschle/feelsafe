@@ -810,6 +810,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stepConfigSmsIncludeMedical => 'تضمين المعلومات الطبية';
 
   @override
+  String get stepConfigSmsAutoRecordAudio => 'Auto-record audio';
+
+  @override
+  String get stepConfigSmsAutoRecordVideo => 'Auto-record video';
+
+  @override
+  String get stepConfigSmsRecordDuration => 'Recording duration';
+
+  @override
   String get stepConfigHoldReleaseSensitivity => 'حساسية الإفلات (ث)';
 
   @override
@@ -1506,75 +1515,74 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get audioRunningLatePhrase =>
-      'Hi, I am running late. I will call you back soon.';
+      'مرحبًا، أنا متأخر. سأعاود الاتصال بك قريبًا.';
 
   @override
   String smsDefaultTemplate(Object name, Object location, Object time) {
-    return '$name may need help. Location: $location. Time: $time.';
+    return '$name قد يحتاج إلى المساعدة. الموقع: $location. الوقت: $time.';
   }
 
   @override
   String smsDefaultPreCallTemplate(Object name) {
-    return '$name is trying to reach you. Please expect a call.';
+    return '$name يحاول الاتصال بك. يرجى توقع مكالمة.';
   }
 
   @override
   String simLoudAlarm(Object tail) {
-    return '[SIM] Loud alarm + $tail';
+    return '[SIM] إنذار مرتفع + $tail';
   }
 
   @override
-  String get simLoudAlarmTailFlash => 'flash';
+  String get simLoudAlarmTailFlash => 'وميض';
 
   @override
-  String get simLoudAlarmTailVibrate => 'vibrate';
+  String get simLoudAlarmTailVibrate => 'اهتزاز';
 
   @override
   String simSmsContact(Object channel, int count) {
-    return '[SIM] Would send $channel to $count contacts';
+    return '[SIM] سيُرسل $channel إلى $count جهات اتصال';
   }
 
   @override
   String simFakeCallRing(Object caller) {
-    return '[SIM] Incoming call from $caller';
+    return '[SIM] مكالمة واردة من $caller';
   }
 
   @override
   String simCountdownWarning(int seconds) {
-    return '[SIM] ${seconds}s countdown warning';
+    return '[SIM] تحذير العد التنازلي $secondsث';
   }
 
   @override
   String simPhoneCall(Object name) {
-    return '[SIM] Would call $name';
+    return '[SIM] سيتصل بـ $name';
   }
 
   @override
-  String get simNoContactToCall => '[SIM] No contact to call';
+  String get simNoContactToCall => '[SIM] لا توجد جهة اتصال للاتصال بها';
 
   @override
   String simCallEmergency(Object number) {
-    return '[SIM] Would dial $number';
+    return '[SIM] سيطلب $number';
   }
 
   @override
-  String get simHardwareButton => '[SIM] Hardware trigger armed';
+  String get simHardwareButton => '[SIM] مُشغّل الأجهزة جاهز';
 
   @override
-  String get simHoldButton => '[SIM] Waiting for hold button';
+  String get simHoldButton => '[SIM] في انتظار الضغط المستمر';
 
   @override
   String simDisguisedReminder(Object title) {
-    return '[SIM] Would show \"$title\"';
+    return '[SIM] سيعرض \"$title\"';
   }
 
   @override
-  String get simDisguisedReminderEmpty =>
-      '[SIM] No reminder template available';
+  String get simDisguisedReminderEmpty => '[SIM] لا يوجد قالب تذكير متاح';
 
   @override
-  String get simGpsArrivalTrigger => '[SIM] GPS arrival trigger fired';
+  String get simGpsArrivalTrigger => '[SIM] تم تشغيل مُشغّل وصول GPS';
 
   @override
-  String get simLowBatteryAlert => '[SIM] Low-battery alert fired';
+  String get simLowBatteryAlert => '[SIM] تم تشغيل تنبيه انخفاض البطارية';
 }
