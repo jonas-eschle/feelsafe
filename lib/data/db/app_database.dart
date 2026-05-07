@@ -13,6 +13,8 @@
 /// migrations run.
 library;
 
+import 'dart:developer' as developer;
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:drift/drift.dart';
@@ -75,8 +77,49 @@ class AppDatabase extends _$AppDatabase {
   /// to delete the file as part of a nuke-and-reseed.
   static const String dbFileName = 'guardian_angela.sqlite';
 
+  /// On desktop platforms (Linux/macOS/Windows) the
+  /// `flutter run -d <desktop>` JIT runtime does not honour
+  /// `native_assets.json` for the `package:sqlite3` `@Native` symbol
+  /// resolution — it falls back to the platform's system
+  /// `libsqlite3.so.0` (which is plaintext-only). Pre-loading the
+  /// bundled `libsqlite3mc` here puts the cipher-capable symbols into
+  /// the process's symbol table BEFORE any `@Native` lookup runs, so
+  /// `RTLD_DEFAULT` finds them first. Mobile platforms
+  /// (Android/iOS) link the cipher build via `sqlite3_flutter_libs`
+  /// at install time and don't need this path.
+  static bool _desktopLoaderAttempted = false;
+
+  static void _ensureDesktopSqlite3mcLoaded() {
+    if (_desktopLoaderAttempted) return;
+    _desktopLoaderAttempted = true;
+    if (!Platform.isLinux && !Platform.isMacOS && !Platform.isWindows) {
+      return;
+    }
+    final candidates = <String>[
+      if (Platform.isLinux) 'libsqlite3mc.so',
+      if (Platform.isLinux) 'lib/libsqlite3mc.so',
+      if (Platform.isMacOS) 'libsqlite3mc.dylib',
+      if (Platform.isMacOS) 'lib/libsqlite3mc.dylib',
+      if (Platform.isWindows) 'sqlite3mc.dll',
+      if (Platform.isWindows) 'lib/sqlite3mc.dll',
+    ];
+    for (final path in candidates) {
+      try {
+        DynamicLibrary.open(path);
+        return;
+      } on Object {
+        // Try the next candidate.
+      }
+    }
+    developer.log(
+      'AppDatabase: could not pre-load libsqlite3mc on desktop. '
+      'Cipher detection will fail.',
+    );
+  }
+
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
+      _ensureDesktopSqlite3mcLoaded();
       final dir = await getApplicationDocumentsDirectory();
       final file = File(p.join(dir.path, dbFileName));
       final passphrase = await EncryptionKey.load();
