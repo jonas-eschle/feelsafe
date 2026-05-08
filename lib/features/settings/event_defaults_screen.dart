@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
@@ -150,14 +151,10 @@ class _DisguisedReminderEditor extends StatelessWidget {
   final DisguisedReminderConfig cfg;
   final ValueChanged<DisguisedReminderConfig> onChanged;
   @override
-  Widget build(BuildContext context) => TextFormField(
-        initialValue: cfg.intervalSeconds.toString(),
-        decoration: const InputDecoration(labelText: 'Interval (s)'),
-        keyboardType: TextInputType.number,
-        onChanged: (v) {
-          final n = int.tryParse(v);
-          if (n != null) onChanged(cfg.copyWith(intervalSeconds: n));
-        },
+  Widget build(BuildContext context) => TimingSlider(
+        label: 'Interval',
+        seconds: cfg.intervalSeconds,
+        onChanged: (v) => onChanged(cfg.copyWith(intervalSeconds: v)),
       );
 }
 

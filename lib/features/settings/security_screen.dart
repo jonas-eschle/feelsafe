@@ -10,6 +10,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/utils/pin_hasher.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -89,18 +90,15 @@ class SecurityScreen extends ConsumerWidget {
               ),
             ),
           const Divider(),
-          ListTile(
-            title: Text(l.securityPinTimeout),
-            subtitle: Text('${settings?.pinTimeoutSeconds ?? 15}s'),
-          ),
-          Slider(
-            value: (settings?.pinTimeoutSeconds ?? 15).toDouble(),
-            min: 5,
-            max: 120,
-            divisions: 23,
-            label: '${settings?.pinTimeoutSeconds ?? 15}s',
-            onChanged: (v) =>
-                notifier.setPinTimeoutSeconds(v.round()),
+          // Spec 11 §DE-1: log-snap slider + direct numeric entry.
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TimingSlider(
+              label: l.securityPinTimeout,
+              seconds: settings?.pinTimeoutSeconds ?? 15,
+              onChanged: (v) =>
+                  notifier.setPinTimeoutSeconds(v.clamp(5, 120)),
+            ),
           ),
         ],
       ),

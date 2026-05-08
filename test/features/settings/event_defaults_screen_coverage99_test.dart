@@ -16,6 +16,7 @@ import 'package:checks/checks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
@@ -115,8 +116,11 @@ void main() {
     );
 
     testWidgets(
-      'disguisedReminder tile (index 1) — expands and shows TextFormField',
+      'disguisedReminder tile (index 1) — expands and shows TimingSlider',
       (tester) async {
+        // Phase 8 (DE-1): the disguised-reminder interval input is now
+        // a TimingSlider (was a plain TextFormField). Assertion target
+        // updated accordingly.
         await tester.binding.setSurfaceSize(const Size(800, 1400));
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
@@ -125,13 +129,12 @@ void main() {
 
         await _expandTileAt(tester, 1);
 
-        // Ensure at least one TextFormField is in the tree (may need scroll).
-        final fieldFinder = find.byType(TextFormField);
-        if (fieldFinder.evaluate().isNotEmpty) {
-          await tester.ensureVisible(fieldFinder.first);
+        final sliderFinder = find.byType(TimingSlider);
+        if (sliderFinder.evaluate().isNotEmpty) {
+          await tester.ensureVisible(sliderFinder.first);
           await tester.pump();
         }
-        check(find.byType(TextFormField).evaluate()).isNotEmpty();
+        check(sliderFinder.evaluate()).isNotEmpty();
       },
     );
 

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
@@ -570,8 +571,12 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('SecurityScreen — PIN timeout slider', () {
+    // Phase 8 (DE-1): the raw Slider widget was replaced by
+    // TimingSlider, which uses a log-scaled index slider internally
+    // and exposes `seconds` as the user-facing field. Assertions now
+    // target TimingSlider.seconds instead of Slider.value/min/max.
     testWidgets(
-      'slider default value is 15 when pinTimeoutSeconds is not set',
+      'TimingSlider default value is 15 when pinTimeoutSeconds is not set',
       (tester) async {
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
         await tester.pumpWidget(_host(
@@ -579,50 +584,13 @@ void main() {
           extras: [settingsRepositoryProvider.overrideWithValue(repo)],
         ));
         await tester.pumpAndSettleTall();
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). The PIN-timeout tests target
-        // the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.value).equals(15.0);
+        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+        check(w.seconds).equals(15);
       },
     );
 
     testWidgets(
-      'slider min is 5',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          extras: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). The PIN-timeout tests target
-        // the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.min).equals(5.0);
-      },
-    );
-
-    testWidgets(
-      'slider max is 120',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          extras: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). The PIN-timeout tests target
-        // the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.max).equals(120.0);
-      },
-    );
-
-    testWidgets(
-      'slider reflects stored pinTimeoutSeconds=30',
+      'TimingSlider reflects stored pinTimeoutSeconds=30',
       (tester) async {
         final repo = _repo(
           const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 30),
@@ -632,11 +600,8 @@ void main() {
           extras: [settingsRepositoryProvider.overrideWithValue(repo)],
         ));
         await tester.pumpAndSettleTall();
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). The PIN-timeout tests target
-        // the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.value).equals(30.0);
+        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+        check(w.seconds).equals(30);
       },
     );
 

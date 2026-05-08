@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
@@ -37,17 +38,14 @@ class GpsLoggingScreen extends ConsumerWidget {
             value: gps.enabled,
             onChanged: (v) => save(gps.copyWith(enabled: v)),
           ),
-          ListTile(
-            title: Text(l.gpsLoggingInterval),
-            subtitle: Text('${gps.intervalSeconds}s'),
-          ),
-          Slider(
-            min: 10,
-            max: 600,
-            divisions: 59,
-            value: gps.intervalSeconds.toDouble(),
-            label: '${gps.intervalSeconds}s',
-            onChanged: (v) => save(gps.copyWith(intervalSeconds: v.round())),
+          // Spec 11 §DE-1: log-snap slider with direct numeric entry.
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+            child: TimingSlider(
+              label: l.gpsLoggingInterval,
+              seconds: gps.intervalSeconds,
+              onChanged: (v) => save(gps.copyWith(intervalSeconds: v)),
+            ),
           ),
           ListTile(
             title: Text(l.gpsLoggingAccuracy),

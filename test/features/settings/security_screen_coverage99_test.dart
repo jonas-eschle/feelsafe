@@ -20,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/settings/security_screen.dart';
@@ -607,8 +608,10 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('SecurityScreen PIN timeout slider', () {
+    // Phase 8 (DE-1): pin-timeout slider is now a TimingSlider with
+    // log-snap stops; the user-facing field is `seconds`.
     testWidgets(
-      'slider reflects default pin timeout (15 seconds)',
+      'TimingSlider reflects default pin timeout (15 seconds)',
       (tester) async {
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
         await tester.pumpWidget(_host(
@@ -616,16 +619,13 @@ void main() {
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
         ));
         await tester.pumpAndSettleTall();
-
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). Test the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.value).equals(15.0);
+        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+        check(w.seconds).equals(15);
       },
     );
 
     testWidgets(
-      'slider reflects persisted pin timeout',
+      'TimingSlider reflects persisted pin timeout',
       (tester) async {
         final repo = _repo(
           const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 30),
@@ -635,11 +635,8 @@ void main() {
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
         ));
         await tester.pumpAndSettleTall();
-
-        // Two sliders: pinTimeoutSeconds (first) + Q9
-        // wrongPinThreshold (second). Test the first.
-        final slider = tester.widget<Slider>(find.byType(Slider).first);
-        check(slider.value).equals(30.0);
+        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+        check(w.seconds).equals(30);
       },
     );
 
