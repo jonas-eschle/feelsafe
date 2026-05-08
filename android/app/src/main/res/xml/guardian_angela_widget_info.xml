@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    AppWidget provider metadata for Guardian Angela's home-screen widget.
+
+    updatePeriodMillis=0: the system will never poll; all updates are
+    pushed explicitly from Dart via HomeWidget.updateWidget().
+
+    resizeMode="horizontal|vertical" lets users resize the widget freely.
+    previewLayout references the real layout so the widget picker shows
+    an accurate preview without needing a separate static image.
+-->
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:initialLayout="@layout/guardian_angela_widget"
+    android:minWidth="110dp"
+    android:minHeight="40dp"
+    android:previewLayout="@layout/guardian_angela_widget"
+    android:resizeMode="horizontal|vertical"
+    android:updatePeriodMillis="0"
+    android:widgetCategory="home_screen" />

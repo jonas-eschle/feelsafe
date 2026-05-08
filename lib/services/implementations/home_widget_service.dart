@@ -29,9 +29,9 @@ final class HomeWidgetService implements HomeWidgetServiceProtocol {
   /// Key used to persist the running flag.
   static const String _runningKey = 'ga_running';
 
-  /// Android widget provider class name. Phase 10 registers the
-  /// matching Kotlin side.
-  static const String _androidWidgetProvider = 'GuardianAngelaWidget';
+  /// Android widget provider class name. Must match the Kotlin class
+  /// [GuardianAngelaAppWidget] registered in AndroidManifest.xml.
+  static const String _androidWidgetProvider = 'GuardianAngelaAppWidget';
 
   /// iOS widget name. Phase 10 registers the matching Swift side.
   static const String _iosWidgetName = 'GuardianAngelaWidget';

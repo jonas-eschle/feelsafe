@@ -125,6 +125,19 @@
             </intent-filter>
         </receiver>
 
+        <!-- Home-screen widget receiver. Updates are pushed from Dart via
+             HomeWidget.updateWidget(); no polling (updatePeriodMillis=0). -->
+        <receiver
+            android:name=".GuardianAngelaAppWidget"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/guardian_angela_widget_info" />
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
