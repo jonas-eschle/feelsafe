@@ -120,6 +120,8 @@ class SessionServices {
     required this.deviceState,
     required this.incomingCall,
     required this.location,
+    required this.flash,
+    required this.recording,
   });
 
   /// Audio (alarm + ringtone + voice recording).
@@ -154,6 +156,13 @@ class SessionServices {
 
   /// Live GPS location lookup.
   final LocationServiceProtocol location;
+
+  /// Camera-LED strobe (Q24). Real on hardware; simulation no-op.
+  final FlashServiceProtocol flash;
+
+  /// Capped-audio recording (Q23). Real on hardware; simulation
+  /// no-op handle so strategies can run regardless of mode.
+  final RecordingServiceProtocol recording;
 }
 
 /// Plain-Dart helper that owns the active session's engine, services,
@@ -572,6 +581,10 @@ class SessionLifecycleController {
         // Spec 11 §DE-3 — strategies prefer the buffer's latest
         // point over a fresh GPS fix when resolving `{location}`.
         trackingBuffer: trackingBuffer,
+        // Q24 — LoudAlarmStrategy strobes the LED when flashLight=true.
+        flash: services.flash,
+        // Q23 — SmsContactStrategy honours autoRecordAudio when set.
+        recording: services.recording,
       ),
       chainStepsResolver: () => engine.steps,
       messagingService: services.messaging,
@@ -985,6 +998,8 @@ class SessionLifecycleController {
         deviceState: ref.read(simulationDeviceStateProvider),
         incomingCall: ref.read(simulationIncomingCallProvider),
         location: ref.read(simulationLocationProvider),
+        flash: ref.read(simulationFlashProvider),
+        recording: ref.read(simulationRecordingProvider),
       );
     }
     return SessionServices(
@@ -999,6 +1014,8 @@ class SessionLifecycleController {
       deviceState: ref.read(deviceStateServiceProvider),
       incomingCall: ref.read(incomingCallServiceProvider),
       location: ref.read(locationServiceProvider),
+      flash: ref.read(flashServiceProvider),
+      recording: ref.read(recordingServiceProvider),
     );
   }
 

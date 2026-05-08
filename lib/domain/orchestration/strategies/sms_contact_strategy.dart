@@ -91,14 +91,26 @@ final class SmsContactStrategy extends EventStrategy {
     // when the user has the toggles on so the gap is visible at
     // runtime. Once available, drive a `services.audio` recording
     // call here, gated on `!isSim`.
-    if (!isSim &&
-        (config.autoRecordAudio || config.autoRecordVideo)) {
+    final recording = services.recording;
+    if (!isSim && config.autoRecordAudio && recording != null) {
+      try {
+        await recording.startAudioRecording(
+          cap: Duration(seconds: config.recordDurationSeconds),
+        );
+      } on Object catch (error) {
+        developer.log(
+          'SmsContactStrategy: recording failed: $error',
+          name: 'orchestration.smsContact',
+        );
+      }
+    }
+    if (config.autoRecordVideo) {
+      // Spec 11 §DE-2 + Q23: video capture is intentionally NOT
+      // supported (privacy + storage tradeoff). Log so the gap is
+      // visible at runtime.
       developer.log(
-        'SmsContactStrategy: auto-record toggles set '
-        '(audio=${config.autoRecordAudio}, '
-        'video=${config.autoRecordVideo}, '
-        'duration=${config.recordDurationSeconds}s) '
-        'but no recording service is wired yet — TODO bucket-D.',
+        'SmsContactStrategy: autoRecordVideo set but video capture '
+        'is not supported by design.',
         name: 'orchestration.smsContact',
       );
     }

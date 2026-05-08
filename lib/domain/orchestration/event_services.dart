@@ -12,6 +12,7 @@ import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/device_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
+import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
@@ -47,6 +48,10 @@ final class EventServices {
   /// [flash] — optional camera-LED strobe service. When null,
   /// `LoudAlarmStrategy` skips the flash leg of its execution and
   /// proceeds with audio + vibration only. Audit Q2.
+  /// [recording] — optional capped-audio recording service. When
+  /// non-null, `SmsContactStrategy` honours `autoRecordAudio` by
+  /// starting a recording that auto-stops after
+  /// `recordDurationSeconds`. Q23.
   const EventServices({
     required this.audio,
     required this.messaging,
@@ -60,6 +65,7 @@ final class EventServices {
     this.registerSmsWorkId,
     this.trackingBuffer,
     this.flash,
+    this.recording,
   });
 
   /// Audio playback service.
@@ -106,4 +112,10 @@ final class EventServices {
   /// alarm flash leg is disabled for the platform or the test wiring
   /// did not provide one.
   final FlashServiceProtocol? flash;
+
+  /// Optional capped-audio recording service. Used by
+  /// `SmsContactStrategy` when `SmsContactConfig.autoRecordAudio`
+  /// is true. Null when no recording service is wired (legacy tests
+  /// or simulation contexts).
+  final RecordingServiceProtocol? recording;
 }
