@@ -377,11 +377,11 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 **Config Keys:**
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| contactId | string | (REQUIRED) | Primary contact to call |
-| alternativeContactIds | comma-sep string | (empty) | Fallback contacts |
-| preSendSms | bool | true | Send brief SMS before calling |
-| preSmsMessage | string | (default) | Pre-call message text |
-| retryCount | int | 1 | How many times to retry |
+| contactId | string? | null | Primary contact id; null = first-sorted contact. |
+| alternativeContactIds | List<String> | [] | Fallback contact ids tried in order if the primary fails. |
+| logGps | LogGpsOverride | useDefault | Per-step GPS-logging override (DE-2). |
+
+`retryCount` lives on the parent `ChainStep`, not on this config. Pre-call SMS is **not** part of `phoneCallContact` — calling a personal contact doesn't warrant an automatic pre-warning SMS. The pre-call location-SMS toggle exists only on `CallEmergencyConfig.sendLocationSmsFirst` (§9 below).
 
 **Timing Defaults:** waitSeconds=0, durationSeconds=60, gracePeriodSeconds=5, retryCount=1
 
@@ -389,7 +389,7 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 - Android: CALL_PHONE permission enables auto-dial without confirmation dialog
 - iOS: always shows confirmation dialog (documented limitation)
 
-**Real Mode:** PhoneService.call() + optional MessagingService pre-SMS. Retry logic implemented in the strategy.
+**Real Mode:** PhoneService.call() iterates primary then alternatives.
 **Simulation:** Toast: "Would call [contact name]"
 
 ---
@@ -407,9 +407,7 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 **System Volume Override:** Configurable toggle. When enabled, sets system media stream to max before playing. Only the alarm overrides silent/vibrate mode (other events respect phone settings).
 
 **Sound Options:**
-- Built-in `siren`
-- Built-in `whistle`
-- Built-in `scream`
+- Built-in `siren` (default)
 - `custom`: user-supplied audio file or in-app recording
 
 **Camera Flash:** SOS morse pattern (··· −−− ···). Configurable toggle (default off).
@@ -425,14 +423,18 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 **Config Keys:**
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| volume | float | 1.0 | Volume level (0.0–1.0) |
-| soundChoice | enum | siren | siren, whistle, scream, custom |
-| customSoundPath | string | null | User's own recording |
-| flashLight | bool | false | Strobe camera flashlight (SOS pattern) |
-| flashScreen | bool | false | Flash screen white/red |
-| flashSpeed | enum | slow | fast (500ms), slow (1000ms) |
-| gradualVolume | bool | true | Gradual volume increase |
-| gradualVolumeDuration | int | 10 | Seconds to ramp to full volume |
+| volume | double | 1.0 | Linear volume 0.0–1.0 |
+| soundChoice | LoudAlarmSound | siren | `siren` or `custom` |
+| flashLight | bool | true | Strobe camera flashlight |
+| flashScreen | bool | false | Strobe screen (photosensitive warning) |
+| flashSpeed | double | 0.5 | (legacy) seconds per flash cycle |
+| flashSpeedMs | int | 500 | Flash cycle length in ms |
+| maxVolume | bool | true | (legacy) force system media volume to max |
+| gradualVolume | bool | false | Ramp volume from silence to `volume` |
+| blackScreenMode | bool | false | Render under black overlay (stealth alarm) |
+| logGps | LogGpsOverride | useDefault | Per-step GPS-logging override (DE-2) |
+
+The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppSettings.alarmGradualVolumeDurationSeconds` (default 5 s). When `gradualVolume` is true the alarm ramps to `volume` over that many seconds.
 
 **Timing Defaults:** waitSeconds=0, durationSeconds=30, gracePeriodSeconds=5, retryCount=0
 
@@ -486,9 +488,9 @@ Condition-triggered actions. The distress chain **replaces** the main chain (sto
 
 ### Distress Chain
 
-The distress chain is a **globally-managed named chain** (see `DistressChain` model). Each `SessionMode` selects one by `distressChainId` (null = first chain in global list = default). Users can create multiple distress chains and reorder them; the first is the default.
+A **distress chain** is the `chainSteps` of a distress mode — a regular `SessionMode` with `isDistressMode = true`. Each `SessionMode` selects one via `distressModeId` (null = inherit `AppDefaults.defaultDistressModeId`).
 
-Distress chains are accessible from **Settings → Modes & Chains → Distress Chains**.
+Distress modes are managed under `/distress-modes` (Settings → Modes & Chains → Distress Modes). They are edited with the same `ModeEditorScreen` used for regular modes (passed `isDistress: true`).
 
 **Three Trigger Types (All Fire the Same Distress Chain):**
 

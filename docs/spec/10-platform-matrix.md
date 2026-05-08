@@ -29,7 +29,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 | Disarm (check-in) | YES | YES | — | Reset chain to step 0 |
 | Speed multiplier | YES | YES | — | Simulation: 1–1000x |
 | Jitter (±20%) | YES | YES | — | Randomization on timing values |
-| Distress chains (hardware panic, duress PIN, wrong PIN) | YES | YES | — | All triggers fire the same selected global DistressChain |
+| Distress chains (hardware panic, duress PIN, wrong PIN) | YES | YES | — | All triggers fire the mode's resolved distress mode (`SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`) |
 
 ---
 
@@ -185,7 +185,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 | **Biometric Auth (Face ID)** | NO | YES | USE_BIOMETRIC | Not available on Android (no reliable face recognition API). iOS: full Face ID support. |
 | **App PIN** | YES | YES | — | 4–6 digit PIN to unlock app at launch. No biometric. |
 | **Session End PIN** | YES | YES | — | PIN required to disarm or end active session. Biometric may substitute. 15s timeout. |
-| **Duress PIN** | YES | YES | — | Third PIN: enters at any prompt → silently fires selected DistressChain. No error message shown. |
+| **Duress PIN** | YES | YES | — | Third PIN: enters at any prompt → silently fires the mode's resolved distress mode (`SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). No error message shown. |
 | **Simulation Mode (SMS/calls blocked)** | YES | YES | — | SMS, phone calls, emergency calls blocked (logged as sim_blocked). Fake call, vibration, reminders fire normally. |
 | **Encryption at Rest** | YES | YES | — | AES-256 via HiveAesCipher, key in secure storage |
 

@@ -98,10 +98,10 @@ Complete list of all routes with full paths and query parameters:
 /modes                                 Modes List (Settings → Session → Modes)
 /modes/edit?id=...                     Mode Editor (create or edit)
 
-/distress-chains                       Distress Chains List (Settings → Session → Distress Chains)
-/distress-chains/edit?chainId=...      Distress Chain Editor (create or edit)
+/distress-modes                        Distress Modes List (Settings → Session → Distress Modes)
+/distress-modes/edit?id=...            Distress Mode Editor (uses ModeEditorScreen with isDistress=true)
 
-/settings                              Settings hub (Theme + Language only)
+/settings                              Settings hub (Theme, Language, Emergency Number, Redo Onboarding)
 /settings/security                     Security submenu (App PIN, Session End PIN, Duress PIN)
 /settings/stealth                      Stealth settings (fake name, icon picker, ...)
 /settings/pin-setup?type=...           PIN Setup screen (type: app|sessionEnd|duress)
@@ -118,8 +118,9 @@ Complete list of all routes with full paths and query parameters:
 /settings/backup                       Backup & Restore
 
 # REMOVED routes (replaced):
-#   /settings/modes-and-chains (replaced by direct links to /modes, /distress-chains, /settings/battery-alert)
-#   /settings/distress-chain   (single-screen editor removed; replaced by /distress-chains list + /distress-chains/edit editor, mirroring the modes pattern)
+#   /settings/modes-and-chains (replaced by direct links to /modes, /distress-modes, /settings/battery-alert)
+#   /settings/distress-chain   (replaced by /distress-modes list + /distress-modes/edit editor; the editor is ModeEditorScreen with isDistress=true)
+#   /distress-chains, /distress-chains/edit (Pivot 3 — distress is a Mode; superseded by /distress-modes routes above)
 #   /settings/defaults          (replaced by individual dedicated screens per category)
 #   /settings/defaults/*        (flattened to /settings/<category> — see list above)
 
@@ -1426,10 +1427,10 @@ Hub screen with three sections: Session Modes, Distress Chains, and Battery Aler
 
 **Behavior:**
 - Tapping "View All Modes" → `/modes`
-- Tapping "View All Chains" → `/distress-chains`
+- Tapping "View All Distress Modes" → `/distress-modes`
 - Tapping "Battery Alert" → `/settings/battery-alert`
 - The first mode in the list has a "Default" badge (used when no mode is selected)
-- The first distress chain has a ★ marker indicating it is the default (used when `distressChainId` is null)
+- The distress mode whose id is `AppDefaults.defaultDistressModeId` carries a ★ marker indicating it is the default used when `SessionMode.distressModeId` is null
 
 ---
 
@@ -1627,7 +1628,7 @@ Each step shows values from `EventDefaults` (global config in Settings). User ca
 
 At the bottom of the mode editor, a collapsible "Safety Options" section includes:
 
-- **Distress Chain:** dropdown showing all global distress chains by name; the picker stores the chain's id in `SessionMode.distressChainId` (null = use default, i.e. the first chain in `AppDefaults.distressChains`). Below the dropdown a "Manage distress chains →" ListTile navigates to `/distress-chains`. ℹ info button explains what fires the distress chain.
+- **Distress Mode:** dropdown showing all distress modes (`SessionMode`s with `isDistressMode = true`); the picker stores the selected mode's id in `SessionMode.distressModeId` (null = use `AppDefaults.defaultDistressModeId`). Below the dropdown a "Manage distress modes →" ListTile navigates to `/distress-modes`. ℹ info button explains what fires the distress chain.
 - **Distress Triggers:** lists active distress triggers for this mode (e.g., "Hardware panic button: 5× volume"). ℹ info button explains each trigger type.
 - **Disarm Triggers:** per-mode automatic disarm conditions (stored in `SessionMode.disarmTriggers`). Parallel to the distress triggers section. Includes:
   - **GPS Arrival Disarm:** Toggle on/off. When enabled: radius slider (50 m–5 km, default 200 m) + "Set destination at session start" toggle. ℹ info button: "Session ends automatically when you arrive within the configured radius of your destination. You set the destination when starting a session."
@@ -1640,177 +1641,47 @@ At the bottom of the mode editor, a collapsible "Safety Options" section include
 
 ---
 
-## Distress Chains Screen (`/distress-chains`)
+## Distress Modes Screen (`/distress-modes`)
 
-List of all global distress chains (route name: `distress_chains`,
-screen class: `DistressChainsScreen`). Accessible via **Settings →
-Session → Distress chains**. Mirrors the **Modes Screen** pattern:
-a distress chain is a chain like any other, and users configure the
-full list here rather than editing a single, implicit chain.
+List of all distress modes — i.e. `SessionMode`s with `isDistressMode = true`. Route name: `distress_modes`; screen class: `DistressModesScreen`. Accessible via **Settings → Session → Distress modes**.
 
-**Purpose:** Manage the pool of named distress chains that modes,
-the duress PIN, the hardware panic button, and the wrong-PIN
-threshold can select from. The first chain in the list is the
-default used by any mode whose `distressChainId` is null.
+A distress mode is a regular `SessionMode` whose `chainSteps` are used as the distress chain when a trigger (duress PIN, hardware panic, wrong-PIN threshold) replaces the main chain. Distress modes are filtered into this dedicated screen so they don't clutter the regular `/modes` list.
 
 **Entry points:**
-- Settings → Session → "Distress chains" row
-- From a mode editor's Safety Options, via the "Manage distress
-  chains →" link next to the distress-chain picker
-- From the Duress PIN setup flow's final step ("Optionally configure
-  what happens") as a deep link
+- Settings → Session → "Distress modes" row
+- From a mode editor's Safety Options, via the "Manage distress modes →" link next to the distress-mode picker
+- From the Duress PIN setup flow's final step as a deep link
 
-**Layout:**
-```
-┌──────────────────────────────┐
-│  [Back] Distress Chains  [+]  │ (FAB = create new chain)
-├──────────────────────────────┤
-│                              │
-│  List of all chains:         │
-│                              │
-│  ┌──────────────────────────┐│
-│  │ ★ Default Distress Chain ││ (★ = default, first in list)
-│  │   SMS → Emergency Call   ││ (subtitle: first 2 steps + count)
-│  │   [Edit] [Duplicate][Del]││ (drag handle on left for reorder)
-│  │                          ││
-│  │  Travel Chain            ││
-│  │   Phone Call → Alarm     ││
-│  │   [Edit] [Duplicate][Del]││
-│  │                          ││
-│  │  Night Chain             ││
-│  │   SMS → Phone Call       ││
-│  │   [Edit] [Duplicate][Del]││
-│  │                          ││
-│  └──────────────────────────┘│
-│                              │
-│  ℹ "The first chain is the   │
-│    default for all modes     │
-│    that don't pick a chain.  │
-│    Drag to reorder."         │
-│                              │
-│  (Empty state — never shown  │
-│   in practice because a seed │
-│   chain is always present;   │
-│   see Behavior below.)       │
-│                              │
-└──────────────────────────────┘
-```
+**Layout:** Same as Modes screen — a list of tiles with [Edit] / [Duplicate] / [Delete] per row, plus a FAB to create a new distress mode. The mode whose id is `AppDefaults.defaultDistressModeId` carries a ★ "Default" badge.
 
 **Primary actions:**
-- **Tap tile or [Edit]:** → `/distress-chains/edit?chainId={id}` — opens the full editor.
-- **[Duplicate]:** Immediately creates a copy named "Copy of {name}" and opens it in the editor for further customization (same behavior as Modes).
-- **[Delete]:** Confirmation dialog → removes the chain. Disabled for the **last remaining chain** (the repository always keeps at least one so the default reference never dangles). Deleting the current default promotes the new first entry to default.
-- **Drag to reorder:** The leading drag handle reorders chains. The first chain is always the default (★ badge updates live).
-- **FAB [+]:** → `/distress-chains/edit` with no `chainId`, creating a new empty chain and opening the editor.
+- **Tap tile or [Edit]:** → `/distress-modes/edit?id={id}` — opens `ModeEditorScreen` with `isDistress: true`. The editor is the same widget used for regular modes; the `isDistress` flag tweaks the heading and removes the check-in step row.
+- **[Duplicate]:** Creates a copy named "Copy of {name}" with a fresh id and `isDistressMode = true`.
+- **[Delete]:** Confirmation dialog. Refuses to delete the mode currently set as `AppDefaults.defaultDistressModeId` until another distress mode is promoted. Modes referenced by `SessionMode.distressModeId` from any regular mode also block deletion until the references are cleared.
+- **Set Default:** Each tile has a "Set as default" action — writes the tile's id into `AppDefaults.defaultDistressModeId`.
+- **FAB [+]:** → `/distress-modes/edit` (no `id`), creating a new empty distress mode.
 
 **State:**
-- Backed by `AppDefaults.distressChains: List<DistressChain>` via
-  `distressChainsController` (Riverpod Notifier) reading/writing
-  the same `AppDefaults` repository used by the defaults screens.
-- Reorder persists immediately; rename/delete/duplicate persist on
-  confirmation.
-- The referenced `SessionMode.distressChainId` for each mode is
-  validated on load — if a mode references a chain that was
-  deleted, it falls back to `null` (which resolves to the default).
-
-**Empty state:** In normal operation the repository always contains
-at least one seeded chain, so a fully empty list is unreachable.
-For defensive UX, if the list is empty the screen renders a
-`FilledButton` "Create first distress chain" that opens the editor
-with a new chain — mirroring the `ModesScreen` defensive empty
-state.
+- Backed by the regular `modesRepository` via a `distressModesProvider` that filters `where (m.isDistressMode == true)`.
+- The referenced `SessionMode.distressModeId` for each mode is validated when a session starts; missing id is a hard validation error.
 
 ---
 
-## Distress Chain Editor (`/distress-chains/edit`)
+## Distress Mode Editor (`/distress-modes/edit`)
 
-Create or edit a single global distress chain (route name:
-`distress_chain_editor`, screen class: `DistressChainEditorScreen`,
-query parameter: `chainId` — omitted when creating a new chain).
-Mirrors the **Mode Editor** in both layout and interaction: a name
-field, a reorderable list of expandable step tiles, and inline
-per-step editors.
+Create or edit a distress mode. Route name: `distress_mode_editor`; the screen is **`ModeEditorScreen` rendered with `isDistress: true`** — i.e. the exact same widget used by the regular Mode Editor, with an `isDistress` parameter that:
 
-**Purpose:** Give the user full control over the chain that fires
-when a distress trigger (duress PIN, hardware panic, wrong-PIN
-threshold) replaces the main chain. Every step type that is valid
-for distress is fully configurable — timing, event-specific config,
-randomization jitter, retry count.
+- Replaces the screen title with "Distress mode" / "Edit distress mode".
+- Hides the check-in step (distress chains don't have a `holdButton` / `disguisedReminder` first step).
+- Sets `SessionMode.isDistressMode = true` on save.
+- Hides the "Distress mode" picker in the Safety Options section (a distress mode doesn't reference another distress mode).
 
-**Entry points:**
-- Distress Chains Screen (tap tile, [Edit], or FAB)
-- Duress PIN setup flow (optional post-setup deep link)
-
-**Layout:**
-```
-┌──────────────────────────────┐
-│  [Back] Distress Chain  [✓]  │ (save)
-├──────────────────────────────┤
-│                              │
-│  ┌──────────────────────────┐│
-│  │ Chain Name               ││
-│  │ [Text field]             ││ (required, min 2 chars)
-│  └──────────────────────────┘│
-│                              │
-│  ┌──────────────────────────┐│
-│  │ Distress Chain:          ││
-│  │ [Reorderable list]       ││ (drag to reorder)
-│  │                          ││
-│  │ [1] [Msg] (icon)         ││ (ExpansionTile)
-│  │     SMS Contacts         ││
-│  │     All contacts, 0s wait││ (summary)
-│  │ ▼ (tap to expand inline) ││
-│  │   ┌────────────────────┐ ││
-│  │   │ Timing             │ ││
-│  │   │ Event config       │ ││
-│  │   │ Retry & Advanced   │ ││
-│  │   │ [Duplicate Step]   │ ││
-│  │   └────────────────────┘ ││
-│  │                          ││
-│  │ [2] [Call] Call Emergency││ (ExpansionTile, collapsed)
-│  │     Ring once, 5s confirm││
-│  │ ▶ (tap to expand)        ││
-│  │                          ││
-│  │ [+] Add Step             ││ (bottom sheet — distress types)
-│  │                          ││
-│  └──────────────────────────┘│
-│                              │
-│  [Cancel] [Save]             │
-│  (dirty flag: warn on back)  │
-│                              │
-└──────────────────────────────┘
-```
-
-**Primary actions:**
-- **Name field:** Required. The name appears verbatim in mode editor pickers and in the Distress Chains list.
-- **Step list:** Same `ExpansionTile` + `StepConfigPanel` widget used in the Mode Editor. Each step expands inline with the same three-subsection layout (Timing → Event configuration → Retry & Advanced) documented under **Mode Editor → Step Expansion**. All event-specific configuration controls (message templates, ring duration, alarm volume, caller name, emergency number, etc.) are available identically.
-- **Allowed step types:** only distress-compatible types — `smsContact`, `phoneCallContact`, `loudAlarm`, `callEmergency`, `countdownWarning`, `fakeCall`. Check-in step types (`holdButton`, `disguisedReminder`, `hardwareButton`) are not offered: a distress chain fires in response to a trigger and never waits for a user check-in.
-- **[+] Add Step:** Opens a categorized picker restricted to the allowed types.
-- **[Duplicate Step]:** Same as mode editor — copies the step with its current config and inserts it after the source.
-- **Reorder:** Drag handle on each tile.
-- **Delete step:** Swipe or overflow menu on each tile (disabled when only one step remains).
-- **[Save]:** Persists the chain to `AppDefaults.distressChains`.
-- **[Cancel] / system back:** Dirty-flag guard — if any field changed, show "Discard unsaved changes?" confirmation (identical to mode editor).
-
-**State:**
-- Backed by a single `DistressChain` object held in controller
-  state; initial state is loaded from `AppDefaults.distressChains`
-  by `chainId`, or a fresh empty `DistressChain` when creating.
-- Save writes the modified list back atomically and returns to
-  `/distress-chains`.
+All other behavior — step list, drag-to-reorder, expansion tiles, dirty-flag guard, save validation — matches the regular Mode Editor.
 
 **Save validation:**
-- Name: required, min 2 chars, trimmed.
+- Mode name: required, min 2 chars.
 - Chain: must have at least 1 step.
-- Distress-chain-specific: at most one `callEmergency` step
-  (prevents accidental double-dialing); warn (non-blocking) if no
-  action step sends an SMS or calls (pure countdown chains leave
-  no outbound trail).
-
-**Empty state (before first step added):** The step list shows a
-placeholder tile "No steps yet — tap + to add one" with the
-[+ Add Step] button rendered prominently. Save is disabled until
-at least one step is present.
+- Warn (non-blocking) if there's no SMS / call action step (pure countdown chains leave no outbound trail).
 
 ---
 

@@ -24,7 +24,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | **Chain** | Ordered list of steps that fire sequentially during a session. | `chainSteps` | SessionMode, SessionEngine | "Walk Mode" has 3 steps: holdButton → fakeCall → loudAlarm |
 | **Step** | One action in the escalation chain (e.g., fake call, SMS, alarm). | `ChainStep` | Data model, settings | Step 2 is a fake call with 30s ring time |
 | **Event** | Something that happens during a session (stepStarted, miss, disarm, etc.). | `ChainEvent`, `ChainEventData` | SessionEngine event stream | Engine emits `reminderFired` event when reminder shows |
-| **Distress Chain** | Global named chain that REPLACES the main chain when triggered. Never returns. | `DistressChain` | AppDefaults, SessionMode (distressChainId) | Duress PIN triggers distress chain (SMS all contacts + call 911) |
+| **Distress Chain** | The `chainSteps` of a distress mode that REPLACE the main chain when triggered. Never returns. | (no separate model — uses `SessionMode` with `isDistressMode = true`) | SessionMode (`distressModeId`), AppDefaults (`defaultDistressModeId`) | Duress PIN triggers distress chain (SMS all contacts + call 911) |
 | **Jitter** | ±20% randomization on timing values. | `randomize`, `_shouldRandomize()` | ChainStep field, engine | 30s reminder interval ±20% = 24–36s |
 | **Speed Multiplier** | Divides all timer durations (for simulation). | `speedMultiplier` | SessionEngine constructor, simulation UI | 10x speed makes 30s timer run in 3s |
 | **Stealth Mode** | Hides all safety indicators, disguises app as music player. Configured via `StealthConfig`. Global in `AppDefaults.stealth`; override per-mode via `ModeOverrides.stealth`. | `StealthConfig`, `AppDefaults.stealth` | AppSettings, ModeOverrides | Notification says "Music playing" instead of "Safety active" |
@@ -60,20 +60,20 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
-| **Session Mode** | Defines check-in mechanism + escalation chain of ChainSteps + distressChainId + triggers. May have per-mode `ModeOverrides`. | `SessionMode` (typeId 8) | Hive box, settings, home screen | "Walk Mode": holds for check-in, escalates via fake call → alarm → emergency |
-| **Chain Step** | One escalation step with timing, config, and type. | `ChainStep` (typeId 10) | SessionMode, settings, engine | Fake call step: 30s ring, 5s grace, 2 retries |
+| **Session Mode** | Defines check-in mechanism + escalation chain of ChainSteps + `distressModeId` + triggers. Distress modes are SessionModes with `isDistressMode = true`. May have per-mode `ModeOverrides`. | `SessionMode` | modes.json, settings, home screen | "Walk Mode": holds for check-in, escalates via fake call → alarm → emergency |
+| **Chain Step** | One escalation step with timing, config, and type. | `ChainStep` | SessionMode, settings, engine | Fake call step: 30s ring, 5s grace, 2 retries |
 | **Emergency Contact** | Named contact with phone + enabled messaging channels. All enabled channels are used (no single preferred channel). Includes `languageCode` and `relationship`. | `EmergencyContact` (typeId 1) | Hive box, settings, SMS/call services | "Alice" — SMS + WhatsApp enabled |
 | **Event Defaults** | Global per-step-type configuration defaults. | `EventDefaults` (typeId 13) | Hive box, settings | Default fake call: 30s ring, Android native style |
 | **Session Log** | Persisted record of completed sessions with events, timing, GPS location. | `SessionLog` (typeId 15) | Hive box, history screen | "Walk home - 45 min - 2 missed reminders" |
 | **App Settings** | Global app configuration (theme, language, three PIN hashes, `AppDefaults`, etc.). | `AppSettings` (typeId 9) | Hive box, settings screens | `appPinHash=...`, `languageCode='de'`, `defaults=AppDefaults(...)` |
 | **Walk Session** | Ephemeral (non-persisted) session state object. | `WalkSession` | SessionController, UI | Current step=1, missCount=1, elapsed=2m30s |
 | **Reminder Template** | Disguised notification design (Calendar, Duolingo, Delivery, etc.). `isGlobal=true` if from AppDefaults; `isGlobal=false` if mode-local. | `ReminderTemplate` | Hive box, settings | Template ID "duolingo": "Time for a lesson!" with Duolingo icon |
-| **Distress Chain** | Globally-managed named escalation chain fired by distress triggers. Stored in `AppDefaults.distressChains`. First = default. | `DistressChain` (typeId 17) | AppDefaults, SessionMode.distressChainId | "Default": SMS + call emergency |
-| **App Defaults** | Master defaults for all modes: distressChains, gpsLogging, stealth, templates, eventDefaults. Modes inherit and may override per-field. | `AppDefaults` (typeId 18) | AppSettings.defaults | Global GPS interval=30s, stealth disabled |
+| **Distress Mode** | A `SessionMode` flagged with `isDistressMode = true`; its `chainSteps` are the distress chain. | `SessionMode` (with `isDistressMode = true`) | modes.json, AppDefaults.defaultDistressModeId | Default distress mode: SMS + call emergency |
+| **App Defaults** | Master defaults for all modes: gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId. Modes inherit and may override per-field. | `AppDefaults` | AppSettings.defaults | Global GPS interval=30s, stealth disabled |
 | **Mode Overrides** | Per-mode optional override of any AppDefaults field. null field = inherit from AppDefaults. `localTemplates` appended to global templates. | `ModeOverrides` (inline in SessionMode) | SessionMode.overrides | Override stealth for Walk Mode only |
 | **GPS Logging Config** | Structured GPS logging settings: enabled, intervalSeconds, accuracy, format, includeInSms, historyRetentionDays. | `GpsLoggingConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.gpsLogging, ModeOverrides.gpsLogging | interval=30s, format=decimal, includeInSms=true |
 | **Stealth Config** | Structured stealth settings: enabled, fakeName, fakeIcon, notificationDisguise, timerDisplay, sessionScreenStealth. | `StealthConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.stealth, ModeOverrides.stealth | fakeName="Music App", timerDisplay=none |
-| **Battery Alert Config** | Low-battery one-shot alert: enabled (bool), thresholdPercent (int, default 10), chain (List<ChainStep>). Default `enabled=false` (opt-in). Seed chain is a single `smsContact` step targeting all contacts. | `BatteryAlertConfig` (typeId 19) | AppSettings | enabled=false, thresholdPercent=10, chain=[smsContact] |
+| **Battery Alert Config** | Low-battery one-shot alert: enabled (bool), thresholdPercent (int, default 10), chain (List<ChainStep>). Default `enabled=false` (opt-in, Q22). Seed chain is a single `smsContact` step targeting all contacts. | `BatteryAlertConfig` | battery_alert.json | enabled=false, thresholdPercent=10, chain=[smsContact] |
 
 ---
 
@@ -85,7 +85,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | **Priority Contact** | Primary emergency contact, shown first in contact list. | `isPrimary` | EmergencyContact field, home screen | Alice (primary) vs. Bob (secondary) |
 | **Message Template** | Customizable message with placeholder variables for SMS/messaging. | `messageTemplate` | smsContact config, settings | "I may need help. Location: {location}. Description: {description}" |
 | **Messaging Channel** | Method to send message: SMS, WhatsApp, Telegram, Signal, etc. | `channel` | EmergencyContact, smsContact config | SMS channel: auto-send (Android) or opens Messages app (iOS) |
-| **Pre-SMS** | Brief SMS sent before phone call to alert contact. | `preSendSms`, `preSmsMessage` | phoneCallContact config | "I may be in danger, calling you now." |
+| **Pre-SMS (emergency only)** | Brief location SMS sent to contacts before dialing emergency services. Lives only on `CallEmergencyConfig.sendLocationSmsFirst` (Q12 — removed from `phoneCallContact`). | `sendLocationSmsFirst` | callEmergency config | "I may be in danger, calling 112 now." |
 
 ---
 
@@ -171,7 +171,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | **App PIN** | PIN to lock app at launch (before home screen). No biometric. | `appPinHash`, AppSettings | Settings > Security | User must enter PIN to open app |
 | **Session End PIN** | PIN required to disarm or end an active session. Biometric may substitute. 15s timeout (`pinTimeoutSeconds`). | `sessionEndPinHash`, AppSettings | Settings > Security | User must enter PIN to stop active session |
 | **Duress PIN** | Third PIN that silently fires the selected distress chain when entered at any prompt. No error message shown. | `duressPinHash`, AppSettings | Settings > Security | Entering duress PIN secretly escalates while appearing to comply |
-| **distressChainId** | Field on `SessionMode` referencing a global `DistressChain` by id. null = use default (first in AppDefaults.distressChains). | `distressChainId` | SessionMode | distressChainId="aggressive" selects the named chain |
+| **distressModeId** | Field on `SessionMode` referencing another `SessionMode` (with `isDistressMode = true`) by id. null = inherit `AppDefaults.defaultDistressModeId`. | `distressModeId` | SessionMode | distressModeId="aggressive-distress" selects the named distress mode |
 | **sim_blocked** | Log status for actions blocked in simulation mode (SMS, calls, emergency call, audio recording). | `SessionLogEvent.deliveryStatus` | Session log, simulation | SMS not sent in simulation; logged as sim_blocked |
 | **isGlobal** | Field on `ReminderTemplate`. true = from AppDefaults (global); false = mode-local (in ModeOverrides.localTemplates). | `ReminderTemplate.isGlobal` | Templates list | Global templates shown in all modes; local appended per-mode |
 | **System Permissions** | OS-level access grants (SMS, calls, location, audio, camera, etc.). | `PermissionService` | Permission handling, session start | User grants CALL_PHONE permission during onboarding |

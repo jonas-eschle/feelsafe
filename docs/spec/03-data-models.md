@@ -4,23 +4,19 @@
 
 # 03 - Data Models Specification
 
-> **Implementation update — May 2026 (Phase 2.5).** `DistressChain` has
-> been removed as a standalone aggregate. Distress modes are now
-> persisted as `SessionMode`s with `isDistressMode = true` in the
-> single `modes` table. `SessionMode.distressChainId` was renamed to
-> `distressModeId` and references another mode by id. Anywhere this
-> document still uses "DistressChain", read it as "distress-flagged
-> SessionMode (`isDistressMode = true`)". The `distress_chains` table
-> and its DAO/repository have been deleted; the schema version is now
-> 2 and pre-alpha policy is nuke-and-reseed on mismatch.
+> **Pivot 3 — distress is a Mode.** `DistressChain` no longer exists.
+> Distress modes are persisted as `SessionMode`s with
+> `isDistressMode = true`. `SessionMode.distressModeId` references
+> another mode by id. The `distress_chains` table / DAO / repository
+> have been deleted; pre-alpha policy is nuke-and-reseed on schema
+> mismatch.
 >
-> **Implementation update — May 2026 (storage rewrite).** The Hive
-> CE story below is aspirational. The current code uses a
-> SQLCipher-encrypted SQLite database (via `drift` + `sqlite3mc`) and
-> serializes each model as a JSON string keyed by id. Each
-> `@HiveType` annotation in the snippets below corresponds to a
-> column in the relevant drift table; runtime behavior is the same
-> from the application's point of view.
+> **Storage backend.** Persistence uses JSON-backed repositories
+> (`JsonSingletonRepository`, `JsonListRepository`) — each model is
+> serialized to a JSON string keyed by id. The `@HiveType` /
+> `@HiveField` annotations below are kept for historical context but
+> the runtime no longer uses Hive. Models live in `lib/domain/models/`
+> with hand-rolled `toJson`/`fromJson`.
 
 Guardian Angela's data models are built on **Hive CE** (Community Edition), a lightweight local NoSQL database optimized for mobile. All persistent data is encrypted at rest and supports automatic cloud backup on both Android and iOS.
 
@@ -89,12 +85,11 @@ For reliable cross-device migration when cloud backup may fail (e.g., keystore k
 
 **Export Format:** Single JSON file containing:
 - Schema version (compatibility check)
-- `appSettings` — theme, language, three PIN hashes, emergencyCallNumber, alarmDndOverride
-- `appDefaults` — GPS logging config, stealth config, global templates, event defaults
-- `distressChains` — ordered list of globally-managed distress chains (stored in its own repository)
-- `userProfile` — name, phone, description, medical fields
+- `appSettings` — theme, language, three PIN hashes, emergencyCallNumber, alarmDndOverride, biometric / telemetry / launch-auth toggles, alarm gradual-volume settings
+- `appDefaults` — GPS logging config, stealth config, global templates, event defaults, `defaultDistressModeId`
+- `userProfile` — name, phone, description (free-form text), medical fields (each `String?`)
 - `emergencyContacts` — all contacts with channels, per-contact language
-- `sessionModes` — all custom + built-in modes with chain steps, distressChainId, triggers, overrides
+- `sessionModes` — all custom + built-in modes (regular and distress-flagged) with chain steps, distressModeId, triggers, overrides
 - `sessionLogs` — all session history (optional, can be excluded)
 - Optional media:
   - Audio files (fake call recordings, alarms)
@@ -135,30 +130,27 @@ For reliable cross-device migration when cloud backup may fail (e.g., keystore k
 
 ## Hive TypeId Registry
 
-All Hive types must have unique `typeId` values (0–19). TypeIds are allocated sequentially; next available is 20.
+The Hive type-id table below is **historical**. The current persistence layer is JSON files, not Hive. Models map one-to-one to JSON repositories under `lib/data/repositories/`:
 
-| TypeId | Model | Hive Box | Notes |
-|--------|-------|----------|-------|
-| 0 | MessageChannel (enum) | — | SMS, WhatsApp, Telegram, Phone |
-| 1 | EmergencyContact | contacts | name, phone, channels, languageCode, sortOrder |
-| 4 | ConfirmationType (enum) | — | tapButton, tapWord, swipe, dismiss |
-| 5 | ReminderTemplate | templates | title, body, confirmationType, displayStyle, isGlobal |
-| 8 | SessionMode | modes | name, chainSteps, distressChainId, triggers, overrides |
-| 9 | AppSettings | settings | three PIN hashes, theme, language, emergencyNumber, alarmDndOverride, AppDefaults |
-| 10 | ChainStep | — | (part of SessionMode.chainSteps and DistressChain.steps) |
-| 11 | ChainStepType (enum) | — | 9 escalation step types |
-| 12 | UserProfile | user_profile | name, phone, physicalDescription, medical fields |
-| 13 | EventDefaults | event_defaults | per-step-type configuration (part of AppDefaults) |
-| 14 | ReminderDisplayStyle (enum) | — | fullScreen, subtle |
-| 15 | SessionLog | session_logs | mode, timestamps, events, simulation flag |
-| 16 | SessionLogEvent | — | (part of SessionLog.events) |
-| 17 | DistressChain | distress_chains | global named distress chain (id, name, List<ChainStep>) |
-| 18 | AppDefaults | app_defaults | gpsLogging, stealth, templates, eventDefaults |
-| 19 | BatteryAlertConfig | battery_alert | low-battery alert config (enabled, thresholdPercent, chain: List<ChainStep>) |
+| Model | Repository file (JSON) | Notes |
+|-------|------------------------|-------|
+| MessageChannel (enum) | — | SMS, WhatsApp, Telegram, Phone |
+| EmergencyContact | `contacts.json` | name, phone, channels, languageCode, sortOrder |
+| ConfirmationType (enum) | — | tapButton, tapWord, swipe, dismiss |
+| ReminderTemplate | `templates.json` | title, body, confirmationType, displayStyle, isGlobal |
+| SessionMode | `modes.json` | name, chainSteps, distressModeId, isDistressMode, triggers, overrides |
+| AppSettings | `app_settings.json` (singleton) | three PIN hashes, theme, language, emergencyNumber, alarmDndOverride, biometric/telemetry/launch-auth toggles, alarm gradual-volume settings, `AppDefaults` |
+| ChainStep | — | part of `SessionMode.chainSteps` |
+| ChainStepType (enum) | — | 9 escalation step types |
+| UserProfile | `user_profile.json` (singleton) | name, age, phoneNumber, photoPath, physicalDescription, medical fields |
+| EventDefaults | (in AppSettings.defaults) | per-step-type configuration |
+| ReminderDisplayStyle (enum) | — | fullScreen, subtle |
+| SessionLog | `session_logs.json` | mode, timestamps, events, isSimulation, hadMedicalInfo |
+| SessionLogEvent | — | part of `SessionLog.events` |
+| AppDefaults | (in AppSettings) | gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId |
+| BatteryAlertConfig | `battery_alert.json` (singleton) | low-battery alert config (enabled, thresholdPercent, chain: List<ChainStep>) |
 
-**Next available TypeId:** 20. (TypeIds 17 and 19 are reserved — do not reuse.)
-
-**Box naming convention:** Lowercase with underscores, plural (e.g., `contacts`, `modes`, `session_logs`).
+The former `DistressChain` Hive type (`typeId 17`) and `distress_chains` box are gone. Distress modes are stored alongside regular modes in `modes.json` and discriminated via `isDistressMode = true`.
 
 ---
 
@@ -427,37 +419,35 @@ When the user saves the step, `contactSelection` and `contactIds` are inferred f
 - A step must have at least one "on" button at save time. Saving with all buttons off is blocked.
 - If every contact in the repository lacks the step's `channel`, the editor displays an error explaining that no contact can receive the step via that channel; the step cannot be saved.
 
-class PhoneCallContactConfig extends StepConfig {
-  final String? contactId;             // null = first contact
-  final CallChannel callChannel;       // default: phone
-  final bool preSendSms;               // default: true
-  final String? preSmsMessage;
-  final bool preSmsIncludeLocation;    // default: true
-  final List<String>? alternativeContactIds;
-  final int retryCount;                // default: 1
-  @override final bool blackScreenMode; // default: false
+final class PhoneCallContactConfig extends StepConfig {
+  final String? contactId;                // null = first-sorted contact
+  final List<String> alternativeContactIds; // default: empty
+  @override final LogGpsOverride logGps;  // default: useDefault
 }
 
-class LoudAlarmConfig extends StepConfig {
-  final double volume;                 // default: 1.0
-  final AlarmSound soundChoice;        // default: siren
-  final bool gradualVolume;            // default: true — ramp volume from 0→max (B4)
-  final int flashSpeedMs;              // stored int; 300=fast, 500=medium, 1000=slow (B5)
-  final bool flashLight;               // default: false
-  final bool flashScreen;              // default: false
-  @override final bool blackScreenMode; // default: false
+// Q12: pre-call SMS configuration was removed from
+// PhoneCallContactConfig — calling a personal contact does not warrant
+// an automatic pre-warning SMS. The pre-call location-SMS toggle now
+// lives only on CallEmergencyConfig.sendLocationSmsFirst.
 
-  /// Computed getter returning the [FlashSpeed] enum for [flashSpeedMs].
-  /// Values: fast (300 ms), medium (500 ms), slow (1000 ms).
-  FlashSpeed get flashSpeed;
+final class LoudAlarmConfig extends StepConfig {
+  final bool flashScreen;                 // default: false (photosensitive warning)
+  final double flashSpeed;                // legacy — seconds per flash cycle (default 0.5)
+  final int flashSpeedMs;                 // canonical — flash cycle in ms (default 500)
+  final bool maxVolume;                   // legacy — force system media to max (default true)
+  final double volume;                    // 0.0–1.0 linear (default 1.0)
+  final LoudAlarmSound soundChoice;       // siren | custom (default siren) — Q9
+  final bool gradualVolume;               // default: false (ramp from 0 → volume)
+  final bool flashLight;                  // default: true (strobe camera flash)
+  final bool blackScreenMode;             // default: false (stealth alarm)
+  @override final LogGpsOverride logGps;  // default: useDefault
 }
 
-/// Flash speed options for the loud alarm screen strobe effect.
-enum FlashSpeed {
-  fast,    // 300 ms per flash
-  medium,  // 500 ms per flash
-  slow,    // 1000 ms per flash
-}
+/// Q9 — alarm sounds reduced to two values. `whoop` and `bell` are
+/// removed. The persisted form of `siren` / `custom` round-trips
+/// directly; legacy values are nuked-and-reseeded under the
+/// pre-alpha policy.
+enum LoudAlarmSound { siren, custom }
 
 class CallEmergencyConfig extends StepConfig {
   /// Per-step override. `null` (default) = inherit the app-wide
@@ -546,29 +536,36 @@ These are seed defaults — each step can override via its `config` map.
 ### SessionMode (typeId: 8)
 
 ```dart
-@HiveType(typeId: 8)
-class SessionMode extends HiveObject {
-  @HiveField(0) final String id;                    // UUID
-  @HiveField(1) String name;                        // "Walk Mode", "Date Mode", etc.
-  @HiveField(2) String? iconName;                   // e.g., "walk", "calendar"
-  @HiveField(3) List<ChainStep> chainSteps;         // Unified chain (first step is check-in)
-  @HiveField(4) bool isFromTemplate;                // true if mode was created from a Walk/Date template (UI badge only)
-  @HiveField(5) String? distressChainId;            // null = use first chain in the DistressChain repository
-  @HiveField(6) List<DistressTrigger> distressTriggers; // e.g., hardware button
-  @HiveField(7) List<DisarmTrigger> disarmTriggers; // e.g., GPS arrival, timer
-  @HiveField(8) Duration? maxPauseDuration;         // null = unlimited
-  @HiveField(9) ModeOverrides? overrides;           // null = inherit all from AppDefaults
+final class SessionMode {
+  final String id;                          // UUID
+  final String name;                        // "Walk Mode", "Date Mode", etc.
+  final String? iconName;                   // e.g., "directions_walk"
+  final ChainStepType checkInType;          // First-step type
+  final List<ChainStep> chainSteps;         // Unified chain (first step is check-in)
+  final String? distressModeId;             // id of a distress mode (a SessionMode with isDistressMode = true);
+                                            // null = inherit AppDefaults.defaultDistressModeId
+  final List<DistressTrigger> distressTriggers;
+  final List<DisarmTrigger> disarmTriggers;
+  final ModeOverrides? overrides;           // null = inherit all from AppDefaults
+  final bool trackingEnabled;               // Spec 11 §DE-3 (default false)
+  final int trackingIntervalSeconds;        // Spec 11 §DE-3 (default 300)
+  final int trackingBufferSize;             // Spec 11 §DE-3 (default 50)
+  final bool pauseAllowed;                  // default true
+  final int? maxPauseMinutes;               // null = unlimited
+  final bool isDistressMode;                // True iff this mode IS a distress mode that
+                                            // other modes reference via distressModeId.
+                                            // Distress modes are managed under
+                                            // /distress-modes (separate UI list).
 }
 ```
 
 **Key design decisions:**
 - **Unified chain:** First step determines check-in mechanism (holdButton or disguisedReminder). All subsequent steps are escalation.
-- **Distress chain by ID:** `distressChainId` references a chain in the **DistressChain repository** by ID. null = use the first chain in the repository (the default). Users can create and reorder global distress chains.
+- **Distress mode by id:** `distressModeId` references another `SessionMode` (with `isDistressMode = true`) by id. `null` means "inherit `AppDefaults.defaultDistressModeId`". If neither resolves, the mode blocks at session start (validation error).
 - **Inheritance:** When `overrides` is null, all per-mode settings (GPS logging, stealth, templates, event defaults) are inherited from `AppDefaults`. When `overrides` is non-null, any non-null field in `ModeOverrides` replaces the corresponding `AppDefaults` value for that mode only.
 - **Template lists:** The effective reminder template list for a mode = `AppDefaults.templates` + `ModeOverrides.localTemplates` (if any). Local templates are appended, not replacing.
 - **All modes deletable:** Every mode, including Walk Mode and Date Mode, can be deleted. There are no protected built-in modes.
-- **Templates for creation:** Walk Mode and Date Mode are available as **seed templates** used only when creating a new mode ("From Template"). Templates are NOT stored as modes — they exist only in seed data. A deleted Walk Mode does not reappear unless the user creates it again from template.
-- **`isFromTemplate`:** Boolean flag (`true` if the mode was created from a seed template). Used only to display an optional "From template" badge in the UI. Has no behavioral effect.
+- **Templates for creation:** Walk Mode and Date Mode are available as **seed templates** used only when creating a new mode ("From Template").
 - **Cannot save empty:** Must have at least 1 chain step
 - **No limit on modes:** Only practical UI limits (pagination/search at ~100+ modes)
 - **Max chain length:** 10,000 steps (prevents runaway configs)
@@ -594,97 +591,105 @@ ChainStepType? get checkInType =>
 ### AppSettings (typeId: 9)
 
 ```dart
-@HiveType(typeId: 9)
-class AppSettings extends HiveObject {
+final class AppSettings {
   // Display
-  @HiveField(0) String themeMode;              // 'system' (default, B6), 'light', 'dark'
-  @HiveField(1) String languageCode;           // default: 'en'
-  @HiveField(2) bool isFirstLaunch;            // default: true
-  @HiveField(3) String? selectedModeId;        // Currently active mode UUID
-  @HiveField(5) int schemaVersion;             // default: 5
+  final AppThemeMode themeMode;            // light, dark, system (default)
+  final String languageCode;               // default: 'en'
+  final bool isFirstLaunch;                // default: true
+  final String? selectedModeId;            // currently selected mode
 
-  // Security — three independent PINs (all nullable = disabled)
-  @HiveField(16) String? appPinHash;           // Locks the app on open (null = no lock)
-  @HiveField(17) String? sessionEndPinHash;    // Required to disarm/end session (null = no lock)
-  @HiveField(18) String? duressPinHash;        // Silently fires distress chain (null = disabled)
-  @HiveField(19) int pinTimeoutSeconds;        // default: 15; scope: App PIN + Session End PIN only (B7)
-  @HiveField(23) int wrongPinThreshold;        // default: 5 — wrong PINs before auto-confirm distress (A3)
-  // (Removed) @HiveField(24) pinLength — PIN length is now determined per-PIN at
-  //           setup time (4–8 digits). The PinEntryDialog auto-submits at the
-  //           first hash match. Legacy JSON with pinLength is ignored on load.
-  @HiveField(25) int sessionLogRetentionDays; // default: 180 (B8). Smart: logs with critical events kept indefinitely
+  // Security — three independent PIN hashes (each nullable = disabled)
+  final String? appPinHash;                // locks the app on open
+  final String? sessionEndPinHash;         // required to disarm/end session
+  final String? duressPinHash;             // silently fires distress chain
+  final int pinTimeoutSeconds;             // default: 15; max: 120
+  final int wrongPinThreshold;             // default: 5 — wrong PINs that
+                                           // silently fire distress (A3)
 
-  // Global settings
-  @HiveField(20) String emergencyCallNumber;   // locale-aware default (112, 911, etc.)
-  @HiveField(21) bool alarmDndOverride;        // default: true
+  // Biometric / launch-auth toggles (Q14)
+  final bool appPinBiometricEnabled;       // try biometric first at app PIN
+  final bool sessionEndPinBiometricEnabled;// try biometric first at session-end PIN
+  final bool distressCancelBiometricEnabled;// try biometric first at distress-cancel
+  final bool requireLaunchAuth;            // gate home screen on cold start
+  final bool launchAuthBiometric;          // launch gate prefers biometric
 
-  // AppDefaults (GPS logging, stealth, templates, event defaults)
-  @HiveField(22) AppDefaults defaults;
+  // Global behavior
+  final String emergencyCallNumber;        // default: '112' (Settings has editor)
+  final bool alarmDndOverride;             // default: false (Q19)
+  final bool alarmGradualVolume;           // default: false
+  final int alarmGradualVolumeDurationSeconds; // default: 5
+  final int sessionLogRetentionDays;       // default: 180
+
+  // Telemetry
+  final bool telemetryOptOut;              // legacy opt-out flag
+  final bool sentryEnabled;                // master Sentry toggle (default false; opt-in)
+
+  // AppDefaults (GPS logging, stealth, templates, event defaults,
+  // defaultDistressModeId)
+  final AppDefaults defaults;
 }
 ```
 
 **Display settings:**
-- `themeMode`: `'system'` (default, B6 — follow OS), `'light'`, or `'dark'`
-- `languageCode`: 'en', 'de', 'es', 'fr', 'ru', 'zh', 'zh_TW', 'hi', 'fa', 'uk', 'pl', 'el', 'ar', 'he'
-- `selectedModeId`: UUID of the current active mode (for quick resume)
+- `themeMode`: `system` (default), `light`, `dark`.
+- `languageCode`: 'en', 'de', 'es', 'fr', 'ru', 'zh', 'zh_TW', 'hi', 'fa', 'uk', 'pl', 'el', 'ar', 'he'. Settings has a Language picker.
+- `selectedModeId`: UUID of the current active mode (for quick resume).
 
 **Security — three distinct PINs:**
-- `appPinHash`: When set, unlocks the app on every open. Null = no app lock.
-- `sessionEndPinHash`: When set, required to disarm or manually end a running session. Timeout configurable via `pinTimeoutSeconds`. Biometric may substitute for this PIN only.
-- `duressPinHash`: When entered at ANY PIN prompt, shows a fake "Session ended" screen to the attacker and silently fires the mode's selected distress chain. Must differ from the other two PINs. **No timeout** (B7) — the duress PIN is accepted instantly at any PIN screen.
-- `pinTimeoutSeconds`: Applies to App PIN and Session End PIN only. The Duress PIN has no timeout and cannot be locked out (B7).
-- PIN length: **no longer a global setting**. Each PIN's length is determined at setup time — the user types between `kPinMinLength` (4) and `kPinMaxLength` (8) digits and taps Submit. The `PinEntryDialog` hashes the input after every keystroke starting at length 4 and auto-submits on the first match, so the three PINs can all have different lengths. Legacy JSON with a `pinLength` field is ignored on load.
-- `wrongPinThreshold`: After this many wrong attempts at a PIN prompt, auto-confirm distress (A3). Default 5.
-- Biometric may substitute for `sessionEndPinHash` only — NOT for `appPinHash` or Quick Exit.
+- `appPinHash`: When set, unlocks the app on every open. Null = no app lock. May try biometric first via `appPinBiometricEnabled`.
+- `sessionEndPinHash`: When set, required to disarm or manually end a running session. Timeout configurable via `pinTimeoutSeconds` (default 15 s, max 120 s). May try biometric first via `sessionEndPinBiometricEnabled`.
+- `duressPinHash`: When entered at ANY PIN prompt, shows a fake "Session ended" screen to the attacker and silently fires the mode's selected distress mode. Must differ from the other two PINs.
+- `wrongPinThreshold`: After this many wrong attempts at a PIN prompt, silently fire distress (A3). Default 5.
+- `requireLaunchAuth` + `launchAuthBiometric`: gate the home screen behind a PIN-or-biometric prompt on cold start. Both default off / on respectively (Q14).
 
-**Session log retention (B8):**
-- `sessionLogRetentionDays`: Auto-delete logs older than this many days. Default 180.
-- **Smart retention:** Logs that triggered a critical event (SMS sent, phone call made, distress chain fired) are kept indefinitely, regardless of this setting. Only uneventful logs (no escalation past step 0) are subject to auto-deletion.
+**Global behavior:**
+- `emergencyCallNumber`: defaults to `112`. Settings has an "Emergency number" editor.
+- `alarmDndOverride`: defaults to **false** (Q19) — opt-in.
+- `alarmGradualVolume` + `alarmGradualVolumeDurationSeconds`: when enabled, the loud-alarm step ramps volume from silence to `LoudAlarmConfig.volume` over the configured number of seconds. Default 5 s. Settings → Alarm exposes both.
+- `sessionLogRetentionDays`: auto-delete logs older than this many days; default 180.
+
+**Telemetry:**
+- `sentryEnabled`: master toggle, default **false** (opt-in). Q42 amended.
+- `telemetryOptOut`: retained legacy flag.
 
 **AppDefaults:**
-- `defaults`: Holds `GpsLoggingConfig`, `StealthConfig`, global `ReminderTemplate` list, and `EventDefaults`. All modes inherit from these unless they specify a `ModeOverrides`. (Distress chains are stored in a separate top-level repository — see the **DistressChain repository** section below.)
+- `defaults`: Holds `GpsLoggingConfig`, `StealthConfig`, global `ReminderTemplate` list, `EventDefaults`, and `defaultDistressModeId`. All modes inherit from these unless they specify a `ModeOverrides`.
 
-**Schema versioning:**
-- Current: `schemaVersion: 5`
-- On mismatch: nuke all boxes and re-seed from defaults (no migration needed — fresh install semantics)
+**Schema:**
+- On mismatch: nuke all repositories and re-seed from defaults (pre-alpha policy — no migrations).
 
 **Quick Exit behavior:**
-- Quick Exit (`finishAndRemoveTask` on Android) removes the app from the recents list and closes the app immediately
-- **Data is preserved:** All session logs, contacts, modes, and settings remain encrypted in storage
-- When the app is reopened, all data is intact and available for police reports or review
-- Quick Exit is NOT a data wipe — it is a visibility/exit mechanism only
+- Quick Exit (`finishAndRemoveTask` on Android) removes the app from the recents list and closes the app immediately.
+- Data is preserved: all session logs, contacts, modes, and settings remain in storage.
+- Quick Exit is NOT a data wipe — it is a visibility/exit mechanism only.
 
 ---
 
 ### UserProfile (typeId: 12)
 
 ```dart
-@HiveType(typeId: 12)
-class UserProfile extends HiveObject {
-  @HiveField(0) String name;                   // User's full name
-  @HiveField(1) String? phoneNumber;           // E.164 format preferred
-  @HiveField(2) String? photoPath;             // App-internal image path
-  @HiveField(3) String? physicalDescription;   // "175cm, brown hair, wearing red"
-  @HiveField(4) String? bloodType;             // "O+", "AB−", etc. (optional)
-  @HiveField(5) String? allergies;             // "Penicillin, shellfish" (optional)
-  @HiveField(6) String? medications;           // "Atorvastatin 20mg, Lisinopril" (optional)
-  @HiveField(7) String? medicalConditions;     // "Type 2 diabetes, hypertension" (optional)
-  @HiveField(8) String? emergencyMedicalNotes; // Free-form medical context (optional)
+final class UserProfile {
+  final String? name;                  // User's display name
+  final int? age;                      // years
+  final String? phoneNumber;           // E.164 format preferred
+  final String? photoPath;             // app-internal image path
+  final String? physicalDescription;   // free-form: "175cm, brown hair, wearing red"
+  final String? bloodType;             // free-form: "O+"
+  final String? allergies;             // free-form text
+  final String? medications;           // free-form text
+  final String? medicalConditions;     // free-form text
+  final String? emergencyInstructions; // free-form text
 }
 ```
 
-**Usage:**
-- **name:** Used in SMS message templates ("_name_ may need help")
-- **phoneNumber:** Can be primary contact phone or just for records
-- **photoPath:** Stored in app-internal `documents/` directory (encrypted by OS sandboxing)
-- **physicalDescription:** For emergency responders/contacts to recognize user
-- **bloodType, allergies, medications, medicalConditions, emergencyMedicalNotes:** Medical profile included in emergency SMS and available to responders during session logs
+Every medical field is `String?` (free-form text) — not a typed list. The form layer accepts comma-separated entries and stores them as a single string. `UserProfile.hasMedicalInfo` returns true when any medical field carries content; `SessionLog.hadMedicalInfo` is stamped from this getter at session start.
 
-**Validation:**
-- name: non-empty, max 255 characters
-- phoneNumber: optional, E.164 format with region warning
-- physicalDescription: optional, max 500 characters
-- Medical fields: optional, max 500 characters each
+**Usage:**
+- `name`: substituted into SMS message templates ("`{name}` may need help").
+- `phoneNumber`: own phone number; included in some emergency SMS templates.
+- `photoPath`: stored in app-internal documents directory.
+- `physicalDescription`: free-form description for responders.
+- Medical fields: included in emergency SMS only when the active step opts in (`SmsContactConfig.includeMedicalInfo == true`).
 
 ---
 
@@ -747,19 +752,23 @@ enum ReminderDisplayStyle {
 
 ---
 
-### SessionLog (typeId: 15)
+### SessionLog
 
 ```dart
-@HiveType(typeId: 15)
-class SessionLog extends HiveObject {
-  @HiveField(0) final String id;               // UUID
-  @HiveField(1) DateTime startTime;
-  @HiveField(2) DateTime? endTime;             // null if session ongoing
-  @HiveField(3) String modeName;               // "Walk Mode" (cached for history)
-  @HiveField(4) String modeId;                 // UUID reference
-  @HiveField(5) bool isSimulation;             // true if this was a practice-mode session
-  @HiveField(6) List<SessionLogEvent> events;  // Event log
-  @HiveField(7) bool hadMedicalInfo;           // Extra 47: true if any step sent medical info
+final class SessionLog {
+  final String id;                 // UUID
+  final String modeId;             // mode that ran
+  final String modeName;           // mode name cached at session start
+  final DateTime startedAt;
+  final DateTime? endedAt;         // null if session ongoing
+  final EndReason? endReason;      // null if still running
+  final bool isSimulation;
+  final bool hadMedicalInfo;       // default: false. Stamped at log creation
+                                   // by SessionLogRecorder when the user
+                                   // profile carries medical info AND at
+                                   // least one step opts in via
+                                   // SmsContactConfig.includeMedicalInfo.
+  final List<SessionLogEvent> events;
 }
 ```
 
@@ -860,103 +869,73 @@ class SessionLogEvent extends HiveObject {
 ### WalkSession (ephemeral, not persisted)
 
 ```dart
-class WalkSession {
-  final DateTime startTime;
+final class WalkSession {
+  final String id;
   final String modeId;
-  final String modeName;
-  final SessionPhase phase;
+  final bool isSimulation;
+  final DateTime startedAt;
+  final SessionPhase phase;            // sealed: idle / active / paused / ended
+  final double simulationSpeed;        // default 1.0
   final int currentStepIndex;
   final ChainStepType? currentStepType;
   final int missCount;
-  final bool isSimulation;
-  final double simulationSpeed;
-  final bool simulationSilent;  // Extra-49: simulation defaults silent=ON
-  final String? lastSimulationDescription;
-  final List<String> firedStepDescriptions;
   final int? remainingSeconds;
   final Duration simulatedElapsed;
+  final List<SimulationDescription> firedStepDescriptions;
+  final SimulationDescription? lastSimulationDescription;
+  final bool isBackgroundAlert;
+  final int totalSteps;
+  final bool simulationSilent;         // suppress sim toasts/beeps
+                                       // (default false; set true by the
+                                       // simulation summary screen for a
+                                       // silent replay)
 }
 ```
 
-**Purpose:** Ephemeral UI-layer snapshot of the active session. NOT persisted to Hive — derived from `EngineState` on each engine event. The `SessionController` owns it and updates it; the `SessionScreen` watches it.
+**Purpose:** Ephemeral UI-layer snapshot of the active session. **Not persisted** to disk — derived from `EngineState` on each engine event. The `SessionController` owns it; the `SessionScreen` watches it. App death = session is gone (no resume-from-disk).
 
-**Named constructors (Extra 49):**
-- `WalkSession.startingReal({...})` — initializes a real session. `isSimulation=false`, `simulationSilent=false` (the flag is meaningless for real audio).
-- `WalkSession.startingSimulation({...})` — initializes a simulation session. `isSimulation=true`, `simulationSilent=true` by default.
+**Named constructors:**
+- `WalkSession.startingReal({...})` — initializes a real session. `isSimulation = false`, `simulationSilent = false`, `simulationSpeed = 1.0`.
+- `WalkSession.startingSimulation({...})` — initializes a simulation session. `isSimulation = true`, `simulationSilent` defaulting to `false`; pass `silent: true` for a silent replay.
 
-**Controller responsibility (Extra 49):** Each simulation starts silent. The `simulationSilent` flag is **not persisted** across sessions — toggling it mid-simulation is fine, but the next simulation starts silent again. Controllers MUST use `WalkSession.startingSimulation` (or explicitly pass `simulationSilent=true`) when kicking off a simulation. The bare `WalkSession()` constructor defaults `simulationSilent=false` for historical compatibility; using it for a simulation would break Extra 49.
+Controllers MUST use the matching named constructor when kicking off a session — the unnamed constructor exists only for `copyWith` round-trips.
 
 ---
 
-### DistressChain (typeId: 17)
+### Distress modes (Pivot 3)
+
+There is no `DistressChain` model. A distress chain is the `chainSteps` of a `SessionMode` flagged with `isDistressMode = true`. Distress modes live alongside regular modes in `modes.json` and are filtered into a separate UI list under `/distress-modes`.
+
+**Selection:**
+- `SessionMode.distressModeId == null` → resolve via `AppDefaults.defaultDistressModeId`.
+- `AppDefaults.defaultDistressModeId == null` → mode validation blocks session start.
+- The resolved id is looked up in `modes.json`; missing id is a hard validation error (no silent fallback).
+
+**Default distress mode:** seeded on first launch. The default chain is two steps — `smsContact` (location to all contacts) → `callEmergency`. Users can edit or replace it; nuke-and-reseed restores the default on schema mismatch.
+
+**Allowed step types:** any of the 9 step types. The editor warns against UI-driven steps in distress chains but does not block them.
+
+---
+
+### AppDefaults
 
 ```dart
-@HiveType(typeId: 17)
-class DistressChain extends HiveObject {
-  @HiveField(0) final String id;               // UUID
-  @HiveField(1) String name;                   // e.g., "Default Distress Chain"
-  @HiveField(2) List<ChainStep> steps;         // Escalation steps
+final class AppDefaults {
+  final GpsLoggingConfig gpsLogging;
+  final StealthConfig stealth;
+  final List<ReminderTemplate> templates;       // global reminder templates
+  final EventDefaults eventDefaults;
+  final String? defaultDistressModeId;          // id of a SessionMode with
+                                                // isDistressMode = true; null
+                                                // means "no global default —
+                                                // modes without their own
+                                                // distressModeId block".
 }
 ```
 
-**Purpose:** A globally-managed named distress chain. All distress triggers (hardware panic, duress PIN, wrong PIN threshold) fire the **same** selected `DistressChain` for the mode. Chains are stored as an ordered list in the top-level **DistressChain repository** (see below); the first entry is the default.
+**Purpose:** Master source for configurable defaults that modes can inherit and override. Modes inherit from `AppDefaults` unless they specify a `ModeOverrides`. The `defaultDistressModeId` field is the runtime resolution target when `SessionMode.distressModeId` is null.
 
-**Navigation:** Settings → Modes & Chains → Distress Chains
-
-**Default chain (seeded on first launch):**
-- Step 1: `smsContact` — sends location SMS to all emergency contacts
-- Step 2: `callEmergency` — calls emergency services (112/911 locale-aware) with a pre-call SMS
-
-This two-step sequence is the chain used when `SessionMode.distressChainId` is null. It is always seeded as the first (and default) entry in the **DistressChain repository**. Users can edit or replace it, but it is re-seeded on schema reset.
-
-**Allowed step types in distress chains:** `smsContact`, `phoneCallContact`, `loudAlarm`, `callEmergency`, `countdownWarning`. UI-driven steps (`holdButton`, `disguisedReminder`, `hardwareButton`) are not allowed.
-
----
-
-### DistressChain repository
-
-The `DistressChain` model lives in its **own top-level repository**, parallel to the `SessionMode` (modes) repository and to the `BatteryAlertConfig` singleton. This makes distress chains a first-class collection — structurally identical to modes and battery-alert chains — rather than a nested field inside `AppDefaults`.
-
-**Storage:**
-- Backed by `JsonListRepository<DistressChain>`.
-- Storage file: `distress_chains.json` (parallel to `modes.json`).
-- Hive box (for the `DistressChain` Hive adapter): `distress_chains`.
-- Ordered: the first element is the **default** distress chain used when `SessionMode.distressChainId` is null.
-
-**Seed behaviour:**
-- On first launch (or after schema mismatch), `seedDefaults()` populates the repository with the single built-in **Default Distress Chain** (see Seed Data section below). It is always present as the first entry.
-- The repository MUST NOT be empty. If it is emptied (e.g., by a hand-edited JSON import), the seed is reinstalled on next app launch.
-
-**Lookup rules:**
-- `SessionMode.distressChainId == null` → use `distressChains.first`.
-- `SessionMode.distressChainId == someId` → look up that chain by id in the repository. If the referenced id is not found (stale reference, deleted chain), fall back to `distressChains.first` and log a warning.
-
-**CRUD:**
-- Users may add, rename, reorder, edit, and delete distress chains from Settings → Modes & Chains → Distress Chains.
-- Deleting the chain currently referenced by one or more modes is allowed; those modes fall back to the default (first) chain at runtime per the lookup rules above.
-- Deleting the last remaining chain is prevented by the UI; the repository invariant is "at least one chain present".
-
-**Pre-alpha policy:** no migration from the former `AppDefaults.distressChains` field. Existing dev-install data is nuked and reseeded on schema mismatch per the repo-wide nuke-and-reseed policy.
-
----
-
-### AppDefaults (typeId: 18)
-
-```dart
-@HiveType(typeId: 18)
-class AppDefaults extends HiveObject {
-  @HiveField(1) GpsLoggingConfig gpsLogging;
-  @HiveField(2) StealthConfig stealth;
-  @HiveField(3) List<ReminderTemplate> templates;   // global reminder templates
-  @HiveField(4) EventDefaults eventDefaults;
-}
-```
-
-**Purpose:** Master source for configurable defaults that modes can inherit and override. Modes inherit from `AppDefaults` unless they specify a `ModeOverrides`.
-
-**Note:** `distressChains` is **no longer** part of `AppDefaults`. Distress chains live in their own top-level repository (see the **DistressChain repository** section above). `@HiveField(0)` is intentionally retired — do not reuse.
-
-**Accessible from:** Settings → Defaults (sub-items: GPS Logging, Event Defaults/Templates). The Default Distress Chain selector lives under Settings → Modes & Chains → Distress Chains, alongside the chain list.
+**Accessible from:** Settings → Defaults (sub-items: GPS Logging, Event Defaults / Templates). The Default Distress Mode selector lives under Settings → Modes & Chains → Distress Modes, alongside the distress-mode list.
 
 ---
 
@@ -973,22 +952,21 @@ class ModeOverrides {
 
 **Purpose:** Per-mode optional overrides. When `ModeOverrides` is set on a mode, any non-null field replaces the corresponding `AppDefaults` value for that mode only. `localTemplates` are APPENDED to global templates — the effective template list = `AppDefaults.templates` + `localTemplates`.
 
-**Note:** the per-mode distress chain selection is NOT in `ModeOverrides`. It lives directly on `SessionMode.distressChainId`, which references a chain in the top-level **DistressChain repository** (null = use the first chain, i.e. the default). Keeping it on `SessionMode` avoids a duplicate field and reflects that distress chains are a first-class repository rather than an `AppDefaults` sub-value to override.
-
-Not a Hive top-level type — serialized inline as part of `SessionMode`.
+**Note:** the per-mode distress selection is NOT in `ModeOverrides` — it lives directly on `SessionMode.distressModeId`.
 
 ---
 
 ### GpsLoggingConfig
 
 ```dart
-class GpsLoggingConfig {
-  bool enabled;                     // master toggle; default true during sessions
-  int intervalSeconds;              // default 30
-  GpsAccuracy accuracy;             // high / balanced / low; default high
-  GpsFormat format;                 // decimal / dms / address; default decimal
-  bool includeInSms;                // append location to SMS steps; default true
-  int historyRetentionDays;         // default 30
+final class GpsLoggingConfig {
+  final bool enabled;               // master toggle; default true
+  final int intervalSeconds;        // default 30 (Q21)
+  final GpsAccuracy accuracy;       // low / medium / high; default high (Q21)
+  final GpsFormat format;           // dms / decimal / openLocationCode;
+                                    // default decimal (Q21)
+  final bool includeInSms;          // append location to SMS steps; default true
+  final int historyRetentionDays;   // default 30
 }
 ```
 
@@ -1001,26 +979,29 @@ class GpsLoggingConfig {
 ### StealthConfig
 
 ```dart
-class StealthConfig {
-  bool enabled;                     // master toggle; default false
-  String? fakeName;                 // fake app name in notifications/recents; default 'Music' (23)
-  String fakeIconIdentifier;        // icon identifier for notification; default 'music' (33)
-  bool fakeIcon;                    // show generic icon in OS recents; default false
-  bool notificationDisguise;        // generic channel name/icon; default false
-  StealthTimerDisplay timerDisplay; // normal / small / none; default normal
-  bool sessionScreenStealth;        // no Guardian Angela branding on session screen; default false
+final class StealthConfig {
+  final bool enabled;                     // master toggle; default false
+  final String fakeName;                  // default 'Music' (Q20)
+  final StealthIconPreset fakeIcon;       // default StealthIconPreset.music (Q20)
+  final bool notificationDisguise;        // default true
+  final StealthTimerDisplay timerDisplay; // normal / small / none; default normal
+  final bool sessionScreenStealth;        // default true
+}
+
+enum StealthIconPreset {
+  music, calendar, fitness, weather, news, photos, notes, clock,
+  podcast, none,
 }
 
 enum StealthTimerDisplay { normal, small, none }
 ```
 
 **Field defaults:**
-- `fakeName`: `'Music'` (decision 23). Can be cleared to null to disable the fake name.
-- `fakeIconIdentifier`: `'music'` (decision 33). One of the 8 built-in preset identifiers: `'music'`, `'calendar'`, `'fitness'`, `'weather'`, `'news'`, `'photos'`, `'notes'`, `'clock'`. Enumerated in `lib/core/theme/stealth_icons.dart` as `kStealthIconPresets`. The helper `iconFromStealth(id)` resolves the identifier to a Material `IconData` (fallback to `music`). **TODO:** the actual Android launcher / adaptive-icon swap is not yet implemented — the identifier is persisted and drives in-app previews but the platform icon is unchanged.
-- `fakeIcon`: `false` — when `true`, replaces the app icon in the OS recents list with a generic icon.
-- `notificationDisguise`: `false` — when `true`, notification channel names and icons match the fake name.
+- `fakeName`: `'Music'` (Q20). Always non-null.
+- `fakeIcon`: `StealthIconPreset.music` (Q20). The helper `iconFromStealth(preset)` resolves to a Material `IconData`.
+- `notificationDisguise`: `true` — disguised channel name / icon when stealth is on.
 - `timerDisplay`: `normal` — session timer appearance in stealth mode.
-- `sessionScreenStealth`: `false` — when `true`, removes Guardian Angela branding from the active session screen.
+- `sessionScreenStealth`: `true` — strip Guardian Angela branding from the session screen when stealth is on.
 
 **Sub-option visibility:** All stealth sub-options are **always visible** in the UI, even when `enabled = false`. This lets users pre-configure stealth appearance before enabling it (D5).
 
@@ -1030,22 +1011,18 @@ enum StealthTimerDisplay { normal, small, none }
 
 ---
 
-### BatteryAlertConfig (typeId: 19)
+### BatteryAlertConfig
 
 ```dart
-@HiveType(typeId: 19)
-class BatteryAlertConfig extends HiveObject {
-  @HiveField(0) bool enabled;                  // default: false
-  @HiveField(1) int thresholdPercent;           // default: 10
-  @HiveField(2) List<ChainStep> chain;          // ITEM 8: escalation chain (default: empty)
-
-  /// Derived: true iff any step in `chain` is `smsContact`.
-  /// Kept only as a transitional shim for
-  /// `lib/features/session/session_controller.dart`
-  /// (`_startBatteryMonitor`). See TODO in the model.
-  bool get sendSms;
+final class BatteryAlertConfig {
+  final bool enabled;                  // default: false (Q22 — opt-in)
+  final int thresholdPercent;          // default: 10
+  final List<ChainStep> chain;         // configurable escalation chain
+                                       // (default: empty)
 }
 ```
+
+`enabled` defaults to `false` (Q22): a safety app must not surprise users with new automatic alerts. `thresholdPercent` defaults to **10** so the alert fires close to a real emergency rather than spamming the user.
 
 **Purpose:** A one-shot side-action that fires once per session when battery drops below threshold during an active session. Does not interrupt the main session chain. Disabled by default (`enabled: false`).
 
@@ -1145,9 +1122,9 @@ Step 4: callEmergency
   - config: showConfirmation=true
 ```
 
-### Default Distress Chain
+### Default Distress Mode
 
-Seeded as the first entry in the **DistressChain repository** (`distress_chains.json`). Used whenever `SessionMode.distressChainId` is null.
+Seeded as a `SessionMode` with `isDistressMode = true`; its id is stored in `AppDefaults.defaultDistressModeId`. Used whenever `SessionMode.distressModeId` is null.
 
 ```
 Step 1: smsContact

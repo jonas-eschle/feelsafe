@@ -17,7 +17,7 @@ The old two-level "Defaults" and "Modes & Chains" hubs have been removed. Each p
 | Section | Subcategory | Route |
 |---------|-------------|-------|
 | Session | Modes | `/modes` |
-| Session | Distress chains | `/distress-chains` |
+| Session | Distress modes | `/distress-modes` |
 | Session | Battery alert | `/settings/battery-alert` |
 | Security | Security (PIN, biometric, thresholds) | `/settings/security` |
 | Security | Stealth | `/settings/stealth` |
@@ -33,7 +33,7 @@ The old two-level "Defaults" and "Modes & Chains" hubs have been removed. Each p
 
 Every non-trivial settings field has a trailing ℹ info button that opens a modal bottom sheet with a short plain-language explanation. Timer-display, theme, emergency number, PIN timeout, and similar fields include an inline preview strip in addition to the info sheet. Shared widgets: `InfoIconButton` (`lib/core/widgets/info_icon_button.dart`) and `SettingsTile` (`lib/core/widgets/settings_tile.dart`).
 
-**Distress chains are now managed like modes.** The Session section's "Distress chains" row opens the full `DistressChainsScreen` list at `/distress-chains` — add / rename / delete / duplicate / reorder / tap-to-edit. Each entry opens `DistressChainEditorScreen` at `/distress-chains/edit?chainId=...`, which is the same reorderable-step expansion-tile editor used by the Mode editor. A distress chain is a chain like any other; every event-specific configuration (message template, ring duration, emergency number, etc.) is fully editable per-step. The first chain in the list is the default used by any mode whose `distressChainId` is null. The former single `/settings/distress-chain` screen is removed.
+**Distress modes are managed like regular modes (Pivot 3).** The Session section's "Distress modes" row opens `DistressModesScreen` at `/distress-modes` — add / rename / delete / duplicate / set-as-default / tap-to-edit. Each entry opens `ModeEditorScreen` (same widget used for regular modes) at `/distress-modes/edit?id=...` with `isDistress: true`. A distress mode is a `SessionMode` with `isDistressMode = true`; its `chainSteps` are the distress chain. The mode whose id is `AppDefaults.defaultDistressModeId` is the default used by any regular mode whose `distressModeId` is null.
 
 ---
 
@@ -83,11 +83,11 @@ This section is a **collapsible card directly on the main settings screen** (not
 | Field | Control | Default | Description |
 |-------|---------|---------|-------------|
 | **enabled** | Toggle switch | false | Master toggle — hides all safety indicators ℹ |
-| **fakeName** | Text field (shown when enabled) | — | Fake app name in notifications and app switcher ℹ |
-| **fakeIcon** | Toggle switch (shown when enabled) | false | Show generic icon instead of Guardian Angela logo ℹ |
-| **notificationDisguise** | Toggle switch (shown when enabled) | false | Use generic notification channel name/icon ℹ |
+| **fakeName** | Text field (shown when enabled) | "Music" (Q20) | Fake app name in notifications and app switcher ℹ |
+| **fakeIcon** | Icon picker (shown when enabled) | `StealthIconPreset.music` (Q20) | Which preset icon (music, calendar, fitness, weather, news, photos, notes, clock, podcast, none) ℹ |
+| **notificationDisguise** | Toggle switch (shown when enabled) | true | Use generic notification channel name/icon ℹ |
 | **timerDisplay** | 3-option selector: Normal / Small / None (shown when enabled) | Normal | Session timer visibility during session ℹ |
-| **sessionScreenStealth** | Toggle switch (shown when enabled) | false | Remove Guardian Angela branding from session screen ℹ |
+| **sessionScreenStealth** | Toggle switch (shown when enabled) | true | Remove Guardian Angela branding from session screen ℹ |
 
 The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`, `sessionScreenStealth`) are shown only when `enabled` is ON. When `enabled` is OFF, the section collapses to just the enabled toggle and the summary line.
 
@@ -158,7 +158,7 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
 - **Where it works:** Any PIN prompt (App lock, Session End)
 - **Behavior when entered:**
   - Shows fake "Session ended" to attacker
-  - Fires the mode's selected `DistressChain` silently
+  - Fires the mode's selected distress mode silently (via `replaceWithDistressChain` with `triggerReason: TriggerReason.duressPin`)
   - Session logs record duress PIN entry with timestamp
 - **Persistence:** `AppSettings.duressPinHash`
 - **Default:** Disabled
@@ -174,7 +174,7 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
   - Reset attempt counter
 - **Note:** All three PIN prompts share the same attempt counter. Counter resets on any correct PIN entry.
 
-Both the duress PIN and wrong-PIN threshold fire the mode's selected `DistressChain` from the global list in `AppDefaults.distressChains`. See **Settings → Session → Distress chains** (`/distress-chains`) for the full list and editor.
+Both the duress PIN and wrong-PIN threshold fire the mode's selected distress mode (resolved via `SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). See **Settings → Session → Distress modes** (`/distress-modes`) for the list and editor.
 
 ---
 
@@ -240,26 +240,25 @@ Global alarm behavior (affects all loudAlarm steps).
 #### Override Silent Mode / Do Not Disturb
 - **Label:** "Alarm overrides silent/vibrate mode"
 - **Control:** Toggle switch
-- **Default:** ON
-- **Persistence:** Custom AppSettings field (e.g., `alarmOverrideSilentMode`)
+- **Default:** **OFF** (Q19 — opt-in; previous spec said ON, but the model defaults to false)
+- **Persistence:** `AppSettings.alarmDndOverride`
 - **Effect:** When enabled, loudAlarm event plays at max volume even if phone is on silent or vibrate. On Android, uses the `STREAM_ALARM` audio stream to bypass Do Not Disturb.
-- **Note:** Alarm is the ONLY event type that can override phone settings
+- **Note:** Alarm is the ONLY event type that can override phone settings.
 - **Warning (if toggle is OFF):** "Warning: Alarm will be silent if phone is on silent mode"
 
-#### Gradual Volume Increase
+#### Gradual Volume Increase (Q33)
 - **Label:** "Gradually increase alarm volume"
 - **Control:** Toggle switch
-- **Default:** ON
-- **Persistence:** Custom AppSettings field (e.g., `alarmGradualVolume`)
-- **Effect:** Affects all loudAlarm steps; overridden per-step if configured differently
+- **Default:** **OFF**
+- **Persistence:** `AppSettings.alarmGradualVolume`
+- **Effect:** Affects all loudAlarm steps; per-step `LoudAlarmConfig.gradualVolume` is the per-step opt-in.
 
 #### Gradual Volume Duration (If Gradual Volume is ON)
 - **Label:** "Ramp duration"
-- **Control:** LogarithmicSlider (range 5–30 seconds, default 10s)
-- **Real-time display:** "10s" or "30s" with unit suffix
-- **Persistence:** Custom AppSettings field (e.g., `alarmGradualVolumeDuration`)
-- **Effect:** Time to reach full volume from zero; linear ramp over this duration
-- **Note:** Longer ramps are less startling but slower to reach full volume
+- **Control:** LogarithmicSlider (range 0–60 seconds, default **5s**)
+- **Real-time display:** "5s" or "30s" with unit suffix
+- **Persistence:** `AppSettings.alarmGradualVolumeDurationSeconds`
+- **Effect:** Time to reach full volume from zero; linear ramp over this duration. Ignored when `alarmGradualVolume` is OFF.
 
 ---
 
@@ -320,7 +319,7 @@ Global alarm behavior (affects all loudAlarm steps).
 - **Feedback:** Brief undo snackbar appears: "Setting changed" with optional "Undo" button
 - **No confirmation:** User can undo within 3 seconds before actual persistence
 
-### Complex Editors (Mode Editor, Duress Chain, Event Defaults)
+### Complex Editors (Mode Editor, Distress Mode Editor, Event Defaults)
 
 - **Explicit save button:** All edits are in-memory until "Save" button pressed
 - **Unsaved changes warning:** If user navigates away without saving, show dialog: "Discard unsaved changes?" with "Discard" / "Keep Editing" options
@@ -410,30 +409,30 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 
 | Option | Default | Type | Description |
 |--------|---------|------|-------------|
-| **callChannel** | phone | enum | phone (tel: URI; WhatsApp/Telegram removed — cannot initiate calls via deep link) |
-| **preSendSms** | true | bool | Send brief SMS before calling |
-| **preSmsMessage** | "I may be in danger, calling you now" | string | SMS text (with placeholders: {name}, {location}, {time}) |
-| **preSmsIncludeLocation** | true | bool | Include location URL in pre-SMS |
-| **retryCount** | 1 | int | How many times to retry if no answer (0–5) |
-| **alternativeContactIds** | (empty) | string | Comma-separated fallback contact IDs |
+| **contactId** | null | string? | Primary contact id; null = first-sorted |
+| **alternativeContactIds** | [] | List<String> | Fallback contact ids |
+| **logGps** | useDefault | LogGpsOverride | Per-step GPS-logging override (DE-2) |
+
+`retryCount` is on the parent `ChainStep`. Pre-call SMS is **not** part of `phoneCallContact` (Q12 — moved to `CallEmergencyConfig.sendLocationSmsFirst` since calling a personal contact does not warrant an automatic pre-warning SMS).
 
 **UI Notes:**
-- LogarithmicSlider for retryCount with real-time display
-- Info icon on preSendSms explains contact will be forewarned
-- preSmsMessage editor with placeholder buttons
+- LogarithmicSlider for retryCount on the step's timing block (not in event config)
+- Multi-select chip row for alternativeContactIds
 
 ### loudAlarm Defaults
 
 | Option | Default | Type | Range | Description |
 |--------|---------|------|-------|-------------|
-| **volume** | 1.0 | float | 0.0–1.0 | Alarm volume level (0 = silent, 1 = max) |
-| **soundChoice** | siren | enum | siren / whistle / scream / custom | Built-in or user-provided sound |
-| **customSoundPath** | (empty) | string | File path to user's custom alarm sound |
-| **flashLight** | false | bool | Strobe camera flashlight (SOS morse pattern) |
-| **flashScreen** | false | bool | Flash screen white/red alternately |
-| **flashSpeed** | medium | enum | fast (300ms) / medium (500ms) / slow (1000ms) — 3-option enum (B5) |
-| **gradualVolume** | true | bool | Inherited from global Alarm section setting |
-| **gradualVolumeDuration** | 10 | int | Inherited from global Alarm section setting |
+| **volume** | 1.0 | double | 0.0–1.0 | Alarm volume level |
+| **soundChoice** | siren | LoudAlarmSound | siren / custom (Q9 — `whoop` and `bell` removed) |
+| **flashLight** | true | bool | Strobe camera flashlight |
+| **flashScreen** | false | bool | Strobe screen (photosensitive warning) |
+| **flashSpeedMs** | 500 | int | 100–2000 | Flash cycle length in ms |
+| **maxVolume** | true | bool | (legacy) force system media volume to max |
+| **gradualVolume** | false | bool | Ramp volume from silence to `volume` |
+| **blackScreenMode** | false | bool | Render under black overlay (stealth alarm) |
+
+The ramp duration lives globally on `AppSettings.alarmGradualVolumeDurationSeconds` (default 5 s; settings UI exposes it).
 
 **UI Notes:**
 - Volume slider (0.0–1.0) with percentage display (0%–100%)
@@ -491,7 +490,7 @@ Per the top-level restructuring, `/settings/defaults` has been removed. Each cat
 | GPS logging | `GpsLoggingSettingsScreen` | `/settings/gps-logging` |
 | Event defaults (per-step-type) | `EventDefaultsScreen` | `/settings/event-defaults` |
 | Reminder templates | `TemplatesScreen` | `/settings/reminder-templates` |
-| Distress chains (list + editor) | `DistressChainsScreen` / `DistressChainEditorScreen` | `/distress-chains`, `/distress-chains/edit?chainId=...` |
+| Distress modes (list + editor) | `DistressModesScreen` / `ModeEditorScreen(isDistress: true)` | `/distress-modes`, `/distress-modes/edit?id=...` |
 | Stealth | `StealthSettingsScreen` | `/settings/stealth` |
 
 The model surface (`AppDefaults`) is unchanged. Only the navigation/UI surface has been restructured.
@@ -524,16 +523,16 @@ Stealth configuration is handled by the collapsible **Stealth Mode Section** dir
 
 Modes can override via `ModeOverrides.stealth` (accessible in the mode editor's Safety Options section).
 
-### Distress Chains (list + editor)
+### Distress Modes (list + editor)
 
-Distress chains are managed as a list, mirroring the Modes pattern. The Session section's "Distress chains" row navigates to `DistressChainsScreen` at `/distress-chains`; tapping any entry opens `DistressChainEditorScreen` at `/distress-chains/edit?chainId=...`. The list supports add / rename / delete / duplicate / reorder and tap-to-edit. The editor is the same expansion-tile step editor used by the Mode editor, with full per-step event configuration (timing, event-specific fields, randomization jitter, retry count) for every distress-compatible step type (`smsContact`, `phoneCallContact`, `loudAlarm`, `callEmergency`, `countdownWarning`, `fakeCall`).
+Distress modes are managed exactly like regular modes (Pivot 3). The Session section's "Distress modes" row navigates to `DistressModesScreen` at `/distress-modes`; tapping any entry opens `ModeEditorScreen` (the same widget used for regular modes) at `/distress-modes/edit?id=...` with `isDistress: true`. The list supports add / rename / delete / duplicate / set-as-default and tap-to-edit.
 
-- **Label (Session section row):** "Distress chains" ℹ
-- **Info:** "The distress chain used when a mode doesn't specify one, or when the hardware panic button fires. Tap to manage all chains — add, rename, reorder, or fully edit each one's escalation steps."
-- **Default chain:** The first chain in the list. Mode pickers default to "Use default (first in list)" when `distressChainId` is null.
-- **Per-mode selection:** Each `SessionMode` picks its distress chain by id in the mode editor's Safety Options section (see `04-screens-navigation.md` → Mode Editor → Safety Options).
+- **Label (Session section row):** "Distress modes" ℹ
+- **Info:** "The distress chain used when a mode doesn't specify one, or when the hardware panic button or duress PIN fires. A distress mode is a `SessionMode` with `isDistressMode = true` — its escalation chain is what runs when distress is triggered."
+- **Default distress mode:** Stored on `AppDefaults.defaultDistressModeId`. Used by every regular mode whose `distressModeId` is null.
+- **Per-mode selection:** Each regular `SessionMode` picks its distress mode by id in the mode editor's Safety Options section.
 
-See `04-screens-navigation.md` for full screen specs of `DistressChainsScreen` and `DistressChainEditorScreen`.
+See `04-screens-navigation.md` for full screen specs of `DistressModesScreen` and the Distress Mode Editor.
 
 ### Reminder Templates
 
@@ -897,8 +896,7 @@ class AppSettings extends HiveObject {
 **Security settings** all live in `AppSettings` (encrypted in Hive via HiveAesCipher).
 PIN hashes stored as bcrypt hashes. No separate `flutter_secure_storage` entries for PINs.
 
-**Distress chains:** Stored in `AppDefaults.distressChains` (List of `DistressChain` objects).
-First in list = default. Managed via Settings → Session → Distress chains (`DistressChainsScreen` at `/distress-chains`); each chain is edited in `DistressChainEditorScreen` at `/distress-chains/edit?chainId=...`.
+**Distress modes:** Stored alongside regular modes in `modes.json` and discriminated by `SessionMode.isDistressMode = true`. The default distress mode id is on `AppDefaults.defaultDistressModeId`. Managed via Settings → Session → Distress modes (`DistressModesScreen` at `/distress-modes`); each is edited via `ModeEditorScreen(isDistress: true)` at `/distress-modes/edit?id=...`.
 
 **Reminder templates:** Stored in `AppDefaults.templates` (global) and
 `SessionMode.overrides.localTemplates` (mode-local, appended to global).
@@ -913,9 +911,9 @@ First in list = default. Managed via Settings → Session → Distress chains (`
 | `/settings/backup` | Export/import/backup | File I/O |
 | `/settings/about` | App info, legal, links | None (read-only) |
 | `/profile` | User profile (name, description, contacts) | UserProfile (typeId X) |
-| `/modes` | List of session modes | SessionMode (typeId 8) |
-| `/distress-chains` | List of global distress chains | AppDefaults.distressChains |
-| `/distress-chains/edit?chainId=...` | Distress chain editor (full step editor) | AppDefaults.distressChains |
+| `/modes` | List of session modes | SessionMode (modes.json) |
+| `/distress-modes` | List of distress modes | SessionMode where `isDistressMode = true` |
+| `/distress-modes/edit?id=...` | Distress mode editor (ModeEditorScreen with `isDistress: true`) | SessionMode |
 
 ---
 

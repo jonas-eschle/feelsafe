@@ -266,9 +266,9 @@ All three PINs are configured in **Settings → Security**. Biometric may substi
 
 ### 9. Distress Chains & Condition-Triggered Events
 
-The engine supports condition-triggered chains. The **distress chain** is a global named list (like modes); each mode selects one by ID (`distressChainId`; `null` = default, which is the first chain in the list):
+The engine supports condition-triggered chains. A **distress mode** is a regular `SessionMode` with `isDistressMode = true`; its `chainSteps` are the distress chain. Each regular mode selects one by id (`distressModeId`; `null` = inherit `AppDefaults.defaultDistressModeId`):
 
-- **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the distress chain stops and discards the main chain, then executes the selected global distress chain as a **replacement** (no going back). When the distress chain exhausts, the session ends with `EndReason.distressCompleted`. Shows fake "Session ended" to the attacker when triggered via duress PIN.
+- **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the engine calls `replaceWithDistressChain(steps, triggerReason: ...)` — the main chain is discarded permanently and the distress mode's chain runs from step 0. When it exhausts, the session ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`). The duress-PIN path also shows a fake "Session ended" to the attacker.
 - **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main escalation chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
 - **Low battery alert:** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + escalation chain).
 
@@ -305,7 +305,7 @@ All modes, including those created from seed templates, are equally deletable. D
 - Created from a seed template ("From Template") or from scratch
 - Any combination of the 9 event types
 - Fully customizable timing, grace periods, event parameters
-- Each mode selects a distress chain by ID (`distressChainId`; null = global default)
+- Each mode selects a distress mode by id (`distressModeId`; null = inherit `AppDefaults.defaultDistressModeId`)
 - Each mode can override global defaults via `ModeOverrides` (GPS logging, stealth, templates, event defaults)
 - Can be shared with friends/family (export/import)
 
@@ -517,20 +517,20 @@ lib/
 └── main.dart                    # App entry, initialization
 ```
 
-### Key Models (Hive)
+### Key Models
 
-| Model | typeId | Purpose |
-|---|---|---|
-| `SessionMode` | 8 | Defines check-in mechanism + escalation chain + distressChainId + triggers + ModeOverrides |
-| `ChainStep` | 10 | One escalation step (9 types) |
-| `EmergencyContact` | 1 | Contact + messaging channels + per-contact language |
-| `EventDefaults` | 13 | Per-step-type default configuration (part of AppDefaults) |
-| `SessionLog` | 15 | Persisted record of completed sessions |
-| `DistressChain` | 17 | Global named distress chain (id, name, List<ChainStep>) |
-| `AppDefaults` | 18 | Master defaults: distressChains, gpsLogging, stealth, templates, eventDefaults |
-| `AppSettings` | 9 | Three PIN hashes, pinTimeoutSeconds, theme, language, emergencyNumber, alarmDndOverride, AppDefaults |
-| `BatteryAlertConfig` | 19 | Low-battery one-shot alert config (enabled toggle + thresholdPercent + escalation chain) |
-| `WalkSession` | — | Ephemeral session state (not persisted) |
+| Model | Purpose |
+|---|---|
+| `SessionMode` | Defines check-in mechanism + escalation chain + `distressModeId` + triggers + ModeOverrides. Distress modes are SessionModes with `isDistressMode = true` (Pivot 3). |
+| `ChainStep` | One escalation step (9 types). |
+| `EmergencyContact` | Contact + messaging channels + per-contact language. |
+| `EventDefaults` | Per-step-type default configuration (part of AppDefaults). |
+| `SessionLog` | Persisted record of completed sessions; `hadMedicalInfo` flag stamped at session start. |
+| `AppDefaults` | Master defaults: gpsLogging, stealth, templates, eventDefaults, `defaultDistressModeId`. |
+| `AppSettings` | Three PIN hashes, pinTimeoutSeconds, theme, language, emergencyNumber, alarmDndOverride, biometric / launch-auth / telemetry toggles, alarm gradual-volume settings, AppDefaults. |
+| `BatteryAlertConfig` | Low-battery one-shot alert config (enabled toggle + thresholdPercent + escalation chain). |
+| `UserProfile` | Identity (name, age, phoneNumber, photoPath, physicalDescription) + free-form medical fields (each `String?`). |
+| `WalkSession` | Ephemeral session state (not persisted). Named ctors: `startingReal`, `startingSimulation`. |
 
 ### SessionEngine
 
@@ -708,8 +708,8 @@ dart run import_sorter:main --no-comments
 2. **8 built-in reminder templates:**
    - Calendar, Duolingo, Delivery, Weather, Fitness, Message, Update, Battery
 
-3. **1 default distress chain:**
-   - Default distress chain: Step 1 — `smsContact` with `contactSelection: firstContact` (location SMS to the first emergency contact) → Step 2 — `callEmergency` (call emergency services with pre-SMS). This is the chain used when `SessionMode.distressChainId` is null.
+3. **1 default distress mode:**
+   - Default distress mode: a `SessionMode` with `isDistressMode = true` whose chain is Step 1 — `smsContact` with `contactSelection: firstContact` (location SMS to the first emergency contact) → Step 2 — `callEmergency` (call emergency services with `sendLocationSmsFirst = true`). Its id is stored in `AppDefaults.defaultDistressModeId` and used whenever `SessionMode.distressModeId` is null.
 
 4. **Per-step-type event defaults:**
    - Default grace periods

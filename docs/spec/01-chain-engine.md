@@ -158,37 +158,26 @@ Detection and routing is handled by platform-specific service (`HardwareButtonSe
 ## ChainStep Data Model
 
 ```dart
-@HiveType(typeId: 10)
-class ChainStep extends HiveObject {
-  @HiveField(0)
+final class ChainStep {
   final String id;              // UUID
-
-  @HiveField(1)
-  ChainStepType type;           // One of 9 types
-
-  @HiveField(2)
-  int order;                    // Position in chain (0-indexed)
-
-  @HiveField(7)
-  int durationSeconds;          // How long event actively runs
-
-  @HiveField(3)
-  int gracePeriodSeconds;       // Dead time after event, before advance/repeat
-
-  @HiveField(4)
-  int retryCount;               // 0 = no retry, N = retry N times
-
-  @HiveField(5)
-  int waitSeconds;              // Time before event fires
-                                // For disguisedReminder: interval between reminders
-
-  @HiveField(8)
-  bool randomize;               // ±20% jitter on all timing values
-
-  @HiveField(6)
-  StepConfig? config;           // Typed per-step config (sealed class hierarchy)
+  final ChainStepType type;     // One of 9 types
+  final int order;              // Position in chain (0-indexed)
+  final int durationSeconds;    // How long event actively runs
+  final int gracePeriodSeconds; // Dead time after event, before
+                                // advance/repeat
+  final int retryCount;         // 0 = no retry, N = retry N times
+  final int waitSeconds;        // Time before event fires. For
+                                // disguisedReminder: interval
+                                // between reminders.
+  final double randomize;       // Jitter factor in [0, 1]; 0 = no
+                                // jitter, 1 = full ±20% range.
+  final StepConfig? config;     // Typed per-step config (sealed
+                                // hierarchy); null = inherit from
+                                // EventDefaults.forType(type).
 }
 ```
+
+`randomize` is a `double` so the UI can expose a "how much jitter" slider rather than a binary on/off — the legacy boolean form was widened to allow gradual jitter control.
 
 **ChainStepType enum** (9 types):
 
@@ -461,15 +450,19 @@ SessionEngine({
   bool isSimulation = false,
   double speedMultiplier = 1.0,
   Random? random,
+  DateTime Function()? clock,
+  Duration? maxPauseDuration,
 })
 ```
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
 | `chainSteps` | — | List of steps to execute in order. Must not be empty. |
-| `isSimulation` | `false` | If `true`, enables simulation mode (leapToNextEvent, speed bar). |
-| `speedMultiplier` | 1.0 | Divides all durations (e.g., 10.0x = 10× faster). |
+| `isSimulation` | `false` | If `true`, enables simulation mode (`leap`, `jumpToStep`, mid-run `setSpeedMultiplier`). |
+| `speedMultiplier` | 1.0 | Divides all durations. Real sessions MUST be `1.0` — non-1.0 throws `ArgumentError`. Clamped to `[0.01, 1000.0]`. NaN / infinity / non-positive values throw. |
 | `random` | `Random()` | Randomizer for jitter. Pass deterministic instance for testing. |
+| `clock` | `DateTime.now` (via `package:clock`) | Wall-clock source. Pass a fake to drive tests. |
+| `maxPauseDuration` | `null` | When non-null, pausing starts a timer; on expiry the engine emits `pauseExpired` and auto-resumes. `null` disables auto-resume. |
 
 ### State Accessors
 
@@ -535,17 +528,18 @@ void holdRelease()
 ```dart
 void disarm()
 ```
-- Reset chain to step 0.
-- Clear miss count (`_missedRepeats = 0`).
-- Emit `userDisarmed` event.
-- Re-execute step 0.
-- **Universal**: Works from ANY phase (wait, duration, grace, sensitivity) of ANY step, including during distress chain.
-- **PIN requirement**: If PIN configured for session-end, execution pauses, PIN prompt shown, 15s timeout. Correct PIN → disarm proceeds. Timeout → action blocked, escalation continues.
+- **Re-arms the chain to step 0 — does NOT end the session.**
+- Clears miss count (`_missedRepeats = 0`).
+- Emits `userDisarmed` event carrying the step index the user was on at the moment of disarm (so the log records *where* the user re-armed from).
+- Re-executes step 0.
+- **No-op outside `EngineRunning`** — callers must `resume()` a paused engine first to make the disarm effective.
+- **PIN requirement**: If PIN configured for session-end, execution pauses, PIN prompt shown. Correct PIN → disarm proceeds. Timeout → action blocked, escalation continues.
+- **To end the session**, callers fire `endSession(reason: ...)` explicitly — `disarm()` never sets `EngineEnded`.
 
 ```dart
 void checkIn()
 ```
-- Alias for `disarm()`. Used by `SessionController`.
+- Alias for `disarm()`. Used by `SessionController` and the disguised-reminder UI to express the "I'm safe" intent. Re-arms the chain to step 0 (does NOT advance to the next step).
 
 ### Early Check-in for Disguised Reminder (D4)
 
@@ -658,53 +652,87 @@ If the app process is killed by the OS or the user (force-stop, OOM kill):
 ### Simulation
 
 ```dart
-void leapToNextEvent()
+void leap()
 ```
-- **Simulation mode only**: skip forward by replacing any active timer with a 1s countdown.
-- Useful for testing and demonstration.
-- No-op if not in simulation mode, paused, or ended.
-- Typically called by a "Leap" button in simulation UI.
+- **Simulation mode only** — fires the active timer immediately, collapsing the remaining duration of the current phase to zero.
+- Throws `StateError` if `isSimulation == false`.
+- No-op when not `EngineRunning` (idle, paused, ended).
 
 ```dart
-void setSpeedMultiplier(double multiplier)
+void jumpToStep(int index)
 ```
-- Change speed multiplier at runtime (e.g., 1x ↔ 5x toggle).
-- Takes effect immediately: rescales the running timer's remaining duration proportionally.
+- **Simulation mode only** — jump directly to a specific step index.
+- Throws `StateError` if `isSimulation == false`.
+- Throws `StateError` if not `EngineRunning` (use `start` for the initial entry).
+- Throws `RangeError` if `index` is out of range.
+- Resets miss count to 0 and re-executes the target step.
+
+```dart
+void setSpeedMultiplier(double value)
+```
+- **Simulation mode only** — adjust speed multiplier mid-run.
+- Throws `StateError` on non-simulation engines.
+- Throws `ArgumentError` on NaN, infinity, or non-positive values.
+- Clamped to `[0.01, 1000.0]`.
+- Currently-scheduled timers keep their original wall-clock deadlines; the new multiplier applies to every phase scheduled after the call.
+
+```dart
+void setBackgroundClamp(bool value)
+```
+- **Simulation mode only** — engages a 60× cap on the *effective* speed multiplier when the OS pushes the simulation app into the background. The stored `speedMultiplier` is left untouched; `effectiveSpeedMultiplier` returns `min(speedMultiplier, 60)` while engaged. No-op for real (non-simulation) sessions — real timers are already wall-clock-driven.
 
 ---
 
 ## Events Emitted
 
-The engine emits **11 total events** across all state transitions:
+The engine emits the following events on its broadcast event stream:
 
 ```dart
 enum ChainEvent {
-  stepStarted,           // Step execution begins
-  reminderFired,         // Disguised reminder became visible (duration phase)
-  repeatMissed,          // Grace expired without disarm (miss counted)
-  stepAdvancing,         // Moving to next step
-  userDisarmed,          // User checked in (reset to step 0)
-  chainExhausted,        // All steps completed, session ending
-  sessionEnded,          // User manually ended session
-  sessionPaused,         // Pause triggered
-  sessionResumed,        // Resume after pause
-  pauseExpired,          // Max pause duration reached (emitted just before
-                         // the auto-resume sessionResumed event; DRIFT-L8)
-  stepExecutionFailed,   // Action failed (timeout, exception)
+  sessionStarted,        // A new session just started.
+  stepStarted,           // A step entered its duration phase.
+  stepAdvancing,         // A step's grace phase expired and the
+                         // engine is advancing.
+  graceExpired,          // A step's grace phase expired before the
+                         // user responded.
+  repeatMissed,          // A disguised-reminder retry fired with no
+                         // response.
+  reminderFired,         // A disguised-reminder step entered its
+                         // duration phase — overlay is now visible.
+  pauseExpired,          // A pause exceeded `maxPauseDuration` and
+                         // the engine auto-resumed.
+  stepExecutionFailed,   // A strategy's `executeReal` threw; emitted
+                         // by the orchestrator's error-isolation
+                         // catch (D-STRATEGY-2). The chain itself
+                         // keeps running.
+  distressTriggered,     // Distress trigger fired; the engine
+                         // replaced the main chain with the distress
+                         // chain.
+  distressCompleted,     // Distress chain finished.
+  sessionPaused,         // Session was paused.
+  sessionResumed,        // Session was resumed from pause.
+  userDisarmed,          // User disarmed/checked-in: chain was
+                         // reset to step 0 without ending the
+                         // session.
+  sessionEnded,          // Session ended (any reason).
 }
 
-class ChainEventData {
+final class ChainEventData {
   final ChainEvent event;
-  final ChainStep? step;           // Current/affected step
-  final int? missCount;            // For repeatMissed: count of misses so far
-  final ChainStep? nextStep;       // For stepAdvancing: the next step (or null if exhausted)
-  final PauseReason? pauseReason;  // For sessionPaused: manual or incomingCall
+  final DateTime timestamp;
+  final int? stepIndex;            // Index into the active chain
+                                   // (null = chain-level event).
+  final ChainStepType? stepType;   // Step type the event refers to.
+  final Map<String, Object?> metadata;
 }
 ```
 
-**Event stream**: Broadcast stream — multiple listeners OK. Closed after `sessionEnded`.
+**Event stream**: Broadcast stream — multiple listeners OK. Synchronous so listeners see events in the order emitted without microtask latency (essential for deterministic test assertions). Closed when the engine is disposed.
 
-**Note:** There are exactly 11 events. Distress chains are integrated into the main engine as chain replacements, not separate entities. The `pauseExpired` event fires only when a mode was configured with a `maxPauseDuration` that has been exceeded; it is always followed immediately by a `sessionResumed` event (see DRIFT-L8 in `lib/domain/engine/session_engine.dart`).
+**Notes:**
+- Distress chains are integrated into the main engine as chain replacements, not separate entities.
+- `pauseExpired` is emitted by the engine when the constructor's `maxPauseDuration` is non-null and a pause exceeds it; the engine auto-resumes immediately afterwards.
+- `stepExecutionFailed` is emitted by the orchestrator (`emitStepExecutionFailed`) when a strategy's `executeReal` throws, so callers can isolate strategy errors from engine state. The chain keeps running.
 
 ---
 
@@ -715,31 +743,55 @@ The engine uses a sealed class hierarchy for state management (no boolean soup):
 ```dart
 sealed class EngineState {}
 
-class EngineIdle extends EngineState {}
+final class EngineIdle extends EngineState {}
 
-class EngineRunning extends EngineState {
+final class EngineRunning extends EngineState {
   int stepIndex;
-  TimerPhase phase;       // wait, duration, grace
+  TimerPhase phase;       // wait, duration, grace, holdWait,
+                          // sensitivity
   Duration remaining;
   int missCount;
   bool isHolding;
-  bool isAwaitingFirstTouch;
 }
 
-class EnginePaused extends EngineState {
+final class EnginePaused extends EngineState {
   EngineRunning snapshot;   // Frozen running state
   PauseReason reason;
 }
 
-class EngineEnded extends EngineState {
+final class EngineEnded extends EngineState {
   EndReason reason;
 }
 
-enum EndReason { userTerminated, chainExhausted, distressCompleted }
-enum PauseReason { manual, incomingCall }
+enum PauseReason {
+  userRequested,        // The UI / user explicitly requested a pause.
+  incomingCall,         // Incoming phone call detected; engine pauses
+                        // so audio does not bleed into the call.
+                        // Auto-resumes when the call ends.
+  fakeCallAnswered,     // Fake-call step `answer` action paused the
+                        // chain while the voice recording plays.
+  bootRestart,          // App relaunched after backgrounding long
+                        // enough that recovery-dialog flow is needed
+                        // (D-ENGINE-22 — no auto-resume).
+}
+
+enum EndReason {
+  disarm,               // User-initiated disarm (I'm safe / session-end
+                        // PIN / GPS arrival).
+  chainExhausted,       // Last chain step completed successfully.
+  hardwarePanic,        // Hardware panic trigger fired; distress chain
+                        // completed.
+  duressPin,            // Duress PIN entered; distress chain completed.
+  wrongPinExhausted,    // Wrong-PIN threshold hit; distress chain
+                        // completed.
+  userQuit,             // User quit the session (app-level termination
+                        // path).
+  appTermination,       // Application termination without an in-progress
+                        // recovery dialog.
+}
 ```
 
-State transitions are exhaustive via `switch` expressions on the sealed type. The engine exposes the current state as a `ValueNotifier<EngineState>`.
+State transitions are exhaustive via `switch` expressions on the sealed type.
 
 ---
 
@@ -881,11 +933,11 @@ This defense-in-depth prevents accidental real actions even if one guard is bypa
 
 ## Distress Chain (Replacement)
 
-When any distress trigger fires, the main chain is **stopped and discarded**. The selected distress chain becomes the active chain. There is no return to the main chain.
+When any distress trigger fires, the main chain is **stopped and discarded**. The selected distress mode's chain becomes the active chain. There is no return to the main chain.
 
-### Distress Chain Selection
+### Distress Mode Selection (Pivot 3 — distress is a Mode)
 
-Each `SessionMode` has a `distressChainId` (null = use the default from `AppDefaults.distressChains[0]`). Distress chains are globally-managed named lists stored in `AppDefaults.distressChains`. The first chain in the list is the default, used when `distressChainId` is null.
+Distress chains are not a separate model. A **distress mode** is a regular `SessionMode` with `isDistressMode = true`; the runtime treats its `chainSteps` as the distress chain. Each `SessionMode` carries a `distressModeId` field — the id of the distress mode whose chain should fire when a distress trigger hits this mode. `null` means "use `AppDefaults.defaultDistressModeId`"; if that is also null, the mode blocks at session start (validation error). Distress modes are managed in the UI under `/distress-modes` (see spec 04).
 
 ### Three Triggers — Same Result
 
@@ -931,8 +983,8 @@ After a distress trigger fires, a **5-second configurable confirmation window** 
 
 ### Distress Chain Mechanics
 
-- **Architecture**: Uses the same `SessionEngine` with `replaceWithDistressChain(steps)` — the engine clears current steps and starts from step 0 of the distress chain.
-- **No return**: Once distress fires, the main chain steps are gone. The engine ends with `EndReason.distressCompleted` when the distress chain completes.
+- **Architecture**: Uses the same `SessionEngine` with `replaceWithDistressChain(steps, triggerReason: ...)` — the engine clears current steps and starts from step 0 of the distress chain. The trigger reason is propagated to `sessionEnded.endReason` (one of `hardwarePanic`, `duressPin`, `wrongPinExhausted`).
+- **No return**: Once distress fires, the main chain steps are gone. The engine ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`) when the distress chain completes.
 - **Step types**: Both main and distress chains can contain any of the 9 step types. No restrictions.
 - **After completion**: UI shows a fake "session ended" screen (to fool an attacker in the duress scenario).
 - **Event logging**: Distress trigger event logged to `SessionLog` with trigger type.
@@ -1206,7 +1258,7 @@ The `SessionController` (Riverpod Notifier) wraps the `SessionEngine` and:
 | **Simulation** | Special mode with speed control and leap features for testing. |
 | **Jitter** | ±20% randomization on timing values. |
 | **Speed Multiplier** | Factor that divides all durations (e.g., 10x = 10× faster). |
-| **Distress Chain** | Globally-managed named chain that **replaces** the main chain when triggered (hardware panic, wrong PIN, duress PIN). No return to main chain. |
+| **Distress Chain** | The chain steps of a distress mode (a `SessionMode` with `isDistressMode = true`). Selected per-mode via `SessionMode.distressModeId` (or `AppDefaults.defaultDistressModeId` when null). **Replaces** the main chain when triggered (hardware panic, wrong PIN, duress PIN). No return to main chain. |
 | **Foreground Service** | Persistent notification shown while session active. |
 | **Stealth Mode** | Session appears as disguised app (e.g., "Music playing" notification). |
 

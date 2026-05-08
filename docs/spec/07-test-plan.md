@@ -287,8 +287,8 @@ Verify immutability, correctness, and serialization of persistent models.
 | 61a | AppDefaults: mode inherits all defaults when ModeOverrides is null | SessionMode with overrides=null, AppDefaults with GPS enabled | Resolve effective GPS config | Returns AppDefaults.gpsLogging |
 | 61b | ModeOverrides: non-null field overrides AppDefaults | SessionMode with overrides.stealth set, AppDefaults.stealth differs | Resolve effective stealth config | Returns overrides.stealth |
 | 61c | ModeOverrides: null field inherits from AppDefaults | SessionMode with overrides.gpsLogging=null | Resolve effective GPS config | Returns AppDefaults.gpsLogging |
-| 61d | DistressChain: mode selects chain by distressChainId | AppDefaults with 2 DistressChains (id="a", id="b"), SessionMode.distressChainId="b" | Resolve distress chain | Returns chain with id="b" |
-| 61e | DistressChain: null distressChainId → uses first chain in list | SessionMode.distressChainId=null, AppDefaults has 2 chains | Resolve distress chain | Returns first chain (default) |
+| 61d | Distress mode: mode selects target by distressModeId | Two distress modes (id="a", id="b"), SessionMode.distressModeId="b" | Resolve distress mode | Returns mode with id="b" |
+| 61e | Distress mode: null distressModeId → uses AppDefaults.defaultDistressModeId | SessionMode.distressModeId=null, AppDefaults.defaultDistressModeId="a" | Resolve distress mode | Returns mode with id="a" |
 | 61f | EmergencyContact: all enabled channels used (no preferredChannel) | EmergencyContact with sms=true, whatsapp=true, telegram=false | List active channels | Returns [sms, whatsapp]; telegram excluded |
 
 ---
@@ -325,7 +325,7 @@ prompt → fires distress chain silently). Each is independently nullable (disab
 |---|-----------|-------|-----|--------|
 | 69 | Correct Session End PIN disarms immediately | sessionEndPinHash set, session active | User enters correct PIN at PIN prompt | disarm() called, chain resets to step 0 |
 | 70 | Wrong Session End PIN increments failure counter | sessionEndPinHash set | Enter wrong PIN | PIN failure count = 1 |
-| 71 | 5 wrong Session End PINs trigger distress chain | sessionEndPinHash set, 5-attempt threshold | Enter wrong PIN 5 times | Distress chain fired (selected global DistressChain) |
+| 71 | 5 wrong Session End PINs trigger distress chain | sessionEndPinHash set, 5-attempt threshold | Enter wrong PIN 5 times | Distress chain fired (mode's resolved distress mode) |
 | 72 | Wrong PIN count resets after correct PIN | PIN failure counter = 4 | Enter correct PIN | Counter reset to 0 |
 | 73 | Biometric fallback for Session End PIN only | sessionEndPinHash set, biometric available | Biometric succeeds | disarm() called; biometric NOT available for App PIN or Duress PIN |
 | 74a | Duress PIN fires distress chain silently at any prompt | duressPinHash set, session active | Enter duress PIN at disarm prompt | Distress chain fires; no "wrong PIN" message shown |
@@ -605,7 +605,7 @@ Tests that verify core safety functionality and prevent catastrophic failures.
 | P1 | 89-90 | Distress hold boundary (5s vs 4.9s) | Prevents accidental distress triggers |
 | P1 | 113-115 | Emergency countdown timing & boundary | Ensures emergency calls placed reliably |
 | P1 | 174 | Emergency countdown + pause interaction | Ensures pause doesn't affect emergency timing |
-| P1 | 61d-61e | DistressChain resolution (by id / null default) | Correct distress chain must fire |
+| P1 | 61d-61e | Distress mode resolution (`distressModeId` → `AppDefaults.defaultDistressModeId`) | Correct distress chain must fire |
 
 ### Phase 2: P2 Data Integrity Tests
 
@@ -635,7 +635,7 @@ Comprehensive coverage of features, edge cases, and integration scenarios.
 | Priority | Test # | Count | Categories |
 |----------|--------|-------|------------|
 | P4 | 1–50 | 50 | Core engine, realistic scenarios |
-| P4 | 54–61f | 14+ | Data models (incl. DistressChain, AppDefaults, ModeOverrides, EmergencyContact) |
+| P4 | 54–61f | 14+ | Data models (incl. distress modes, AppDefaults, ModeOverrides, EmergencyContact) |
 | P4 | 69–74a, 75–78 | 8+ | PIN authentication (three-PIN model), pause/resume |
 | P4 | 91–98, 100–158 | 60+ | Volume detection, alarm ramp, contact import, JSON backup, simulation, UI, etc. |
 
@@ -1200,8 +1200,10 @@ end-to-end timer-driven flows. These scenarios close that gap.
 - **Expected outcomes:**
   - `engine.isDistressChain == true` immediately after panic.
   - `engine.steps` is now the distress chain (smsContact first).
-  - Terminal state is `EngineEnded(distressCompleted)`.
-  - Stream emits `chainExhausted` followed by `sessionEnded`.
+  - Terminal state is `EngineEnded(reason: hardwarePanic)`.
+  - Stream emits `distressTriggered` (when the chain is replaced),
+    later `distressCompleted`, and finally `sessionEnded` carrying
+    `endReason: hardwarePanic`.
   - `FakeMessagingService` recorded one `sendToAll` or `sendMessage`.
   - `FakePhoneService` recorded one `callEmergency` with the
     configured number.

@@ -79,28 +79,26 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
 
 ---
 
-## Distress Chains
+## Distress Chains (Pivot 3 — distress is a Mode)
 
-### Global Named Distress Chains
-- **Model**: `DistressChain` — globally managed named chain (id, name, List<ChainStep>).
-  Stored in `AppDefaults.distressChains`. First in list = default.
-- **Mode reference**: Each `SessionMode` has `distressChainId` (String?).
-  null = use default (first in list). Non-null = select chain by id.
+### Distress is a Mode
+- **No separate model.** A distress chain is the `chainSteps` of a regular `SessionMode`
+  flagged with `isDistressMode = true`. Distress modes live alongside regular modes in
+  `modes.json`.
+- **Mode reference**: Each `SessionMode` has `distressModeId` (String?). null =
+  inherit `AppDefaults.defaultDistressModeId`. If neither resolves, mode validation blocks
+  session start.
 - **Single distress chain per mode**: All three distress triggers (hardware panic, duress
-  PIN, wrong PIN threshold) fire the same selected chain. No per-trigger chain customization.
-- **Centralized distress chains**: Distress chains are global, not embedded in modes, enabling
-  reuse across multiple modes and simplifying distress configuration.
+  PIN, wrong PIN threshold) fire the same resolved distress mode's chain. No per-trigger
+  customization.
 
 ### Battery Alert (One-Shot Only)
-- **BatteryAlertConfig**: Chain-based alert: threshold + editable escalation chain (matching the mode-editor pattern). One-shot mechanism.
-- **Rationale**: Battery SMS alert is a simple notification, not a full escalation chain.
+- **BatteryAlertConfig**: Chain-based alert: threshold + editable escalation chain (matching the mode-editor pattern). One-shot mechanism. `enabled` defaults to false; `thresholdPercent` defaults to 10.
+- **Rationale**: Opt-in by design (Q22) — a safety app must not surprise users with new automatic alerts.
 
 ### Design Rationale
-- **Why global?**: All modes share the same distress response; per-mode embedding was redundant.
-- **Why named list?**: User may want different distress responses (e.g., "quiet" vs. "aggressive").
-  Named list allows selection without duplication.
-- **Why one chain per mode?**: Simplifies the trigger system — one consistent response regardless
-  of what triggered distress.
+- **Why a Mode?** Distress chains needed exactly the editing affordances modes already had (timing, retry, jitter, full per-step config). Adding `isDistressMode` was cheaper than maintaining a parallel `DistressChain` aggregate, repository, and editor screen.
+- **Why one chain per mode?**: Simplifies the trigger system — one consistent response regardless of what triggered distress.
 
 ---
 
@@ -631,8 +629,9 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 - **Date Mode**: Check-in via periodic reminders
 - **Custom modes**: Can mix check-in methods and steps creatively
 - **AppDefaults**: Master defaults for all modes. Stored as `AppDefaults` in `AppSettings`.
-  Contains: `distressChains`, `gpsLogging` (GpsLoggingConfig), `stealth` (StealthConfig),
-  `templates` (global ReminderTemplates), `eventDefaults` (EventDefaults).
+  Contains: `gpsLogging` (GpsLoggingConfig), `stealth` (StealthConfig),
+  `templates` (global ReminderTemplates), `eventDefaults` (EventDefaults), and
+  `defaultDistressModeId` (id of the default distress mode — Pivot 3).
 - **ModeOverrides**: Per-mode optional override of any AppDefaults field. null = inherit.
   `localTemplates` appended to global templates (not replacing).
 
@@ -757,7 +756,7 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 ### Backwards Compatibility
 - **Pre-alpha stance**: OK to break backwards compatibility during pre-alpha
 - **Hive schema**: Version management in `lib/main.dart` via `_migrateIfNeeded()`
-- **Hive type IDs**: Allocated 0–19 for core models (DistressChain, AppDefaults, BatteryAlertConfig)
+- **Persistence**: JSON-backed `JsonSingletonRepository` / `JsonListRepository`. Models live in `lib/domain/models/` with hand-rolled `toJson` / `fromJson`. Hive has been retired.
 
 ---
 
@@ -873,12 +872,11 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 - **Rationale**: Prevents unauthorized person from ending active safety session.
 
 ### Duress PIN
-- **Duress PIN**: Third PIN hash in AppSettings. When entered at any PIN prompt, fires the
-  selected global DistressChain silently (no error message shown to attacker).
+- **Duress PIN**: Third PIN hash in AppSettings. When entered at any PIN prompt, fires the mode's resolved distress mode silently (no error message shown to attacker). Engine is invoked via `replaceWithDistressChain(steps, triggerReason: TriggerReason.duressPin)`.
 - **Rationale**: Safety if coerced to "unlock the app" or "stop the session."
 
 ### Wrong PIN Escalation
-- **Attempts**: 5 wrong Session End PIN entries triggers the selected global DistressChain.
+- **Attempts**: 5 wrong Session End PIN entries triggers the mode's resolved distress mode (`triggerReason: TriggerReason.wrongPinExhausted`).
 - **Count**: Configurable threshold (default 5).
 - **Reset**: Resets to 0 after successful entry or time-based reset.
 - **Duress PIN does not count as wrong**: Silently escalates, no increment.
@@ -1102,10 +1100,48 @@ Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` 
 
 ---
 
+## Phase 1–10 Q-Decisions (May 2026)
+
+The following decisions were made during phases 1–10 of the rewrite. Each is described in detail in the relevant spec section; this table is the canonical index of "what got decided when, what shipped".
+
+| # | Topic | Resolution |
+|---|-------|------------|
+| Q1 | Deferred enhancements DE-1..5 | DE-1 / DE-2 / DE-3 / DE-4 LANDED. DE-5 LANDED on Android; iOS interactive widget deferred (see spec 11 §DE-5). |
+| Q6 | Distress unification (Pivot 3) | `DistressChain` deleted. Distress modes are `SessionMode`s with `isDistressMode = true`. Field renamed `distressChainId` → `distressModeId`. UI route is `/distress-modes` using `ModeEditorScreen(isDistress: true)`. |
+| Q7 | `pauseExpired` and `stepExecutionFailed` events | Both are now emitted (not "reserved"). Engine constructor accepts `maxPauseDuration`. |
+| Q8 | `disarm()` semantics | Re-arms the chain to step 0; does NOT end the session. |
+| Q9 | Loud alarm sounds | `LoudAlarmSound` enum is `siren` + `custom` only (`whoop` and `bell` removed). |
+| Q10 | `ChainStep.randomize` type | `double` in `[0, 1]` (not enum, not bool). |
+| Q11 | Speed multiplier | Clamp `[0.01, 1000.0]`. Real sessions reject any non-1.0 value. NaN / inf / non-positive throw. |
+| Q12 | `preSendSms` removed | Removed from `PhoneCallContactConfig`. The pre-call location SMS now lives only on `CallEmergencyConfig.sendLocationSmsFirst`. |
+| Q13 | `EndReason` / `PauseReason` | Rich code values match `lib/domain/engine/engine_state.dart` (`disarm`, `chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`, `userQuit`, `appTermination` / `userRequested`, `incomingCall`, `fakeCallAnswered`, `bootRestart`). |
+| Q14 | `jumpToStep` is simulation-only | Throws `StateError` on real sessions. |
+| Q15 | `SessionLog.hadMedicalInfo` | Field added (default `false`); stamped at session start by `SessionLogRecorder`. |
+| Q16 | `WalkSession.simulationSilent` | Field added; `WalkSession.startingReal` / `startingSimulation` named ctors. |
+| Q17 | `UserProfile` shape | Medical fields are `String?` (free-form text). Added `phoneNumber`, `photoPath`, `physicalDescription`. |
+| Q18 | `AppSettings` biometric / telemetry | `appPinBiometricEnabled`, `sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`, `requireLaunchAuth`, `launchAuthBiometric`, `sentryEnabled`, `telemetryOptOut` documented explicitly. |
+| Q19 | `alarmDndOverride` default | `false` (opt-in). |
+| Q20 | `StealthConfig` defaults | `fakeName = 'Music'`, `fakeIcon = StealthIconPreset.music`. |
+| Q21 | `GpsLoggingConfig` defaults | `intervalSeconds = 30`, `accuracy = high`, `format = decimal`. |
+| Q22 | `BatteryAlertConfig.enabled` default | `false` (opt-in). |
+| Q23/24/25 | Services exist + wired | `RecordingService`, `FlashService`, `ScreenFlashService`, `BackgroundSessionService` all implemented under `lib/services/implementations/`. |
+| Q26 | Onboarding p2 contact form | Uses the full `ContactFormScreen` (not a stripped form). |
+| Q27 | `EmergencyConfirmScreen` | Wired into `CallEmergencyStrategy` via the `emergencyConfirmationRequests` stream. |
+| Q28 | `/about` and `/feedback` | Nested under `/settings/` (`/settings/about`, `/settings/feedback`). |
+| Q29 | `/templates` and `/templates/edit` | Nested under `/settings/` (`/settings/templates`, `/settings/templates/edit`). |
+| Q31 | Settings — Language picker | Settings has a Language picker (14 languages). |
+| Q32 | Settings — Emergency Number editor | Settings has an Emergency-number editor. |
+| Q33 | Alarm gradual volume | `AppSettings.alarmGradualVolume` + `alarmGradualVolumeDurationSeconds` (default 5 s). Settings UI exposes both. |
+| Q34 | Settings — Redo onboarding | Settings has a "Redo onboarding" action. |
+| Q35 | PIN-timeout slider max | Bumped 60 s → 120 s. |
+
+---
+
 ## Changelog
 
 | Date | Change |
 |------|--------|
+| 2026-05-08 | Reconciled spec with phases 1–10 of the rewrite (Q1–Q35). Removed `DistressChain` model in favour of distress-flagged modes (Pivot 3); pruned `whoop` / `bell` alarm sounds, `preSendSms`, and other retracted features. |
 | 2026-04-14 | Normalized timing values: hardware button minimum 5 presses, decline-with-distress hold 5 seconds. Removed process markers and historical references. |
 | 2026-04-02 | Initial consolidation: centralized design decisions across all feature areas. |
 
