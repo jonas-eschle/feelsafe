@@ -15,8 +15,12 @@ final class SimulationAudioService implements AudioServiceProtocol {
   Future<void> playAlarm({
     bool maxVolume = true,
     bool isSimulation = false,
+    Duration? gradualVolumeRamp,
   }) async {
-    developer.log('[SIM] audio.playAlarm maxVolume=$maxVolume');
+    developer.log(
+      '[SIM] audio.playAlarm maxVolume=$maxVolume '
+      'ramp=${gradualVolumeRamp?.inSeconds}s',
+    );
   }
 
   @override

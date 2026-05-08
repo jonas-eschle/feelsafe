@@ -74,7 +74,7 @@ class _FakeFakeCallController extends FakeCallController {
 /// from reaching real platform plugins (which throw / hang in tests).
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false})
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
       async {}
   @override
   Future<void> stopAlarm() async {}

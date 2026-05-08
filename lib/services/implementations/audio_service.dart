@@ -77,12 +77,36 @@ final class AudioService implements AudioServiceProtocol {
   Future<void> playAlarm({
     bool maxVolume = true,
     bool isSimulation = false,
+    Duration? gradualVolumeRamp,
   }) async {
     if (isSimulation) {
-      developer.log('[SIM-BLOCK] audio.playAlarm maxVolume=$maxVolume');
+      developer.log(
+        '[SIM-BLOCK] audio.playAlarm maxVolume=$maxVolume '
+        'ramp=${gradualVolumeRamp?.inSeconds}s',
+      );
       return;
     }
     final player = _alarm;
+    final target = maxVolume ? 1.0 : 0.5;
+    final ramp = gradualVolumeRamp;
+    if (ramp != null && ramp > Duration.zero) {
+      // Q33: start silent and step up linearly. 10 steps is enough
+      // for human-perceptible smoothness without over-allocating
+      // timers; the cap of 30s on the setting bounds total work.
+      await player.setVolume(0.0);
+      await player.setAsset(_alarmAsset);
+      await player.setLoopMode(LoopMode.all);
+      await player.play();
+      const stepCount = 10;
+      final stepDuration = Duration(
+        microseconds: ramp.inMicroseconds ~/ stepCount,
+      );
+      for (var i = 1; i <= stepCount; i++) {
+        await Future<void>.delayed(stepDuration);
+        await player.setVolume(target * (i / stepCount));
+      }
+      return;
+    }
     if (maxVolume) {
       await player.setVolume(1.0);
     }

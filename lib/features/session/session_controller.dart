@@ -38,6 +38,7 @@ import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/session_log_recorder.dart';
+import 'package:guardianangela/domain/engine/tracking_buffer.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
@@ -58,6 +59,7 @@ class _SessionRuntime {
     required this.mode,
     required this.triggerManager,
     required this.eventsSub,
+    required this.services,
     this.incomingCallSub,
   });
 
@@ -68,6 +70,7 @@ class _SessionRuntime {
   final TriggerManager? triggerManager;
   final StreamSubscription<ChainEventData> eventsSub;
   final StreamSubscription<CallState>? incomingCallSub;
+  final _SessionServices services;
 }
 
 /// Async controller driving the active safety session.
@@ -305,11 +308,13 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   }
 
   /// Simulation-only: synthesize a GPS-arrival event so the user can
-  /// rehearse the auto-disarm path without actually walking.
+  /// rehearse the auto-disarm path without actually walking. Per
+  /// spec 01 §Disarm/Check-in the GPS-arrival path ends the session
+  /// (it is a successful check-in, not a re-arm).
   Future<void> simulateGpsArrival() async {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.disarm();
+    runtime.engine.endSession(reason: EndReason.disarm);
   }
 
   /// Simulation-only: synthesize a low-battery threshold crossing so
@@ -369,7 +374,10 @@ class SessionController extends AsyncNotifier<WalkSession?> {
   Future<void> triggerDistressChain() async {
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps());
+    runtime.engine.replaceWithDistressChain(
+      await _currentDistressChainSteps(),
+      triggerReason: TriggerReason.hardwarePanic,
+    );
   }
 
   /// Handles the outcome of a PIN prompt.
@@ -421,7 +429,15 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     }
     final runtime = _runtime;
     if (runtime == null) return;
-    runtime.engine.replaceWithDistressChain(await _currentDistressChainSteps());
+    final triggerReason = switch (reason) {
+      EndReason.duressPin => TriggerReason.duressPin,
+      EndReason.wrongPinExhausted => TriggerReason.wrongPinExhausted,
+      _ => TriggerReason.hardwarePanic,
+    };
+    runtime.engine.replaceWithDistressChain(
+      await _currentDistressChainSteps(),
+      triggerReason: triggerReason,
+    );
   }
 
   Future<List<ChainStep>> _currentDistressChainSteps() async {
@@ -477,10 +493,24 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       defaultPreSmsTemplate: _preSmsDefaultTemplateOf(appL),
       smsTemplateForLanguage: smsResolver,
       preSmsTemplateForLanguage: preSmsResolver,
+      // Q33: surface the gradual-volume ramp to LoudAlarmStrategy.
+      alarmGradualVolumeRamp: settings.alarmGradualVolume
+          ? Duration(seconds: settings.alarmGradualVolumeDurationSeconds)
+          : null,
     );
+    // Spec 11 §DE-3 — interval-based GPS recording. The buffer is
+    // ephemeral: created at session-start, cleared at session-end,
+    // never persisted (no session restore from disk).
+    final TrackingBuffer? trackingBuffer = mode.trackingEnabled
+        ? TrackingBuffer(capacity: mode.trackingBufferSize)
+        : null;
     final engine = SessionEngine(
       chainSteps: mode.chainSteps,
       isSimulation: isSimulation,
+      // Spec 01 §Events Emitted — pauseExpired auto-resume timer.
+      maxPauseDuration: mode.maxPauseMinutes != null
+          ? Duration(minutes: mode.maxPauseMinutes!)
+          : null,
     );
     final orchestrator = SessionOrchestrator(
       isSimulation: isSimulation,
@@ -491,9 +521,19 @@ class SessionController extends AsyncNotifier<WalkSession?> {
         notification: services.notification,
         vibration: services.vibration,
         deviceState: services.deviceState,
+        // Q46: pipe the live location service so LocationResolver
+        // can substitute `{location}` in SMS templates.
+        location: services.location,
         context: context,
         isCancelled: isCancelled,
         registerSmsWorkId: registerWorkId,
+        // Spec 11 §DE-3 — strategies prefer the buffer's latest
+        // point over a fresh GPS fix when resolving `{location}`.
+        trackingBuffer: trackingBuffer,
+        // Q24 — LoudAlarmStrategy strobes the LED when flashLight=true.
+        flash: services.flash,
+        // Q23 — SmsContactStrategy honours autoRecordAudio when set.
+        recording: services.recording,
       ),
       chainStepsResolver: () => engine.steps,
       messagingService: services.messaging,
@@ -503,6 +543,11 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       // empty list. Route descriptions into the live WalkSession
       // so the summary screen renders them.
       onSimulationDescription: _appendFiredDescription,
+      // Spec 01 §Events Emitted — surface strategy failures as engine
+      // events so SessionLogRecorder can record them.
+      onStepExecutionFailedEvent: ({required step, required stepIndex}) {
+        engine.emitStepExecutionFailed(stepIndex: stepIndex, step: step);
+      },
     );
     final recorder = SessionLogRecorder(
       log: SessionLog(
@@ -561,6 +606,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       triggerManager: triggerManager,
       eventsSub: eventsSub,
       incomingCallSub: incomingCallSub,
+      services: services,
     );
 
     // Seed `state` with an active WalkSession BEFORE starting so
@@ -783,6 +829,9 @@ class SessionController extends AsyncNotifier<WalkSession?> {
         batteryMonitor: ref.read(simulationBatteryMonitorProvider),
         deviceState: ref.read(simulationDeviceStateProvider),
         incomingCall: ref.read(simulationIncomingCallProvider),
+        location: ref.read(simulationLocationProvider),
+        flash: ref.read(simulationFlashProvider),
+        recording: ref.read(simulationRecordingProvider),
       );
     }
     return _SessionServices(
@@ -796,6 +845,9 @@ class SessionController extends AsyncNotifier<WalkSession?> {
       batteryMonitor: ref.read(batteryMonitorServiceProvider),
       deviceState: ref.read(deviceStateServiceProvider),
       incomingCall: ref.read(incomingCallServiceProvider),
+      location: ref.read(locationServiceProvider),
+      flash: ref.read(flashServiceProvider),
+      recording: ref.read(recordingServiceProvider),
     );
   }
 
@@ -807,6 +859,17 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final incomingCallSub = runtime.incomingCallSub;
     if (incomingCallSub != null) {
       await incomingCallSub.cancel();
+      // Sev-1 fix: also unregister the platform TelephonyCallback /
+      // CXCallObserver so the OS doesn't keep delivering events to
+      // a dead session.
+      try {
+        await runtime.services.incomingCall.stopListening();
+      } on Object catch (e) {
+        developer.log(
+          'incomingCall.stopListening failed: $e',
+          name: 'session.dispose',
+        );
+      }
     }
     await runtime.triggerManager?.dispose();
     await runtime.orchestrator.cancelPendingWork();
@@ -836,6 +899,9 @@ class _SessionServices {
     required this.batteryMonitor,
     required this.deviceState,
     required this.incomingCall,
+    required this.location,
+    required this.flash,
+    required this.recording,
   });
 
   final AudioServiceProtocol audio;
@@ -848,6 +914,9 @@ class _SessionServices {
   final BatteryMonitorServiceProtocol batteryMonitor;
   final DeviceStateServiceProtocol deviceState;
   final IncomingCallServiceProtocol incomingCall;
+  final LocationServiceProtocol location;
+  final FlashServiceProtocol flash;
+  final RecordingServiceProtocol recording;
 }
 
 /// Provider for `SessionController`.

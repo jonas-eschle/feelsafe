@@ -101,6 +101,7 @@ final class SessionContext {
     this.defaultPreSmsTemplate = kFallbackPreSmsTemplate,
     this.smsTemplateForLanguage,
     this.preSmsTemplateForLanguage,
+    this.alarmGradualVolumeRamp,
   });
 
   /// The active mode, if any.
@@ -160,6 +161,14 @@ final class SessionContext {
   /// Analogous resolver for the pre-call SMS template; falls back to
   /// [defaultPreSmsTemplate] when null.
   final SmsTemplateResolver? preSmsTemplateForLanguage;
+
+  /// Q33 — when set, [LoudAlarmStrategy] passes this duration to
+  /// [AudioServiceProtocol.playAlarm] so the alarm volume ramps from
+  /// 0.0 to the target linearly. Sourced from
+  /// [AppSettings.alarmGradualVolume] +
+  /// [AppSettings.alarmGradualVolumeDurationSeconds] at session
+  /// bootstrap. Null = no ramp (alarm starts at full volume).
+  final Duration? alarmGradualVolumeRamp;
 
   /// Returns the SMS template that should apply to [contact].
   ///

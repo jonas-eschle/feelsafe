@@ -20,7 +20,7 @@ import '../fake_repositories.dart';
 
 class _A implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false}) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp}) async {}
   @override
   Future<void> stopAlarm() async {}
   @override

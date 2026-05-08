@@ -199,6 +199,7 @@ class _FakeAudio implements AudioServiceProtocol {
   Future<void> playAlarm({
     bool maxVolume = true,
     bool isSimulation = false,
+    Duration? gradualVolumeRamp,
   }) async => calls.add('playAlarm:$maxVolume:sim=$isSimulation');
 
   @override

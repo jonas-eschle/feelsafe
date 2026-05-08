@@ -13,7 +13,16 @@ abstract class AudioServiceProtocol {
   /// maximum for the duration of playback.
   /// [isSimulation] — if true, the implementation may short-circuit
   /// to a preview tone or no-op.
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false});
+  /// [gradualVolumeRamp] — when non-null and > 0, the alarm starts at
+  /// volume 0.0 and ramps linearly to the configured target over the
+  /// given duration so the user has time to reach their phone before
+  /// the full siren scares them. Q33. Null = no ramp (legacy behaviour:
+  /// alarm starts at full volume).
+  Future<void> playAlarm({
+    bool maxVolume = true,
+    bool isSimulation = false,
+    Duration? gradualVolumeRamp,
+  });
 
   /// Stops the alarm (no-op if not playing).
   Future<void> stopAlarm();

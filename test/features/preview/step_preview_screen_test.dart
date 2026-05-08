@@ -50,7 +50,7 @@ class _FakeModesRepository extends ModesRepository {
 /// No-op audio so [FakeCallScreen] doesn't reach real platform code.
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false})
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
       async {}
   @override
   Future<void> stopAlarm() async {}

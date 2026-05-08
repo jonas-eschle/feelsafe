@@ -26,6 +26,7 @@ final class LoudAlarmStrategy extends EventStrategy {
     await services.audio.playAlarm(
       maxVolume: config.maxVolume,
       isSimulation: isSim,
+      gradualVolumeRamp: services.context.alarmGradualVolumeRamp,
     );
     await services.vibration.alarmPattern(isSimulation: isSim);
     // Camera-LED strobe — Q2 extraction. The flash service is

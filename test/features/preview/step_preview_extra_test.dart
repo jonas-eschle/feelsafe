@@ -45,7 +45,7 @@ class _FakeModesRepository extends ModesRepository {
 
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false})
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
       async {}
   @override
   Future<void> stopAlarm() async {}
@@ -68,7 +68,7 @@ class _NoopAudio implements AudioServiceProtocol {
 /// exercise the error-catch path in [_SimulationStrategyPreview._run].
 class _ThrowingAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false}) =>
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp}) =>
       Future.error(StateError('playAlarm simulated failure'));
   @override
   Future<void> stopAlarm() async {}

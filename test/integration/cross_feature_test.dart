@@ -154,6 +154,7 @@ class _Audio implements AudioServiceProtocol {
   Future<void> playAlarm({
     bool maxVolume = true,
     bool isSimulation = false,
+    Duration? gradualVolumeRamp,
   }) async => calls.add('playAlarm');
   @override
   Future<void> stopAlarm() async => calls.add('stopAlarm');
