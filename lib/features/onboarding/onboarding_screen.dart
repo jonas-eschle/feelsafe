@@ -9,13 +9,12 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:uuid/uuid.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
+import 'package:guardianangela/features/contacts/contact_form_screen.dart';
 import 'package:guardianangela/features/contacts/contacts_controller.dart';
 import 'package:guardianangela/features/onboarding/onboarding_controller.dart';
 import 'package:guardianangela/features/profile/profile_controller.dart';
@@ -35,15 +34,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   int _page = 0;
 
   final TextEditingController _nameCtrl = TextEditingController();
-  final TextEditingController _contactNameCtrl = TextEditingController();
-  final TextEditingController _contactPhoneCtrl = TextEditingController();
 
   @override
   void dispose() {
     _controller.dispose();
     _nameCtrl.dispose();
-    _contactNameCtrl.dispose();
-    _contactPhoneCtrl.dispose();
     super.dispose();
   }
 
@@ -54,21 +49,9 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
           .read(profileControllerProvider.notifier)
           .save(UserProfile(name: name));
     }
-    final contactName = _contactNameCtrl.text.trim();
-    final contactPhone = _contactPhoneCtrl.text.trim();
-    if (contactName.isNotEmpty && contactPhone.isNotEmpty) {
-      await ref
-          .read(contactsControllerProvider.notifier)
-          .save(
-            EmergencyContact(
-              id: const Uuid().v4(),
-              name: contactName,
-              phoneNumber: contactPhone,
-              sortOrder: 0,
-              channels: const [MessageChannel.sms],
-            ),
-          );
-    }
+    // Q26: contacts are added via the full ContactFormScreen launched
+    // from p2 — that screen persists directly via contactsController,
+    // so no contact-saving fall-through is needed here.
     await ref.read(onboardingControllerProvider.notifier).completeOnboarding();
     if (mounted) context.go(RouteNames.home);
   }
@@ -86,11 +69,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 children: [
                   const _WelcomePage(),
-                  _ProfilePage(
-                    nameCtrl: _nameCtrl,
-                    contactNameCtrl: _contactNameCtrl,
-                    contactPhoneCtrl: _contactPhoneCtrl,
-                  ),
+                  _ProfilePage(nameCtrl: _nameCtrl),
                   const _PermissionsPage(),
                 ],
               ),
@@ -167,20 +146,16 @@ class _WelcomePage extends StatelessWidget {
   }
 }
 
-class _ProfilePage extends StatelessWidget {
-  const _ProfilePage({
-    required this.nameCtrl,
-    required this.contactNameCtrl,
-    required this.contactPhoneCtrl,
-  });
+class _ProfilePage extends ConsumerWidget {
+  const _ProfilePage({required this.nameCtrl});
 
   final TextEditingController nameCtrl;
-  final TextEditingController contactNameCtrl;
-  final TextEditingController contactPhoneCtrl;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
+    final contacts =
+        ref.watch(contactsControllerProvider).value ?? const <EmergencyContact>[];
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(
@@ -197,18 +172,28 @@ class _ProfilePage extends StatelessWidget {
             controller: nameCtrl,
             decoration: InputDecoration(labelText: l.profileFieldName),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 24),
           Text(l.contactsTitle, style: Theme.of(context).textTheme.titleMedium),
           const SizedBox(height: 8),
-          TextField(
-            controller: contactNameCtrl,
-            decoration: InputDecoration(labelText: l.contactFieldName),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: contactPhoneCtrl,
-            decoration: InputDecoration(labelText: l.contactFieldPhone),
-            keyboardType: TextInputType.phone,
+          // Show every saved contact so the user can confirm one was
+          // actually persisted. Q26: we use the full ContactFormScreen
+          // for adding contacts during onboarding — same form as
+          // Settings → Contacts so the experience is consistent.
+          for (final contact in contacts)
+            ListTile(
+              dense: true,
+              leading: const Icon(Icons.person_outline),
+              title: Text(contact.name),
+              subtitle: Text(contact.phoneNumber),
+            ),
+          OutlinedButton.icon(
+            icon: const Icon(Icons.add),
+            label: Text(l.contactsAdd),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => const ContactFormScreen(),
+              ),
+            ),
           ),
         ],
       ),

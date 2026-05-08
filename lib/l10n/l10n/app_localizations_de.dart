@@ -1071,6 +1071,39 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsAlarmDnd => 'Alarm überschreibt „Nicht stören“';
 
   @override
+  String get settingsLanguagePicker => 'Sprache';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Notrufnummer';
+
+  @override
+  String get settingsEmergencyNumberHint => 'z. B. 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Speichern';
+
+  @override
+  String get settingsRedoOnboarding => 'Einrichtung wiederholen';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Einrichtung neu starten?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Ihre aktuelle Konfiguration bleibt erhalten.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Neu starten';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Alarm schrittweise lauter';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Anstiegsdauer: $seconds s';
+  }
+
+  @override
   String get securityTitle => 'Sicherheit';
 
   @override

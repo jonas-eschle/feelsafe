@@ -1064,6 +1064,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAlarmDnd => 'Alarm overrides Do Not Disturb';
 
   @override
+  String get settingsLanguagePicker => 'Language';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Emergency number';
+
+  @override
+  String get settingsEmergencyNumberHint => 'e.g., 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Save';
+
+  @override
+  String get settingsRedoOnboarding => 'Redo onboarding';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Restart onboarding?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Your current configuration is preserved.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Restart';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Gradual alarm volume';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Ramp duration: ${seconds}s';
+  }
+
+  @override
   String get securityTitle => 'Security';
 
   @override

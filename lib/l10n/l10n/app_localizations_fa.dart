@@ -1067,6 +1067,38 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsAlarmDnd => 'آژیر، حالت مزاحم نشوید را نادیده می‌گیرد';
 
   @override
+  String get settingsLanguagePicker => 'زبان';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'شماره اضطراری';
+
+  @override
+  String get settingsEmergencyNumberHint => 'مثلاً ۱۱۲';
+
+  @override
+  String get settingsEmergencyNumberSave => 'ذخیره';
+
+  @override
+  String get settingsRedoOnboarding => 'راه‌اندازی مجدد';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'راه‌اندازی از نو؟';
+
+  @override
+  String get settingsRedoOnboardingBody => 'تنظیمات فعلی شما حفظ می‌شود.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'شروع مجدد';
+
+  @override
+  String get settingsAlarmGradualVolume => 'افزایش تدریجی صدای آژیر';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'مدت افزایش: $seconds ثانیه';
+  }
+
+  @override
   String get securityTitle => 'امنیت';
 
   @override

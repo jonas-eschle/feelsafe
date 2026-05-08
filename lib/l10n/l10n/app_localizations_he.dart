@@ -1058,6 +1058,38 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsAlarmDnd => 'אזעקה עוקפת את מצב \'נא לא להפריע\'';
 
   @override
+  String get settingsLanguagePicker => 'שפה';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'מספר חירום';
+
+  @override
+  String get settingsEmergencyNumberHint => 'לדוגמה 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'שמור';
+
+  @override
+  String get settingsRedoOnboarding => 'חזרה על הכניסה הראשונה';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'להתחיל את הכניסה מחדש?';
+
+  @override
+  String get settingsRedoOnboardingBody => 'ההגדרות הנוכחיות שלך נשמרות.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'התחל מחדש';
+
+  @override
+  String get settingsAlarmGradualVolume => 'עוצמת אזעקה הדרגתית';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'משך הגברה: $seconds ש׳';
+  }
+
+  @override
   String get securityTitle => 'אבטחה';
 
   @override

@@ -1070,6 +1070,39 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsAlarmDnd => 'Сирена обходить «Не турбувати»';
 
   @override
+  String get settingsLanguagePicker => 'Мова';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Номер екстреної служби';
+
+  @override
+  String get settingsEmergencyNumberHint => 'напр., 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Зберегти';
+
+  @override
+  String get settingsRedoOnboarding => 'Повторити знайомство';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Почати знайомство спочатку?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Ваша поточна конфігурація зберігається.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Почати спочатку';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Поступове наростання сирени';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Тривалість наростання: $seconds с';
+  }
+
+  @override
   String get securityTitle => 'Безпека';
 
   @override

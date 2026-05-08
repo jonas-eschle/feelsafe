@@ -146,6 +146,29 @@ class SettingsController extends AsyncNotifier<AppSettings> {
     final current = await future;
     await save(current.copyWith(isFirstLaunch: false));
   }
+
+  /// Marks onboarding incomplete so the user is routed back to it
+  /// on next navigation (`isFirstLaunch = true`). Does NOT wipe any
+  /// existing profile, contacts, or modes — the spec says configuration
+  /// is preserved.
+  Future<void> markOnboardingIncomplete() async {
+    final current = await future;
+    await save(current.copyWith(isFirstLaunch: true));
+  }
+
+  /// Updates the gradual alarm-volume toggle.
+  Future<void> setAlarmGradualVolume(bool enabled) async {
+    final current = await future;
+    await save(current.copyWith(alarmGradualVolume: enabled));
+  }
+
+  /// Updates the gradual alarm-volume ramp duration in seconds.
+  Future<void> setAlarmGradualVolumeDuration(int seconds) async {
+    final current = await future;
+    await save(
+      current.copyWith(alarmGradualVolumeDurationSeconds: seconds),
+    );
+  }
 }
 
 /// Provider for `SettingsController`.

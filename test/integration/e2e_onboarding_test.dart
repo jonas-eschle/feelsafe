@@ -105,8 +105,11 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
-      // Page 2 has text fields for name and contact.
-      check(find.byType(TextField).evaluate().length).isGreaterOrEqual(2);
+      // Q26: page 2 exposes the profile name TextField and an
+      // OutlinedButton that pushes ContactFormScreen for adding a
+      // contact (no inline contact fields anymore).
+      check(find.byType(TextField).evaluate().length).isGreaterOrEqual(1);
+      check(find.byType(OutlinedButton).evaluate().length).isGreaterOrEqual(1);
     },
   );
 
@@ -199,13 +202,13 @@ void main() {
         child: const OnboardingScreen(),
       ));
       await tester.pumpAndSettle();
-      // Advance to page 2 (profile + contact).
+      // Advance to page 2 (profile name + contacts list).
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(0), 'Alice');
-      await tester.enterText(fields.at(1), 'Bob');
-      await tester.enterText(fields.at(2), '+15550001111');
+      // Q26: page 2 only has the profile name TextField; contacts are
+      // captured via the pushed ContactFormScreen (out of this test's
+      // scope — exercised in the contacts-form tests).
+      await tester.enterText(find.byType(TextField).first, 'Alice');
       await tester.pump();
       // Advance to last page.
       await tester.tap(find.byType(FilledButton).first);
@@ -214,9 +217,6 @@ void main() {
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
       check(profile.stored?.name).equals('Alice');
-      final saved = await contacts.getAll();
-      check(saved.length).equals(1);
-      check(saved.first.phoneNumber).equals('+15550001111');
       check(settings.stored!.isFirstLaunch).isFalse();
     },
   );
@@ -232,11 +232,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
-      // Leave name blank; fill contact.
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(1), 'Bob');
-      await tester.enterText(fields.at(2), '+15550001111');
-      await tester.pump();
+      // Leave name blank; advance through the rest of the flow.
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton).first);
@@ -247,7 +243,8 @@ void main() {
   );
 
   testWidgets(
-    'onboarding_finish_with_incomplete_contact_does_not_save_contact',
+    'onboarding_finish_does_not_save_contact_inline_anymore '
+    '(Q26: contacts come from ContactFormScreen)',
     (tester) async {
       final contacts = FakeContactsRepository();
       await tester.pumpWidget(hostScreenWithRouter(
@@ -257,12 +254,8 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
-      // Name-only contact, no phone.
-      final fields = find.byType(TextField);
-      await tester.enterText(fields.at(0), 'Alice');
-      await tester.enterText(fields.at(1), 'Bob');
-      // No phone entered.
-      await tester.pump();
+      // No inline contact form on p2 anymore — the page only has the
+      // user-name TextField + an Add-contact OutlinedButton.
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton).first);

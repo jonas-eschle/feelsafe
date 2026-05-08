@@ -11,6 +11,25 @@ import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
+// Mapping of BCP-47 language codes to their native display names.
+// Only the 14 locales that the app ships with need entries here.
+const Map<String, String> _localeDisplayNames = {
+  'ar': 'العربية',
+  'de': 'Deutsch',
+  'el': 'Ελληνικά',
+  'en': 'English',
+  'es': 'Español',
+  'fa': 'فارسی',
+  'fr': 'Français',
+  'he': 'עברית',
+  'hi': 'हिन्दी',
+  'pl': 'Polski',
+  'ru': 'Русский',
+  'uk': 'Українська',
+  'zh': '中文（简体）',
+  'zh_TW': '中文（繁體）',
+};
+
 /// Settings hub.
 class SettingsScreen extends ConsumerWidget {
   /// Creates the settings screen.
@@ -86,6 +105,24 @@ class SettingsScreen extends ConsumerWidget {
                   .setAlarmDndOverride(v),
             ),
           ),
+          _LanguagePicker(
+            current: settings?.languageCode ?? 'en',
+          ),
+          _EmergencyNumberTile(
+            current: settings?.emergencyCallNumber ?? '112',
+          ),
+          SwitchListTile(
+            title: Text(l.settingsAlarmGradualVolume),
+            value: settings?.alarmGradualVolume ?? false,
+            onChanged: (v) => ref
+                .read(settingsControllerProvider.notifier)
+                .setAlarmGradualVolume(v),
+          ),
+          if (settings?.alarmGradualVolume ?? false)
+            _GradualVolumeDurationSlider(
+              seconds: settings?.alarmGradualVolumeDurationSeconds ?? 5,
+            ),
+          _RedoOnboardingTile(),
         ],
       ),
     );
@@ -139,5 +176,160 @@ class _ThemeDropdown extends ConsumerWidget {
         },
       ),
     );
+  }
+}
+
+class _LanguagePicker extends ConsumerWidget {
+  const _LanguagePicker({required this.current});
+
+  final String current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    // Build locale items from the supported locales list, mapping each
+    // to a stable language-only code (e.g. zh_TW stays zh_TW).
+    final items = AppLocalizations.supportedLocales.map((locale) {
+      final code =
+          locale.countryCode != null ? '${locale.languageCode}_${locale.countryCode}' : locale.languageCode;
+      final label = _localeDisplayNames[code] ?? code;
+      return DropdownMenuItem<String>(value: code, child: Text(label));
+    }).toList();
+
+    // Ensure the current code is represented; fall back to 'en'.
+    final effectiveCurrent = items.any((i) => i.value == current) ? current : 'en';
+
+    return ListTile(
+      title: Text(l.settingsLanguagePicker),
+      trailing: DropdownButton<String>(
+        value: effectiveCurrent,
+        items: items,
+        onChanged: (v) {
+          if (v != null) {
+            ref.read(settingsControllerProvider.notifier).setLanguageCode(v);
+          }
+        },
+      ),
+    );
+  }
+}
+
+class _EmergencyNumberTile extends ConsumerWidget {
+  const _EmergencyNumberTile({required this.current});
+
+  final String current;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    return ListTile(
+      title: Text(l.settingsEmergencyNumberLabel),
+      subtitle: Text(current),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _showDialog(context, ref, l),
+    );
+  }
+
+  Future<void> _showDialog(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l,
+  ) async {
+    final ctrl = TextEditingController(text: current);
+    final saved = await showDialog<String>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.settingsEmergencyNumberLabel),
+        content: TextField(
+          controller: ctrl,
+          decoration: InputDecoration(hintText: l.settingsEmergencyNumberHint),
+          keyboardType: TextInputType.phone,
+          autofocus: true,
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(ctrl.text.trim()),
+            child: Text(l.settingsEmergencyNumberSave),
+          ),
+        ],
+      ),
+    );
+    ctrl.dispose();
+    if (saved != null && saved.isNotEmpty) {
+      await ref
+          .read(settingsControllerProvider.notifier)
+          .setEmergencyCallNumber(saved);
+    }
+  }
+}
+
+class _GradualVolumeDurationSlider extends ConsumerWidget {
+  const _GradualVolumeDurationSlider({required this.seconds});
+
+  final int seconds;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    return ListTile(
+      title: Text(l.settingsAlarmGradualVolumeDuration(seconds)),
+      subtitle: Slider(
+        value: seconds.toDouble(),
+        min: 0,
+        max: 30,
+        divisions: 30,
+        label: '$seconds',
+        onChanged: (v) => ref
+            .read(settingsControllerProvider.notifier)
+            .setAlarmGradualVolumeDuration(v.round()),
+      ),
+    );
+  }
+}
+
+class _RedoOnboardingTile extends ConsumerWidget {
+  const _RedoOnboardingTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    return ListTile(
+      title: Text(l.settingsRedoOnboarding),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => _confirm(context, ref, l),
+    );
+  }
+
+  Future<void> _confirm(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l,
+  ) async {
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l.settingsRedoOnboardingConfirm),
+        content: Text(l.settingsRedoOnboardingBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l.settingsRedoOnboardingProceed),
+          ),
+        ],
+      ),
+    );
+    if (proceed != true) return;
+    await ref
+        .read(settingsControllerProvider.notifier)
+        .markOnboardingIncomplete();
+    if (context.mounted) context.go(RouteNames.onboarding);
   }
 }

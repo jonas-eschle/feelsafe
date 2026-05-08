@@ -60,10 +60,11 @@ abstract class RouteNames {
 
   // ------------------------------- templates
   /// Disguised reminder templates list.
-  static const String templates = '/templates';
+  static const String templates = '/settings/templates';
 
-  /// Template create / edit form.
-  static const String templateEditor = '/templates/edit';
+  /// Template create / edit form (canonical /settings/-nested path
+  /// per Q29; Phase 7b consolidation).
+  static const String templateEditor = '/settings/templates/edit';
 
   // ------------------------------- profile
   /// User profile (identity + medical info).
@@ -113,10 +114,11 @@ abstract class RouteNames {
   /// Evidence export (share full session log).
   static const String evidenceExport = '/past-events/evidence';
 
-  // ------------------------------- misc
+  // ------------------------------- misc (nested under /settings/
+  // per Q28 — these are reached only from the Settings hub.)
   /// About / credits screen.
-  static const String about = '/about';
+  static const String about = '/settings/about';
 
   /// User-feedback form.
-  static const String feedback = '/feedback';
+  static const String feedback = '/settings/feedback';
 }

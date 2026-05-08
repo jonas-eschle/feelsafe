@@ -28,6 +28,7 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/models/walk_session.dart';
+import 'package:guardianangela/features/emergency/emergency_confirm_screen.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/simulation_advanced_controls.dart';
@@ -62,6 +63,23 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
       controller.onDistressConfirmation = _confirmDistress;
       controller.onAngelaDeceptiveDialog = _showAngelaDeceptiveDialog;
       controller.onDisarmRequested = _onDisarmRequested;
+      // Subscribe to emergency-call confirmation requests. Each event
+      // pushes the full-screen countdown so the user can cancel before
+      // the call is placed. The strategy's own silent delay runs in
+      // parallel; the screen pops itself when the countdown expires.
+      _emergencyConfirmSub = controller.emergencyConfirmationRequests.listen(
+        (req) {
+          if (!mounted) return;
+          Navigator.of(context).push<void>(
+            MaterialPageRoute<void>(
+              builder: (_) => EmergencyConfirmScreen(
+                number: req.number,
+                durationSeconds: req.durationSeconds,
+              ),
+            ),
+          );
+        },
+      );
     });
   }
 
@@ -69,6 +87,10 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
   /// [dispose] can detach the callback without calling
   /// `ref.read(...)` on a disposed element (which throws in Riverpod 3).
   SessionController? _attachedController;
+
+  /// Subscription to emergency-call confirmation requests. A new
+  /// [EmergencyConfirmScreen] is pushed for every event on this stream.
+  StreamSubscription<Object>? _emergencyConfirmSub;
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
@@ -98,6 +120,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
     _attachedController?.onAngelaDeceptiveDialog = null;
     _attachedController?.onDisarmRequested = null;
     _attachedController = null;
+    _emergencyConfirmSub?.cancel();
+    _emergencyConfirmSub = null;
     super.dispose();
   }
 

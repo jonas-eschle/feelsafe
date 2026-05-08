@@ -1077,6 +1077,39 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsAlarmDnd => 'L\'alarme contourne le mode Ne pas déranger';
 
   @override
+  String get settingsLanguagePicker => 'Langue';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Numéro d\'urgence';
+
+  @override
+  String get settingsEmergencyNumberHint => 'ex. 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Enregistrer';
+
+  @override
+  String get settingsRedoOnboarding => 'Refaire l\'introduction';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Redémarrer l\'introduction ?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Votre configuration actuelle est conservée.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Redémarrer';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Volume d\'alarme progressif';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Durée de montée : $seconds s';
+  }
+
+  @override
   String get securityTitle => 'Sécurité';
 
   @override

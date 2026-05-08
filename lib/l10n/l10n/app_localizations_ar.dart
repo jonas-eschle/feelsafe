@@ -1064,6 +1064,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsAlarmDnd => 'الإنذار يتجاوز وضع عدم الإزعاج';
 
   @override
+  String get settingsLanguagePicker => 'اللغة';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'رقم الطوارئ';
+
+  @override
+  String get settingsEmergencyNumberHint => 'مثلاً 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'حفظ';
+
+  @override
+  String get settingsRedoOnboarding => 'إعادة التهيئة';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'إعادة التهيئة من البداية؟';
+
+  @override
+  String get settingsRedoOnboardingBody => 'سيتم الاحتفاظ بإعداداتك الحالية.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'إعادة البدء';
+
+  @override
+  String get settingsAlarmGradualVolume => 'تصاعد تدريجي لصوت الإنذار';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'مدة التصاعد: $seconds ث';
+  }
+
+  @override
   String get securityTitle => 'الأمان';
 
   @override

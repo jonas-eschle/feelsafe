@@ -1070,6 +1070,39 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsAlarmDnd => 'अलार्म Do Not Disturb को रद्द करे';
 
   @override
+  String get settingsLanguagePicker => 'भाषा';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'आपातकालीन नंबर';
+
+  @override
+  String get settingsEmergencyNumberHint => 'जैसे, 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'सहेजें';
+
+  @override
+  String get settingsRedoOnboarding => 'परिचय दोबारा करें';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'परिचय पुनः प्रारंभ करें?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'आपका वर्तमान कॉन्फ़िगरेशन सुरक्षित रहेगा।';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'पुनः प्रारंभ करें';
+
+  @override
+  String get settingsAlarmGradualVolume => 'क्रमिक अलार्म वॉल्यूम';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'वृद्धि अवधि: $seconds से.';
+  }
+
+  @override
   String get securityTitle => 'सुरक्षा';
 
   @override

@@ -2105,6 +2105,66 @@ abstract class AppLocalizations {
   /// **'Alarm overrides Do Not Disturb'**
   String get settingsAlarmDnd;
 
+  /// Label for the language picker drop-down.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguagePicker;
+
+  /// ListTile title for the emergency call number.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency number'**
+  String get settingsEmergencyNumberLabel;
+
+  /// TextField hint inside the emergency-number dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g., 112'**
+  String get settingsEmergencyNumberHint;
+
+  /// Save button inside the emergency-number dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get settingsEmergencyNumberSave;
+
+  /// ListTile to restart the onboarding flow.
+  ///
+  /// In en, this message translates to:
+  /// **'Redo onboarding'**
+  String get settingsRedoOnboarding;
+
+  /// Title of the redo-onboarding confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart onboarding?'**
+  String get settingsRedoOnboardingConfirm;
+
+  /// Body of the redo-onboarding confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Your current configuration is preserved.'**
+  String get settingsRedoOnboardingBody;
+
+  /// Confirm button in the redo-onboarding dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get settingsRedoOnboardingProceed;
+
+  /// Toggle: ramp volume gradually when the alarm fires.
+  ///
+  /// In en, this message translates to:
+  /// **'Gradual alarm volume'**
+  String get settingsAlarmGradualVolume;
+
+  /// Slider label showing the gradual-volume ramp duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramp duration: {seconds}s'**
+  String settingsAlarmGradualVolumeDuration(int seconds);
+
   /// Title of the security submenu.
   ///
   /// In en, this message translates to:

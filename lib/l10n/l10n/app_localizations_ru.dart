@@ -1071,6 +1071,39 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsAlarmDnd => 'Тревога игнорирует режим «Не беспокоить»';
 
   @override
+  String get settingsLanguagePicker => 'Язык';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Номер экстренной помощи';
+
+  @override
+  String get settingsEmergencyNumberHint => 'напр., 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Сохранить';
+
+  @override
+  String get settingsRedoOnboarding => 'Повторить знакомство';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Начать знакомство заново?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Ваша текущая конфигурация сохраняется.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Начать заново';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Постепенное нарастание тревоги';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Длительность нарастания: $seconds с';
+  }
+
+  @override
   String get securityTitle => 'Безопасность';
 
   @override

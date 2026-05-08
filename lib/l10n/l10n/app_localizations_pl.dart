@@ -1069,6 +1069,39 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsAlarmDnd => 'Alarm pomija tryb Nie przeszkadzać';
 
   @override
+  String get settingsLanguagePicker => 'Język';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Numer alarmowy';
+
+  @override
+  String get settingsEmergencyNumberHint => 'np. 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Zapisz';
+
+  @override
+  String get settingsRedoOnboarding => 'Powtórz wprowadzenie';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Zrestartować wprowadzenie?';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Twoja obecna konfiguracja zostanie zachowana.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Restartuj';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Stopniowe narastanie alarmu';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Czas narastania: $seconds s';
+  }
+
+  @override
   String get securityTitle => 'Bezpieczeństwo';
 
   @override

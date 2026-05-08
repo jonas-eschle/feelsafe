@@ -1041,6 +1041,38 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsAlarmDnd => '警报忽略勿扰模式';
 
   @override
+  String get settingsLanguagePicker => '语言';
+
+  @override
+  String get settingsEmergencyNumberLabel => '紧急号码';
+
+  @override
+  String get settingsEmergencyNumberHint => '例如 112';
+
+  @override
+  String get settingsEmergencyNumberSave => '保存';
+
+  @override
+  String get settingsRedoOnboarding => '重新引导';
+
+  @override
+  String get settingsRedoOnboardingConfirm => '重新开始引导？';
+
+  @override
+  String get settingsRedoOnboardingBody => '您当前的配置将保留。';
+
+  @override
+  String get settingsRedoOnboardingProceed => '重新开始';
+
+  @override
+  String get settingsAlarmGradualVolume => '渐进式报警音量';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return '渐增时长：$seconds 秒';
+  }
+
+  @override
   String get securityTitle => '安全';
 
   @override
@@ -2598,6 +2630,38 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get settingsAlarmDnd => '警報覆寫勿擾模式';
+
+  @override
+  String get settingsLanguagePicker => '語言';
+
+  @override
+  String get settingsEmergencyNumberLabel => '緊急號碼';
+
+  @override
+  String get settingsEmergencyNumberHint => '例如 112';
+
+  @override
+  String get settingsEmergencyNumberSave => '儲存';
+
+  @override
+  String get settingsRedoOnboarding => '重新引導';
+
+  @override
+  String get settingsRedoOnboardingConfirm => '重新開始引導？';
+
+  @override
+  String get settingsRedoOnboardingBody => '您目前的設定將會保留。';
+
+  @override
+  String get settingsRedoOnboardingProceed => '重新開始';
+
+  @override
+  String get settingsAlarmGradualVolume => '漸進式警報音量';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return '漸增時長：$seconds 秒';
+  }
 
   @override
   String get securityTitle => '安全性';

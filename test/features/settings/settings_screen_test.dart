@@ -47,8 +47,22 @@ void main() {
       child: const SettingsScreen(),
     ));
     await tester.pumpAndSettle();
-    await tester.scrollUntilVisible(find.byType(Switch), 400);
-    await tester.tap(find.byType(Switch));
+    // Scroll until the DND switch ListTile text is visible, then tap
+    // the Switch inside the DND tile directly via a descendant search.
+    // `alarmDndOverride` defaults to false so the first Switch in the
+    // list is the DND one (gradual-volume switch is hidden until DND is
+    // toggled on, but let's be precise with a text-parent finder).
+    final dndTileText = find.text('Alarm overrides Do Not Disturb');
+    await tester.scrollUntilVisible(dndTileText, 400);
+    // The DND ListTile contains a raw Switch (not SwitchListTile).
+    final dndSwitch = find.descendant(
+      of: find.ancestor(
+        of: dndTileText,
+        matching: find.byType(ListTile),
+      ),
+      matching: find.byType(Switch),
+    );
+    await tester.tap(dndSwitch);
     await tester.pumpAndSettle();
     check(repo.stored!.alarmDndOverride).isTrue();
   });

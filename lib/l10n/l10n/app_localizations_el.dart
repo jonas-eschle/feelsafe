@@ -1078,6 +1078,39 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsAlarmDnd => 'Ο συναγερμός παρακάμπτει το Μην Ενοχλείτε';
 
   @override
+  String get settingsLanguagePicker => 'Γλώσσα';
+
+  @override
+  String get settingsEmergencyNumberLabel => 'Αριθμός έκτακτης ανάγκης';
+
+  @override
+  String get settingsEmergencyNumberHint => 'π.χ. 112';
+
+  @override
+  String get settingsEmergencyNumberSave => 'Αποθήκευση';
+
+  @override
+  String get settingsRedoOnboarding => 'Επανεκκίνηση εισαγωγής';
+
+  @override
+  String get settingsRedoOnboardingConfirm => 'Επανεκκίνηση εισαγωγής;';
+
+  @override
+  String get settingsRedoOnboardingBody =>
+      'Η τρέχουσα ρύθμισή σας διατηρείται.';
+
+  @override
+  String get settingsRedoOnboardingProceed => 'Επανεκκίνηση';
+
+  @override
+  String get settingsAlarmGradualVolume => 'Σταδιακή αύξηση έντασης συναγερμού';
+
+  @override
+  String settingsAlarmGradualVolumeDuration(int seconds) {
+    return 'Διάρκεια αύξησης: $seconds δλ';
+  }
+
+  @override
   String get securityTitle => 'Ασφάλεια';
 
   @override

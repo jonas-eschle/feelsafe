@@ -87,7 +87,8 @@ void main() {
   });
 
   testWidgets(
-    'OnboardingScreen finish button on last page saves profile + contact',
+    'OnboardingScreen finish button on last page saves profile only '
+    '(contacts captured via the full ContactFormScreen, Q26)',
     (tester) async {
       final settingsRepo = FakeSettingsRepository();
       final profileRepo = FakeUserProfileRepository();
@@ -101,15 +102,15 @@ void main() {
         child: const OnboardingScreen(),
       ));
       await tester.pumpAndSettle();
-      // Advance to page 2 and fill in name + contact.
+      // Advance to page 2 (profile name + contacts list).
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
       final fields = find.byType(TextField);
-      await tester.enterText(fields.at(0), 'Alice');
-      await tester.enterText(fields.at(1), 'Bob');
-      await tester.enterText(fields.at(2), '+15550001111');
+      // p2 exposes only the profile name TextField; contacts come
+      // from the pushed ContactFormScreen which we don't exercise here.
+      await tester.enterText(fields.first, 'Alice');
       await tester.pump();
-      // Advance to last page.
+      // Advance to permissions page.
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
       // Tap Finish (last-page FilledButton).
@@ -117,9 +118,6 @@ void main() {
       await tester.pumpAndSettle();
       check(profileRepo.stored).isNotNull();
       check(profileRepo.stored!.name).equals('Alice');
-      final contacts = await contactsRepo.getAll();
-      check(contacts.length).equals(1);
-      check(contacts.single.phoneNumber).equals('+15550001111');
       check(settingsRepo.stored!.isFirstLaunch).isFalse();
     },
   );
