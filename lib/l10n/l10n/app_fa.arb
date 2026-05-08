@@ -192,6 +192,8 @@
   "profileTitle": "پروفایل",
   "profileFieldName": "نام",
   "profileFieldAge": "سن",
+  "profileFieldPhoneNumber": "شماره تلفن",
+  "profileFieldPhysicalDescription": "توصیف ظاهری",
   "profileFieldBloodType": "گروه خونی",
   "profileFieldAllergies": "حساسیت‌ها",
   "profileFieldMedications": "داروها",

@@ -965,6 +965,12 @@ class AppLocalizationsFa extends AppLocalizations {
   String get profileFieldAge => 'سن';
 
   @override
+  String get profileFieldPhoneNumber => 'شماره تلفن';
+
+  @override
+  String get profileFieldPhysicalDescription => 'توصیف ظاهری';
+
+  @override
   String get profileFieldBloodType => 'گروه خونی';
 
   @override

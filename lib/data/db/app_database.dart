@@ -53,7 +53,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -64,6 +64,7 @@ class AppDatabase extends _$AppDatabase {
       // Pre-alpha: each schema version is the only supported one.
       // v2 (Phase 2.5) drops the distress_chains table — distress
       // modes now live in the modes table with isDistressMode=true.
+      // v3 (Phase 3) adds hadMedicalInfo column to session_logs.
       // Any upgrade attempt indicates a schema mismatch the caller
       // layer must resolve with a nuke-and-reseed.
       throw StateError(

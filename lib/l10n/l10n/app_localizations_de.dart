@@ -969,6 +969,12 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileFieldAge => 'Alter';
 
   @override
+  String get profileFieldPhoneNumber => 'Telefonnummer';
+
+  @override
+  String get profileFieldPhysicalDescription => 'Körperbeschreibung';
+
+  @override
   String get profileFieldBloodType => 'Blutgruppe';
 
   @override

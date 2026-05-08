@@ -962,6 +962,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get profileFieldAge => 'العمر';
 
   @override
+  String get profileFieldPhoneNumber => 'رقم الهاتف';
+
+  @override
+  String get profileFieldPhysicalDescription => 'الوصف الجسدي';
+
+  @override
   String get profileFieldBloodType => 'فصيلة الدم';
 
   @override

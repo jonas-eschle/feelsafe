@@ -46,6 +46,12 @@ final class AppSettings {
   /// defaults to 180 per spec/B8 (D-SAFETY-6).
   /// [wrongPinThreshold] — consecutive wrong-PIN entries that fire
   /// the distress chain; defaults to 5 per D-SEC-5 / spec A3.
+  /// [alarmGradualVolume] — when true the loud-alarm step ramps
+  /// volume from a low starting level to maximum over
+  /// [alarmGradualVolumeDurationSeconds]; defaults to false.
+  /// [alarmGradualVolumeDurationSeconds] — ramp duration in seconds;
+  /// must be >= 0; defaults to 5. Ignored when
+  /// [alarmGradualVolume] is false.
   const AppSettings({
     required this.defaults,
     this.appPinHash,
@@ -67,6 +73,8 @@ final class AppSettings {
     this.requireLaunchAuth = false,
     this.launchAuthBiometric = true,
     this.sentryEnabled = false,
+    this.alarmGradualVolume = false,
+    this.alarmGradualVolumeDurationSeconds = 5,
   });
 
   /// Deserializes `AppSettings` from JSON.
@@ -98,6 +106,10 @@ final class AppSettings {
     requireLaunchAuth: json['requireLaunchAuth'] as bool? ?? false,
     launchAuthBiometric: json['launchAuthBiometric'] as bool? ?? true,
     sentryEnabled: json['sentryEnabled'] as bool? ?? false,
+    alarmGradualVolume:
+        json['alarmGradualVolume'] as bool? ?? false,
+    alarmGradualVolumeDurationSeconds:
+        (json['alarmGradualVolumeDurationSeconds'] as num?)?.toInt() ?? 5,
   );
 
   /// Hash of the app-unlock PIN; null = no lock.
@@ -177,6 +189,15 @@ final class AppSettings {
   /// initialization happens at app start.
   final bool sentryEnabled;
 
+  /// When true, the loud-alarm step ramps volume from a low starting
+  /// level to maximum over [alarmGradualVolumeDurationSeconds],
+  /// giving the user time to reach their phone. Defaults to false.
+  final bool alarmGradualVolume;
+
+  /// Duration of the volume ramp in seconds. Must be >= 0. Defaults
+  /// to 5. Ignored when [alarmGradualVolume] is false.
+  final int alarmGradualVolumeDurationSeconds;
+
   /// Returns a new settings instance with the given fields replaced.
   ///
   /// Nullable PIN-hash fields and `selectedModeId` support explicit
@@ -209,6 +230,8 @@ final class AppSettings {
     bool? requireLaunchAuth,
     bool? launchAuthBiometric,
     bool? sentryEnabled,
+    bool? alarmGradualVolume,
+    int? alarmGradualVolumeDurationSeconds,
   }) => AppSettings(
     appPinHash: clearAppPinHash ? null : (appPinHash ?? this.appPinHash),
     sessionEndPinHash: clearSessionEndPinHash
@@ -240,6 +263,9 @@ final class AppSettings {
     requireLaunchAuth: requireLaunchAuth ?? this.requireLaunchAuth,
     launchAuthBiometric: launchAuthBiometric ?? this.launchAuthBiometric,
     sentryEnabled: sentryEnabled ?? this.sentryEnabled,
+    alarmGradualVolume: alarmGradualVolume ?? this.alarmGradualVolume,
+    alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds ??
+        this.alarmGradualVolumeDurationSeconds,
   );
 
   /// Serializes to JSON.
@@ -264,6 +290,8 @@ final class AppSettings {
     'requireLaunchAuth': requireLaunchAuth,
     'launchAuthBiometric': launchAuthBiometric,
     'sentryEnabled': sentryEnabled,
+    'alarmGradualVolume': alarmGradualVolume,
+    'alarmGradualVolumeDurationSeconds': alarmGradualVolumeDurationSeconds,
   };
 
   @override
@@ -288,7 +316,10 @@ final class AppSettings {
           other.sessionEndPinBiometricEnabled ==
               sessionEndPinBiometricEnabled &&
           other.distressCancelBiometricEnabled ==
-              distressCancelBiometricEnabled;
+              distressCancelBiometricEnabled &&
+          other.alarmGradualVolume == alarmGradualVolume &&
+          other.alarmGradualVolumeDurationSeconds ==
+              alarmGradualVolumeDurationSeconds;
 
   @override
   int get hashCode => Object.hash(
@@ -310,6 +341,8 @@ final class AppSettings {
       appPinBiometricEnabled,
       sessionEndPinBiometricEnabled,
       distressCancelBiometricEnabled,
+      alarmGradualVolume,
+      alarmGradualVolumeDurationSeconds,
     ),
   );
 

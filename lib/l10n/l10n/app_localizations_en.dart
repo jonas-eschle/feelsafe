@@ -962,6 +962,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileFieldAge => 'Age';
 
   @override
+  String get profileFieldPhoneNumber => 'Phone number';
+
+  @override
+  String get profileFieldPhysicalDescription => 'Physical description';
+
+  @override
   String get profileFieldBloodType => 'Blood type';
 
   @override

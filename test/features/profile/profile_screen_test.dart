@@ -7,7 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/repository_providers.dart';
-import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/profile/profile_screen.dart';
 
@@ -15,8 +14,7 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('ProfileScreen renders with no profile stored',
-      (tester) async {
+  testWidgets('ProfileScreen renders with no profile stored', (tester) async {
     await tester.pumpWidget(hostScreen(
       overrides: [
         userProfileRepositoryProvider
@@ -43,28 +41,24 @@ void main() {
     check(find.byType(ProfileScreen).evaluate().length).equals(1);
   });
 
-  testWidgets(
-    'ProfileScreen hydrates medical lists and allows removal',
-    (tester) async {
-      const profile = UserProfile(
-        name: 'Bob',
-        allergies: ['Peanuts'],
-        medications: ['Aspirin'],
-        medicalConditions: ['Asthma'],
-        emergencyInstructions: 'Call home',
-      );
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider
-              .overrideWithValue(FakeUserProfileRepository(profile)),
-        ],
-        child: const ProfileScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // The hydrated "Peanuts" allergy is rendered in the list editor.
-      check(find.text('Peanuts').evaluate().length).isGreaterOrEqual(1);
-    },
-  );
+  testWidgets('ProfileScreen hydrates medical text fields', (tester) async {
+    const profile = UserProfile(
+      name: 'Bob',
+      allergies: 'Peanuts',
+      medications: 'Aspirin',
+      medicalConditions: 'Asthma',
+      emergencyInstructions: 'Call home',
+    );
+    await tester.pumpWidget(hostScreenPushed(
+      overrides: [
+        userProfileRepositoryProvider
+            .overrideWithValue(FakeUserProfileRepository(profile)),
+      ],
+      child: const ProfileScreen(),
+    ));
+    await tester.pumpAndSettle();
+    check(find.text('Peanuts').evaluate().length).isGreaterOrEqual(1);
+  });
 
   testWidgets('ProfileScreen save persists edited profile', (tester) async {
     final repo = FakeUserProfileRepository();
@@ -78,7 +72,8 @@ void main() {
     final fields = find.byType(TextField);
     await tester.enterText(fields.at(0), 'Carol');
     await tester.enterText(fields.at(1), '42');
-    await tester.enterText(fields.at(2), 'A+');
+    // field 2 = phone, field 3 = physical, field 4 = bloodType
+    await tester.enterText(fields.at(4), 'A+');
     await tester.pump();
     await tester.tap(find.byIcon(Icons.check));
     await tester.pumpAndSettle();
@@ -107,20 +102,4 @@ void main() {
       check(repo.stored!.emergencyInstructions).isNull();
     },
   );
-
-  testWidgets('ProfileScreen remove-item button deletes entry',
-      (tester) async {
-    const profile = UserProfile(allergies: ['X']);
-    await tester.pumpWidget(hostScreenPushed(
-      overrides: [
-        userProfileRepositoryProvider
-            .overrideWithValue(FakeUserProfileRepository(profile)),
-      ],
-      child: const ProfileScreen(),
-    ));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.close).first);
-    await tester.pumpAndSettle();
-    check(find.text('X').evaluate()).isEmpty();
-  });
 }

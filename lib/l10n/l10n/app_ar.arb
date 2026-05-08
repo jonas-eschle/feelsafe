@@ -192,6 +192,8 @@
   "profileTitle": "الملف الشخصي",
   "profileFieldName": "الاسم",
   "profileFieldAge": "العمر",
+  "profileFieldPhoneNumber": "رقم الهاتف",
+  "profileFieldPhysicalDescription": "الوصف الجسدي",
   "profileFieldBloodType": "فصيلة الدم",
   "profileFieldAllergies": "الحساسية",
   "profileFieldMedications": "الأدوية",

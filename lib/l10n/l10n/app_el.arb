@@ -192,6 +192,8 @@
   "profileTitle": "Προφίλ",
   "profileFieldName": "Όνομα",
   "profileFieldAge": "Ηλικία",
+  "profileFieldPhoneNumber": "Αριθμός τηλεφώνου",
+  "profileFieldPhysicalDescription": "Φυσική περιγραφή",
   "profileFieldBloodType": "Ομάδα αίματος",
   "profileFieldAllergies": "Αλλεργίες",
   "profileFieldMedications": "Φάρμακα",

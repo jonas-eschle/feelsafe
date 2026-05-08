@@ -976,6 +976,12 @@ class AppLocalizationsEl extends AppLocalizations {
   String get profileFieldAge => 'Ηλικία';
 
   @override
+  String get profileFieldPhoneNumber => 'Αριθμός τηλεφώνου';
+
+  @override
+  String get profileFieldPhysicalDescription => 'Φυσική περιγραφή';
+
+  @override
   String get profileFieldBloodType => 'Ομάδα αίματος';
 
   @override

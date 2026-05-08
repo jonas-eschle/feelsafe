@@ -192,6 +192,8 @@
   "profileTitle": "Профіль",
   "profileFieldName": "Ім'я",
   "profileFieldAge": "Вік",
+  "profileFieldPhoneNumber": "Номер телефону",
+  "profileFieldPhysicalDescription": "Фізичний опис",
   "profileFieldBloodType": "Група крові",
   "profileFieldAllergies": "Алергії",
   "profileFieldMedications": "Ліки",

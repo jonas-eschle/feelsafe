@@ -192,6 +192,8 @@
   "profileTitle": "Perfil",
   "profileFieldName": "Nombre",
   "profileFieldAge": "Edad",
+  "profileFieldPhoneNumber": "Número de teléfono",
+  "profileFieldPhysicalDescription": "Descripción física",
   "profileFieldBloodType": "Grupo sanguíneo",
   "profileFieldAllergies": "Alergias",
   "profileFieldMedications": "Medicamentos",

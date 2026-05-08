@@ -108,6 +108,9 @@ final class WalkSession {
   /// defaults to false.
   /// [totalSteps] — total step count of the active chain; used by
   /// the session screen step counter. Defaults to 0.
+  /// [simulationSilent] — when true, audible/visible simulation
+  /// output (beeps, toasts) is suppressed; used by the simulation
+  /// summary screen. Defaults to false.
   const WalkSession({
     required this.id,
     required this.modeId,
@@ -124,7 +127,53 @@ final class WalkSession {
     this.lastSimulationDescription,
     this.isBackgroundAlert = false,
     this.totalSteps = 0,
+    this.simulationSilent = false,
   });
+
+  /// Creates a [WalkSession] for a real (non-simulation) session.
+  ///
+  /// Sets [isSimulation] to `false` and [simulationSilent] to `false`
+  /// because there is no simulation output to suppress in a real run.
+  /// [simulationSpeed] is fixed at 1.0 — the engine rejects speed
+  /// multipliers for real sessions.
+  WalkSession.startingReal({
+    required String id,
+    required String modeId,
+    required DateTime startedAt,
+    bool isBackgroundAlert = false,
+  }) : this(
+         id: id,
+         modeId: modeId,
+         isSimulation: false,
+         startedAt: startedAt,
+         phase: const SessionPhaseIdle(),
+         simulationSpeed: 1.0,
+         isBackgroundAlert: isBackgroundAlert,
+         simulationSilent: false,
+       );
+
+  /// Creates a [WalkSession] for a simulation run.
+  ///
+  /// [simulationSilent] defaults to `false` so the normal simulation
+  /// experience (beeps, toasts) is preserved; pass `true` when the
+  /// simulation summary screen drives a silent replay.
+  /// [simulationSpeed] must be ≥ 1.0; the engine enforces this but
+  /// the UI should pre-validate before constructing the session.
+  WalkSession.startingSimulation({
+    required String id,
+    required String modeId,
+    required DateTime startedAt,
+    double simulationSpeed = 1.0,
+    bool silent = false,
+  }) : this(
+         id: id,
+         modeId: modeId,
+         isSimulation: true,
+         startedAt: startedAt,
+         phase: const SessionPhaseIdle(),
+         simulationSpeed: simulationSpeed,
+         simulationSilent: silent,
+       );
 
   /// Session id.
   final String id;
@@ -175,6 +224,12 @@ final class WalkSession {
   /// Total step count in the active chain. Defaults to 0.
   final int totalSteps;
 
+  /// When true, audible and visible simulation output (beeps, toasts)
+  /// is suppressed. Used by the simulation summary screen to run a
+  /// silent replay. Always `false` for real sessions. Defaults to
+  /// false.
+  final bool simulationSilent;
+
   /// Derives the correct [SessionPhase] from an [EngineState].
   static SessionPhase phaseFromEngine(EngineState state) => switch (state) {
     EngineIdle() => const SessionPhaseIdle(),
@@ -200,6 +255,7 @@ final class WalkSession {
     SimulationDescription? lastSimulationDescription,
     bool? isBackgroundAlert,
     int? totalSteps,
+    bool? simulationSilent,
   }) => WalkSession(
     id: id ?? this.id,
     modeId: modeId ?? this.modeId,
@@ -217,6 +273,7 @@ final class WalkSession {
         lastSimulationDescription ?? this.lastSimulationDescription,
     isBackgroundAlert: isBackgroundAlert ?? this.isBackgroundAlert,
     totalSteps: totalSteps ?? this.totalSteps,
+    simulationSilent: simulationSilent ?? this.simulationSilent,
   );
 
   /// Serializes to JSON (debug-only — `WalkSession` is ephemeral).
@@ -239,6 +296,7 @@ final class WalkSession {
         ? null
         : _simDescToJson(lastSimulationDescription!),
     'isBackgroundAlert': isBackgroundAlert,
+    'simulationSilent': simulationSilent,
   };
 
   /// Deserializes a `WalkSession` from JSON (debug-only).
@@ -274,6 +332,7 @@ final class WalkSession {
               json['lastSimulationDescription']! as Map<String, Object?>,
             ),
       isBackgroundAlert: json['isBackgroundAlert'] as bool? ?? false,
+      simulationSilent: json['simulationSilent'] as bool? ?? false,
     );
   }
 
@@ -296,6 +355,7 @@ final class WalkSession {
       return false;
     }
     if (other.isBackgroundAlert != isBackgroundAlert) return false;
+    if (other.simulationSilent != simulationSilent) return false;
     if (other.firedStepDescriptions.length != firedStepDescriptions.length) {
       return false;
     }
@@ -323,6 +383,7 @@ final class WalkSession {
     Object.hashAll(firedStepDescriptions),
     lastSimulationDescription,
     isBackgroundAlert,
+    simulationSilent,
   );
 
   @override

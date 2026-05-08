@@ -126,6 +126,8 @@ final class SessionLog {
   /// later renames do not corrupt history).
   /// [startedAt] — when the session started.
   /// [isSimulation] — true if this was a practice session.
+  /// [hadMedicalInfo] — true if medical info was attached when the
+  /// session started; defaults to false.
   /// [endedAt] — when the session ended; null if still running.
   /// [endReason] — why the session ended; null if still running.
   /// [events] — ordered list of events; defaults to empty.
@@ -135,6 +137,7 @@ final class SessionLog {
     required this.modeName,
     required this.startedAt,
     required this.isSimulation,
+    this.hadMedicalInfo = false,
     this.endedAt,
     this.endReason,
     this.events = const [],
@@ -155,6 +158,7 @@ final class SessionLog {
           ? null
           : _endReasonFromJson(json['endReason']),
       isSimulation: json['isSimulation'] as bool? ?? false,
+      hadMedicalInfo: json['hadMedicalInfo'] as bool? ?? false,
       events: raw is List
           ? List<SessionLogEvent>.unmodifiable(
               raw.map(
@@ -186,6 +190,13 @@ final class SessionLog {
   /// True if this was a simulation.
   final bool isSimulation;
 
+  /// True if medical info was attached at session start.
+  ///
+  /// Recorded once so history accurately reflects whether the
+  /// emergency SMS sent during this session included medical data,
+  /// even if the user later fills in or removes medical information.
+  final bool hadMedicalInfo;
+
   /// Ordered event list.
   final List<SessionLogEvent> events;
 
@@ -198,6 +209,7 @@ final class SessionLog {
     DateTime? endedAt,
     EndReason? endReason,
     bool? isSimulation,
+    bool? hadMedicalInfo,
     List<SessionLogEvent>? events,
   }) => SessionLog(
     id: id ?? this.id,
@@ -207,6 +219,7 @@ final class SessionLog {
     endedAt: endedAt ?? this.endedAt,
     endReason: endReason ?? this.endReason,
     isSimulation: isSimulation ?? this.isSimulation,
+    hadMedicalInfo: hadMedicalInfo ?? this.hadMedicalInfo,
     events: events ?? this.events,
   );
 
@@ -219,6 +232,7 @@ final class SessionLog {
     'endedAt': endedAt?.toIso8601String(),
     'endReason': endReason?.name,
     'isSimulation': isSimulation,
+    'hadMedicalInfo': hadMedicalInfo,
     'events': events.map((e) => e.toJson()).toList(growable: false),
   };
 
@@ -233,6 +247,7 @@ final class SessionLog {
     if (other.endedAt != endedAt) return false;
     if (other.endReason != endReason) return false;
     if (other.isSimulation != isSimulation) return false;
+    if (other.hadMedicalInfo != hadMedicalInfo) return false;
     if (other.events.length != events.length) return false;
     for (var i = 0; i < events.length; i++) {
       if (other.events[i] != events[i]) return false;
@@ -249,6 +264,7 @@ final class SessionLog {
     endedAt,
     endReason,
     isSimulation,
+    hadMedicalInfo,
     Object.hashAll(events),
   );
 

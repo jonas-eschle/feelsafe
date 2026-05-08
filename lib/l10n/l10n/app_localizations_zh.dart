@@ -939,6 +939,12 @@ class AppLocalizationsZh extends AppLocalizations {
   String get profileFieldAge => '年龄';
 
   @override
+  String get profileFieldPhoneNumber => '电话号码';
+
+  @override
+  String get profileFieldPhysicalDescription => '外貌描述';
+
+  @override
   String get profileFieldBloodType => '血型';
 
   @override
@@ -2490,6 +2496,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get profileFieldAge => '年齡';
+
+  @override
+  String get profileFieldPhoneNumber => '電話號碼';
+
+  @override
+  String get profileFieldPhysicalDescription => '外貌描述';
 
   @override
   String get profileFieldBloodType => '血型';

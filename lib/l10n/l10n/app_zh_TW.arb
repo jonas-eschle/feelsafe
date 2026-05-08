@@ -192,6 +192,8 @@
   "profileTitle": "個人資料",
   "profileFieldName": "姓名",
   "profileFieldAge": "年齡",
+  "profileFieldPhoneNumber": "電話號碼",
+  "profileFieldPhysicalDescription": "外貌描述",
   "profileFieldBloodType": "血型",
   "profileFieldAllergies": "過敏原",
   "profileFieldMedications": "使用中藥物",

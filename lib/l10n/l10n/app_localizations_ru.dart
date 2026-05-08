@@ -969,6 +969,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileFieldAge => 'Возраст';
 
   @override
+  String get profileFieldPhoneNumber => 'Номер телефона';
+
+  @override
+  String get profileFieldPhysicalDescription => 'Физическое описание';
+
+  @override
   String get profileFieldBloodType => 'Группа крови';
 
   @override

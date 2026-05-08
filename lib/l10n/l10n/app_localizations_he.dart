@@ -956,6 +956,12 @@ class AppLocalizationsHe extends AppLocalizations {
   String get profileFieldAge => 'גיל';
 
   @override
+  String get profileFieldPhoneNumber => 'מספר טלפון';
+
+  @override
+  String get profileFieldPhysicalDescription => 'תיאור פיזי';
+
+  @override
   String get profileFieldBloodType => 'סוג דם';
 
   @override

@@ -250,7 +250,7 @@ final _settingsA = AppSettings(
 const _profileA = UserProfile(
   name: 'Test User',
   bloodType: 'O+',
-  allergies: ['Peanuts'],
+  allergies: 'Peanuts',
 );
 const _batteryA = BatteryAlertConfig(enabled: true, thresholdPercent: 15);
 final _logA = SessionLog(

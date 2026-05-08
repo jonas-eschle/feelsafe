@@ -192,6 +192,8 @@
   "profileTitle": "प्रोफ़ाइल",
   "profileFieldName": "नाम",
   "profileFieldAge": "आयु",
+  "profileFieldPhoneNumber": "फ़ोन नंबर",
+  "profileFieldPhysicalDescription": "शारीरिक विवरण",
   "profileFieldBloodType": "रक्त समूह",
   "profileFieldAllergies": "एलर्जी",
   "profileFieldMedications": "दवाइयाँ",

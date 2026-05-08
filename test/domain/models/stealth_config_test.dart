@@ -11,8 +11,8 @@ void main() {
     test('defaults', () {
       const c = StealthConfig();
       check(c.enabled).isFalse();
-      check(c.fakeName).equals('Calendar');
-      check(c.fakeIcon).equals(StealthIconPreset.calendar);
+      check(c.fakeName).equals('Music');
+      check(c.fakeIcon).equals(StealthIconPreset.music);
       check(c.notificationDisguise).isTrue();
       check(c.timerDisplay).equals(StealthTimerDisplay.normal);
       check(c.sessionScreenStealth).isTrue();

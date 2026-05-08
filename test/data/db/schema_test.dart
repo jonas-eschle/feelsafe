@@ -23,8 +23,8 @@ void main() {
     await db.close();
   });
 
-  test('schema version is 2', () {
-    check(db.schemaVersion).equals(2);
+  test('schema version is 3', () {
+    check(db.schemaVersion).equals(3);
   });
 
   test('dbFileName is the documented value', () {

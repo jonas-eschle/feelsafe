@@ -1901,6 +1901,18 @@ abstract class AppLocalizations {
   /// **'Age'**
   String get profileFieldAge;
 
+  /// Profile own phone number field.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get profileFieldPhoneNumber;
+
+  /// Free-form physical description (hair, height, etc.).
+  ///
+  /// In en, this message translates to:
+  /// **'Physical description'**
+  String get profileFieldPhysicalDescription;
+
   /// Profile blood type field.
   ///
   /// In en, this message translates to:

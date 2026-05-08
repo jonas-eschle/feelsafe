@@ -1,6 +1,5 @@
 /// Coverage filler for [ProfileScreen]:
-///   * `_ListEditor` add-item path (typed text + tapping the + icon,
-///     lines 180-184 of profile_screen.dart).
+///   * multiline text fields for allergies, medications, conditions.
 ///   * Error async state path via a throwing repo.
 library;
 
@@ -16,7 +15,7 @@ import '../widget_test_helpers.dart';
 
 void main() {
   testWidgets(
-    'ProfileScreen _ListEditor add-item button persists typed entry on save',
+    'ProfileScreen allergies text field persists value on save',
     (tester) async {
       final repo = FakeUserProfileRepository();
       await tester.pumpWidget(hostScreenPushed(
@@ -26,26 +25,19 @@ void main() {
         child: const ProfileScreen(),
       ));
       await tester.pumpAndSettle();
-      // Find the allergies inline TextField (first list editor).
-      final listFields = find.byType(TextField);
-      // The _ListEditor inline field comes after the three profile
-      // fields (name, age, bloodType). Index 3 = first _ListEditor
-      // input.
-      await tester.enterText(listFields.at(3), 'Peanuts');
+      // Fields: 0=name, 1=age, 2=phone, 3=physical, 4=blood,
+      //         5=allergies, 6=medications, 7=conditions, 8=instructions
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(5), 'Peanuts');
       await tester.pump();
-      // The add icon is the first Icons.add in the list editor row.
-      final addIcons = find.byIcon(Icons.add);
-      await tester.tap(addIcons.first);
-      await tester.pumpAndSettle();
-      // Now save.
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();
-      check(repo.stored!.allergies).deepEquals(['Peanuts']);
+      check(repo.stored!.allergies).equals('Peanuts');
     },
   );
 
   testWidgets(
-    'ProfileScreen _ListEditor add-item with blank input is a no-op',
+    'ProfileScreen blank allergies field saves as null',
     (tester) async {
       final repo = FakeUserProfileRepository();
       await tester.pumpWidget(hostScreenPushed(
@@ -55,12 +47,9 @@ void main() {
         child: const ProfileScreen(),
       ));
       await tester.pumpAndSettle();
-      // Tap add without typing — should not add anything.
-      await tester.tap(find.byIcon(Icons.add).first);
-      await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();
-      check(repo.stored!.allergies).isEmpty();
+      check(repo.stored!.allergies).isNull();
     },
   );
 }

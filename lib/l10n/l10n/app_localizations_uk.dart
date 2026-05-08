@@ -968,6 +968,12 @@ class AppLocalizationsUk extends AppLocalizations {
   String get profileFieldAge => 'Вік';
 
   @override
+  String get profileFieldPhoneNumber => 'Номер телефону';
+
+  @override
+  String get profileFieldPhysicalDescription => 'Фізичний опис';
+
+  @override
   String get profileFieldBloodType => 'Група крові';
 
   @override

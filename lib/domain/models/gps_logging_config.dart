@@ -34,18 +34,18 @@ final class GpsLoggingConfig {
   /// Creates a GPS logging config.
   ///
   /// [enabled] — master toggle; defaults to true.
-  /// [intervalSeconds] — sampling interval; defaults to 60.
-  /// [accuracy] — sampling accuracy preset; defaults to medium.
-  /// [format] — textual format for messages; defaults to dms.
+  /// [intervalSeconds] — sampling interval; defaults to 30.
+  /// [accuracy] — sampling accuracy preset; defaults to high.
+  /// [format] — textual format for messages; defaults to decimal.
   /// [includeInSms] — append location to SMS messages; defaults to
   /// true.
   /// [historyRetentionDays] — how long samples are kept; defaults
   /// to 30.
   const GpsLoggingConfig({
     this.enabled = true,
-    this.intervalSeconds = 60,
-    this.accuracy = GpsAccuracy.medium,
-    this.format = GpsFormat.dms,
+    this.intervalSeconds = 30,
+    this.accuracy = GpsAccuracy.high,
+    this.format = GpsFormat.decimal,
     this.includeInSms = true,
     this.historyRetentionDays = 30,
   });
@@ -54,7 +54,7 @@ final class GpsLoggingConfig {
   factory GpsLoggingConfig.fromJson(Map<String, Object?> json) =>
       GpsLoggingConfig(
         enabled: json['enabled'] as bool? ?? true,
-        intervalSeconds: (json['intervalSeconds'] as num?)?.toInt() ?? 60,
+        intervalSeconds: (json['intervalSeconds'] as num?)?.toInt() ?? 30,
         accuracy: _accuracyFromJson(json['accuracy']),
         format: _formatFromJson(json['format']),
         includeInSms: json['includeInSms'] as bool? ?? true,
@@ -65,14 +65,14 @@ final class GpsLoggingConfig {
   /// Master toggle for GPS logging. Defaults to true.
   final bool enabled;
 
-  /// Sampling interval in seconds. Defaults to 60.
+  /// Sampling interval in seconds. Defaults to 30.
   final int intervalSeconds;
 
-  /// Sampling accuracy preset. Defaults to `GpsAccuracy.medium`.
+  /// Sampling accuracy preset. Defaults to `GpsAccuracy.high`.
   final GpsAccuracy accuracy;
 
   /// Textual format for embedded coordinates. Defaults to
-  /// `GpsFormat.dms`.
+  /// `GpsFormat.decimal`.
   final GpsFormat format;
 
   /// Whether to append coordinates to SMS messages. Defaults to true.
@@ -141,7 +141,7 @@ GpsAccuracy _accuracyFromJson(Object? raw) => switch (raw) {
   'low' => GpsAccuracy.low,
   'medium' => GpsAccuracy.medium,
   'high' => GpsAccuracy.high,
-  null => GpsAccuracy.medium,
+  null => GpsAccuracy.high,
   _ => throw ArgumentError.value(raw, 'accuracy', 'unknown GpsAccuracy'),
 };
 
@@ -149,6 +149,6 @@ GpsFormat _formatFromJson(Object? raw) => switch (raw) {
   'dms' => GpsFormat.dms,
   'decimal' => GpsFormat.decimal,
   'openLocationCode' => GpsFormat.openLocationCode,
-  null => GpsFormat.dms,
+  null => GpsFormat.decimal,
   _ => throw ArgumentError.value(raw, 'format', 'unknown GpsFormat'),
 };

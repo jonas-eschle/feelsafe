@@ -11,9 +11,9 @@ void main() {
     test('defaults', () {
       const c = GpsLoggingConfig();
       check(c.enabled).isTrue();
-      check(c.intervalSeconds).equals(60);
-      check(c.accuracy).equals(GpsAccuracy.medium);
-      check(c.format).equals(GpsFormat.dms);
+      check(c.intervalSeconds).equals(30);
+      check(c.accuracy).equals(GpsAccuracy.high);
+      check(c.format).equals(GpsFormat.decimal);
       check(c.includeInSms).isTrue();
       check(c.historyRetentionDays).equals(30);
     });

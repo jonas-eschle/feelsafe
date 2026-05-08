@@ -86,6 +86,14 @@ class SessionLogsTable extends Table {
   /// Mirror of `SessionLog.startedAt` for sort / range queries.
   DateTimeColumn get startedAt => dateTime()();
 
+  /// Mirror of `SessionLog.hadMedicalInfo`. Defaults to false.
+  ///
+  /// Surfaced as a native column so evidence-export queries can
+  /// filter logs where medical data was included without parsing
+  /// every JSON blob.
+  BoolColumn get hadMedicalInfo =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 

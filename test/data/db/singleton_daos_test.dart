@@ -74,14 +74,14 @@ void main() {
       final dao = UserProfileDao(db);
       const profile = UserProfile(
         name: 'Alice',
-        allergies: ['peanuts'],
-        medications: ['insulin'],
+        allergies: 'peanuts',
+        medications: 'insulin',
       );
       await dao.save(profile);
       final read = await dao.get();
       check(read!.name).equals('Alice');
-      check(read.allergies).deepEquals(['peanuts']);
-      check(read.medications).deepEquals(['insulin']);
+      check(read.allergies).equals('peanuts');
+      check(read.medications).equals('insulin');
     });
 
     test('save overwrites the singleton', () async {

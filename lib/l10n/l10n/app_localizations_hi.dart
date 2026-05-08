@@ -968,6 +968,12 @@ class AppLocalizationsHi extends AppLocalizations {
   String get profileFieldAge => 'आयु';
 
   @override
+  String get profileFieldPhoneNumber => 'फ़ोन नंबर';
+
+  @override
+  String get profileFieldPhysicalDescription => 'शारीरिक विवरण';
+
+  @override
   String get profileFieldBloodType => 'रक्त समूह';
 
   @override

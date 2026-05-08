@@ -60,9 +60,9 @@ final class StealthConfig {
   ///
   /// [enabled] — master stealth toggle; defaults to false.
   /// [fakeName] — fake app / mode name shown to observers; defaults
-  /// to "Calendar".
+  /// to "Music".
   /// [fakeIcon] — which built-in icon preset to use; defaults to
-  /// calendar.
+  /// music.
   /// [notificationDisguise] — disguise notification channel / icon;
   /// defaults to true.
   /// [timerDisplay] — show session timer even in stealth; defaults
@@ -71,8 +71,8 @@ final class StealthConfig {
   /// the session screen; defaults to true.
   const StealthConfig({
     this.enabled = false,
-    this.fakeName = 'Calendar',
-    this.fakeIcon = StealthIconPreset.calendar,
+    this.fakeName = 'Music',
+    this.fakeIcon = StealthIconPreset.music,
     this.notificationDisguise = true,
     this.timerDisplay = StealthTimerDisplay.normal,
     this.sessionScreenStealth = true,
@@ -81,7 +81,7 @@ final class StealthConfig {
   /// Deserializes a `StealthConfig` from JSON.
   factory StealthConfig.fromJson(Map<String, Object?> json) => StealthConfig(
     enabled: json['enabled'] as bool? ?? false,
-    fakeName: json['fakeName'] as String? ?? 'Calendar',
+    fakeName: json['fakeName'] as String? ?? 'Music',
     fakeIcon: _iconFromJson(json['fakeIcon']),
     notificationDisguise: json['notificationDisguise'] as bool? ?? true,
     timerDisplay: _timerDisplayFromJson(json['timerDisplay']),
@@ -175,7 +175,7 @@ StealthIconPreset _iconFromJson(Object? raw) => switch (raw) {
   'clock' => StealthIconPreset.clock,
   'podcast' => StealthIconPreset.podcast,
   'none' => StealthIconPreset.none,
-  null => StealthIconPreset.calendar,
+  null => StealthIconPreset.music,
   _ => throw ArgumentError.value(raw, 'fakeIcon', 'unknown StealthIconPreset'),
 };
 

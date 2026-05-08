@@ -182,15 +182,15 @@ void main() {
       final repo = UserProfileRepository(UserProfileDao(db));
       const profile = UserProfile(
         name: 'Alice',
-        allergies: ['penicillin'],
-        medications: ['metformin'],
+        allergies: 'penicillin',
+        medications: 'metformin',
       );
       await repo.save(profile);
       final read = await repo.get();
       check(read).isNotNull();
       check(read!.name).equals('Alice');
-      check(read.allergies).deepEquals(['penicillin']);
-      check(read.medications).deepEquals(['metformin']);
+      check(read.allergies).equals('penicillin');
+      check(read.medications).equals('metformin');
     });
   });
 
