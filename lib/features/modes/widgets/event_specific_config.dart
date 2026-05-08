@@ -351,16 +351,9 @@ class _PhoneForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final cfg = (step.config is PhoneCallContactConfig)
-        ? step.config! as PhoneCallContactConfig
-        : const PhoneCallContactConfig();
-    return SwitchListTile(
-      value: cfg.preSendSms,
-      title: Text(l.stepConfigPhonePreSms),
-      onChanged: (v) =>
-          onChanged(step.copyWith(config: cfg.copyWith(preSendSms: v))),
-    );
+    // Q12: PhoneCallContact has no per-step pre-SMS toggle anymore.
+    // The pre-SMS feature lives only on CallEmergencyConfig.
+    return const SizedBox.shrink();
   }
 }
 

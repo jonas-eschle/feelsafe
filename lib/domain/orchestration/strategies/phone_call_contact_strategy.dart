@@ -20,27 +20,18 @@
 /// logs and returns — never falls back to a hardcoded phone number
 /// (see AUDIT-BUG-3).
 ///
-/// When `config.preSendSms` is true, a pre-call SMS is sent to the
-/// current target contact before dialing. Every enqueued
-/// [MessageWorkId] is passed to `services.registerSmsWorkId` when
-/// present.
+/// Q12: pre-call SMS support was removed from this strategy. The
+/// pre-call warning SMS lives only on the `callEmergency` step type
+/// (see [CallEmergencyStrategy]).
 library;
 
 import 'dart:developer' as developer;
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/step_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
-import 'package:guardianangela/domain/orchestration/location_resolver.dart';
-import 'package:guardianangela/domain/orchestration/log_gps_resolver.dart';
-
-/// Default pre-SMS body when neither the step config nor a global
-/// template provides one.
-const String _defaultPreSmsTemplate =
-    '{name} is trying to reach you. Please expect a call.';
 
 /// Strategy for phone-call-to-contact steps.
 final class PhoneCallContactStrategy extends EventStrategy {
@@ -60,40 +51,12 @@ final class PhoneCallContactStrategy extends EventStrategy {
       return;
     }
     final isSim = services.context.isSimulation;
-    // Spec 11 §DE-2: resolve the per-step GPS-logging override
-    // once per call. Drives the `{location}` placeholder in the
-    // pre-call SMS, plus opt-out of any location lookup performed
-    // by the platform call layer in the future.
-    final logGps = LogGpsResolver.resolve(step, services);
-    final locationUrl = LocationResolver.resolve(
-      services,
-      logGpsEnabled: logGps && config.preSmsIncludeLocation,
-    );
     // Spec 02 §7: +1 extra attempts per retryCount on the current
     // contact before moving to the next alternative.
     final attemptsPerContact = step.retryCount + 1;
     for (final contact in targets) {
       var succeeded = false;
       for (var attempt = 0; attempt < attemptsPerContact; attempt++) {
-        if (config.preSendSms) {
-          final preBody = services.context.resolvePlaceholders(
-            config.preSmsMessage ?? _defaultPreSmsTemplate,
-            location: locationUrl,
-          );
-          final id = await services.messaging.sendMessage(
-            contact: contact,
-            // Pre-SMS uses the contact's first enabled messaging
-            // channel (or SMS if none set). Distinct from the call
-            // channel per spec.
-            channel: contact.channels.isNotEmpty
-                ? contact.channels.first
-                : MessageChannel.sms,
-            message: preBody,
-            isSimulation: isSim,
-          );
-          final register = services.registerSmsWorkId;
-          if (register != null) register(id);
-        }
         try {
           await services.phone.call(
             contact.phoneNumber,

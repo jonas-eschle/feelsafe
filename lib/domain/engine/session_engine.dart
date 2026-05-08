@@ -56,13 +56,15 @@ final class SessionEngine {
     double speedMultiplier = 1.0,
     Random? random,
     DateTime Function()? clock,
+    Duration? maxPauseDuration,
   }) : _steps = List.of(chainSteps),
        _speedMultiplier = speedMultiplier.clamp(
          _speedMultiplierMin,
          _speedMultiplierMax,
        ),
        _random = random ?? Random(),
-       _clock = clock ?? (() => pkg_clock.clock.now()) {
+       _clock = clock ?? (() => pkg_clock.clock.now()),
+       _maxPauseDuration = maxPauseDuration {
     if (speedMultiplier.isNaN ||
         speedMultiplier.isInfinite ||
         speedMultiplier <= 0) {
@@ -124,6 +126,16 @@ final class SessionEngine {
 
   /// Single active timer; null when no phase is scheduled.
   Timer? _timer;
+
+  /// Spec 01 §Events Emitted — when set and the engine enters
+  /// [EnginePaused], a timer starts. On expiry the engine emits
+  /// [ChainEvent.pauseExpired] and auto-resumes. Null disables the
+  /// auto-resume.
+  final Duration? _maxPauseDuration;
+
+  /// Active pause-expiry timer; null when not paused or when
+  /// auto-resume is disabled.
+  Timer? _pauseExpiryTimer;
 
   /// When the current phase was scheduled; used by `pause` to
   /// compute the exact remaining duration. Null between phases.
@@ -225,6 +237,34 @@ final class SessionEngine {
       stepType: _steps[current.stepIndex].type,
       metadata: {'reason': reason.name},
     );
+    _startPauseExpiryTimer();
+  }
+
+  /// Starts the pause-expiry timer when [_maxPauseDuration] is set.
+  /// On fire, emits [ChainEvent.pauseExpired] and auto-resumes the
+  /// session. Spec 01 §Events Emitted.
+  void _startPauseExpiryTimer() {
+    final maxPause = _maxPauseDuration;
+    if (maxPause == null) return;
+    final scaled = Duration(
+      microseconds: (maxPause.inMicroseconds / effectiveSpeedMultiplier)
+          .round()
+          .clamp(0, 1 << 53),
+    );
+    _pauseExpiryTimer?.cancel();
+    _pauseExpiryTimer = Timer(scaled, _onPauseExpired);
+  }
+
+  void _onPauseExpired() {
+    _pauseExpiryTimer = null;
+    final current = _state;
+    if (current is! EnginePaused) return;
+    _emit(
+      ChainEvent.pauseExpired,
+      stepIndex: current.snapshot.stepIndex,
+      stepType: _steps[current.snapshot.stepIndex].type,
+    );
+    resume();
   }
 
   /// Resumes a paused session.
@@ -236,6 +276,8 @@ final class SessionEngine {
     if (current is! EnginePaused) {
       return;
     }
+    _pauseExpiryTimer?.cancel();
+    _pauseExpiryTimer = null;
     final snapshot = current.snapshot;
     _state = snapshot;
     _emit(
@@ -260,6 +302,8 @@ final class SessionEngine {
       return;
     }
     _cancelTimer();
+    _pauseExpiryTimer?.cancel();
+    _pauseExpiryTimer = null;
     final prevIndex = _currentStepIndexOrNull();
     _state = EngineEnded(reason: reason);
     _emit(
@@ -517,11 +561,27 @@ final class SessionEngine {
     _enterStep(index);
   }
 
+  /// Emits [ChainEvent.stepExecutionFailed] on the event stream.
+  /// Called by the orchestrator when a strategy's `executeReal`
+  /// throws (D-STRATEGY-2). The chain itself keeps running.
+  void emitStepExecutionFailed({
+    required int stepIndex,
+    required ChainStep step,
+  }) {
+    _emit(
+      ChainEvent.stepExecutionFailed,
+      stepIndex: stepIndex,
+      stepType: step.type,
+    );
+  }
+
   /// Releases internal resources (timers, stream controllers).
   ///
   /// Idempotent. Does not emit any trailing events.
   void dispose() {
     _cancelTimer();
+    _pauseExpiryTimer?.cancel();
+    _pauseExpiryTimer = null;
     if (!_eventsCtrl.isClosed) {
       _eventsCtrl.close();
     }

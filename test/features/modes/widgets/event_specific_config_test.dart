@@ -270,18 +270,17 @@ void main() {
     check((latest!.config! as SmsContactConfig).includeMedicalInfo).isTrue();
   });
 
-  testWidgets('phoneCallContact: toggle preSendSms', (tester) async {
-    ChainStep? latest;
+  // Q12: PhoneCallContactConfig no longer has a preSendSms switch.
+  // The widget renders SizedBox.shrink() for this step type.
+  testWidgets('phoneCallContact: form is empty (no switches)', (tester) async {
     final step = _step(
       ChainStepType.phoneCallContact,
-      config: const PhoneCallContactConfig(preSendSms: false),
+      config: const PhoneCallContactConfig(),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as PhoneCallContactConfig).preSendSms).isTrue();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
+    check(find.byType(TextFormField).evaluate()).isEmpty();
   });
 
   testWidgets('loudAlarm: toggle flashScreen', (tester) async {

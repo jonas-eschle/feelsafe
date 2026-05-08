@@ -550,6 +550,10 @@ class SessionLifecycleController {
     final engine = SessionEngine(
       chainSteps: mode.chainSteps,
       isSimulation: isSimulation,
+      // Spec 01 §Events Emitted — pauseExpired auto-resume timer.
+      maxPauseDuration: mode.maxPauseMinutes != null
+          ? Duration(minutes: mode.maxPauseMinutes!)
+          : null,
     );
     final orchestrator = SessionOrchestrator(
       isSimulation: isSimulation,
@@ -573,6 +577,11 @@ class SessionLifecycleController {
       messagingService: services.messaging,
       // Bug #3 fix: route descriptions into the live WalkSession.
       onSimulationDescription: appendFiredDescription,
+      // Spec 01 §Events Emitted — surface strategy failures as engine
+      // events so SessionLogRecorder can record them.
+      onStepExecutionFailedEvent: ({required step, required stepIndex}) {
+        engine.emitStepExecutionFailed(stepIndex: stepIndex, step: step);
+      },
     );
     final recorder = SessionLogRecorder(
       log: SessionLog(

@@ -137,9 +137,6 @@ void main() {
         config: const PhoneCallContactConfig(
           contactId: 'c1',
           alternativeContactIds: ['c2', 'c3'],
-          preSendSms: true,
-          preSmsIncludeLocation: false,
-          preSmsMessage: 'warn',
         ),
       );
       check(ChainStep.fromJson(s.toJson())).equals(s);

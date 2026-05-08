@@ -237,11 +237,11 @@ class _PhoneCallContactEditor extends StatelessWidget {
   final PhoneCallContactConfig cfg;
   final ValueChanged<PhoneCallContactConfig> onChanged;
   @override
-  Widget build(BuildContext context) => SwitchListTile(
-        title: const Text('Send SMS first'),
-        value: cfg.preSendSms,
-        onChanged: (v) => onChanged(cfg.copyWith(preSendSms: v)),
-      );
+  // Q12: PhoneCallContact has no pre-SMS toggle anymore — that lives
+  // on CallEmergencyConfig.sendLocationSmsFirst now. Phone-call-contact
+  // currently has no editable defaults beyond GPS-logging override
+  // (handled by the shared LogGpsSelector).
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 class _LoudAlarmEditor extends StatelessWidget {

@@ -1157,19 +1157,15 @@ final class PhoneCallContactConfig extends StepConfig {
   /// [contactId] — which contact to call; null = first-sorted.
   /// [alternativeContactIds] — fallbacks if primary fails; defaults
   /// to empty.
-  /// [preSendSms] — send a warning SMS before calling; defaults to
-  /// false.
-  /// [preSmsIncludeLocation] — include location in the pre-SMS;
-  /// defaults to true.
-  /// [preSmsMessage] — optional custom pre-SMS message.
   /// [logGps] — per-step GPS logging override (DE-2); defaults to
   /// [LogGpsOverride.useDefault].
+  ///
+  /// Q12: pre-call SMS configuration was moved to
+  /// [CallEmergencyConfig.sendLocationSmsFirst] — calling a personal
+  /// contact does not warrant an automatic pre-warning SMS.
   const PhoneCallContactConfig({
     this.contactId,
     this.alternativeContactIds = const [],
-    this.preSendSms = false,
-    this.preSmsIncludeLocation = true,
-    this.preSmsMessage,
     this.logGps = LogGpsOverride.useDefault,
   });
 
@@ -1181,9 +1177,6 @@ final class PhoneCallContactConfig extends StepConfig {
       alternativeContactIds: raw is List
           ? List<String>.unmodifiable(raw.map((e) => e as String))
           : const [],
-      preSendSms: json['preSendSms'] as bool? ?? false,
-      preSmsIncludeLocation: json['preSmsIncludeLocation'] as bool? ?? true,
-      preSmsMessage: json['preSmsMessage'] as String?,
       logGps: logGpsOverrideFromJson(json['logGps']),
     );
   }
@@ -1195,16 +1188,6 @@ final class PhoneCallContactConfig extends StepConfig {
   /// Defaults to the empty list.
   final List<String> alternativeContactIds;
 
-  /// Whether to send an SMS just before dialing. Defaults to false.
-  final bool preSendSms;
-
-  /// Whether to attach location to the pre-call SMS. Defaults to
-  /// true.
-  final bool preSmsIncludeLocation;
-
-  /// Optional custom pre-SMS body. Defaults to null.
-  final String? preSmsMessage;
-
   /// Per-step GPS-logging override (DE-2).
   @override
   final LogGpsOverride logGps;
@@ -1213,16 +1196,10 @@ final class PhoneCallContactConfig extends StepConfig {
   PhoneCallContactConfig copyWith({
     String? contactId,
     List<String>? alternativeContactIds,
-    bool? preSendSms,
-    bool? preSmsIncludeLocation,
-    String? preSmsMessage,
     LogGpsOverride? logGps,
   }) => PhoneCallContactConfig(
     contactId: contactId ?? this.contactId,
     alternativeContactIds: alternativeContactIds ?? this.alternativeContactIds,
-    preSendSms: preSendSms ?? this.preSendSms,
-    preSmsIncludeLocation: preSmsIncludeLocation ?? this.preSmsIncludeLocation,
-    preSmsMessage: preSmsMessage ?? this.preSmsMessage,
     logGps: logGps ?? this.logGps,
   );
 
@@ -1231,9 +1208,6 @@ final class PhoneCallContactConfig extends StepConfig {
     'type': 'phoneCallContact',
     'contactId': contactId,
     'alternativeContactIds': alternativeContactIds,
-    'preSendSms': preSendSms,
-    'preSmsIncludeLocation': preSmsIncludeLocation,
-    'preSmsMessage': preSmsMessage,
     'logGps': logGpsOverrideToJson(logGps),
   };
 
@@ -1243,9 +1217,6 @@ final class PhoneCallContactConfig extends StepConfig {
     return other is PhoneCallContactConfig &&
         other.contactId == contactId &&
         _listEquals(other.alternativeContactIds, alternativeContactIds) &&
-        other.preSendSms == preSendSms &&
-        other.preSmsIncludeLocation == preSmsIncludeLocation &&
-        other.preSmsMessage == preSmsMessage &&
         other.logGps == logGps;
   }
 
@@ -1253,9 +1224,6 @@ final class PhoneCallContactConfig extends StepConfig {
   int get hashCode => Object.hash(
     contactId,
     Object.hashAll(alternativeContactIds),
-    preSendSms,
-    preSmsIncludeLocation,
-    preSmsMessage,
     logGps,
   );
 
@@ -1263,7 +1231,7 @@ final class PhoneCallContactConfig extends StepConfig {
   String toString() =>
       'PhoneCallContactConfig(contactId: $contactId, '
       'alternativeContactIds: $alternativeContactIds, '
-      'preSendSms: $preSendSms, logGps: $logGps)';
+      'logGps: $logGps)';
 }
 
 /// Sound choice for a `LoudAlarmConfig` step.
@@ -1272,12 +1240,6 @@ final class PhoneCallContactConfig extends StepConfig {
 enum LoudAlarmSound {
   /// Continuous siren (default).
   siren,
-
-  /// Two-tone whoop.
-  whoop,
-
-  /// Ringing bell.
-  bell,
 
   /// User-supplied asset.
   custom,
@@ -1449,8 +1411,7 @@ final class LoudAlarmConfig extends StepConfig {
 
 LoudAlarmSound _loudAlarmSoundFromJson(Object? raw) => switch (raw) {
   'siren' => LoudAlarmSound.siren,
-  'whoop' => LoudAlarmSound.whoop,
-  'bell' => LoudAlarmSound.bell,
+  // Pre-alpha policy: nuke-and-reseed handles legacy values.
   'custom' => LoudAlarmSound.custom,
   null => LoudAlarmSound.siren,
   _ => throw ArgumentError.value(

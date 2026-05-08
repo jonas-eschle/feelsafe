@@ -131,14 +131,12 @@ void main() {
     });
 
     test('PhoneCallContactConfig round-trips', () {
+      // Q12: preSendSms / preSmsIncludeLocation / preSmsMessage removed.
       const cases = [
         PhoneCallContactConfig(),
         PhoneCallContactConfig(
           contactId: 'primary',
           alternativeContactIds: ['a', 'b'],
-          preSendSms: true,
-          preSmsIncludeLocation: false,
-          preSmsMessage: 'calling',
         ),
       ];
       for (final cfg in cases) {

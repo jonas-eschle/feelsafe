@@ -333,9 +333,7 @@ void main() {
       const c = PhoneCallContactConfig();
       check(c.contactId).isNull();
       check(c.alternativeContactIds).isEmpty();
-      check(c.preSendSms).isFalse();
-      check(c.preSmsIncludeLocation).isTrue();
-      check(c.preSmsMessage).isNull();
+      // Q12: preSendSms / preSmsIncludeLocation / preSmsMessage removed.
     });
 
     test('copyWith', () {
@@ -343,20 +341,15 @@ void main() {
       final c2 = c.copyWith(
         contactId: 'c1',
         alternativeContactIds: const ['c2'],
-        preSendSms: true,
       );
       check(c2.contactId).equals('c1');
       check(c2.alternativeContactIds).deepEquals(['c2']);
-      check(c2.preSendSms).isTrue();
     });
 
     test('round-trip with alternatives', () {
       const c = PhoneCallContactConfig(
         contactId: 'c1',
         alternativeContactIds: ['c2', 'c3'],
-        preSendSms: true,
-        preSmsIncludeLocation: false,
-        preSmsMessage: 'hey',
       );
       check(StepConfig.fromJson(c.toJson())).equals(c);
     });
@@ -384,7 +377,7 @@ void main() {
         flashSpeed: 0.1,
         maxVolume: false,
         volume: 0.5,
-        soundChoice: LoudAlarmSound.whoop,
+        soundChoice: LoudAlarmSound.custom,
         gradualVolume: true,
         flashLight: false,
         flashSpeedMs: 250,
@@ -394,7 +387,7 @@ void main() {
       check(c2.flashSpeed).equals(0.1);
       check(c2.maxVolume).isFalse();
       check(c2.volume).equals(0.5);
-      check(c2.soundChoice).equals(LoudAlarmSound.whoop);
+      check(c2.soundChoice).equals(LoudAlarmSound.custom);
       check(c2.gradualVolume).isTrue();
       check(c2.flashLight).isFalse();
       check(c2.flashSpeedMs).equals(250);
@@ -406,7 +399,7 @@ void main() {
         flashScreen: true,
         flashSpeed: 1.0,
         volume: 0.8,
-        soundChoice: LoudAlarmSound.bell,
+        soundChoice: LoudAlarmSound.custom,
         gradualVolume: true,
         flashLight: false,
         flashSpeedMs: 300,
@@ -526,11 +519,9 @@ void main() {
       final str = const PhoneCallContactConfig(
         contactId: 'c1',
         alternativeContactIds: ['c2'],
-        preSendSms: true,
       ).toString();
       check(str).contains('c1');
       check(str).contains('[c2]');
-      check(str).contains('preSendSms: true');
     });
 
     test('LoudAlarmConfig toString', () {
@@ -802,18 +793,7 @@ void main() {
         const PhoneCallContactConfig(alternativeContactIds: ['a']) ==
             const PhoneCallContactConfig(alternativeContactIds: ['b']),
       ).isFalse();
-      check(
-        const PhoneCallContactConfig() ==
-            const PhoneCallContactConfig(preSendSms: true),
-      ).isFalse();
-      check(
-        const PhoneCallContactConfig() ==
-            const PhoneCallContactConfig(preSmsIncludeLocation: false),
-      ).isFalse();
-      check(
-        const PhoneCallContactConfig() ==
-            const PhoneCallContactConfig(preSmsMessage: 'x'),
-      ).isFalse();
+      // Q12: preSendSms / preSmsIncludeLocation / preSmsMessage removed.
     });
 
     test('PhoneCallContactConfig hashCode stable', () {
@@ -846,7 +826,7 @@ void main() {
       ).isFalse();
       check(
         const LoudAlarmConfig() ==
-            const LoudAlarmConfig(soundChoice: LoudAlarmSound.bell),
+            const LoudAlarmConfig(soundChoice: LoudAlarmSound.custom),
       ).isFalse();
       check(
         const LoudAlarmConfig() == const LoudAlarmConfig(gradualVolume: true),
@@ -968,9 +948,6 @@ void main() {
       const c = PhoneCallContactConfig(
         contactId: 'c1',
         alternativeContactIds: ['c2'],
-        preSendSms: true,
-        preSmsIncludeLocation: false,
-        preSmsMessage: 'x',
       );
       check(c.copyWith()).equals(c);
     });

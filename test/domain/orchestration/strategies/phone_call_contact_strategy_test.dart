@@ -88,66 +88,9 @@ void main() {
       expect(harness.phone.calls.any((c) => c.contains('0000000000')), isFalse);
     });
 
-    test('executeReal sends pre-SMS when preSendSms=true', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a', phoneNumber: '+111')],
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.phoneCallContact,
-          config: const PhoneCallContactConfig(preSendSms: true),
-        ),
-        harness.build(),
-      );
-      expect(
-        harness.messaging.calls.any((c) => c.startsWith('sendMessage:')),
-        isTrue,
-      );
-    });
-
-    test('executeReal skips pre-SMS when preSendSms=false', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a', phoneNumber: '+111')],
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(type: ChainStepType.phoneCallContact),
-        harness.build(),
-      );
-      expect(harness.messaging.calls, isEmpty);
-    });
-
-    test('executeReal registers pre-SMS work ids', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a', phoneNumber: '+111')],
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.phoneCallContact,
-          config: const PhoneCallContactConfig(preSendSms: true),
-        ),
-        harness.build(),
-      );
-      expect(harness.registered.length, 1);
-    });
-
-    test('executeReal sends pre-SMS before placing the call', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a', phoneNumber: '+111')],
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.phoneCallContact,
-          config: const PhoneCallContactConfig(preSendSms: true),
-        ),
-        harness.build(),
-      );
-      expect(harness.messaging.calls.isNotEmpty, isTrue);
-      expect(harness.phone.calls, contains('call:+111'));
-    });
+    // Q12: preSendSms / preSmsIncludeLocation / preSmsMessage removed from
+    // PhoneCallContactConfig. Pre-call SMS is no longer supported for
+    // personal-contact calls. Tests for that branch are deleted.
 
     test('executeReal does not touch audio/vibration/notification', () async {
       final harness = StrategyHarness(contacts: [makeContact(id: 'a')]);
@@ -197,20 +140,6 @@ void main() {
         harness.build(),
       );
       expect(harness.phone.calls, contains('call:+111'));
-    });
-
-    test('executeReal preSendSms without contacts is still no-op', () async {
-      final harness = StrategyHarness();
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.phoneCallContact,
-          config: const PhoneCallContactConfig(preSendSms: true),
-        ),
-        harness.build(),
-      );
-      expect(harness.messaging.calls, isEmpty);
-      expect(harness.phone.calls, isEmpty);
     });
 
     // Spec 02 §7.phoneCallContact Retry Logic + alternatives.
