@@ -63,6 +63,30 @@ void main() {
       // 8 is closer to 10.
       check(kTimingSnapStops[closestSnapStopIndex(8)]).equals(10);
     });
+
+    // Spec-derived: 13 is between stops 10 and 15. |15-13|=2 < |13-10|=3,
+    // so 13 should snap to the index of 15.
+    test('closestSnapStopIndex(13) returns the index of 15', () {
+      final idx = closestSnapStopIndex(13);
+      check(kTimingSnapStops[idx]).equals(15);
+    });
+
+    // Spec-derived boundary assertions for key label values.
+    test('formatTimingLabel(0) returns "0s (immediate)"', () {
+      check(formatTimingLabel(0)).equals('0s (immediate)');
+    });
+
+    test('formatTimingLabel(60) returns "1m"', () {
+      check(formatTimingLabel(60)).equals('1m');
+    });
+
+    test('formatTimingLabel(3600) returns "1h"', () {
+      check(formatTimingLabel(3600)).equals('1h');
+    });
+
+    test('formatTimingLabel(86400) returns "1d"', () {
+      check(formatTimingLabel(86400)).equals('1d');
+    });
   });
 
   group('TimingSlider widget', () {
