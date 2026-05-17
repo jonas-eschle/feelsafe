@@ -1,13 +1,27 @@
 # 11 — Deferred Enhancements
 
-> **Status (2026-05-08).** DE-1 and DE-4 LANDED. DE-2 (per-event GPS)
-> and DE-3 (interval tracking) LANDED silently and are no longer
-> documented separately — the per-step `LogGpsOverride` field on
-> every `StepConfig` and the `trackingEnabled` /
-> `trackingIntervalSeconds` / `trackingBufferSize` fields on
-> `SessionMode` are part of the live data model spec (see spec 03).
-> DE-5 LANDED on Android; the iOS interactive widget remains
-> deferred — see the iOS gap note below.
+> **Status (2026-05-08).** DE-1, DE-2, DE-3, DE-4 LANDED. DE-5 LANDED
+> on Android; iOS interactive widget remains deferred (see iOS gap
+> note below).
+
+---
+
+## DE-2: Per-Event GPS Override — LANDED
+
+Per-step `LogGpsOverride` enum (`useDefault` / `forceOn` / `forceOff`)
+on every relevant `StepConfig`. The strategy resolves the effective
+value against `AppDefaults.gpsLogging.enabled` (with optional
+`ModeOverrides.gpsLogging.enabled`). Defined in spec 03.
+
+---
+
+## DE-3: Interval GPS Tracking — LANDED
+
+`SessionMode.trackingEnabled` (default `false`),
+`trackingIntervalSeconds` (default `300`), and `trackingBufferSize`
+(default `50`). When `trackingEnabled` is true, `LocationService`
+samples at the configured interval and stores the last
+`trackingBufferSize` points in `SessionLog`. Defined in spec 03.
 
 ---
 

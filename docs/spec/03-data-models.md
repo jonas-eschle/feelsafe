@@ -443,17 +443,38 @@ final class LoudAlarmConfig extends StepConfig {
   @override final LogGpsOverride logGps;  // default: useDefault
 }
 
-/// Q9 — alarm sounds reduced to two values. `whoop` and `bell` are
-/// removed. The persisted form of `siren` / `custom` round-trips
-/// directly; legacy values are nuked-and-reseeded under the
-/// pre-alpha policy.
+/// Q9 — alarm sounds reduced to two values. The persisted form of
+/// `siren` / `custom` round-trips directly; legacy values are
+/// nuked-and-reseeded under the pre-alpha policy.
 enum LoudAlarmSound { siren, custom }
+
+/// Per-step GPS-logging override. Resolves against
+/// `AppDefaults.gpsLogging.enabled` (and the matching
+/// `ModeOverrides.gpsLogging.enabled` when set).
+///
+/// `useDefault` — inherit the resolved default for the active mode.
+/// `forceOn`    — record GPS for this step regardless of defaults.
+/// `forceOff`   — suppress GPS for this step regardless of defaults.
+enum LogGpsOverride { useDefault, forceOn, forceOff }
+
+/// Visual presentation of a `countdownWarning` step.
+enum CountdownStyle { fullScreen, notification, minimal }
+
+/// Source of the destination coordinate for a
+/// `GpsArrivalDisarmTrigger`.
+///
+/// `promptAtStart` — session-start screen asks for lat/lng (with a
+///                   "use current location" shortcut). Skipping
+///                   disables the trigger for that session.
+/// `fixed`         — coordinates stored on the trigger itself
+///                   (`lat`/`lng`); no prompt at session start.
+enum GpsDestinationSource { promptAtStart, fixed }
 
 class CallEmergencyConfig extends StepConfig {
   /// Per-step override. `null` (default) = inherit the app-wide
   /// `AppSettings.emergencyCallNumber` (locale-aware, 112/911/…).
   /// A non-null value overrides the global default for this step
-  /// only — useful for travel modes or regional escalation chains.
+  /// only — useful for travel modes or regional chains.
   final String? emergencyNumber;
   final bool sendLocationSmsFirst;     // default: true
   final bool showConfirmation;         // default: true
@@ -495,7 +516,7 @@ class HardwareButtonConfig extends StepConfig {
 - Examples:
   - `fakeCall`: `FakeCallConfig(callerName: 'Mom', ringDurationSeconds: 30)`
   - `smsContact`: `SmsContactConfig(messageTemplate: '...', includeLocation: true)`
-  - `loudAlarm`: `LoudAlarmConfig(volume: 0.8, soundChoice: AlarmSound.siren)`
+  - `loudAlarm`: `LoudAlarmConfig(volume: 0.8, soundChoice: LoudAlarmSound.siren)`
 - If null, `EventDefaults.forType(stepType)` provides the default config.
 - If non-null, per-step values override defaults field by field.
 
@@ -533,6 +554,59 @@ These are seed defaults — each step can override via its `config` map.
 
 ---
 
+### DistressTrigger / DisarmTrigger (sealed hierarchies)
+
+Triggers run in parallel with the main chain — they are NOT chain
+steps. Distress triggers fire the mode's resolved distress mode;
+disarm triggers end the current session.
+
+```dart
+sealed class DistressTrigger {
+  Map<String, dynamic> toJson();
+}
+
+/// Hardware-button panic: rapid presses of a physical device button.
+/// Only the `repeatPress` pattern is currently shipped; `longPress`
+/// is reserved for future use and stored as `durationSeconds`.
+final class HardwareButtonDistressTrigger extends DistressTrigger {
+  final ButtonType buttonType;       // volumeUp | volumeDown
+  final PressPattern pattern;        // repeatPress | longPress
+  final int pressCount;              // default: 5 (B1) — repeatPress only
+  final double? durationSeconds;     // longPress only; null otherwise
+}
+
+sealed class DisarmTrigger {
+  Map<String, dynamic> toJson();
+}
+
+/// Session ends automatically when the user arrives within `radius`
+/// metres of the destination coordinate.
+final class GpsArrivalDisarmTrigger extends DisarmTrigger {
+  final int radiusMeters;                       // default: 200
+  final GpsDestinationSource destinationSource; // default: promptAtStart
+  final double? lat;                            // required when fixed
+  final double? lng;                            // required when fixed
+}
+
+/// Session ends automatically after `durationSeconds`, regardless
+/// of escalation progress.
+final class TimerDisarmTrigger extends DisarmTrigger {
+  final int durationSeconds;
+}
+```
+
+Each subclass round-trips JSON via a `type` discriminator on its
+`toJson()` (`hardware_button` / `gps_arrival` / `timer`). The list
+fields `SessionMode.distressTriggers` and `SessionMode.disarmTriggers`
+serialise as JSON arrays of these objects.
+
+All triggers require the standard disarm confirmation (PIN /
+biometric per `AppSettings`) before they take effect. Validation
+blocks saving a `GpsArrivalDisarmTrigger` with
+`destinationSource = fixed` unless both `lat` and `lng` are non-null.
+
+---
+
 ### SessionMode (typeId: 8)
 
 ```dart
@@ -540,16 +614,15 @@ final class SessionMode {
   final String id;                          // UUID
   final String name;                        // "Walk Mode", "Date Mode", etc.
   final String? iconName;                   // e.g., "directions_walk"
-  final ChainStepType checkInType;          // First-step type
-  final List<ChainStep> chainSteps;         // Unified chain (first step is check-in)
+  final List<ChainStep> chainSteps;         // Chain; first step runs first, no special check-in slot
   final String? distressModeId;             // id of a distress mode (a SessionMode with isDistressMode = true);
                                             // null = inherit AppDefaults.defaultDistressModeId
   final List<DistressTrigger> distressTriggers;
   final List<DisarmTrigger> disarmTriggers;
   final ModeOverrides? overrides;           // null = inherit all from AppDefaults
-  final bool trackingEnabled;               // Spec 11 §DE-3 (default false)
-  final int trackingIntervalSeconds;        // Spec 11 §DE-3 (default 300)
-  final int trackingBufferSize;             // Spec 11 §DE-3 (default 50)
+  final bool trackingEnabled;               // interval GPS tracking; default false (DE-3 landed)
+  final int trackingIntervalSeconds;        // default 300
+  final int trackingBufferSize;             // default 50
   final bool pauseAllowed;                  // default true
   final int? maxPauseMinutes;               // null = unlimited
   final bool isDistressMode;                // True iff this mode IS a distress mode that
@@ -560,31 +633,24 @@ final class SessionMode {
 ```
 
 **Key design decisions:**
-- **Unified chain:** First step determines check-in mechanism (holdButton or disguisedReminder). All subsequent steps are escalation.
+- **Unified chain:** Every step in `chainSteps` is on equal footing. The first step simply runs first; nothing labels it as "the check-in".
 - **Distress mode by id:** `distressModeId` references another `SessionMode` (with `isDistressMode = true`) by id. `null` means "inherit `AppDefaults.defaultDistressModeId`". If neither resolves, the mode blocks at session start (validation error).
 - **Inheritance:** When `overrides` is null, all per-mode settings (GPS logging, stealth, templates, event defaults) are inherited from `AppDefaults`. When `overrides` is non-null, any non-null field in `ModeOverrides` replaces the corresponding `AppDefaults` value for that mode only.
 - **Template lists:** The effective reminder template list for a mode = `AppDefaults.templates` + `ModeOverrides.localTemplates` (if any). Local templates are appended, not replacing.
 - **All modes deletable:** Every mode, including Walk Mode and Date Mode, can be deleted. There are no protected built-in modes.
-- **Templates for creation:** Walk Mode and Date Mode are available as **seed templates** used only when creating a new mode ("From Template").
+- **Seeded modes:** **Walk Mode** and **Date Mode** are seeded as real `SessionMode` records on first launch. They are not a separate "template" type — they exist as ordinary editable/deletable modes.
 - **Cannot save empty:** Must have at least 1 chain step
 - **No limit on modes:** Only practical UI limits (pagination/search at ~100+ modes)
 - **Max chain length:** 10,000 steps (prevents runaway configs)
 
-**Seed templates (used only for mode creation, not stored as modes):**
-1. **Walk Mode template** — `holdButton` check-in, escalates via fake calls → SMS → emergency
-2. **Date Mode template** — `disguisedReminder` check-in, periodic reminders, escalates like Walk Mode
+**Seeded modes on first launch:**
+1. **Walk Mode** — first step is `holdButton`, then escalates via fake call → SMS → emergency
+2. **Date Mode** — first step is `disguisedReminder`, then periodic reminders, escalates like Walk Mode
 
-**Adding new mode:**
-1. User selects "From Template" (Walk/Date seed) or "From Scratch"
-2. Configures chain steps
-3. Saves with unique name and UUID
-4. Mode stored with `isFromTemplate: true` if created from a seed template
-
-**Derived property:**
-```dart
-ChainStepType? get checkInType =>
-  chainSteps.isNotEmpty ? chainSteps.first.type : null;
-```
+**Adding new mode (from the Modes screen FAB picker):**
+1. User picks "Blank mode" or "From <existing non-distress mode>" in the bottom-sheet picker (see `04-screens-navigation.md` Modes Screen).
+2. "Blank mode" → empty `chainSteps`, no triggers, no overrides. The user adds the first step from the full step-type picker.
+3. "From <name>" → clones the source mode's `chainSteps + triggers + overrides` into a freshly-id'd `SessionMode` named `"Copy of <name>"`, persists it, then opens the mode editor on the new mode.
 
 ---
 
@@ -618,7 +684,13 @@ final class AppSettings {
   final bool alarmDndOverride;             // default: false (Q19)
   final bool alarmGradualVolume;           // default: false
   final int alarmGradualVolumeDurationSeconds; // default: 5
-  final int sessionLogRetentionDays;       // default: 180
+  final int sessionLogRetentionDays;       // default: 180 — log-level
+                                           // retention before smart-purge
+                                           // moves a log into trash.
+  final int trashRetentionDays;            // default: 7 — soft-delete grace
+                                           // window inside the trash box
+                                           // before the second-pass hard
+                                           // purge (Extra 11).
 
   // Telemetry
   final bool telemetryOptOut;              // legacy opt-out flag
@@ -763,11 +835,8 @@ final class SessionLog {
   final DateTime? endedAt;         // null if session ongoing
   final EndReason? endReason;      // null if still running
   final bool isSimulation;
-  final bool hadMedicalInfo;       // default: false. Stamped at log creation
-                                   // by SessionLogRecorder when the user
-                                   // profile carries medical info AND at
-                                   // least one step opts in via
-                                   // SmsContactConfig.includeMedicalInfo.
+  final bool hadMedicalInfo;       // default: false. See semantics under
+                                   // "Key fields → hadMedicalInfo" below.
   final List<SessionLogEvent> events;
 }
 ```
@@ -798,11 +867,8 @@ final class SessionLog {
   4. For non-critical logs, check `endTime`. If null (session never
      finished), fall back to `startTime`.
   5. If the reference time is older than `now - Duration(days:
-     retentionDays)`, delete the log. Until Extra-11 (soft-delete) lands,
-     this is a hard delete; afterwards the same method will transition
-     into a soft-delete that moves the log into a trash box for 7 days
-     before a second-pass purge.
-- Soft delete + undo (decision 11): deleted logs enter a recoverable trash state for 7 days before permanent purge
+     retentionDays)`, soft-delete the log into the trash box.
+- Soft delete + undo (Extra 11): deleted logs enter a recoverable trash state for `trashRetentionDays` (7 days) before permanent purge. The user can restore from the trash screen during that window; after the window elapses, a second-pass purge hard-deletes the log.
 - Storage warning when database size exceeds threshold (e.g., 100 MB)
 - Manual export/import via JSON (see Backup Strategy section)
 
@@ -885,10 +951,11 @@ final class WalkSession {
   final SimulationDescription? lastSimulationDescription;
   final bool isBackgroundAlert;
   final int totalSteps;
-  final bool simulationSilent;         // suppress sim toasts/beeps
-                                       // (default false; set true by the
-                                       // simulation summary screen for a
-                                       // silent replay)
+  final bool simulationSilent;         // suppress simulation audio
+                                       // (default true per Extra 49;
+                                       // mutable in the simulation
+                                       // controls bar but never
+                                       // persisted)
 }
 ```
 
@@ -896,7 +963,7 @@ final class WalkSession {
 
 **Named constructors:**
 - `WalkSession.startingReal({...})` — initializes a real session. `isSimulation = false`, `simulationSilent = false`, `simulationSpeed = 1.0`.
-- `WalkSession.startingSimulation({...})` — initializes a simulation session. `isSimulation = true`, `simulationSilent` defaulting to `false`; pass `silent: true` for a silent replay.
+- `WalkSession.startingSimulation({...})` — initializes a simulation session. `isSimulation = true`, `simulationSilent` defaulting to `true` (Extra 49); pass `silent: false` for an audible replay.
 
 Controllers MUST use the matching named constructor when kicking off a session — the unnamed constructor exists only for `copyWith` round-trips.
 
@@ -935,7 +1002,7 @@ final class AppDefaults {
 
 **Purpose:** Master source for configurable defaults that modes can inherit and override. Modes inherit from `AppDefaults` unless they specify a `ModeOverrides`. The `defaultDistressModeId` field is the runtime resolution target when `SessionMode.distressModeId` is null.
 
-**Accessible from:** Settings → Defaults (sub-items: GPS Logging, Event Defaults / Templates). The Default Distress Mode selector lives under Settings → Modes & Chains → Distress Modes, alongside the distress-mode list.
+**Accessible from:** Settings → individual subcategory screens (`/settings/gps-logging`, `/settings/event-defaults`, `/settings/reminder-templates`, `/settings/stealth`). The Default Distress Mode selector lives under Settings → Distress modes (`/distress-modes`), alongside the distress-mode list.
 
 ---
 
@@ -988,6 +1055,11 @@ final class StealthConfig {
   final bool sessionScreenStealth;        // default true
 }
 
+/// Picks which neutral icon stealth uses in disguised notifications
+/// and the app-switcher tile. `none` means "no icon override — fall
+/// back to the standard app icon"; useful when the user has enabled
+/// stealth for other reasons (fake name, timer display) but does not
+/// want a disguised launcher icon.
 enum StealthIconPreset {
   music, calendar, fitness, weather, news, photos, notes, clock,
   podcast, none,
@@ -1017,7 +1089,7 @@ enum StealthTimerDisplay { normal, small, none }
 final class BatteryAlertConfig {
   final bool enabled;                  // default: false (Q22 — opt-in)
   final int thresholdPercent;          // default: 10
-  final List<ChainStep> chain;         // configurable escalation chain
+  final List<ChainStep> chain;         // configurable chain
                                        // (default: empty)
 }
 ```
@@ -1027,18 +1099,20 @@ final class BatteryAlertConfig {
 **Purpose:** A one-shot side-action that fires once per session when battery drops below threshold during an active session. Does not interrupt the main session chain. Disabled by default (`enabled: false`).
 
 **ITEM 8 — Chain-based model:**
-- The alert now carries a **configurable chain** (`List<ChainStep>`) rather than a single `sendSms` boolean. The chain can include `smsContact`, `phoneCallContact`, `callEmergency`, `loudAlarm`, `countdownWarning`, and `fakeCall` steps.
-- Seed default: `[smsContact]` with `includeLocation: true`, matching pre-ITEM-8 behaviour so existing users see no functional regression once they toggle `enabled` on.
-- Legacy JSON upgrade: when an exported `sendSms` boolean is encountered without a `chain` field, `BatteryAlertConfig.fromJson` synthesises a single-step `smsContact` chain if `sendSms: true`, or an empty chain if `sendSms: false`.
-- The `sendSms` getter returns `true` iff the chain contains an `smsContact` step. It is retained only until the battery-monitor side-action is rewritten to drive the full chain through the session engine.
+- The alert carries a **configurable chain** (`List<ChainStep>`). The chain can include `smsContact`, `phoneCallContact`, `callEmergency`, `loudAlarm`, `countdownWarning`, and `fakeCall` steps. Interactive types (`holdButton`, `disguisedReminder`, `hardwareButton`) are forbidden — the alert is OS-triggered, not user-driven.
+- Seed default: `[smsContact]` with `includeLocation: true` to all contacts.
+- Validation: `BatteryAlertConfig.validateChain()` rejects any chain that contains a forbidden step type. The mode editor and battery-alert screen filter the step picker to the allowed list, so the rule is enforced both at save time and in the UI.
+
+`sendSms` is **not** a field. The legacy boolean and the
+`fromJson` synthesis that derived it have been removed per the
+pre-alpha "no migrations" policy. The battery-monitor service
+drives the full chain directly through the session engine.
 
 **Behavior:**
 - Only fires if enabled AND battery reaches the threshold during an active session
 - Fires exactly once per session (no repeats)
 - Runs the configured chain (or no-ops if chain is empty) — main session continues uninterrupted
 - Chain steps execute through the same strategies the main session uses
-
-**TODO:** `lib/services/implementations/battery_monitor_service.dart` and `lib/features/session/session_controller.dart` (`_startBatteryMonitor`) must be migrated from the legacy `sendSms` boolean path to driving the full chain via the session engine. See the TODO in the model file.
 
 ---
 
@@ -1277,7 +1351,7 @@ All persistent data encrypted at rest:
 
 `test/unit/models/` includes:
 - **ChainStep tests:** Timing calculations, jitter, config fallbacks
-- **SessionMode tests:** Chain validation, check-in type detection
+- **SessionMode tests:** Chain validation
 - **EventDefaults tests:** Type-specific config lookups
 - **AppSettings tests:** Theme/language/stealth option combinations
 - **SessionLog tests:** Event ordering, timestamp validation

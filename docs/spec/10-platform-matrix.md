@@ -25,7 +25,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 |---|---|---|---|---|
 | Session timer | YES | YES | — | Timers run even when app backgrounded |
 | Pause/resume session | YES | YES | — | Preserves exact remaining time |
-| Escalation chain | YES | YES | — | All 9 step types supported identically on both |
+| Chain | YES | YES | — | All 9 step types supported identically on both |
 | Disarm (check-in) | YES | YES | — | Reset chain to step 0 |
 | Speed multiplier | YES | YES | — | Simulation: 1–1000x |
 | Jitter (±20%) | YES | YES | — | Randomization on timing values |
@@ -96,10 +96,10 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 | Feature | Android | iOS | Permission | Notes |
 |---|---|---|---|---|
 | **Loud Alarm** | YES | YES | — | Max-volume siren sound |
-| **Gradual Volume Increase** | YES | YES | — | Linear ramp from 0 to target (default 10s) |
+| **Gradual Volume Increase** | YES | YES | — | Linear ramp from 0 to target (default 5s per Q33) |
 | **System Volume Override** | YES | PARTIAL | — | Android: can set media stream to max. iOS: limited (respects system volume). |
 | **Alarm Override Silent Mode** | YES | YES | — | Loud alarm plays even if phone on silent (iOS entitlement). |
-| **Custom Alarm Sound** | YES | YES | — | User-recorded audio file or built-in siren/beep |
+| **Custom Alarm Sound** | YES | YES | — | User-recorded audio file or built-in siren (Q9 — `siren`/`custom` only) |
 | **Voice Recording Playback** | YES | YES | RECORD_AUDIO | For fake call voice message |
 | **Ringtone Style** | YES | YES | — | Platform default or custom asset |
 | **Speaker vs. Earpiece** | YES | YES | — | Configurable output routing for fake call voice |
@@ -183,10 +183,10 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 |---|---|---|---|---|
 | **Biometric Auth (Fingerprint)** | YES | YES | USE_BIOMETRIC | Unlock app or end session with fingerprint. Fallback to PIN. |
 | **Biometric Auth (Face ID)** | NO | YES | USE_BIOMETRIC | Not available on Android (no reliable face recognition API). iOS: full Face ID support. |
-| **App PIN** | YES | YES | — | 4–6 digit PIN to unlock app at launch. No biometric. |
+| **App PIN** | YES | YES | — | 4–8 digit PIN (length chosen at setup per-PIN; `AppSettings.pinLength` removed) to unlock app at launch. No biometric. |
 | **Session End PIN** | YES | YES | — | PIN required to disarm or end active session. Biometric may substitute. 15s timeout. |
 | **Duress PIN** | YES | YES | — | Third PIN: enters at any prompt → silently fires the mode's resolved distress mode (`SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). No error message shown. |
-| **Simulation Mode (SMS/calls blocked)** | YES | YES | — | SMS, phone calls, emergency calls blocked (logged as sim_blocked). Fake call, vibration, reminders fire normally. |
+| **Simulation Mode (SMS/calls blocked)** | YES | YES | — | SMS, phone calls, emergency calls, loud alarm audio, audio recording all blocked / muted (logged as `sim_blocked`). Fake call, vibration, reminders fire normally. |
 | **Encryption at Rest** | YES | YES | — | AES-256 via HiveAesCipher, key in secure storage |
 
 ---
@@ -195,14 +195,14 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 
 | Feature | Android | iOS | Permission | Notes |
 |---|---|---|---|---|
-| **Hive CE (Local Database)** | YES | YES | — | Type-safe NoSQL, always encrypted |
+| **JSON-backed Repositories (Local Storage)** | YES | YES | — | `JsonSingletonRepository` / `JsonListRepository`; always encrypted at rest (Hive CE retired) |
 | **flutter_secure_storage** | YES | YES | — | Secure key storage (Android Keystore / iOS Keychain) |
 | **Google Auto Backup** | YES | — | — | Android system backup to Google Drive (encrypted, no code needed) |
 | **iCloud Backup** | — | YES | — | iOS system backup to iCloud (user opt-in, automatic) |
 | **Manual JSON Export** | YES | YES | — | User-initiated export with optional encryption & media |
 | **Manual JSON Import** | YES | YES | — | User-initiated import with merge or replace options |
 | **Backup Schema Versioning** | YES | YES | — | Export includes `_schemaVersion`; import validates compatibility |
-| **Hive Key Loss Recovery (Extra 21)** | YES | YES | — | If `HiveBoxes.init()` throws (e.g., encryption key missing or box corruption), `main()` runs the minimal `HiveRecoveryApp` widget (`lib/core/widgets/hive_recovery_app.dart`) offering "Start fresh" (deletes the Hive directory) or "Restore from backup" (stages a backup file for next launch). After either action, the user relaunches the app to boot into a healthy Hive state. |
+| **JSON Repository Corruption Recovery (Extra 21)** | YES | YES | — | If `JsonRepositories.init()` throws (e.g., malformed JSON or unreadable encryption envelope), `main()` runs the minimal `JsonRecoveryApp` widget offering "Start fresh" (deletes the JSON directory and re-seeds) or "Restore from backup" (stages a backup file for next launch). After either action, the user relaunches the app to boot into a healthy storage state. |
 
 ---
 

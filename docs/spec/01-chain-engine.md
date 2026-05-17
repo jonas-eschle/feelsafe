@@ -8,7 +8,7 @@
 
 The chain engine is a **pure Dart state machine** that walks through a list of `ChainStep` objects in order. It has zero Flutter dependencies — only `dart:async` and `dart:math`. All interaction with Flutter (UI, services, navigation) is handled by the `SessionController` which wraps the engine.
 
-The engine drives the core safety session lifecycle: validating user presence, escalating automatically when check-ins are missed, and coordinating with platform services (notifications, alarms, SMS, calls).
+The engine drives the core safety session lifecycle: walking the chain of events, escalating automatically when the user fails to respond to interactive steps, and coordinating with platform services (notifications, alarms, SMS, calls).
 
 ---
 
@@ -18,9 +18,12 @@ The engine drives the core safety session lifecycle: validating user presence, e
 
 An ordered list of `ChainStep` objects. Immutable once started — steps don't change, only the execution position advances through the chain.
 
-Typical chain structure:
-1. **Check-in mechanism** (step 0): `holdButton` or `disguisedReminder` — how the user proves they're safe
-2. **Escalation steps** (steps 1+): `fakeCall`, `loudAlarm`, `smsContact`, `phoneCallContact`, `countdownWarning`, `callEmergency`, etc. — increasingly urgent actions triggered automatically if user misses check-ins
+Every step in the chain is on equal footing — there is no special "check-in" slot. The first step simply runs first. A typical chain orders its steps from "low-key, requires user response" to "loud / automatic":
+
+- An interactive step such as `holdButton` or `disguisedReminder` near the front: the user can disarm by responding.
+- Increasingly urgent steps later (`fakeCall`, `loudAlarm`, `smsContact`, `phoneCallContact`, `countdownWarning`, `callEmergency`) that fire automatically when earlier steps elapse without disarm.
+
+Nothing in the model labels any step as "the check-in" — order alone determines what runs when.
 
 ### Three-Phase Timing Model
 
@@ -130,20 +133,20 @@ Divides all durations to simulate fast-forward. Useful for testing and demonstra
 - **Timing**: applied at timer creation, and rescaled on running timers.
   - Changing the multiplier mid-session immediately rescales the running timer's remaining duration proportionally.
 
-### Check-in Methods
+### Interactive Step Types
 
-Two primary ways a user can confirm they're safe (disarm the chain):
+Two step types are *interactive* — the user can disarm the chain by responding to them:
 
-1. **Hold button** — User touches and holds the screen during step 0.
-2. **Disguised reminder** — User interacts with the fake notification overlay during step 0.
+1. **`holdButton`** — User touches and holds the screen while the step is active.
+2. **`disguisedReminder`** — User taps / interacts with the fake notification overlay while the step is active.
 
-Both methods trigger `disarm()`, which resets the chain to step 0.
+Both trigger `disarm()`, which resets the chain to step 0 and re-runs the first step. Either type can appear anywhere in the chain; placing one first gives the chain a familiar "user-prompted" feel, while a chain with no interactive steps escalates automatically end-to-end.
 
 ### Hardware Button — Triple Role
 
 The hardware button (typically volume button) has three distinct roles:
 
-1. **Check-in method at step 0**: When the first step is `hardwareButton`, pressing the button = "I'm safe" → triggers disarm (reset to step 0). Only used as a chain step type at step 0.
+1. **Disarm shortcut when `hardwareButton` is the running step**: pressing the configured button counts as the user response — triggers disarm (reset to step 0).
 
 2. **Chain step at any position**: The `hardwareButton` can appear as a regular step in the chain at any position, awaiting a button press to advance.
 
@@ -183,8 +186,8 @@ final class ChainStep {
 
 | Type | Description |
 |------|-------------|
-| `holdButton` | User holds screen to prove presence. Step 0 check-in mechanism. |
-| `disguisedReminder` | Fake notification overlay prompts user to check in. Step 0 mechanism or escalation. |
+| `holdButton` | User holds the screen to prove presence; releasing during the active phase counts as a disarm. Interactive step type. |
+| `disguisedReminder` | Fake notification overlay prompts the user; tapping it counts as a disarm. Interactive step type. |
 | `countdownWarning` | Visual countdown (e.g., "Emergency in 10s"). Warning before serious action. |
 | `fakeCall` | Phone rings with caller ID spoofed to trusted contact. User can decline to restart or answer to disarm. |
 | `smsContact` | Sends SMS to a configured emergency contact with location/message. |
@@ -355,7 +358,7 @@ During grace:
 The fake call step has a **two-phase interaction model**:
 
 ```
-Ring → Answer → Chain PAUSES → Voice plays → User hangs up → DISARM
+Ring → Answer → Voice plays (engine timer keeps running) → User hangs up → DISARM
 Ring → Decline → declineIsSafe? disarm : miss (restartCurrentStep)
 Ring → Decline (5s hold) → DISTRESS CHAIN triggered
 Ring → Timeout → miss
@@ -554,13 +557,12 @@ void earlyCheckIn({required bool resetOnEarlyCheckIn})
 - **Behavior when `resetOnEarlyCheckIn = false`**: No-op — the early tap is ignored and the existing wait timer continues. The reminder fires at the original scheduled time.
 - **Rationale (D4):** Lets mode designers choose whether tapping a reminder notification early counts as a valid check-in (reset cycle) or should be ignored (reminder fires on schedule regardless of the early tap).
 
-### Disarm During retryCount = 0 Grace (Extra-46)
+### Disarm During Grace (Extra-46)
 
-When a step has `retryCount = 0` (single attempt only) and the user disarms **during the grace period** of that step:
+Grace is always a disarm window regardless of `retryCount`. When a user disarms during any step's grace period:
 - `disarm()` is called normally.
 - The chain resets to step 0.
-- **Special case — only affects UX framing**: The user checked in "late" (after the event fired, during dead time) but before the step advanced. This is still a valid disarm. No extra penalty applies.
-- **Contrast with `retryCount > 0`**: When retries exist, disarming during grace also resets to step 0 (grace is always a disarm window). The grace period is always a disarm window regardless of retry count.
+- No "late disarm" penalty applies.
 
 ### Fake Call Methods
 
@@ -768,8 +770,6 @@ enum PauseReason {
   incomingCall,         // Incoming phone call detected; engine pauses
                         // so audio does not bleed into the call.
                         // Auto-resumes when the call ends.
-  fakeCallAnswered,     // Fake-call step `answer` action paused the
-                        // chain while the voice recording plays.
   bootRestart,          // App relaunched after backgrounding long
                         // enough that recovery-dialog flow is needed
                         // (D-ENGINE-22 — no auto-resume).
@@ -975,6 +975,8 @@ After a distress trigger fires, a **5-second configurable confirmation window** 
 - Timeout or no action → after 5s, distress chain starts.
 - Confirmation UI respects stealth mode (no app branding, disguised appearance).
 
+**Biometric branch (`distressCancelBiometricEnabled = true`):** The cancel prompt accepts either PIN or biometric (Q18). Biometric is shown first; failure or cancel falls through to PIN entry within the same 15s timeout window. The biometric path is opt-in and has no effect when the flag is `false`.
+
 **Rationale**: Prevents false positives from accidental volume button presses while maintaining rapid escalation in real emergencies.
 
 ### Battery Alert (One-Shot Side Action)
@@ -1070,7 +1072,7 @@ Checked in `_shouldRandomize()`:
 ### Walk Mode
 
 ```
-Step 0: holdButton (check-in)
+Step 0: holdButton (interactive — user holds the button to disarm)
   waitSeconds: 0
   durationSeconds: 10 (countdown visible)
   gracePeriodSeconds: 1
@@ -1104,7 +1106,7 @@ Step 4: callEmergency
 ### Date Mode
 
 ```
-Step 0: disguisedReminder (periodic check-in disguised as app notification)
+Step 0: disguisedReminder (interactive — periodic prompt disguised as app notification; tap to disarm)
   waitSeconds: 1800 (30 min intervals)
   durationSeconds: 60 (reminder overlay visible)
   gracePeriodSeconds: 120
@@ -1159,7 +1161,7 @@ This eliminates jitter variation, making tests predictable:
 ### Simulation Mode
 
 In simulation mode (`isSimulation=true`):
-- `leapToNextEvent()` available — skip to 1s before next timer.
+- `leap()` available — fires the active timer immediately, collapsing the remaining duration of the current phase to zero. Surfaced in the simulation UI as the "Leap" button.
 - Speed bar UI allows user to set multiplier (1x–1000x) via a logarithmic slider.
 - Preset speed stops: **1x**, **2x**, **5x**, **10x**, **20x**, **50x**, **100x**, **500x**, **1000x**.
 - Default speed: 1x (real-time). User can drag to any value or tap preset stops.
@@ -1243,22 +1245,5 @@ The `SessionController` (Riverpod Notifier) wraps the `SessionEngine` and:
 
 ## Glossary
 
-| Term | Definition |
-|------|-----------|
-| **Chain** | Ordered list of ChainStep objects. |
-| **Step** | Individual escalation action (holdButton, fakeCall, etc.). |
-| **Wait Phase** | Delay before event fires. |
-| **Duration Phase** | Event actively running (alarm playing, reminder visible, etc.). |
-| **Grace Period** | Dead time after event ends, before advancing/repeating. |
-| **Miss Count** | Number of grace periods expired without disarm. |
-| **Repeat Count** | Maximum number of times a step can repeat before advancing. |
-| **Disarm** | User confirms they're safe → reset chain to step 0. |
-| **Check-in** | Alias for disarm. |
-| **Escalation** | Advancing to next (more urgent) step. |
-| **Simulation** | Special mode with speed control and leap features for testing. |
-| **Jitter** | ±20% randomization on timing values. |
-| **Speed Multiplier** | Factor that divides all durations (e.g., 10x = 10× faster). |
-| **Distress Chain** | The chain steps of a distress mode (a `SessionMode` with `isDistressMode = true`). Selected per-mode via `SessionMode.distressModeId` (or `AppDefaults.defaultDistressModeId` when null). **Replaces** the main chain when triggered (hardware panic, wrong PIN, duress PIN). No return to main chain. |
-| **Foreground Service** | Persistent notification shown while session active. |
-| **Stealth Mode** | Session appears as disguised app (e.g., "Music playing" notification). |
+See `09-glossary.md` for the single canonical glossary covering every term used across the spec set.
 

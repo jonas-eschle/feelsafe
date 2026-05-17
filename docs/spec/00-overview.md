@@ -109,7 +109,7 @@ Women walking home at night, on dates, or in unfamiliar situations. Anyone in po
 **Scenario:** Frequent solo traveler, outdoor enthusiast, or someone managing multiple safety contexts (walking, dating, road trip, late shift, etc.).
 
 **Interaction pattern:**
-- Creates custom modes with personalized escalation chains
+- Creates custom modes with personalized chains
 - May have a "Night Out" mode with 15-minute check-in intervals
 - May have a "Road Trip" mode with 1-hour intervals and different emergency contacts
 - May have a "Delivery Driver" mode that calls their boss after 2 missed check-ins
@@ -159,20 +159,22 @@ The app supports 9 distinct event types that can be chained in any order:
 | **callEmergency** | Call emergency services (112/911) | App handles automatically | Dial emergency number + optional pre-SMS |
 | **hardwareButton** | Panic trigger via physical button | Press volume button pattern | Jump to configured step or escalate |
 
-### 3. Check-in Methods (2 Primary + 1 Panic)
+### 3. Interactive Step Types (2 Primary + 1 Panic)
 
-#### Primary Check-in Methods
+Each step type is on equal footing in the chain. The two *interactive* types let the user disarm by responding; nothing in the model labels a particular position as "the check-in".
+
+#### Primary Interactive Steps
 
 **Hold Button**
 - User holds down a button on screen (typically in bottom third, one-hand accessible)
-- Holding silence confirms user is safe
+- Holding silently confirms the user is safe
 - Releasing starts a configurable grace period (e.g., 5 seconds)
-- If not held again within grace period, escalation begins
+- If not held again within grace period, the chain advances
 - **Configurable:** sensitivity, hold style (discrete/large/full-screen), vibration feedback, sound feedback
 
 **Disguised Reminders**
 - Fake notifications styled as real apps: Calendar, Duolingo, food delivery services, etc.
-- User must open the notification or swipe/interact within a grace period
+- User must open the notification or swipe/interact within a grace period to disarm
 - Full-screen or subtle display styles
 - 8 built-in templates + user can create custom ones
 - **Configurable:** frequency, templates, grace period, repeat behavior
@@ -189,7 +191,7 @@ The app supports 9 distinct event types that can be chained in any order:
 
 ### 4. Simulation Mode
 
-Practice mode for testing entire escalation chains at configurable speed without triggering real actions.
+Practice mode for testing entire chains at configurable speed without triggering real actions.
 
 **Simulation is NOT a demo or automated playback.** It is a practice mode where the user interacts with the app exactly as they would in a real session. The purpose is to let users experience the real session flow, practice responding to events (fake calls, disguised reminders, hold button), and verify their chain configuration — all in a safe, no-consequences environment.
 
@@ -198,7 +200,7 @@ Practice mode for testing entire escalation chains at configurable speed without
 - **Visual indicator:** Orange border + [SIM] banner always visible on session screen
 - **[SIM] badges:** Notifications carry a `[SIM]` suffix; the foreground service title shows "SIMULATION — [mode]"; the fake call screen shows a [SIM] marker in the caller name area.
 - **Principle — identical UI for local actions:** Simulation renders the **actual UI** for all local-only events. Specifically: fake call shows the actual call screen with ringtone; countdown warning shows the actual countdown UI with vibration; disguised reminders show the actual full-screen or subtle reminder overlay (not a text toast). The simulation controls bar (speed slider, Leap button, Silent toggle) is overlaid separately at the bottom and never replaces step UI.
-- **Silent toggle (per-session, not persisted):** An additional toggle in the simulation controls bar. When ON, all audio is suppressed — ringtones, voice recordings, alarm audio, countdown sounds. Vibration still fires (users can feel haptic feedback). When OFF (default), audio plays normally for local-only steps (e.g., the fake call ringtone plays). The toggle defaults to off each session and is never persisted to storage.
+- **Silent toggle (per-session, not persisted):** An additional toggle in the simulation controls bar. When ON, all audio is suppressed — ringtones, voice recordings, alarm audio, countdown sounds. Vibration still fires (users can feel haptic feedback). When OFF, audio plays normally for local-only steps (e.g., the fake call ringtone plays). The toggle defaults to ON each session (Extra 49 — silent practice by default) and is never persisted to storage.
 - **What fires normally (local-only, silent=OFF):** Fake call screen + ringtone, vibration, countdown warning vibration + UI, foreground notification ([SIM] prefix), disguised reminder overlays and notifications ([SIM] suffix), location/GPS tracking
 - **What fires with silent=ON:** All of the above except audio — ringtone suppressed, voice recording suppressed, alarm suppressed, countdown audio suppressed. Vibration and all UI still fire.
 - **What is blocked regardless of silent:** SMS / WhatsApp / Telegram messages, phone calls to contacts, emergency calls (911 etc.), audio recording (privacy). Blocked actions show a `[SIM]` informational card instead.
@@ -233,9 +235,9 @@ Stealth mode is configured via `StealthConfig`, a structured set of options (not
 
 `StealthConfig` fields:
 - `enabled` — master toggle
-- `fakeName` — fake app name shown in notifications/recents (String?)
-- `fakeIcon` — show generic icon instead of app icon
-- `notificationDisguise` — generic channel name/icon
+- `fakeName` — fake app name shown in notifications/recents (String)
+- `fakeIcon` — `StealthIconPreset` enum picking which generic icon to show
+- `notificationDisguise` — `bool` toggling generic channel name/icon
 - `timerDisplay` — `normal` / `small` / `none`
 - `sessionScreenStealth` — no Guardian Angela branding on session screen
 
@@ -264,13 +266,13 @@ Three distinct PINs, each with a separate purpose:
 
 All three PINs are configured in **Settings → Security**. Biometric may substitute for the Session End PIN only — NOT for App PIN.
 
-### 9. Distress Chains & Condition-Triggered Events
+### 9. Distress Modes & Condition-Triggered Events
 
 The engine supports condition-triggered chains. A **distress mode** is a regular `SessionMode` with `isDistressMode = true`; its `chainSteps` are the distress chain. Each regular mode selects one by id (`distressModeId`; `null` = inherit `AppDefaults.defaultDistressModeId`):
 
 - **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the engine calls `replaceWithDistressChain(steps, triggerReason: ...)` — the main chain is discarded permanently and the distress mode's chain runs from step 0. When it exhausts, the session ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`). The duress-PIN path also shows a fake "Session ended" to the attacker.
-- **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main escalation chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
-- **Low battery alert:** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + escalation chain).
+- **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
+- **Low battery alert:** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + chain).
 
 ### 10. Session End & Quick Exit
 
@@ -296,7 +298,7 @@ Implementation: `home_widget` package (0.9.x) + Android `AppWidgetProvider` (`Gu
 ### 12. Session Modes (Presets + Custom)
 
 **Seed Templates (for mode creation only, not stored as modes):**
-1. **Walk Mode** — Designed for walking home: hold button check-in, short grace period (1 sec), escalates to fake call (1 attempt) → SMS → phone call to contact → emergency call
+1. **Walk Mode** — Designed for walking home: hold button check-in, short grace period (Walk Mode seed overrides the default `0s` with `1s`), escalates to fake call (1 attempt) → SMS → phone call to contact → emergency call
 2. **Date Mode** — Designed for dating: disguised reminder check-in every 30 min, grace period (2 min), 2 total attempts before escalating to fake call (1 attempt) → SMS → phone call to contact → emergency call
 
 All modes, including those created from seed templates, are equally deletable. Deleted modes can be re-created from their templates at any time.
@@ -350,9 +352,9 @@ Every design decision prioritizes user safety. This manifests in:
 ### 2. Configurable Everything
 
 Users have full control over:
-- Event chain order and parameters
+- Chain order and parameters for every event
 - Timing, grace periods, and delays
-- Check-in methods and frequency
+- Which interactive step types to include and how often they fire
 - Which contacts receive alerts
 - Which event types are enabled
 - Simulation speed for testing
@@ -521,14 +523,14 @@ lib/
 
 | Model | Purpose |
 |---|---|
-| `SessionMode` | Defines check-in mechanism + escalation chain + `distressModeId` + triggers + ModeOverrides. Distress modes are SessionModes with `isDistressMode = true` (Pivot 3). |
+| `SessionMode` | Defines a chain + `distressModeId` + triggers + ModeOverrides. Every step in `chainSteps` is on equal footing; the first step simply runs first. Distress modes are SessionModes with `isDistressMode = true` (Pivot 3). |
 | `ChainStep` | One escalation step (9 types). |
 | `EmergencyContact` | Contact + messaging channels + per-contact language. |
 | `EventDefaults` | Per-step-type default configuration (part of AppDefaults). |
 | `SessionLog` | Persisted record of completed sessions; `hadMedicalInfo` flag stamped at session start. |
 | `AppDefaults` | Master defaults: gpsLogging, stealth, templates, eventDefaults, `defaultDistressModeId`. |
 | `AppSettings` | Three PIN hashes, pinTimeoutSeconds, theme, language, emergencyNumber, alarmDndOverride, biometric / launch-auth / telemetry toggles, alarm gradual-volume settings, AppDefaults. |
-| `BatteryAlertConfig` | Low-battery one-shot alert config (enabled toggle + thresholdPercent + escalation chain). |
+| `BatteryAlertConfig` | Low-battery one-shot alert config (enabled toggle + thresholdPercent + chain). |
 | `UserProfile` | Identity (name, age, phoneNumber, photoPath, physicalDescription) + free-form medical fields (each `String?`). |
 | `WalkSession` | Ephemeral session state (not persisted). Named ctors: `startingReal`, `startingSimulation`. |
 
@@ -572,6 +574,9 @@ Strategy pattern for the 9 step types:
 | **06** | [Settings & Configuration](06-settings.md) | All configurable options, defaults, stealth mode, export/import |
 | **07** | [Test Plan](07-test-plan.md) | Test strategy, test cases, acceptance criteria, coverage targets |
 | **08** | [Design Decisions](08-decisions-consolidated.md) | Design decisions log, rationale, trade-offs, alternatives considered |
+| **09** | [Glossary](09-glossary.md) | Terminology reference for terms, fields, and concepts used across the spec set |
+| **10** | [Platform Matrix](10-platform-matrix.md) | Per-feature Android / iOS capability matrix, permissions, and workarounds |
+| **11** | [Deferred Enhancements](11-deferred-enhancements.md) | Landed / deferred / rejected enhancements (DE-1..5, REJ-1) |
 
 ---
 
@@ -702,7 +707,7 @@ dart run import_sorter:main --no-comments
 `lib/data/seed_data.dart` provides:
 
 1. **2 built-in modes:**
-   - Walk Mode (hold button, 1-sec grace, escalates to fake call → SMS → phone contact → emergency call)
+   - Walk Mode (hold button, 1-sec grace as a Walk Mode seed override of the default `0s`, escalates to fake call → SMS → phone contact → emergency call)
    - Date Mode (disguised reminders, 30-min intervals, 2-min grace, 2 attempts, escalates to fake call → SMS → phone contact → emergency call)
 
 2. **8 built-in reminder templates:**

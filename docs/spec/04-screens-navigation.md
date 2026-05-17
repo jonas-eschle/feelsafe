@@ -474,7 +474,7 @@ The main dashboard and entry point after onboarding. Displays mode selector, qui
 - **Style:** Outlined, TextButton, less prominent
 - **On tap:** Same validation as real session, then:
   1. Create WalkSession with `isSimulation: true`
-  2. Navigate to `/session/simulation-loading` (1.5s loading screen)
+  2. Render the 1.5s loading screen inline in `/session`
   3. Then `/session` with simulation overlay
 
 ### Safety Setup Checklist (Post-Onboarding)
@@ -578,10 +578,10 @@ Every simulation session starts with `simulationSilent = true`. The toggle in th
 
 **Silent Mode toggle (in simulation controls bar):**
 - A toggle button labelled "Silent" (with a muted speaker icon) within the simulation controls bar.
-- **When ON:** All audio is suppressed — ringtone, voice recording, alarm audio, countdown sounds. Vibration still fires. Useful when testing in public or when audio would be intrusive.
-- **When OFF (default):** Audio plays normally for local-only steps (e.g., the fake call ringtone plays at normal volume).
+- **When ON (default per Extra 49):** All audio is suppressed — ringtone, voice recording, alarm audio, countdown sounds. Vibration still fires. Lets users practice in public without surprising audio.
+- **When OFF:** Audio plays normally for local-only steps (e.g., the fake call ringtone plays at normal volume).
 - The loud alarm is ALWAYS muted in simulation regardless of this toggle.
-- The toggle is **per-session only** — it is not persisted to storage and defaults to OFF at the start of every simulation session.
+- The toggle is **per-session only** — it is not persisted to storage and defaults to ON at the start of every simulation session.
 
 **Leap button:**
 - Skips simulated time forward to 1 second before the next scheduled engine event. Useful for bypassing long wait phases (e.g., the 30-minute wait in Date Mode) without requiring the user to crank the speed slider.
@@ -651,29 +651,7 @@ When any distress trigger fires (hardware panic button, wrong PIN threshold reac
 
 #### 1. Hold Button (Walk Mode Primary)
 
-**Four style options:**
-
-**Style: discreteButton**
-```
-┌─────────────────────────────┐
-│ [Pride bar] [Elapsed] [End] │
-├─────────────────────────────┤
-│                             │
-│   "Session Active"          │
-│                             │
-│   "Hold button to stay safe"│
-│                             │
-│  ┌─────────────────────┐    │
-│  │  HOLD TO STAY SAFE  │    │ (small button, 80x40)
-│  │  (teal=safe)        │    │
-│  └─────────────────────┘    │
-│                             │
-│  "Release to start grace    │
-│   period (5s)"              │
-│                             │
-│                             │
-└─────────────────────────────┘
-```
+**Three style options:**
 
 **Style: largeButton**
 ```
@@ -831,7 +809,7 @@ When any distress trigger fires (hardware panic button, wrong PIN threshold reac
 - Show large countdown timer
 - Flash screen (optional, configurable)
 - Vibrate (optional, configurable)
-- Beep tone every 5 seconds (configurable volume)
+- Audio cue every 5 seconds (configurable volume)
 - After countdown: transition to next step
 
 ---
@@ -958,6 +936,43 @@ Stealth mode is orthogonal to PIN configuration. If a PIN is required to disarm 
 - Keypad UI appears minimal (matches stealth aesthetic)
 - PIN entry appears as standard numeric input with no safety-app indicators
 - This allows users to practice PIN entry discreetly without revealing app identity
+
+---
+
+### Session-Interrupted Prompt (Extra 13)
+
+If the engine ended unexpectedly (process kill, OOM, force-stop), the
+app surfaces a modal on next launch before the home screen renders.
+
+**Layout:**
+```
+┌─────────────────────────────────┐
+│                                 │
+│   Session interrupted           │
+│                                 │
+│   A session was running when    │
+│   the app stopped. The chain    │
+│   is gone — only the mode and   │
+│   start time are preserved.     │
+│                                 │
+│   ┌───────────────────────┐     │
+│   │ [PinKeypad] (gated)   │     │ (Session End PIN if set; Skip→Discard)
+│   └───────────────────────┘     │
+│                                 │
+│   [Resume]   [Discard]          │
+│                                 │
+└─────────────────────────────────┘
+```
+
+**Data preserved:** `modeId`, session `startedAt` timestamp, last
+completed step index. **NOT preserved:** chain state, miss counts,
+GPS history, in-progress phase timers — session is in-memory only,
+nothing is restored from disk.
+
+**Behavior:**
+- PIN gate appears only when `AppSettings.sessionEndPinHash` is set. Wrong PIN follows the standard wrong-PIN escalation. Tapping "Skip" disables the PIN gate and routes to "Discard".
+- **Resume:** starts a fresh `SessionEngine` for `modeId` from step 0. The original session log is closed with `EndReason.appTermination`; a new log is opened.
+- **Discard:** closes the prior session log with `EndReason.appTermination` and routes to home.
 
 ---
 
@@ -1348,11 +1363,9 @@ Create or edit a single emergency contact. This same screen is navigated to from
 │  │ Relationship (optional)  ││
 │  │ [Text field]             ││ ("Mom", "Friend", etc.)
 │  │                          ││
-│  │ Channels (≥1 required):  ││
-│  │ ☐ SMS                    ││ (ℹ info icon)
-│  │ ☐ WhatsApp               ││ (ℹ info icon)
-│  │ ☐ Telegram               ││ (ℹ info icon)
-│  │ ☐ Phone Call             ││ (ℹ info icon)
+│  │ Channels (≥1 required):  ││ (FilterChip row, default = all on)
+│  │ [✓ SMS]   [✓ WhatsApp]   ││ (ℹ info icon per chip)
+│  │ [✓ Telegram] [✓ Phone]   ││ (ℹ info icon per chip)
 │  │                          ││
 │  │ Language for this contact││
 │  │ [Dropdown] (default: app)││ (per-contact SMS language)
@@ -1377,7 +1390,9 @@ Create or edit a single emergency contact. This same screen is navigated to from
 
 **Note:** All enabled messaging channels are used for each contact. Each contact can be configured with multiple channels (SMS, WhatsApp, Telegram, phone call), and during an escalation step that requires contacting this person, all enabled channels are triggered simultaneously.
 
-**Info buttons (ℹ):** Every channel toggle has an info button that opens a bottom sheet explaining how that channel works and when to use it (e.g., "SMS — auto-sends on Android, requires manual Send on iOS").
+**Channel toggles:** Rendered as `FilterChip` buttons in a `Wrap` (not `CheckboxListTile`). A fresh contact starts with **all 4 channels enabled** (SMS + WhatsApp + Telegram + Phone Call); the user opts OUT of channels they don't want, not in.
+
+**Info buttons (ℹ):** Every channel chip has an info button that opens a bottom sheet explaining how that channel works and when to use it (e.g., "SMS — auto-sends on Android, requires manual Send on iOS").
 
 **Behavior:**
 - **Create mode:** All fields empty
@@ -1390,53 +1405,9 @@ Create or edit a single emergency contact. This same screen is navigated to from
 
 ---
 
-## Modes & Chains Screen (`/settings/modes-and-chains`)
-
-Hub screen with three sections: Session Modes, Distress Chains, and Battery Alert. Accessible via Settings → "Modes & Chains".
-
-**Layout:**
-```
-┌──────────────────────────────┐
-│  [Back] Modes & Chains       │
-├──────────────────────────────┤
-│                              │
-│  SESSION MODES               │
-│  ┌──────────────────────────┐│
-│  │ [icon] Night Out Mode    ││ (→ /modes; shows user-created modes)
-│  │ [icon] My Walk Mode      ││
-│  │ ...                      ││
-│  │ > View All Modes     [+] ││
-│  └──────────────────────────┘│
-│                              │
-│  DISTRESS CHAINS             │
-│  ┌──────────────────────────┐│
-│  │ ★ Default Distress Chain ││ (★ = default, first in list)
-│  │   SMS → Call Emergency   ││ (subtitle: smsContact → callEmergency)
-│  │ ...                      ││
-│  │ > View All Chains    [+] ││
-│  └──────────────────────────┘│
-│                              │
-│  BATTERY ALERT               │
-│  ┌──────────────────────────┐│
-│  │ > Battery Alert          ││ (→ /settings/battery-alert)
-│  │   Alert at 10%, SMS on   ││ (summary of current config)
-│  └──────────────────────────┘│
-│                              │
-└──────────────────────────────┘
-```
-
-**Behavior:**
-- Tapping "View All Modes" → `/modes`
-- Tapping "View All Distress Modes" → `/distress-modes`
-- Tapping "Battery Alert" → `/settings/battery-alert`
-- The first mode in the list has a "Default" badge (used when no mode is selected)
-- The distress mode whose id is `AppDefaults.defaultDistressModeId` carries a ★ marker indicating it is the default used when `SessionMode.distressModeId` is null
-
----
-
 ## Modes Screen (`/modes`)
 
-List of all session modes (built-in and custom). Accessible via Settings → Modes & Chains → Modes.
+List of all session modes (built-in and custom). Accessible via Settings → Modes.
 
 **Layout:**
 ```
@@ -1470,10 +1441,13 @@ List of all session modes (built-in and custom). Accessible via Settings → Mod
 │  [FAB]                       │
 │  "Create Mode"               │
 │                              │
-│  On tap:                     │
+│  On tap (showModalBottomSheet):
 │  ┌──────────────────────────┐│
-│  │ "From template"          ││ (Walk Mode / Date Mode)
-│  │ "From scratch"           ││ (custom mode)
+│  │ Blank mode               ││ (subtitle: "Start with an empty chain")
+│  │ From Walk Mode           ││ (subtitle: "Copy this mode's chain and triggers")
+│  │ From Date Mode           ││ (subtitle: "Copy this mode's chain and triggers")
+│  │ From <custom mode>       ││ (one row per existing non-distress mode)
+│  │ …                        ││
 │  └──────────────────────────┘│
 │                              │
 └──────────────────────────────┘
@@ -1482,17 +1456,17 @@ List of all session modes (built-in and custom). Accessible via Settings → Mod
 **Behavior:**
 
 - **Edit mode:** Tap mode or [Edit] button → `/modes/edit?id={id}`
-- **Delete mode:** [Delete] button → confirmation → deletes the mode. Works for all modes including those created from Walk Mode or Date Mode templates. A mode created from a template and then deleted does not reappear automatically; the user can re-create it from the template again.
+- **Delete mode:** [Delete] button → confirmation → deletes the mode. Works for all modes including those seeded as Walk Mode or Date Mode. Deleted modes do not reappear automatically; the user can re-create them via the "From template" picker as long as another mode of that shape still exists.
 - **Duplicate mode:** [Duplicate] button on each tile → immediately creates a copy named "Copy of {name}" and opens it in the mode editor for further customization.
-- **FAB:** Create mode bottom sheet with two options:
-  1. "From template" → shows exactly 2 choices: **Walk Mode** template and **Date Mode** template. Selecting one creates a new mode pre-populated with that template's chain; the new mode gets `isFromTemplate: true` and a "From template" badge.
-  2. "From scratch" → empty chain; immediately asks "How do you want to check in?" (Hold Button / Disguised Reminder) before opening the mode editor.
+- **FAB:** Opens a `showModalBottomSheet` picker with:
+  1. **"Blank mode"** (subtitle: "Start with an empty chain") — creates a freshly-id'd `SessionMode` with empty `chainSteps`, no triggers, no overrides, then opens the mode editor.
+  2. **One row per existing non-distress mode**, labelled **"From <name>"** (subtitle: "Copy this mode's chain and triggers"). Picking a row clones the source mode's `chainSteps + triggers + overrides` into a freshly-id'd `SessionMode` named `"Copy of <name>"`, persists it, then opens the mode editor on the new mode.
 
 ---
 
 ## Mode Editor (`/modes/edit`)
 
-Create or edit a session mode with custom escalation chain.
+Create or edit a session mode with custom chain.
 
 **Layout:**
 ```
@@ -1510,7 +1484,7 @@ Create or edit a session mode with custom escalation chain.
 │  └──────────────────────────┘│
 │                              │
 │  ┌──────────────────────────┐│
-│  │ Escalation Chain:        ││
+│  │ Chain:                   ││
 │  │ [Reorderable list]       ││ (drag to reorder)
 │  │                          ││
 │  │ [1] [Hold] (icon)        ││ (ExpansionTile)
@@ -1547,12 +1521,7 @@ Create or edit a session mode with custom escalation chain.
 
 **New Mode Flow:**
 
-1. Dialog: "How do you want to check in?"
-   - [Hold Button] → chain starts with holdButton step
-   - [Disguised Reminder] → chain starts with disguisedReminder step
-   - [More Options] → shows all 9 step types
-
-2. Empty mode editor opens with chosen first step
+The mode editor opens directly. "Blank mode" creations land on an empty chain; the user adds the first step (any of the 9 step types) via the "Add Step" picker. Template-based creations land with the source mode's `chainSteps + triggers + overrides` already cloned in.
 
 **Step Expansion — Inline Three-Group ExpansionTile Layout (ITEM 7):**
 
@@ -1604,12 +1573,12 @@ Each step tile always shows:
 4. **Key config summary** (e.g., "30s ring, 5s grace" or "Contacts: Alice, Bob") — updates live as settings change
 
 **Common settings per step type:**
-- **holdButton:** Hold style (discreteButton/largeButton/fullScreen/fakeLockScreen), vibration feedback, sound feedback
+- **holdButton:** Hold style (largeButton/fullScreen/fakeLockScreen), vibration feedback, sound feedback
 - **disguisedReminder:** Interval (waitSeconds), template choice (Calendar/Duolingo/etc.), retryCount. Below the templateIds field the form renders a "Manage reminder templates" ListTile (leading `collections_outlined`, chevron trailing) that navigates to `/settings/reminder-templates` so the user can manage the global template pool without leaving the mode editor flow. An InfoIconButton above the link explains what templates are.
 - **fakeCall:** Ring duration, ring style (Android/iOS/WhatsApp/Telegram/Signal), caller name
 - **smsContact:** Contact selection (grid of one toggle button per contact — see **SMS Contact Selection** below), message template (editable with placeholders)
 - **countdownWarning:** Duration, flash (on/off), sound (on/off)
-- **loudAlarm:** Volume, sound choice (siren/beep/custom), flash (on/off)
+- **loudAlarm:** Volume, sound choice (siren/custom — Q9), flash (on/off)
 - **callEmergency:** Emergency number, pre-SMS toggle
 - **phoneCallContact:** Contact selection, pre-SMS toggle
 - **hardwareButton:** Button type (volumeUp/Down), press pattern (repeat/long), press count or hold duration
@@ -1657,7 +1626,7 @@ A distress mode is a regular `SessionMode` whose `chainSteps` are used as the di
 **Primary actions:**
 - **Tap tile or [Edit]:** → `/distress-modes/edit?id={id}` — opens `ModeEditorScreen` with `isDistress: true`. The editor is the same widget used for regular modes; the `isDistress` flag tweaks the heading and removes the check-in step row.
 - **[Duplicate]:** Creates a copy named "Copy of {name}" with a fresh id and `isDistressMode = true`.
-- **[Delete]:** Confirmation dialog. Refuses to delete the mode currently set as `AppDefaults.defaultDistressModeId` until another distress mode is promoted. Modes referenced by `SessionMode.distressModeId` from any regular mode also block deletion until the references are cleared.
+- **[Delete]:** Confirmation dialog. Refuses to delete the mode currently set as `AppDefaults.defaultDistressModeId` until another distress mode is promoted. Modes referenced by `SessionMode.distressModeId` from any regular mode also block deletion until the references are cleared. **Empty-set invariant:** the last remaining distress mode cannot be deleted — at least one distress mode must always exist so that `AppDefaults.defaultDistressModeId` resolves. The delete button on the last entry is disabled with the tooltip "At least one distress mode is required."
 - **Set Default:** Each tile has a "Set as default" action — writes the tile's id into `AppDefaults.defaultDistressModeId`.
 - **FAB [+]:** → `/distress-modes/edit` (no `id`), creating a new empty distress mode.
 
@@ -1688,7 +1657,7 @@ All other behavior — step list, drag-to-reorder, expansion tiles, dirty-flag g
 ## SMS Contact Selection (shared step-editor widget)
 
 Used inside any `smsContact` step config panel — i.e. in the Mode
-Editor, the Distress Chain Editor, and the Battery Alert chain
+Editor, the Distress Mode Editor, and the Battery Alert chain
 editor. Replaces the former "All / First only / Specific" dropdown
 with an **always-visible grid of one button per emergency contact**.
 This puts the full list of contacts one tap away and makes the
@@ -1731,13 +1700,14 @@ Contacts to message:
   to `/contacts`.
 
 **Selection semantics (cross-reference to `03-data-models.md`):**
-- The model field is still a `SmsRecipient` sealed type. Save-time
-  inference maps the grid selection back to:
-  - **All channel-capable contacts selected** → `SmsRecipient.allContacts`
-  - **Strict subset selected** → `SmsRecipient.specificIds(ids)`
-- The legacy `firstOnly` case is no longer producible from this
-  UI and is migrated away on first edit (spec change only; see
-  `03-data-models.md` for the model-level contract).
+- The model field is the `SmsContactSelection` enum
+  (`allContacts | firstContact | specificIds`). Save-time inference
+  maps the grid selection back to:
+  - **All channel-capable contacts selected** → `SmsContactSelection.allContacts` (`contactIds = null`)
+  - **Strict subset selected** → `SmsContactSelection.specificIds` (`contactIds = [ids]`)
+- `firstContact` is no longer producible from this UI — it is kept
+  in the enum only to honour the seeded default distress chain
+  (see `03-data-models.md`).
 - Grayed (channel-incapable) contacts are never part of the saved
   selection regardless of UI state.
 
@@ -1784,7 +1754,7 @@ editor's step list.
 
 **Allowed step types:** only action steps
 (`smsContact`, `phoneCallContact`, `callEmergency`, `loudAlarm`,
-`countdownWarning`, `fakeCall`). Check-in types (`holdButton`,
+`countdownWarning`, `fakeCall`). Interactive step types (`holdButton`,
 `disguisedReminder`, `hardwareButton`) are not offered — the alert
 is triggered by an OS battery event, not by user interaction.
 
@@ -1872,7 +1842,7 @@ Master source for all configurable defaults inherited by modes.
 │  │   Interval, accuracy,    ││
 │  │   format, retention      ││
 │  │                          ││
-│  │ > Default Distress Chain ││ (dropdown; reorder in Distress Chains)
+│  │ > Default Distress Mode  ││ (dropdown; reorder in Distress Modes)
 │  │   [Default Distress ▾]   ││
 │  │                          ││
 │  │ > Event Defaults         ││ (→ /settings/event-defaults)
@@ -1943,12 +1913,13 @@ Central hub for app configuration.
 │  CONFIGURATION               │
 │  ┌──────────────────────────┐│
 │  │ > Profile                ││ (→ /profile)
-│  │ > Modes & Chains         ││ (→ /settings/modes-and-chains)
-│  │   Modes, Distress Chains,││
-│  │   Battery Alert          ││
-│  │ > Defaults               ││ (→ /settings/defaults)
-│  │   GPS, Event Defaults,   ││
-│  │   Templates              ││
+│  │ > Modes                  ││ (→ /modes)
+│  │ > Distress modes         ││ (→ /distress-modes)
+│  │ > Battery alert          ││ (→ /settings/battery-alert)
+│  │ > Event defaults         ││ (→ /settings/event-defaults)
+│  │ > GPS logging            ││ (→ /settings/gps-logging)
+│  │ > Reminder templates     ││ (→ /settings/reminder-templates)
+│  │ > Stealth                ││ (→ /settings/stealth)
 │  │                          ││
 │  └──────────────────────────┘│
 │                              │
@@ -1978,8 +1949,8 @@ Central hub for app configuration.
 - **Theme:** Auto-saves on selection
 - **Language:** Auto-saves, rebuilds localization. **Blocked during active session:** If user tries to change language while a session is running, show prompt: "End your session first."
 - **Security:** → `/settings/security` (Security submenu: App PIN, Session End PIN, Duress PIN)
-- **Modes & Chains:** → `/settings/modes-and-chains` (three sections: Session Modes, Distress Chains, Battery Alert)
-- **Defaults:** → `/settings/defaults` (GPS Logging, Event Defaults + Templates)
+- **Modes / Distress modes / Battery alert:** direct rows under Configuration — see Route Names appendix at the end of this doc.
+- **Defaults (GPS logging / Event defaults / Reminder templates / Stealth):** each lives on its own dedicated screen (no second-level hub).
 - **Navigation items:** Tap → navigate to sub-screen
 - **Export:** → JSON backup file. **Blocked during active session:** Show prompt: "End your session first."
 - **Import:** → file picker, restore from JSON. **Blocked during active session:** Show prompt: "End your session first."
@@ -2201,7 +2172,7 @@ A [Preview] button inside the expanded section simulates the step locally (shows
 
 ---
 
-## Template Editor (`/settings/defaults/event-defaults/templates/edit`)
+## Template Editor (`/settings/templates/edit`)
 
 Create or edit a reminder template with live preview.
 
@@ -2717,7 +2688,7 @@ All screens include:
 
 This specification covers 25+ distinct screens organized into logical flows:
 
-1. **Onboarding:** 9-page guided setup
+1. **Onboarding:** 3-screen guided setup
 2. **Home & Core:** Home, Session, Fake Call, Chain Exhausted, Simulation
 3. **Contacts:** List, Form
 4. **Modes:** List, Editor
@@ -2727,3 +2698,49 @@ This specification covers 25+ distinct screens organized into logical flows:
 Each screen includes layout, behavior, validation, and accessibility notes. Navigation between screens is fully mapped via GoRouter with query parameter support for dynamic data passing.
 
 All screens follow Guardian Angela's design principles: safety first, configurable everything, stealth when needed, one-hand operation, and offline-first capability.
+
+---
+
+## Appendix — GoRouter Route Names
+
+`lib/core/constants/route_names.dart` exports one `name:` constant
+per route. The list below mirrors the path map at the top of this
+doc. Add a new row whenever a route is added.
+
+```
+home
+onboarding
+session
+fake_call
+session_completed
+session_simulation_summary
+
+contacts
+contact_form
+
+modes
+mode_editor
+
+distress_modes
+distress_mode_editor
+
+settings
+settings_security
+settings_stealth
+pin_setup
+settings_event_defaults
+settings_gps_logging
+settings_reminder_templates
+template_editor
+settings_notifications
+settings_history_retention
+settings_battery_alert
+profile
+settings_about
+settings_feedback
+settings_backup
+
+past_events
+past_event_detail
+past_event_evidence
+```

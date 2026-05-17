@@ -6,7 +6,7 @@
 
 ## 9 Step Types
 
-The chain consists of **9 step types**. Some serve as check-in methods (how the user confirms safety), others are escalation actions. Every step has:
+The chain consists of **9 step types**. Some are *interactive* — the user can disarm by responding to them (`holdButton`, `disguisedReminder`, `hardwareButton`); the rest are non-interactive actions. Every step has equal standing in the chain — none is labelled "the check-in". Every step has:
 - **Action**: what happens when the step fires
 - **Disarm mechanism**: how the user proves they're OK
 - **Grace period**: time before auto-advancing to next step
@@ -26,7 +26,7 @@ The chain consists of **9 step types**. Some serve as check-in methods (how the 
 
 ---
 
-## 1. holdButton (Check-in Method)
+## 1. holdButton (Interactive Step)
 
 **Purpose:** Dead man's switch. User holds screen; releasing starts countdown.
 
@@ -66,7 +66,7 @@ Sensitivity delay (1s) → Grace countdown (10s) → Advance to next step
 
 ---
 
-## 2. disguisedReminder (Check-in Method)
+## 2. disguisedReminder (Interactive Step)
 
 **Purpose:** Periodic fake notifications looking like real apps. User confirms by interacting with the notification.
 
@@ -151,9 +151,9 @@ When the user taps the reminder notification **before** the reminder fires (duri
 
 ---
 
-## 3. hardwareButton (Check-in Method)
+## 3. hardwareButton (Interactive Step)
 
-**Purpose:** Discreet hardware button check-in. User presses physical device button instead of touching screen.
+**Purpose:** Discreet hardware-button response. User presses a physical device button (e.g., volume up) instead of touching the screen to signal "I'm safe".
 
 **Platform Support:**
 - **Android only** — iOS option greyed out (platform limitations prevent reliable button detection)
@@ -232,7 +232,7 @@ The fake call follows a two-phase interaction model:
    - User has three options: Answer, Decline, or wait for timeout
 
 2. **User Actions**
-   - **Answer**: Stops ringtone → "Calling..." screen → chain PAUSES (no escalation) → voice recording plays → user manually hangs up → DISARM (reset to step 0)
+   - **Answer**: Stops ringtone → "Calling..." screen → voice recording plays while the engine timer keeps running (Pivot 2 — fakeCall is an event, not a pause) → user manually hangs up → DISARM (reset to step 0)
    - **Decline (brief tap)**: Default behavior depends on `declineIsSafe` flag:
      - If `declineIsSafe=true` (default): Disarm immediately (reset to step 0)
      - If `declineIsSafe=false`: Counts as a miss → call rings again per `retryCount`
@@ -248,8 +248,8 @@ The fake call follows a two-phase interaction model:
 **Real Phone Call Interaction:**
 If a real phone call comes in while a fake call is active, the fake call auto-disarms silently when the real call ends. The user was genuinely in a call, so the safety check-in is considered satisfied.
 
-**Chain Pausing vs Disarming:**
-- **Chain PAUSES on answer**: When user answers, timers stop but the session continues. No escalation to next step until hang-up.
+**Answer / Hang-up Semantics (Pivot 2):**
+- **Answer does NOT pause the chain**: The engine timer keeps running while the voice clip plays. `FakeCallScreen` is a route push, not a pause-and-overlay. Rationale: pausing on every fake call would create gaps that an attacker could exploit by repeatedly declining/answering to delay the chain.
 - **DISARM on hang-up**: When user manually hangs up, disarm fires (reset to step 0) and chain restarts from the beginning.
 
 **Vibration:** Realistic phone call vibration pattern (matches OS).
@@ -272,7 +272,7 @@ If a real phone call comes in while a fake call is active, the fake call auto-di
 **Timing Defaults:** waitSeconds=0, durationSeconds=30, gracePeriodSeconds=5, retryCount=0 (B3 — one attempt only)
 
 **Engine Methods:**
-- `answerFakeCall()`: Pauses chain timers, does NOT disarm
+- `answerFakeCall()`: No-op at the engine level (Pivot 2) — engine timer continues running while the UI plays the voice recording. Does NOT disarm.
 - `hangUp()`: Fires disarm (reset to step 0)
 
 **Real Mode:** Audio ringtone via AudioService, vibration, call screen UI.
@@ -434,7 +434,7 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 | blackScreenMode | bool | false | Render under black overlay (stealth alarm) |
 | logGps | LogGpsOverride | useDefault | Per-step GPS-logging override (DE-2) |
 
-The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppSettings.alarmGradualVolumeDurationSeconds` (default 5 s). When `gradualVolume` is true the alarm ramps to `volume` over that many seconds.
+The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppSettings.alarmGradualVolumeDurationSeconds` (default 5 s). The ramp fires only when BOTH `AppSettings.alarmGradualVolume = true` AND `LoudAlarmConfig.gradualVolume = true`. If global gradual volume is OFF, the per-step `gradualVolume = true` is suppressed (no ramp). If global is ON but per-step is OFF, the step jumps straight to `volume`.
 
 **Timing Defaults:** waitSeconds=0, durationSeconds=30, gracePeriodSeconds=5, retryCount=0
 
@@ -490,7 +490,7 @@ Condition-triggered actions. The distress chain **replaces** the main chain (sto
 
 A **distress chain** is the `chainSteps` of a distress mode — a regular `SessionMode` with `isDistressMode = true`. Each `SessionMode` selects one via `distressModeId` (null = inherit `AppDefaults.defaultDistressModeId`).
 
-Distress modes are managed under `/distress-modes` (Settings → Modes & Chains → Distress Modes). They are edited with the same `ModeEditorScreen` used for regular modes (passed `isDistress: true`).
+Distress modes are managed under `/distress-modes` (Settings → Distress modes). They are edited with the same `ModeEditorScreen` used for regular modes (passed `isDistress: true`).
 
 **Three Trigger Types (All Fire the Same Distress Chain):**
 

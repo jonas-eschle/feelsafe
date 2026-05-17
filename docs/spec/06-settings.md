@@ -12,7 +12,7 @@ Guardian Angela's settings system provides comprehensive control over every aspe
 
 The top-level `/settings` screen shows ONLY the two controls that users change most often — **Theme** and **Language**. Every other setting lives on a dedicated subcategory screen linked from a tappable row below. This keeps the hub screen scannable and makes each subcategory self-contained (an important affordance for accessibility and translation — fewer cramped sections, fewer inline accordions).
 
-The old two-level "Defaults" and "Modes & Chains" hubs have been removed. Each previously-grouped configuration is now its own screen:
+The old two-level "Defaults" and "Modes & Chains" hubs have been removed (Pivot 3 / Settings restructure). Each previously-grouped configuration is now its own screen:
 
 | Section | Subcategory | Route |
 |---------|-------------|-------|
@@ -140,8 +140,8 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
 - **Info:** "Required to disarm or manually end a running session. Prevents an attacker from stopping escalation. Times out after 15 seconds — if no PIN is entered, the session continues."
 - **Control:** "Set PIN" / "Change PIN" / "Remove" button
 - **Timeout:** Configurable slider (5–120s, default 15s)
-- **Biometric:** Toggle "Biometric for session end" — when enabled, the session-end PIN prompt first shows the device biometric (fingerprint / Face ID) and only falls back to the PIN keypad on cancel, failure, or absence. Preference stored in `SharedPreferences` under `biometric_for_session_end` (default `false`); see `lib/core/utils/biometric_prefs.dart`. Callers wire up the hook via `promptBiometricThenPin(...)`.
-- **Persistence:** `AppSettings.sessionEndPinHash` + `AppSettings.pinTimeoutSeconds`. Biometric toggle kept outside `AppSettings` to avoid schema churn.
+- **Biometric:** Toggle "Biometric for session end" — when enabled, the session-end PIN prompt first shows the device biometric (fingerprint / Face ID) and only falls back to the PIN keypad on cancel, failure, or absence. Stored on `AppSettings.sessionEndPinBiometricEnabled` (Q18); the analogous `appPinBiometricEnabled` and `distressCancelBiometricEnabled` flags live on the same model. There is no separate `SharedPreferences` mirror — pre-alpha policy is to break schema freely rather than maintain a duplicate storage location.
+- **Persistence:** `AppSettings.sessionEndPinHash` + `AppSettings.pinTimeoutSeconds` + `AppSettings.sessionEndPinBiometricEnabled`.
 - **Effect:** Disarm and manual session end require PIN entry (or biometric) with timeout.
 - **Note:** Biometric may substitute for Session End PIN. It may NOT substitute for App PIN or Quick Exit (fingerprint can be forced from unconscious user).
 
@@ -154,7 +154,7 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
   1. Enter new duress PIN
   2. Confirm duress PIN
   3. **Preview:** Shows mock "Session ended" screen — "This is what the attacker sees. Behind this screen, your distress chain fires silently."
-  4. Optionally navigate to Distress Chains to configure what happens (or accept defaults)
+  4. Optionally navigate to Distress Modes to configure what happens (or accept defaults)
 - **Where it works:** Any PIN prompt (App lock, Session End)
 - **Behavior when entered:**
   - Shows fake "Session ended" to attacker
@@ -165,14 +165,10 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
 
 #### Wrong PIN Behavior
 - **Label:** "Wrong PIN attempts before escalation" ℹ
-- **Info:** "After N wrong attempts, the deceptive 'Old pin entered' dialog appears, then your distress chain fires silently."
+- **Info:** "After N wrong PIN attempts, your distress chain fires silently."
 - **Control:** Slider (range 2–10, default 5)
-- **Behavior:** After N consecutive wrong PIN entries:
-  - Show deceptive dialog: "Old pin entered — are you sure you want to proceed?"
-  - This deliberately misleads the attacker into thinking a previous PIN was entered
-  - Regardless of attacker's choice, the selected distress chain fires silently
-  - Reset attempt counter
-- **Note:** All three PIN prompts share the same attempt counter. Counter resets on any correct PIN entry.
+- **Behavior:** After N consecutive wrong PIN entries, the selected distress chain fires silently in the background. The UI shows the same shake animation it would show for any wrong PIN — there is no visible difference to the attacker.
+- **Counter scope (R-27):** An in-memory counter shared across all three PIN prompts (App PIN, Session End PIN, Duress PIN). The counter is NOT persisted across app restart. Reset rules: (a) on any correct PIN entry, (b) on Duress PIN entry (does not count as wrong), (c) on app restart.
 
 Both the duress PIN and wrong-PIN threshold fire the mode's selected distress mode (resolved via `SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). See **Settings → Session → Distress modes** (`/distress-modes`) for the list and editor.
 
@@ -199,8 +195,8 @@ Optional low-battery one-shot alert. Battery alert is a one-shot SMS alert that 
 
 #### Configure chain (If Enabled)
 - **Label:** "Battery alert chain" ℹ
-- **Info:** "The escalation chain that fires when the battery drops below the threshold. Edited with the same step-tile UI used by the mode editor."
-- **Control:** Inline reorderable chain editor (add / remove / reorder / edit steps) with a "Reset to default" action. Only action step types are offered (no check-in types — battery alert is triggered, not held).
+- **Info:** "The chain that fires when the battery drops below the threshold. Edited with the same step-tile UI used by the mode editor."
+- **Control:** Inline reorderable chain editor (add / remove / reorder / edit steps) with a "Reset to default" action. Only action step types are offered (interactive types like holdButton/disguisedReminder are excluded — battery alert is triggered, not held).
 - **Default:** Single `smsContact` step targeting all emergency contacts (see seed data).
 - **Persistence:** `BatteryAlertConfig.chain: List<ChainStep>`
 - **Screen:** Embedded in `/settings/battery-alert` (see `battery_alert_screen.dart`).
@@ -212,6 +208,13 @@ Optional low-battery one-shot alert. Battery alert is a one-shot SMS alert that 
 The emergency services number is a free-form text field so users can
 configure country-specific short codes (112, 911, 999, etc.) or
 carrier-specific variants.
+
+**Default precedence:**
+1. User-edited value in `AppSettings.emergencyCallNumber` (this field) — wins when non-empty.
+2. Locale-derived seed (`emergencyNumbers` map in 03 → 80+ countries) — populated on first launch from the device locale.
+3. Hard fallback `'112'` (GSM international standard) when locale lookup fails.
+
+The editor never allows saving an empty string — clearing the input falls back to the locale-derived value, never to a blank.
 
 - **Input:** Editable dialog triggered from Settings → Emergency
 - **Validator:** Non-blocking. Implemented in
@@ -229,7 +232,7 @@ carrier-specific variants.
   - Empty input: blocks Save until non-empty.
 - **Persistence:** `AppSettings.emergencyCallNumber`
 - **Session lock:** Cannot be changed during an active session.
-- **Scope — global default:** This setting is the **global default**. Individual `callEmergency` steps may override it via `CallEmergencyConfig.emergencyNumber` (see `02-event-types.md §9`). When a step's override is `null` or empty the strategy falls back to this global value; when the step override is non-empty it takes precedence for that step only. Use per-step overrides for travel modes or regional escalation chains instead of changing the global number.
+- **Scope — global default:** This setting is the **global default**. Individual `callEmergency` steps may override it via `CallEmergencyConfig.emergencyNumber` (see `02-event-types.md §9`). When a step's override is `null` or empty the strategy falls back to this global value; when the step override is non-empty it takes precedence for that step only. Use per-step overrides for travel modes or regional chains instead of changing the global number.
 
 ---
 
@@ -403,7 +406,7 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 - Info icon on includeLocation explains that this creates a shareable maps link
 - Info icon on autoRecordAudio: "Check local recording laws before enabling"
 - Legal warning box: "Recording laws vary by jurisdiction. You are responsible for compliance."
-- **Contact selection (per-step):** Inside any `smsContact` step config (in the Mode editor, Distress Chain editor, or Battery Alert editor) the former "All / First only / Specific" dropdown is replaced by a **grid of one clickable button per emergency contact**. Contacts whose `messageChannels` include SMS are enabled and default to ON for a new step; contacts without SMS as a channel render disabled and grayed out (cannot be toggled). At save time, an all-enabled selection maps to `SmsRecipient.allContacts`; a strict subset maps to `SmsRecipient.specificIds`. See **`04-screens-navigation.md` → SMS Contact Selection** for the full widget spec, and **`03-data-models.md`** for the model-level save-time inference contract.
+- **Contact selection (per-step):** Inside any `smsContact` step config (in the Mode editor, Distress Mode editor, or Battery Alert editor) the former "All / First only / Specific" dropdown is replaced by a **grid of one clickable button per emergency contact**. Contacts whose `messageChannels` include SMS are enabled and default to ON for a new step; contacts without SMS as a channel render disabled and grayed out (cannot be toggled). At save time, an all-enabled selection maps to `SmsContactSelection.allContacts`; a strict subset maps to `SmsContactSelection.specificIds`. See **`04-screens-navigation.md` → SMS Contact Selection** for the full widget spec, and **`03-data-models.md`** for the model-level save-time inference contract.
 
 ### phoneCallContact Defaults
 
@@ -424,7 +427,7 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 | Option | Default | Type | Range | Description |
 |--------|---------|------|-------|-------------|
 | **volume** | 1.0 | double | 0.0–1.0 | Alarm volume level |
-| **soundChoice** | siren | LoudAlarmSound | siren / custom (Q9 — `whoop` and `bell` removed) |
+| **soundChoice** | siren | LoudAlarmSound | siren / custom (Q9) |
 | **flashLight** | true | bool | Strobe camera flashlight |
 | **flashScreen** | false | bool | Strobe screen (photosensitive warning) |
 | **flashSpeedMs** | 500 | int | 100–2000 | Flash cycle length in ms |
@@ -528,7 +531,7 @@ Modes can override via `ModeOverrides.stealth` (accessible in the mode editor's 
 Distress modes are managed exactly like regular modes (Pivot 3). The Session section's "Distress modes" row navigates to `DistressModesScreen` at `/distress-modes`; tapping any entry opens `ModeEditorScreen` (the same widget used for regular modes) at `/distress-modes/edit?id=...` with `isDistress: true`. The list supports add / rename / delete / duplicate / set-as-default and tap-to-edit.
 
 - **Label (Session section row):** "Distress modes" ℹ
-- **Info:** "The distress chain used when a mode doesn't specify one, or when the hardware panic button or duress PIN fires. A distress mode is a `SessionMode` with `isDistressMode = true` — its escalation chain is what runs when distress is triggered."
+- **Info:** "The distress chain used when a mode doesn't specify one, or when the hardware panic button or duress PIN fires. A distress mode is a `SessionMode` with `isDistressMode = true` — its chain is what runs when distress is triggered."
 - **Default distress mode:** Stored on `AppDefaults.defaultDistressModeId`. Used by every regular mode whose `distressModeId` is null.
 - **Per-mode selection:** Each regular `SessionMode` picks its distress mode by id in the mode editor's Safety Options section.
 
@@ -863,35 +866,11 @@ Placeholder section for planned advanced features:
 
 All settings stored in encrypted Hive database:
 
-**Primary model:** `AppSettings` (typeId 9)
-
-```dart
-@HiveType(typeId: 9)
-class AppSettings extends HiveObject {
-  // Theme & Language
-  bool isDarkTheme;              // "light", "dark", or "system"
-  String languageCode;           // "en", "de", "fr", "es", "ru", ...
-
-  // Three PIN hashes (null = disabled)
-  String? appPinHash;            // App lock PIN
-  String? sessionEndPinHash;     // Session disarm/end PIN (biometric may substitute)
-  String? duressPinHash;         // Duress PIN — fires distress chain silently
-  int pinTimeoutSeconds;         // default 15
-
-  // GPS and Stealth consolidated into AppDefaults
-  AppDefaults defaults;          // GPS logging, stealth, templates, event defaults, distress chains
-
-  // Alarm Behavior
-  bool alarmOverrideSilentMode;  // default: true
-  bool alarmGradualVolume;       // default: true
-  int alarmGradualVolumeDuration; // default: 10 seconds
-
-  // Battery Alert
-  BatteryAlertConfig? batteryAlert; // null = disabled
-
-  // Other fields...
-}
-```
+**Primary model:** `AppSettings` (typeId 9). The canonical Dart
+sketch is the one in **`03-data-models.md` → AppSettings**
+(`themeMode`, biometric / launch-auth toggles, `wrongPinThreshold`,
+`sentryEnabled`, `telemetryOptOut`, `sessionLogRetentionDays`,
+`trashRetentionDays`, etc.). Do not duplicate the field list here.
 
 **Security settings** all live in `AppSettings` (encrypted in Hive via HiveAesCipher).
 PIN hashes stored as bcrypt hashes. No separate `flutter_secure_storage` entries for PINs.

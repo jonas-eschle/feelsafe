@@ -151,7 +151,7 @@ The disguised reminder is a timer-driven check-in method: periodic fake notifica
 | 9 | Start → wait interval fires → reminderFired event emitted | Step 0 = disguisedReminder (30s wait) | engine.start(), elapse 30s | reminderFired event emitted |
 | 10 | reminderFired → user disarms within duration | Step 0 = disguisedReminder (30s wait, 60s duration) | start, elapse 30s, disarm | userDisarmed emitted, reset to step 0 |
 | 11 | reminderFired → duration expires → grace expires → miss counted | Step 0 = disguisedReminder (30s wait, 60s duration, 5s grace) | start, elapse 95s | repeatMissed emitted with missCount = 1 |
-| 12 | 3 misses → advance to next step | Step 0 = disguisedReminder (repeatCount=2), Step 1 = loudAlarm | start, elapse wait/duration/grace 3 times | stepAdvancing emitted, advance to step 1 after 3rd miss |
+| 12 | 3 misses → advance to next step | Step 0 = disguisedReminder (retryCount=2), Step 1 = loudAlarm | start, elapse wait/duration/grace 3 times | stepAdvancing emitted, advance to step 1 after 3rd miss |
 | 13 | Disarm resets miss count | Step 0 = disguisedReminder, miss once | start, elapse 95s (1 miss), disarm | missCount = 0 after disarm |
 | 14 | Randomize ±20% applies to waitSeconds | Step 0 = disguisedReminder (waitSeconds=1000, randomize=true) | With _FixedRandom(0.5): factor=1.0, no jitter; test with Random() | Timer duration within [800, 1200] ms range (with Random) or exactly 1000 (with _FixedRandom) |
 | 15 | No premature reminderFired before interval | Step 0 = disguisedReminder (30s wait) | start, elapse 25s | No reminderFired event yet, only stepStarted |
@@ -165,7 +165,7 @@ All non-holdButton, non-disguisedReminder steps follow the same three-phase patt
 | 16 | Step with wait > 0 | Step 0 = countdownWarning (10s wait, 5s duration, 3s grace) | start, elapse phases | stepStarted → wait fires → duration fires → grace fires → advance |
 | 17 | Step with wait = 0 (immediate) | Step 0 = loudAlarm (0s wait, 15s duration, 5s grace) | start | duration phase begins immediately, no wait |
 | 18 | Step with duration = 0, grace = 0 | Step 0 = smsContact (0s wait, 0s duration, 0s grace) | start | Immediately advance to next step |
-| 19 | Step with repeats: full repeat cycle | Step 0 = fakeCall (0s wait, 5s duration, 2s grace, repeatCount=1) | start, elapse 7s (miss 1), elapse 7s (miss 2) | grace expires → repeat cycle → second grace → advance |
+| 19 | Step with repeats: full repeat cycle | Step 0 = fakeCall (0s wait, 5s duration, 2s grace, retryCount=1) | start, elapse 7s (miss 1), elapse 7s (miss 2) | grace expires → repeat cycle → second grace → advance |
 | 20 | Disarm at any phase resets to step 0 | Step 0 = loudAlarm, Step 1 = fakeCall, at any phase | start at step 1, disarm | Reset to step 0, miss count cleared |
 
 ### Disarm Tests (4)
@@ -185,9 +185,9 @@ Declining (not answering) a fake call does NOT disarm; it repeats the call with 
 
 | # | Test Case | Setup | Act | Assert |
 |---|-----------|-------|-----|--------|
-| 25 | Decline → grace → re-fire same step | Step 0 = fakeCall (10s duration, 2s grace, repeatCount=1) | start, elapse 10s (decline), elapse 2s (grace) | Grace expires, same step re-fires (2 total attempts) |
-| 26 | Decline preserves miss count | Step 0 = fakeCall (repeatCount=2), decline twice | start, decline at 10s, decline at 22s | Miss count = 2 after 2 declines, advance on 3rd |
-| 27 | Multiple declines → repeat limit → advance | Step 0 = fakeCall (repeatCount=1), Step 1 = loudAlarm | start, decline, wait grace, decline, wait grace | After 2 declines, advance to step 1 |
+| 25 | Decline → grace → re-fire same step | Step 0 = fakeCall (10s duration, 2s grace, retryCount=1) | start, elapse 10s (decline), elapse 2s (grace) | Grace expires, same step re-fires (2 total attempts) |
+| 26 | Decline preserves miss count | Step 0 = fakeCall (retryCount=2), decline twice | start, decline at 10s, decline at 22s | Miss count = 2 after 2 declines, advance on 3rd |
+| 27 | Multiple declines → repeat limit → advance | Step 0 = fakeCall (retryCount=1), Step 1 = loudAlarm | start, decline, wait grace, decline, wait grace | After 2 declines, advance to step 1 |
 
 ### Simulation Tests (7)
 
@@ -196,7 +196,7 @@ Simulation mode allows speed control and fast-forward for testing without real c
 | # | Test Case | Setup | Act | Assert |
 |---|-----------|-------|-----|--------|
 | 28 | Speed multiplier 5x: timers fire 5× faster | Engine with isSimulation=true, speedMultiplier=5.0, Step 0 = fakeCall (10s duration) | start, elapse 2s | Timer fires (10s / 5 = 2s) |
-| 29 | leapToNextEvent: skip to 1s before next fire | isSimulation=true, Step 0 = loudAlarm (30s wait) | start, leapToNextEvent | Active timer replaced with 1s countdown |
+| 29 | leap: skip to 1s before next fire | isSimulation=true, Step 0 = loudAlarm (30s wait) | start, leap | Active timer replaced with 1s countdown |
 | 30 | SMS blocked in simulation: logged as sim_blocked, not sent | isSimulation=true, Step 0 = smsContact | strategy.executeReal() called | SMS not sent, SessionLogEvent has status=sim_blocked |
 | 30a | Simulation end shows PIN prompt when configured | isSimulation=true, sessionEndPinHash set | Simulation ends (disarm or chain exhaust) | PIN prompt shown with "Skip" button visible |
 | 30b | Simulation end skips PIN prompt when not configured | isSimulation=true, sessionEndPinHash=null | Simulation ends | No PIN prompt; goes directly to Simulation Summary |
@@ -241,8 +241,8 @@ User on date with periodic disguised reminder check-ins.
 | # | Scenario | Setup | Steps | Expected |
 |---|----------|-------|-------|----------|
 | 43 | Safe date: all reminders confirmed | Date Mode (disguisedReminder every 10 min, 3 cycles) | start, elapse 10m → disarm, elapse 10m → disarm, elapse 10m → disarm | 3 successful check-ins, no escalation |
-| 44 | Distracted: miss 1, confirm next 2 | disguisedReminder (10m interval, repeatCount=1) over 3 cycles | start, elapse 10m → miss grace, elapse 10m → disarm, elapse 10m → disarm | 1 miss triggers repeat, confirm on 2nd attempt, then 2 clean confirmations |
-| 45 | Dangerous: 3 misses → escalation to fakeCall | disguisedReminder (10m, repeatCount=2), then fakeCall | start, elapse 3× full cycle (10m+duration+grace each) without disarm | 3 misses → advance to fakeCall step |
+| 44 | Distracted: miss 1, confirm next 2 | disguisedReminder (10m interval, retryCount=1) over 3 cycles | start, elapse 10m → miss grace, elapse 10m → disarm, elapse 10m → disarm | 1 miss triggers repeat, confirm on 2nd attempt, then 2 clean confirmations |
+| 45 | Dangerous: 3 misses → escalation to fakeCall | disguisedReminder (10m, retryCount=2), then fakeCall | start, elapse 3× full cycle (10m+duration+grace each) without disarm | 3 misses → advance to fakeCall step |
 | 46 | Background: reminders fire while app backgrounded | Date Mode with background execution | start, app moves to background, elapse 10m | reminderFired event emitted even when backgrounded (foreground service keeps timers alive) |
 
 ### Fake Call Scenarios (4)
@@ -251,10 +251,10 @@ User interaction with fake incoming calls.
 
 | # | Scenario | Setup | Steps | Expected |
 |---|----------|-------|-------|----------|
-| 47 | Answer: disarm, back to step 0 | fakeCall (30s ring) | start, ring fires, user answers | answerFakeCall() → disarm triggers, reset to step 0 |
-| 48 | Decline: grace → rings again | fakeCall (30s ring, 2s grace, repeatCount=1) | start, ring fires, user declines, wait 2s grace | restartCurrentStep() → grace expires → re-ring |
-| 49 | Decline twice: 2 misses → advance | fakeCall (30s ring, 2s grace, repeatCount=1), then loudAlarm | start, decline, wait grace, decline, wait grace | 2 declines, miss count = 2, advance to loudAlarm |
-| 50 | Unanswered: grace expires → advance | fakeCall (10s ring, 5s grace, repeatCount=0), then loudAlarm | start, ring fires, no user action, wait 15s | Grace expires → advance to loudAlarm |
+| 47 | Answer keeps engine timer running until hang-up (Pivot 2) | fakeCall (30s ring) | start, ring fires, user answers, no hang-up | answerFakeCall() is a no-op at engine level — duration timer continues. On hangUp(), disarm triggers and chain resets to step 0. |
+| 48 | Decline: grace → rings again | fakeCall (30s ring, 2s grace, retryCount=1) | start, ring fires, user declines, wait 2s grace | restartCurrentStep() → grace expires → re-ring |
+| 49 | Decline twice: 2 misses → advance | fakeCall (30s ring, 2s grace, retryCount=1, **declineIsSafe=false** — non-default), then loudAlarm | start, decline, wait grace, decline, wait grace | 2 declines, miss count = 2, advance to loudAlarm. (Canonical default `declineIsSafe=true` means decline = disarm; this test exercises the opt-in inverse behavior.) |
+| 50 | Unanswered: grace expires → advance | fakeCall (10s ring, 5s grace, retryCount=0, **declineIsSafe=false** — non-default), then loudAlarm | start, ring fires, no user action, wait 15s | Grace expires → advance to loudAlarm |
 
 ### Stealth Mode Scenarios (3)
 
@@ -353,7 +353,7 @@ Disguised UI that looks like lock screen but is actually a hold button check-in.
 
 ### Fake Music Player (5)
 
-Disguised UI that looks like music player but is actually a check-in mechanism.
+Disguised UI that looks like a music player but disarms the chain when the user interacts with it (slider, controls).
 
 | # | Test Case | Setup | Act | Assert |
 |---|-----------|-------|-----|--------|
@@ -373,7 +373,7 @@ User can hold decline button for 5 seconds to trigger distress signal instead of
 | 90 | Hold 5s triggers distress signal | Decline button, hold 5s | Hold continuously for 5s | Distress chain triggered |
 | 91 | Hold 4.9s does not trigger distress | Decline button, hold 4.9s | Hold for 4.9s then release | Normal decline behavior (not distress) |
 | 92 | Visual feedback during hold | Decline button, hold pressed | Hold button | Visual feedback appears (color change, progress indicator) |
-| 93 | Distress works while engine paused | Engine paused, decline button displayed | Hold decline 5s | Distress chain executes even while main chain paused |
+| 93 | Distress works while engine running through fake-call event | Engine running (Pivot 2 — answer does not pause), decline button displayed | Hold decline 5s | Distress chain executes regardless of which UI is on top of the running engine |
 
 ### Non-Blocking Event Execution (4)
 
@@ -528,7 +528,7 @@ Prepare user for session with summary and destination options.
 
 | # | Test Case | Setup | Act | Assert |
 |---|-----------|-------|-----|--------|
-| 154 | Trigger summary shown before session begins | Tap "Start Real Session" or "Start Simulation" | Session start button tapped | Full escalation chain displayed (all steps, timings, actions) |
+| 154 | Trigger summary shown before session begins | Tap "Start Real Session" or "Start Simulation" | Session start button tapped | Full chain displayed (all steps, timings, actions) |
 | 155 | GPS destination prompt shown (skippable) | Session ready to start, GPS tracking enabled in AppDefaults | Session start flow shown | "Set destination?" dialog appears with "Skip" and "Set" buttons |
 | 156 | Skipping destination does not block session start | GPS destination prompt shown | Tap "Skip" | Session starts immediately without destination set |
 
@@ -751,7 +751,7 @@ ChainStep _step({
   int waitSeconds = 0,
   int durationSeconds = 10,
   int gracePeriodSeconds = 5,
-  int repeatCount = 0,
+  int retryCount = 0,
   bool randomize = false,
   Map<String, String>? config,
 }) {
@@ -762,7 +762,7 @@ ChainStep _step({
     waitSeconds: waitSeconds,
     durationSeconds: durationSeconds,
     gracePeriodSeconds: gracePeriodSeconds,
-    repeatCount: repeatCount,
+    retryCount: retryCount,
     randomize: randomize,
     config: config,
   );
@@ -926,7 +926,7 @@ This table maps all critical spec requirements to their corresponding test cases
 | Speed multiplier divides all durations | TC-18, TC-19 | session_engine_test.dart | P1 |
 | Jitter: ±20% randomization on timing | TC-22, TC-23 | session_engine_test.dart | P1 |
 | Fake call decline counts as miss | TC-49, TC-50 | fake_call_scenarios_test.dart | P1 |
-| Fake call answer: chain pauses, disarm on hang-up | TC-47, TC-48 | fake_call_scenarios_test.dart | P1 |
+| Fake call answer: engine keeps running until hang-up (Pivot 2) | TC-47, TC-48 | fake_call_scenarios_test.dart | P1 |
 | Real phone call detection auto-pauses session | TC-25 | session_engine_test.dart | P1 |
 | chainExhausted emitted when last step grace expires | TC-4 | session_engine_test.dart | P1 |
 | sessionEnded idempotent (safe to call multiple times) | TC-34, TC-35 | session_engine_test.dart | P1 |
@@ -948,7 +948,7 @@ This table maps all critical spec requirements to their corresponding test cases
 |---|---|---|---|
 | Fake call: decline counts as miss toward retryCount | TC-49 | fake_call_scenarios_test.dart | P1 |
 | Fake call decline: grace → re-ring | TC-48, TC-50 | fake_call_scenarios_test.dart | P1 |
-| Fake call answer: chain pauses, disarm on hang-up | TC-47 | fake_call_scenarios_test.dart | P1 |
+| Fake call answer: engine keeps running, disarm on hang-up (Pivot 2) | TC-47 | fake_call_scenarios_test.dart | P1 |
 | Fake call: max retryCount rings before advancing | TC-49, TC-50, TC-51 | fake_call_scenarios_test.dart | P1 |
 
 ### Email/SMS Contact (P1 - Safety Critical)
@@ -1024,7 +1024,7 @@ This table maps all critical spec requirements to their corresponding test cases
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| ChainStep field: retryCount (not repeatCount) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
+| ChainStep field: retryCount (not retryCount) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
 | SessionMode: chainSteps ordered by order field | TC-74 | session_mode_test.dart | P2 |
 | SessionLog: all events timestamped and categorized | TC-62, TC-63, TC-64, TC-65 | session_log_test.dart | P2 |
 | Hive encryption always-on (no opt-out) | TC-75 | encryption_test.dart | P1 |
@@ -1199,7 +1199,7 @@ end-to-end timer-driven flows. These scenarios close that gap.
   4. `async.elapse(Duration(seconds: 15))`.
 - **Expected outcomes:**
   - `engine.isDistressChain == true` immediately after panic.
-  - `engine.steps` is now the distress chain (smsContact first).
+  - `engine.chainSteps` is now the distress chain (smsContact first).
   - Terminal state is `EngineEnded(reason: hardwarePanic)`.
   - Stream emits `distressTriggered` (when the chain is replaced),
     later `distressCompleted`, and finally `sessionEnded` carrying
@@ -1280,7 +1280,7 @@ end-to-end timer-driven flows. These scenarios close that gap.
   1. `engine.start()`.
   2. `async.elapse(Duration(milliseconds: 100))` to ensure the
      duration phase has started.
-  3. `engine.leapToNextEvent()`.
+  3. `engine.leap()`.
   4. `async.elapse(Duration(seconds: 2))`.
 - **Expected outcomes:**
   - The duration phase's timer fires within ~1s real time.

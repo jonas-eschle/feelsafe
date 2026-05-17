@@ -84,13 +84,13 @@ Plays the default alarm sound (siren) at maximum volume, looping indefinitely un
 
 Plays an alarm with configurable parameters:
 
-- **soundChoice**: `'siren'` (default), `'beep'`, or `'custom'`
+- **soundChoice**: `'siren'` (default) or `'custom'` only (Q9; matches `LoudAlarmSound` enum in 03)
 - **customSoundPath**: filesystem path to a custom audio file (required if `soundChoice == 'custom'`)
 - **volume**: 0.0–1.0 (clamped to valid range)
 
 ### Gradual Volume Increase
 
-When enabled in settings, volume ramps linearly from 0 to the target volume over a configurable duration (default 10 seconds). Implemented via `Timer.periodic(100ms)` to avoid abrupt loudness that could startle or cause audio feedback loops.
+When enabled in settings, volume ramps linearly from 0 to the target volume over a configurable duration (default 5 seconds per Q33; configured via `AppSettings.alarmGradualVolumeDurationSeconds`). Implemented via `Timer.periodic(100ms)` to avoid abrupt loudness that could startle or cause audio feedback loops.
 
 ### System Volume Override
 
@@ -1070,7 +1070,7 @@ or interrupted — battery alert is a side action only.
 ### Low Battery Alert (One-Shot)
 
 1. Shows a notification to the user: "Battery low — [X]% remaining"
-2. Optionally sends an SMS to contacts (if `BatteryAlertConfig.smsEnabled`)
+2. Runs `BatteryAlertConfig.chain` through the same engine/orchestrator used for session chains (no legacy `smsEnabled` boolean)
 3. Fires ONCE per session only (subsequent drops below threshold are ignored)
 4. Main chain continues uninterrupted
 
@@ -1081,6 +1081,70 @@ Optional feature, off by default. Enabled in settings with a configurable thresh
 ### Implementation
 
 Uses `battery_plus` package to monitor battery state changes.
+
+---
+
+## SessionLogRecorder
+
+Persists session timeline events emitted by the engine into a
+`SessionLog`. Owned by `SessionController`; one recorder per session.
+
+```dart
+class SessionLogRecorder {
+  SessionLogRecorder({
+    required SessionContext context,
+    required SessionLogRepository repo,
+  });
+
+  void onEvent(ChainEventData event);   // append to in-memory log
+  Future<void> finalise(EndReason r);   // single atomic write
+}
+```
+
+- **Subscribes** to `engine.events` on session start and appends one
+  `SessionLogEvent` per step transition. No partial writes.
+- **Stamps `hadMedicalInfo` at log creation** from the resolved
+  `SessionContext`: true iff the user profile carries any medical
+  field AND at least one step in the chain has
+  `SmsContactConfig.includeMedicalInfo = true`.
+- **Single atomic write** on `sessionEnded`: the populated log is
+  persisted in one repository call. There is no incremental
+  persistence — process kill mid-session = log is lost (matches
+  the no-session-restore policy).
+
+---
+
+## Permission Audit Flow
+
+One normative subsection for when permissions are checked,
+re-requested, and how revocation mid-session is handled.
+
+**Lifecycle:**
+
+1. **Cold start** — only the always-required notification permission
+   is requested. The home screen surfaces a checklist for any other
+   permissions the user is likely to need; nothing is requested
+   eagerly.
+2. **Session start (real or simulation)** — `SessionController` calls
+   `PermissionService.auditForMode(mode)`. The auditor inspects only
+   what THIS mode needs:
+   - SMS / WhatsApp / Telegram permissions iff `mode.chainSteps`
+     contains an `smsContact` step.
+   - Phone permissions iff `mode.chainSteps` contains
+     `phoneCallContact` or `callEmergency`.
+   - Location iff `mode.trackingEnabled` is true OR any
+     `disarmTriggers` entry is a `GpsArrivalDisarmTrigger`.
+   - Microphone iff any step opts in to `autoRecordAudio`.
+   - Camera iff any `loudAlarm` step has `flashLight = true`.
+   Missing permissions block real-session start (validation error)
+   and warn-but-allow simulation start.
+3. **Mid-session revocation** — `PermissionService` listens for
+   OS-level revocation. Revocation is recorded as a
+   `SessionLogEvent` with `eventType: 'permission_revoked'` and the
+   session **continues**. The step that needs the missing permission
+   logs `deliveryStatus: 'failed'` (or `'no_signal'` for SMS) on its
+   next attempt; the chain advances per the standard non-blocking
+   failure rule.
 
 ---
 
@@ -1230,12 +1294,12 @@ await audioService.playAlarm();
 
 All services degrade gracefully on error:
 
-- **Missing permission** — Log and skip (continue escalation chain)
+- **Missing permission** — Log and skip (continue chain)
 - **Unavailable hardware** — No-op (e.g., no camera = no flash)
 - **Network unavailable** — Retry queue (SMS only)
 - **App not installed** — Fall back to alternative channel or fail silently
 
-No escalation chain is blocked by service failures. If SMS fails, the chain continues. If location is unavailable, messages show "Location unavailable" instead of a URL. If the alarm fails to play, vibration patterns still fire.
+No chain is blocked by service failures. If SMS fails, the chain continues. If location is unavailable, messages show "Location unavailable" instead of a URL. If the alarm fails to play, vibration patterns still fire.
 
 This ensures safety is never compromised by service unavailability.
 

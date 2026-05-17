@@ -13,7 +13,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
 | **Check-in** | User action proving safety. Resets chain to step 0, clears miss count. User-facing term. | `checkIn()`, `disarm()` | UI, notifications, user docs | "Tap to check in" |
-| **Disarm** | Engine-internal synonym for check-in. Resets escalation chain to step 0. | `disarm()` | SessionEngine, SessionController | Engine emits `userDisarmed` event |
+| **Disarm** | Engine-internal synonym for check-in. Resets chain to step 0. | `disarm()` | SessionEngine, SessionController | Engine emits `userDisarmed` event |
 | **Miss** | Grace period expired without user response. Increments toward retry limit. | `missCount`, `_missedRepeats` | SessionEngine, session logs | "Missed: 2" on session screen |
 | **Escalation** | Advancing to the next (more urgent) step after retries exhausted. | `stepAdvancing`, `advanceToNext()` | Chain engine, event stream | After 3 missed reminders, escalate to phone call |
 | **Retry Count** | Max retry attempts before advancing. N retries = N+1 total attempts. | `retryCount` | ChainStep field, settings | `retryCount=2` means 3 total attempts (initial + 2 retries) |
@@ -22,7 +22,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | **Duration** | How long the event actively runs. | `durationSeconds` | ChainStep field, settings | Fake call rings for 30 seconds (durationSeconds=30) |
 | **Session** | An active safety monitoring period from start to end/exhaustion. | `WalkSession` (ephemeral), `SessionLog` (persisted) | Engine, UI, repository | User starts session at 8:00pm, ends at 9:15pm |
 | **Chain** | Ordered list of steps that fire sequentially during a session. | `chainSteps` | SessionMode, SessionEngine | "Walk Mode" has 3 steps: holdButton → fakeCall → loudAlarm |
-| **Step** | One action in the escalation chain (e.g., fake call, SMS, alarm). | `ChainStep` | Data model, settings | Step 2 is a fake call with 30s ring time |
+| **Step** | One action in the chain (e.g., fake call, SMS, alarm). | `ChainStep` | Data model, settings | Step 2 is a fake call with 30s ring time |
 | **Event** | Something that happens during a session (stepStarted, miss, disarm, etc.). | `ChainEvent`, `ChainEventData` | SessionEngine event stream | Engine emits `reminderFired` event when reminder shows |
 | **Distress Chain** | The `chainSteps` of a distress mode that REPLACE the main chain when triggered. Never returns. | (no separate model — uses `SessionMode` with `isDistressMode = true`) | SessionMode (`distressModeId`), AppDefaults (`defaultDistressModeId`) | Duress PIN triggers distress chain (SMS all contacts + call 911) |
 | **Jitter** | ±20% randomization on timing values. | `randomize`, `_shouldRandomize()` | ChainStep field, engine | 30s reminder interval ±20% = 24–36s |
@@ -32,13 +32,15 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 
 ---
 
-## Check-in Methods
+## Interactive Step Types
+
+These step types let the user disarm the chain by responding. Any step type can appear anywhere in the chain — nothing labels one as "the check-in".
 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
-| **Hold Button** | User holds screen to keep session active. Releasing starts grace period. | `ChainStepType.holdButton` | Step 0 (check-in mechanism), settings | User holds phone while walking |
-| **Disguised Reminder** | Fake notification styled to look like real app (Calendar, Duolingo, etc.). | `ChainStepType.disguisedReminder` | Step 0 (check-in mechanism) or escalation | "Meeting in 15 min" notification is actually safety check-in |
-| **Hardware Button** | Physical device button press (volume, headphone remote). | `ChainStepType.hardwareButton` | Manual escalation trigger, settings | Volume button + 5 rapid presses = escalate |
+| **Hold Button** | User holds the screen while the step is active. Releasing starts the grace period. | `ChainStepType.holdButton` | Any chain position, settings | User holds phone while walking |
+| **Disguised Reminder** | Fake notification styled to look like a real app (Calendar, Duolingo, etc.). Tapping it disarms. | `ChainStepType.disguisedReminder` | Any chain position | "Meeting in 15 min" notification disarms when tapped |
+| **Hardware Button** | Physical device button press (volume, headphone remote). | `ChainStepType.hardwareButton` | Any chain position; also a global panic trigger | Volume button + 5 rapid presses = escalate |
 | **Panic Trigger** | Hardware button configured to manually escalate or jump to a specific step. | `hardwareButton` with `targetStep` | Settings config | Volume button holds → jump to "Call Emergency" step |
 
 ---
@@ -47,12 +49,12 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
-| **Count Down Warning** | Visual countdown (e.g., "Emergency in 10s"). Warning before serious action. | `ChainStepType.countdownWarning` | Escalation chain | "Emergency call in 10 seconds" with vibration |
-| **Fake Call** | Phone rings with caller ID spoofed to trusted contact. User can answer or decline. | `ChainStepType.fakeCall` | Escalation chain | "Incoming call from Angela" screen mimics real call |
-| **SMS Contact** | Sends SMS to configured emergency contact with location/message. | `ChainStepType.smsContact` | Escalation chain | Auto-sends "I may need help. Location: [maps link]" |
-| **Phone Call Contact** | Auto-initiates call to emergency contact. | `ChainStepType.phoneCallContact` | Escalation chain | Dials friend's number; can answer and talk |
-| **Loud Alarm** | Device plays loud alarm sound. Disarmable by swiping slider or tapping stop button. | `ChainStepType.loudAlarm` | Escalation chain | Siren blasts at max volume, wakes attention |
-| **Call Emergency** | Calls emergency number (999/911/112). Requires explicit confirmation before placing call. | `ChainStepType.callEmergency` | Escalation chain, terminal step | Dials 911 after 5s confirmation countdown |
+| **Count Down Warning** | Visual countdown (e.g., "Emergency in 10s"). Warning before serious action. | `ChainStepType.countdownWarning` | Chain | "Emergency call in 10 seconds" with vibration |
+| **Fake Call** | Phone rings with caller ID spoofed to trusted contact. User can answer or decline. | `ChainStepType.fakeCall` | Chain | "Incoming call from Angela" screen mimics real call |
+| **SMS Contact** | Sends SMS to configured emergency contact with location/message. | `ChainStepType.smsContact` | Chain | Auto-sends "I may need help. Location: [maps link]" |
+| **Phone Call Contact** | Auto-initiates call to emergency contact. | `ChainStepType.phoneCallContact` | Chain | Dials friend's number; can answer and talk |
+| **Loud Alarm** | Device plays loud alarm sound. Disarmable by swiping slider or tapping stop button. | `ChainStepType.loudAlarm` | Chain | Siren blasts at max volume, wakes attention |
+| **Call Emergency** | Calls emergency number (999/911/112). Requires explicit confirmation before placing call. | `ChainStepType.callEmergency` | Chain, terminal step | Dials 911 after 5s confirmation countdown |
 
 ---
 
@@ -60,7 +62,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
-| **Session Mode** | Defines check-in mechanism + escalation chain of ChainSteps + `distressModeId` + triggers. Distress modes are SessionModes with `isDistressMode = true`. May have per-mode `ModeOverrides`. | `SessionMode` | modes.json, settings, home screen | "Walk Mode": holds for check-in, escalates via fake call → alarm → emergency |
+| **Session Mode** | Defines a chain of ChainSteps + `distressModeId` + triggers. Every step in `chainSteps` is on equal footing; the first step simply runs first. Distress modes are SessionModes with `isDistressMode = true`. May have per-mode `ModeOverrides`. | `SessionMode` | modes.json, settings, home screen | "Walk Mode": holdButton first, then fake call → alarm → emergency |
 | **Chain Step** | One escalation step with timing, config, and type. | `ChainStep` | SessionMode, settings, engine | Fake call step: 30s ring, 5s grace, 2 retries |
 | **Emergency Contact** | Named contact with phone + enabled messaging channels. All enabled channels are used (no single preferred channel). Includes `languageCode` and `relationship`. | `EmergencyContact` (typeId 1) | Hive box, settings, SMS/call services | "Alice" — SMS + WhatsApp enabled |
 | **Event Defaults** | Global per-step-type configuration defaults. | `EventDefaults` (typeId 13) | Hive box, settings | Default fake call: 30s ring, Android native style |
@@ -94,7 +96,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
 | **Ringtone** | Phone call audio that loops until stopped. | `playRingtone()`, `AudioService` | fakeCall step | iPhone default ringtone loops during fake call |
-| **Alarm Sound** | Max-volume siren audio for loudAlarm step. | `playAlarm()`, `AudioService` | loudAlarm step | Continuous siren sound plays at max volume |
+| **Alarm Sound** | Siren audio for loudAlarm step. Plays at the configured `LoudAlarmConfig.volume`; only reaches max system volume when `AppSettings.alarmDndOverride = true` (opt-in, default `false`). | `playAlarm()`, `AudioService` | loudAlarm step | Continuous siren sound plays at the configured volume |
 | **Voice Recording** | Audio message played when fake call is answered. | `voiceRecordingPath`, `playVoiceRecording()` | fakeCall config | "Hey, it's Angela, just checking in..." message |
 | **Vibration Pattern** | Haptic feedback sequence (short pulses, long vibrations, etc.). | `vibrateOnRelease`, `VibrationService` | holdButton, countdownWarning, loudAlarm | Vibrate on button release, alarm vibration pattern on loudAlarm |
 
@@ -155,7 +157,7 @@ Complete reference of all terms, variable names, and concepts used in Guardian A
 |---|---|---|---|---|
 | **Simulation Mode** | Special app mode allowing testing without real actions (SMS, calls, alarms). | `isSimulation=true` | SessionEngine, home screen | "SIMULATION" banner shown; toasts instead of sending SMS |
 | **Speed Bar** | UI slider to control simulation speed (1x–1000x). | Speed multiplier UI, `setSpeedMultiplier()` | Simulation screen | Drag to 10x: 30s timer runs in 3s |
-| **Leap Button** | "Skip to next event" feature in simulation. | `leapToNextEvent()` | Simulation UI | Jump from current event to 1s before next event fires |
+| **Leap Button** | "Skip to next event" feature in simulation. | `leap()` (API name; UI label is "Leap >>") | Simulation UI | Fires the active phase timer immediately, collapsing remaining duration to zero |
 | **Test Case** | Individual unit/widget/integration test with arrangement, act, assert. | Test function in `test/` directory | Test suite | `test('hold button: grace expires → advance')` |
 | **Deterministic Random** | Fixed random number generator for reproducible tests. | `_FixedRandom(0.5)` | SessionEngine tests | Always returns 0.5 → jitter factor = 1.0 (no actual jitter) |
 | **Fake Async** | Wrapper for controlled timer testing without real delays. | `fakeAsync()`, `async.elapse()` | Timer tests | Test progresses through timers in milliseconds |

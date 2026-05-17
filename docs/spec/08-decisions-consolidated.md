@@ -79,7 +79,7 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
 
 ---
 
-## Distress Chains (Pivot 3 — distress is a Mode)
+## Distress Modes (Pivot 3 — distress is a Mode)
 
 ### Distress is a Mode
 - **No separate model.** A distress chain is the `chainSteps` of a regular `SessionMode`
@@ -93,7 +93,7 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
   customization.
 
 ### Battery Alert (One-Shot Only)
-- **BatteryAlertConfig**: Chain-based alert: threshold + editable escalation chain (matching the mode-editor pattern). One-shot mechanism. `enabled` defaults to false; `thresholdPercent` defaults to 10.
+- **BatteryAlertConfig**: Chain-based alert: threshold + editable chain (matching the mode-editor pattern). One-shot mechanism. `enabled` defaults to false; `thresholdPercent` defaults to 10.
 - **Rationale**: Opt-in by design (Q22) — a safety app must not surprise users with new automatic alerts.
 
 ### Design Rationale
@@ -185,10 +185,9 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
   - `speaker` (default, audible to bystanders): Voice plays through speaker
 - **Built-in voices**: 3 ringtones (Android, iOS, WhatsApp default) + per-language voice recording
 
-### Session Behavior
-- **Chain pause**: While fake call screen displayed, chain engine pauses (timers suspended)
-- **Resumes**: On answer, decline, or hang-up
-- **Hang-up timing**: Next step waits for actual hang-up (answer alone doesn't advance)
+### Session Behavior (Pivot 2 — fakeCall is event, not pause)
+- **No engine pause on fake call**: The engine timer keeps running while `FakeCallScreen` is on top. `FakeCallScreen` is a route push, not a pause-and-overlay.
+- **Hang-up timing**: Hang-up fires `disarm()` (reset to step 0). Decline follows the `declineIsSafe` semantics.
 
 ### Photo (NOT Used)
 - Photo is NOT used for fake call UI
@@ -285,13 +284,13 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
 - **Gesture**: Tap button or swipe disarm slider
 
 ### Volume Control
-- **Gradual volume increase**: Linear ramp over configurable duration (default 10 seconds)
+- **Gradual volume increase**: Linear ramp over configurable duration (default 5 seconds per Q33)
 - **System volume**: Set to max before playing (configurable toggle)
 - **Override silent mode**: Alarm is the ONLY exception to silent/vibrate mode (configurable toggle)
   - Rationale: Silent mode must not prevent safety escalation
 
 ### Sound Options
-- **Built-in sounds**: Siren (default), whistle, scream
+- **Built-in sounds**: Siren only (Q9 keeps `siren` + `custom`).
 - **Custom audio**: From files or in-app recording (`soundChoice: custom`)
 - **Audio behavior**: Ducks (lowers) all other audio while alarm plays
 
@@ -372,9 +371,9 @@ Stealth is configured via `StealthConfig` (not scattered boolean fields):
 | Field | Type | Description |
 |-------|------|-------------|
 | `enabled` | bool | Master stealth switch |
-| `fakeName` | String? | Fake app name shown in notifications/header |
-| `fakeIcon` | String? | Icon asset path for disguised notifications |
-| `notificationDisguise` | String? | Notification title text (default: "Music playing") |
+| `fakeName` | String | Fake app name shown in notifications/header (default `'Music'`, Q20) |
+| `fakeIcon` | `StealthIconPreset` | Enum: music, calendar, fitness, weather, news, photos, notes, clock, podcast, none (Q20) |
+| `notificationDisguise` | bool | When true, the notification uses a generic channel name/icon (default `true`) |
 | `timerDisplay` | enum | `normal` / `small` / `none` — how session timer is shown |
 | `sessionScreenStealth` | bool | Whether session screen hides safety indicators |
 
@@ -642,9 +641,8 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 ### Ringtones for Fake Call
 - **Matching call style**: Ringtone reflects chosen call style (Android, iOS, WhatsApp, Telegram, Signal)
 - **Built-in sounds**: 
-  - 3 ringtones (Android native, iOS native, WhatsApp default)
-  - Siren (for alarm)
-  - Beep (for alarm)
+  - 5 ringtones (Android native, iOS native, WhatsApp, Telegram, Signal)
+  - Siren (for alarm — Q9 keeps only this and `custom`)
 
 ### Custom Audio
 - **Source**: From device files OR in-app recording
@@ -1092,11 +1090,11 @@ Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` 
 - **Behavior**: Creates exact copy of step with all current config, inserted right after original
 - **Use case**: Users can quickly create similar steps without manual re-entry
 
-### Fake Call Answer Behavior (Clarified)
-- **On answer**: Chain pauses (does not escalate further)
-- **On hang-up**: Disarm fires (reset to step 0)
-- **Decline**: Counts as a miss toward retryCount; grace period → re-ring
-- **Rationale**: Decline with distress allows users to escalate quickly if they accidentally hit decline instead of disarm.
+### Fake Call Answer Behavior (Pivot 2 — clarified)
+- **On answer**: Engine keeps running — answer is a no-op at the engine level. The voice clip plays while escalation timers continue.
+- **On hang-up**: Disarm fires (reset to step 0).
+- **Decline**: Behaviour depends on `declineIsSafe` (default `true` ⇒ decline = disarm; `false` ⇒ decline = miss → grace → re-ring).
+- **Rationale**: Pausing on every fake call would create gaps that an attacker could exploit; decline-with-distress lets the user escalate quickly if they hit decline accidentally instead of answering.
 
 ---
 
@@ -1110,7 +1108,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 | Q6 | Distress unification (Pivot 3) | `DistressChain` deleted. Distress modes are `SessionMode`s with `isDistressMode = true`. Field renamed `distressChainId` → `distressModeId`. UI route is `/distress-modes` using `ModeEditorScreen(isDistress: true)`. |
 | Q7 | `pauseExpired` and `stepExecutionFailed` events | Both are now emitted (not "reserved"). Engine constructor accepts `maxPauseDuration`. |
 | Q8 | `disarm()` semantics | Re-arms the chain to step 0; does NOT end the session. |
-| Q9 | Loud alarm sounds | `LoudAlarmSound` enum is `siren` + `custom` only (`whoop` and `bell` removed). |
+| Q9 | Loud alarm sounds | `LoudAlarmSound` enum is `siren` + `custom` only. |
 | Q10 | `ChainStep.randomize` type | `double` in `[0, 1]` (not enum, not bool). |
 | Q11 | Speed multiplier | Clamp `[0.01, 1000.0]`. Real sessions reject any non-1.0 value. NaN / inf / non-positive throw. |
 | Q12 | `preSendSms` removed | Removed from `PhoneCallContactConfig`. The pre-call location SMS now lives only on `CallEmergencyConfig.sendLocationSmsFirst`. |
@@ -1141,7 +1139,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 
 | Date | Change |
 |------|--------|
-| 2026-05-08 | Reconciled spec with phases 1–10 of the rewrite (Q1–Q35). Removed `DistressChain` model in favour of distress-flagged modes (Pivot 3); pruned `whoop` / `bell` alarm sounds, `preSendSms`, and other retracted features. |
+| 2026-05-08 | Reconciled spec with phases 1–10 of the rewrite (Q1–Q35). Removed `DistressChain` model in favour of distress-flagged modes (Pivot 3); pruned legacy alarm-sound enum values, `preSendSms`, and other retracted features. |
 | 2026-04-14 | Normalized timing values: hardware button minimum 5 presses, decline-with-distress hold 5 seconds. Removed process markers and historical references. |
 | 2026-04-02 | Initial consolidation: centralized design decisions across all feature areas. |
 
