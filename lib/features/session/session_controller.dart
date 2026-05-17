@@ -255,7 +255,6 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final syntheticMode = SessionMode(
       id: 'battery-alert',
       name: 'Battery Alert',
-      checkInType: config.chain.first.type,
       chainSteps: config.chain,
       distressModeId: settings.defaults.defaultDistressModeId,
     );

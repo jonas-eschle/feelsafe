@@ -105,6 +105,28 @@ class AppLocalizationsPl extends AppLocalizations {
       'Upewnij się, że kontakty i PIN są skonfigurowane. Sesja będzie działać na pierwszym planie, a wybrany tryb będzie kierował zameldowaniami.';
 
   @override
+  String get homePermissionsMissingTitle => 'Brakuje niektórych uprawnień';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Następujące uprawnienia nie zostały przyznane. Bez nich odpowiednie kroki łańcucha zakończą się niepowodzeniem po cichu:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Rozpocznij mimo to';
+
+  @override
+  String get homePermissionsNotification => 'Powiadomienia';
+
+  @override
+  String get homePermissionsLocation => 'Lokalizacja';
+
+  @override
+  String get homePermissionsCallPhone => 'Połączenia telefoniczne';
+
+  @override
+  String get homePermissionsSendSms => 'Wysyłanie SMS';
+
+  @override
   String get homeSimulate => 'Symuluj';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get homeContactsBannerNone =>
       'Brak skonfigurowanych kontaktów alarmowych.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return 'Skonfigurowano $count kontakt(ów). Zalecamy co najmniej 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Ustawienia';
@@ -446,6 +463,32 @@ class AppLocalizationsPl extends AppLocalizations {
   String get modesAdd => 'Dodaj tryb';
 
   @override
+  String get modesNewPickerTitle => 'Zacznij od';
+
+  @override
+  String get modesNewPickerBlank => 'Pusty tryb';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Zacznij z pustym łańcuchem';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'Z $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Skopiuj łańcuch i wyzwalacze tego trybu';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Kopia $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Wbudowany';
+
+  @override
   String get modeEditorTitleCreate => 'Nowy tryb';
 
   @override
@@ -455,16 +498,13 @@ class AppLocalizationsPl extends AppLocalizations {
   String get modeFieldName => 'Nazwa';
 
   @override
-  String get modeFieldCheckInType => 'Typ potwierdzenia';
-
-  @override
   String get modeFieldDistressMode => 'Tryb alarmowy';
 
   @override
   String get modeFieldDistressModeDefault => 'Użyj domyślnego';
 
   @override
-  String get modeChainHeader => 'Łańcuch eskalacji';
+  String get modeChainHeader => 'Łańcuch';
 
   @override
   String get modeChainAddStep => 'Dodaj krok';

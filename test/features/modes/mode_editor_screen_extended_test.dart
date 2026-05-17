@@ -54,34 +54,6 @@ void main() {
   );
 
   testWidgets(
-    'ModeEditorScreen check-in dropdown persists disguisedReminder',
-    (tester) async {
-      final repo = FakeModesRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(repo),        ],
-        child: const ModeEditorScreen(),
-      ));
-      await tester.pumpAndSettle();
-      await tester.tap(
-        find.descendant(
-          of: find.byType(ModeEditorScreen),
-          matching: find.byType(DropdownButtonFormField<ChainStepType>),
-        ),
-      );
-      await tester.pumpAndSettle();
-      await tester
-          .tap(find.text('Disguised reminder').last);
-      await tester.pumpAndSettle();
-      await tester.tap(find.byIcon(Icons.check));
-      await tester.pumpAndSettle();
-      final saved = await repo.getAll();
-      check(saved.single.checkInType)
-          .equals(ChainStepType.disguisedReminder);
-    },
-  );
-
-  testWidgets(
     'ModeEditorScreen distress-chain dropdown binds selected chain id',
     (tester) async {
       final distressMode = makeDistressMode(id: 'dc-1', name: 'MyChain');

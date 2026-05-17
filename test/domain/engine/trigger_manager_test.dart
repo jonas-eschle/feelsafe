@@ -7,7 +7,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -118,7 +117,6 @@ SessionMode _mode({
 }) => SessionMode(
   id: 'mode-1',
   name: 'Walk',
-  checkInType: ChainStepType.holdButton,
   chainSteps: [holdStep()],
   distressTriggers:
       distress ??

@@ -19,7 +19,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -47,7 +46,6 @@ SessionMode _timerMode(
   return SessionMode(
     id: 'mode-timer',
     name: 'Timer',
-    checkInType: ChainStepType.holdButton,
     chainSteps: [holdStep()],
     distressTriggers: const [],
     disarmTriggers: triggers,
@@ -528,7 +526,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-timer-gps',
           name: 'TimerAndGPS',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [
@@ -652,7 +649,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-mixed',
           name: 'Mixed',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [

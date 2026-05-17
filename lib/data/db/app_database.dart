@@ -19,6 +19,7 @@ import 'dart:io';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -115,21 +116,109 @@ class AppDatabase extends _$AppDatabase {
     );
   }
 
+  /// Verifies the on-disk database (if any) is compatible with the
+  /// current schema and encryption key.
+  ///
+  /// Per the pre-alpha nuke-and-reseed policy: if opening the
+  /// existing file fails for any reason — schema mismatch
+  /// ([MigrationStrategy.onUpgrade] throws), cipher-key mismatch,
+  /// or file corruption — the file is deleted and the stored
+  /// passphrase reset so the next [AppDatabase] open creates a
+  /// fresh database via [MigrationStrategy.onCreate].
+  ///
+  /// Returns `true` when the existing DB had to be reseeded.
+  ///
+  /// Production callers pass no arguments. Tests inject
+  /// [fileOverride] to control the file path and [storage] to
+  /// control the secure-storage backend.
+  static Future<bool> ensureCompatible({
+    File? fileOverride,
+    FlutterSecureStorage? storage,
+  }) async {
+    _ensureDesktopSqlite3mcLoaded();
+    final file = fileOverride ?? await resolveDbFile();
+    if (!file.existsSync()) return false;
+
+    try {
+      final passphrase = await EncryptionKey.load(storage: storage);
+      final probe = AppDatabase(
+        executor: NativeDatabase(
+          file,
+          setup: (db) {
+            // PRAGMA key first — sqlite cannot prepare any other
+            // statement on an encrypted-but-locked file. The
+            // cipher-build sanity check is intentionally omitted
+            // here: this probe's job is just "is the existing file
+            // openable with the stored key", and any failure
+            // (corruption, wrong key, missing cipher build) means
+            // nuke-and-reseed.
+            db.execute("PRAGMA key = '$passphrase';");
+          },
+        ),
+      );
+      try {
+        await probe.customStatement('SELECT 1');
+      } finally {
+        await probe.close();
+      }
+      return false;
+    } on Object catch (e, s) {
+      developer.log(
+        'AppDatabase.ensureCompatible: opening existing DB failed, '
+        'nuking and reseeding per pre-alpha policy',
+        error: e,
+        stackTrace: s,
+      );
+      if (file.existsSync()) {
+        await file.delete();
+      }
+      await EncryptionKey.reset(storage: storage);
+      return true;
+    }
+  }
+
+  /// Resolves the on-disk path for the SQLite file.
+  ///
+  /// On Linux desktop we deliberately store the DB inside the
+  /// `flutter run -d linux` bundle directory (next to the resolved
+  /// executable) rather than under `~/Documents`. That makes
+  /// `flutter clean` — which wipes the entire `build/` tree — also
+  /// wipe the development DB, matching the expectation that "clean"
+  /// resets everything for the next run. Mobile (Android / iOS) is
+  /// unaffected and keeps using `getApplicationDocumentsDirectory()`.
+  static Future<File> resolveDbFile() async {
+    if (Platform.isLinux) {
+      final exeDir = Directory(p.dirname(Platform.resolvedExecutable));
+      final dataDir = Directory(p.join(exeDir.path, 'dev_db'));
+      if (!dataDir.existsSync()) {
+        dataDir.createSync(recursive: true);
+      }
+      return File(p.join(dataDir.path, dbFileName));
+    }
+    final dir = await getApplicationDocumentsDirectory();
+    return File(p.join(dir.path, dbFileName));
+  }
+
   static LazyDatabase _openConnection() {
     return LazyDatabase(() async {
       _ensureDesktopSqlite3mcLoaded();
-      final dir = await getApplicationDocumentsDirectory();
-      final file = File(p.join(dir.path, dbFileName));
+      final file = await resolveDbFile();
       final passphrase = await EncryptionKey.load();
 
       return NativeDatabase(
         file,
         setup: (db) {
-          // Verify we loaded the cipher-capable build (sqlite3mc).
-          // SQLite3MultipleCiphers exposes `sqlite3mc_version()` as a
-          // SQL function — plaintext sqlite3 will throw
-          // "no such function" instead of returning a row, which is
-          // how we detect that the wrong build is linked.
+          // `PRAGMA key` MUST run before any other SQL on an
+          // encrypted file — sqlite's PREPARE step reads page 1 to
+          // validate the header, which on an encrypted-but-locked
+          // DB throws `SQLITE_NOTADB` (code 26). Plain sqlite3
+          // silently ignores unknown PRAGMAs, so this line is safe
+          // on either build.
+          db.execute("PRAGMA key = '$passphrase';");
+          // Now verify we actually loaded the cipher-capable build
+          // (sqlite3mc). The version function exists only in
+          // sqlite3mc — plaintext sqlite3 raises "no such function",
+          // which is how we detect that the wrong build is linked.
           try {
             db.select('SELECT sqlite3mc_version()');
           } on Object catch (e) {
@@ -139,8 +228,6 @@ class AppDatabase extends _$AppDatabase {
               'in pubspec.yaml. Underlying error: $e',
             );
           }
-          // `PRAGMA key` must be run before any data read/write.
-          db.execute("PRAGMA key = '$passphrase';");
         },
       );
     });

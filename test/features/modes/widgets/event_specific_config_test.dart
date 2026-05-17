@@ -147,20 +147,18 @@ void main() {
     ),
   );
 
-  testWidgets('holdButton: edit releaseSensitivity TextField',
+  // holdButton step UI is now empty — release sensitivity is a
+  // global default in Settings → Defaults → Hold button.
+  testWidgets('holdButton: form renders empty (no per-step fields)',
       (tester) async {
-    ChainStep? latest;
     final step = _step(
       ChainStepType.holdButton,
       config: const HoldButtonConfig(releaseSensitivity: 2.0),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextFormField), '3.5');
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as HoldButtonConfig).releaseSensitivity)
-        .equals(3.5);
+    check(find.byType(TextFormField).evaluate()).isEmpty();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
   });
 
   // bugs.json Note 3 — the disguisedReminder form no longer renders
@@ -184,34 +182,17 @@ void main() {
     check(find.byType(TextFormField).evaluate()).isEmpty();
   });
 
-  testWidgets('countdownWarning: toggle vibrate switch',
+  // countdownWarning step UI is now empty — vibrate + playTone are
+  // global defaults in Settings → Defaults → Countdown warning.
+  testWidgets('countdownWarning: form renders empty (no per-step fields)',
       (tester) async {
-    ChainStep? latest;
     final step = _step(
       ChainStepType.countdownWarning,
       config: const CountdownWarningConfig(vibrate: false, playTone: false),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).first);
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as CountdownWarningConfig).vibrate).isTrue();
-  });
-
-  testWidgets('countdownWarning: toggle playTone switch',
-      (tester) async {
-    ChainStep? latest;
-    final step = _step(
-      ChainStepType.countdownWarning,
-      config: const CountdownWarningConfig(vibrate: false, playTone: false),
-    );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).at(1));
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as CountdownWarningConfig).playTone).isTrue();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
   });
 
   testWidgets('fakeCall: edit caller name', (tester) async {
@@ -228,35 +209,24 @@ void main() {
     check((latest!.config! as FakeCallConfig).callerName).equals('Boss');
   });
 
-  testWidgets('fakeCall: toggle declineIsSafe switch', (tester) async {
-    ChainStep? latest;
+  // fakeCall.declineIsSafe is a global default — no per-step toggle.
+  testWidgets('fakeCall: form has no decline-is-safe switch',
+      (tester) async {
     final step = _step(
       ChainStepType.fakeCall,
       config: const FakeCallConfig(declineIsSafe: false),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as FakeCallConfig).declineIsSafe).isTrue();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
+    // Caller name TextFormField is the only per-step field left.
+    check(find.byType(TextFormField).evaluate().length).equals(1);
   });
 
-  testWidgets('smsContact: toggle includeLocation', (tester) async {
-    ChainStep? latest;
-    final step = _step(
-      ChainStepType.smsContact,
-      config: const SmsContactConfig(includeLocation: false),
-    );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).first);
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as SmsContactConfig).includeLocation).isTrue();
-  });
-
-  testWidgets('smsContact: toggle includeMedicalInfo', (tester) async {
+  // smsContact.includeLocation is a global default — no per-step
+  // toggle. The first SwitchListTile is now includeMedicalInfo.
+  testWidgets('smsContact: toggle includeMedicalInfo (first switch)',
+      (tester) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.smsContact,
@@ -264,7 +234,7 @@ void main() {
     );
     await tester.pumpWidget(hostWith(step, (s) => latest = s));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).at(1));
+    await tester.tap(find.byType(SwitchListTile).first);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
     check((latest!.config! as SmsContactConfig).includeMedicalInfo).isTrue();
@@ -283,32 +253,17 @@ void main() {
     check(find.byType(TextFormField).evaluate()).isEmpty();
   });
 
-  testWidgets('loudAlarm: toggle flashScreen', (tester) async {
-    ChainStep? latest;
+  // loudAlarm step UI is now empty — flashScreen, maxVolume,
+  // soundChoice, flashLight all live in Settings → Defaults.
+  testWidgets('loudAlarm: form renders empty (no per-step fields)',
+      (tester) async {
     final step = _step(
       ChainStepType.loudAlarm,
       config: const LoudAlarmConfig(flashScreen: false, maxVolume: false),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).first);
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as LoudAlarmConfig).flashScreen).isTrue();
-  });
-
-  testWidgets('loudAlarm: toggle maxVolume', (tester) async {
-    ChainStep? latest;
-    final step = _step(
-      ChainStepType.loudAlarm,
-      config: const LoudAlarmConfig(flashScreen: false, maxVolume: false),
-    );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile).at(1));
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as LoudAlarmConfig).maxVolume).isTrue();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
   });
 
   testWidgets('callEmergency: edit emergency number (non-empty)',
@@ -342,20 +297,18 @@ void main() {
     check((latest!.config! as CallEmergencyConfig).emergencyNumber).isNull();
   });
 
-  testWidgets('callEmergency: toggle showConfirmation',
+  // callEmergency.showConfirmation is a global default — not exposed
+  // per-step. The only per-step field is the emergency-number override.
+  testWidgets('callEmergency: form has no confirmation switch',
       (tester) async {
-    ChainStep? latest;
     final step = _step(
       ChainStepType.callEmergency,
       config: const CallEmergencyConfig(showConfirmation: false),
     );
-    await tester.pumpWidget(hostWith(step, (s) => latest = s));
+    await tester.pumpWidget(hostWith(step, (_) {}));
     await tester.pumpAndSettle();
-    await tester.tap(find.byType(SwitchListTile));
-    await tester.pumpAndSettle();
-    check(latest).isNotNull();
-    check((latest!.config! as CallEmergencyConfig).showConfirmation)
-        .isTrue();
+    check(find.byType(SwitchListTile).evaluate()).isEmpty();
+    check(find.byType(TextFormField).evaluate().length).equals(1);
   });
 
   testWidgets('hardwareButton: edit press count TextField (#9)',

@@ -72,9 +72,9 @@ void main() {
         await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
         await tester.pumpAndSettle();
 
-        // SwitchListTiles order: includeLocation (0), includeMedical (1),
-        // autoRecordAudio (2), autoRecordVideo (3).
-        await tester.tap(find.byType(SwitchListTile).at(2));
+        // SwitchListTiles order (includeLocation moved to defaults):
+        // includeMedical (0), autoRecordAudio (1), autoRecordVideo (2).
+        await tester.tap(find.byType(SwitchListTile).at(1));
         await tester.pumpAndSettle();
 
         check(latest).isNotNull();
@@ -93,8 +93,9 @@ void main() {
         await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
         await tester.pumpAndSettle();
 
-        // 4th SwitchListTile: autoRecordVideo (index 3).
-        await tester.tap(find.byType(SwitchListTile).at(3));
+        // 3rd SwitchListTile (after includeLocation removed):
+        // autoRecordVideo (index 2).
+        await tester.tap(find.byType(SwitchListTile).at(2));
         await tester.pumpAndSettle();
 
         check(latest).isNotNull();

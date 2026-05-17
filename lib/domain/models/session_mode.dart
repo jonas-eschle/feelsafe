@@ -1,9 +1,14 @@
-/// `SessionMode` — a named safety mode with a check-in type, an
-/// escalation chain, an optional distress-chain reference, triggers,
-/// and optional `ModeOverrides`.
+/// `SessionMode` — a named safety mode with a chain of events, an
+/// optional distress-mode reference, triggers, and optional
+/// `ModeOverrides`.
+///
+/// There is no "check-in type" — every event in [chainSteps] is on
+/// equal footing. The first step in the chain determines the initial
+/// behaviour (e.g. a hold-button step makes the mode walk-like, a
+/// disguised-reminder step makes it date-like) but the engine treats
+/// it like any other step.
 library;
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/mode_overrides.dart';
 import 'package:guardianangela/domain/models/trigger.dart';
@@ -14,10 +19,8 @@ final class SessionMode {
   ///
   /// [id] — stable UUID.
   /// [name] — display name.
-  /// [checkInType] — which step type is the mode's check-in
-  /// (holdButton / disguisedReminder).
-  /// [chainSteps] — main escalation chain; first step determines
-  /// check-in behaviour. Defaults to empty.
+  /// [chainSteps] — chain of events; first step runs first. Defaults
+  /// to empty.
   /// [distressModeId] — id of a chain in the distress repository;
   /// null = use default (first in repo).
   /// [distressTriggers] — triggers that switch to the distress
@@ -47,7 +50,6 @@ final class SessionMode {
   const SessionMode({
     required this.id,
     required this.name,
-    required this.checkInType,
     this.chainSteps = const [],
     this.distressModeId,
     this.distressTriggers = const [],
@@ -71,7 +73,6 @@ final class SessionMode {
     return SessionMode(
       id: json['id']! as String,
       name: json['name']! as String,
-      checkInType: _checkInTypeFromJson(json['checkInType']),
       chainSteps: rawChain is List
           ? List<ChainStep>.unmodifiable(
               rawChain.map(
@@ -115,10 +116,7 @@ final class SessionMode {
   /// Display name.
   final String name;
 
-  /// Which check-in mechanism this mode uses.
-  final ChainStepType checkInType;
-
-  /// Main escalation chain; first step drives check-in.
+  /// Chain of events; the first step runs first.
   final List<ChainStep> chainSteps;
 
   /// Id of the distress chain to use. Null = use the default (first
@@ -171,7 +169,6 @@ final class SessionMode {
   SessionMode copyWith({
     String? id,
     String? name,
-    ChainStepType? checkInType,
     List<ChainStep>? chainSteps,
     String? distressModeId,
     List<DistressTrigger>? distressTriggers,
@@ -189,7 +186,6 @@ final class SessionMode {
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
-    checkInType: checkInType ?? this.checkInType,
     chainSteps: chainSteps ?? this.chainSteps,
     distressModeId: distressModeId ?? this.distressModeId,
     distressTriggers: distressTriggers ?? this.distressTriggers,
@@ -211,7 +207,6 @@ final class SessionMode {
   Map<String, Object?> toJson() => {
     'id': id,
     'name': name,
-    'checkInType': checkInType.name,
     'chainSteps': chainSteps.map((s) => s.toJson()).toList(growable: false),
     'distressModeId': distressModeId,
     'distressTriggers': distressTriggers
@@ -236,7 +231,6 @@ final class SessionMode {
     if (other is! SessionMode) return false;
     if (other.id != id) return false;
     if (other.name != name) return false;
-    if (other.checkInType != checkInType) return false;
     if (other.distressModeId != distressModeId) return false;
     if (other.overrides != overrides) return false;
     if (other.trackingEnabled != trackingEnabled) return false;
@@ -258,7 +252,6 @@ final class SessionMode {
   int get hashCode => Object.hash(
     id,
     name,
-    checkInType,
     Object.hashAll(chainSteps),
     distressModeId,
     Object.hashAll(distressTriggers),
@@ -276,21 +269,8 @@ final class SessionMode {
   @override
   String toString() =>
       'SessionMode(id: $id, name: $name, '
-      'checkInType: $checkInType, steps: ${chainSteps.length})';
+      'steps: ${chainSteps.length})';
 }
-
-ChainStepType _checkInTypeFromJson(Object? raw) => switch (raw) {
-  'holdButton' => ChainStepType.holdButton,
-  'disguisedReminder' => ChainStepType.disguisedReminder,
-  'countdownWarning' => ChainStepType.countdownWarning,
-  'fakeCall' => ChainStepType.fakeCall,
-  'smsContact' => ChainStepType.smsContact,
-  'phoneCallContact' => ChainStepType.phoneCallContact,
-  'loudAlarm' => ChainStepType.loudAlarm,
-  'callEmergency' => ChainStepType.callEmergency,
-  'hardwareButton' => ChainStepType.hardwareButton,
-  _ => throw ArgumentError.value(raw, 'checkInType', 'unknown ChainStepType'),
-};
 
 bool _listEquals<T>(List<T> a, List<T> b) {
   if (identical(a, b)) return true;

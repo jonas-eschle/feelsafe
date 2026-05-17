@@ -82,13 +82,19 @@
   "modesTitle": "模式",
   "modesEmpty": "尚无模式。点击“添加”创建一个模式。",
   "modesAdd": "添加模式",
+  "modesNewPickerTitle": "起始方式",
+  "modesNewPickerBlank": "空白模式",
+  "modesNewPickerBlankSubtitle": "从一个空的链开始",
+  "modesNewPickerFromTemplate": "基于“{name}”",
+  "modesNewPickerFromTemplateSubtitle": "复制此模式的链和触发器",
+  "modesNewPickerCopyName": "“{name}”的副本",
+  "modesNewPickerBuiltinBadge": "内置",
   "modeEditorTitleCreate": "新建模式",
   "modeEditorTitleEdit": "编辑模式",
   "modeFieldName": "名称",
-  "modeFieldCheckInType": "签到类型",
   "modeFieldDistressMode": "求救模式",
   "modeFieldDistressModeDefault": "使用默认",
-  "modeChainHeader": "升级链",
+  "modeChainHeader": "链",
   "modeChainAddStep": "添加步骤",
   "modeChainEmpty": "尚无步骤。点击“添加步骤”。",
   "modeTrackingHeader": "GPS 追踪",
@@ -400,22 +406,19 @@
     "description": "Title for the start-session confirmation dialog."
   },
   "homeStartConfirmBody": "请确认您的联系人和 PIN 码已配置。会话将在前台运行，所选模式将引导签到。",
+  "homePermissionsMissingTitle": "缺少某些权限",
+  "homePermissionsMissingBody": "未授予以下权限。没有它们，相应的链步骤将静默失败：",
+  "homePermissionsContinueAnyway": "仍然启动",
+  "homePermissionsNotification": "通知",
+  "homePermissionsLocation": "位置",
+  "homePermissionsCallPhone": "电话呼叫",
+  "homePermissionsSendSms": "发送短信",
   "@homeStartConfirmBody": {
     "description": "Body for the start-session confirmation dialog."
   },
   "homeContactsBannerNone": "尚未配置紧急联系人。",
   "@homeContactsBannerNone": {
     "description": "Banner shown when zero contacts are configured."
-  },
-  "homeContactsBannerFew": "已配置 {count} 位联系人。建议至少 3 位。",
-  "@homeContactsBannerFew": {
-    "description": "Banner shown when 1–2 contacts are configured.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "1"
-      }
-    }
   },
   "sessionCheckIn": "我已签到",
   "@sessionCheckIn": {
@@ -875,11 +878,9 @@
   },
   "historyTabReal": "真实",
   "historyTabSimulated": "模拟",
-
   "audioRunningLatePhrase": "你好，我要迟到了，我会尽快回电。",
   "smsDefaultTemplate": "{name} 可能需要帮助。位置：{location}。时间：{time}。",
   "smsDefaultPreCallTemplate": "{name} 正在尝试联系你。请等待来电。",
-
   "simLoudAlarm": "[SIM] 响亮警报 + {tail}",
   "simLoudAlarmTailFlash": "闪光",
   "simLoudAlarmTailVibrate": "振动",

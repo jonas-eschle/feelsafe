@@ -57,33 +57,30 @@ void main() {
   testWidgets(
     'ContactFormScreen toggling channels off after turning on removes them',
     (tester) async {
-      // Spec 04 §Contact Form lines 1351-1354: channel toggles are
-      // CheckboxListTile rows, not FilterChips. Tap each non-SMS
-      // checkbox twice (on, then off); SMS starts on.
+      // Channel toggles are FilterChip widgets and default to all 4
+      // selected. Tap each non-SMS chip twice (off, then on); SMS
+      // gets tapped once (off) to verify a single-tap deselection.
       final repo = FakeContactsRepository();
       await tester.pumpWidget(hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      final boxes = find.byType(CheckboxListTile);
-      // 0=SMS, 1=WhatsApp, 2=Telegram, 3=Phone (per the form layout).
+      final chips = find.byType(FilterChip);
+      // Order: 0=SMS, 1=WhatsApp, 2=Telegram, 3=Phone.
       for (final i in const [1, 2, 3]) {
-        await tester.tap(boxes.at(i));
+        await tester.tap(chips.at(i));
         await tester.pumpAndSettle();
-        await tester.tap(boxes.at(i));
+        await tester.tap(chips.at(i));
         await tester.pumpAndSettle();
       }
-      // SMS starts on; tap it once (off), tap again (on).
-      await tester.tap(boxes.at(0));
+      // SMS starts on; tap once → off.
+      await tester.tap(chips.at(0));
       await tester.pumpAndSettle();
-      await tester.tap(boxes.at(0));
-      await tester.pumpAndSettle();
-      // All four checkboxes end up with SMS-on-only.
-      final sms = tester.widget<CheckboxListTile>(boxes.at(0));
-      check(sms.value).equals(true);
-      final wa = tester.widget<CheckboxListTile>(boxes.at(1));
-      check(wa.value).equals(false);
+      final sms = tester.widget<FilterChip>(chips.at(0));
+      check(sms.selected).isFalse();
+      final wa = tester.widget<FilterChip>(chips.at(1));
+      check(wa.selected).isTrue();
     },
   );
 

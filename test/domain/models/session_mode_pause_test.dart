@@ -7,7 +7,6 @@ library;
 import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 
 // ---------------------------------------------------------------------------
@@ -21,7 +20,6 @@ SessionMode _mode({
 }) => SessionMode(
   id: 'test-pause',
   name: 'Pause Test',
-  checkInType: ChainStepType.holdButton,
   pauseAllowed: pauseAllowed ?? true,
   maxPauseMinutes: maxPauseMinutes,
 );
@@ -78,7 +76,6 @@ void main() {
       final raw = <String, Object?>{
         'id': 'legacy',
         'name': 'Legacy',
-        'checkInType': 'holdButton',
       };
       // Act
       final m = SessionMode.fromJson(raw);

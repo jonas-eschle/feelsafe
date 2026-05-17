@@ -21,7 +21,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -82,7 +81,6 @@ SessionMode _modeWithGps({
   return SessionMode(
     id: 'mode-gps',
     name: 'GPS',
-    checkInType: ChainStepType.holdButton,
     chainSteps: [holdStep()],
     distressTriggers: const [],
     disarmTriggers: triggers,
@@ -691,7 +689,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-both',
           name: 'Both',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [
             HardwareButtonDistressTrigger(
@@ -969,7 +966,6 @@ void main() {
         final mode = SessionMode(
           id: 'no-gps',
           name: 'NoGps',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [],
@@ -1019,7 +1015,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-multi-gps',
           name: 'MultiGPS',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [
@@ -1074,7 +1069,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-multi-gps-miss',
           name: 'MultiGPSMiss',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [

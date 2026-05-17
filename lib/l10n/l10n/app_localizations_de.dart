@@ -105,6 +105,28 @@ class AppLocalizationsDe extends AppLocalizations {
       'Stellen Sie sicher, dass Ihre Kontakte und Ihre PIN konfiguriert sind. Die Sitzung läuft im Vordergrund und Ihr ausgewählter Modus leitet die Check-ins.';
 
   @override
+  String get homePermissionsMissingTitle => 'Einige Berechtigungen fehlen';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Die folgenden Berechtigungen wurden nicht erteilt. Ohne sie schlagen die entsprechenden Kettenschritte stillschweigend fehl:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Trotzdem starten';
+
+  @override
+  String get homePermissionsNotification => 'Benachrichtigungen';
+
+  @override
+  String get homePermissionsLocation => 'Standort';
+
+  @override
+  String get homePermissionsCallPhone => 'Telefonanrufe';
+
+  @override
+  String get homePermissionsSendSms => 'SMS senden';
+
+  @override
   String get homeSimulate => 'Simulieren';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'Keine Notfallkontakte konfiguriert.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count Kontakt(e) konfiguriert. Wir empfehlen mindestens 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Einstellungen';
@@ -448,6 +465,32 @@ class AppLocalizationsDe extends AppLocalizations {
   String get modesAdd => 'Modus hinzufügen';
 
   @override
+  String get modesNewPickerTitle => 'Ausgangspunkt';
+
+  @override
+  String get modesNewPickerBlank => 'Leerer Modus';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Mit einer leeren Kette beginnen';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'Aus $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Kette und Auslöser dieses Modus kopieren';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Kopie von $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Eingebaut';
+
+  @override
   String get modeEditorTitleCreate => 'Neuer Modus';
 
   @override
@@ -457,16 +500,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get modeFieldName => 'Name';
 
   @override
-  String get modeFieldCheckInType => 'Check-in-Art';
-
-  @override
   String get modeFieldDistressMode => 'Notfallmodus';
 
   @override
   String get modeFieldDistressModeDefault => 'Standard verwenden';
 
   @override
-  String get modeChainHeader => 'Eskalationskette';
+  String get modeChainHeader => 'Kette';
 
   @override
   String get modeChainAddStep => 'Schritt hinzufügen';

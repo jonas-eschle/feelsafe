@@ -105,6 +105,28 @@ class AppLocalizationsHi extends AppLocalizations {
       'सुनिश्चित करें कि आपके संपर्क और PIN कॉन्फ़िगर हैं। सत्र अग्रभूमि में चलेगा और आपका चुना हुआ मोड चेक-इन का मार्गदर्शन करेगा।';
 
   @override
+  String get homePermissionsMissingTitle => 'कुछ अनुमतियाँ गायब हैं';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'निम्न अनुमतियाँ नहीं दी गई थीं। इनके बिना, संबंधित श्रृंखला चरण चुपचाप विफल हो जाएँगे:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'फिर भी शुरू करें';
+
+  @override
+  String get homePermissionsNotification => 'सूचनाएँ';
+
+  @override
+  String get homePermissionsLocation => 'स्थान';
+
+  @override
+  String get homePermissionsCallPhone => 'फ़ोन कॉल';
+
+  @override
+  String get homePermissionsSendSms => 'SMS भेजें';
+
+  @override
   String get homeSimulate => 'सिमुलेट करें';
 
   @override
@@ -124,11 +146,6 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get homeContactsBannerNone =>
       'कोई आपातकालीन संपर्क कॉन्फ़िगर नहीं है।';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count संपर्क कॉन्फ़िगर हैं। हम कम से कम 3 की सिफारिश करते हैं।';
-  }
 
   @override
   String get homeMenuSettings => 'सेटिंग्स';
@@ -449,6 +466,32 @@ class AppLocalizationsHi extends AppLocalizations {
   String get modesAdd => 'मोड जोड़ें';
 
   @override
+  String get modesNewPickerTitle => 'इससे शुरू करें';
+
+  @override
+  String get modesNewPickerBlank => 'खाली मोड';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'खाली श्रृंखला से शुरू करें';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return '$name से';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'इस मोड की श्रृंखला और ट्रिगर की प्रतिलिपि बनाएँ';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return '$name की प्रतिलिपि';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'अंतर्निहित';
+
+  @override
   String get modeEditorTitleCreate => 'नया मोड';
 
   @override
@@ -458,16 +501,13 @@ class AppLocalizationsHi extends AppLocalizations {
   String get modeFieldName => 'नाम';
 
   @override
-  String get modeFieldCheckInType => 'चेक-इन प्रकार';
-
-  @override
   String get modeFieldDistressMode => 'संकट मोड';
 
   @override
   String get modeFieldDistressModeDefault => 'डिफ़ॉल्ट उपयोग करें';
 
   @override
-  String get modeChainHeader => 'वृद्धि शृंखला';
+  String get modeChainHeader => 'श्रृंखला';
 
   @override
   String get modeChainAddStep => 'चरण जोड़ें';

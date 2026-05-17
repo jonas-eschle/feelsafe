@@ -307,6 +307,48 @@ abstract class AppLocalizations {
   /// **'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.'**
   String get homeStartConfirmBody;
 
+  /// Title for the dialog shown when one or more permissions needed by the selected mode were not granted.
+  ///
+  /// In en, this message translates to:
+  /// **'Some permissions are missing'**
+  String get homePermissionsMissingTitle;
+
+  /// Body of the dialog explaining which permissions the selected mode needs but did not get.
+  ///
+  /// In en, this message translates to:
+  /// **'The following permissions were not granted. Without them, the corresponding chain steps will fail silently:'**
+  String get homePermissionsMissingBody;
+
+  /// Button that starts the session even though some permissions were denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Start anyway'**
+  String get homePermissionsContinueAnyway;
+
+  /// Label for the notification permission in the missing-permissions dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get homePermissionsNotification;
+
+  /// Label for the location permission in the missing-permissions dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get homePermissionsLocation;
+
+  /// Label for the call-phone permission in the missing-permissions dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone calls'**
+  String get homePermissionsCallPhone;
+
+  /// Label for the SMS permission in the missing-permissions dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SMS'**
+  String get homePermissionsSendSms;
+
   /// Toggle that switches between a real and a simulated session.
   ///
   /// In en, this message translates to:
@@ -342,12 +384,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No emergency contacts configured.'**
   String get homeContactsBannerNone;
-
-  /// Banner shown when 1–2 contacts are configured.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} contact(s) configured. We recommend at least 3.'**
-  String homeContactsBannerFew(int count);
 
   /// Settings button on home.
   ///
@@ -923,6 +959,48 @@ abstract class AppLocalizations {
   /// **'Add mode'**
   String get modesAdd;
 
+  /// Title of the picker shown when creating a new mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start from'**
+  String get modesNewPickerTitle;
+
+  /// Picker option that opens an empty mode editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Blank mode'**
+  String get modesNewPickerBlank;
+
+  /// Subtitle for the Blank-mode picker option.
+  ///
+  /// In en, this message translates to:
+  /// **'Start with an empty chain'**
+  String get modesNewPickerBlankSubtitle;
+
+  /// Picker option that clones an existing mode as the starting template.
+  ///
+  /// In en, this message translates to:
+  /// **'From {name}'**
+  String modesNewPickerFromTemplate(String name);
+
+  /// Subtitle for the From-template picker option.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy this mode\'s chain and triggers'**
+  String get modesNewPickerFromTemplateSubtitle;
+
+  /// Default name for a newly cloned mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy of {name}'**
+  String modesNewPickerCopyName(String name);
+
+  /// Badge label shown next to built-in templates in the new-mode picker.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get modesNewPickerBuiltinBadge;
+
   /// Title when creating a mode.
   ///
   /// In en, this message translates to:
@@ -941,12 +1019,6 @@ abstract class AppLocalizations {
   /// **'Name'**
   String get modeFieldName;
 
-  /// Check-in-type selector.
-  ///
-  /// In en, this message translates to:
-  /// **'Check-in type'**
-  String get modeFieldCheckInType;
-
   /// Distress-mode selector.
   ///
   /// In en, this message translates to:
@@ -962,7 +1034,7 @@ abstract class AppLocalizations {
   /// Header above the chain-step list.
   ///
   /// In en, this message translates to:
-  /// **'Escalation chain'**
+  /// **'Chain'**
   String get modeChainHeader;
 
   /// Button to add a chain step.

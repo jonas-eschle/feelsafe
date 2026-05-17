@@ -262,14 +262,14 @@ void main() {
     });
 
     testWidgets('contact_form_shows_channel_toggles', (tester) async {
-      // Spec 04 §Contact Form lines 1351-1354: channel toggles are
-      // rendered as CheckboxListTile rows (one per channel).
+      // Channel toggles are FilterChip buttons (one per channel),
+      // and they all start selected by default.
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: _formOverrides(),
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      check(find.byType(CheckboxListTile).evaluate().length).isGreaterOrEqual(4);
+      check(find.byType(FilterChip).evaluate().length).isGreaterOrEqual(4);
     });
   });
 

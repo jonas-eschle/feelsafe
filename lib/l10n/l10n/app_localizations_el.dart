@@ -106,6 +106,28 @@ class AppLocalizationsEl extends AppLocalizations {
       'Βεβαιωθείτε ότι οι επαφές και το PIN σας έχουν ρυθμιστεί. Η συνεδρία θα εκτελείται στο προσκήνιο και η επιλεγμένη λειτουργία θα καθοδηγεί τους ελέγχους.';
 
   @override
+  String get homePermissionsMissingTitle => 'Λείπουν ορισμένα δικαιώματα';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Τα παρακάτω δικαιώματα δεν χορηγήθηκαν. Χωρίς αυτά, τα αντίστοιχα βήματα της αλυσίδας θα αποτύχουν σιωπηλά:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Εκκίνηση παρ\' όλα αυτά';
+
+  @override
+  String get homePermissionsNotification => 'Ειδοποιήσεις';
+
+  @override
+  String get homePermissionsLocation => 'Τοποθεσία';
+
+  @override
+  String get homePermissionsCallPhone => 'Τηλεφωνικές κλήσεις';
+
+  @override
+  String get homePermissionsSendSms => 'Αποστολή SMS';
+
+  @override
   String get homeSimulate => 'Προσομοίωση';
 
   @override
@@ -125,11 +147,6 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get homeContactsBannerNone =>
       'Δεν έχουν ρυθμιστεί επαφές έκτακτης ανάγκης.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count επαφές έχουν ρυθμιστεί. Συνιστούμε τουλάχιστον 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Ρυθμίσεις';
@@ -452,6 +469,32 @@ class AppLocalizationsEl extends AppLocalizations {
   String get modesAdd => 'Προσθήκη λειτουργίας';
 
   @override
+  String get modesNewPickerTitle => 'Εκκίνηση από';
+
+  @override
+  String get modesNewPickerBlank => 'Κενή λειτουργία';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Ξεκινήστε με άδεια αλυσίδα';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'Από $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Αντιγραφή αλυσίδας και σκανδαλών αυτής της λειτουργίας';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Αντίγραφο του $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Ενσωματωμένο';
+
+  @override
   String get modeEditorTitleCreate => 'Νέα λειτουργία';
 
   @override
@@ -461,16 +504,13 @@ class AppLocalizationsEl extends AppLocalizations {
   String get modeFieldName => 'Όνομα';
 
   @override
-  String get modeFieldCheckInType => 'Τύπος ελέγχου';
-
-  @override
   String get modeFieldDistressMode => 'Λειτουργία κινδύνου';
 
   @override
   String get modeFieldDistressModeDefault => 'Χρήση προεπιλογής';
 
   @override
-  String get modeChainHeader => 'Αλυσίδα κλιμάκωσης';
+  String get modeChainHeader => 'Αλυσίδα';
 
   @override
   String get modeChainAddStep => 'Προσθήκη βήματος';

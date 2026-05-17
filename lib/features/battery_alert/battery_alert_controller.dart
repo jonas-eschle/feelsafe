@@ -47,7 +47,7 @@ class BatteryAlertController extends AsyncNotifier<BatteryAlertConfig> {
     await save(current.copyWith(enabled: false));
   }
 
-  /// Replaces the escalation chain [chain].
+  /// Replaces the chain [chain].
   Future<void> setChain(List<ChainStep> chain) async {
     final current = await future;
     await save(current.copyWith(chain: chain));

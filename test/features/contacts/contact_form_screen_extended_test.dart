@@ -1,7 +1,7 @@
 /// Extended tests for [ContactFormScreen]:
 ///   * Validation errors (empty name / empty phone) keep Save from
 ///     persisting.
-///   * All four channel checkboxes toggle state cleanly.
+///   * All four channel chips toggle state cleanly.
 ///   * Unchecking the last channel shows a SnackBar on save instead
 ///     of persisting.
 ///   * Relationship and language fields optional; blank → null on
@@ -51,8 +51,7 @@ void main() {
   );
 
   testWidgets(
-    'ContactFormScreen unchecking SMS default-channel leaves the field '
-    'available to re-add',
+    'ContactFormScreen tapping a selected channel chip deselects it',
     (tester) async {
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
@@ -62,16 +61,17 @@ void main() {
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      final smsTile = find.byType(CheckboxListTile).first;
-      await tester.tap(smsTile);
+      final smsChip = find.byType(FilterChip).first;
+      // Default = all selected, so the SMS chip starts selected.
+      check(tester.widget<FilterChip>(smsChip).selected).isTrue();
+      await tester.tap(smsChip);
       await tester.pumpAndSettle();
-      final sms = tester.widget<CheckboxListTile>(smsTile);
-      check(sms.value).equals(false);
+      check(tester.widget<FilterChip>(smsChip).selected).isFalse();
     },
   );
 
   testWidgets(
-    'ContactFormScreen all four channel checkboxes render',
+    'ContactFormScreen all four channel chips render and start selected',
     (tester) async {
       await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
@@ -81,11 +81,14 @@ void main() {
         child: const ContactFormScreen(),
       ));
       await tester.pumpAndSettle();
-      final tiles = find.descendant(
+      final chips = find.descendant(
         of: find.byType(ContactFormScreen),
-        matching: find.byType(CheckboxListTile),
+        matching: find.byType(FilterChip),
       );
-      check(tiles.evaluate().length).equals(4);
+      check(chips.evaluate().length).equals(4);
+      for (var i = 0; i < 4; i++) {
+        check(tester.widget<FilterChip>(chips.at(i)).selected).isTrue();
+      }
     },
   );
 
@@ -105,12 +108,15 @@ void main() {
       await tester.enterText(fields.at(0), 'Kate');
       await tester.enterText(fields.at(1), '+15559998877');
       await tester.pump();
-      // Uncheck SMS so channels set is empty.
-      final tiles = find.descendant(
+      // Default is all 4 chips selected — deselect every one to leave
+      // the channels set empty.
+      final chips = find.descendant(
         of: find.byType(ContactFormScreen),
-        matching: find.byType(CheckboxListTile),
+        matching: find.byType(FilterChip),
       );
-      await tester.tap(tiles.at(0));
+      for (var i = 0; i < 4; i++) {
+        await tester.tap(chips.at(i));
+      }
       await tester.pumpAndSettle();
       final save = find.descendant(
         of: find.byType(ContactFormScreen),
@@ -176,7 +182,7 @@ void main() {
   );
 
   testWidgets(
-    'ContactFormScreen toggling Telegram + WhatsApp + Phone adds channels',
+    'ContactFormScreen saves with all four channels by default',
     (tester) async {
       final repo = FakeContactsRepository();
       await tester.pumpWidget(hostScreenPushed(
@@ -191,15 +197,8 @@ void main() {
       await tester.enterText(fields.at(0), 'Bob');
       await tester.enterText(fields.at(1), '+15550002222');
       await tester.pump();
-      final tiles = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.byType(CheckboxListTile),
-      );
-      // Tile order: SMS, WhatsApp, Telegram, Phone
-      await tester.tap(tiles.at(1));
-      await tester.tap(tiles.at(2));
-      await tester.tap(tiles.at(3));
-      await tester.pumpAndSettle();
+      // The default state is "all 4 channels selected"; no toggling
+      // needed before save.
       final save = find.descendant(
         of: find.byType(ContactFormScreen),
         matching: find.widgetWithText(FilledButton, 'Save'),

@@ -82,13 +82,19 @@
   "modesTitle": "Modes",
   "modesEmpty": "Aucun mode pour le moment. Appuyez sur Ajouter pour créer un mode.",
   "modesAdd": "Ajouter un mode",
+  "modesNewPickerTitle": "Partir de",
+  "modesNewPickerBlank": "Mode vierge",
+  "modesNewPickerBlankSubtitle": "Commencer avec une chaîne vide",
+  "modesNewPickerFromTemplate": "À partir de {name}",
+  "modesNewPickerFromTemplateSubtitle": "Copier la chaîne et les déclencheurs de ce mode",
+  "modesNewPickerCopyName": "Copie de {name}",
+  "modesNewPickerBuiltinBadge": "Intégré",
   "modeEditorTitleCreate": "Nouveau mode",
   "modeEditorTitleEdit": "Modifier le mode",
   "modeFieldName": "Nom",
-  "modeFieldCheckInType": "Type de vérification",
   "modeFieldDistressMode": "Mode de détresse",
   "modeFieldDistressModeDefault": "Utiliser par défaut",
-  "modeChainHeader": "Chaîne d'escalade",
+  "modeChainHeader": "Chaîne",
   "modeChainAddStep": "Ajouter une étape",
   "modeChainEmpty": "Aucune étape pour le moment. Appuyez sur Ajouter une étape.",
   "modeTrackingHeader": "Suivi GPS",
@@ -373,16 +379,14 @@
   "pinSubmit": "Valider",
   "homeStartConfirmTitle": "Démarrer une session ?",
   "homeStartConfirmBody": "Vérifiez que vos contacts et votre PIN sont configurés. La session s'exécutera au premier plan et le mode sélectionné guidera les validations.",
+  "homePermissionsMissingTitle": "Certaines autorisations manquent",
+  "homePermissionsMissingBody": "Les autorisations suivantes n'ont pas été accordées. Sans elles, les étapes correspondantes échoueront silencieusement :",
+  "homePermissionsContinueAnyway": "Démarrer quand même",
+  "homePermissionsNotification": "Notifications",
+  "homePermissionsLocation": "Position",
+  "homePermissionsCallPhone": "Appels téléphoniques",
+  "homePermissionsSendSms": "Envoyer un SMS",
   "homeContactsBannerNone": "Aucun contact d'urgence configuré.",
-  "homeContactsBannerFew": "{count} contact(s) configuré(s). Nous en recommandons au moins 3.",
-  "@homeContactsBannerFew": {
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "1"
-      }
-    }
-  },
   "sessionCheckIn": "Je suis en sécurité",
   "sessionDisarmTriggerTitle": "Déclencheur de désactivation activé",
   "sessionDisarmTriggerBody": "Un déclencheur de désactivation s'est activé. Terminer la session ?",
@@ -531,11 +535,9 @@
   "launchGateUseBiometric": "Utiliser la biométrie",
   "historyTabReal": "Réel",
   "historyTabSimulated": "Simulé",
-
   "audioRunningLatePhrase": "Salut, je suis en retard. Je te rappelle bientôt.",
   "smsDefaultTemplate": "{name} pourrait avoir besoin d'aide. Emplacement : {location}. Heure : {time}.",
   "smsDefaultPreCallTemplate": "{name} essaie de te joindre. Attends-toi à un appel.",
-
   "simLoudAlarm": "[SIM] Alarme sonore + {tail}",
   "simLoudAlarmTailFlash": "flash",
   "simLoudAlarmTailVibrate": "vibration",

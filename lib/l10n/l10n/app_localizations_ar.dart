@@ -105,6 +105,28 @@ class AppLocalizationsAr extends AppLocalizations {
       'تأكد من أن جهات الاتصال ورمز PIN مهيّأة. ستعمل الجلسة في المقدمة وسيوجّهك الوضع المختار خلال عمليات تسجيل الوصول.';
 
   @override
+  String get homePermissionsMissingTitle => 'بعض الأذونات مفقودة';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'لم يتم منح الأذونات التالية. بدونها، ستفشل خطوات السلسلة المقابلة بصمت:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'ابدأ على أي حال';
+
+  @override
+  String get homePermissionsNotification => 'الإشعارات';
+
+  @override
+  String get homePermissionsLocation => 'الموقع';
+
+  @override
+  String get homePermissionsCallPhone => 'المكالمات الهاتفية';
+
+  @override
+  String get homePermissionsSendSms => 'إرسال رسائل SMS';
+
+  @override
   String get homeSimulate => 'محاكاة';
 
   @override
@@ -122,11 +144,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'لم يتم تكوين أي جهات اتصال للطوارئ.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return 'تم تكوين $count جهة اتصال. نوصي بثلاث على الأقل.';
-  }
 
   @override
   String get homeMenuSettings => 'الإعدادات';
@@ -444,6 +461,32 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modesAdd => 'إضافة وضع';
 
   @override
+  String get modesNewPickerTitle => 'ابدأ من';
+
+  @override
+  String get modesNewPickerBlank => 'وضع فارغ';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'ابدأ بسلسلة فارغة';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'من $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'نسخ سلسلة هذا الوضع ومحفّزاته';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'نسخة من $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'مدمج';
+
+  @override
   String get modeEditorTitleCreate => 'وضع جديد';
 
   @override
@@ -453,16 +496,13 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modeFieldName => 'الاسم';
 
   @override
-  String get modeFieldCheckInType => 'نوع تسجيل الوصول';
-
-  @override
   String get modeFieldDistressMode => 'وضع الاستغاثة';
 
   @override
   String get modeFieldDistressModeDefault => 'استخدام الافتراضي';
 
   @override
-  String get modeChainHeader => 'سلسلة التصعيد';
+  String get modeChainHeader => 'سلسلة';
 
   @override
   String get modeChainAddStep => 'إضافة خطوة';

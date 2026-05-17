@@ -14,7 +14,8 @@ final class EmergencyContact {
   /// [relationship] — optional informational label (e.g., "Mom").
   /// [sortOrder] — manual ordering key; lower = earlier.
   /// [channels] — messaging channels enabled for this contact;
-  /// defaults to `[MessageChannel.sms]`.
+  /// defaults to ALL channels enabled
+  /// (sms + whatsapp + telegram + phoneCall).
   /// [languageCode] — optional per-contact SMS language override;
   /// null = use app language.
   const EmergencyContact({
@@ -23,7 +24,12 @@ final class EmergencyContact {
     required this.phoneNumber,
     required this.sortOrder,
     this.relationship,
-    this.channels = const [MessageChannel.sms],
+    this.channels = const [
+      MessageChannel.sms,
+      MessageChannel.whatsapp,
+      MessageChannel.telegram,
+      MessageChannel.phoneCall,
+    ],
     this.languageCode,
   });
 

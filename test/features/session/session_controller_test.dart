@@ -575,7 +575,6 @@ void main() {
         const SessionMode(
           id: 'empty',
           name: 'Empty',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [],
         ),
       ];
@@ -596,7 +595,6 @@ void main() {
             const SessionMode(
               id: 'empty',
               name: 'Empty',
-              checkInType: ChainStepType.smsContact,
               isDistressMode: true,
             ),
           ],

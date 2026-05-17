@@ -82,13 +82,19 @@
   "modesTitle": "模式",
   "modesEmpty": "尚未建立模式。點選「新增」以建立模式。",
   "modesAdd": "新增模式",
+  "modesNewPickerTitle": "從何處開始",
+  "modesNewPickerBlank": "空白模式",
+  "modesNewPickerBlankSubtitle": "從空的鏈開始",
+  "modesNewPickerFromTemplate": "以 {name} 為範本",
+  "modesNewPickerFromTemplateSubtitle": "複製此模式的鏈與觸發器",
+  "modesNewPickerCopyName": "{name} 的副本",
+  "modesNewPickerBuiltinBadge": "內建",
   "modeEditorTitleCreate": "新模式",
   "modeEditorTitleEdit": "編輯模式",
   "modeFieldName": "名稱",
-  "modeFieldCheckInType": "報平安方式",
   "modeFieldDistressMode": "求救模式",
   "modeFieldDistressModeDefault": "使用預設",
-  "modeChainHeader": "警報升級流程",
+  "modeChainHeader": "鏈",
   "modeChainAddStep": "新增步驟",
   "modeChainEmpty": "尚未有任何步驟。點選「新增步驟」。",
   "modeTrackingHeader": "GPS 追蹤",
@@ -400,22 +406,19 @@
     "description": "Title for the start-session confirmation dialog."
   },
   "homeStartConfirmBody": "請確認你的聯絡人與 PIN 已設定完成。守護將在前景執行,並由你選擇的模式引導報平安。",
+  "homePermissionsMissingTitle": "缺少某些權限",
+  "homePermissionsMissingBody": "未授予以下權限。沒有它們，相應的鏈步驟將靜默失敗：",
+  "homePermissionsContinueAnyway": "仍然啟動",
+  "homePermissionsNotification": "通知",
+  "homePermissionsLocation": "位置",
+  "homePermissionsCallPhone": "電話呼叫",
+  "homePermissionsSendSms": "傳送簡訊",
   "@homeStartConfirmBody": {
     "description": "Body for the start-session confirmation dialog."
   },
   "homeContactsBannerNone": "尚未設定緊急聯絡人。",
   "@homeContactsBannerNone": {
     "description": "Banner shown when zero contacts are configured."
-  },
-  "homeContactsBannerFew": "已設定 {count} 位聯絡人。建議至少 3 位。",
-  "@homeContactsBannerFew": {
-    "description": "Banner shown when 1–2 contacts are configured.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "1"
-      }
-    }
   },
   "sessionCheckIn": "我已報平安",
   "@sessionCheckIn": {
@@ -875,11 +878,9 @@
   },
   "historyTabReal": "真實",
   "historyTabSimulated": "模擬",
-
   "audioRunningLatePhrase": "你好，我會遲到，我會盡快回電。",
   "smsDefaultTemplate": "{name} 可能需要協助。位置：{location}。時間：{time}。",
   "smsDefaultPreCallTemplate": "{name} 正在嘗試聯絡你。請等待來電。",
-
   "simLoudAlarm": "[SIM] 響亮警報 + {tail}",
   "simLoudAlarmTailFlash": "閃光",
   "simLoudAlarmTailVibrate": "震動",

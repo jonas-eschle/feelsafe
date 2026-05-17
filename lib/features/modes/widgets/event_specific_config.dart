@@ -113,7 +113,6 @@ class EventSpecificConfig extends ConsumerWidget {
         mode: SessionMode(
           id: 'preview',
           name: 'Preview',
-          checkInType: step.type,
           chainSteps: [step],
         ),
         contacts: const [],
@@ -134,32 +133,18 @@ class EventSpecificConfig extends ConsumerWidget {
   }
 }
 
+/// HoldButton step has no per-step UI fields.
+///
+/// All HoldButton tuning lives in `Settings → Defaults → Hold button`
+/// (release sensitivity, vibrate-on-release, hold style, etc.) so the
+/// same value isn't editable in two places.
 class _HoldButtonForm extends StatelessWidget {
   const _HoldButtonForm({required this.step, required this.onChanged});
   final ChainStep step;
   final ValueChanged<ChainStep> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final cfg = (step.config is HoldButtonConfig)
-        ? step.config! as HoldButtonConfig
-        : const HoldButtonConfig();
-    return TextFormField(
-      initialValue: cfg.releaseSensitivity.toString(),
-      keyboardType: TextInputType.number,
-      decoration: InputDecoration(
-        labelText: l.stepConfigHoldReleaseSensitivity,
-      ),
-      onChanged: (v) => onChanged(
-        step.copyWith(
-          config: cfg.copyWith(
-            releaseSensitivity: double.tryParse(v) ?? cfg.releaseSensitivity,
-          ),
-        ),
-      ),
-    );
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 /// Disguised reminder event-specific form.
@@ -184,36 +169,22 @@ class _DisguisedReminderForm extends StatelessWidget {
   }
 }
 
+/// CountdownWarning step has no per-step UI fields.
+///
+/// Vibrate + play-tone live in `Settings → Defaults → Countdown
+/// warning`. Per-step timing is on the timing sliders above.
 class _CountdownForm extends StatelessWidget {
   const _CountdownForm({required this.step, required this.onChanged});
   final ChainStep step;
   final ValueChanged<ChainStep> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final cfg = (step.config is CountdownWarningConfig)
-        ? step.config! as CountdownWarningConfig
-        : const CountdownWarningConfig();
-    return Column(
-      children: [
-        SwitchListTile(
-          value: cfg.vibrate,
-          title: Text(l.stepConfigCountdownVibrate),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(vibrate: v))),
-        ),
-        SwitchListTile(
-          value: cfg.playTone,
-          title: Text(l.stepConfigCountdownTone),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(playTone: v))),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// FakeCall step UI — only the per-instance caller name is editable.
+/// The decline-is-safe toggle is global behaviour and lives in
+/// `Settings → Defaults → Fake call`.
 class _FakeCallForm extends StatelessWidget {
   const _FakeCallForm({required this.step, required this.onChanged});
   final ChainStep step;
@@ -225,21 +196,11 @@ class _FakeCallForm extends StatelessWidget {
     final cfg = (step.config is FakeCallConfig)
         ? step.config! as FakeCallConfig
         : const FakeCallConfig();
-    return Column(
-      children: [
-        TextFormField(
-          initialValue: cfg.callerName ?? '',
-          decoration: InputDecoration(labelText: l.stepConfigFakeCallCaller),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(callerName: v))),
-        ),
-        SwitchListTile(
-          value: cfg.declineIsSafe,
-          title: Text(l.stepConfigFakeCallDecline),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(declineIsSafe: v))),
-        ),
-      ],
+    return TextFormField(
+      initialValue: cfg.callerName ?? '',
+      decoration: InputDecoration(labelText: l.stepConfigFakeCallCaller),
+      onChanged: (v) =>
+          onChanged(step.copyWith(config: cfg.copyWith(callerName: v))),
     );
   }
 }
@@ -280,13 +241,8 @@ class _SmsForm extends StatelessWidget {
             onChanged(step.copyWith(config: cfg.copyWith(contactSelection: v)));
           },
         ),
-        SwitchListTile(
-          value: cfg.includeLocation,
-          title: Text(l.stepConfigSmsIncludeLocation),
-          onChanged: (v) => onChanged(
-            step.copyWith(config: cfg.copyWith(includeLocation: v)),
-          ),
-        ),
+        // `includeLocation` and `channel` are master defaults in
+        // `Settings → Defaults → SMS contact` — not duplicated here.
         SwitchListTile(
           value: cfg.includeMedicalInfo,
           title: Text(l.stepConfigSmsIncludeMedical),
@@ -357,36 +313,23 @@ class _PhoneForm extends StatelessWidget {
   }
 }
 
+/// LoudAlarm step has no per-step UI fields.
+///
+/// flash-screen + volume + sound choice + flashlight live in
+/// `Settings → Defaults → Loud alarm`. Per-step timing is on the
+/// timing sliders above.
 class _LoudAlarmForm extends StatelessWidget {
   const _LoudAlarmForm({required this.step, required this.onChanged});
   final ChainStep step;
   final ValueChanged<ChainStep> onChanged;
 
   @override
-  Widget build(BuildContext context) {
-    final l = AppLocalizations.of(context);
-    final cfg = (step.config is LoudAlarmConfig)
-        ? step.config! as LoudAlarmConfig
-        : const LoudAlarmConfig();
-    return Column(
-      children: [
-        SwitchListTile(
-          value: cfg.flashScreen,
-          title: Text(l.stepConfigLoudAlarmFlash),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(flashScreen: v))),
-        ),
-        SwitchListTile(
-          value: cfg.maxVolume,
-          title: Text(l.stepConfigLoudAlarmVolume),
-          onChanged: (v) =>
-              onChanged(step.copyWith(config: cfg.copyWith(maxVolume: v))),
-        ),
-      ],
-    );
-  }
+  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
+/// CallEmergency step UI — only the per-instance emergency-number
+/// override is editable here. show-confirmation is global and lives
+/// in `Settings → Defaults → Call emergency`.
 class _EmergencyForm extends StatelessWidget {
   const _EmergencyForm({required this.step, required this.onChanged});
   final ChainStep step;
@@ -398,30 +341,16 @@ class _EmergencyForm extends StatelessWidget {
     final cfg = (step.config is CallEmergencyConfig)
         ? step.config! as CallEmergencyConfig
         : const CallEmergencyConfig();
-    return Column(
-      children: [
-        TextFormField(
-          initialValue: cfg.emergencyNumber ?? '',
-          decoration: InputDecoration(labelText: l.stepConfigEmergencyNumber),
-          onChanged: (v) => onChanged(
-            step.copyWith(
-              // Fix for bugs.json historical Warn (copy-with clear
-              // patterns): use `clearEmergencyNumber: true` for
-              // empty text so the value is explicitly nulled.
-              config: v.isEmpty
-                  ? cfg.copyWith(clearEmergencyNumber: true)
-                  : cfg.copyWith(emergencyNumber: v),
-            ),
-          ),
+    return TextFormField(
+      initialValue: cfg.emergencyNumber ?? '',
+      decoration: InputDecoration(labelText: l.stepConfigEmergencyNumber),
+      onChanged: (v) => onChanged(
+        step.copyWith(
+          config: v.isEmpty
+              ? cfg.copyWith(clearEmergencyNumber: true)
+              : cfg.copyWith(emergencyNumber: v),
         ),
-        SwitchListTile(
-          value: cfg.showConfirmation,
-          title: Text(l.stepConfigEmergencyConfirm),
-          onChanged: (v) => onChanged(
-            step.copyWith(config: cfg.copyWith(showConfirmation: v)),
-          ),
-        ),
-      ],
+      ),
     );
   }
 }

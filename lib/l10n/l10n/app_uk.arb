@@ -82,13 +82,19 @@
   "modesTitle": "Режими",
   "modesEmpty": "Ще немає режимів. Натисніть «Додати», щоб створити режим.",
   "modesAdd": "Додати режим",
+  "modesNewPickerTitle": "Почати з",
+  "modesNewPickerBlank": "Порожній режим",
+  "modesNewPickerBlankSubtitle": "Почати з порожнього ланцюга",
+  "modesNewPickerFromTemplate": "З «{name}»",
+  "modesNewPickerFromTemplateSubtitle": "Скопіювати ланцюг і тригери цього режиму",
+  "modesNewPickerCopyName": "Копія «{name}»",
+  "modesNewPickerBuiltinBadge": "Вбудований",
   "modeEditorTitleCreate": "Новий режим",
   "modeEditorTitleEdit": "Редагувати режим",
   "modeFieldName": "Назва",
-  "modeFieldCheckInType": "Тип реєстрації",
   "modeFieldDistressMode": "Режим тривоги",
   "modeFieldDistressModeDefault": "Використати типовий",
-  "modeChainHeader": "Ланцюг ескалації",
+  "modeChainHeader": "Ланцюг",
   "modeChainAddStep": "Додати крок",
   "modeChainEmpty": "Ще немає кроків. Натисніть «Додати крок».",
   "modeTrackingHeader": "Відстеження GPS",
@@ -400,22 +406,19 @@
     "description": "Title for the start-session confirmation dialog."
   },
   "homeStartConfirmBody": "Переконайтеся, що Ваші контакти та PIN-код налаштовано. Сесія працюватиме у фоновому режимі, і обраний режим керуватиме реєстраціями.",
+  "homePermissionsMissingTitle": "Бракує деяких дозволів",
+  "homePermissionsMissingBody": "Наступні дозволи не було надано. Без них відповідні кроки ланцюжка не виконаються без сповіщення:",
+  "homePermissionsContinueAnyway": "Запустити все одно",
+  "homePermissionsNotification": "Сповіщення",
+  "homePermissionsLocation": "Місцезнаходження",
+  "homePermissionsCallPhone": "Телефонні дзвінки",
+  "homePermissionsSendSms": "Надсилання SMS",
   "@homeStartConfirmBody": {
     "description": "Body for the start-session confirmation dialog."
   },
   "homeContactsBannerNone": "Не налаштовано жодного екстреного контакту.",
   "@homeContactsBannerNone": {
     "description": "Banner shown when zero contacts are configured."
-  },
-  "homeContactsBannerFew": "Налаштовано {count} контакт(ів). Рекомендуємо щонайменше 3.",
-  "@homeContactsBannerFew": {
-    "description": "Banner shown when 1–2 contacts are configured.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "1"
-      }
-    }
   },
   "sessionCheckIn": "Я зареєструвався",
   "@sessionCheckIn": {
@@ -875,11 +878,9 @@
   },
   "historyTabReal": "Реальні",
   "historyTabSimulated": "Симуляція",
-
   "audioRunningLatePhrase": "Привіт, я запізнююсь. Скоро передзвоню.",
   "smsDefaultTemplate": "{name} може потребувати допомоги. Місцезнаходження: {location}. Час: {time}.",
   "smsDefaultPreCallTemplate": "{name} намагається з вами зв'язатися. Очікуйте дзвінка.",
-
   "simLoudAlarm": "[SIM] Гучна тривога + {tail}",
   "simLoudAlarmTailFlash": "спалах",
   "simLoudAlarmTailVibrate": "вібрація",

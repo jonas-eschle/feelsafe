@@ -12,11 +12,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/permissions/required_permissions.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/widgets/mode_icon_library.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 /// Landing screen for returning users.
 class HomeScreen extends ConsumerWidget {
@@ -154,7 +157,7 @@ class _HomeBody extends ConsumerWidget {
                         : () => _onStart(
                               context: context,
                               ref: ref,
-                              modeId: mode.id,
+                              mode: mode,
                               isSimulation: false,
                               l: l,
                             ),
@@ -169,7 +172,7 @@ class _HomeBody extends ConsumerWidget {
                       : () => _onStart(
                             context: context,
                             ref: ref,
-                            modeId: mode.id,
+                            mode: mode,
                             isSimulation: true,
                             l: l,
                           ),
@@ -248,26 +251,20 @@ class _ContactBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (contactCount >= 3) return const SizedBox.shrink();
+    if (contactCount > 0) return const SizedBox.shrink();
     final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
-    final isError = contactCount == 0;
-    final color = isError ? scheme.errorContainer : scheme.tertiaryContainer;
-    final iconData = isError ? Icons.error_outline : Icons.info_outline;
-    final text = isError
-        ? l.homeContactsBannerNone
-        : l.homeContactsBannerFew(contactCount);
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: color,
+        color: scheme.errorContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
         children: [
-          Icon(iconData),
+          const Icon(Icons.error_outline),
           const SizedBox(width: 8),
-          Expanded(child: Text(text)),
+          Expanded(child: Text(l.homeContactsBannerNone)),
         ],
       ),
     );
@@ -277,7 +274,7 @@ class _ContactBanner extends StatelessWidget {
 Future<void> _onStart({
   required BuildContext context,
   required WidgetRef ref,
-  required String modeId,
+  required SessionMode mode,
   required bool isSimulation,
   required AppLocalizations l,
 }) async {
@@ -300,10 +297,62 @@ Future<void> _onStart({
   );
   if (confirmed != true) return;
   if (!context.mounted) return;
+  // Pre-flight permission audit: only the perms THIS mode's chain
+  // actually needs are requested, and only the ones that aren't
+  // already granted will show a system dialog. Skipped in
+  // simulation mode because no real side effects are triggered.
+  if (!isSimulation) {
+    final denied = await ensureSessionPermissions(
+      service: ref.read(permissionServiceProvider),
+      mode: mode,
+    );
+    if (denied.isNotEmpty) {
+      if (!context.mounted) return;
+      final proceed = await _showMissingPermissionsDialog(
+        context: context,
+        denied: denied,
+        l: l,
+      );
+      if (proceed != true) return;
+    }
+    if (!context.mounted) return;
+  }
   await ref
       .read(sessionControllerProvider.notifier)
-      .startSession(modeId: modeId, isSimulation: isSimulation);
+      .startSession(modeId: mode.id, isSimulation: isSimulation);
   if (context.mounted) {
     context.push(RouteNames.session);
   }
 }
+
+Future<bool?> _showMissingPermissionsDialog({
+  required BuildContext context,
+  required Set<RequiredPermission> denied,
+  required AppLocalizations l,
+}) {
+  final lines = denied.map((p) => '• ${_labelFor(p, l)}').join('\n');
+  return showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: Text(l.homePermissionsMissingTitle),
+      content: Text('${l.homePermissionsMissingBody}\n\n$lines'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(ctx).pop(false),
+          child: Text(l.commonCancel),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.of(ctx).pop(true),
+          child: Text(l.homePermissionsContinueAnyway),
+        ),
+      ],
+    ),
+  );
+}
+
+String _labelFor(RequiredPermission p, AppLocalizations l) => switch (p) {
+  RequiredPermission.notification => l.homePermissionsNotification,
+  RequiredPermission.location => l.homePermissionsLocation,
+  RequiredPermission.callPhone => l.homePermissionsCallPhone,
+  RequiredPermission.sendSms => l.homePermissionsSendSms,
+};

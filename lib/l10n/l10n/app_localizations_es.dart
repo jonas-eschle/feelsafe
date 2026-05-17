@@ -105,6 +105,28 @@ class AppLocalizationsEs extends AppLocalizations {
       'Asegúrese de tener configurados sus contactos y su PIN. La sesión se ejecutará en primer plano y el modo seleccionado guiará las confirmaciones.';
 
   @override
+  String get homePermissionsMissingTitle => 'Faltan algunos permisos';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Los siguientes permisos no se concedieron. Sin ellos, los pasos correspondientes fallarán silenciosamente:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Iniciar de todos modos';
+
+  @override
+  String get homePermissionsNotification => 'Notificaciones';
+
+  @override
+  String get homePermissionsLocation => 'Ubicación';
+
+  @override
+  String get homePermissionsCallPhone => 'Llamadas telefónicas';
+
+  @override
+  String get homePermissionsSendSms => 'Enviar SMS';
+
+  @override
   String get homeSimulate => 'Simular';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get homeContactsBannerNone =>
       'No hay contactos de emergencia configurados.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count contacto(s) configurado(s). Recomendamos al menos 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Ajustes';
@@ -450,6 +467,32 @@ class AppLocalizationsEs extends AppLocalizations {
   String get modesAdd => 'Añadir modo';
 
   @override
+  String get modesNewPickerTitle => 'Empezar desde';
+
+  @override
+  String get modesNewPickerBlank => 'Modo vacío';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Empezar con una cadena vacía';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'Desde $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Copiar la cadena y los disparadores de este modo';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Copia de $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Integrado';
+
+  @override
   String get modeEditorTitleCreate => 'Nuevo modo';
 
   @override
@@ -459,16 +502,13 @@ class AppLocalizationsEs extends AppLocalizations {
   String get modeFieldName => 'Nombre';
 
   @override
-  String get modeFieldCheckInType => 'Tipo de confirmación';
-
-  @override
   String get modeFieldDistressMode => 'Modo de auxilio';
 
   @override
   String get modeFieldDistressModeDefault => 'Usar predeterminada';
 
   @override
-  String get modeChainHeader => 'Cadena de escalada';
+  String get modeChainHeader => 'Cadena';
 
   @override
   String get modeChainAddStep => 'Añadir paso';

@@ -105,6 +105,28 @@ class AppLocalizationsRu extends AppLocalizations {
       'Убедитесь, что ваши контакты и PIN настроены. Сессия будет работать на переднем плане, и выбранный режим будет управлять отметками.';
 
   @override
+  String get homePermissionsMissingTitle => 'Отсутствуют некоторые разрешения';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Следующие разрешения не были предоставлены. Без них соответствующие шаги цепочки завершатся неудачно без уведомления:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Запустить всё равно';
+
+  @override
+  String get homePermissionsNotification => 'Уведомления';
+
+  @override
+  String get homePermissionsLocation => 'Местоположение';
+
+  @override
+  String get homePermissionsCallPhone => 'Телефонные звонки';
+
+  @override
+  String get homePermissionsSendSms => 'Отправка SMS';
+
+  @override
   String get homeSimulate => 'Симуляция';
 
   @override
@@ -122,11 +144,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'Экстренные контакты не настроены.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return 'Настроено контактов: $count. Рекомендуем не менее 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Настройки';
@@ -447,6 +464,32 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modesAdd => 'Добавить режим';
 
   @override
+  String get modesNewPickerTitle => 'Создать из';
+
+  @override
+  String get modesNewPickerBlank => 'Пустой режим';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Начать с пустой цепочки';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'Из «$name»';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Скопировать цепочку и триггеры этого режима';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Копия «$name»';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Встроенный';
+
+  @override
   String get modeEditorTitleCreate => 'Новый режим';
 
   @override
@@ -456,16 +499,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modeFieldName => 'Название';
 
   @override
-  String get modeFieldCheckInType => 'Тип проверки';
-
-  @override
   String get modeFieldDistressMode => 'Режим тревоги';
 
   @override
   String get modeFieldDistressModeDefault => 'По умолчанию';
 
   @override
-  String get modeChainHeader => 'Цепочка эскалации';
+  String get modeChainHeader => 'Цепочка';
 
   @override
   String get modeChainAddStep => 'Добавить шаг';

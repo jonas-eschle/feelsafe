@@ -32,6 +32,18 @@ class SeedModeIds {
 /// Stable id of the default distress-flagged mode.
 const String seedDefaultDistressModeId = 'seed.distress.default';
 
+/// The set of built-in mode ids. These modes are always available
+/// in the "from template" picker, even after the user deletes the
+/// corresponding row from the modes list — they live as
+/// permanent templates rendered by [builtInTemplates].
+const Set<String> kBuiltInModeIds = {SeedModeIds.walk, SeedModeIds.date};
+
+/// Returns the built-in `SessionMode` templates that the mode-create
+/// picker always offers. Distinct from the seeded rows: even if the
+/// user deletes Walk Mode from their saved modes, this list still
+/// exposes it as a template the user can clone from.
+List<SessionMode> builtInTemplates() => [_walkMode(), _dateMode()];
+
 /// Idempotent first-launch seeding. Writes built-in modes (regular
 /// + distress-flagged), templates, default app settings, the empty
 /// user profile, and the default battery-alert config — only for
@@ -89,7 +101,6 @@ Future<void> seedData(Ref ref) async {
 SessionMode _defaultDistressMode() => const SessionMode(
   id: seedDefaultDistressModeId,
   name: 'Default Distress Chain',
-  checkInType: ChainStepType.smsContact,
   isDistressMode: true,
   chainSteps: [
     ChainStep(
@@ -133,31 +144,46 @@ SessionMode _walkMode() => const SessionMode(
   // name-heuristic in `home_screen._iconForModeName` is kept as a
   // fallback for unnamed user modes.
   iconName: 'directions_walk',
-  checkInType: ChainStepType.holdButton,
   chainSteps: [
+    // Spec 01 §Example Chains/Walk Mode. Step 0 keeps the
+    // user-tested 0/0 timing (Issues-v4 #16) — spec says 10s/1s but
+    // user feedback preferred instant escalation on release. The
+    // full escalation tail (fakeCall → smsContact → phoneCallContact
+    // → callEmergency) is per spec so the chain actually reaches
+    // contacts when no one disarms.
     ChainStep(
       id: 'seed.mode.walk.step.hold',
       type: ChainStepType.holdButton,
       order: 0,
       durationSeconds: 0,
-      // Issues-v4 #16: hold-button grace defaults to 0 (escalate
-      // immediately when the countdown ends). Spec 02 § hold-button
-      // says 5s; updated per user-test feedback. Spec doc updated in
-      // Phase 14.
       gracePeriodSeconds: 0,
     ),
     ChainStep(
-      id: 'seed.mode.walk.step.countdown',
-      type: ChainStepType.countdownWarning,
+      id: 'seed.mode.walk.step.fakecall',
+      type: ChainStepType.fakeCall,
       order: 1,
-      durationSeconds: 15,
-      gracePeriodSeconds: 0,
+      durationSeconds: 30,
+      gracePeriodSeconds: 5,
     ),
     ChainStep(
-      id: 'seed.mode.walk.step.alarm',
-      type: ChainStepType.loudAlarm,
+      id: 'seed.mode.walk.step.sms',
+      type: ChainStepType.smsContact,
       order: 2,
-      durationSeconds: 30,
+      durationSeconds: 15,
+      gracePeriodSeconds: 5,
+    ),
+    ChainStep(
+      id: 'seed.mode.walk.step.phone',
+      type: ChainStepType.phoneCallContact,
+      order: 3,
+      durationSeconds: 60,
+      gracePeriodSeconds: 5,
+    ),
+    ChainStep(
+      id: 'seed.mode.walk.step.emergency',
+      type: ChainStepType.callEmergency,
+      order: 4,
+      durationSeconds: 5,
       gracePeriodSeconds: 0,
     ),
   ],
@@ -175,29 +201,47 @@ SessionMode _dateMode() => const SessionMode(
   // Issues-v4 #12 — seed an iconName so the Date tile matches its
   // mode-editor selection on Home + Modes list.
   iconName: 'favorite',
-  checkInType: ChainStepType.disguisedReminder,
   chainSteps: [
+    // Spec 01 §Example Chains/Date Mode. The disguised reminder
+    // fires every 30 min with a 60s overlay + 2 min grace, repeated
+    // once before escalating. Full tail per spec.
     ChainStep(
       id: 'seed.mode.date.step.reminder',
       type: ChainStepType.disguisedReminder,
       order: 0,
-      durationSeconds: 30,
-      gracePeriodSeconds: 60,
-      config: DisguisedReminderConfig(intervalSeconds: 600),
+      waitSeconds: 1800,
+      durationSeconds: 60,
+      gracePeriodSeconds: 120,
+      retryCount: 1,
     ),
     ChainStep(
       id: 'seed.mode.date.step.fakecall',
       type: ChainStepType.fakeCall,
       order: 1,
       durationSeconds: 30,
-      gracePeriodSeconds: 20,
+      gracePeriodSeconds: 5,
     ),
     ChainStep(
       id: 'seed.mode.date.step.sms',
       type: ChainStepType.smsContact,
       order: 2,
+      durationSeconds: 15,
+      gracePeriodSeconds: 5,
+    ),
+    ChainStep(
+      id: 'seed.mode.date.step.phone',
+      type: ChainStepType.phoneCallContact,
+      order: 3,
+      durationSeconds: 60,
+      gracePeriodSeconds: 5,
+    ),
+    ChainStep(
+      id: 'seed.mode.date.step.emergency',
+      type: ChainStepType.callEmergency,
+      order: 4,
       durationSeconds: 10,
       gracePeriodSeconds: 0,
+      config: CallEmergencyConfig(),
     ),
   ],
   distressTriggers: [

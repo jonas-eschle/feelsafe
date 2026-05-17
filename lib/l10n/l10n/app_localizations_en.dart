@@ -105,6 +105,28 @@ class AppLocalizationsEn extends AppLocalizations {
       'Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.';
 
   @override
+  String get homePermissionsMissingTitle => 'Some permissions are missing';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'The following permissions were not granted. Without them, the corresponding chain steps will fail silently:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Start anyway';
+
+  @override
+  String get homePermissionsNotification => 'Notifications';
+
+  @override
+  String get homePermissionsLocation => 'Location';
+
+  @override
+  String get homePermissionsCallPhone => 'Phone calls';
+
+  @override
+  String get homePermissionsSendSms => 'Send SMS';
+
+  @override
   String get homeSimulate => 'Simulate';
 
   @override
@@ -122,11 +144,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'No emergency contacts configured.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count contact(s) configured. We recommend at least 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Settings';
@@ -443,6 +460,32 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modesAdd => 'Add mode';
 
   @override
+  String get modesNewPickerTitle => 'Start from';
+
+  @override
+  String get modesNewPickerBlank => 'Blank mode';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Start with an empty chain';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'From $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Copy this mode\'s chain and triggers';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Copy of $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Built-in';
+
+  @override
   String get modeEditorTitleCreate => 'New mode';
 
   @override
@@ -452,16 +495,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modeFieldName => 'Name';
 
   @override
-  String get modeFieldCheckInType => 'Check-in type';
-
-  @override
   String get modeFieldDistressMode => 'Distress mode';
 
   @override
   String get modeFieldDistressModeDefault => 'Use default';
 
   @override
-  String get modeChainHeader => 'Escalation chain';
+  String get modeChainHeader => 'Chain';
 
   @override
   String get modeChainAddStep => 'Add step';

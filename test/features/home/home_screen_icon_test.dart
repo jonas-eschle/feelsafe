@@ -8,7 +8,6 @@ import 'package:checks/checks.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
@@ -29,7 +28,6 @@ SessionMode _modeWithIcon(String id, String name, String? iconName) =>
       id: id,
       name: name,
       iconName: iconName,
-      checkInType: ChainStepType.holdButton,
       chainSteps: const [],
     );
 

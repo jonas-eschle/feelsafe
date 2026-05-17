@@ -46,7 +46,9 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
     _phoneCtrl = TextEditingController();
     _relationshipCtrl = TextEditingController();
     _languageCtrl = TextEditingController();
-    _channels.add(MessageChannel.sms);
+    // Default: every channel enabled. The user toggles them off if
+    // they want to narrow the channels.
+    _channels.addAll(MessageChannel.values);
   }
 
   void _hydrate(List<EmergencyContact> contacts) {
@@ -76,6 +78,16 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
     _relationshipCtrl.dispose();
     _languageCtrl.dispose();
     super.dispose();
+  }
+
+  void _toggleChannel(MessageChannel channel, bool selected) {
+    setState(() {
+      if (selected) {
+        _channels.add(channel);
+      } else {
+        _channels.remove(channel);
+      }
+    });
   }
 
   Future<void> _save() async {
@@ -180,49 +192,36 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
               l.contactChannelsHeader,
               style: Theme.of(context).textTheme.titleMedium,
             ),
-            CheckboxListTile(
-              value: _channels.contains(MessageChannel.sms),
-              title: Text(l.contactChannelSms),
-              onChanged: (v) => setState(() {
-                if (v ?? false) {
-                  _channels.add(MessageChannel.sms);
-                } else {
-                  _channels.remove(MessageChannel.sms);
-                }
-              }),
-            ),
-            CheckboxListTile(
-              value: _channels.contains(MessageChannel.whatsapp),
-              title: Text(l.contactChannelWhatsapp),
-              onChanged: (v) => setState(() {
-                if (v ?? false) {
-                  _channels.add(MessageChannel.whatsapp);
-                } else {
-                  _channels.remove(MessageChannel.whatsapp);
-                }
-              }),
-            ),
-            CheckboxListTile(
-              value: _channels.contains(MessageChannel.telegram),
-              title: Text(l.contactChannelTelegram),
-              onChanged: (v) => setState(() {
-                if (v ?? false) {
-                  _channels.add(MessageChannel.telegram);
-                } else {
-                  _channels.remove(MessageChannel.telegram);
-                }
-              }),
-            ),
-            CheckboxListTile(
-              value: _channels.contains(MessageChannel.phoneCall),
-              title: Text(l.contactChannelPhone),
-              onChanged: (v) => setState(() {
-                if (v ?? false) {
-                  _channels.add(MessageChannel.phoneCall);
-                } else {
-                  _channels.remove(MessageChannel.phoneCall);
-                }
-              }),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                _ChannelChip(
+                  channel: MessageChannel.sms,
+                  label: l.contactChannelSms,
+                  selected: _channels.contains(MessageChannel.sms),
+                  onChanged: _toggleChannel,
+                ),
+                _ChannelChip(
+                  channel: MessageChannel.whatsapp,
+                  label: l.contactChannelWhatsapp,
+                  selected: _channels.contains(MessageChannel.whatsapp),
+                  onChanged: _toggleChannel,
+                ),
+                _ChannelChip(
+                  channel: MessageChannel.telegram,
+                  label: l.contactChannelTelegram,
+                  selected: _channels.contains(MessageChannel.telegram),
+                  onChanged: _toggleChannel,
+                ),
+                _ChannelChip(
+                  channel: MessageChannel.phoneCall,
+                  label: l.contactChannelPhone,
+                  selected: _channels.contains(MessageChannel.phoneCall),
+                  onChanged: _toggleChannel,
+                ),
+              ],
             ),
             const SizedBox(height: 24),
             FilledButton(onPressed: _save, child: Text(l.commonSave)),
@@ -231,4 +230,26 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
       ),
     );
   }
+}
+
+/// Clickable button-style toggle for a single messaging channel.
+class _ChannelChip extends StatelessWidget {
+  const _ChannelChip({
+    required this.channel,
+    required this.label,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final MessageChannel channel;
+  final String label;
+  final bool selected;
+  final void Function(MessageChannel channel, bool selected) onChanged;
+
+  @override
+  Widget build(BuildContext context) => FilterChip(
+    label: Text(label),
+    selected: selected,
+    onSelected: (v) => onChanged(channel, v),
+  );
 }

@@ -163,10 +163,19 @@ class _CountdownWarningEditor extends StatelessWidget {
   final CountdownWarningConfig cfg;
   final ValueChanged<CountdownWarningConfig> onChanged;
   @override
-  Widget build(BuildContext context) => SwitchListTile(
-        title: const Text('Vibrate'),
-        value: cfg.vibrate,
-        onChanged: (v) => onChanged(cfg.copyWith(vibrate: v)),
+  Widget build(BuildContext context) => Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Vibrate'),
+            value: cfg.vibrate,
+            onChanged: (v) => onChanged(cfg.copyWith(vibrate: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Play tone'),
+            value: cfg.playTone,
+            onChanged: (v) => onChanged(cfg.copyWith(playTone: v)),
+          ),
+        ],
       );
 }
 
@@ -246,10 +255,24 @@ class _LoudAlarmEditor extends StatelessWidget {
   final LoudAlarmConfig cfg;
   final ValueChanged<LoudAlarmConfig> onChanged;
   @override
-  Widget build(BuildContext context) => SwitchListTile(
-        title: const Text('Flash screen'),
-        value: cfg.flashScreen,
-        onChanged: (v) => onChanged(cfg.copyWith(flashScreen: v)),
+  Widget build(BuildContext context) => Column(
+        children: [
+          SwitchListTile(
+            title: const Text('Flash screen'),
+            value: cfg.flashScreen,
+            onChanged: (v) => onChanged(cfg.copyWith(flashScreen: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Max volume'),
+            value: cfg.maxVolume,
+            onChanged: (v) => onChanged(cfg.copyWith(maxVolume: v)),
+          ),
+          SwitchListTile(
+            title: const Text('Flashlight strobe'),
+            value: cfg.flashLight,
+            onChanged: (v) => onChanged(cfg.copyWith(flashLight: v)),
+          ),
+        ],
       );
 }
 

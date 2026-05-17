@@ -163,9 +163,11 @@ void main() {
         await tester.pumpAndSettle();
 
         // Add a trigger — _DistressTriggerCard appears (ExpansionTile in a Card).
-        // Before adding: only the _ModeOverridesSection ExpansionTile is present.
         final beforeCount = find.byType(ExpansionTile).evaluate().length;
-        await tester.tap(find.byIcon(Icons.add_alert_outlined));
+        final addBtn = find.byIcon(Icons.add_alert_outlined);
+        await tester.ensureVisible(addBtn);
+        await tester.pumpAndSettle();
+        await tester.tap(addBtn);
         await tester.pumpAndSettle();
 
         // Confirm one more ExpansionTile appeared.
@@ -173,9 +175,10 @@ void main() {
             .equals(beforeCount + 1);
 
         // Delete by tapping the delete icon in the trigger card's trailing area.
-        await tester.tap(
-          find.byIcon(Icons.delete_outline).first,
-        );
+        final deleteBtn = find.byIcon(Icons.delete_outline).first;
+        await tester.ensureVisible(deleteBtn);
+        await tester.pumpAndSettle();
+        await tester.tap(deleteBtn);
         await tester.pumpAndSettle();
 
         // Back to the original count.

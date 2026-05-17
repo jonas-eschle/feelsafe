@@ -260,7 +260,6 @@ void main() {
       final fakeCallMode = SessionMode(
         id: 'fc-mode',
         name: 'FC Mode',
-        checkInType: ChainStepType.fakeCall,
         chainSteps: [fakeCallStep(order: 0, declineIsSafe: true)],
       );
       final repo = FakeModesRepository([fakeCallMode]);

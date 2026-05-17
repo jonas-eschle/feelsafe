@@ -14,7 +14,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -125,7 +124,6 @@ HardwarePanicEvent _panic() => HardwarePanicEvent(
 SessionMode _timerMode(int durationSeconds) => SessionMode(
   id: 'mode-timer',
   name: 'Timer',
-  checkInType: ChainStepType.holdButton,
   chainSteps: [holdStep()],
   distressTriggers: const [],
   disarmTriggers: [TimerDisarmTrigger(durationSeconds: durationSeconds)],
@@ -135,7 +133,6 @@ SessionMode _timerMode(int durationSeconds) => SessionMode(
 SessionMode _distressMode() => SessionMode(
   id: 'mode-distress',
   name: 'Distress',
-  checkInType: ChainStepType.holdButton,
   chainSteps: [holdStep(), smsStep(order: 1)],
   distressTriggers: const [
     HardwareButtonDistressTrigger(
@@ -256,7 +253,6 @@ void main() {
         final mode = SessionMode(
           id: 'mode-two-timers',
           name: 'TwoTimers',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [

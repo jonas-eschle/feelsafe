@@ -267,17 +267,19 @@ void main() {
     check(find.byIcon(Icons.error_outline).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('home_one_contact_shows_tertiary_banner', (tester) async {
+  testWidgets('home_one_contact_hides_banner', (tester) async {
+    // No more "we recommend at least 3" banner — once at least one
+    // contact is configured the banner disappears entirely.
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: _base(contacts: [makeContact(id: 'c1')]),
       child: const HomeScreen(),
     ));
     await tester.pumpAndSettle();
-    // 1 contact → warning/info banner shown (info_outline icon).
-    check(find.byIcon(Icons.info_outline).evaluate().length).isGreaterOrEqual(1);
+    check(find.byIcon(Icons.error_outline).evaluate()).isEmpty();
+    check(find.byIcon(Icons.info_outline).evaluate()).isEmpty();
   });
 
-  testWidgets('home_two_contacts_shows_tertiary_banner', (tester) async {
+  testWidgets('home_two_contacts_hides_banner', (tester) async {
     await tester.pumpWidget(hostScreenWithRouter(
       overrides: _base(contacts: [
         makeContact(id: 'c1', name: 'Alice'),
@@ -286,7 +288,8 @@ void main() {
       child: const HomeScreen(),
     ));
     await tester.pumpAndSettle();
-    check(find.byIcon(Icons.info_outline).evaluate().length).isGreaterOrEqual(1);
+    check(find.byIcon(Icons.error_outline).evaluate()).isEmpty();
+    check(find.byIcon(Icons.info_outline).evaluate()).isEmpty();
   });
 
   testWidgets('home_three_contacts_hides_banner', (tester) async {
@@ -299,7 +302,6 @@ void main() {
       child: const HomeScreen(),
     ));
     await tester.pumpAndSettle();
-    // 3 contacts → no banner at all.
     check(find.byIcon(Icons.error_outline).evaluate()).isEmpty();
     check(find.byIcon(Icons.info_outline).evaluate()).isEmpty();
   });

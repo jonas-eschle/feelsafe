@@ -13,7 +13,7 @@ final class BatteryAlertConfig {
   /// [thresholdPercent] — battery percentage at which the alert
   /// fires, 0–100; defaults to **10** (Q35: closer to actual
   /// emergency, fewer false fires).
-  /// [chain] — configurable escalation chain executed when the
+  /// [chain] — configurable chain executed when the
   /// threshold is reached; defaults to empty.
   const BatteryAlertConfig({
     this.enabled = false,
@@ -43,7 +43,7 @@ final class BatteryAlertConfig {
   /// to 15.
   final int thresholdPercent;
 
-  /// Escalation chain executed on trigger. Defaults to the empty
+  /// Chain executed on trigger. Defaults to the empty
   /// list (no-op).
   final List<ChainStep> chain;
 

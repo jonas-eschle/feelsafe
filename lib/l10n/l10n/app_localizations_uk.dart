@@ -105,6 +105,28 @@ class AppLocalizationsUk extends AppLocalizations {
       'Переконайтеся, що Ваші контакти та PIN-код налаштовано. Сесія працюватиме у фоновому режимі, і обраний режим керуватиме реєстраціями.';
 
   @override
+  String get homePermissionsMissingTitle => 'Бракує деяких дозволів';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Наступні дозволи не було надано. Без них відповідні кроки ланцюжка не виконаються без сповіщення:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Запустити все одно';
+
+  @override
+  String get homePermissionsNotification => 'Сповіщення';
+
+  @override
+  String get homePermissionsLocation => 'Місцезнаходження';
+
+  @override
+  String get homePermissionsCallPhone => 'Телефонні дзвінки';
+
+  @override
+  String get homePermissionsSendSms => 'Надсилання SMS';
+
+  @override
   String get homeSimulate => 'Симуляція';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get homeContactsBannerNone =>
       'Не налаштовано жодного екстреного контакту.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return 'Налаштовано $count контакт(ів). Рекомендуємо щонайменше 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Налаштування';
@@ -448,6 +465,32 @@ class AppLocalizationsUk extends AppLocalizations {
   String get modesAdd => 'Додати режим';
 
   @override
+  String get modesNewPickerTitle => 'Почати з';
+
+  @override
+  String get modesNewPickerBlank => 'Порожній режим';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Почати з порожнього ланцюга';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'З «$name»';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Скопіювати ланцюг і тригери цього режиму';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Копія «$name»';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Вбудований';
+
+  @override
   String get modeEditorTitleCreate => 'Новий режим';
 
   @override
@@ -457,16 +500,13 @@ class AppLocalizationsUk extends AppLocalizations {
   String get modeFieldName => 'Назва';
 
   @override
-  String get modeFieldCheckInType => 'Тип реєстрації';
-
-  @override
   String get modeFieldDistressMode => 'Режим тривоги';
 
   @override
   String get modeFieldDistressModeDefault => 'Використати типовий';
 
   @override
-  String get modeChainHeader => 'Ланцюг ескалації';
+  String get modeChainHeader => 'Ланцюг';
 
   @override
   String get modeChainAddStep => 'Додати крок';

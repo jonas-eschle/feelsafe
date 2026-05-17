@@ -103,6 +103,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get homeStartConfirmBody => '请确认您的联系人和 PIN 码已配置。会话将在前台运行，所选模式将引导签到。';
 
   @override
+  String get homePermissionsMissingTitle => '缺少某些权限';
+
+  @override
+  String get homePermissionsMissingBody => '未授予以下权限。没有它们，相应的链步骤将静默失败：';
+
+  @override
+  String get homePermissionsContinueAnyway => '仍然启动';
+
+  @override
+  String get homePermissionsNotification => '通知';
+
+  @override
+  String get homePermissionsLocation => '位置';
+
+  @override
+  String get homePermissionsCallPhone => '电话呼叫';
+
+  @override
+  String get homePermissionsSendSms => '发送短信';
+
+  @override
   String get homeSimulate => '模拟';
 
   @override
@@ -119,11 +140,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => '尚未配置紧急联系人。';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '已配置 $count 位联系人。建议至少 3 位。';
-  }
 
   @override
   String get homeMenuSettings => '设置';
@@ -432,6 +448,31 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modesAdd => '添加模式';
 
   @override
+  String get modesNewPickerTitle => '起始方式';
+
+  @override
+  String get modesNewPickerBlank => '空白模式';
+
+  @override
+  String get modesNewPickerBlankSubtitle => '从一个空的链开始';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return '基于“$name”';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle => '复制此模式的链和触发器';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return '“$name”的副本';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => '内置';
+
+  @override
   String get modeEditorTitleCreate => '新建模式';
 
   @override
@@ -441,16 +482,13 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modeFieldName => '名称';
 
   @override
-  String get modeFieldCheckInType => '签到类型';
-
-  @override
   String get modeFieldDistressMode => '求救模式';
 
   @override
   String get modeFieldDistressModeDefault => '使用默认';
 
   @override
-  String get modeChainHeader => '升级链';
+  String get modeChainHeader => '链';
 
   @override
   String get modeChainAddStep => '添加步骤';
@@ -1694,6 +1732,27 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
       '請確認你的聯絡人與 PIN 已設定完成。守護將在前景執行,並由你選擇的模式引導報平安。';
 
   @override
+  String get homePermissionsMissingTitle => '缺少某些權限';
+
+  @override
+  String get homePermissionsMissingBody => '未授予以下權限。沒有它們，相應的鏈步驟將靜默失敗：';
+
+  @override
+  String get homePermissionsContinueAnyway => '仍然啟動';
+
+  @override
+  String get homePermissionsNotification => '通知';
+
+  @override
+  String get homePermissionsLocation => '位置';
+
+  @override
+  String get homePermissionsCallPhone => '電話呼叫';
+
+  @override
+  String get homePermissionsSendSms => '傳送簡訊';
+
+  @override
   String get homeSimulate => '模擬';
 
   @override
@@ -1710,11 +1769,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get homeContactsBannerNone => '尚未設定緊急聯絡人。';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '已設定 $count 位聯絡人。建議至少 3 位。';
-  }
 
   @override
   String get homeMenuSettings => '設定';
@@ -2023,6 +2077,31 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get modesAdd => '新增模式';
 
   @override
+  String get modesNewPickerTitle => '從何處開始';
+
+  @override
+  String get modesNewPickerBlank => '空白模式';
+
+  @override
+  String get modesNewPickerBlankSubtitle => '從空的鏈開始';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return '以 $name 為範本';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle => '複製此模式的鏈與觸發器';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return '$name 的副本';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => '內建';
+
+  @override
   String get modeEditorTitleCreate => '新模式';
 
   @override
@@ -2032,16 +2111,13 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get modeFieldName => '名稱';
 
   @override
-  String get modeFieldCheckInType => '報平安方式';
-
-  @override
   String get modeFieldDistressMode => '求救模式';
 
   @override
   String get modeFieldDistressModeDefault => '使用預設';
 
   @override
-  String get modeChainHeader => '警報升級流程';
+  String get modeChainHeader => '鏈';
 
   @override
   String get modeChainAddStep => '新增步驟';

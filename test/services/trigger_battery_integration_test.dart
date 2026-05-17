@@ -50,7 +50,6 @@ SessionMode _fullMode({
 }) => SessionMode(
   id: 'mode-full',
   name: 'Full',
-  checkInType: ChainStepType.holdButton,
   chainSteps: [holdStep(), smsStep(order: 1)],
   distressTriggers: hasDistress
       ? const [
@@ -460,7 +459,6 @@ void main() {
         final mode = SessionMode(
           id: 'no-triggers',
           name: 'None',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [holdStep()],
           distressTriggers: const [],
           disarmTriggers: const [],

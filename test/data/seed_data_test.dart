@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/app_database.dart';
+import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
 import 'package:guardianangela/data/seed_data.dart';
 import 'db/dao_test_support.dart';
@@ -100,7 +101,11 @@ void main() {
         .read(modesRepositoryProvider)
         .getById(SeedModeIds.date);
     check(date).isNotNull();
-    check(date!.chainSteps.length).equals(3);
+    // Spec 01 §Example Chains/Date Mode: 5 steps —
+    // disguisedReminder → fakeCall → smsContact → phoneCallContact
+    // → callEmergency.
+    check(date!.chainSteps.length).equals(5);
+    check(date.chainSteps.first.type).equals(ChainStepType.disguisedReminder);
   });
 
   test('seedData is idempotent: second call does not duplicate', () async {

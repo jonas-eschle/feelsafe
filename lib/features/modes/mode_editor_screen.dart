@@ -1,6 +1,6 @@
 /// Session-mode create / edit screen.
 ///
-/// The mode's main escalation chain is edited via [ChainStepTile]s
+/// The mode's main chain is edited via [ChainStepTile]s
 /// in a [ReorderableListView]. Below the chain the editor surfaces
 /// collapsible sections for distress triggers and per-mode overrides
 /// of [AppDefaults]. Tracking (spec 11 §DE-3) and the icon picker
@@ -35,7 +35,7 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 ///
 /// Phase 2.6: this screen now handles both regular session modes and
 /// distress-flagged modes (`isDistress=true`). For distress modes
-/// the irrelevant fields (icon, check-in type, distress reference,
+/// the irrelevant fields (icon, distress reference,
 /// triggers, tracking, overrides) are hidden — distress modes only
 /// expose the name and the chain steps.
 class ModeEditorScreen extends ConsumerStatefulWidget {
@@ -78,7 +78,6 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   // ---------- form state ----------
   SessionMode? _mode;
   final TextEditingController _nameCtrl = TextEditingController();
-  ChainStepType _checkInType = ChainStepType.holdButton;
   String? _distressModeId;
   String? _iconName;
   List<ChainStep> _chain = const [];
@@ -101,7 +100,6 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       if (m.id == id) {
         _mode = m;
         _nameCtrl.text = m.name;
-        _checkInType = m.checkInType;
         _distressModeId = m.distressModeId;
         _iconName = m.iconName;
         _chain = List.of(m.chainSteps);
@@ -122,14 +120,12 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   bool get _isDirty {
     final m = _mode;
     final loadedName = m?.name ?? '';
-    final loadedCheckIn = m?.checkInType ?? ChainStepType.holdButton;
     final loadedChain = m?.chainSteps ?? const <ChainStep>[];
     final loadedDistress = m?.distressTriggers ?? const <DistressTrigger>[];
     final loadedOverrides = m?.overrides;
     final loadedIcon = m?.iconName;
     final loadedDistressChainId = m?.distressModeId;
     if (_nameCtrl.text.trim() != loadedName) return true;
-    if (_checkInType != loadedCheckIn) return true;
     if (_distressModeId != loadedDistressChainId) return true;
     if (_iconName != loadedIcon) return true;
     if (!_listEquals(_chain, loadedChain)) return true;
@@ -150,12 +146,6 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final current = SessionMode(
       id: mode?.id ?? const Uuid().v4(),
       name: _nameCtrl.text.trim().isEmpty ? 'Mode' : _nameCtrl.text.trim(),
-      // Distress modes don't carry a check-in type — pin it to the
-      // first step's type (or smsContact when empty) so the field
-      // stays meaningful even though the UI doesn't expose it.
-      checkInType: isDistress
-          ? (_chain.isEmpty ? ChainStepType.smsContact : _chain.first.type)
-          : _checkInType,
       chainSteps: List.of(_chain),
       distressModeId: isDistress ? null : _distressModeId,
       distressTriggers: isDistress ? const [] : List.of(_distressTriggers),
@@ -366,24 +356,6 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                 onNameChanged: () => setState(() {}),
               ),
             if (!isDistress) ...[
-              const SizedBox(height: 12),
-              DropdownButtonFormField<ChainStepType>(
-                initialValue: _checkInType,
-                decoration: InputDecoration(labelText: l.modeFieldCheckInType),
-                items: [
-                  DropdownMenuItem(
-                    value: ChainStepType.holdButton,
-                    child: Text(l.stepTypeHoldButton),
-                  ),
-                  DropdownMenuItem(
-                    value: ChainStepType.disguisedReminder,
-                    child: Text(l.stepTypeDisguisedReminder),
-                  ),
-                ],
-                onChanged: (v) {
-                  if (v != null) setState(() => _checkInType = v);
-                },
-              ),
               const SizedBox(height: 12),
               DropdownButtonFormField<String?>(
                 initialValue: _distressModeId,

@@ -279,7 +279,6 @@ SessionMode _modeWithFakeCall({
   return SessionMode(
     id: id,
     name: 'Mode $id',
-    checkInType: ChainStepType.holdButton,
     chainSteps: steps,
   );
 }
@@ -417,7 +416,6 @@ void main() {
         const mode = SessionMode(
           id: 'mode-x',
           name: 'Mode X',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [
             ChainStep(
               id: 'sms-0',
@@ -473,7 +471,6 @@ void main() {
         const mode = SessionMode(
           id: 'mode-1',
           name: 'Mode 1',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [
             ChainStep(
               id: 'sms-0',
@@ -503,7 +500,6 @@ void main() {
         const mode = SessionMode(
           id: 'mode-1',
           name: 'Mode 1',
-          checkInType: ChainStepType.holdButton,
           chainSteps: [
             ChainStep(
               id: 'fc-0',

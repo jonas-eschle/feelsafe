@@ -5,7 +5,6 @@ library;
 import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/models.dart';
 import '../../helpers/test_helpers.dart';
 
@@ -15,7 +14,6 @@ void main() {
       final m = makeMode();
       check(m.id).isNotNull();
       check(m.name).equals('Test');
-      check(m.checkInType).equals(ChainStepType.holdButton);
       check(m.distressModeId).isNull();
       check(m.distressTriggers).isEmpty();
       check(m.disarmTriggers).isEmpty();
@@ -90,11 +88,7 @@ void main() {
     });
 
     test('JSON round-trip with empty fields', () {
-      const m = SessionMode(
-        id: 'm1',
-        name: 'X',
-        checkInType: ChainStepType.disguisedReminder,
-      );
+      const m = SessionMode(id: 'm1', name: 'X');
       check(SessionMode.fromJson(m.toJson())).equals(m);
     });
 
@@ -115,22 +109,11 @@ void main() {
       ).not((it) => it.equals(makeMode(steps: [holdStep(), smsStep()])));
     });
 
-    test('fromJson throws on unknown checkInType', () {
-      check(
-        () => SessionMode.fromJson(const {
-          'id': 'x',
-          'name': 'y',
-          'checkInType': 'bogus',
-        }),
-      ).throws<ArgumentError>();
-    });
-
-    test('toString contains id, name, type', () {
+    test('toString contains id and name', () {
       final m = makeMode();
       final str = m.toString();
       check(str).contains(m.id);
       check(str).contains(m.name);
-      check(str).contains('holdButton');
     });
 
     test('mode with all trigger types round-trips', () {
@@ -187,7 +170,6 @@ void main() {
       final json = {
         'id': 'm1',
         'name': 'X',
-        'checkInType': 'holdButton',
       };
       final m = SessionMode.fromJson(json);
       check(m.trackingEnabled).isFalse();
@@ -235,7 +217,6 @@ void main() {
       final json = {
         'id': 'm1',
         'name': 'X',
-        'checkInType': 'holdButton',
       };
       check(SessionMode.fromJson(json).isDistressMode).isFalse();
     });

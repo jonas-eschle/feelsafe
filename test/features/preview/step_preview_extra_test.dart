@@ -117,7 +117,6 @@ SessionMode _mode({
 }) => SessionMode(
   id: id,
   name: 'Test mode $id',
-  checkInType: ChainStepType.holdButton,
   chainSteps: steps,
 );
 

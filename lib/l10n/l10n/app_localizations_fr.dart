@@ -105,6 +105,28 @@ class AppLocalizationsFr extends AppLocalizations {
       'Vérifiez que vos contacts et votre PIN sont configurés. La session s\'exécutera au premier plan et le mode sélectionné guidera les validations.';
 
   @override
+  String get homePermissionsMissingTitle => 'Certaines autorisations manquent';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'Les autorisations suivantes n\'ont pas été accordées. Sans elles, les étapes correspondantes échoueront silencieusement :';
+
+  @override
+  String get homePermissionsContinueAnyway => 'Démarrer quand même';
+
+  @override
+  String get homePermissionsNotification => 'Notifications';
+
+  @override
+  String get homePermissionsLocation => 'Position';
+
+  @override
+  String get homePermissionsCallPhone => 'Appels téléphoniques';
+
+  @override
+  String get homePermissionsSendSms => 'Envoyer un SMS';
+
+  @override
   String get homeSimulate => 'Simuler';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'Aucun contact d\'urgence configuré.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count contact(s) configuré(s). Nous en recommandons au moins 3.';
-  }
 
   @override
   String get homeMenuSettings => 'Paramètres';
@@ -448,6 +465,32 @@ class AppLocalizationsFr extends AppLocalizations {
   String get modesAdd => 'Ajouter un mode';
 
   @override
+  String get modesNewPickerTitle => 'Partir de';
+
+  @override
+  String get modesNewPickerBlank => 'Mode vierge';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'Commencer avec une chaîne vide';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'À partir de $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'Copier la chaîne et les déclencheurs de ce mode';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'Copie de $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'Intégré';
+
+  @override
   String get modeEditorTitleCreate => 'Nouveau mode';
 
   @override
@@ -457,16 +500,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get modeFieldName => 'Nom';
 
   @override
-  String get modeFieldCheckInType => 'Type de vérification';
-
-  @override
   String get modeFieldDistressMode => 'Mode de détresse';
 
   @override
   String get modeFieldDistressModeDefault => 'Utiliser par défaut';
 
   @override
-  String get modeChainHeader => 'Chaîne d\'escalade';
+  String get modeChainHeader => 'Chaîne';
 
   @override
   String get modeChainAddStep => 'Ajouter une étape';

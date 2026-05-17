@@ -105,6 +105,28 @@ class AppLocalizationsFa extends AppLocalizations {
       'اطمینان حاصل کنید که مخاطبین و پین شما پیکربندی شده‌اند. جلسه در پیش‌زمینه اجرا می‌شود و حالت انتخابی شما گزارش‌های وضعیت را راهنمایی می‌کند.';
 
   @override
+  String get homePermissionsMissingTitle => 'برخی مجوزها وجود ندارند';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'مجوزهای زیر اعطا نشدند. بدون آن‌ها، مراحل زنجیره مربوطه بی‌صدا با شکست مواجه می‌شوند:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'به هر حال شروع کن';
+
+  @override
+  String get homePermissionsNotification => 'اعلان‌ها';
+
+  @override
+  String get homePermissionsLocation => 'موقعیت';
+
+  @override
+  String get homePermissionsCallPhone => 'تماس‌های تلفنی';
+
+  @override
+  String get homePermissionsSendSms => 'ارسال پیامک';
+
+  @override
   String get homeSimulate => 'شبیه‌سازی';
 
   @override
@@ -123,11 +145,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'هیچ مخاطب اضطراری پیکربندی نشده است.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count مخاطب پیکربندی شده است. حداقل ۳ مخاطب توصیه می‌شود.';
-  }
 
   @override
   String get homeMenuSettings => 'تنظیمات';
@@ -446,6 +463,32 @@ class AppLocalizationsFa extends AppLocalizations {
   String get modesAdd => 'افزودن حالت';
 
   @override
+  String get modesNewPickerTitle => 'شروع از';
+
+  @override
+  String get modesNewPickerBlank => 'حالت خالی';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'با یک زنجیره خالی شروع کنید';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'از $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'کپی زنجیره و محرک‌های این حالت';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'کپی از $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'داخلی';
+
+  @override
   String get modeEditorTitleCreate => 'حالت جدید';
 
   @override
@@ -455,16 +498,13 @@ class AppLocalizationsFa extends AppLocalizations {
   String get modeFieldName => 'نام';
 
   @override
-  String get modeFieldCheckInType => 'نوع گزارش وضعیت';
-
-  @override
   String get modeFieldDistressMode => 'حالت اضطرار';
 
   @override
   String get modeFieldDistressModeDefault => 'استفاده از پیش‌فرض';
 
   @override
-  String get modeChainHeader => 'زنجیره تشدید';
+  String get modeChainHeader => 'زنجیره';
 
   @override
   String get modeChainAddStep => 'افزودن گام';

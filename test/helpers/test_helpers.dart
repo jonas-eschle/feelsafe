@@ -144,19 +144,16 @@ ChainStep fakeCallStep({
 ///
 /// [id] — defaults to `'mode-<name>'`.
 /// [name] — defaults to 'Test'.
-/// [checkInType] — defaults to [ChainStepType.holdButton].
 /// [steps] — defaults to a single [holdStep] at order 0.
 /// [distressModeId] — defaults to null (use repo's first chain).
 SessionMode makeMode({
   String? id,
   String name = 'Test',
-  ChainStepType checkInType = ChainStepType.holdButton,
   List<ChainStep>? steps,
   String? distressModeId,
 }) => SessionMode(
   id: id ?? 'mode-$name',
   name: name,
-  checkInType: checkInType,
   chainSteps: steps ?? [holdStep()],
   distressModeId: distressModeId,
 );
@@ -198,7 +195,6 @@ SessionMode makeDistressMode({
   return SessionMode(
     id: id,
     name: name,
-    checkInType: s.first.type,
     chainSteps: s,
     isDistressMode: true,
   );

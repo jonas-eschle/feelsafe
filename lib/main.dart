@@ -28,7 +28,9 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:guardianangela/app.dart';
 import 'package:guardianangela/core/telemetry/sentry_config.dart';
+import 'package:guardianangela/data/db/app_database.dart';
 import 'package:guardianangela/data/repositories/repository_providers.dart';
+import 'package:guardianangela/data/seed_data.dart';
 import 'package:guardianangela/domain/models/battery_alert_config.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -72,6 +74,20 @@ void main() async {
     dsn: _sentryDsn,
     release: _appRelease,
     appRunner: () async {
+      // Pre-alpha policy: if a stale schema or wrong cipher key
+      // makes the on-disk DB unreadable, nuke it before any consumer
+      // touches the [appDatabaseProvider]. Without this, the
+      // [MigrationStrategy.onUpgrade] StateError would bubble out of
+      // every repository read after a schema bump.
+      try {
+        await AppDatabase.ensureCompatible();
+      } on Object catch (e, s) {
+        developer.log(
+          'main: AppDatabase.ensureCompatible failed',
+          error: e,
+          stackTrace: s,
+        );
+      }
       final container = ProviderContainer();
       // Fix for bugs.json Warn (AppDatabase never initialised): force
       // the Drift/SQLCipher DB open so the file is created on first
@@ -82,6 +98,22 @@ void main() async {
       } on Object catch (e, s) {
         developer.log(
           'main: AppDatabase warm-up failed',
+          error: e,
+          stackTrace: s,
+        );
+      }
+      // First-launch seeding: idempotent, only inserts rows for ids
+      // not already present. Provides the built-in Walk Mode + Date
+      // Mode + default distress chain + reminder templates +
+      // AppSettings + empty UserProfile + BatteryAlertConfig.
+      // `seedData` wants a `Ref`; obtain one by reading a transient
+      // provider — the same idiom used by the seed test harness.
+      try {
+        final seedProvider = Provider<Future<void>>((ref) => seedData(ref));
+        await container.read(seedProvider);
+      } on Object catch (e, s) {
+        developer.log(
+          'main: seedData failed',
           error: e,
           stackTrace: s,
         );

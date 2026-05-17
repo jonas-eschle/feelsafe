@@ -148,7 +148,6 @@ List<Override> _overrides({
 SessionMode _mode({required List<ChainStep> steps}) => SessionMode(
   id: 'mode-1',
   name: 'Test Mode',
-  checkInType: ChainStepType.holdButton,
   chainSteps: steps,
 );
 

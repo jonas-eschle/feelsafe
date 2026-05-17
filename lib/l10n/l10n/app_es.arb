@@ -82,13 +82,19 @@
   "modesTitle": "Modos",
   "modesEmpty": "Aún no hay modos. Toca Añadir para crear un modo.",
   "modesAdd": "Añadir modo",
+  "modesNewPickerTitle": "Empezar desde",
+  "modesNewPickerBlank": "Modo vacío",
+  "modesNewPickerBlankSubtitle": "Empezar con una cadena vacía",
+  "modesNewPickerFromTemplate": "Desde {name}",
+  "modesNewPickerFromTemplateSubtitle": "Copiar la cadena y los disparadores de este modo",
+  "modesNewPickerCopyName": "Copia de {name}",
+  "modesNewPickerBuiltinBadge": "Integrado",
   "modeEditorTitleCreate": "Nuevo modo",
   "modeEditorTitleEdit": "Editar modo",
   "modeFieldName": "Nombre",
-  "modeFieldCheckInType": "Tipo de confirmación",
   "modeFieldDistressMode": "Modo de auxilio",
   "modeFieldDistressModeDefault": "Usar predeterminada",
-  "modeChainHeader": "Cadena de escalada",
+  "modeChainHeader": "Cadena",
   "modeChainAddStep": "Añadir paso",
   "modeChainEmpty": "Aún no hay pasos. Toca Añadir paso.",
   "modeTrackingHeader": "Seguimiento GPS",
@@ -400,22 +406,19 @@
     "description": "Title for the start-session confirmation dialog."
   },
   "homeStartConfirmBody": "Asegúrese de tener configurados sus contactos y su PIN. La sesión se ejecutará en primer plano y el modo seleccionado guiará las confirmaciones.",
+  "homePermissionsMissingTitle": "Faltan algunos permisos",
+  "homePermissionsMissingBody": "Los siguientes permisos no se concedieron. Sin ellos, los pasos correspondientes fallarán silenciosamente:",
+  "homePermissionsContinueAnyway": "Iniciar de todos modos",
+  "homePermissionsNotification": "Notificaciones",
+  "homePermissionsLocation": "Ubicación",
+  "homePermissionsCallPhone": "Llamadas telefónicas",
+  "homePermissionsSendSms": "Enviar SMS",
   "@homeStartConfirmBody": {
     "description": "Body for the start-session confirmation dialog."
   },
   "homeContactsBannerNone": "No hay contactos de emergencia configurados.",
   "@homeContactsBannerNone": {
     "description": "Banner shown when zero contacts are configured."
-  },
-  "homeContactsBannerFew": "{count} contacto(s) configurado(s). Recomendamos al menos 3.",
-  "@homeContactsBannerFew": {
-    "description": "Banner shown when 1–2 contacts are configured.",
-    "placeholders": {
-      "count": {
-        "type": "int",
-        "example": "1"
-      }
-    }
   },
   "sessionCheckIn": "Estoy a salvo",
   "@sessionCheckIn": {
@@ -875,11 +878,9 @@
   },
   "historyTabReal": "Real",
   "historyTabSimulated": "Simulada",
-
   "audioRunningLatePhrase": "Hola, llego tarde. Te llamo enseguida.",
   "smsDefaultTemplate": "{name} podría necesitar ayuda. Ubicación: {location}. Hora: {time}.",
   "smsDefaultPreCallTemplate": "{name} está tratando de comunicarse contigo. Espera una llamada.",
-
   "simLoudAlarm": "[SIM] Alarma sonora + {tail}",
   "simLoudAlarmTailFlash": "destello",
   "simLoudAlarmTailVibrate": "vibración",

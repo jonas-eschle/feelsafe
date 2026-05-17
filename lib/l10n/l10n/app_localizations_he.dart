@@ -105,6 +105,28 @@ class AppLocalizationsHe extends AppLocalizations {
       'ודא/י שאנשי הקשר וה-PIN מוגדרים. המושב יפעל בחזית והמצב שבחרת ינחה את הצ\'ק-אינים.';
 
   @override
+  String get homePermissionsMissingTitle => 'חסרות מספר הרשאות';
+
+  @override
+  String get homePermissionsMissingBody =>
+      'ההרשאות הבאות לא הוענקו. בלעדיהן, שלבי השרשרת המתאימים ייכשלו בשקט:';
+
+  @override
+  String get homePermissionsContinueAnyway => 'התחל בכל זאת';
+
+  @override
+  String get homePermissionsNotification => 'התראות';
+
+  @override
+  String get homePermissionsLocation => 'מיקום';
+
+  @override
+  String get homePermissionsCallPhone => 'שיחות טלפון';
+
+  @override
+  String get homePermissionsSendSms => 'שליחת SMS';
+
+  @override
   String get homeSimulate => 'סימולציה';
 
   @override
@@ -122,11 +144,6 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get homeContactsBannerNone => 'לא הוגדרו אנשי קשר לחירום.';
-
-  @override
-  String homeContactsBannerFew(int count) {
-    return '$count אנשי קשר מוגדרים. אנו ממליצים על 3 לפחות.';
-  }
 
   @override
   String get homeMenuSettings => 'הגדרות';
@@ -441,6 +458,32 @@ class AppLocalizationsHe extends AppLocalizations {
   String get modesAdd => 'הוסף מצב';
 
   @override
+  String get modesNewPickerTitle => 'התחל מ-';
+
+  @override
+  String get modesNewPickerBlank => 'מצב ריק';
+
+  @override
+  String get modesNewPickerBlankSubtitle => 'התחל עם שרשרת ריקה';
+
+  @override
+  String modesNewPickerFromTemplate(String name) {
+    return 'מתוך $name';
+  }
+
+  @override
+  String get modesNewPickerFromTemplateSubtitle =>
+      'העתק את השרשרת והטריגרים של המצב הזה';
+
+  @override
+  String modesNewPickerCopyName(String name) {
+    return 'עותק של $name';
+  }
+
+  @override
+  String get modesNewPickerBuiltinBadge => 'מובנה';
+
+  @override
   String get modeEditorTitleCreate => 'מצב חדש';
 
   @override
@@ -450,16 +493,13 @@ class AppLocalizationsHe extends AppLocalizations {
   String get modeFieldName => 'שם';
 
   @override
-  String get modeFieldCheckInType => 'סוג צ\'ק-אין';
-
-  @override
   String get modeFieldDistressMode => 'מצב מצוקה';
 
   @override
   String get modeFieldDistressModeDefault => 'השתמש בברירת המחדל';
 
   @override
-  String get modeChainHeader => 'שרשרת הסלמה';
+  String get modeChainHeader => 'שרשרת';
 
   @override
   String get modeChainAddStep => 'הוסף שלב';
