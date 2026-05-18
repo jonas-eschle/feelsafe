@@ -1,4 +1,0 @@
-# Dart test config — declares known test tags used by `alchemist`
-# golden tests so `dart_test` stops warning about undeclared tags.
-tags:
-  golden:
