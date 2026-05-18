@@ -716,6 +716,12 @@ enum ChainEvent {
   userDisarmed,          // User disarmed/checked-in: chain was
                          // reset to step 0 without ending the
                          // session.
+  deceptiveOldPinShown,  // Wrong PIN entered while
+                         // `AppSettings.deceptivePinDialogEnabled` is
+                         // true — the "Old PIN entered" dialog (spec
+                         // 04 §DeceptiveOldPinDialog) was shown.
+                         // metadata['attemptCount'] = post-increment
+                         // wrong-PIN counter value.
   sessionEnded,          // Session ended (any reason).
 }
 

@@ -172,6 +172,17 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
 
 Both the duress PIN and wrong-PIN threshold fire the mode's selected distress mode (resolved via `SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). See **Settings → Session → Distress modes** (`/distress-modes`) for the list and editor.
 
+#### Deceptive "Old PIN entered" Dialog (R-42)
+- **Label:** "Show deceptive dialog on wrong PIN" ℹ
+- **Info:** "When a wrong PIN is entered, show 'Old PIN entered — are you sure you want to proceed?' instead of a plain incorrect-PIN response. Psychological misdirection: an attacker who tries a guessed or stale PIN sees a prompt that suggests their guess was a previously-valid value, encouraging them to keep trying older guesses rather than realising they're locked out."
+- **Control:** Toggle switch
+- **Default:** ON
+- **Persistence:** `AppSettings.deceptivePinDialogEnabled` (bool, default `true`)
+- **UX (screen mock in spec 04 §`DeceptiveOldPinDialog`):** On wrong PIN, instead of the shake + "Incorrect PIN" toast, a modal appears with title "Old PIN entered" and body "Are you sure you want to proceed?". Buttons: "Cancel" (closes the dialog) and "Continue" (also closes — both paths are dead ends that increment the same wrong-PIN counter described above). The dialog is identical regardless of whether the entered PIN was ever a previously-set PIN — the wording is deceptive, not literal.
+- **Engine event:** Each invocation emits `ChainEvent.deceptiveOldPinShown` (spec 01 §Events Emitted) with `metadata['attemptCount']` = post-increment counter value, so the session log records the misdirection for forensics.
+- **Interaction with wrong-PIN escalation:** Both "Cancel" and "Continue" increment the wrong-PIN counter exactly once. The dialog does NOT replace or short-circuit the escalation rules above — when the counter hits the configured threshold the distress chain still fires silently.
+- **Why:** Without this, a wrong-PIN response that says "incorrect" tells an attacker their guess was wrong, which lets them eliminate that PIN from their search. The deceptive wording instead tells them the PIN was once valid (so they keep trying earlier-PIN-like guesses) while the silent counter ticks toward distress.
+
 ---
 
 ### Battery Alert Section (`/settings/battery-alert`)

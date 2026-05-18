@@ -329,6 +329,9 @@ prompt → fires distress chain silently). Each is independently nullable (disab
 | 72 | Wrong PIN count resets after correct PIN | PIN failure counter = 4 | Enter correct PIN | Counter reset to 0 |
 | 73 | Biometric fallback for Session End PIN only | sessionEndPinHash set, biometric available | Biometric succeeds | disarm() called; biometric NOT available for App PIN or Duress PIN |
 | 74a | Duress PIN fires distress chain silently at any prompt | duressPinHash set, session active | Enter duress PIN at disarm prompt | Distress chain fires; no "wrong PIN" message shown |
+| 74b | Deceptive Old-PIN dialog shows on wrong PIN when enabled (R-42) | `deceptivePinDialogEnabled=true`, sessionEndPinHash set | Enter wrong PIN | `DeceptiveOldPinDialog` rendered with title "Old PIN entered"; `ChainEvent.deceptiveOldPinShown` emitted with `metadata['attemptCount']`; wrong-PIN counter incremented exactly once |
+| 74c | Deceptive dialog suppressed when disabled (R-42) | `deceptivePinDialogEnabled=false`, sessionEndPinHash set | Enter wrong PIN | Shake animation + plain "Incorrect PIN" toast shown; no `DeceptiveOldPinDialog`; no `deceptiveOldPinShown` event |
+| 74d | Deceptive dialog "Continue" and "Cancel" both close without further effect (R-42) | dialog visible from prior wrong PIN | Tap "Continue" then enter wrong PIN; tap "Cancel" then enter wrong PIN | Each tap closes the dialog; subsequent wrong-PIN entries increment the counter once each (not twice); counter reaches threshold after the configured number of wrong attempts (NOT halved by dialog dismissals) |
 
 ### Pause/Resume Session (4)
 

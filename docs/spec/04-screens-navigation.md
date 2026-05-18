@@ -2567,6 +2567,28 @@ class PinKeypad extends StatelessWidget {
 - `PinEntryScreen` — action = biometric icon (if available)
 - `PinSetupScreen` — action = none (hidden)
 
+### DeceptiveOldPinDialog (R-42)
+
+Modal dialog shown on every wrong-PIN entry when `AppSettings.deceptivePinDialogEnabled` is `true` (default ON, configurable in `/settings/security`). Replaces the plain shake + "Incorrect PIN" feedback with deceptive wording that masks the wrong-PIN counter from a casual attacker. See spec 06 §"Deceptive 'Old PIN entered' Dialog (R-42)" for the policy.
+
+```
+┌──────────────────────────────────────────┐
+│  Old PIN entered                         │
+│                                          │
+│  Are you sure you want to proceed?       │
+│                                          │
+│              [ Cancel ]   [ Continue ]   │
+└──────────────────────────────────────────┘
+```
+
+**Construction:** Stateless `AlertDialog` shown via `showDialog(barrierDismissible: false)`. Title `"Old PIN entered"`, content `"Are you sure you want to proceed?"`, two `TextButton`s. No counter, no biometric, no PIN-keypad — it is a dead-end UI. Both buttons close the dialog without distinguishing user intent.
+
+**Side effect on show:** the calling site (PinEntryScreen, SessionScreen's session-end prompt, distress-cancel prompt) has already incremented the wrong-PIN counter and emitted `ChainEvent.deceptiveOldPinShown` (spec 01 §Events Emitted) before the dialog is built. The dialog itself is pure UI.
+
+**Localization:** the title and body strings are localised verbatim — translations must preserve the deceptive intent (the literal "Old PIN entered" phrasing, not a translation of "incorrect PIN").
+
+**Bypass:** When `deceptivePinDialogEnabled` is `false`, the prior plain shake + "Incorrect PIN" feedback is used instead.
+
 ---
 
 ## Navigation & Deep Linking
