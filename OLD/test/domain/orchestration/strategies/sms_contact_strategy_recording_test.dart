@@ -61,10 +61,7 @@ final class _Deps {
     context: SessionContext(
       isSimulation: overrideSimulation ?? _isSimulation,
       contacts: [
-        makeContact(
-          id: 'c1',
-          channels: const [MessageChannel.sms],
-        ),
+        makeContact(id: 'c1', channels: const [MessageChannel.sms]),
       ],
       defaultSmsTemplate: kFallbackSmsTemplate,
       defaultPreSmsTemplate: kFallbackPreSmsTemplate,
@@ -89,79 +86,77 @@ const _strategy = SmsContactStrategy();
 // ---------------------------------------------------------------------------
 
 void main() {
-  group(
-    'SmsContactStrategy — recording.startAudioRecording gating',
-    () {
-      test(
-          'fires startAudioRecording with correct cap when '
-          'autoRecordAudio=true AND isSimulation=false', () async {
-        final deps = _Deps();
-        addTearDown(deps.dispose);
+  group('SmsContactStrategy — recording.startAudioRecording gating', () {
+    test('fires startAudioRecording with correct cap when '
+        'autoRecordAudio=true AND isSimulation=false', () async {
+      final deps = _Deps();
+      addTearDown(deps.dispose);
 
-        await _strategy.executeReal(
-          step(
-            type: ChainStepType.smsContact,
-            config: const SmsContactConfig(
-              autoRecordAudio: true,
-              recordDurationSeconds: 30,
-              contactSelection: SmsContactSelection.allContacts,
-            ),
+      await _strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(
+            autoRecordAudio: true,
+            recordDurationSeconds: 30,
+            contactSelection: SmsContactSelection.allContacts,
           ),
-          deps.build(),
-        );
+        ),
+        deps.build(),
+      );
 
-        final recordCalls = deps.recording.calls
-            .where((c) => c.startsWith('startAudioRecording:'));
-        check(recordCalls.length).equals(1);
-        check(recordCalls.first).equals('startAudioRecording:cap=30');
-      });
+      final recordCalls = deps.recording.calls.where(
+        (c) => c.startsWith('startAudioRecording:'),
+      );
+      check(recordCalls.length).equals(1);
+      check(recordCalls.first).equals('startAudioRecording:cap=30');
+    });
 
-      test(
-          'cap matches recordDurationSeconds from config', () async {
-        final deps = _Deps();
-        addTearDown(deps.dispose);
+    test('cap matches recordDurationSeconds from config', () async {
+      final deps = _Deps();
+      addTearDown(deps.dispose);
 
-        await _strategy.executeReal(
-          step(
-            type: ChainStepType.smsContact,
-            config: const SmsContactConfig(
-              autoRecordAudio: true,
-              recordDurationSeconds: 45,
-              contactSelection: SmsContactSelection.allContacts,
-            ),
+      await _strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(
+            autoRecordAudio: true,
+            recordDurationSeconds: 45,
+            contactSelection: SmsContactSelection.allContacts,
           ),
-          deps.build(),
-        );
+        ),
+        deps.build(),
+      );
 
-        check(deps.recording.calls.first).equals('startAudioRecording:cap=45');
-      });
+      check(deps.recording.calls.first).equals('startAudioRecording:cap=45');
+    });
 
-      test('does NOT call startAudioRecording when isSimulation=true', () async {
-        // Even if autoRecordAudio=true, simulation mode must never
-        // start a real microphone capture.
-        final deps = _Deps(isSimulation: true);
-        addTearDown(deps.dispose);
+    test('does NOT call startAudioRecording when isSimulation=true', () async {
+      // Even if autoRecordAudio=true, simulation mode must never
+      // start a real microphone capture.
+      final deps = _Deps(isSimulation: true);
+      addTearDown(deps.dispose);
 
-        await _strategy.executeReal(
-          step(
-            type: ChainStepType.smsContact,
-            config: const SmsContactConfig(
-              autoRecordAudio: true,
-              recordDurationSeconds: 30,
-              contactSelection: SmsContactSelection.allContacts,
-            ),
+      await _strategy.executeReal(
+        step(
+          type: ChainStepType.smsContact,
+          config: const SmsContactConfig(
+            autoRecordAudio: true,
+            recordDurationSeconds: 30,
+            contactSelection: SmsContactSelection.allContacts,
           ),
-          deps.build(),
-        );
+        ),
+        deps.build(),
+      );
 
-        final recordCalls = deps.recording.calls
-            .where((c) => c.startsWith('startAudioRecording:'));
-        check(recordCalls).isEmpty();
-      });
+      final recordCalls = deps.recording.calls.where(
+        (c) => c.startsWith('startAudioRecording:'),
+      );
+      check(recordCalls).isEmpty();
+    });
 
-      test(
-          'does NOT call startAudioRecording when autoRecordAudio=false',
-          () async {
+    test(
+      'does NOT call startAudioRecording when autoRecordAudio=false',
+      () async {
         final deps = _Deps();
         addTearDown(deps.dispose);
 
@@ -177,11 +172,12 @@ void main() {
         );
 
         check(deps.recording.calls).isEmpty();
-      });
+      },
+    );
 
-      test(
-          'does NOT call startAudioRecording when services.recording is null',
-          () async {
+    test(
+      'does NOT call startAudioRecording when services.recording is null',
+      () async {
         final deps = _Deps();
         addTearDown(deps.dispose);
 
@@ -195,10 +191,7 @@ void main() {
           context: SessionContext(
             isSimulation: false,
             contacts: [
-              makeContact(
-                id: 'c1',
-                channels: const [MessageChannel.sms],
-              ),
+              makeContact(id: 'c1', channels: const [MessageChannel.sms]),
             ],
             defaultSmsTemplate: kFallbackSmsTemplate,
             defaultPreSmsTemplate: kFallbackPreSmsTemplate,
@@ -222,7 +215,7 @@ void main() {
         // The null-recording path does not crash and does not call our
         // fake's startAudioRecording.
         check(deps.recording.calls).isEmpty();
-      });
-    },
-  );
+      },
+    );
+  });
 }

@@ -11,18 +11,14 @@ import '../widget_test_helpers.dart';
 
 void main() {
   testWidgets('EventDefaultsScreen renders without throwing', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(child: const EventDefaultsScreen()),
-    );
+    await tester.pumpWidget(hostScreen(child: const EventDefaultsScreen()));
     await tester.pumpAndSettle();
     check(find.byType(EventDefaultsScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
   testWidgets('EventDefaultsScreen shows placeholder text', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(child: const EventDefaultsScreen()),
-    );
+    await tester.pumpWidget(hostScreen(child: const EventDefaultsScreen()));
     await tester.pumpAndSettle();
     check(find.byType(Text).evaluate().length).isGreaterThan(1);
   });

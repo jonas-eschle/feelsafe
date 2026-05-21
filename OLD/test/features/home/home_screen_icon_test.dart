@@ -24,18 +24,14 @@ class _FakeSessionController extends SessionController {
 }
 
 SessionMode _modeWithIcon(String id, String name, String? iconName) =>
-    SessionMode(
-      id: id,
-      name: name,
-      iconName: iconName,
-      chainSteps: const [],
-    );
+    SessionMode(id: id, name: name, iconName: iconName, chainSteps: const []);
 
 void main() {
-  testWidgets(
-    'HomeScreen renders the mode iconName when set (#12)',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('HomeScreen renders the mode iconName when set (#12)', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         child: const HomeScreen(),
         overrides: [
           modesRepositoryProvider.overrideWithValue(
@@ -45,7 +41,9 @@ void main() {
               _modeWithIcon('m1', 'Anything', 'directions_walk'),
             ]),
           ),
-          contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
           settingsRepositoryProvider.overrideWithValue(
             FakeSettingsRepository(),
           ),
@@ -53,37 +51,39 @@ void main() {
             () => _FakeSessionController(null),
           ),
         ],
-      ));
-      await tester.pumpAndSettle();
-      // The mode tile renders Icons.directions_walk because the mode
-      // has iconName='directions_walk'. The legacy heuristic would
-      // have returned Icons.tune for name='Anything'.
-      check(
-        find.byIcon(Icons.directions_walk).evaluate().length,
-      ).isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // The mode tile renders Icons.directions_walk because the mode
+    // has iconName='directions_walk'. The legacy heuristic would
+    // have returned Icons.tune for name='Anything'.
+    check(
+      find.byIcon(Icons.directions_walk).evaluate().length,
+    ).isGreaterOrEqual(1);
+  });
 
   testWidgets(
     'HomeScreen falls back to the name heuristic when iconName is null (#12)',
     (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        child: const HomeScreen(),
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(
-            FakeModesRepository([
-              _modeWithIcon('m1', 'Run Mode', null),
-            ]),
-          ),
-          contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-          sessionControllerProvider.overrideWith(
-            () => _FakeSessionController(null),
-          ),
-        ],
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          child: const HomeScreen(),
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(
+              FakeModesRepository([_modeWithIcon('m1', 'Run Mode', null)]),
+            ),
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+            sessionControllerProvider.overrideWith(
+              () => _FakeSessionController(null),
+            ),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       // No iconName -> heuristic kicks in: name contains "run" so it
       // resolves to Icons.directions_run.
@@ -93,12 +93,13 @@ void main() {
     },
   );
 
-  testWidgets(
-    'unknown iconName falls through to the name heuristic (#12)',
-    (tester) async {
-      // 'not_a_real_icon' is not in kModeIconLibrary; iconForName
-      // returns null and the heuristic uses the name.
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('unknown iconName falls through to the name heuristic (#12)', (
+    tester,
+  ) async {
+    // 'not_a_real_icon' is not in kModeIconLibrary; iconForName
+    // returns null and the heuristic uses the name.
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         child: const HomeScreen(),
         overrides: [
           modesRepositoryProvider.overrideWithValue(
@@ -106,7 +107,9 @@ void main() {
               _modeWithIcon('m1', 'Bike Day', 'not_a_real_icon'),
             ]),
           ),
-          contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
           settingsRepositoryProvider.overrideWithValue(
             FakeSettingsRepository(),
           ),
@@ -114,12 +117,12 @@ void main() {
             () => _FakeSessionController(null),
           ),
         ],
-      ));
-      await tester.pumpAndSettle();
-      // Heuristic for "bike" returns Icons.directions_bike.
-      check(
-        find.byIcon(Icons.directions_bike).evaluate().length,
-      ).isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Heuristic for "bike" returns Icons.directions_bike.
+    check(
+      find.byIcon(Icons.directions_bike).evaluate().length,
+    ).isGreaterOrEqual(1);
+  });
 }

@@ -47,8 +47,12 @@ void main() {
 
     test('save overwrites rather than inserting a second row', () async {
       final dao = SettingsDao(db);
-      await dao.save(const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 10));
-      await dao.save(const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 99));
+      await dao.save(
+        const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 10),
+      );
+      await dao.save(
+        const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 99),
+      );
       check((await dao.get())!.pinTimeoutSeconds).equals(99);
     });
 

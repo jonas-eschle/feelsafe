@@ -33,37 +33,38 @@ List<Override> _allRepoOverrides({ModesRepository? modes}) => [
   contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-  userProfileRepositoryProvider
-      .overrideWithValue(FakeUserProfileRepository()),
-  batteryAlertRepositoryProvider
-      .overrideWithValue(FakeBatteryAlertRepository()),
-  sessionLogsRepositoryProvider
-      .overrideWithValue(FakeSessionLogsRepository()),
+  userProfileRepositoryProvider.overrideWithValue(FakeUserProfileRepository()),
+  batteryAlertRepositoryProvider.overrideWithValue(
+    FakeBatteryAlertRepository(),
+  ),
+  sessionLogsRepositoryProvider.overrideWithValue(FakeSessionLogsRepository()),
 ];
 
 void main() {
-  testWidgets(
-    'BackupScreen export throws → renders a SnackBar with error',
-    (tester) async {
-      await tester.pumpWidget(hostScreen(
+  testWidgets('BackupScreen export throws → renders a SnackBar with error', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(
         overrides: _allRepoOverrides(modes: _ThrowingModes()),
         child: const BackupScreen(),
-      ));
-      await tester.pumpAndSettle();
-      await tester.dragUntilVisible(
-        find.byType(FilledButton),
-        find.byType(SingleChildScrollView).first,
-        const Offset(0, -100),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
-      // A SnackBar should surface the thrown StateError.
-      check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
-      check(find.textContaining('export-failed').evaluate().length)
-          .isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.dragUntilVisible(
+      find.byType(FilledButton),
+      find.byType(SingleChildScrollView).first,
+      const Offset(0, -100),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    // A SnackBar should surface the thrown StateError.
+    check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
+    check(
+      find.textContaining('export-failed').evaluate().length,
+    ).isGreaterOrEqual(1);
+  });
 
   testWidgets(
     'BackupScreen import with mismatched PIN hits auth-error branch',
@@ -71,10 +72,9 @@ void main() {
       // First export with PIN "secret" so we have an encrypted payload
       // we can replay with a WRONG PIN and trigger the auth-error
       // branch (BackupAuthenticationError).
-      await tester.pumpWidget(hostScreen(
-        overrides: _allRepoOverrides(),
-        child: const BackupScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+      );
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'secret');
       await tester.pump();
@@ -87,9 +87,9 @@ void main() {
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
       // Copy the displayed encrypted payload.
-      final encrypted = (tester.widget<SelectableText>(
-        find.byType(SelectableText),
-      ).data)!;
+      final encrypted = (tester
+          .widget<SelectableText>(find.byType(SelectableText))
+          .data)!;
       // Close the dialog.
       await tester.tap(find.byType(TextButton));
       await tester.pumpAndSettle();
@@ -120,10 +120,9 @@ void main() {
   testWidgets(
     'BackupScreen import with malformed encrypted payload hits format branch',
     (tester) async {
-      await tester.pumpWidget(hostScreen(
-        overrides: _allRepoOverrides(),
-        child: const BackupScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+      );
       await tester.pumpAndSettle();
       // No PIN; import an encrypted-flagged but missing-fields payload.
       await tester.dragUntilVisible(

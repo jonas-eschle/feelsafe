@@ -31,16 +31,11 @@ void main() {
       addTearDown(() => FlutterError.onError = prevOnError);
 
       final seeded = FakeSettingsRepository(
-        const AppSettings(
-          isFirstLaunch: true,
-          defaults: AppDefaults(),
-        ),
+        const AppSettings(isFirstLaunch: true, defaults: AppDefaults()),
       );
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [
-            settingsRepositoryProvider.overrideWithValue(seeded),
-          ],
+          overrides: [settingsRepositoryProvider.overrideWithValue(seeded)],
           child: const GuardianAngelaApp(),
         ),
       );
@@ -70,41 +65,30 @@ void main() {
   // exercising it here would require pumping HomeScreen (which has
   // async controllers that never quiesce in a pure-unit environment).
 
-  test(
-    'redirect returns null when settings are still loading',
-    () {
-      // While `settings.value` is null (AsyncLoading), redirect must
-      // return null so the router falls through to initialLocation.
-      final container = ProviderContainer(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
+  test('redirect returns null when settings are still loading', () {
+    // While `settings.value` is null (AsyncLoading), redirect must
+    // return null so the router falls through to initialLocation.
+    final container = ProviderContainer(
+      overrides: [
+        settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+      ],
+    );
+    addTearDown(container.dispose);
 
-      // Don't read the provider yet — value stays null.
-      // Use a minimal GoRouter-style state via a probe.
-      // Asserting the behaviour end-to-end would require Flutter
-      // bindings; the structural test in app_router_test.dart already
-      // ensures redirect returns a String? when settings.value is null.
-      // Here we simply verify provider is wired and unresolved.
-      final async = container.read(settingsControllerProvider);
-      check(async.value).isNull();
-    },
-  );
+    // Don't read the provider yet — value stays null.
+    // Use a minimal GoRouter-style state via a probe.
+    // Asserting the behaviour end-to-end would require Flutter
+    // bindings; the structural test in app_router_test.dart already
+    // ensures redirect returns a String? when settings.value is null.
+    // Here we simply verify provider is wired and unresolved.
+    final async = container.read(settingsControllerProvider);
+    check(async.value).isNull();
+  });
 
-  test(
-    'every GoRoute exposes a non-null builder',
-    () {
-      final routes = appRouter.configuration.routes.whereType<GoRoute>();
-      for (final r in routes) {
-        check(
-          because: 'route ${r.name} missing builder',
-          r.builder,
-        ).isNotNull();
-      }
-    },
-  );
+  test('every GoRoute exposes a non-null builder', () {
+    final routes = appRouter.configuration.routes.whereType<GoRoute>();
+    for (final r in routes) {
+      check(because: 'route ${r.name} missing builder', r.builder).isNotNull();
+    }
+  });
 }

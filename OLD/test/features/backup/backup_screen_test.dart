@@ -20,12 +20,11 @@ List<Override> _allRepoOverrides() => [
   contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-  userProfileRepositoryProvider
-      .overrideWithValue(FakeUserProfileRepository()),
-  batteryAlertRepositoryProvider
-      .overrideWithValue(FakeBatteryAlertRepository()),
-  sessionLogsRepositoryProvider
-      .overrideWithValue(FakeSessionLogsRepository()),
+  userProfileRepositoryProvider.overrideWithValue(FakeUserProfileRepository()),
+  batteryAlertRepositoryProvider.overrideWithValue(
+    FakeBatteryAlertRepository(),
+  ),
+  sessionLogsRepositoryProvider.overrideWithValue(FakeSessionLogsRepository()),
 ];
 
 void main() {
@@ -36,8 +35,9 @@ void main() {
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets('BackupScreen shows a PIN field + export/import buttons',
-      (tester) async {
+  testWidgets('BackupScreen shows a PIN field + export/import buttons', (
+    tester,
+  ) async {
     await tester.pumpWidget(hostScreen(child: const BackupScreen()));
     await tester.pumpAndSettle();
     check(find.byType(TextField).evaluate().length).equals(1);
@@ -53,12 +53,12 @@ void main() {
     check(find.text('1234').evaluate().length).equals(1);
   });
 
-  testWidgets('BackupScreen export opens dialog with JSON payload',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen export opens dialog with JSON payload', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(FilledButton),
@@ -73,10 +73,9 @@ void main() {
   });
 
   testWidgets('BackupScreen export dialog closes', (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(FilledButton),
@@ -91,12 +90,12 @@ void main() {
     check(find.byType(AlertDialog).evaluate()).isEmpty();
   });
 
-  testWidgets('BackupScreen export with PIN produces encrypted payload',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen export with PIN produces encrypted payload', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField), 'pass');
     await tester.pump();
@@ -109,15 +108,13 @@ void main() {
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
     // Encrypted envelope contains "encrypted": true.
-    check(find.textContaining('"encrypted": true').evaluate().length)
-        .equals(1);
+    check(find.textContaining('"encrypted": true').evaluate().length).equals(1);
   });
 
   testWidgets('BackupScreen import opens prompt dialog', (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -130,12 +127,12 @@ void main() {
     check(find.byType(AlertDialog).evaluate().length).equals(1);
   });
 
-  testWidgets('BackupScreen import with valid JSON shows success',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import with valid JSON shows success', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -167,12 +164,12 @@ void main() {
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('BackupScreen import cancels when prompt dialog is cancelled',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import cancels when prompt dialog is cancelled', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -187,12 +184,12 @@ void main() {
     check(find.byType(AlertDialog).evaluate()).isEmpty();
   });
 
-  testWidgets('BackupScreen import with wrong version shows error',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import with wrong version shows error', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -214,12 +211,12 @@ void main() {
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('BackupScreen import with malformed JSON shows error',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import with malformed JSON shows error', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -241,12 +238,12 @@ void main() {
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('BackupScreen import with PIN-needed payload shows error',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import with PIN-needed payload shows error', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),
@@ -276,12 +273,10 @@ void main() {
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('BackupScreen import with empty text is a no-op',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: _allRepoOverrides(),
-      child: const BackupScreen(),
-    ));
+  testWidgets('BackupScreen import with empty text is a no-op', (tester) async {
+    await tester.pumpWidget(
+      hostScreen(overrides: _allRepoOverrides(), child: const BackupScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.dragUntilVisible(
       find.byType(OutlinedButton),

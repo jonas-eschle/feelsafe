@@ -29,16 +29,19 @@ List<Override> _sessionOverride() => [
   ),
 ];
 
-List<Override> _contactsOverrides({List<EmergencyContact> contacts = const []}) =>
-    [
-      contactsRepositoryProvider
-          .overrideWithValue(FakeContactsRepository(contacts)),
-      ..._sessionOverride(),
-    ];
+List<Override> _contactsOverrides({
+  List<EmergencyContact> contacts = const [],
+}) => [
+  contactsRepositoryProvider.overrideWithValue(
+    FakeContactsRepository(contacts),
+  ),
+  ..._sessionOverride(),
+];
 
 List<Override> _formOverrides({List<EmergencyContact> contacts = const []}) => [
-  contactsRepositoryProvider
-      .overrideWithValue(FakeContactsRepository(contacts)),
+  contactsRepositoryProvider.overrideWithValue(
+    FakeContactsRepository(contacts),
+  ),
   ..._sessionOverride(),
 ];
 
@@ -49,68 +52,92 @@ List<Override> _formOverrides({List<EmergencyContact> contacts = const []}) => [
 void main() {
   group('contacts screen', () {
     testWidgets('contacts_screen_empty_shows_empty_state', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(contacts: []),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(contacts: []),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       check(find.byType(Center).evaluate().length).isGreaterOrEqual(1);
     });
 
     testWidgets('contacts_screen_seeded_shows_names', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(contacts: [
-          makeContact(id: 'c1', name: 'Alice'),
-          makeContact(id: 'c2', name: 'Bob'),
-        ]),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(
+            contacts: [
+              makeContact(id: 'c1', name: 'Alice'),
+              makeContact(id: 'c2', name: 'Bob'),
+            ],
+          ),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       check(find.text('Alice').evaluate().length).isGreaterOrEqual(1);
       check(find.text('Bob').evaluate().length).isGreaterOrEqual(1);
     });
 
     testWidgets('contacts_screen_shows_phone_numbers', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(contacts: [
-          makeContact(id: 'c1', name: 'Alice', phoneNumber: '+441234567890'),
-        ]),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(
+            contacts: [
+              makeContact(
+                id: 'c1',
+                name: 'Alice',
+                phoneNumber: '+441234567890',
+              ),
+            ],
+          ),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       check(find.text('+441234567890').evaluate().length).isGreaterOrEqual(1);
     });
 
     testWidgets('contacts_screen_add_fab_visible', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
-      check(find.byType(FloatingActionButton).evaluate().length)
-          .isGreaterOrEqual(1);
+      check(
+        find.byType(FloatingActionButton).evaluate().length,
+      ).isGreaterOrEqual(1);
     });
 
     testWidgets('contacts_screen_delete_icon_per_contact', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(contacts: [
-          makeContact(id: 'c1', name: 'Alice'),
-          makeContact(id: 'c2', name: 'Bob'),
-        ]),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(
+            contacts: [
+              makeContact(id: 'c1', name: 'Alice'),
+              makeContact(id: 'c2', name: 'Bob'),
+            ],
+          ),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
-      check(find.byIcon(Icons.delete_outline).evaluate().length)
-          .isGreaterOrEqual(2);
+      check(
+        find.byIcon(Icons.delete_outline).evaluate().length,
+      ).isGreaterOrEqual(2);
     });
 
     testWidgets('contacts_screen_delete_shows_confirm_dialog', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _contactsOverrides(contacts: [
-          makeContact(id: 'c1', name: 'Alice'),
-        ]),
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _contactsOverrides(
+            contacts: [makeContact(id: 'c1', name: 'Alice')],
+          ),
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.delete_outline).first);
       await tester.pumpAndSettle();
@@ -119,14 +146,18 @@ void main() {
     });
 
     testWidgets('contacts_screen_delete_cancel_keeps_contact', (tester) async {
-      final repo = FakeContactsRepository([makeContact(id: 'c1', name: 'Alice')]);
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: const ContactsScreen(),
-      ));
+      final repo = FakeContactsRepository([
+        makeContact(id: 'c1', name: 'Alice'),
+      ]);
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.delete_outline).first);
       await tester.pumpAndSettle();
@@ -137,18 +168,22 @@ void main() {
       check(remaining.length).equals(1);
     });
 
-    testWidgets('contacts_screen_delete_confirm_removes_contact', (tester) async {
+    testWidgets('contacts_screen_delete_confirm_removes_contact', (
+      tester,
+    ) async {
       final repo = FakeContactsRepository([
         makeContact(id: 'c1', name: 'Alice'),
         makeContact(id: 'c2', name: 'Bob'),
       ]);
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: const ContactsScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: const ContactsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.delete_outline).first);
       await tester.pumpAndSettle();
@@ -163,25 +198,30 @@ void main() {
   // ---- ContactFormScreen: create -------------------------------------------
 
   group('contact form — create', () {
-    testWidgets('contact_form_create_renders_name_and_phone_fields',
-        (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _formOverrides(),
-        child: const ContactFormScreen(),
-      ));
+    testWidgets('contact_form_create_renders_name_and_phone_fields', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _formOverrides(),
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       check(find.byType(TextFormField).evaluate().length).isGreaterOrEqual(2);
     });
 
     testWidgets('contact_form_save_with_name_and_phone', (tester) async {
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.byType(TextFormField);
       await tester.enterText(fields.at(0), 'Carol');
@@ -200,15 +240,19 @@ void main() {
       check(saved.first.phoneNumber).equals('+441112223344');
     });
 
-    testWidgets('contact_form_empty_name_shows_validation_error', (tester) async {
+    testWidgets('contact_form_empty_name_shows_validation_error', (
+      tester,
+    ) async {
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       // Scroll to the save button (form content may exceed screen height).
       await tester.drag(find.byType(ListView).first, const Offset(0, -400));
@@ -224,13 +268,15 @@ void main() {
 
     testWidgets('contact_form_sms_channel_default', (tester) async {
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.byType(TextFormField);
       await tester.enterText(fields.at(0), 'Dave');
@@ -247,15 +293,18 @@ void main() {
     });
 
     testWidgets('contact_form_language_dropdown_has_entries', (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _formOverrides(),
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _formOverrides(),
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       // There should be a DropdownButtonFormField for language.
       // Use predicate since find.byType doesn't match on generic type params.
       check(
-        find.byWidgetPredicate((w) => w is DropdownButtonFormField)
+        find
+            .byWidgetPredicate((w) => w is DropdownButtonFormField)
             .evaluate()
             .length,
       ).isGreaterOrEqual(1);
@@ -264,10 +313,12 @@ void main() {
     testWidgets('contact_form_shows_channel_toggles', (tester) async {
       // Channel toggles are FilterChip buttons (one per channel),
       // and they all start selected by default.
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _formOverrides(),
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _formOverrides(),
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       check(find.byType(FilterChip).evaluate().length).isGreaterOrEqual(4);
     });
@@ -277,18 +328,26 @@ void main() {
 
   group('contact form — edit', () {
     testWidgets('contact_form_edit_pre_fills_name', (tester) async {
-      final existing = makeContact(id: 'c1', name: 'Alice', phoneNumber: '+10000000000');
+      final existing = makeContact(
+        id: 'c1',
+        name: 'Alice',
+        phoneNumber: '+10000000000',
+      );
       final repo = FakeContactsRepository([existing]);
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: ContactFormScreen(id: 'c1'),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: ContactFormScreen(id: 'c1'),
+        ),
+      );
       await tester.pumpAndSettle();
       // The name field should be pre-filled with 'Alice'.
-      final fields = tester.widgetList<TextFormField>(find.byType(TextFormField));
+      final fields = tester.widgetList<TextFormField>(
+        find.byType(TextFormField),
+      );
       // At least one field contains 'Alice'.
       final hasAlice = fields.any((f) {
         final ctrl = f.controller;
@@ -298,17 +357,25 @@ void main() {
     });
 
     testWidgets('contact_form_edit_pre_fills_phone', (tester) async {
-      final existing = makeContact(id: 'c1', name: 'Alice', phoneNumber: '+19991112222');
+      final existing = makeContact(
+        id: 'c1',
+        name: 'Alice',
+        phoneNumber: '+19991112222',
+      );
       final repo = FakeContactsRepository([existing]);
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: ContactFormScreen(id: 'c1'),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: ContactFormScreen(id: 'c1'),
+        ),
+      );
       await tester.pumpAndSettle();
-      final fields = tester.widgetList<TextFormField>(find.byType(TextFormField));
+      final fields = tester.widgetList<TextFormField>(
+        find.byType(TextFormField),
+      );
       final hasPhone = fields.any((f) {
         final ctrl = f.controller;
         return ctrl != null && ctrl.text == '+19991112222';
@@ -323,13 +390,15 @@ void main() {
         phoneNumber: '+10000000000',
       );
       final repo = FakeContactsRepository([existing]);
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(repo),
-          ..._sessionOverride(),
-        ],
-        child: ContactFormScreen(id: 'c1'),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(repo),
+            ..._sessionOverride(),
+          ],
+          child: ContactFormScreen(id: 'c1'),
+        ),
+      );
       await tester.pumpAndSettle();
       // Change the phone field (index 1).
       final fields = find.byType(TextFormField);
@@ -343,7 +412,9 @@ void main() {
       await tester.tap(find.byType(FilledButton).last);
       await tester.pumpAndSettle();
       final saved = await repo.getAll();
-      check(saved.where((c) => c.phoneNumber == '+19998887777').length).equals(1);
+      check(
+        saved.where((c) => c.phoneNumber == '+19998887777').length,
+      ).equals(1);
     });
   });
 }

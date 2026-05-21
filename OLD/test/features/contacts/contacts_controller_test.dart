@@ -134,9 +134,7 @@ void main() {
     });
 
     test('throws RangeError on out-of-range oldIndex', () async {
-      final container = _makeContainer(
-        seed: [makeContact(id: 'a')],
-      );
+      final container = _makeContainer(seed: [makeContact(id: 'a')]);
       addTearDown(container.dispose);
       final notifier = container.read(contactsControllerProvider.notifier);
       await container.read(contactsControllerProvider.future);
@@ -146,9 +144,7 @@ void main() {
 
   group('ContactsController.reload', () {
     test('resets state and re-reads from repo', () async {
-      final repo = FakeContactsRepository([
-        makeContact(id: 'a'),
-      ]);
+      final repo = FakeContactsRepository([makeContact(id: 'a')]);
       final container = ProviderContainer(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
       );

@@ -40,8 +40,7 @@ Future<PinResult> showPinEntryDialog({
   Object? biometric,
 }) async {
   final l = AppLocalizations.of(context);
-  final bio =
-      biometric is BiometricServiceProtocol ? biometric : null;
+  final bio = biometric is BiometricServiceProtocol ? biometric : null;
   final result = await showDialog<PinResult>(
     context: context,
     barrierDismissible: true,
@@ -185,8 +184,7 @@ class _PinDialogState extends State<_PinDialog> {
           return;
         }
         final sessionEnd = widget.sessionEndHash;
-        if (sessionEnd != null &&
-            await PinHasher.verify(pin, sessionEnd)) {
+        if (sessionEnd != null && await PinHasher.verify(pin, sessionEnd)) {
           if (!mounted) return;
           if (_buffer.toString() != pin) continue;
           Navigator.of(context).pop(PinResult.correct);

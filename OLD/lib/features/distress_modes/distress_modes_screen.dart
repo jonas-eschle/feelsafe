@@ -45,8 +45,8 @@ class DistressModesScreen extends ConsumerWidget {
                       // execute (D-SAFETY-17).
                       onPressed: modes.length > 1
                           ? () => ref
-                              .read(distressModesControllerProvider.notifier)
-                              .delete(m.id)
+                                .read(distressModesControllerProvider.notifier)
+                                .delete(m.id)
                           : null,
                     ),
                   );

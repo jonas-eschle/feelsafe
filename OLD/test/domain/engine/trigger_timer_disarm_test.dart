@@ -330,43 +330,45 @@ void main() {
   // Group 4: Multiple timers fire independently
   // -------------------------------------------------------------------------
   group('TimerDisarmTrigger — multiple timers', () {
-    test('two timers at different durations both fire (callback counted twice)',
-        () {
-      fakeAsync((async) {
-        final engine = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
-        var disarmCount = 0;
-        var t = DateTime.utc(2026, 4, 1, 12, 0, 0, 0);
-        // Advance clock between fires so both pass cooldown.
-        final mgr = TriggerManager(
-          engine: engine,
-          mode: _timerMode(5, extraDurations: [10]),
-          hardwareButtonService: FakeHardwareButtonService(),
-          geofenceService: FakeGeofenceService(),
-          onDisarmRequested: () {
-            disarmCount++;
-            t = t.add(const Duration(seconds: 5));
-          },
-          clock: () => t,
-        );
-        mgr.start();
-        engine.start();
-        async.flushMicrotasks();
+    test(
+      'two timers at different durations both fire (callback counted twice)',
+      () {
+        fakeAsync((async) {
+          final engine = SessionEngine(
+            chainSteps: [holdStep()],
+            random: FixedRandom(),
+          );
+          var disarmCount = 0;
+          var t = DateTime.utc(2026, 4, 1, 12, 0, 0, 0);
+          // Advance clock between fires so both pass cooldown.
+          final mgr = TriggerManager(
+            engine: engine,
+            mode: _timerMode(5, extraDurations: [10]),
+            hardwareButtonService: FakeHardwareButtonService(),
+            geofenceService: FakeGeofenceService(),
+            onDisarmRequested: () {
+              disarmCount++;
+              t = t.add(const Duration(seconds: 5));
+            },
+            clock: () => t,
+          );
+          mgr.start();
+          engine.start();
+          async.flushMicrotasks();
 
-        async.elapse(const Duration(seconds: 6)); // first timer fires
-        async.flushMicrotasks();
-        check(disarmCount).equals(1);
+          async.elapse(const Duration(seconds: 6)); // first timer fires
+          async.flushMicrotasks();
+          check(disarmCount).equals(1);
 
-        async.elapse(const Duration(seconds: 5)); // second timer fires
-        async.flushMicrotasks();
-        check(disarmCount).equals(2);
+          async.elapse(const Duration(seconds: 5)); // second timer fires
+          async.flushMicrotasks();
+          check(disarmCount).equals(2);
 
-        mgr.dispose();
-        engine.dispose();
-      });
-    });
+          mgr.dispose();
+          engine.dispose();
+        });
+      },
+    );
 
     test('two identical timers at same time → cooldown drops second', () {
       fakeAsync((async) {

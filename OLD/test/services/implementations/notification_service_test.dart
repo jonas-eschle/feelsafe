@@ -19,50 +19,47 @@ import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/services/implementations/notification_service.dart';
 
 ReminderTemplate _template() => const ReminderTemplate(
-      id: 't1',
-      name: 'ping',
-      title: 'Hello',
-      body: 'body',
-      confirmationType: ConfirmationType.tapButton,
-      displayStyle: ReminderDisplayStyle.fullScreen,
-      isGlobal: true,
-    );
+  id: 't1',
+  name: 'ping',
+  title: 'Hello',
+  body: 'body',
+  confirmationType: ConfirmationType.tapButton,
+  displayStyle: ReminderDisplayStyle.fullScreen,
+  isGlobal: true,
+);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('NotificationService simulation/guard paths', () {
-    test('showSessionNotification(isSimulation:true) does not init plugin',
-        () async {
-      final s = NotificationService();
-      // Would crash if init were called on Linux. The short-circuit
-      // only calls showToast, which *does* init → we must only verify
-      // the log-only branch when isSimulation triggers a non-init path.
-      // Actually, showSessionNotification(isSimulation:true) still calls
-      // showToast → init. So instead exercise the code and catch the
-      // expected LateInitializationError to assert the short-circuit was
-      // taken (we never reach `_plugin.show` the non-sim branch tries).
-      await check(s.showSessionNotification(
-        title: 'T',
-        body: 'B',
-        isSimulation: true,
-      )).throws<Object>();
-      await s.dispose();
-    });
-
     test(
-        'showDisguisedReminder(isSimulation:true) short-circuits before '
+      'showSessionNotification(isSimulation:true) does not init plugin',
+      () async {
+        final s = NotificationService();
+        // Would crash if init were called on Linux. The short-circuit
+        // only calls showToast, which *does* init → we must only verify
+        // the log-only branch when isSimulation triggers a non-init path.
+        // Actually, showSessionNotification(isSimulation:true) still calls
+        // showToast → init. So instead exercise the code and catch the
+        // expected LateInitializationError to assert the short-circuit was
+        // taken (we never reach `_plugin.show` the non-sim branch tries).
+        await check(
+          s.showSessionNotification(title: 'T', body: 'B', isSimulation: true),
+        ).throws<Object>();
+        await s.dispose();
+      },
+    );
+
+    test('showDisguisedReminder(isSimulation:true) short-circuits before '
         'the native show', () async {
       final s = NotificationService();
-      await check(s.showDisguisedReminder(
-        template: _template(),
-        isSimulation: true,
-      )).throws<Object>();
+      await check(
+        s.showDisguisedReminder(template: _template(), isSimulation: true),
+      ).throws<Object>();
       await s.dispose();
     });
 
-    test(
-        'scheduleNotification(isSimulation:true) returns id without '
+    test('scheduleNotification(isSimulation:true) returns id without '
         'queueing a timer', () async {
       final s = NotificationService();
       final id1 = await s.scheduleNotification(
@@ -98,10 +95,12 @@ void main() {
     });
   });
 
-  test('NotificationServiceProtocol contract — actionTaps is broadcast',
-      () async {
-    final s = NotificationService();
-    check(s.actionTaps.isBroadcast).isTrue();
-    await s.dispose();
-  });
+  test(
+    'NotificationServiceProtocol contract — actionTaps is broadcast',
+    () async {
+      final s = NotificationService();
+      check(s.actionTaps.isBroadcast).isTrue();
+      await s.dispose();
+    },
+  );
 }

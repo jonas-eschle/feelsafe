@@ -13,50 +13,66 @@ import '../widget_test_helpers.dart';
 
 void main() {
   testWidgets('OnboardingScreen renders without throwing', (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        settingsRepositoryProvider
-            .overrideWithValue(FakeSettingsRepository()),
-        userProfileRepositoryProvider
-            .overrideWithValue(FakeUserProfileRepository()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-      ],
-      child: const OnboardingScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+        ],
+        child: const OnboardingScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(OnboardingScreen).evaluate().length).equals(1);
   });
 
   testWidgets('OnboardingScreen shows a PageView', (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        settingsRepositoryProvider
-            .overrideWithValue(FakeSettingsRepository()),
-        userProfileRepositoryProvider
-            .overrideWithValue(FakeUserProfileRepository()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-      ],
-      child: const OnboardingScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+        ],
+        child: const OnboardingScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(PageView).evaluate().length).equals(1);
   });
 
-  testWidgets('OnboardingScreen advances through pages via Next',
-      (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        settingsRepositoryProvider
-            .overrideWithValue(FakeSettingsRepository()),
-        userProfileRepositoryProvider
-            .overrideWithValue(FakeUserProfileRepository()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-      ],
-      child: const OnboardingScreen(),
-    ));
+  testWidgets('OnboardingScreen advances through pages via Next', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+        ],
+        child: const OnboardingScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(FilledButton));
     await tester.pumpAndSettle();
@@ -65,19 +81,22 @@ void main() {
     check(find.byIcon(Icons.lock_open).evaluate().length).equals(1);
   });
 
-  testWidgets('OnboardingScreen Skip button persists settings',
-      (tester) async {
+  testWidgets('OnboardingScreen Skip button persists settings', (tester) async {
     final settingsRepo = FakeSettingsRepository();
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        settingsRepositoryProvider.overrideWithValue(settingsRepo),
-        userProfileRepositoryProvider
-            .overrideWithValue(FakeUserProfileRepository()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-      ],
-      child: const OnboardingScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(settingsRepo),
+          userProfileRepositoryProvider.overrideWithValue(
+            FakeUserProfileRepository(),
+          ),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+        ],
+        child: const OnboardingScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byType(TextButton));
     await tester.pumpAndSettle();
@@ -86,39 +105,40 @@ void main() {
     check(settingsRepo.stored!.isFirstLaunch).isFalse();
   });
 
-  testWidgets(
-    'OnboardingScreen finish button on last page saves profile only '
-    '(contacts captured via the full ContactFormScreen, Q26)',
-    (tester) async {
-      final settingsRepo = FakeSettingsRepository();
-      final profileRepo = FakeUserProfileRepository();
-      final contactsRepo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('OnboardingScreen finish button on last page saves profile only '
+      '(contacts captured via the full ContactFormScreen, Q26)', (
+    tester,
+  ) async {
+    final settingsRepo = FakeSettingsRepository();
+    final profileRepo = FakeUserProfileRepository();
+    final contactsRepo = FakeContactsRepository();
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: [
           settingsRepositoryProvider.overrideWithValue(settingsRepo),
           userProfileRepositoryProvider.overrideWithValue(profileRepo),
           contactsRepositoryProvider.overrideWithValue(contactsRepo),
         ],
         child: const OnboardingScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // Advance to page 2 (profile name + contacts list).
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
-      final fields = find.byType(TextField);
-      // p2 exposes only the profile name TextField; contacts come
-      // from the pushed ContactFormScreen which we don't exercise here.
-      await tester.enterText(fields.first, 'Alice');
-      await tester.pump();
-      // Advance to permissions page.
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
-      // Tap Finish (last-page FilledButton).
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
-      check(profileRepo.stored).isNotNull();
-      check(profileRepo.stored!.name).equals('Alice');
-      check(settingsRepo.stored!.isFirstLaunch).isFalse();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Advance to page 2 (profile name + contacts list).
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    final fields = find.byType(TextField);
+    // p2 exposes only the profile name TextField; contacts come
+    // from the pushed ContactFormScreen which we don't exercise here.
+    await tester.enterText(fields.first, 'Alice');
+    await tester.pump();
+    // Advance to permissions page.
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    // Tap Finish (last-page FilledButton).
+    await tester.tap(find.byType(FilledButton));
+    await tester.pumpAndSettle();
+    check(profileRepo.stored).isNotNull();
+    check(profileRepo.stored!.name).equals('Alice');
+    check(settingsRepo.stored!.isFirstLaunch).isFalse();
+  });
 }

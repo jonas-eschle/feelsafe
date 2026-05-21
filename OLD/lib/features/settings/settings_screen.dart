@@ -105,12 +105,8 @@ class SettingsScreen extends ConsumerWidget {
                   .setAlarmDndOverride(v),
             ),
           ),
-          _LanguagePicker(
-            current: settings?.languageCode ?? 'en',
-          ),
-          _EmergencyNumberTile(
-            current: settings?.emergencyCallNumber ?? '112',
-          ),
+          _LanguagePicker(current: settings?.languageCode ?? 'en'),
+          _EmergencyNumberTile(current: settings?.emergencyCallNumber ?? '112'),
           SwitchListTile(
             title: Text(l.settingsAlarmGradualVolume),
             value: settings?.alarmGradualVolume ?? false,
@@ -190,14 +186,17 @@ class _LanguagePicker extends ConsumerWidget {
     // Build locale items from the supported locales list, mapping each
     // to a stable language-only code (e.g. zh_TW stays zh_TW).
     final items = AppLocalizations.supportedLocales.map((locale) {
-      final code =
-          locale.countryCode != null ? '${locale.languageCode}_${locale.countryCode}' : locale.languageCode;
+      final code = locale.countryCode != null
+          ? '${locale.languageCode}_${locale.countryCode}'
+          : locale.languageCode;
       final label = _localeDisplayNames[code] ?? code;
       return DropdownMenuItem<String>(value: code, child: Text(label));
     }).toList();
 
     // Ensure the current code is represented; fall back to 'en'.
-    final effectiveCurrent = items.any((i) => i.value == current) ? current : 'en';
+    final effectiveCurrent = items.any((i) => i.value == current)
+        ? current
+        : 'en';
 
     return ListTile(
       title: Text(l.settingsLanguagePicker),

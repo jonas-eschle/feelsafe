@@ -659,8 +659,7 @@ void main() {
   });
 
   group('SessionOrchestrator onStepExecutionFailedEvent', () {
-    test('emits a stepExecutionFailedEvent when executeReal throws',
-        () async {
+    test('emits a stepExecutionFailedEvent when executeReal throws', () async {
       final exploding = _ExplodingMessagingService();
       addTearDown(exploding.dispose);
       final harness = _OrchHarness(

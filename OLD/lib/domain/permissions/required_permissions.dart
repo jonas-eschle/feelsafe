@@ -66,7 +66,9 @@ void _accumulateForStep(ChainStep step, Set<RequiredPermission> out) {
       out.add(RequiredPermission.notification);
     case ChainStepType.smsContact:
       final cfg = step.config;
-      final channel = cfg is SmsContactConfig ? cfg.channel : MessageChannel.sms;
+      final channel = cfg is SmsContactConfig
+          ? cfg.channel
+          : MessageChannel.sms;
       switch (channel) {
         case MessageChannel.sms:
           out.add(RequiredPermission.sendSms);
@@ -77,8 +79,9 @@ void _accumulateForStep(ChainStep step, Set<RequiredPermission> out) {
           // Routed via app intent; no system permission.
           break;
       }
-      final includesLocation =
-          cfg is SmsContactConfig ? cfg.includeLocation : true;
+      final includesLocation = cfg is SmsContactConfig
+          ? cfg.includeLocation
+          : true;
       if (includesLocation) {
         out.add(RequiredPermission.location);
       }

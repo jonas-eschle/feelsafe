@@ -19,10 +19,12 @@ void main() {
     'TemplateEditorScreen ConfirmationType dropdown change persists on save',
     (tester) async {
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-        child: const TemplateEditorScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+          child: const TemplateEditorScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       // First dropdown is ConfirmationType.
       final confirm = find.byType(DropdownButtonFormField<ConfirmationType>);
@@ -46,10 +48,12 @@ void main() {
     'TemplateEditorScreen DisplayStyle dropdown change persists on save',
     (tester) async {
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-        child: const TemplateEditorScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+          child: const TemplateEditorScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final display = find.byType(
         DropdownButtonFormField<ReminderDisplayStyle>,
@@ -74,10 +78,12 @@ void main() {
       // Default confirmation type is tapButton; the button-label
       // field is the only conditional field shown.
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-        child: const TemplateEditorScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+          child: const TemplateEditorScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.byType(TextField);
       // Fields: 0=name, 1=title, 2=body, 3=buttonLabel (only
@@ -92,30 +98,31 @@ void main() {
     },
   );
 
-  testWidgets(
-    'TemplateEditorScreen keyword text field persists for tapWord',
-    (tester) async {
-      final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('TemplateEditorScreen keyword text field persists for tapWord', (
+    tester,
+  ) async {
+    final repo = FakeTemplatesRepository();
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
         child: const TemplateEditorScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // Switch to tapWord so the keyword field appears.
-      final confirm = find.byType(DropdownButtonFormField<ConfirmationType>);
-      await tester.tap(confirm);
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Tap word').last);
-      await tester.pumpAndSettle();
-      final fields = find.byType(TextField);
-      // Fields: 0=name, 1=title, 2=body, 3=keyword.
-      await tester.enterText(fields.at(0), 'K');
-      await tester.enterText(fields.at(3), 'keyword');
-      await tester.pump();
-      await tester.tap(find.byIcon(Icons.check));
-      await tester.pumpAndSettle();
-      final saved = await repo.getAll();
-      check(saved.single.keyword).equals('keyword');
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Switch to tapWord so the keyword field appears.
+    final confirm = find.byType(DropdownButtonFormField<ConfirmationType>);
+    await tester.tap(confirm);
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Tap word').last);
+    await tester.pumpAndSettle();
+    final fields = find.byType(TextField);
+    // Fields: 0=name, 1=title, 2=body, 3=keyword.
+    await tester.enterText(fields.at(0), 'K');
+    await tester.enterText(fields.at(3), 'keyword');
+    await tester.pump();
+    await tester.tap(find.byIcon(Icons.check));
+    await tester.pumpAndSettle();
+    final saved = await repo.getAll();
+    check(saved.single.keyword).equals('keyword');
+  });
 }

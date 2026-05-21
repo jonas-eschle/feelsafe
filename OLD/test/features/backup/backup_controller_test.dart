@@ -21,20 +21,23 @@ ProviderContainer _makeContainer({
 }) {
   return ProviderContainer(
     overrides: [
-      modesRepositoryProvider
-          .overrideWithValue(FakeModesRepository(modes)),
-      contactsRepositoryProvider
-          .overrideWithValue(FakeContactsRepository(contacts)),
-      templatesRepositoryProvider
-          .overrideWithValue(FakeTemplatesRepository()),
-      settingsRepositoryProvider
-          .overrideWithValue(FakeSettingsRepository(settings)),
-      userProfileRepositoryProvider
-          .overrideWithValue(FakeUserProfileRepository()),
-      batteryAlertRepositoryProvider
-          .overrideWithValue(FakeBatteryAlertRepository()),
-      sessionLogsRepositoryProvider
-          .overrideWithValue(FakeSessionLogsRepository()),
+      modesRepositoryProvider.overrideWithValue(FakeModesRepository(modes)),
+      contactsRepositoryProvider.overrideWithValue(
+        FakeContactsRepository(contacts),
+      ),
+      templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
+      settingsRepositoryProvider.overrideWithValue(
+        FakeSettingsRepository(settings),
+      ),
+      userProfileRepositoryProvider.overrideWithValue(
+        FakeUserProfileRepository(),
+      ),
+      batteryAlertRepositoryProvider.overrideWithValue(
+        FakeBatteryAlertRepository(),
+      ),
+      sessionLogsRepositoryProvider.overrideWithValue(
+        FakeSessionLogsRepository(),
+      ),
     ],
   );
 }
@@ -95,20 +98,21 @@ void main() {
         modes: [makeMode(id: 'mode-1', name: 'M1')],
       );
       addTearDown(exportContainer.dispose);
-      final exportNotifier =
-          exportContainer.read(backupControllerProvider.notifier);
+      final exportNotifier = exportContainer.read(
+        backupControllerProvider.notifier,
+      );
       await exportContainer.read(backupControllerProvider.future);
       final payload = await exportNotifier.exportAll();
 
       // Import into a fresh container.
       final importContainer = _makeContainer();
       addTearDown(importContainer.dispose);
-      final importNotifier =
-          importContainer.read(backupControllerProvider.notifier);
+      final importNotifier = importContainer.read(
+        backupControllerProvider.notifier,
+      );
       await importContainer.read(backupControllerProvider.future);
       await importNotifier.importAll(payload);
-      final repo =
-          importContainer.read(modesRepositoryProvider);
+      final repo = importContainer.read(modesRepositoryProvider);
       final modes = await repo.getAll();
       check(modes.length).equals(1);
       check(modes.single.id).equals('mode-1');
@@ -127,16 +131,17 @@ void main() {
     test('wrong PIN throws BackupAuthenticationError', () async {
       final exportContainer = _makeContainer();
       addTearDown(exportContainer.dispose);
-      final exportNotifier =
-          exportContainer.read(backupControllerProvider.notifier);
+      final exportNotifier = exportContainer.read(
+        backupControllerProvider.notifier,
+      );
       await exportContainer.read(backupControllerProvider.future);
-      final payload =
-          await exportNotifier.exportAll(pin: 'right-pin');
+      final payload = await exportNotifier.exportAll(pin: 'right-pin');
 
       final importContainer = _makeContainer();
       addTearDown(importContainer.dispose);
-      final importNotifier =
-          importContainer.read(backupControllerProvider.notifier);
+      final importNotifier = importContainer.read(
+        backupControllerProvider.notifier,
+      );
       await importContainer.read(backupControllerProvider.future);
       await check(
         importNotifier.importAll(payload, pin: 'wrong-pin'),

@@ -34,10 +34,9 @@ final class CountdownWarningStrategy extends EventStrategy {
   SimulationDescription simulationDescription(
     ChainStep step,
     EventServices services,
-  ) => SimulationDescription(
-    'simCountdownWarning',
-    {'seconds': step.durationSeconds},
-  );
+  ) => SimulationDescription('simCountdownWarning', {
+    'seconds': step.durationSeconds,
+  });
 
   /// Resolves the step's config.
   ///

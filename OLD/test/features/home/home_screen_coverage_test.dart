@@ -63,16 +63,30 @@ Widget _host(Widget child, {List<Override> overrides = const []}) {
     initialLocation: '/',
     routes: [
       GoRoute(path: '/', builder: (c, s) => child),
-      GoRoute(path: '/settings', builder: (c, s) =>
-          const Scaffold(key: Key('/settings'), body: SizedBox())),
-      GoRoute(path: '/session', builder: (c, s) =>
-          const Scaffold(key: Key('/session'), body: SizedBox())),
-      GoRoute(path: '/contacts', builder: (c, s) =>
-          const Scaffold(key: Key('/contacts'), body: SizedBox())),
-      GoRoute(path: '/modes', builder: (c, s) =>
-          const Scaffold(key: Key('/modes'), body: SizedBox())),
-      GoRoute(path: '/past-events', builder: (c, s) =>
-          const Scaffold(key: Key('/past-events'), body: SizedBox())),
+      GoRoute(
+        path: '/settings',
+        builder: (c, s) =>
+            const Scaffold(key: Key('/settings'), body: SizedBox()),
+      ),
+      GoRoute(
+        path: '/session',
+        builder: (c, s) =>
+            const Scaffold(key: Key('/session'), body: SizedBox()),
+      ),
+      GoRoute(
+        path: '/contacts',
+        builder: (c, s) =>
+            const Scaffold(key: Key('/contacts'), body: SizedBox()),
+      ),
+      GoRoute(
+        path: '/modes',
+        builder: (c, s) => const Scaffold(key: Key('/modes'), body: SizedBox()),
+      ),
+      GoRoute(
+        path: '/past-events',
+        builder: (c, s) =>
+            const Scaffold(key: Key('/past-events'), body: SizedBox()),
+      ),
     ],
   );
   return ProviderScope(
@@ -86,55 +100,72 @@ Widget _host(Widget child, {List<Override> overrides = const []}) {
 }
 
 void main() {
-  testWidgets('HomeScreen settings IconButton pushes /settings',
-      (tester) async {
-    await tester.pumpWidget(_host(
-      const HomeScreen(),
-      overrides: [
-        modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-        settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-      ],
-    ));
+  testWidgets('HomeScreen settings IconButton pushes /settings', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        const HomeScreen(),
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+        ],
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.settings));
     await tester.pumpAndSettle();
     check(find.byKey(const Key('/settings')).evaluate().length).equals(1);
   });
 
-  testWidgets('HomeScreen error state renders the error text',
-      (tester) async {
-    await tester.pumpWidget(_host(
-      const HomeScreen(),
-      overrides: [
-        modesRepositoryProvider.overrideWithValue(_ThrowingModes()),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-        settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-      ],
-    ));
+  testWidgets('HomeScreen error state renders the error text', (tester) async {
+    await tester.pumpWidget(
+      _host(
+        const HomeScreen(),
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(_ThrowingModes()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+        ],
+      ),
+    );
     await tester.pumpAndSettle();
-    check(find.textContaining('modes-boom').evaluate().length)
-        .isGreaterOrEqual(1);
+    check(
+      find.textContaining('modes-boom').evaluate().length,
+    ).isGreaterOrEqual(1);
   });
 
-  testWidgets('HomeScreen active-session card onTap navigates to /session',
-      (tester) async {
-    await tester.pumpWidget(_host(
-      const HomeScreen(),
-      overrides: [
-        modesRepositoryProvider.overrideWithValue(
-          FakeModesRepository([makeMode(id: 'm')]),
-        ),
-        contactsRepositoryProvider
-            .overrideWithValue(FakeContactsRepository()),
-        settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-        sessionControllerProvider.overrideWith(
-          () => _FakeSessionController(_activeSession()),
-        ),
-      ],
-    ));
+  testWidgets('HomeScreen active-session card onTap navigates to /session', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _host(
+        const HomeScreen(),
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(
+            FakeModesRepository([makeMode(id: 'm')]),
+          ),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
+          sessionControllerProvider.overrideWith(
+            () => _FakeSessionController(_activeSession()),
+          ),
+        ],
+      ),
+    );
     await tester.pumpAndSettle();
     // Tap the Card's ListTile (active session). The mode-icon
     // fallback also uses `Icons.shield`, so tap the FIRST shield
@@ -144,32 +175,33 @@ void main() {
     check(find.byKey(const Key('/session')).evaluate().length).equals(1);
   });
 
-  testWidgets(
-    'HomeScreen Resume button navigates to /session',
-    (tester) async {
-      await tester.pumpWidget(_host(
+  testWidgets('HomeScreen Resume button navigates to /session', (tester) async {
+    await tester.pumpWidget(
+      _host(
         const HomeScreen(),
         overrides: [
           modesRepositoryProvider.overrideWithValue(
             FakeModesRepository([makeMode(id: 'm')]),
           ),
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
           sessionControllerProvider.overrideWith(
             () => _FakeSessionController(_activeSession()),
           ),
         ],
-      ));
-      await tester.pumpAndSettle();
-      // The Resume button is the FilledButton inside the Card's
-      // trailing slot; tapping it pushes /session.
-      await tester.tap(find.widgetWithText(FilledButton, 'Resume'));
-      await tester.pumpAndSettle();
-      check(find.byKey(const Key('/session')).evaluate().length).equals(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // The Resume button is the FilledButton inside the Card's
+    // trailing slot; tapping it pushes /session.
+    await tester.tap(find.widgetWithText(FilledButton, 'Resume'));
+    await tester.pumpAndSettle();
+    check(find.byKey(const Key('/session')).evaluate().length).equals(1);
+  });
 
   testWidgets(
     'HomeScreen Start button shows confirmation; confirm fires startSession',
@@ -178,24 +210,26 @@ void main() {
       // button on the selected-mode card opens an AlertDialog. Only
       // confirming the dialog fires startSession + navigates.
       final ctrl = _FakeSessionController(null);
-      await tester.pumpWidget(_host(
-        const HomeScreen(),
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(
-            FakeModesRepository([makeMode(id: 'alpha')]),
-          ),
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
-          sessionControllerProvider.overrideWith(() => ctrl),
-        ],
-      ));
+      await tester.pumpWidget(
+        _host(
+          const HomeScreen(),
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(
+              FakeModesRepository([makeMode(id: 'alpha')]),
+            ),
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+            sessionControllerProvider.overrideWith(() => ctrl),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       // Tap the primary Start button on the selected-mode card.
-      await tester.tap(
-        find.widgetWithIcon(FilledButton, Icons.play_arrow),
-      );
+      await tester.tap(find.widgetWithIcon(FilledButton, Icons.play_arrow));
       await tester.pumpAndSettle();
       // Confirmation dialog must be visible.
       final l = AppLocalizations.of(
@@ -223,21 +257,24 @@ void main() {
       // buttons below the chain preview start the session.
       final ctrl = _FakeSessionController(null);
       final settings = FakeSettingsRepository();
-      await tester.pumpWidget(_host(
-        const HomeScreen(),
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(
-            FakeModesRepository([
-              makeMode(id: 'one', name: 'Walk'),
-              makeMode(id: 'two', name: 'Date'),
-            ]),
-          ),
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider.overrideWithValue(settings),
-          sessionControllerProvider.overrideWith(() => ctrl),
-        ],
-      ));
+      await tester.pumpWidget(
+        _host(
+          const HomeScreen(),
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(
+              FakeModesRepository([
+                makeMode(id: 'one', name: 'Walk'),
+                makeMode(id: 'two', name: 'Date'),
+              ]),
+            ),
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+            settingsRepositoryProvider.overrideWithValue(settings),
+            sessionControllerProvider.overrideWith(() => ctrl),
+          ],
+        ),
+      );
       await tester.pumpAndSettle();
       // Tap the Date tile (Icons.favorite per _iconForModeName).
       await tester.tap(find.byIcon(Icons.favorite));
@@ -248,30 +285,31 @@ void main() {
     },
   );
 
-  testWidgets(
-    'HomeScreen OutlinedButton shortcut navigates',
-    (tester) async {
-      await tester.pumpWidget(_host(
+  testWidgets('HomeScreen OutlinedButton shortcut navigates', (tester) async {
+    await tester.pumpWidget(
+      _host(
         const HomeScreen(),
         overrides: [
           modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository(),
+          ),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
         ],
-      ));
-      await tester.pumpAndSettle();
-      // Tap the first OutlinedButton shortcut (Contacts).
-      final contactsBtn = find.descendant(
-        of: find.byType(HomeScreen),
-        matching: find.byIcon(Icons.contacts),
-      );
-      await tester.tap(contactsBtn);
-      await tester.pumpAndSettle();
-      check(find.byKey(const Key('/contacts')).evaluate().length).equals(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Tap the first OutlinedButton shortcut (Contacts).
+    final contactsBtn = find.descendant(
+      of: find.byType(HomeScreen),
+      matching: find.byIcon(Icons.contacts),
+    );
+    await tester.tap(contactsBtn);
+    await tester.pumpAndSettle();
+    check(find.byKey(const Key('/contacts')).evaluate().length).equals(1);
+  });
 
   // Touch the RouteNames import so the analyzer doesn't flag it.
   test('RouteNames constants exist', () {

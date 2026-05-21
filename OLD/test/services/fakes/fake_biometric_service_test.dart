@@ -94,7 +94,9 @@ void main() {
       // Update
       s.nextResult = BiometricResult.cancelled;
       // Assert — new result takes effect immediately.
-      check(await s.authenticate(reason: 'r2')).equals(BiometricResult.cancelled);
+      check(
+        await s.authenticate(reason: 'r2'),
+      ).equals(BiometricResult.cancelled);
     });
   });
 }

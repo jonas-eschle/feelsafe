@@ -21,15 +21,17 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const batteryChannel = MethodChannel('dev.fluttercommunity.plus/battery');
-  const chargingChannel =
-      EventChannel('dev.fluttercommunity.plus/charging');
+  const chargingChannel = EventChannel('dev.fluttercommunity.plus/charging');
 
   group('BatteryMonitorService (mocked plugin)', () {
     test('startMonitoring seeds last level and stays active', () async {
-      installMethodChannelMock(batteryChannel, responder: (call) {
-        if (call.method == 'getBatteryLevel') return 50;
-        return null;
-      });
+      installMethodChannelMock(
+        batteryChannel,
+        responder: (call) {
+          if (call.method == 'getBatteryLevel') return 50;
+          return null;
+        },
+      );
       installEventChannelMock(chargingChannel);
       final s = BatteryMonitorService();
       await s.startMonitoring(thresholdPercent: 20);
@@ -38,39 +40,47 @@ void main() {
       check(s.isActive).isFalse();
     });
 
-    test('event-driven state change with crossing fires onLowBattery',
-        () async {
-      int level = 50;
-      installMethodChannelMock(batteryChannel, responder: (call) {
-        if (call.method == 'getBatteryLevel') return level;
-        return null;
-      });
-      final eventMock = installEventChannelMock(chargingChannel);
-      final s = BatteryMonitorService();
-      final events = <int>[];
-      final sub = s.onLowBattery.listen(events.add);
-      await s.startMonitoring(thresholdPercent: 25);
-      check(s.isActive).isTrue();
-      // Simulate a battery-state change while level drops below 25.
-      level = 10;
-      await eventMock.push('discharging');
-      // Give the listener a tick to see the emitted value.
-      await Future<void>.delayed(const Duration(milliseconds: 5));
-      check(events).deepEquals([10]);
-      // Idempotency: a second state change does not re-fire (latch).
-      await eventMock.push('discharging');
-      await Future<void>.delayed(const Duration(milliseconds: 5));
-      check(events).deepEquals([10]);
-      await sub.cancel();
-      await s.stopMonitoring();
-    });
+    test(
+      'event-driven state change with crossing fires onLowBattery',
+      () async {
+        int level = 50;
+        installMethodChannelMock(
+          batteryChannel,
+          responder: (call) {
+            if (call.method == 'getBatteryLevel') return level;
+            return null;
+          },
+        );
+        final eventMock = installEventChannelMock(chargingChannel);
+        final s = BatteryMonitorService();
+        final events = <int>[];
+        final sub = s.onLowBattery.listen(events.add);
+        await s.startMonitoring(thresholdPercent: 25);
+        check(s.isActive).isTrue();
+        // Simulate a battery-state change while level drops below 25.
+        level = 10;
+        await eventMock.push('discharging');
+        // Give the listener a tick to see the emitted value.
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+        check(events).deepEquals([10]);
+        // Idempotency: a second state change does not re-fire (latch).
+        await eventMock.push('discharging');
+        await Future<void>.delayed(const Duration(milliseconds: 5));
+        check(events).deepEquals([10]);
+        await sub.cancel();
+        await s.stopMonitoring();
+      },
+    );
 
     test('non-crossing change does not fire', () async {
       int level = 80;
-      installMethodChannelMock(batteryChannel, responder: (call) {
-        if (call.method == 'getBatteryLevel') return level;
-        return null;
-      });
+      installMethodChannelMock(
+        batteryChannel,
+        responder: (call) {
+          if (call.method == 'getBatteryLevel') return level;
+          return null;
+        },
+      );
       final eventMock = installEventChannelMock(chargingChannel);
       final s = BatteryMonitorService();
       final events = <int>[];
@@ -86,16 +96,19 @@ void main() {
 
     test('PlatformException in _safeBatteryLevel is swallowed', () async {
       bool errored = false;
-      installMethodChannelMock(batteryChannel, responder: (call) {
-        if (call.method == 'getBatteryLevel') {
-          if (!errored) {
-            errored = true;
-            throw PlatformException(code: 'ERR');
+      installMethodChannelMock(
+        batteryChannel,
+        responder: (call) {
+          if (call.method == 'getBatteryLevel') {
+            if (!errored) {
+              errored = true;
+              throw PlatformException(code: 'ERR');
+            }
+            return 15;
           }
-          return 15;
-        }
-        return null;
-      });
+          return null;
+        },
+      );
       final eventMock = installEventChannelMock(chargingChannel);
       final s = BatteryMonitorService();
       await s.startMonitoring(thresholdPercent: 20);
@@ -113,12 +126,15 @@ void main() {
     });
 
     test('null battery level skips sampling', () async {
-      installMethodChannelMock(batteryChannel, responder: (call) {
-        if (call.method == 'getBatteryLevel') {
-          throw PlatformException(code: 'ERR');
-        }
-        return null;
-      });
+      installMethodChannelMock(
+        batteryChannel,
+        responder: (call) {
+          if (call.method == 'getBatteryLevel') {
+            throw PlatformException(code: 'ERR');
+          }
+          return null;
+        },
+      );
       final eventMock = installEventChannelMock(chargingChannel);
       final s = BatteryMonitorService();
       final events = <int>[];

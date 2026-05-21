@@ -51,10 +51,7 @@ final class LoudAlarmStrategy extends EventStrategy {
     EventServices services,
   ) {
     final config = _resolveConfig(step, services);
-    return SimulationDescription(
-      'simLoudAlarm',
-      {'flash': config.flashScreen},
-    );
+    return SimulationDescription('simLoudAlarm', {'flash': config.flashScreen});
   }
 
   /// Resolves the step config.

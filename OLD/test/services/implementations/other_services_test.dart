@@ -43,32 +43,29 @@ void main() {
 
     test('playVoiceRecording isSimulation is a no-op', () async {
       final s = AudioService();
-      await s.playVoiceRecording(
-        assetPath: 'v.mp3',
-        isSimulation: true,
-      );
+      await s.playVoiceRecording(assetPath: 'v.mp3', isSimulation: true);
     });
 
-    test('stopAlarm on a service with no player instantiated is safe',
-        () async {
-      final s = AudioService();
-      await s.stopAlarm();
-      await s.stopRingtone();
-      await s.stopVoiceRecording();
-    });
+    test(
+      'stopAlarm on a service with no player instantiated is safe',
+      () async {
+        final s = AudioService();
+        await s.stopAlarm();
+        await s.stopRingtone();
+        await s.stopVoiceRecording();
+      },
+    );
   });
 
   group('VibrationService isSimulation', () {
-    test('every pattern method is a no-op when isSimulation=true',
-        () async {
+    test('every pattern method is a no-op when isSimulation=true', () async {
       final s = VibrationService();
       await s.alarmPattern(isSimulation: true);
       await s.warningPattern(isSimulation: true);
       await s.fakeCallPattern(isSimulation: true);
     });
 
-    test('real alarmPattern completes without throwing on host',
-        () async {
+    test('real alarmPattern completes without throwing on host', () async {
       // Vibration.hasVibrator returns false on non-mobile hosts, so the
       // guarded `Vibration.vibrate` is skipped and the method completes.
       final s = VibrationService();
@@ -93,14 +90,15 @@ void main() {
       check(s.history).isEmpty();
     });
 
-    test('requestPermission surfaces MissingPluginException in tests',
-        () async {
-      final s = LocationService();
-      await check(s.requestPermission()).throws<Object>();
-    });
+    test(
+      'requestPermission surfaces MissingPluginException in tests',
+      () async {
+        final s = LocationService();
+        await check(s.requestPermission()).throws<Object>();
+      },
+    );
 
-    test('startTracking/stopTracking are safe to call (lazy stream)',
-        () async {
+    test('startTracking/stopTracking are safe to call (lazy stream)', () async {
       final s = LocationService();
       // The position stream is lazy: subscribing does not trigger the
       // native plugin call. Stream errors are logged via onError.
@@ -122,15 +120,13 @@ void main() {
       s.dispose();
     });
 
-    test('removeGeofence on a never-registered service is safe',
-        () async {
+    test('removeGeofence on a never-registered service is safe', () async {
       final s = GeofenceService();
       await s.removeGeofence();
       await s.dispose();
     });
 
-    test('registerGeofence sets internal center without throwing',
-        () async {
+    test('registerGeofence sets internal center without throwing', () async {
       // The Position stream is subscribed lazily; the call returns
       // immediately even if the native plugin is missing.
       final s = GeofenceService();
@@ -147,14 +143,15 @@ void main() {
   group('BatteryMonitorService', () {
     test('threshold out of range throws ArgumentError', () async {
       final s = BatteryMonitorService();
-      await check(s.startMonitoring(thresholdPercent: -1))
-          .throws<ArgumentError>();
-      await check(s.startMonitoring(thresholdPercent: 101))
-          .throws<ArgumentError>();
+      await check(
+        s.startMonitoring(thresholdPercent: -1),
+      ).throws<ArgumentError>();
+      await check(
+        s.startMonitoring(thresholdPercent: 101),
+      ).throws<ArgumentError>();
     });
 
-    test('isActive defaults to false and onLowBattery is broadcast',
-        () async {
+    test('isActive defaults to false and onLowBattery is broadcast', () async {
       final s = BatteryMonitorService();
       check(s.isActive).isFalse();
       check(s.onLowBattery.isBroadcast).isTrue();
@@ -167,8 +164,9 @@ void main() {
       final s = BatteryMonitorService();
       // _safeBatteryLevel only catches PlatformException, not
       // MissingPluginException; that surfaces on the test host.
-      await check(s.startMonitoring(thresholdPercent: 20))
-          .throws<MissingPluginException>();
+      await check(
+        s.startMonitoring(thresholdPercent: 20),
+      ).throws<MissingPluginException>();
       // isActive was set before the failing call, so leave the
       // service by stopping it cleanly.
       await s.stopMonitoring();
@@ -183,49 +181,53 @@ void main() {
   });
 
   group('WakelockService', () {
-    test('enable/disable/isEnabled surface MissingPluginException in tests',
-        () async {
-      final s = WakelockService();
-      await check(s.enable()).throws<Object>();
-      await check(s.disable()).throws<Object>();
-      await check(s.isEnabled).throws<Object>();
-    });
+    test(
+      'enable/disable/isEnabled surface MissingPluginException in tests',
+      () async {
+        final s = WakelockService();
+        await check(s.enable()).throws<Object>();
+        await check(s.disable()).throws<Object>();
+        await check(s.isEnabled).throws<Object>();
+      },
+    );
   });
 
   group('HomeWidgetService', () {
-    test('initiallyLaunchedUri surfaces MissingPluginException in tests',
-        () async {
+    test(
+      'initiallyLaunchedUri surfaces MissingPluginException in tests',
+      () async {
+        final s = HomeWidgetService();
+        await check(s.initiallyLaunchedUri()).throws<Object>();
+      },
+    );
+
+    test('updateStatus surfaces MissingPluginException in tests', () async {
       final s = HomeWidgetService();
-      await check(s.initiallyLaunchedUri()).throws<Object>();
+      await check(
+        s.updateStatus(status: 'Idle', modeName: 'Walk', isRunning: false),
+      ).throws<Object>();
     });
 
-    test('updateStatus surfaces MissingPluginException in tests',
-        () async {
-      final s = HomeWidgetService();
-      await check(s.updateStatus(
-        status: 'Idle',
-        modeName: 'Walk',
-        isRunning: false,
-      )).throws<Object>();
-    });
-
-    test('writeLastMarker surfaces MissingPluginException in tests',
-        () async {
+    test('writeLastMarker surfaces MissingPluginException in tests', () async {
       final s = HomeWidgetService();
       await check(s.writeLastMarker('m')).throws<Object>();
     });
 
-    test('consumePendingMarker surfaces MissingPluginException in tests',
-        () async {
-      final s = HomeWidgetService();
-      await check(s.consumePendingMarker()).throws<Object>();
-    });
+    test(
+      'consumePendingMarker surfaces MissingPluginException in tests',
+      () async {
+        final s = HomeWidgetService();
+        await check(s.consumePendingMarker()).throws<Object>();
+      },
+    );
 
-    test('registerInteractivity surfaces MissingPluginException in tests',
-        () async {
-      final s = HomeWidgetService();
-      await check(s.registerInteractivity(() {})).throws<Object>();
-    });
+    test(
+      'registerInteractivity surfaces MissingPluginException in tests',
+      () async {
+        final s = HomeWidgetService();
+        await check(s.registerInteractivity(() {})).throws<Object>();
+      },
+    );
   });
 
   // Sanity: every service exposes a default constructor with no
@@ -243,8 +245,7 @@ void main() {
     check(services.length).equals(7);
   });
 
-  test('LocationPoint history cap is observed via getLastLocationPoint',
-      () {
+  test('LocationPoint history cap is observed via getLastLocationPoint', () {
     // Structural test — we can't push positions without a plugin, but
     // verifying the history accessors is easy.
     final s = LocationService();

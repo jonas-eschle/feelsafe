@@ -24,7 +24,7 @@ final class PhoneService implements PhoneServiceProtocol {
   /// [platform] defaults to the const production [PlatformInfo()];
   /// tests inject a [FakePlatformInfo] to exercise the Android path.
   PhoneService({PlatformInfo platform = const PlatformInfo()})
-      : _platform = platform;
+    : _platform = platform;
 
   /// Method channel name; Phase 10 wires the native Android side.
   static const MethodChannel _channel = MethodChannel(

@@ -104,11 +104,7 @@ abstract final class PinHasher {
 
   /// Derives an Argon2id digest from [pin] using the given [salt]
   /// and the D-SEC-10 cost parameters.
-  static Uint8List _derive(
-    String pin,
-    Uint8List salt, {
-    int? hashLen,
-  }) {
+  static Uint8List _derive(String pin, Uint8List salt, {int? hashLen}) {
     final parameters = Argon2Parameters(
       Argon2Parameters.ARGON2_id,
       salt,

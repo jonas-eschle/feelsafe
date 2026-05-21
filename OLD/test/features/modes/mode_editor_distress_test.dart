@@ -26,7 +26,9 @@ void main() {
       return hostScreenPushed(
         overrides: [
           modesRepositoryProvider.overrideWithValue(r),
-          settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(),
+          ),
         ],
         initialQuery: initialQuery,
         child: const ModeEditorScreen(isDistress: true),
@@ -39,8 +41,9 @@ void main() {
       check(find.byType(TextField).evaluate()).isNotEmpty();
     });
 
-    testWidgets('does not render check-in type dropdown for distress modes',
-        (tester) async {
+    testWidgets('does not render check-in type dropdown for distress modes', (
+      tester,
+    ) async {
       await tester.pumpWidget(buildDistressEditor());
       await tester.pumpAndSettle();
       // The check-in DropdownButtonFormField is not shown in distress mode.
@@ -75,10 +78,9 @@ void main() {
     testWidgets('hydrates name from existing distress mode', (tester) async {
       final dm = makeDistressMode(id: 'dm1', name: 'My Distress');
       final repo = FakeModesRepository([dm]);
-      await tester.pumpWidget(buildDistressEditor(
-        repo: repo,
-        initialQuery: 'id=dm1',
-      ));
+      await tester.pumpWidget(
+        buildDistressEditor(repo: repo, initialQuery: 'id=dm1'),
+      );
       await tester.pumpAndSettle();
 
       final field = tester.widget<TextField>(find.byType(TextField).first);
@@ -113,16 +115,21 @@ void main() {
   });
 
   group('ModeEditorScreen (distress triggers section)', () {
-    testWidgets('distress triggers section exists for regular modes',
-        (tester) async {
+    testWidgets('distress triggers section exists for regular modes', (
+      tester,
+    ) async {
       final repo = FakeModesRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(repo),
-          settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-        ],
-        child: const ModeEditorScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(repo),
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+          ],
+          child: const ModeEditorScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // The screen renders without errors — distress triggers section
@@ -132,14 +139,20 @@ void main() {
   });
 
   group('ModeEditorScreen (tracking section)', () {
-    testWidgets('tracking section is hidden for distress modes', (tester) async {
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-          settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-        ],
-        child: const ModeEditorScreen(isDistress: true),
-      ));
+    testWidgets('tracking section is hidden for distress modes', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+          ],
+          child: const ModeEditorScreen(isDistress: true),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Scroll through all content to confirm no tracking header appears.

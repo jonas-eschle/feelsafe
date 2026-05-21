@@ -12,15 +12,19 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('ReminderTemplatesScreen renders the TemplatesScreen proxy',
-      (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: [
-        templatesRepositoryProvider
-            .overrideWithValue(FakeTemplatesRepository()),
-      ],
-      child: const ReminderTemplatesScreen(),
-    ));
+  testWidgets('ReminderTemplatesScreen renders the TemplatesScreen proxy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreen(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(
+            FakeTemplatesRepository(),
+          ),
+        ],
+        child: const ReminderTemplatesScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(ReminderTemplatesScreen).evaluate().length).equals(1);
     check(find.byType(TemplatesScreen).evaluate().length).equals(1);

@@ -86,8 +86,7 @@ void main() {
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
-        check((e.state as EngineEnded).reason)
-            .equals(EndReason.hardwarePanic);
+        check((e.state as EngineEnded).reason).equals(EndReason.hardwarePanic);
         check(events).contains(ChainEvent.distressCompleted);
         e.dispose();
       });

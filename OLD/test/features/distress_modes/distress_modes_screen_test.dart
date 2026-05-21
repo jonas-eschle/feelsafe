@@ -19,11 +19,10 @@ import '../../helpers/test_helpers.dart';
 
 void main() {
   group('DistressModesScreen', () {
-    Widget buildScreen(FakeModesRepository repo) =>
-        hostScreenWithRouter(
-          child: const DistressModesScreen(),
-          overrides: [modesRepositoryProvider.overrideWithValue(repo)],
-        );
+    Widget buildScreen(FakeModesRepository repo) => hostScreenWithRouter(
+      child: const DistressModesScreen(),
+      overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+    );
 
     testWidgets('shows loading indicator while data loads', (tester) async {
       // Just use an empty repo — the loading spinner appears briefly.
@@ -33,8 +32,9 @@ void main() {
       await tester.pump();
     });
 
-    testWidgets('shows empty message when no distress modes exist',
-        (tester) async {
+    testWidgets('shows empty message when no distress modes exist', (
+      tester,
+    ) async {
       final repo = FakeModesRepository([makeMode(id: 'r', name: 'Regular')]);
       await tester.pumpWidget(buildScreen(repo));
       await tester.pumpAndSettle();
@@ -55,54 +55,57 @@ void main() {
     });
 
     testWidgets(
-        'delete button is disabled when only one distress mode remains',
-        (tester) async {
-      final repo = FakeModesRepository([
-        makeDistressMode(id: 'd1', name: 'Only'),
-      ]);
-      await tester.pumpWidget(buildScreen(repo));
-      await tester.pumpAndSettle();
+      'delete button is disabled when only one distress mode remains',
+      (tester) async {
+        final repo = FakeModesRepository([
+          makeDistressMode(id: 'd1', name: 'Only'),
+        ]);
+        await tester.pumpWidget(buildScreen(repo));
+        await tester.pumpAndSettle();
 
-      // The IconButton that wraps the delete icon should have null onPressed.
-      final iconButtons = find.byType(IconButton);
-      check(iconButtons.evaluate()).isNotEmpty();
-      // Find the one with the delete icon.
-      final deleteBtn = tester.widgetList<IconButton>(iconButtons).firstWhere(
-        (btn) {
-          final icon = btn.icon;
-          return icon is Icon && icon.icon == Icons.delete_outline;
-        },
-        orElse: () => throw StateError('no delete button found'),
-      );
-      check(deleteBtn.onPressed).isNull();
-    });
-
-    testWidgets(
-        'delete button is enabled when more than one distress mode exists',
-        (tester) async {
-      final repo = FakeModesRepository([
-        makeDistressMode(id: 'd1', name: 'Alpha'),
-        makeDistressMode(id: 'd2', name: 'Beta'),
-      ]);
-      await tester.pumpWidget(buildScreen(repo));
-      await tester.pumpAndSettle();
-
-      // Both delete buttons should be enabled.
-      final deleteBtns = tester
-          .widgetList<IconButton>(find.byType(IconButton))
-          .where((btn) {
+        // The IconButton that wraps the delete icon should have null onPressed.
+        final iconButtons = find.byType(IconButton);
+        check(iconButtons.evaluate()).isNotEmpty();
+        // Find the one with the delete icon.
+        final deleteBtn = tester.widgetList<IconButton>(iconButtons).firstWhere(
+          (btn) {
             final icon = btn.icon;
             return icon is Icon && icon.icon == Icons.delete_outline;
-          })
-          .toList();
-      check(deleteBtns.length).equals(2);
-      for (final btn in deleteBtns) {
-        check(btn.onPressed).isNotNull();
-      }
-    });
+          },
+          orElse: () => throw StateError('no delete button found'),
+        );
+        check(deleteBtn.onPressed).isNull();
+      },
+    );
 
-    testWidgets('tapping delete removes the item from the list',
-        (tester) async {
+    testWidgets(
+      'delete button is enabled when more than one distress mode exists',
+      (tester) async {
+        final repo = FakeModesRepository([
+          makeDistressMode(id: 'd1', name: 'Alpha'),
+          makeDistressMode(id: 'd2', name: 'Beta'),
+        ]);
+        await tester.pumpWidget(buildScreen(repo));
+        await tester.pumpAndSettle();
+
+        // Both delete buttons should be enabled.
+        final deleteBtns = tester
+            .widgetList<IconButton>(find.byType(IconButton))
+            .where((btn) {
+              final icon = btn.icon;
+              return icon is Icon && icon.icon == Icons.delete_outline;
+            })
+            .toList();
+        check(deleteBtns.length).equals(2);
+        for (final btn in deleteBtns) {
+          check(btn.onPressed).isNotNull();
+        }
+      },
+    );
+
+    testWidgets('tapping delete removes the item from the list', (
+      tester,
+    ) async {
       final repo = FakeModesRepository([
         makeDistressMode(id: 'd1', name: 'Alpha'),
         makeDistressMode(id: 'd2', name: 'Beta'),
@@ -145,6 +148,5 @@ void main() {
 
 class _ThrowingController extends DistressModesController {
   @override
-  Future<List<SessionMode>> build() async =>
-      throw Exception('test error');
+  Future<List<SessionMode>> build() async => throw Exception('test error');
 }

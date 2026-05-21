@@ -35,9 +35,7 @@ void main() {
       check(
         s.calls.any((c) => c.startsWith('showDisarmTriggerNotification:')),
       ).isTrue();
-      check(
-        s.calls.any((c) => c.contains('Disarm trigger fired')),
-      ).isTrue();
+      check(s.calls.any((c) => c.contains('Disarm trigger fired'))).isTrue();
     });
 
     test('multiple disarm-trigger calls are each recorded', () async {
@@ -98,32 +96,31 @@ void main() {
       await Future<void>.delayed(Duration.zero);
 
       // Assert — both delivered in order.
-      check(received).deepEquals([
-        'disarmTriggerEnd',
-        'disarmTriggerContinue',
-      ]);
+      check(received).deepEquals(['disarmTriggerEnd', 'disarmTriggerContinue']);
     });
 
-    test('disarmTriggerEnd action ID is a broadcast — multiple listeners',
-        () async {
-      // Arrange
-      final s = FakeNotificationService();
-      addTearDown(s.dispose);
-      final a = <String>[];
-      final b = <String>[];
-      final sa = s.actionTaps.listen(a.add);
-      final sb = s.actionTaps.listen(b.add);
-      addTearDown(sa.cancel);
-      addTearDown(sb.cancel);
+    test(
+      'disarmTriggerEnd action ID is a broadcast — multiple listeners',
+      () async {
+        // Arrange
+        final s = FakeNotificationService();
+        addTearDown(s.dispose);
+        final a = <String>[];
+        final b = <String>[];
+        final sa = s.actionTaps.listen(a.add);
+        final sb = s.actionTaps.listen(b.add);
+        addTearDown(sa.cancel);
+        addTearDown(sb.cancel);
 
-      // Act
-      s.injectTap('disarmTriggerEnd');
-      await Future<void>.delayed(Duration.zero);
+        // Act
+        s.injectTap('disarmTriggerEnd');
+        await Future<void>.delayed(Duration.zero);
 
-      // Assert — both listeners received the event.
-      check(a).deepEquals(['disarmTriggerEnd']);
-      check(b).deepEquals(['disarmTriggerEnd']);
-    });
+        // Assert — both listeners received the event.
+        check(a).deepEquals(['disarmTriggerEnd']);
+        check(b).deepEquals(['disarmTriggerEnd']);
+      },
+    );
   });
 
   group('SimulationNotificationService – showDisarmTriggerNotification', () {

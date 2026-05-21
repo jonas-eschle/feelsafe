@@ -18,16 +18,19 @@ void main() {
       check(categoryOf(ChainStepType.holdButton)).equals(StepCategory.disarm);
     });
     test('hardwareButton → disarm', () {
-      check(categoryOf(ChainStepType.hardwareButton))
-          .equals(StepCategory.disarm);
+      check(
+        categoryOf(ChainStepType.hardwareButton),
+      ).equals(StepCategory.disarm);
     });
     test('disguisedReminder → reminder', () {
-      check(categoryOf(ChainStepType.disguisedReminder))
-          .equals(StepCategory.reminder);
+      check(
+        categoryOf(ChainStepType.disguisedReminder),
+      ).equals(StepCategory.reminder);
     });
     test('countdownWarning → reminder', () {
-      check(categoryOf(ChainStepType.countdownWarning))
-          .equals(StepCategory.reminder);
+      check(
+        categoryOf(ChainStepType.countdownWarning),
+      ).equals(StepCategory.reminder);
     });
     test('fakeCall → action', () {
       check(categoryOf(ChainStepType.fakeCall)).equals(StepCategory.action);
@@ -36,15 +39,17 @@ void main() {
       check(categoryOf(ChainStepType.smsContact)).equals(StepCategory.action);
     });
     test('phoneCallContact → action', () {
-      check(categoryOf(ChainStepType.phoneCallContact))
-          .equals(StepCategory.action);
+      check(
+        categoryOf(ChainStepType.phoneCallContact),
+      ).equals(StepCategory.action);
     });
     test('loudAlarm → action', () {
       check(categoryOf(ChainStepType.loudAlarm)).equals(StepCategory.action);
     });
     test('callEmergency → action', () {
-      check(categoryOf(ChainStepType.callEmergency))
-          .equals(StepCategory.action);
+      check(
+        categoryOf(ChainStepType.callEmergency),
+      ).equals(StepCategory.action);
     });
   });
 
@@ -66,8 +71,9 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('picker opens and shows Hold button by default',
-        (tester) async {
+    testWidgets('picker opens and shows Hold button by default', (
+      tester,
+    ) async {
       await openPicker(tester);
       check(find.text('Hold button').evaluate()).isNotEmpty();
     });
@@ -90,8 +96,9 @@ void main() {
       check(find.text('Loud alarm').evaluate()).isNotEmpty();
     });
 
-    testWidgets('category filter chips appear after More options',
-        (tester) async {
+    testWidgets('category filter chips appear after More options', (
+      tester,
+    ) async {
       await openPicker(tester);
       await tester.tap(find.text('More options...'));
       await tester.pumpAndSettle();
@@ -100,8 +107,9 @@ void main() {
       check(find.byType(ChoiceChip).evaluate()).isNotEmpty();
     });
 
-    testWidgets('selecting Action filter hides check-in-type steps',
-        (tester) async {
+    testWidgets('selecting Action filter hides check-in-type steps', (
+      tester,
+    ) async {
       await openPicker(tester);
       await tester.tap(find.text('More options...'));
       await tester.pumpAndSettle();
@@ -116,8 +124,9 @@ void main() {
       check(find.text('Hardware button').evaluate()).isEmpty();
     });
 
-    testWidgets('tapping an entry in expanded list returns the type',
-        (tester) async {
+    testWidgets('tapping an entry in expanded list returns the type', (
+      tester,
+    ) async {
       ChainStepType? result;
       await tester.pumpWidget(
         hostScreen(
@@ -145,8 +154,9 @@ void main() {
       check(result).equals(ChainStepType.smsContact);
     });
 
-    testWidgets('Check-in filter shows only hold/hardware button steps',
-        (tester) async {
+    testWidgets('Check-in filter shows only hold/hardware button steps', (
+      tester,
+    ) async {
       await openPicker(tester);
       await tester.tap(find.text('More options...'));
       await tester.pumpAndSettle();

@@ -88,35 +88,25 @@ Widget _hostWithStepPreviewRoute({
 
 void main() {
   group('ChainStepTile — preview button (line 70)', () {
-    testWidgets(
-      'preview icon hidden when modeId is null',
-      (tester) async {
-        await tester.pumpWidget(
-          _hostWithStepPreviewRoute(
-            step: _step(),
-            pushed: [],
-            // modeId omitted → null → preview icon absent.
-          ),
-        );
-        await tester.pumpAndSettle();
-        check(find.byIcon(Icons.play_arrow_outlined).evaluate()).isEmpty();
-      },
-    );
+    testWidgets('preview icon hidden when modeId is null', (tester) async {
+      await tester.pumpWidget(
+        _hostWithStepPreviewRoute(
+          step: _step(),
+          pushed: [],
+          // modeId omitted → null → preview icon absent.
+        ),
+      );
+      await tester.pumpAndSettle();
+      check(find.byIcon(Icons.play_arrow_outlined).evaluate()).isEmpty();
+    });
 
-    testWidgets(
-      'preview icon visible when modeId is provided',
-      (tester) async {
-        await tester.pumpWidget(
-          _hostWithStepPreviewRoute(
-            step: _step(),
-            pushed: [],
-            modeId: 'mode-1',
-          ),
-        );
-        await tester.pumpAndSettle();
-        check(find.byIcon(Icons.play_arrow_outlined).evaluate()).isNotEmpty();
-      },
-    );
+    testWidgets('preview icon visible when modeId is provided', (tester) async {
+      await tester.pumpWidget(
+        _hostWithStepPreviewRoute(step: _step(), pushed: [], modeId: 'mode-1'),
+      );
+      await tester.pumpAndSettle();
+      check(find.byIcon(Icons.play_arrow_outlined).evaluate()).isNotEmpty();
+    });
 
     testWidgets(
       '_openPreview pushes stepPreview URI with stepId + modeId (lines 126–131)',

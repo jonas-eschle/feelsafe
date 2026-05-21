@@ -73,56 +73,60 @@ Widget _hostWithQuery({
   required Widget child,
   required String query,
   List<Override> overrides = const [],
-}) => _host(
-  child: child,
-  overrides: overrides,
-  initialLocation: '/root?$query',
-);
+}) =>
+    _host(child: child, overrides: overrides, initialLocation: '/root?$query');
 
 void main() {
-  testWidgets(
-    'PastEventDetailScreen FAB onPressed routes to evidence export',
-    (tester) async {
-      final log = SessionLog(
-        id: 'log-1',
-        modeId: 'mode',
-        modeName: 'Walk',
-        startedAt: DateTime.utc(2025),
-        isSimulation: false,
-        events: const [],
-      );
-      await tester.pumpWidget(_hostWithQuery(
+  testWidgets('PastEventDetailScreen FAB onPressed routes to evidence export', (
+    tester,
+  ) async {
+    final log = SessionLog(
+      id: 'log-1',
+      modeId: 'mode',
+      modeName: 'Walk',
+      startedAt: DateTime.utc(2025),
+      isSimulation: false,
+      events: const [],
+    );
+    await tester.pumpWidget(
+      _hostWithQuery(
         query: 'id=log-1',
         overrides: [
-          sessionLogsRepositoryProvider
-              .overrideWithValue(FakeSessionLogsRepository([log])),
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([log]),
+          ),
         ],
         child: const PastEventDetailScreen(),
-      ));
-      await tester.pumpAndSettle();
-      await tester.tap(find.byType(FloatingActionButton));
-      await tester.pumpAndSettle();
-      check(find.byKey(const Key(RouteNames.evidenceExport)).evaluate().length)
-          .equals(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pumpAndSettle();
+    check(
+      find.byKey(const Key(RouteNames.evidenceExport)).evaluate().length,
+    ).equals(1);
+  });
 
   testWidgets(
     'SecurityScreen Set-PIN button pushes the pin-setup route with a which',
     (tester) async {
-      await tester.pumpWidget(_host(
-        overrides: [
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
-        ],
-        child: const SecurityScreen(),
-      ));
+      await tester.pumpWidget(
+        _host(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+          ],
+          child: const SecurityScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       // Tap the first Set PIN FilledButton (App PIN).
       await tester.tap(find.byType(FilledButton).first);
       await tester.pumpAndSettle();
-      check(find.byKey(const Key(RouteNames.pinSetup)).evaluate().length)
-          .equals(1);
+      check(
+        find.byKey(const Key(RouteNames.pinSetup)).evaluate().length,
+      ).equals(1);
     },
   );
 
@@ -130,13 +134,16 @@ void main() {
     'SettingsScreen _SettingsLink ListTile onTap pushes the named route',
     (tester) async {
       // Arrange: sub-panel with a few settings entries visible.
-      await tester.pumpWidget(_host(
-        overrides: [
-          settingsRepositoryProvider
-              .overrideWithValue(FakeSettingsRepository()),
-        ],
-        child: const SettingsScreen(),
-      ));
+      await tester.pumpWidget(
+        _host(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+          ],
+          child: const SettingsScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       // Tap the first chevron_right ListTile (any sub-menu link).
       final firstLink = find.widgetWithIcon(ListTile, Icons.chevron_right);

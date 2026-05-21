@@ -17,31 +17,32 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets(
-    'StealthScreen tapping an icon preset persists the choice',
-    (tester) async {
-      final repo = FakeSettingsRepository();
-      final fake = FakeStealthIconService();
-      await tester.pumpWidget(hostScreen(
+  testWidgets('StealthScreen tapping an icon preset persists the choice', (
+    tester,
+  ) async {
+    final repo = FakeSettingsRepository();
+    final fake = FakeStealthIconService();
+    await tester.pumpWidget(
+      hostScreen(
         overrides: [
           settingsRepositoryProvider.overrideWithValue(repo),
           stealthIconServiceProvider.overrideWithValue(fake),
         ],
         child: const StealthScreen(),
-      ));
+      ),
+    );
+    await tester.pumpAndSettle();
+    // The preset picker is a horizontal carousel with icons;
+    // tapping Icons.music_note fires onSelect(music).
+    final music = find.byIcon(Icons.music_note);
+    if (music.evaluate().isEmpty) {
+      // If layout hides it, scroll the screen first.
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
       await tester.pumpAndSettle();
-      // The preset picker is a horizontal carousel with icons;
-      // tapping Icons.music_note fires onSelect(music).
-      final music = find.byIcon(Icons.music_note);
-      if (music.evaluate().isEmpty) {
-        // If layout hides it, scroll the screen first.
-        await tester.drag(find.byType(Scrollable).first, const Offset(0, -300));
-        await tester.pumpAndSettle();
-      }
-      await tester.tap(find.byIcon(Icons.music_note).first);
-      await tester.pumpAndSettle();
-      check(fake.calls.any((c) => c.startsWith('setPreset:music'))).isTrue();
-      check(repo.stored).isNotNull();
-    },
-  );
+    }
+    await tester.tap(find.byIcon(Icons.music_note).first);
+    await tester.pumpAndSettle();
+    check(fake.calls.any((c) => c.startsWith('setPreset:music'))).isTrue();
+    check(repo.stored).isNotNull();
+  });
 }

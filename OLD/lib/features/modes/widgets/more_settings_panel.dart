@@ -58,9 +58,7 @@ class MoreSettingsPanel extends StatelessWidget {
         title: Text(
           title,
           style: theme.textTheme.titleSmall?.copyWith(
-            color: customizedCount == 0
-                ? null
-                : theme.colorScheme.primary,
+            color: customizedCount == 0 ? null : theme.colorScheme.primary,
           ),
         ),
         childrenPadding: const EdgeInsets.symmetric(

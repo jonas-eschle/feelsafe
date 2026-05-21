@@ -104,9 +104,7 @@ void main() {
     });
 
     test('throws RangeError on negative oldIndex', () async {
-      final container = _makeContainer(
-        seed: [makeMode(id: 'a')],
-      );
+      final container = _makeContainer(seed: [makeMode(id: 'a')]);
       addTearDown(container.dispose);
       final notifier = container.read(modesControllerProvider.notifier);
       await container.read(modesControllerProvider.future);
@@ -114,9 +112,7 @@ void main() {
     });
 
     test('throws RangeError on oldIndex >= length', () async {
-      final container = _makeContainer(
-        seed: [makeMode(id: 'a')],
-      );
+      final container = _makeContainer(seed: [makeMode(id: 'a')]);
       addTearDown(container.dispose);
       final notifier = container.read(modesControllerProvider.notifier);
       await container.read(modesControllerProvider.future);

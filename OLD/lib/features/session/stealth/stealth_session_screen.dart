@@ -58,7 +58,7 @@ class StealthSessionScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final stealth =
         ref.watch(settingsControllerProvider).value?.defaults.stealth ??
-            const StealthConfig();
+        const StealthConfig();
 
     Future<void> handleDisarm() async {
       final settings = await ref.read(settingsControllerProvider.future);
@@ -97,17 +97,17 @@ class StealthSessionScreen extends ConsumerWidget {
       StealthIconPreset.photos ||
       StealthIconPreset.notes ||
       StealthIconPreset.clock => MusicPlayerScreen(
-          session: session,
-          onDisarm: handleDisarm,
-        ),
+        session: session,
+        onDisarm: handleDisarm,
+      ),
       StealthIconPreset.podcast => PodcastPlayerScreen(
-          session: session,
-          onDisarm: handleDisarm,
-        ),
+        session: session,
+        onDisarm: handleDisarm,
+      ),
       StealthIconPreset.calendar => CalendarScreen(
-          session: session,
-          onDisarm: handleDisarm,
-        ),
+        session: session,
+        onDisarm: handleDisarm,
+      ),
       // `none` should never reach this widget — `shouldShow` guards
       // the mount. Render an empty SizedBox as a safety net.
       StealthIconPreset.none => const SizedBox.shrink(),

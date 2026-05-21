@@ -337,13 +337,11 @@ final class DisguisedReminderConfig extends StepConfig {
   factory DisguisedReminderConfig.fromJson(Map<String, Object?> json) =>
       DisguisedReminderConfig(
         templateId: json['templateId'] as String?,
-        intervalSeconds:
-            (json['intervalSeconds'] as num?)?.toInt() ?? 60,
+        intervalSeconds: (json['intervalSeconds'] as num?)?.toInt() ?? 60,
         randomizeInterval: json['randomizeInterval'] as bool? ?? false,
         randomizeTemplateOrder:
             json['randomizeTemplateOrder'] as bool? ?? false,
-        resetOnEarlyCheckIn:
-            json['resetOnEarlyCheckIn'] as bool? ?? true,
+        resetOnEarlyCheckIn: json['resetOnEarlyCheckIn'] as bool? ?? true,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
         logGps: logGpsOverrideFromJson(json['logGps']),
       );
@@ -389,8 +387,7 @@ final class DisguisedReminderConfig extends StepConfig {
     randomizeInterval: randomizeInterval ?? this.randomizeInterval,
     randomizeTemplateOrder:
         randomizeTemplateOrder ?? this.randomizeTemplateOrder,
-    resetOnEarlyCheckIn:
-        resetOnEarlyCheckIn ?? this.resetOnEarlyCheckIn,
+    resetOnEarlyCheckIn: resetOnEarlyCheckIn ?? this.resetOnEarlyCheckIn,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
     logGps: logGps ?? this.logGps,
   );
@@ -760,11 +757,9 @@ final class FakeCallConfig extends StepConfig {
     callerPhotoPath: json['callerPhotoPath'] as String?,
     voiceSource: _voiceSourceFromJson(json['voiceSource']),
     voiceRoute: _voiceRouteFromJson(json['voiceRoute']),
-    ringDurationSeconds:
-        (json['ringDurationSeconds'] as num?)?.toInt() ?? 30,
+    ringDurationSeconds: (json['ringDurationSeconds'] as num?)?.toInt() ?? 30,
     declineWithDistressHoldSeconds:
-        (json['declineWithDistressHoldSeconds'] as num?)?.toDouble() ??
-        5.0,
+        (json['declineWithDistressHoldSeconds'] as num?)?.toDouble() ?? 5.0,
     blackScreenMode: json['blackScreenMode'] as bool? ?? false,
     logGps: logGpsOverrideFromJson(json['logGps']),
   );
@@ -843,8 +838,7 @@ final class FakeCallConfig extends StepConfig {
     voiceRoute: voiceRoute ?? this.voiceRoute,
     ringDurationSeconds: ringDurationSeconds ?? this.ringDurationSeconds,
     declineWithDistressHoldSeconds:
-        declineWithDistressHoldSeconds ??
-        this.declineWithDistressHoldSeconds,
+        declineWithDistressHoldSeconds ?? this.declineWithDistressHoldSeconds,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
     logGps: logGps ?? this.logGps,
   );
@@ -927,11 +921,7 @@ VoiceSource _voiceSourceFromJson(Object? raw) => switch (raw) {
   'tts' => VoiceSource.tts,
   'none' => VoiceSource.none,
   null => VoiceSource.tts,
-  _ => throw ArgumentError.value(
-    raw,
-    'voiceSource',
-    'unknown VoiceSource',
-  ),
+  _ => throw ArgumentError.value(raw, 'voiceSource', 'unknown VoiceSource'),
 };
 
 VoiceRoute _voiceRouteFromJson(Object? raw) => switch (raw) {
@@ -1221,11 +1211,8 @@ final class PhoneCallContactConfig extends StepConfig {
   }
 
   @override
-  int get hashCode => Object.hash(
-    contactId,
-    Object.hashAll(alternativeContactIds),
-    logGps,
-  );
+  int get hashCode =>
+      Object.hash(contactId, Object.hashAll(alternativeContactIds), logGps);
 
   @override
   String toString() =>
@@ -1414,11 +1401,7 @@ LoudAlarmSound _loudAlarmSoundFromJson(Object? raw) => switch (raw) {
   // Pre-alpha policy: nuke-and-reseed handles legacy values.
   'custom' => LoudAlarmSound.custom,
   null => LoudAlarmSound.siren,
-  _ => throw ArgumentError.value(
-    raw,
-    'soundChoice',
-    'unknown LoudAlarmSound',
-  ),
+  _ => throw ArgumentError.value(raw, 'soundChoice', 'unknown LoudAlarmSound'),
 };
 
 /// Configuration for a `callEmergency` step.
@@ -1455,10 +1438,8 @@ final class CallEmergencyConfig extends StepConfig {
   factory CallEmergencyConfig.fromJson(Map<String, Object?> json) =>
       CallEmergencyConfig(
         emergencyNumber: json['emergencyNumber'] as String?,
-        showConfirmation:
-            json['showConfirmation'] as bool? ?? true,
-        sendLocationSmsFirst:
-            json['sendLocationSmsFirst'] as bool? ?? true,
+        showConfirmation: json['showConfirmation'] as bool? ?? true,
+        sendLocationSmsFirst: json['sendLocationSmsFirst'] as bool? ?? true,
         confirmationDurationSeconds:
             (json['confirmationDurationSeconds'] as num?)?.toInt() ?? 5,
         blackScreenMode: json['blackScreenMode'] as bool? ?? false,
@@ -1516,8 +1497,7 @@ final class CallEmergencyConfig extends StepConfig {
         ? null
         : (emergencyNumber ?? this.emergencyNumber),
     showConfirmation: showConfirmation ?? this.showConfirmation,
-    sendLocationSmsFirst:
-        sendLocationSmsFirst ?? this.sendLocationSmsFirst,
+    sendLocationSmsFirst: sendLocationSmsFirst ?? this.sendLocationSmsFirst,
     confirmationDurationSeconds:
         confirmationDurationSeconds ?? this.confirmationDurationSeconds,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
@@ -1545,8 +1525,7 @@ final class CallEmergencyConfig extends StepConfig {
           other.emergencyNumber == emergencyNumber &&
           other.showConfirmation == showConfirmation &&
           other.sendLocationSmsFirst == sendLocationSmsFirst &&
-          other.confirmationDurationSeconds ==
-              confirmationDurationSeconds &&
+          other.confirmationDurationSeconds == confirmationDurationSeconds &&
           other.stealthSuppressConfirmation == stealthSuppressConfirmation &&
           other.blackScreenMode == blackScreenMode &&
           other.logGps == logGps;

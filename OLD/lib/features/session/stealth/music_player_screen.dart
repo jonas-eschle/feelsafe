@@ -65,9 +65,10 @@ class MusicPlayerScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final stealth =
         ref.watch(settingsControllerProvider).value?.defaults.stealth ??
-            const StealthConfig();
-    final fakeName =
-        stealth.fakeName.isNotEmpty ? stealth.fakeName : l.stealthPresetMusic;
+        const StealthConfig();
+    final fakeName = stealth.fakeName.isNotEmpty
+        ? stealth.fakeName
+        : l.stealthPresetMusic;
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -90,14 +91,12 @@ class MusicPlayerScreen extends ConsumerWidget {
                 Text(
                   l.stealthMusicNowPlaying,
                   style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                        letterSpacing: 1.2,
-                      ),
+                    color: scheme.onSurfaceVariant,
+                    letterSpacing: 1.2,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                Expanded(
-                  child: _AlbumArt(scheme: scheme),
-                ),
+                Expanded(child: _AlbumArt(scheme: scheme)),
                 const SizedBox(height: 24),
                 Text(
                   l.stealthMusicTrackTitle,
@@ -108,27 +107,23 @@ class MusicPlayerScreen extends ConsumerWidget {
                 Text(
                   '${l.stealthMusicArtist} — ${l.stealthMusicAlbum}',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
+                    color: scheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),
                 _Scrubber(
                   session: session,
-                  hideDigits:
-                      stealth.timerDisplay == StealthTimerDisplay.none,
+                  hideDigits: stealth.timerDisplay == StealthTimerDisplay.none,
                 ),
                 const SizedBox(height: 16),
-                _TransportControls(
-                  l: l,
-                  onSkipNext: onDisarm,
-                ),
+                _TransportControls(l: l, onSkipNext: onDisarm),
                 const SizedBox(height: 8),
                 Text(
                   l.stealthMusicSwipeHint,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: scheme.onSurfaceVariant,
-                      ),
+                    color: scheme.onSurfaceVariant,
+                  ),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -206,20 +201,14 @@ class _Scrubber extends StatelessWidget {
             thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
             overlayShape: SliderComponentShape.noOverlay,
           ),
-          child: Slider(
-            value: fraction,
-            onChanged: null,
-          ),
+          child: Slider(value: fraction, onChanged: null),
         ),
         if (!hideDigits)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(_formatMmSs(elapsed)),
-                Text(_formatMmSs(total)),
-              ],
+              children: [Text(_formatMmSs(elapsed)), Text(_formatMmSs(total))],
             ),
           ),
       ],
@@ -281,4 +270,3 @@ class _TransportControls extends StatelessWidget {
     );
   }
 }
-

@@ -10,23 +10,20 @@ import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 
 void main() {
-  test(
-    'default channels enable all four messaging channels',
-    () {
-      const c = EmergencyContact(
-        id: 'c1',
-        name: 'A',
-        phoneNumber: '+15551112222',
-        sortOrder: 0,
-      );
-      check(c.channels.toSet()).deepEquals({
-        MessageChannel.sms,
-        MessageChannel.whatsapp,
-        MessageChannel.telegram,
-        MessageChannel.phoneCall,
-      });
-    },
-  );
+  test('default channels enable all four messaging channels', () {
+    const c = EmergencyContact(
+      id: 'c1',
+      name: 'A',
+      phoneNumber: '+15551112222',
+      sortOrder: 0,
+    );
+    check(c.channels.toSet()).deepEquals({
+      MessageChannel.sms,
+      MessageChannel.whatsapp,
+      MessageChannel.telegram,
+      MessageChannel.phoneCall,
+    });
+  });
 
   test('default channels list survives JSON round-trip', () {
     const c = EmergencyContact(

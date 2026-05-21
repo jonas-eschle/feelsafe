@@ -20,10 +20,10 @@ List<MethodCall> installMethodChannelMock(
   final calls = <MethodCall>[];
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(channel, (call) async {
-    calls.add(call);
-    if (responder == null) return null;
-    return responder(call);
-  });
+        calls.add(call);
+        if (responder == null) return null;
+        return responder(call);
+      });
   addTearDown(() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, null);
@@ -48,10 +48,7 @@ List<MethodCall> installPlatformErrorMock(MethodChannel channel) {
   return installMethodChannelMock(
     channel,
     responder: (call) {
-      throw PlatformException(
-        code: 'ERR',
-        message: 'simulated platform error',
-      );
+      throw PlatformException(code: 'ERR', message: 'simulated platform error');
     },
   );
 }
@@ -64,9 +61,9 @@ EventChannelMock installEventChannelMock(EventChannel channel) {
   final mock = EventChannelMock._(channel);
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
-    MethodChannel(channel.name, channel.codec),
-    (MethodCall call) async => mock._onMethodCall(call),
-  );
+        MethodChannel(channel.name, channel.codec),
+        (MethodCall call) async => mock._onMethodCall(call),
+      );
   addTearDown(mock._tearDown);
   return mock;
 }
@@ -96,10 +93,10 @@ class EventChannelMock {
     final completer = Completer<void>();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
-      _channel.name,
-      data,
-      (_) => completer.complete(),
-    );
+          _channel.name,
+          data,
+          (_) => completer.complete(),
+        );
     await completer.future;
     return true;
   }
@@ -121,10 +118,10 @@ class EventChannelMock {
     final completer = Completer<void>();
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .handlePlatformMessage(
-      _channel.name,
-      data,
-      (_) => completer.complete(),
-    );
+          _channel.name,
+          data,
+          (_) => completer.complete(),
+        );
     await completer.future;
     return true;
   }
@@ -132,8 +129,8 @@ class EventChannelMock {
   void _tearDown() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(
-      MethodChannel(_channel.name, _channel.codec),
-      null,
-    );
+          MethodChannel(_channel.name, _channel.codec),
+          null,
+        );
   }
 }

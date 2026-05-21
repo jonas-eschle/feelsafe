@@ -156,88 +156,94 @@ void main() {
   // Group 2: TriggerManager does not subscribe to battery
   // -------------------------------------------------------------------------
   group('TriggerManager — battery events not processed by TriggerManager', () {
-    test('battery injection has no effect on engine state via TriggerManager',
-        () {
-      // TriggerManager's job is panic + GPS + timer only.
-      // BatteryMonitor subscription is handled by SessionController.
-      fakeAsync((async) {
-        final hw = FakeHardwareButtonService();
-        final gf = FakeGeofenceService();
-        final bm = FakeBatteryMonitorService();
-        final engine = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
-        final mgr = TriggerManager(
-          engine: engine,
-          mode: _fullMode(hasDistress: false),
-          hardwareButtonService: hw,
-          geofenceService: gf,
+    test(
+      'battery injection has no effect on engine state via TriggerManager',
+      () {
+        // TriggerManager's job is panic + GPS + timer only.
+        // BatteryMonitor subscription is handled by SessionController.
+        fakeAsync((async) {
+          final hw = FakeHardwareButtonService();
+          final gf = FakeGeofenceService();
+          final bm = FakeBatteryMonitorService();
+          final engine = SessionEngine(
+            chainSteps: [holdStep()],
+            random: FixedRandom(),
+          );
+          final mgr = TriggerManager(
+            engine: engine,
+            mode: _fullMode(hasDistress: false),
+            hardwareButtonService: hw,
+            geofenceService: gf,
+          );
+          mgr.start();
+          engine.start();
+          async.flushMicrotasks();
 
-        );
-        mgr.start();
-        engine.start();
-        async.flushMicrotasks();
+          // Inject low-battery event.
+          bm.injectLowBattery(5);
+          async.flushMicrotasks();
 
-        // Inject low-battery event.
-        bm.injectLowBattery(5);
-        async.flushMicrotasks();
+          // Engine should be unaffected — TriggerManager doesn't act on battery.
+          check(engine.state).isA<EngineRunning>();
 
-        // Engine should be unaffected — TriggerManager doesn't act on battery.
-        check(engine.state).isA<EngineRunning>();
+          mgr.dispose();
+          hw.dispose();
+          gf.dispose();
+          bm.dispose();
+          engine.dispose();
+        });
+      },
+    );
 
-        mgr.dispose();
-        hw.dispose();
-        gf.dispose();
-        bm.dispose();
-        engine.dispose();
-      });
-    });
+    test(
+      'TriggerManager stores batteryMonitorService but never subscribes',
+      () {
+        fakeAsync((async) {
+          final hw = FakeHardwareButtonService();
+          final gf = FakeGeofenceService();
+          final bm = FakeBatteryMonitorService();
+          final engine = SessionEngine(
+            chainSteps: [holdStep()],
+            random: FixedRandom(),
+          );
+          final mgr = TriggerManager(
+            engine: engine,
+            mode: _fullMode(hasDistress: false),
+            hardwareButtonService: hw,
+            geofenceService: gf,
+          );
+          mgr.start();
+          async.flushMicrotasks();
 
-    test('TriggerManager stores batteryMonitorService but never subscribes',
-        () {
-      fakeAsync((async) {
-        final hw = FakeHardwareButtonService();
-        final gf = FakeGeofenceService();
-        final bm = FakeBatteryMonitorService();
-        final engine = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
-        final mgr = TriggerManager(
-          engine: engine,
-          mode: _fullMode(hasDistress: false),
-          hardwareButtonService: hw,
-          geofenceService: gf,
+          // Verify the service is stored but not started by the manager.
+          check(bm.isActive).isFalse();
+          check(
+            bm.calls,
+          ).isEmpty(); // No startMonitoring call from TriggerManager.
 
-        );
-        mgr.start();
-        async.flushMicrotasks();
-
-        // Verify the service is stored but not started by the manager.
-        check(bm.isActive).isFalse();
-        check(bm.calls).isEmpty(); // No startMonitoring call from TriggerManager.
-
-        mgr.dispose();
-        hw.dispose();
-        gf.dispose();
-        bm.dispose();
-        engine.dispose();
-      });
-    });
+          mgr.dispose();
+          hw.dispose();
+          gf.dispose();
+          bm.dispose();
+          engine.dispose();
+        });
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
   // Group 3: BatteryAlertConfig model
   // -------------------------------------------------------------------------
   group('BatteryAlertConfig — model', () {
-    test('default values (Q34/Q35): enabled=false, threshold=10, chain empty',
-        () {
-      const cfg = BatteryAlertConfig();
-      check(cfg.enabled).isFalse();
-      check(cfg.thresholdPercent).equals(10);
-      check(cfg.chain).isEmpty();
-    });
+    test(
+      'default values (Q34/Q35): enabled=false, threshold=10, chain empty',
+      () {
+        const cfg = BatteryAlertConfig();
+        check(cfg.enabled).isFalse();
+        check(cfg.thresholdPercent).equals(10);
+        check(cfg.chain).isEmpty();
+      },
+    );
 
     test('JSON round-trip preserves enabled=false', () {
       const cfg = BatteryAlertConfig(enabled: false, thresholdPercent: 10);
@@ -400,52 +406,54 @@ void main() {
       });
     });
 
-    test('GPS arrival disarms before timer fires; timer fires but engine ended',
-        () {
-      fakeAsync((async) {
-        final hw = FakeHardwareButtonService();
-        final gf = FakeGeofenceService();
-        final bm = FakeBatteryMonitorService();
-        final engine = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
-        final mgr = TriggerManager(
-          engine: engine,
-          mode: _fullMode(hasDistress: false, hasGps: true, hasTimer: true),
-          hardwareButtonService: hw,
-          geofenceService: gf,
+    test(
+      'GPS arrival disarms before timer fires; timer fires but engine ended',
+      () {
+        fakeAsync((async) {
+          final hw = FakeHardwareButtonService();
+          final gf = FakeGeofenceService();
+          final bm = FakeBatteryMonitorService();
+          final engine = SessionEngine(
+            chainSteps: [holdStep()],
+            random: FixedRandom(),
+          );
+          final mgr = TriggerManager(
+            engine: engine,
+            mode: _fullMode(hasDistress: false, hasGps: true, hasTimer: true),
+            hardwareButtonService: hw,
+            geofenceService: gf,
 
-          // No callback → engine.disarm() called directly.
-        );
-        mgr.start();
-        engine.start();
-        async.flushMicrotasks();
+            // No callback → engine.disarm() called directly.
+          );
+          mgr.start();
+          engine.start();
+          async.flushMicrotasks();
 
-        // GPS fires first, engine ends.
-        gf.injectArrival(
-          LocationPoint(
-            latitude: 51.5074,
-            longitude: -0.1278,
-            timestamp: DateTime.utc(2026, 4, 1),
-          ),
-        );
-        async.flushMicrotasks();
-        check(engine.state).isA<EngineEnded>();
+          // GPS fires first, engine ends.
+          gf.injectArrival(
+            LocationPoint(
+              latitude: 51.5074,
+              longitude: -0.1278,
+              timestamp: DateTime.utc(2026, 4, 1),
+            ),
+          );
+          async.flushMicrotasks();
+          check(engine.state).isA<EngineEnded>();
 
-        // Timer fires later — engine.endSession() is idempotent;
-        // first disarm path wins and the reason is preserved.
-        async.elapse(const Duration(seconds: 65));
-        check(engine.state).isA<EngineEnded>();
-        check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
+          // Timer fires later — engine.endSession() is idempotent;
+          // first disarm path wins and the reason is preserved.
+          async.elapse(const Duration(seconds: 65));
+          check(engine.state).isA<EngineEnded>();
+          check((engine.state as EngineEnded).reason).equals(EndReason.disarm);
 
-        mgr.dispose();
-        hw.dispose();
-        gf.dispose();
-        bm.dispose();
-        engine.dispose();
-      });
-    });
+          mgr.dispose();
+          hw.dispose();
+          gf.dispose();
+          bm.dispose();
+          engine.dispose();
+        });
+      },
+    );
 
     test('mode with NO triggers → isStarted=false and no subscriptions', () {
       fakeAsync((async) {
@@ -468,7 +476,6 @@ void main() {
           mode: mode,
           hardwareButtonService: hw,
           geofenceService: gf,
-
         );
         mgr.start();
         engine.start();
@@ -490,8 +497,7 @@ void main() {
   // -------------------------------------------------------------------------
   group('TriggerManager — cooldown constant', () {
     test('cooldown is 500 ms', () {
-      check(TriggerManager.cooldown)
-          .equals(const Duration(milliseconds: 500));
+      check(TriggerManager.cooldown).equals(const Duration(milliseconds: 500));
     });
 
     test('cooldown is the same across multiple reads', () {
@@ -670,8 +676,7 @@ void main() {
   // -------------------------------------------------------------------------
   group('Trigger.fromJson — invalid inputs', () {
     test('missing kind throws ArgumentError', () {
-      check(() => Trigger.fromJson({'type': 'timer'}))
-          .throws<ArgumentError>();
+      check(() => Trigger.fromJson({'type': 'timer'})).throws<ArgumentError>();
     });
 
     test('unknown kind throws ArgumentError', () {
@@ -717,11 +722,13 @@ void main() {
       check(t.pressWindowMs).equals(1500); // default
     });
 
-    test('LongPressTrigger.fromJson uses default durationSeconds when absent',
-        () {
-      final t = LongPressTrigger.fromJson({'type': 'longPress'});
-      check(t.durationSeconds).equals(2.0); // default
-    });
+    test(
+      'LongPressTrigger.fromJson uses default durationSeconds when absent',
+      () {
+        final t = LongPressTrigger.fromJson({'type': 'longPress'});
+        check(t.durationSeconds).equals(2.0); // default
+      },
+    );
 
     test('HardwareTrigger.fromJson dispatches repeatPress', () {
       final t = HardwareTrigger.fromJson({
@@ -741,7 +748,10 @@ void main() {
     });
 
     test('DisarmTrigger.fromJson dispatches timer', () {
-      final t = DisarmTrigger.fromJson({'type': 'timer', 'durationSeconds': 30});
+      final t = DisarmTrigger.fromJson({
+        'type': 'timer',
+        'durationSeconds': 30,
+      });
       check(t).isA<TimerDisarmTrigger>();
     });
 
@@ -759,10 +769,12 @@ void main() {
       // its threshold lives on `AppSettings.wrongPinThreshold` now.
       // The dispatcher must reject the legacy tag rather than silently
       // round-trip a stale config from disk.
-      check(() => DisarmTrigger.fromJson({
-            'type': 'wrongPinThreshold',
-            'threshold': 3,
-          })).throws<ArgumentError>();
+      check(
+        () => DisarmTrigger.fromJson({
+          'type': 'wrongPinThreshold',
+          'threshold': 3,
+        }),
+      ).throws<ArgumentError>();
     });
 
     test('DistressTrigger.fromJson dispatches hardwareButton', () {
@@ -775,13 +787,15 @@ void main() {
     });
 
     test('DistressTrigger.fromJson with missing type throws', () {
-      check(() => DistressTrigger.fromJson({'kind': 'distress'}))
-          .throws<ArgumentError>();
+      check(
+        () => DistressTrigger.fromJson({'kind': 'distress'}),
+      ).throws<ArgumentError>();
     });
 
     test('DisarmTrigger.fromJson with missing type throws', () {
-      check(() => DisarmTrigger.fromJson({'kind': 'disarm'}))
-          .throws<ArgumentError>();
+      check(
+        () => DisarmTrigger.fromJson({'kind': 'disarm'}),
+      ).throws<ArgumentError>();
     });
   });
 

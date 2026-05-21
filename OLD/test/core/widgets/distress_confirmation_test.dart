@@ -15,9 +15,7 @@ import 'package:guardianangela/core/theme/app_theme.dart';
 import 'package:guardianangela/core/widgets/distress_confirmation.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
-Widget _appHost({
-  required void Function(BuildContext) onOpen,
-}) => MaterialApp(
+Widget _appHost({required void Function(BuildContext) onOpen}) => MaterialApp(
   theme: AppTheme.light(),
   localizationsDelegates: const [
     AppLocalizations.delegate,
@@ -36,9 +34,7 @@ Widget _appHost({
   ),
 );
 
-Widget _directHost({
-  required DistressConfirmation child,
-}) => MaterialApp(
+Widget _directHost({required DistressConfirmation child}) => MaterialApp(
   theme: AppTheme.light(),
   localizationsDelegates: const [
     AppLocalizations.delegate,
@@ -52,24 +48,28 @@ Widget _directHost({
 
 void main() {
   testWidgets('DistressConfirmation renders initial countdown', (tester) async {
-    await tester.pumpWidget(_directHost(
-      child: DistressConfirmation(
-        countdownSeconds: 5,
-        onConfirmed: () {},
-        onCancelled: () {},
+    await tester.pumpWidget(
+      _directHost(
+        child: DistressConfirmation(
+          countdownSeconds: 5,
+          onConfirmed: () {},
+          onCancelled: () {},
+        ),
       ),
-    ));
+    );
     check(find.text('5').evaluate().length).equals(1);
   });
 
   testWidgets('DistressConfirmation ticks down each second', (tester) async {
-    await tester.pumpWidget(_directHost(
-      child: DistressConfirmation(
-        countdownSeconds: 3,
-        onConfirmed: () {},
-        onCancelled: () {},
+    await tester.pumpWidget(
+      _directHost(
+        child: DistressConfirmation(
+          countdownSeconds: 3,
+          onConfirmed: () {},
+          onCancelled: () {},
+        ),
       ),
-    ));
+    );
     check(find.text('3').evaluate().length).equals(1);
     await tester.pump(const Duration(seconds: 1));
     check(find.text('2').evaluate().length).equals(1);
@@ -77,16 +77,19 @@ void main() {
     check(find.text('1').evaluate().length).equals(1);
   });
 
-  testWidgets('DistressConfirmation fires onConfirmed when countdown expires',
-      (tester) async {
+  testWidgets('DistressConfirmation fires onConfirmed when countdown expires', (
+    tester,
+  ) async {
     var confirmed = 0;
-    await tester.pumpWidget(_directHost(
-      child: DistressConfirmation(
-        countdownSeconds: 2,
-        onConfirmed: () => confirmed++,
-        onCancelled: () {},
+    await tester.pumpWidget(
+      _directHost(
+        child: DistressConfirmation(
+          countdownSeconds: 2,
+          onConfirmed: () => confirmed++,
+          onCancelled: () {},
+        ),
       ),
-    ));
+    );
     await tester.pump(const Duration(seconds: 1));
     await tester.pump(const Duration(seconds: 1));
     check(confirmed).equals(1);
@@ -95,44 +98,53 @@ void main() {
     check(confirmed).equals(1);
   });
 
-  testWidgets('DistressConfirmation cancel button fires onCancelled',
-      (tester) async {
+  testWidgets('DistressConfirmation cancel button fires onCancelled', (
+    tester,
+  ) async {
     var cancelled = 0;
-    await tester.pumpWidget(_directHost(
-      child: DistressConfirmation(
-        countdownSeconds: 5,
-        onConfirmed: () {},
-        onCancelled: () => cancelled++,
+    await tester.pumpWidget(
+      _directHost(
+        child: DistressConfirmation(
+          countdownSeconds: 5,
+          onConfirmed: () {},
+          onCancelled: () => cancelled++,
+        ),
       ),
-    ));
+    );
     await tester.tap(find.byType(FilledButton));
     await tester.pump();
     check(cancelled).equals(1);
   });
 
-  testWidgets('DistressConfirmation stealth=true renders without error',
-      (tester) async {
-    await tester.pumpWidget(_directHost(
-      child: DistressConfirmation(
-        countdownSeconds: 5,
-        stealth: true,
-        onConfirmed: () {},
-        onCancelled: () {},
+  testWidgets('DistressConfirmation stealth=true renders without error', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _directHost(
+        child: DistressConfirmation(
+          countdownSeconds: 5,
+          stealth: true,
+          onConfirmed: () {},
+          onCancelled: () {},
+        ),
       ),
-    ));
+    );
     // In stealth mode the header uses the stealth localization key;
     // the countdown number is the same (shows "5").
     check(find.text('5').evaluate().length).equals(1);
   });
 
-  testWidgets('showDistressConfirmation returns true on countdown expiry',
-      (tester) async {
+  testWidgets('showDistressConfirmation returns true on countdown expiry', (
+    tester,
+  ) async {
     bool? result;
-    await tester.pumpWidget(_appHost(
-      onOpen: (ctx) async {
-        result = await showDistressConfirmation(ctx, duration: 2);
-      },
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        onOpen: (ctx) async {
+          result = await showDistressConfirmation(ctx, duration: 2);
+        },
+      ),
+    );
     await tester.tap(find.text('open'));
     await tester.pump();
     // Let the countdown fully expire.
@@ -143,14 +155,17 @@ void main() {
     check(result).equals(true);
   });
 
-  testWidgets('showDistressConfirmation returns false on cancel (default)',
-      (tester) async {
+  testWidgets('showDistressConfirmation returns false on cancel (default)', (
+    tester,
+  ) async {
     bool? result;
-    await tester.pumpWidget(_appHost(
-      onOpen: (ctx) async {
-        result = await showDistressConfirmation(ctx, duration: 60);
-      },
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        onOpen: (ctx) async {
+          result = await showDistressConfirmation(ctx, duration: 60);
+        },
+      ),
+    );
     await tester.tap(find.text('open'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
@@ -159,18 +174,21 @@ void main() {
     check(result).equals(false);
   });
 
-  testWidgets('showDistressConfirmation hook returning true honors cancel',
-      (tester) async {
+  testWidgets('showDistressConfirmation hook returning true honors cancel', (
+    tester,
+  ) async {
     bool? result;
-    await tester.pumpWidget(_appHost(
-      onOpen: (ctx) async {
-        result = await showDistressConfirmation(
-          ctx,
-          duration: 60,
-          onCancel: () async => true,
-        );
-      },
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        onOpen: (ctx) async {
+          result = await showDistressConfirmation(
+            ctx,
+            duration: 60,
+            onCancel: () async => true,
+          );
+        },
+      ),
+    );
     await tester.tap(find.text('open'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
@@ -179,18 +197,21 @@ void main() {
     check(result).equals(false);
   });
 
-  testWidgets('showDistressConfirmation hook returning false rejects cancel',
-      (tester) async {
+  testWidgets('showDistressConfirmation hook returning false rejects cancel', (
+    tester,
+  ) async {
     bool? result;
-    await tester.pumpWidget(_appHost(
-      onOpen: (ctx) async {
-        result = await showDistressConfirmation(
-          ctx,
-          duration: 60,
-          onCancel: () async => false,
-        );
-      },
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        onOpen: (ctx) async {
+          result = await showDistressConfirmation(
+            ctx,
+            duration: 60,
+            onCancel: () async => false,
+          );
+        },
+      ),
+    );
     await tester.tap(find.text('open'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));
@@ -200,13 +221,16 @@ void main() {
     check(result).equals(true);
   });
 
-  testWidgets('showDistressConfirmation stealth flag propagates',
-      (tester) async {
-    await tester.pumpWidget(_appHost(
-      onOpen: (ctx) async {
-        await showDistressConfirmation(ctx, duration: 60, isStealth: true);
-      },
-    ));
+  testWidgets('showDistressConfirmation stealth flag propagates', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _appHost(
+        onOpen: (ctx) async {
+          await showDistressConfirmation(ctx, duration: 60, isStealth: true);
+        },
+      ),
+    );
     await tester.tap(find.text('open'));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 200));

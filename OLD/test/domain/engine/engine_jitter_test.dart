@@ -67,7 +67,12 @@ void main() {
 
     test('randomize=0 in wait phase also applies no jitter', () {
       fakeAsync((async) {
-        final e = _jitterEngine(0.0, FixedRandom(0.0), waitSecs: 50, durSecs: 1);
+        final e = _jitterEngine(
+          0.0,
+          FixedRandom(0.0),
+          waitSecs: 50,
+          durSecs: 1,
+        );
         e.start();
         async.flushMicrotasks();
         final s = e.state as EngineRunning;
@@ -80,9 +85,10 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 5, gracePeriodSeconds: 30).copyWith(
-              randomize: 0.0,
-            ),
+            smsStep(
+              durationSeconds: 5,
+              gracePeriodSeconds: 30,
+            ).copyWith(randomize: 0.0),
           ],
           random: FixedRandom(1.0),
         );
@@ -176,42 +182,52 @@ void main() {
       });
     });
 
-    test('FixedRandom(0.0) with wait phase: factor=0.8 → 80s for 100s wait',
-        () {
-      fakeAsync((async) {
-        final e = _jitterEngine(1.0, FixedRandom(0.0), waitSecs: 100, durSecs: 1);
-        e.start();
-        async.flushMicrotasks();
-        final s = e.state as EngineRunning;
-        check(s.remaining.inSeconds).equals(80);
-        e.dispose();
-      });
-    });
+    test(
+      'FixedRandom(0.0) with wait phase: factor=0.8 → 80s for 100s wait',
+      () {
+        fakeAsync((async) {
+          final e = _jitterEngine(
+            1.0,
+            FixedRandom(0.0),
+            waitSecs: 100,
+            durSecs: 1,
+          );
+          e.start();
+          async.flushMicrotasks();
+          final s = e.state as EngineRunning;
+          check(s.remaining.inSeconds).equals(80);
+          e.dispose();
+        });
+      },
+    );
 
-    test('FixedRandom(1.0) with grace phase: factor=1.2 → 120s for 100s grace',
-        () {
-      fakeAsync((async) {
-        final e = SessionEngine(
-          chainSteps: [
-            smsStep(durationSeconds: 5, gracePeriodSeconds: 100).copyWith(
-              randomize: 1.0,
-            ),
-          ],
-          random: FixedRandom(1.0),
-        );
-        e.start();
-        async.flushMicrotasks();
-        async.elapse(
-          Duration(microseconds: _expectedUs(5, 1.2)),
-        ); // dur × 1.2.
-        async.flushMicrotasks();
-        final s = e.state as EngineRunning;
-        check(s.phase).equals(TimerPhase.grace);
-        // Grace: 100 × 1.2 = 120s.
-        check(s.remaining.inSeconds).equals(120);
-        e.dispose();
-      });
-    });
+    test(
+      'FixedRandom(1.0) with grace phase: factor=1.2 → 120s for 100s grace',
+      () {
+        fakeAsync((async) {
+          final e = SessionEngine(
+            chainSteps: [
+              smsStep(
+                durationSeconds: 5,
+                gracePeriodSeconds: 100,
+              ).copyWith(randomize: 1.0),
+            ],
+            random: FixedRandom(1.0),
+          );
+          e.start();
+          async.flushMicrotasks();
+          async.elapse(
+            Duration(microseconds: _expectedUs(5, 1.2)),
+          ); // dur × 1.2.
+          async.flushMicrotasks();
+          final s = e.state as EngineRunning;
+          check(s.phase).equals(TimerPhase.grace);
+          // Grace: 100 × 1.2 = 120s.
+          check(s.remaining.inSeconds).equals(120);
+          e.dispose();
+        });
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -252,10 +268,10 @@ void main() {
         // will use the same factor — but the key is they both use jitter.
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 100, gracePeriodSeconds: 0).copyWith(
-              waitSeconds: 100,
-              randomize: 1.0,
-            ),
+            smsStep(
+              durationSeconds: 100,
+              gracePeriodSeconds: 0,
+            ).copyWith(waitSeconds: 100, randomize: 1.0),
           ],
           random: FixedRandom(1.0), // factor 1.2 for every draw.
         );
@@ -280,9 +296,10 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 100, gracePeriodSeconds: 0).copyWith(
-              randomize: 1.0,
-            ),
+            smsStep(
+              durationSeconds: 100,
+              gracePeriodSeconds: 0,
+            ).copyWith(randomize: 1.0),
           ],
           isSimulation: true,
           speedMultiplier: 2.0,
@@ -300,9 +317,10 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(durationSeconds: 100, gracePeriodSeconds: 0).copyWith(
-              randomize: 1.0,
-            ),
+            smsStep(
+              durationSeconds: 100,
+              gracePeriodSeconds: 0,
+            ).copyWith(randomize: 1.0),
           ],
           isSimulation: true,
           speedMultiplier: 2.0,

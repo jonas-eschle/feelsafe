@@ -63,12 +63,8 @@ Future<void> _pumpExpanded(
   tester.view.devicePixelRatio = 1.0;
   await tester.pumpWidget(
     hostScreen(
-      overrides: [
-        sessionControllerProvider.overrideWith(() => ctrl),
-      ],
-      child: const SingleChildScrollView(
-        child: SimulationAdvancedControls(),
-      ),
+      overrides: [sessionControllerProvider.overrideWith(() => ctrl)],
+      child: const SingleChildScrollView(child: SimulationAdvancedControls()),
     ),
   );
   await tester.pumpAndSettle();
@@ -177,9 +173,7 @@ void main() {
         final ctrl = _FakeSessionController();
         await tester.pumpWidget(
           hostScreen(
-            overrides: [
-              sessionControllerProvider.overrideWith(() => ctrl),
-            ],
+            overrides: [sessionControllerProvider.overrideWith(() => ctrl)],
             child: const SingleChildScrollView(
               child: SimulationAdvancedControls(),
             ),
@@ -193,119 +187,114 @@ void main() {
 
         // Assert — no background-cap hint shown at 1×.
         check(
-          find
-              .text('Capped at 60× in background')
-              .evaluate()
-              .length,
-        ).equals(0);
-      },
-    );
-
-    testWidgets(
-      'background-cap hint APPEARS after tapping the 1000× chip',
-      (tester) async {
-        // Arrange
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        final ctrl = _FakeSessionController();
-        await _pumpExpanded(tester, ctrl);
-
-        // Act — tap the 1000× chip to set speed above 60×.
-        await tester.tap(find.text('1000×'));
-        await tester.pumpAndSettle();
-
-        // Assert — the background-cap hint text is now visible.
-        // The exact text depends on the l10n key sessionSimSpeedBackgroundCap.
-        // We match by substring because translations may vary; in en locale
-        // it says 'Capped at 60× in background'.
-        check(
-          find
-              .text('Capped at 60× in background')
-              .evaluate()
-              .length,
-        ).isGreaterOrEqual(1);
-      },
-    );
-
-    testWidgets(
-      'background-cap hint disappears after switching back to 1×',
-      (tester) async {
-        // Arrange
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        final ctrl = _FakeSessionController();
-        await _pumpExpanded(tester, ctrl);
-
-        // First raise speed to 1000× so hint appears.
-        await tester.tap(find.text('1000×'));
-        await tester.pumpAndSettle();
-        check(
-          find.text('Capped at 60× in background').evaluate().length,
-        ).isGreaterOrEqual(1);
-
-        // Act — switch back to 1×.
-        await tester.tap(find.text('1×'));
-        await tester.pumpAndSettle();
-
-        // Assert — hint is gone again.
-        check(
           find.text('Capped at 60× in background').evaluate().length,
         ).equals(0);
       },
     );
+
+    testWidgets('background-cap hint APPEARS after tapping the 1000× chip', (
+      tester,
+    ) async {
+      // Arrange
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final ctrl = _FakeSessionController();
+      await _pumpExpanded(tester, ctrl);
+
+      // Act — tap the 1000× chip to set speed above 60×.
+      await tester.tap(find.text('1000×'));
+      await tester.pumpAndSettle();
+
+      // Assert — the background-cap hint text is now visible.
+      // The exact text depends on the l10n key sessionSimSpeedBackgroundCap.
+      // We match by substring because translations may vary; in en locale
+      // it says 'Capped at 60× in background'.
+      check(
+        find.text('Capped at 60× in background').evaluate().length,
+      ).isGreaterOrEqual(1);
+    });
+
+    testWidgets('background-cap hint disappears after switching back to 1×', (
+      tester,
+    ) async {
+      // Arrange
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final ctrl = _FakeSessionController();
+      await _pumpExpanded(tester, ctrl);
+
+      // First raise speed to 1000× so hint appears.
+      await tester.tap(find.text('1000×'));
+      await tester.pumpAndSettle();
+      check(
+        find.text('Capped at 60× in background').evaluate().length,
+      ).isGreaterOrEqual(1);
+
+      // Act — switch back to 1×.
+      await tester.tap(find.text('1×'));
+      await tester.pumpAndSettle();
+
+      // Assert — hint is gone again.
+      check(
+        find.text('Capped at 60× in background').evaluate().length,
+      ).equals(0);
+    });
   });
 
   // -------------------------------------------------------------------------
   group('_setSpeed via LogarithmicSlider drag', () {
-    testWidgets(
-      'dragging the slider calls setSimulationSpeedMultiplier',
-      (tester) async {
-        // Arrange — we drag the LogarithmicSlider to exercise _setSpeed
-        // which covers lines 41-45.
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        final ctrl = _FakeSessionController();
-        await _pumpExpanded(tester, ctrl);
+    testWidgets('dragging the slider calls setSimulationSpeedMultiplier', (
+      tester,
+    ) async {
+      // Arrange — we drag the LogarithmicSlider to exercise _setSpeed
+      // which covers lines 41-45.
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final ctrl = _FakeSessionController();
+      await _pumpExpanded(tester, ctrl);
 
-        // Find the slider widget.
-        final slider = find.byType(LogarithmicSlider);
-        check(slider.evaluate().length).isGreaterOrEqual(1);
+      // Find the slider widget.
+      final slider = find.byType(LogarithmicSlider);
+      check(slider.evaluate().length).isGreaterOrEqual(1);
 
-        // Drag the slider to the right to change its value.
-        final sliderRect = tester.getRect(slider.first);
-        await tester.dragFrom(sliderRect.center, Offset(sliderRect.width * 0.3, 0));
-        await tester.pumpAndSettle();
+      // Drag the slider to the right to change its value.
+      final sliderRect = tester.getRect(slider.first);
+      await tester.dragFrom(
+        sliderRect.center,
+        Offset(sliderRect.width * 0.3, 0),
+      );
+      await tester.pumpAndSettle();
 
-        // Assert — at least one speed call was recorded (the drag changed the
-        // value and called _setSpeed → setSimulationSpeedMultiplier).
-        check(ctrl.calls.where((c) => c.startsWith('speed:')).isNotEmpty)
-            .isTrue();
-      },
-    );
+      // Assert — at least one speed call was recorded (the drag changed the
+      // value and called _setSpeed → setSimulationSpeedMultiplier).
+      check(
+        ctrl.calls.where((c) => c.startsWith('speed:')).isNotEmpty,
+      ).isTrue();
+    });
   });
 
   // -------------------------------------------------------------------------
   group('speed display text updates', () {
-    testWidgets(
-      'speed label shows 1000 after tapping 1000× chip',
-      (tester) async {
-        // The Row row shows l.sessionSimSpeedValue(effectiveSpeed.round())
-        // which in English is '1000×'. After tapping the chip the label
-        // should change. This exercises the setState path in _setSpeed.
-        addTearDown(tester.view.resetPhysicalSize);
-        addTearDown(tester.view.resetDevicePixelRatio);
-        final ctrl = _FakeSessionController();
-        await _pumpExpanded(tester, ctrl);
+    testWidgets('speed label shows 1000 after tapping 1000× chip', (
+      tester,
+    ) async {
+      // The Row row shows l.sessionSimSpeedValue(effectiveSpeed.round())
+      // which in English is '1000×'. After tapping the chip the label
+      // should change. This exercises the setState path in _setSpeed.
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final ctrl = _FakeSessionController();
+      await _pumpExpanded(tester, ctrl);
 
-        await tester.tap(find.text('1000×'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('1000×'));
+      await tester.pumpAndSettle();
 
-        // The speed value label uses sessionSimSpeedValue which returns
-        // something like '1000×'. We just verify the chip tap didn't throw
-        // and the widget is still in the tree.
-        check(find.byType(SimulationAdvancedControls).evaluate().length)
-            .equals(1);
-      },
-    );
+      // The speed value label uses sessionSimSpeedValue which returns
+      // something like '1000×'. We just verify the chip tap didn't throw
+      // and the widget is still in the tree.
+      check(
+        find.byType(SimulationAdvancedControls).evaluate().length,
+      ).equals(1);
+    });
   });
 }

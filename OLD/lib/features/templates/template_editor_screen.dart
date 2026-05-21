@@ -165,8 +165,7 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
           if (_confirm == ConfirmationType.tapWord)
             TextField(
               controller: _keywordCtrl,
-              decoration:
-                  InputDecoration(labelText: l.templateFieldKeyword),
+              decoration: InputDecoration(labelText: l.templateFieldKeyword),
             ),
           if (_confirm == ConfirmationType.tapButton)
             TextField(

@@ -26,15 +26,17 @@ void main() {
     check(find.text('Love it').evaluate().length).equals(1);
   });
 
-  testWidgets('FeedbackScreen shows a FilledButton for sending',
-      (tester) async {
+  testWidgets('FeedbackScreen shows a FilledButton for sending', (
+    tester,
+  ) async {
     await tester.pumpWidget(hostScreen(child: const FeedbackScreen()));
     await tester.pumpAndSettle();
     check(find.byType(FilledButton).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('FeedbackScreen send button exercises _openEmail branch',
-      (tester) async {
+  testWidgets('FeedbackScreen send button exercises _openEmail branch', (
+    tester,
+  ) async {
     await tester.pumpWidget(hostScreen(child: const FeedbackScreen()));
     await tester.pumpAndSettle();
     await tester.enterText(find.byType(TextField).first, 'msg');

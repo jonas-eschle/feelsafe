@@ -28,9 +28,7 @@ void main() {
   late List<GoRoute> realRoutes;
 
   setUp(() {
-    realRoutes = appRouter.configuration.routes
-        .whereType<GoRoute>()
-        .toList();
+    realRoutes = appRouter.configuration.routes.whereType<GoRoute>().toList();
   });
 
   testWidgets(
@@ -77,20 +75,14 @@ class _BuilderHarness extends StatelessWidget {
     // produced screen. Any builder that needs query params will see
     // an empty params map.
     final router = GoRouter(
-      routes: [
-        GoRoute(path: '/', builder: builder),
-      ],
+      routes: [GoRoute(path: '/', builder: builder)],
       errorBuilder: (_, _) => const SizedBox.shrink(),
     );
     return ProviderScope(
       overrides: [
-        settingsRepositoryProvider.overrideWithValue(
-          FakeSettingsRepository(),
-        ),
+        settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
         modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-        contactsRepositoryProvider.overrideWithValue(
-          FakeContactsRepository(),
-        ),
+        contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
         userProfileRepositoryProvider.overrideWithValue(
           FakeUserProfileRepository(),
         ),

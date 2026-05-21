@@ -61,47 +61,45 @@ void main() {
   // ---------- _SmsForm auto-record toggles (lines 300–308) ----------
 
   group('_SmsForm — autoRecord toggles (lines 300–308)', () {
-    testWidgets(
-      'autoRecordAudio switch fires onChanged (lines 300–301)',
-      (tester) async {
-        ChainStep? latest;
-        final step = _step(
-          ChainStepType.smsContact,
-          config: const SmsContactConfig(autoRecordAudio: false),
-        );
-        await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
-        await tester.pumpAndSettle();
+    testWidgets('autoRecordAudio switch fires onChanged (lines 300–301)', (
+      tester,
+    ) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.smsContact,
+        config: const SmsContactConfig(autoRecordAudio: false),
+      );
+      await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpAndSettle();
 
-        // SwitchListTiles order (includeLocation moved to defaults):
-        // includeMedical (0), autoRecordAudio (1), autoRecordVideo (2).
-        await tester.tap(find.byType(SwitchListTile).at(1));
-        await tester.pumpAndSettle();
+      // SwitchListTiles order (includeLocation moved to defaults):
+      // includeMedical (0), autoRecordAudio (1), autoRecordVideo (2).
+      await tester.tap(find.byType(SwitchListTile).at(1));
+      await tester.pumpAndSettle();
 
-        check(latest).isNotNull();
-        check((latest!.config! as SmsContactConfig).autoRecordAudio).isTrue();
-      },
-    );
+      check(latest).isNotNull();
+      check((latest!.config! as SmsContactConfig).autoRecordAudio).isTrue();
+    });
 
-    testWidgets(
-      'autoRecordVideo switch fires onChanged (lines 307–308)',
-      (tester) async {
-        ChainStep? latest;
-        final step = _step(
-          ChainStepType.smsContact,
-          config: const SmsContactConfig(autoRecordVideo: false),
-        );
-        await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
-        await tester.pumpAndSettle();
+    testWidgets('autoRecordVideo switch fires onChanged (lines 307–308)', (
+      tester,
+    ) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.smsContact,
+        config: const SmsContactConfig(autoRecordVideo: false),
+      );
+      await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpAndSettle();
 
-        // 3rd SwitchListTile (after includeLocation removed):
-        // autoRecordVideo (index 2).
-        await tester.tap(find.byType(SwitchListTile).at(2));
-        await tester.pumpAndSettle();
+      // 3rd SwitchListTile (after includeLocation removed):
+      // autoRecordVideo (index 2).
+      await tester.tap(find.byType(SwitchListTile).at(2));
+      await tester.pumpAndSettle();
 
-        check(latest).isNotNull();
-        check((latest!.config! as SmsContactConfig).autoRecordVideo).isTrue();
-      },
-    );
+      check(latest).isNotNull();
+      check((latest!.config! as SmsContactConfig).autoRecordVideo).isTrue();
+    });
   });
 
   // ---------- showRecordDuration TimingSlider (lines 312–327) ----------
@@ -136,53 +134,51 @@ void main() {
       },
     );
 
-    testWidgets(
-      'TimingSlider.onChanged fires copyWith(recordDurationSeconds) '
-      '(lines 320–327)',
-      (tester) async {
-        ChainStep? latest;
-        final step = _step(
-          ChainStepType.smsContact,
-          config: const SmsContactConfig(
-            autoRecordAudio: true,
-            recordDurationSeconds: 30,
-          ),
-        );
-        await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
-        await tester.pumpAndSettle();
+    testWidgets('TimingSlider.onChanged fires copyWith(recordDurationSeconds) '
+        '(lines 320–327)', (tester) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.smsContact,
+        config: const SmsContactConfig(
+          autoRecordAudio: true,
+          recordDurationSeconds: 30,
+        ),
+      );
+      await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpAndSettle();
 
-        final slider = tester.widget<TimingSlider>(find.byType(TimingSlider));
-        // Invoke slider.onChanged with a valid clamped value.
-        slider.onChanged(60);
-        await tester.pumpAndSettle();
+      final slider = tester.widget<TimingSlider>(find.byType(TimingSlider));
+      // Invoke slider.onChanged with a valid clamped value.
+      slider.onChanged(60);
+      await tester.pumpAndSettle();
 
-        check(latest).isNotNull();
-        check((latest!.config! as SmsContactConfig).recordDurationSeconds)
-            .equals(60);
-      },
-    );
+      check(latest).isNotNull();
+      check(
+        (latest!.config! as SmsContactConfig).recordDurationSeconds,
+      ).equals(60);
+    });
 
-    testWidgets(
-      'TimingSlider.onChanged clamps below min (line 321)',
-      (tester) async {
-        ChainStep? latest;
-        final step = _step(
-          ChainStepType.smsContact,
-          config: const SmsContactConfig(autoRecordAudio: true),
-        );
-        await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
-        await tester.pumpAndSettle();
+    testWidgets('TimingSlider.onChanged clamps below min (line 321)', (
+      tester,
+    ) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.smsContact,
+        config: const SmsContactConfig(autoRecordAudio: true),
+      );
+      await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpAndSettle();
 
-        final slider = tester.widget<TimingSlider>(find.byType(TimingSlider));
-        // 1 is below min (5) — should be clamped to 5.
-        slider.onChanged(1);
-        await tester.pumpAndSettle();
+      final slider = tester.widget<TimingSlider>(find.byType(TimingSlider));
+      // 1 is below min (5) — should be clamped to 5.
+      slider.onChanged(1);
+      await tester.pumpAndSettle();
 
-        check(latest).isNotNull();
-        check((latest!.config! as SmsContactConfig).recordDurationSeconds)
-            .equals(5); // _kMinRecordDurationSeconds
-      },
-    );
+      check(latest).isNotNull();
+      check(
+        (latest!.config! as SmsContactConfig).recordDurationSeconds,
+      ).equals(5); // _kMinRecordDurationSeconds
+    });
   });
 
   // ---------- _HardwareFormState.didUpdateWidget (lines 487, 490, 494) ----------
@@ -267,13 +263,9 @@ void main() {
         await tester.pumpAndSettle();
 
         // Switch to long-press by selecting the pattern dropdown.
-        await tester.tap(
-          find.byType(DropdownButtonFormField<HardwarePattern>),
-        );
+        await tester.tap(find.byType(DropdownButtonFormField<HardwarePattern>));
         await tester.pumpAndSettle();
-        await tester.tap(
-          find.byType(DropdownMenuItem<HardwarePattern>).last,
-        );
+        await tester.tap(find.byType(DropdownMenuItem<HardwarePattern>).last);
         await tester.pumpAndSettle();
 
         check(latest).isNotNull();
@@ -343,38 +335,37 @@ void main() {
       },
     );
 
-    testWidgets(
-      '_withLogGps covers smsContact branch (line 650)',
-      (tester) async {
-        ChainStep? latest;
-        final step = _step(
-          ChainStepType.smsContact,
-          config: const SmsContactConfig(logGps: LogGpsOverride.useDefault),
-        );
+    testWidgets('_withLogGps covers smsContact branch (line 650)', (
+      tester,
+    ) async {
+      ChainStep? latest;
+      final step = _step(
+        ChainStepType.smsContact,
+        config: const SmsContactConfig(logGps: LogGpsOverride.useDefault),
+      );
 
-        await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpWidget(_host(step, onChanged: (s) => latest = s));
+      await tester.pumpAndSettle();
+
+      final morePanel = find.byType(ExpansionTile);
+      if (morePanel.evaluate().isNotEmpty) {
+        await tester.tap(morePanel.first);
         await tester.pumpAndSettle();
+      }
 
-        final morePanel = find.byType(ExpansionTile);
-        if (morePanel.evaluate().isNotEmpty) {
-          await tester.tap(morePanel.first);
+      final dropdown = find.byType(DropdownButtonFormField<LogGpsOverride>);
+      if (dropdown.evaluate().isNotEmpty) {
+        await tester.tap(dropdown.first);
+        await tester.pumpAndSettle();
+        final items = find.byType(DropdownMenuItem<LogGpsOverride>);
+        if (items.evaluate().length > 1) {
+          await tester.tap(items.at(1));
           await tester.pumpAndSettle();
+          check(latest).isNotNull();
         }
+      }
 
-        final dropdown = find.byType(DropdownButtonFormField<LogGpsOverride>);
-        if (dropdown.evaluate().isNotEmpty) {
-          await tester.tap(dropdown.first);
-          await tester.pumpAndSettle();
-          final items = find.byType(DropdownMenuItem<LogGpsOverride>);
-          if (items.evaluate().length > 1) {
-            await tester.tap(items.at(1));
-            await tester.pumpAndSettle();
-            check(latest).isNotNull();
-          }
-        }
-
-        check(find.byType(EventSpecificConfig).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventSpecificConfig).evaluate()).isNotEmpty();
+    });
   });
 }

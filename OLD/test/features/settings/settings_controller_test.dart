@@ -49,10 +49,9 @@ void main() {
       addTearDown(container.dispose);
       final notifier = container.read(settingsControllerProvider.notifier);
       await container.read(settingsControllerProvider.future);
-      await notifier.save(const AppSettings(
-        defaults: AppDefaults(),
-        languageCode: 'de',
-      ));
+      await notifier.save(
+        const AppSettings(defaults: AppDefaults(), languageCode: 'de'),
+      );
       final s = container.read(settingsControllerProvider).value!;
       check(s.languageCode).equals('de');
     });
@@ -168,8 +167,9 @@ void main() {
       addTearDown(container.dispose);
       final notifier = container.read(settingsControllerProvider.notifier);
       await container.read(settingsControllerProvider.future);
-      check(container.read(settingsControllerProvider).value!.isFirstLaunch)
-          .isTrue();
+      check(
+        container.read(settingsControllerProvider).value!.isFirstLaunch,
+      ).isTrue();
       await notifier.completeOnboarding();
       final s = container.read(settingsControllerProvider).value!;
       check(s.isFirstLaunch).isFalse();

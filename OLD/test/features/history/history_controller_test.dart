@@ -37,9 +37,7 @@ void main() {
     });
 
     test('hydrates persisted logs', () async {
-      final container = _makeContainer(
-        seed: [_log('a'), _log('b')],
-      );
+      final container = _makeContainer(seed: [_log('a'), _log('b')]);
       addTearDown(container.dispose);
       final list = await container.read(historyControllerProvider.future);
       check(list.length).equals(2);
@@ -48,9 +46,7 @@ void main() {
 
   group('HistoryController.delete', () {
     test('removes single log', () async {
-      final container = _makeContainer(
-        seed: [_log('a'), _log('b'), _log('c')],
-      );
+      final container = _makeContainer(seed: [_log('a'), _log('b'), _log('c')]);
       addTearDown(container.dispose);
       final notifier = container.read(historyControllerProvider.notifier);
       await container.read(historyControllerProvider.future);
@@ -73,9 +69,7 @@ void main() {
 
   group('HistoryController.deleteAll', () {
     test('clears the repository', () async {
-      final container = _makeContainer(
-        seed: [_log('a'), _log('b')],
-      );
+      final container = _makeContainer(seed: [_log('a'), _log('b')]);
       addTearDown(container.dispose);
       final notifier = container.read(historyControllerProvider.notifier);
       await container.read(historyControllerProvider.future);

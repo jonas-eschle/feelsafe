@@ -23,8 +23,7 @@ EmergencyContact _contact({String? languageCode}) => EmergencyContact(
 
 void main() {
   group('SessionContext.resolvePreSmsTemplateForContact', () {
-    test('returns localized value when resolver returns non-empty string',
-        () {
+    test('returns localized value when resolver returns non-empty string', () {
       const context = SessionContext(
         defaultPreSmsTemplate: 'DEFAULT',
         preSmsTemplateForLanguage: _resolveDE,
@@ -57,11 +56,8 @@ void main() {
       check(result).equals('DEFAULT');
     });
 
-    test('falls back to default when preSmsTemplateForLanguage is null',
-        () {
-      const context = SessionContext(
-        defaultPreSmsTemplate: 'FALLBACK',
-      );
+    test('falls back to default when preSmsTemplateForLanguage is null', () {
+      const context = SessionContext(defaultPreSmsTemplate: 'FALLBACK');
       final result = context.resolvePreSmsTemplateForContact(
         _contact(languageCode: 'de'),
       );
@@ -70,8 +66,7 @@ void main() {
   });
 
   group('SessionContext.resolveSmsTemplateForContact (existing)', () {
-    test('returns localized value when resolver returns non-empty string',
-        () {
+    test('returns localized value when resolver returns non-empty string', () {
       const context = SessionContext(
         defaultSmsTemplate: 'DEFAULT',
         smsTemplateForLanguage: _resolveDE,

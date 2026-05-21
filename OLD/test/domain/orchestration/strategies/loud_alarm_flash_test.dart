@@ -57,20 +57,22 @@ void main() {
       flash: flash,
     );
 
-    test('starts strobe when flashLight=true and flash service is wired',
-        () async {
-      const strategy = LoudAlarmStrategy();
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.loudAlarm,
-          config: const LoudAlarmConfig(flashLight: true, flashSpeedMs: 200),
-        ),
-        buildServices(),
-      );
-      check(flash.calls).isNotEmpty();
-      check(flash.calls.any((c) => c.startsWith('startStrobe'))).isTrue();
-      check(flash.isStrobing).isTrue();
-    });
+    test(
+      'starts strobe when flashLight=true and flash service is wired',
+      () async {
+        const strategy = LoudAlarmStrategy();
+        await strategy.executeReal(
+          step(
+            type: ChainStepType.loudAlarm,
+            config: const LoudAlarmConfig(flashLight: true, flashSpeedMs: 200),
+          ),
+          buildServices(),
+        );
+        check(flash.calls).isNotEmpty();
+        check(flash.calls.any((c) => c.startsWith('startStrobe'))).isTrue();
+        check(flash.isStrobing).isTrue();
+      },
+    );
 
     test('does not start strobe when flashLight=false', () async {
       const strategy = LoudAlarmStrategy();

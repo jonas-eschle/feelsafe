@@ -69,9 +69,9 @@ Widget _app({
 /// Poke real time past the Flutter fake clock so Argon2id isolates complete.
 Future<void> _realSettle(WidgetTester tester, {int seconds = 4}) async {
   for (var i = 0; i < seconds * 5; i++) {
-    await tester.runAsync(() => Future<void>.delayed(
-          const Duration(milliseconds: 200),
-        ));
+    await tester.runAsync(
+      () => Future<void>.delayed(const Duration(milliseconds: 200)),
+    );
     await tester.pump();
   }
 }
@@ -110,11 +110,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -129,11 +125,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -148,11 +140,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -166,11 +154,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -185,16 +169,14 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
       // FilledButton with onPressed=null is disabled.
-      final submit = tester.widget<FilledButton>(find.byKey(const Key('pin-submit')));
+      final submit = tester.widget<FilledButton>(
+        find.byKey(const Key('pin-submit')),
+      );
       check(submit.onPressed).isNull();
       // Cleanup.
       await tester.tap(find.byType(TextButton).last);
@@ -202,16 +184,13 @@ void main() {
       check(r).equals(PinResult.cancelled);
     });
 
-    testWidgets('bullet dots are empty before any digit is typed',
-        (tester) async {
+    testWidgets('bullet dots are empty before any digit is typed', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -228,16 +207,13 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('PinEntryDialog — correct PIN', () {
-    testWidgets('correct 4-digit PIN + Submit returns PinResult.correct',
-        (tester) async {
+    testWidgets('correct 4-digit PIN + Submit returns PinResult.correct', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -251,11 +227,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('5678')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -269,16 +241,13 @@ void main() {
       check(find.byType(AlertDialog).evaluate().length).equals(0);
     });
 
-    testWidgets('correct 8-digit PIN + Submit returns PinResult.correct',
-        (tester) async {
+    testWidgets('correct 8-digit PIN + Submit returns PinResult.correct', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('12345678')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -288,18 +257,15 @@ void main() {
       check(r).equals(PinResult.correct);
     });
 
-    testWidgets('typing PIN without Submit keeps the dialog open',
-        (tester) async {
+    testWidgets('typing PIN without Submit keeps the dialog open', (
+      tester,
+    ) async {
       // Q12: no auto-submit on length match. The dialog stays open until
       // the user presses Submit.
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -324,11 +290,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('9999')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -342,43 +304,30 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('99999999')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
-      await _tapDigits(
-        tester,
-        ['1', '1', '1', '1', '1', '1', '1', '1'],
-      );
+      await _tapDigits(tester, ['1', '1', '1', '1', '1', '1', '1', '1']);
       await _tapSubmit(tester);
       await _realSettle(tester, seconds: 16);
       check(r).equals(PinResult.wrong);
     });
 
-    testWidgets('Q12: buffer accepts > 8 digits (no length cap)',
-        (tester) async {
+    testWidgets('Q12: buffer accepts > 8 digits (no length cap)', (
+      tester,
+    ) async {
       // Q12 (B4): the 8-digit hard cap was removed when auto-submit was
       // deleted. Typing 9 digits must show 9 bullet dots — Submit then
       // verifies the full 9-digit string.
       final hash = (await tester.runAsync(() => PinHasher.hash('99999999')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
-      await _tapDigits(
-        tester,
-        ['1', '1', '1', '1', '1', '1', '1', '1', '1'],
-      );
+      await _tapDigits(tester, ['1', '1', '1', '1', '1', '1', '1', '1', '1']);
       // 9 bullets visible (string of 9 '•' chars) — pump already done.
       check(find.text('•' * 9).evaluate().length).equals(1);
       // Cleanup.
@@ -397,11 +346,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -411,34 +356,33 @@ void main() {
     });
 
     testWidgets(
-        'Cancel after partial entry (3 digits) returns PinResult.cancelled',
-        (tester) async {
-      final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
-      PinResult? r;
-      await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
-      );
-      await tester.pump();
-      await _openDialog(tester);
-      await _tapDigits(tester, ['1', '2', '3']);
-      await tester.tap(find.byType(TextButton).last);
-      await _realSettle(tester, seconds: 1);
-      check(r).equals(PinResult.cancelled);
-    });
+      'Cancel after partial entry (3 digits) returns PinResult.cancelled',
+      (tester) async {
+        final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+        PinResult? r;
+        await tester.pumpWidget(
+          _app(
+            sessionEndHash: hash,
+            duressHash: null,
+            onResolved: (v) => r = v,
+          ),
+        );
+        await tester.pump();
+        await _openDialog(tester);
+        await _tapDigits(tester, ['1', '2', '3']);
+        await tester.tap(find.byType(TextButton).last);
+        await _realSettle(tester, seconds: 1);
+        check(r).equals(PinResult.cancelled);
+      },
+    );
 
-    testWidgets('barrier dismissal returns PinResult.cancelled', (tester) async {
+    testWidgets('barrier dismissal returns PinResult.cancelled', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -455,7 +399,9 @@ void main() {
 
   group('PinEntryDialog — duress PIN', () {
     testWidgets('duress PIN + Submit returns PinResult.duress', (tester) async {
-      final sessionHash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+      final sessionHash = (await tester.runAsync(
+        () => PinHasher.hash('1234'),
+      ))!;
       final duressHash = (await tester.runAsync(() => PinHasher.hash('9999')))!;
       PinResult? r;
       await tester.pumpWidget(
@@ -473,8 +419,9 @@ void main() {
       check(r).equals(PinResult.duress);
     });
 
-    testWidgets('duress is checked before correct (priority order)',
-        (tester) async {
+    testWidgets('duress is checked before correct (priority order)', (
+      tester,
+    ) async {
       // Hash the SAME PIN as both duress and session-end.
       // Duress must win.
       final samePin = (await tester.runAsync(() => PinHasher.hash('5555')))!;
@@ -497,16 +444,13 @@ void main() {
       check(r).equals(PinResult.duress);
     });
 
-    testWidgets('with no duress hash set, correct PIN returns correct',
-        (tester) async {
+    testWidgets('with no duress hash set, correct PIN returns correct', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('2222')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -522,8 +466,9 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('PinEntryDialog — timeout', () {
-    testWidgets('timeout=1 returns PinResult.timeout after 1 second',
-        (tester) async {
+    testWidgets('timeout=1 returns PinResult.timeout after 1 second', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
@@ -542,8 +487,9 @@ void main() {
       check(r).equals(PinResult.timeout);
     });
 
-    testWidgets('timeout=0 does not fire; Cancel returns cancelled',
-        (tester) async {
+    testWidgets('timeout=0 does not fire; Cancel returns cancelled', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
@@ -575,11 +521,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -594,15 +536,13 @@ void main() {
       check(r).equals(PinResult.cancelled);
     });
 
-    testWidgets('three digits then two backspaces → one bullet', (tester) async {
+    testWidgets('three digits then two backspaces → one bullet', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -623,11 +563,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -648,11 +584,7 @@ void main() {
       final hash = (await tester.runAsync(() => PinHasher.hash('2345')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -673,88 +605,92 @@ void main() {
 
   group('PinEntryDialog — biometric', () {
     testWidgets(
-        'biometric success → PinResult.correct without showing keypad',
-        (tester) async {
-      final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
-      final bio = FakeBiometricService(
-        available: true,
-        nextResult: BiometricResult.success,
-      );
-      PinResult? r;
-      await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          biometric: bio,
-          onResolved: (v) => r = v,
-        ),
-      );
-      await tester.pump();
-      await _openDialog(tester);
-      await _realSettle(tester, seconds: 2);
-      // Should have resolved to correct via biometric — no keypad shown.
-      check(r).equals(PinResult.correct);
-      check(find.byType(AlertDialog).evaluate().length).equals(0);
-    });
+      'biometric success → PinResult.correct without showing keypad',
+      (tester) async {
+        final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+        final bio = FakeBiometricService(
+          available: true,
+          nextResult: BiometricResult.success,
+        );
+        PinResult? r;
+        await tester.pumpWidget(
+          _app(
+            sessionEndHash: hash,
+            duressHash: null,
+            biometric: bio,
+            onResolved: (v) => r = v,
+          ),
+        );
+        await tester.pump();
+        await _openDialog(tester);
+        await _realSettle(tester, seconds: 2);
+        // Should have resolved to correct via biometric — no keypad shown.
+        check(r).equals(PinResult.correct);
+        check(find.byType(AlertDialog).evaluate().length).equals(0);
+      },
+    );
 
     testWidgets(
-        'biometric cancelled → falls back to keypad; correct PIN+Submit works',
-        (tester) async {
-      final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
-      final bio = FakeBiometricService(
-        available: true,
-        nextResult: BiometricResult.cancelled,
-      );
-      PinResult? r;
-      await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          biometric: bio,
-          onResolved: (v) => r = v,
-        ),
-      );
-      await tester.pump();
-      await _openDialog(tester);
-      await _realSettle(tester, seconds: 2);
-      // Keypad should now be visible.
-      check(find.byType(PinKeypad).evaluate().length).isGreaterOrEqual(1);
-      await _tapDigits(tester, ['1', '2', '3', '4']);
-      await _tapSubmit(tester);
-      await _realSettle(tester, seconds: 6);
-      check(r).equals(PinResult.correct);
-    });
+      'biometric cancelled → falls back to keypad; correct PIN+Submit works',
+      (tester) async {
+        final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+        final bio = FakeBiometricService(
+          available: true,
+          nextResult: BiometricResult.cancelled,
+        );
+        PinResult? r;
+        await tester.pumpWidget(
+          _app(
+            sessionEndHash: hash,
+            duressHash: null,
+            biometric: bio,
+            onResolved: (v) => r = v,
+          ),
+        );
+        await tester.pump();
+        await _openDialog(tester);
+        await _realSettle(tester, seconds: 2);
+        // Keypad should now be visible.
+        check(find.byType(PinKeypad).evaluate().length).isGreaterOrEqual(1);
+        await _tapDigits(tester, ['1', '2', '3', '4']);
+        await _tapSubmit(tester);
+        await _realSettle(tester, seconds: 6);
+        check(r).equals(PinResult.correct);
+      },
+    );
 
     testWidgets(
-        'biometric unavailable → falls back to keypad; correct PIN+Submit works',
-        (tester) async {
-      final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
-      final bio = FakeBiometricService(
-        available: false,
-        nextResult: BiometricResult.unavailable,
-      );
-      PinResult? r;
-      await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          biometric: bio,
-          onResolved: (v) => r = v,
-        ),
-      );
-      await tester.pump();
-      await _openDialog(tester);
-      await _realSettle(tester, seconds: 2);
-      // Keypad visible as fallback.
-      check(find.byType(PinKeypad).evaluate().length).isGreaterOrEqual(1);
-      await _tapDigits(tester, ['1', '2', '3', '4']);
-      await _tapSubmit(tester);
-      await _realSettle(tester, seconds: 6);
-      check(r).equals(PinResult.correct);
-    });
+      'biometric unavailable → falls back to keypad; correct PIN+Submit works',
+      (tester) async {
+        final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+        final bio = FakeBiometricService(
+          available: false,
+          nextResult: BiometricResult.unavailable,
+        );
+        PinResult? r;
+        await tester.pumpWidget(
+          _app(
+            sessionEndHash: hash,
+            duressHash: null,
+            biometric: bio,
+            onResolved: (v) => r = v,
+          ),
+        );
+        await tester.pump();
+        await _openDialog(tester);
+        await _realSettle(tester, seconds: 2);
+        // Keypad visible as fallback.
+        check(find.byType(PinKeypad).evaluate().length).isGreaterOrEqual(1);
+        await _tapDigits(tester, ['1', '2', '3', '4']);
+        await _tapSubmit(tester);
+        await _realSettle(tester, seconds: 6);
+        check(r).equals(PinResult.correct);
+      },
+    );
 
-    testWidgets('biometric records the authenticate reason prompt',
-        (tester) async {
+    testWidgets('biometric records the authenticate reason prompt', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       final bio = FakeBiometricService(
         available: true,
@@ -777,17 +713,13 @@ void main() {
       check(bio.prompts).isNotEmpty();
     });
 
-    testWidgets(
-        'biometric=null ignores biometric entirely; keypad shown',
-        (tester) async {
+    testWidgets('biometric=null ignores biometric entirely; keypad shown', (
+      tester,
+    ) async {
       final hash = (await tester.runAsync(() => PinHasher.hash('1234')))!;
       PinResult? r;
       await tester.pumpWidget(
-        _app(
-          sessionEndHash: hash,
-          duressHash: null,
-          onResolved: (v) => r = v,
-        ),
+        _app(sessionEndHash: hash, duressHash: null, onResolved: (v) => r = v),
       );
       await tester.pump();
       await _openDialog(tester);
@@ -797,9 +729,9 @@ void main() {
       check(r).equals(PinResult.cancelled);
     });
 
-    testWidgets(
-        'biometric skipped when sessionEndHash is null; keypad shown',
-        (tester) async {
+    testWidgets('biometric skipped when sessionEndHash is null; keypad shown', (
+      tester,
+    ) async {
       // Spec: biometric is only tried when sessionEndHash != null.
       final bio = FakeBiometricService(
         available: true,

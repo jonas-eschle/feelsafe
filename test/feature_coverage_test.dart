@@ -56,6 +56,8 @@ const List<_FeatureStatus> _features = [
     id: 'F-010',
     description: 'Hardware-button distress (5x volume)',
     phase: 2,
+    implemented: true,
+    tested: true,
   ),
   _FeatureStatus(id: 'F-011', description: 'Duress PIN trigger', phase: 5),
   _FeatureStatus(
@@ -67,8 +69,16 @@ const List<_FeatureStatus> _features = [
     id: 'F-013',
     description: 'GPS-arrival disarm trigger',
     phase: 2,
+    implemented: true,
+    tested: true,
   ),
-  _FeatureStatus(id: 'F-014', description: 'Timer disarm trigger', phase: 2),
+  _FeatureStatus(
+    id: 'F-014',
+    description: 'Timer disarm trigger',
+    phase: 2,
+    implemented: true,
+    tested: true,
+  ),
   _FeatureStatus(
     id: 'F-015',
     description: 'Low-battery alert chain (separate engine)',
@@ -211,14 +221,34 @@ const List<_FeatureStatus> _features = [
   _FeatureStatus(id: 'F-086', description: 'ARB: he (RTL)', phase: 8),
 
   // ── Engine & data (F-087..F-100) ─────────────────────────────────
-  _FeatureStatus(id: 'F-087', description: 'Pure-Dart SessionEngine', phase: 2),
+  _FeatureStatus(
+    id: 'F-087',
+    description: 'Pure-Dart SessionEngine',
+    phase: 2,
+    implemented: true,
+    tested: true,
+  ),
   _FeatureStatus(
     id: 'F-088',
     description: 'Speed multipliers (fg/bg caps)',
     phase: 2,
+    implemented: true,
+    tested: true,
   ),
-  _FeatureStatus(id: 'F-089', description: 'Jitter ±20%', phase: 2),
-  _FeatureStatus(id: 'F-090', description: 'Pause/resume', phase: 2),
+  _FeatureStatus(
+    id: 'F-089',
+    description: 'Jitter ±20%',
+    phase: 2,
+    implemented: true,
+    tested: true,
+  ),
+  _FeatureStatus(
+    id: 'F-090',
+    description: 'Pause/resume',
+    phase: 2,
+    implemented: true,
+    tested: true,
+  ),
   _FeatureStatus(id: 'F-091', description: 'Session logging', phase: 5),
   _FeatureStatus(id: 'F-092', description: 'Log export', phase: 6),
   _FeatureStatus(
@@ -324,7 +354,13 @@ const List<_FeatureStatus> _features = [
   _FeatureStatus(id: 'F-127', description: 'ScreenFlash channel', phase: 7),
 
   // ── Tests (F-128..F-139) ─────────────────────────────────────────
-  _FeatureStatus(id: 'F-128', description: 'Engine unit tests', phase: 2),
+  _FeatureStatus(
+    id: 'F-128',
+    description: 'Engine unit tests',
+    phase: 2,
+    implemented: true,
+    tested: true,
+  ),
   _FeatureStatus(id: 'F-129', description: 'Strategy unit tests', phase: 3),
   _FeatureStatus(
     id: 'F-130',
@@ -403,11 +439,15 @@ const List<_FeatureStatus> _features = [
     id: 'F-146',
     description: 'Session locks (no re-entry during active session)',
     phase: 2,
+    implemented: true,
+    tested: true,
   ),
   _FeatureStatus(
     id: 'F-147',
     description: 'HardwareButton-as-step OR trigger validator',
     phase: 2,
+    implemented: true,
+    tested: true,
   ),
   _FeatureStatus(
     id: 'F-148',

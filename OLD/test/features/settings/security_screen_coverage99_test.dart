@@ -40,10 +40,8 @@ const _stubDuressHash =
     r'$AAAAAAAAAAAAAAAAAAAAAA'
     r'$AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
 
-Widget _host(
-  Widget child, {
-  List<Override> overrides = const [],
-}) => hostScreenWithRouter(child: child, overrides: overrides);
+Widget _host(Widget child, {List<Override> overrides = const []}) =>
+    hostScreenWithRouter(child: child, overrides: overrides);
 
 FakeSettingsRepository _repo(AppSettings s) => FakeSettingsRepository(s);
 
@@ -78,40 +76,43 @@ void main() {
       (tester) async {
         // No appPinHash → onChanged should be null → switch is disabled.
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
         // Find the first SwitchListTile (app-PIN biometric).
-        final switches = tester.widgetList<SwitchListTile>(
-          find.byType(SwitchListTile),
-        ).toList();
+        final switches = tester
+            .widgetList<SwitchListTile>(find.byType(SwitchListTile))
+            .toList();
         check(switches.length).isGreaterOrEqual(3);
         // When onChanged is null the switch is disabled.
         check(switches[0].onChanged).isNull();
       },
     );
 
-    testWidgets(
-      'app-PIN biometric switch is enabled when appPinHash is set',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(defaults: AppDefaults(), appPinHash: 'h'),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('app-PIN biometric switch is enabled when appPinHash is set', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(defaults: AppDefaults(), appPinHash: 'h'),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        final switches = tester.widgetList<SwitchListTile>(
-          find.byType(SwitchListTile),
-        ).toList();
-        check(switches[0].onChanged).isNotNull();
-      },
-    );
+      final switches = tester
+          .widgetList<SwitchListTile>(find.byType(SwitchListTile))
+          .toList();
+      check(switches[0].onChanged).isNotNull();
+    });
 
     testWidgets(
       'toggling app-PIN biometric switch calls setAppPinBiometricEnabled',
@@ -123,10 +124,12 @@ void main() {
             appPinBiometricEnabled: false,
           ),
         );
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
         // Tap the first SwitchListTile.
@@ -141,15 +144,17 @@ void main() {
       'session-end biometric switch is disabled when sessionEndPinHash null',
       (tester) async {
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
-        final switches = tester.widgetList<SwitchListTile>(
-          find.byType(SwitchListTile),
-        ).toList();
+        final switches = tester
+            .widgetList<SwitchListTile>(find.byType(SwitchListTile))
+            .toList();
         check(switches[1].onChanged).isNull();
       },
     );
@@ -164,10 +169,12 @@ void main() {
             sessionEndPinBiometricEnabled: false,
           ),
         );
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
         // Second SwitchListTile = session-end biometric.
@@ -182,15 +189,17 @@ void main() {
       'distress-cancel biometric switch is disabled when appPinHash null',
       (tester) async {
         final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
-        final switches = tester.widgetList<SwitchListTile>(
-          find.byType(SwitchListTile),
-        ).toList();
+        final switches = tester
+            .widgetList<SwitchListTile>(find.byType(SwitchListTile))
+            .toList();
         // Third SwitchListTile = distress-cancel biometric.
         check(switches[2].onChanged).isNull();
       },
@@ -211,10 +220,12 @@ void main() {
             distressCancelBiometricEnabled: false,
           ),
         );
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
         // Third SwitchListTile is distress-cancel biometric.
@@ -225,28 +236,29 @@ void main() {
       },
     );
 
-    testWidgets(
-      'toggling app-PIN biometric OFF persists false',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            appPinHash: 'h',
-            appPinBiometricEnabled: true,
-          ),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('toggling app-PIN biometric OFF persists false', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          appPinHash: 'h',
+          appPinBiometricEnabled: true,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byType(SwitchListTile).first);
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byType(SwitchListTile).first);
+      await tester.pumpAndSettleTall();
 
-        check(repo.stored!.appPinBiometricEnabled).isFalse();
-      },
-    );
+      check(repo.stored!.appPinBiometricEnabled).isFalse();
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -254,191 +266,196 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('SecurityScreen duress-PIN test row', () {
-    testWidgets(
-      'duress-PIN test row is hidden when duressPinHash is null',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
+    testWidgets('duress-PIN test row is hidden when duressPinHash is null', (
+      tester,
+    ) async {
+      final repo = _repo(const AppSettings(defaults: AppDefaults()));
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        // Icon.verified_outlined appears only in the duress-test tile.
-        check(find.byIcon(Icons.verified_outlined).evaluate()).isEmpty();
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettleTall();
+      // Icon.verified_outlined appears only in the duress-test tile.
+      check(find.byIcon(Icons.verified_outlined).evaluate()).isEmpty();
+    });
 
-    testWidgets(
-      'duress-PIN test row is shown when duressPinHash is set',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('duress-PIN test row is shown when duressPinHash is set', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        check(find.byIcon(Icons.verified_outlined).evaluate()).isNotEmpty();
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettleTall();
+      check(find.byIcon(Icons.verified_outlined).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'tapping duress-PIN test row opens AlertDialog',
-      (tester) async {
-        // Give extra height so the dialog's Column doesn't overflow.
-        await tester.binding.setSurfaceSize(const Size(800, 1200));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('tapping duress-PIN test row opens AlertDialog', (
+      tester,
+    ) async {
+      // Give extra height so the dialog's Column doesn't overflow.
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byIcon(Icons.verified_outlined));
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byIcon(Icons.verified_outlined));
+      await tester.pumpAndSettleTall();
 
-        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'duress test dialog shows PinKeypad',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(800, 1200));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('duress test dialog shows PinKeypad', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byIcon(Icons.verified_outlined));
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byIcon(Icons.verified_outlined));
+      await tester.pumpAndSettleTall();
 
-        // PinKeypad is rendered inside the dialog.
-        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
-        // The keypad renders digit buttons — verify at least one is shown.
-        check(find.text('1').evaluate()).isNotEmpty();
-      },
-    );
+      // PinKeypad is rendered inside the dialog.
+      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+      // The keypad renders digit buttons — verify at least one is shown.
+      check(find.text('1').evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'tapping OK button in duress test dialog closes it',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(800, 1200));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('tapping OK button in duress test dialog closes it', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byIcon(Icons.verified_outlined));
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byIcon(Icons.verified_outlined));
+      await tester.pumpAndSettleTall();
 
-        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
 
-        await tester.tap(find.byType(TextButton).last);
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byType(TextButton).last);
+      await tester.pumpAndSettleTall();
 
-        check(find.byType(AlertDialog).evaluate()).isEmpty();
-      },
-    );
+      check(find.byType(AlertDialog).evaluate()).isEmpty();
+    });
 
-    testWidgets(
-      'entering digits in duress-test dialog updates dot display',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(800, 1200));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('entering digits in duress-test dialog updates dot display', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byIcon(Icons.verified_outlined));
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byIcon(Icons.verified_outlined));
+      await tester.pumpAndSettleTall();
 
-        // Tap 1, 2, 3 on the keypad.
-        await tester.tap(find.text('1').first);
-        await tester.pump();
-        await tester.tap(find.text('2').first);
-        await tester.pump();
-        await tester.tap(find.text('3').first);
-        await tester.pump();
+      // Tap 1, 2, 3 on the keypad.
+      await tester.tap(find.text('1').first);
+      await tester.pump();
+      await tester.tap(find.text('2').first);
+      await tester.pump();
+      await tester.tap(find.text('3').first);
+      await tester.pump();
 
-        // Three digits entered — three bullet chars should appear.
-        check(find.text('•••').evaluate()).isNotEmpty();
-      },
-    );
+      // Three digits entered — three bullet chars should appear.
+      check(find.text('•••').evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'backspace in duress-test dialog removes a digit',
-      (tester) async {
-        await tester.binding.setSurfaceSize(const Size(800, 1200));
-        addTearDown(() => tester.binding.setSurfaceSize(null));
+    testWidgets('backspace in duress-test dialog removes a digit', (
+      tester,
+    ) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
 
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: _stubDuressHash,
-          ),
-        );
-        await tester.pumpWidget(_host(
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          duressPinHash: _stubDuressHash,
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byIcon(Icons.verified_outlined));
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byIcon(Icons.verified_outlined));
+      await tester.pumpAndSettleTall();
 
-        // Enter two digits then backspace once.
-        await tester.tap(find.text('1').first);
-        await tester.pump();
-        await tester.tap(find.text('2').first);
-        await tester.pump();
+      // Enter two digits then backspace once.
+      await tester.tap(find.text('1').first);
+      await tester.pump();
+      await tester.tap(find.text('2').first);
+      await tester.pump();
 
-        // Tap the backspace key (⌫ label in PinKeypad).
-        await tester.tap(find.text('⌫').first);
-        await tester.pump();
+      // Tap the backspace key (⌫ label in PinKeypad).
+      await tester.tap(find.text('⌫').first);
+      await tester.pump();
 
-        // Only one digit should remain.
-        check(find.text('•').evaluate()).isNotEmpty();
-      },
-    );
+      // Only one digit should remain.
+      check(find.text('•').evaluate()).isNotEmpty();
+    });
 
     testWidgets(
       'entering 4 digits triggers verification and shows result text',
@@ -452,10 +469,12 @@ void main() {
             duressPinHash: _stubDuressHash,
           ),
         );
-        await tester.pumpWidget(_host(
-          const SecurityScreen(),
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
+        await tester.pumpWidget(
+          _host(
+            const SecurityScreen(),
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+          ),
+        );
         await tester.pumpAndSettleTall();
 
         await tester.tap(find.byIcon(Icons.verified_outlined));
@@ -494,113 +513,110 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('SecurityScreen _PinRow buttons', () {
-    testWidgets(
-      'shows Set PIN button when no PIN is configured',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
+    testWidgets('shows Set PIN button when no PIN is configured', (
+      tester,
+    ) async {
+      final repo = _repo(const AppSettings(defaults: AppDefaults()));
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        // With no PINs set, FilledButtons should show "Set PIN".
-        final filledButtons = tester.widgetList<FilledButton>(
-          find.byType(FilledButton),
-        ).toList();
-        check(filledButtons.length).equals(3);
-      },
-    );
+      // With no PINs set, FilledButtons should show "Set PIN".
+      final filledButtons = tester
+          .widgetList<FilledButton>(find.byType(FilledButton))
+          .toList();
+      check(filledButtons.length).equals(3);
+    });
 
-    testWidgets(
-      'shows Change and Disable when PIN is already set',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(defaults: AppDefaults(), appPinHash: 'h'),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('shows Change and Disable when PIN is already set', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(defaults: AppDefaults(), appPinHash: 'h'),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        // Disable buttons are TextButtons (one per set PIN row).
-        check(find.byType(TextButton).evaluate().length).isGreaterOrEqual(1);
-        // Change/Set buttons are FilledButtons (one per row regardless).
-        check(find.byType(FilledButton).evaluate().length).isGreaterOrEqual(1);
-      },
-    );
+      // Disable buttons are TextButtons (one per set PIN row).
+      check(find.byType(TextButton).evaluate().length).isGreaterOrEqual(1);
+      // Change/Set buttons are FilledButtons (one per row regardless).
+      check(find.byType(FilledButton).evaluate().length).isGreaterOrEqual(1);
+    });
 
-    testWidgets(
-      'disabling session-end PIN clears sessionEndPinHash',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            sessionEndPinHash: 'se',
-          ),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('disabling session-end PIN clears sessionEndPinHash', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(defaults: AppDefaults(), sessionEndPinHash: 'se'),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        // The Disable TextButton for session-end is the first TextButton.
-        await tester.tap(find.byType(TextButton).first);
-        await tester.pumpAndSettleTall();
+      // The Disable TextButton for session-end is the first TextButton.
+      await tester.tap(find.byType(TextButton).first);
+      await tester.pumpAndSettleTall();
 
-        check(repo.stored!.sessionEndPinHash).isNull();
-      },
-    );
+      check(repo.stored!.sessionEndPinHash).isNull();
+    });
 
-    testWidgets(
-      'disabling duress PIN clears duressPinHash',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            duressPinHash: 'dp',
-          ),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('disabling duress PIN clears duressPinHash', (tester) async {
+      final repo = _repo(
+        const AppSettings(defaults: AppDefaults(), duressPinHash: 'dp'),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.tap(find.byType(TextButton).first);
-        await tester.pumpAndSettleTall();
+      await tester.tap(find.byType(TextButton).first);
+      await tester.pumpAndSettleTall();
 
-        check(repo.stored!.duressPinHash).isNull();
-      },
-    );
+      check(repo.stored!.duressPinHash).isNull();
+    });
 
-    testWidgets(
-      'all three disable buttons shown when all three PINs are set',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(
-            defaults: AppDefaults(),
-            appPinHash: 'a',
-            sessionEndPinHash: 'b',
-            duressPinHash: 'c',
-          ),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('all three disable buttons shown when all three PINs are set', (
+      tester,
+    ) async {
+      final repo = _repo(
+        const AppSettings(
+          defaults: AppDefaults(),
+          appPinHash: 'a',
+          sessionEndPinHash: 'b',
+          duressPinHash: 'c',
+        ),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        // Three Disable TextButtons (one per PIN row) plus OK button from
-        // any possible dialog. Without dialog open = exactly 3.
-        final textButtons = tester.widgetList<TextButton>(
-          find.byType(TextButton),
-        ).toList();
-        check(textButtons.length).isGreaterOrEqual(3);
-      },
-    );
+      // Three Disable TextButtons (one per PIN row) plus OK button from
+      // any possible dialog. Without dialog open = exactly 3.
+      final textButtons = tester
+          .widgetList<TextButton>(find.byType(TextButton))
+          .toList();
+      check(textButtons.length).isGreaterOrEqual(3);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -610,53 +626,52 @@ void main() {
   group('SecurityScreen PIN timeout slider', () {
     // Phase 8 (DE-1): pin-timeout slider is now a TimingSlider with
     // log-snap stops; the user-facing field is `seconds`.
-    testWidgets(
-      'TimingSlider reflects default pin timeout (15 seconds)',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
+    testWidgets('TimingSlider reflects default pin timeout (15 seconds)', (
+      tester,
+    ) async {
+      final repo = _repo(const AppSettings(defaults: AppDefaults()));
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
-        check(w.seconds).equals(15);
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettleTall();
+      final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+      check(w.seconds).equals(15);
+    });
 
-    testWidgets(
-      'TimingSlider reflects persisted pin timeout',
-      (tester) async {
-        final repo = _repo(
-          const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 30),
-        );
-        await tester.pumpWidget(_host(
+    testWidgets('TimingSlider reflects persisted pin timeout', (tester) async {
+      final repo = _repo(
+        const AppSettings(defaults: AppDefaults(), pinTimeoutSeconds: 30),
+      );
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
-        check(w.seconds).equals(30);
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettleTall();
+      final w = tester.widget<TimingSlider>(find.byType(TimingSlider).first);
+      check(w.seconds).equals(30);
+    });
 
-    testWidgets(
-      'dragging slider persists new pin timeout',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
+    testWidgets('dragging slider persists new pin timeout', (tester) async {
+      final repo = _repo(const AppSettings(defaults: AppDefaults()));
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
+        ),
+      );
+      await tester.pumpAndSettleTall();
 
-        await tester.drag(find.byType(Slider).first, const Offset(100, 0));
-        await tester.pumpAndSettleTall();
+      await tester.drag(find.byType(Slider).first, const Offset(100, 0));
+      await tester.pumpAndSettleTall();
 
-        check(repo.stored).isNotNull();
-        check(repo.stored!.pinTimeoutSeconds).isGreaterThan(0);
-      },
-    );
+      check(repo.stored).isNotNull();
+      check(repo.stored!.pinTimeoutSeconds).isGreaterThan(0);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -664,17 +679,18 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('SecurityScreen loading state', () {
-    testWidgets(
-      'SecurityScreen renders when settings are loaded',
-      (tester) async {
-        final repo = _repo(const AppSettings(defaults: AppDefaults()));
-        await tester.pumpWidget(_host(
+    testWidgets('SecurityScreen renders when settings are loaded', (
+      tester,
+    ) async {
+      final repo = _repo(const AppSettings(defaults: AppDefaults()));
+      await tester.pumpWidget(
+        _host(
           const SecurityScreen(),
           overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        ));
-        await tester.pumpAndSettleTall();
-        check(find.byType(ListView).evaluate()).isNotEmpty();
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettleTall();
+      check(find.byType(ListView).evaluate()).isNotEmpty();
+    });
   });
 }

@@ -55,19 +55,21 @@ class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
 
   List<SessionLog> _filter(List<SessionLog> logs) {
     final query = _searchCtrl.text.trim().toLowerCase();
-    return logs.where((log) {
-      if (_modeFilter != null && log.modeName != _modeFilter) return false;
-      if (_dateRange != null) {
-        final start = _dateRange!.start;
-        final endInclusive = _dateRange!.end
-            .add(const Duration(days: 1))
-            .subtract(const Duration(microseconds: 1));
-        if (log.startedAt.isBefore(start)) return false;
-        if (log.startedAt.isAfter(endInclusive)) return false;
-      }
-      if (query.isEmpty) return true;
-      return log.modeName.toLowerCase().contains(query);
-    }).toList(growable: false);
+    return logs
+        .where((log) {
+          if (_modeFilter != null && log.modeName != _modeFilter) return false;
+          if (_dateRange != null) {
+            final start = _dateRange!.start;
+            final endInclusive = _dateRange!.end
+                .add(const Duration(days: 1))
+                .subtract(const Duration(microseconds: 1));
+            if (log.startedAt.isBefore(start)) return false;
+            if (log.startedAt.isAfter(endInclusive)) return false;
+          }
+          if (query.isEmpty) return true;
+          return log.modeName.toLowerCase().contains(query);
+        })
+        .toList(growable: false);
   }
 
   @override
@@ -100,8 +102,7 @@ class _PastEventsScreenState extends ConsumerState<PastEventsScreen> {
                   onSearchChanged: () => setState(() {}),
                   modeNames: {for (final log in logs) log.modeName},
                   modeFilter: _modeFilter,
-                  onModeFilterChanged: (v) =>
-                      setState(() => _modeFilter = v),
+                  onModeFilterChanged: (v) => setState(() => _modeFilter = v),
                   dateRange: _dateRange,
                   onPickDateRange: _pickDateRange,
                   onClearDateRange: () => setState(() => _dateRange = null),
@@ -189,10 +190,7 @@ class _Filters extends StatelessWidget {
                   child: Text(l.historyFilterModeAll),
                 ),
                 for (final name in modeNames)
-                  DropdownMenuItem<String?>(
-                    value: name,
-                    child: Text(name),
-                  ),
+                  DropdownMenuItem<String?>(value: name, child: Text(name)),
               ],
               onChanged: onModeFilterChanged,
             ),

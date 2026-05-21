@@ -512,12 +512,7 @@ void main() {
   group('SessionEngine.restartCurrentStep', () {
     test('restartCurrentStep re-enters current step at wait phase', () {
       fakeAsync((async) {
-        final e = _mk([
-          smsStep(
-            durationSeconds: 5,
-            gracePeriodSeconds: 1,
-          ),
-        ]);
+        final e = _mk([smsStep(durationSeconds: 5, gracePeriodSeconds: 1)]);
         e.start();
         async.elapse(const Duration(seconds: 2));
         async.flushMicrotasks();

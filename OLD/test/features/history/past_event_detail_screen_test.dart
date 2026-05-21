@@ -22,47 +22,57 @@ SessionLog _log(String id) => SessionLog(
 );
 
 void main() {
-  testWidgets('PastEventDetailScreen shows empty when id missing',
-      (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        sessionLogsRepositoryProvider
-            .overrideWithValue(FakeSessionLogsRepository()),
-      ],
-      child: const PastEventDetailScreen(),
-    ));
+  testWidgets('PastEventDetailScreen shows empty when id missing', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository(),
+          ),
+        ],
+        child: const PastEventDetailScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(PastEventDetailScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets('PastEventDetailScreen renders details for existing log',
-      (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        sessionLogsRepositoryProvider.overrideWithValue(
-          FakeSessionLogsRepository([_log('log-1')]),
-        ),
-      ],
-      initialLocation: '/?id=log-1',
-      child: const PastEventDetailScreen(),
-    ));
+  testWidgets('PastEventDetailScreen renders details for existing log', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-1')]),
+          ),
+        ],
+        initialLocation: '/?id=log-1',
+        child: const PastEventDetailScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(PastEventDetailScreen).evaluate().length).equals(1);
     check(find.text('Walk').evaluate().length).equals(1);
   });
 
-  testWidgets('PastEventDetailScreen shows a share FAB for existing log',
-      (tester) async {
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [
-        sessionLogsRepositoryProvider.overrideWithValue(
-          FakeSessionLogsRepository([_log('log-2')]),
-        ),
-      ],
-      initialLocation: '/?id=log-2',
-      child: const PastEventDetailScreen(),
-    ));
+  testWidgets('PastEventDetailScreen shows a share FAB for existing log', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-2')]),
+          ),
+        ],
+        initialLocation: '/?id=log-2',
+        child: const PastEventDetailScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(FloatingActionButton).evaluate().length).equals(1);
   });

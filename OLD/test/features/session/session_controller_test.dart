@@ -35,8 +35,8 @@ class _FakeModesRepository extends ModesRepository {
   _FakeModesRepository(
     List<SessionMode> initial, {
     List<SessionMode> extraModes = const [],
-  })  : _items = [...initial, ...extraModes],
-        super.forTesting();
+  }) : _items = [...initial, ...extraModes],
+       super.forTesting();
   final List<SessionMode> _items;
 
   @override
@@ -495,9 +495,15 @@ _Fixture _makeFixture({
   // Phase 2.5: distress modes live in the modes repo with
   // isDistressMode=true. Tests pass them via [distressModes].
   final effectiveDistressModes =
-      distressModes ?? [makeDistressMode(steps: [smsStep(order: 0)])];
+      distressModes ??
+      [
+        makeDistressMode(steps: [smsStep(order: 0)]),
+      ];
   final modesRepo = _FakeModesRepository(
-    modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
+    modes ??
+        [
+          makeMode(id: 'mode-1', steps: [holdStep()]),
+        ],
     extraModes: effectiveDistressModes,
   );
   final contactsRepo = _FakeContactsRepository(contacts ?? const []);
@@ -572,11 +578,7 @@ void main() {
 
     test('throws when mode has no chain steps', () async {
       final modes = [
-        const SessionMode(
-          id: 'empty',
-          name: 'Empty',
-          chainSteps: [],
-        ),
+        const SessionMode(id: 'empty', name: 'Empty', chainSteps: []),
       ];
       final fx = _makeFixture(modes: modes);
       addTearDown(fx.container.dispose);
@@ -592,11 +594,7 @@ void main() {
       () async {
         final fx = _makeFixture(
           distressModes: [
-            const SessionMode(
-              id: 'empty',
-              name: 'Empty',
-              isDistressMode: true,
-            ),
+            const SessionMode(id: 'empty', name: 'Empty', isDistressMode: true),
           ],
         );
         addTearDown(fx.container.dispose);
@@ -961,18 +959,23 @@ void main() {
       check(fx.container.read(sessionControllerProvider).value).isNotNull();
     });
 
-    test('falls back to first distress mode when distressModeId is null', () async {
-      final distressModes = [
-        makeDistressMode(id: 'first', steps: [smsStep(order: 0)]),
-        makeDistressMode(id: 'second', steps: [smsStep(order: 0)]),
-      ];
-      final fx = _makeFixture(distressModes: distressModes);
-      addTearDown(fx.container.dispose);
-      final controller = fx.container.read(sessionControllerProvider.notifier);
-      await fx.container.read(sessionControllerProvider.future);
-      await controller.startSession(modeId: 'mode-1');
-      check(fx.container.read(sessionControllerProvider).value).isNotNull();
-    });
+    test(
+      'falls back to first distress mode when distressModeId is null',
+      () async {
+        final distressModes = [
+          makeDistressMode(id: 'first', steps: [smsStep(order: 0)]),
+          makeDistressMode(id: 'second', steps: [smsStep(order: 0)]),
+        ];
+        final fx = _makeFixture(distressModes: distressModes);
+        addTearDown(fx.container.dispose);
+        final controller = fx.container.read(
+          sessionControllerProvider.notifier,
+        );
+        await fx.container.read(sessionControllerProvider.future);
+        await controller.startSession(modeId: 'mode-1');
+        check(fx.container.read(sessionControllerProvider).value).isNotNull();
+      },
+    );
   });
 
   group('SessionController fake-call methods', () {

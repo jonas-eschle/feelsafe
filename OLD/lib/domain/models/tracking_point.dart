@@ -107,6 +107,5 @@ final class TrackingPoint {
       Object.hash(timestamp, latitude, longitude, accuracy, altitude, speed);
 
   @override
-  String toString() =>
-      'TrackingPoint($latitude,$longitude @ $timestamp)';
+  String toString() => 'TrackingPoint($latitude,$longitude @ $timestamp)';
 }

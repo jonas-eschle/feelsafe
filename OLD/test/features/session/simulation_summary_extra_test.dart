@@ -63,7 +63,9 @@ void main() {
       check(find.text('2').evaluate()).isNotEmpty();
     });
 
-    testWidgets('return button can be tapped without exception', (tester) async {
+    testWidgets('return button can be tapped without exception', (
+      tester,
+    ) async {
       final session = _sessionWith(const [
         SimulationDescription('simHoldButton'),
       ]);
@@ -82,8 +84,9 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('null session shows empty state (fallback ?? [])',
-        (tester) async {
+    testWidgets('null session shows empty state (fallback ?? [])', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [

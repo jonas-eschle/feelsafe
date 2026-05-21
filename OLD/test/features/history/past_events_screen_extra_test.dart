@@ -99,8 +99,9 @@ void main() {
       check(find.textContaining('history load error').evaluate()).isNotEmpty();
     });
 
-    testWidgets('simulated tab has delete callback (lines 121–123)',
-        (tester) async {
+    testWidgets('simulated tab has delete callback (lines 121–123)', (
+      tester,
+    ) async {
       final repo = FakeSessionLogsRepository([
         _log(id: 's1', modeName: 'SimWalk', isSimulation: true),
       ]);
@@ -129,8 +130,9 @@ void main() {
       check(await repo.getAll()).isEmpty();
     });
 
-    testWidgets('tapping a real log tile navigates to detail (lines 240–241)',
-        (tester) async {
+    testWidgets('tapping a real log tile navigates to detail (lines 240–241)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _hostWithPastEventDetail(
           overrides: [

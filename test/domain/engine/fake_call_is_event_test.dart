@@ -1,10 +1,10 @@
 import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
-
 import 'engine_test_helpers.dart';
 
 void main() {

@@ -65,8 +65,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
   /// "Ask for Angela" code-word as a standalone word would clash
   /// with the safety convention if used as a real personal name,
   /// so we warn the user before persisting.
-  static final RegExp _angelaPattern =
-      RegExp(r'\bangelas?\b', caseSensitive: false);
+  static final RegExp _angelaPattern = RegExp(
+    r'\bangelas?\b',
+    caseSensitive: false,
+  );
 
   String? _nonEmpty(String raw) {
     final v = raw.trim();
@@ -141,9 +143,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           TextField(
             controller: _phoneCtrl,
             keyboardType: TextInputType.phone,
-            decoration: InputDecoration(
-              labelText: l.profileFieldPhoneNumber,
-            ),
+            decoration: InputDecoration(labelText: l.profileFieldPhoneNumber),
           ),
           const SizedBox(height: 12),
           TextField(
@@ -180,9 +180,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
           TextField(
             controller: _instructionsCtrl,
             maxLines: 4,
-            decoration: InputDecoration(
-              labelText: l.profileFieldInstructions,
-            ),
+            decoration: InputDecoration(labelText: l.profileFieldInstructions),
           ),
         ],
       ),

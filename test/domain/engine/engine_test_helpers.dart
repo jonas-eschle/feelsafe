@@ -1,11 +1,12 @@
 import 'dart:math';
 
+import 'package:uuid/uuid.dart';
+
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
-import 'package:uuid/uuid.dart';
 
 /// A [Random] subclass that always returns a fixed value.
 ///

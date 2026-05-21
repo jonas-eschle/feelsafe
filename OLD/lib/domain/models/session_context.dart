@@ -265,8 +265,7 @@ final class SessionContext {
     gpsLoggingEnabled: gpsLoggingEnabled ?? this.gpsLoggingEnabled,
     ttsLatePhrase: ttsLatePhrase ?? this.ttsLatePhrase,
     defaultSmsTemplate: defaultSmsTemplate ?? this.defaultSmsTemplate,
-    defaultPreSmsTemplate:
-        defaultPreSmsTemplate ?? this.defaultPreSmsTemplate,
+    defaultPreSmsTemplate: defaultPreSmsTemplate ?? this.defaultPreSmsTemplate,
     smsTemplateForLanguage:
         smsTemplateForLanguage ?? this.smsTemplateForLanguage,
     preSmsTemplateForLanguage:

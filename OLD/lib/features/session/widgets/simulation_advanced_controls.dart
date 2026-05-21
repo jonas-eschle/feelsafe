@@ -60,7 +60,10 @@ class _SimulationAdvancedControlsState
       child: ExpansionTile(
         title: Text(l.sessionSimAdvancedLabel),
         leading: const Icon(Icons.tune),
-        childrenPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        childrenPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
+        ),
         children: [
           _SpeedSection(
             speed: _speed,
@@ -74,12 +77,15 @@ class _SimulationAdvancedControlsState
             arrivalLabel: l.sessionSimTriggerArrival,
             batteryLabel: l.sessionSimTriggerBattery,
             panicLabel: l.sessionSimTriggerPanic,
-            onArrival: () =>
-                ref.read(sessionControllerProvider.notifier).simulateGpsArrival(),
-            onBattery: () =>
-                ref.read(sessionControllerProvider.notifier).simulateLowBattery(),
-            onPanic: () =>
-                ref.read(sessionControllerProvider.notifier).triggerDistressChain(),
+            onArrival: () => ref
+                .read(sessionControllerProvider.notifier)
+                .simulateGpsArrival(),
+            onBattery: () => ref
+                .read(sessionControllerProvider.notifier)
+                .simulateLowBattery(),
+            onPanic: () => ref
+                .read(sessionControllerProvider.notifier)
+                .triggerDistressChain(),
           ),
           const SizedBox(height: 8),
         ],

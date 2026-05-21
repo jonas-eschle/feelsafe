@@ -32,8 +32,7 @@ ChainStep _distressSms() => smsStep(
 
 void main() {
   group('SessionEngine — distressTriggerReason getter (line 123)', () {
-    test('distressTriggerReason is null before replaceWithDistressChain',
-        () {
+    test('distressTriggerReason is null before replaceWithDistressChain', () {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [holdStep(durationSeconds: 10, gracePeriodSeconds: 5)],
@@ -52,18 +51,15 @@ void main() {
       () {
         fakeAsync((async) {
           final e = SessionEngine(
-            chainSteps: [
-              holdStep(durationSeconds: 10, gracePeriodSeconds: 5),
-            ],
+            chainSteps: [holdStep(durationSeconds: 10, gracePeriodSeconds: 5)],
             random: FixedRandom(),
           );
           e.start();
           async.flushMicrotasks();
 
-          e.replaceWithDistressChain(
-            [_distressSms()],
-            triggerReason: TriggerReason.duressPin,
-          );
+          e.replaceWithDistressChain([
+            _distressSms(),
+          ], triggerReason: TriggerReason.duressPin);
           async.flushMicrotasks();
 
           // Getter (line 123) should reflect the duressPin reason.
@@ -81,39 +77,33 @@ void main() {
       },
     );
 
-    test(
-      'distressTriggerReason reflects TriggerReason.wrongPinExhausted '
-      '(line 676)',
-      () {
-        fakeAsync((async) {
-          final e = SessionEngine(
-            chainSteps: [
-              holdStep(durationSeconds: 10, gracePeriodSeconds: 5),
-            ],
-            random: FixedRandom(),
-          );
-          e.start();
-          async.flushMicrotasks();
+    test('distressTriggerReason reflects TriggerReason.wrongPinExhausted '
+        '(line 676)', () {
+      fakeAsync((async) {
+        final e = SessionEngine(
+          chainSteps: [holdStep(durationSeconds: 10, gracePeriodSeconds: 5)],
+          random: FixedRandom(),
+        );
+        e.start();
+        async.flushMicrotasks();
 
-          e.replaceWithDistressChain(
-            [_distressSms()],
-            triggerReason: TriggerReason.wrongPinExhausted,
-          );
-          async.flushMicrotasks();
+        e.replaceWithDistressChain([
+          _distressSms(),
+        ], triggerReason: TriggerReason.wrongPinExhausted);
+        async.flushMicrotasks();
 
-          check(e.distressTriggerReason)
-              .equals(TriggerReason.wrongPinExhausted);
+        check(e.distressTriggerReason).equals(TriggerReason.wrongPinExhausted);
 
-          // Complete the distress chain to exercise line 676.
-          async.elapse(const Duration(seconds: 5));
-          async.flushMicrotasks();
+        // Complete the distress chain to exercise line 676.
+        async.elapse(const Duration(seconds: 5));
+        async.flushMicrotasks();
 
-          check(e.state).isA<EngineEnded>();
-          check((e.state as EngineEnded).reason)
-              .equals(EndReason.wrongPinExhausted);
-          e.dispose();
-        });
-      },
-    );
+        check(e.state).isA<EngineEnded>();
+        check(
+          (e.state as EngineEnded).reason,
+        ).equals(EndReason.wrongPinExhausted);
+        e.dispose();
+      });
+    });
   });
 }

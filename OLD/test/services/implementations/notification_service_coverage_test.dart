@@ -30,15 +30,14 @@ class _FakeAndroidNotificationChannel extends Fake
 // Helpers
 // ---------------------------------------------------------------------------
 
-_MockPlugin _makePlugin({
-  AndroidFlutterLocalNotificationsPlugin? androidImpl,
-}) {
+_MockPlugin _makePlugin({AndroidFlutterLocalNotificationsPlugin? androidImpl}) {
   final p = _MockPlugin();
   when(
     () => p.initialize(
       settings: any(named: 'settings'),
-      onDidReceiveNotificationResponse:
-          any(named: 'onDidReceiveNotificationResponse'),
+      onDidReceiveNotificationResponse: any(
+        named: 'onDidReceiveNotificationResponse',
+      ),
     ),
   ).thenAnswer((_) async => true);
   when(
@@ -49,13 +48,13 @@ _MockPlugin _makePlugin({
       notificationDetails: any(named: 'notificationDetails'),
     ),
   ).thenAnswer((_) async {});
-  when(
-    () => p.cancel(id: any(named: 'id')),
-  ).thenAnswer((_) async {});
+  when(() => p.cancel(id: any(named: 'id'))).thenAnswer((_) async {});
   when(p.cancelAll).thenAnswer((_) async {});
   when(
-    () => p.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>(),
+    () => p
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >(),
   ).thenReturn(androidImpl);
   return p;
 }
@@ -82,29 +81,26 @@ void main() {
   });
 
   group('NotificationService.dispose with pending scheduled timers', () {
-    test(
-      'cancels scheduled timers on dispose before they fire',
-      () async {
-        // Arrange: initialize the service and schedule a notification with
-        // a very long delay so the timer is still pending when dispose is called.
-        final plugin = _makePlugin();
-        final s = _build(plugin: plugin);
-        await s.init();
+    test('cancels scheduled timers on dispose before they fire', () async {
+      // Arrange: initialize the service and schedule a notification with
+      // a very long delay so the timer is still pending when dispose is called.
+      final plugin = _makePlugin();
+      final s = _build(plugin: plugin);
+      await s.init();
 
-        // Schedule a notification with a 1-hour delay; timer stays pending.
-        await s.scheduleNotification(
-          title: 'Test',
-          body: 'body',
-          delay: const Duration(hours: 1),
-        );
+      // Schedule a notification with a 1-hour delay; timer stays pending.
+      await s.scheduleNotification(
+        title: 'Test',
+        body: 'body',
+        delay: const Duration(hours: 1),
+      );
 
-        // Act: dispose while the timer is still scheduled.
-        await s.dispose();
+      // Act: dispose while the timer is still scheduled.
+      await s.dispose();
 
-        // Assert: no exception thrown; the service disposed cleanly.
-        check(true).isTrue(); // dispose completed without error
-      },
-    );
+      // Assert: no exception thrown; the service disposed cleanly.
+      check(true).isTrue(); // dispose completed without error
+    });
 
     test('dispose is idempotent when no timers are scheduled', () async {
       final s = _build();

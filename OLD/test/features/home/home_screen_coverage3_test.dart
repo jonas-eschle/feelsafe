@@ -81,19 +81,20 @@ Widget _hostWithRoutes({
 
 void main() {
   group('HomeScreen ChoiceChip onSelected (lines 138–142)', () {
-    testWidgets(
-      'tapping an unselected mode chip invokes setSelectedModeId',
-      (tester) async {
-        // Two modes — first selected by default (mode-A), second unselected.
-        final modeA = makeMode(id: 'mode-A', name: 'Mode A');
-        final modeB = makeMode(id: 'mode-B', name: 'Mode B');
+    testWidgets('tapping an unselected mode chip invokes setSelectedModeId', (
+      tester,
+    ) async {
+      // Two modes — first selected by default (mode-A), second unselected.
+      final modeA = makeMode(id: 'mode-A', name: 'Mode A');
+      final modeB = makeMode(id: 'mode-B', name: 'Mode B');
 
-        // Settings: select modeA so modeB chip is NOT selected.
-        final fakeSettings = FakeSettingsRepository(
-          const AppSettings(defaults: AppDefaults()),
-        );
+      // Settings: select modeA so modeB chip is NOT selected.
+      final fakeSettings = FakeSettingsRepository(
+        const AppSettings(defaults: AppDefaults()),
+      );
 
-        await tester.pumpWidget(_hostWithRoutes(
+      await tester.pumpWidget(
+        _hostWithRoutes(
           overrides: [
             modesRepositoryProvider.overrideWithValue(
               FakeModesRepository([modeA, modeB]),
@@ -104,29 +105,30 @@ void main() {
             settingsRepositoryProvider.overrideWithValue(fakeSettings),
           ],
           child: const HomeScreen(),
-        ));
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // Two ChoiceChips should be rendered.
+      final chips = find.byType(ChoiceChip);
+      if (chips.evaluate().length >= 2) {
+        // Tap the second chip (Mode B — not selected), which makes sel=true
+        // and triggers the setSelectedModeId path.
+        await tester.tap(chips.at(1));
         await tester.pumpAndSettle();
+      }
 
-        // Two ChoiceChips should be rendered.
-        final chips = find.byType(ChoiceChip);
-        if (chips.evaluate().length >= 2) {
-          // Tap the second chip (Mode B — not selected), which makes sel=true
-          // and triggers the setSelectedModeId path.
-          await tester.tap(chips.at(1));
-          await tester.pumpAndSettle();
-        }
-
-        // Screen must still render cleanly after the interaction.
-        check(find.byType(HomeScreen).evaluate()).isNotEmpty();
-      },
-    );
+      // Screen must still render cleanly after the interaction.
+      check(find.byType(HomeScreen).evaluate()).isNotEmpty();
+    });
   });
 
   group('HomeScreen contacts-banner onTap (line 247)', () {
-    testWidgets(
-      'tapping the zero-contacts banner navigates to contacts',
-      (tester) async {
-        await tester.pumpWidget(_hostWithRoutes(
+    testWidgets('tapping the zero-contacts banner navigates to contacts', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        _hostWithRoutes(
           overrides: [
             modesRepositoryProvider.overrideWithValue(
               FakeModesRepository([makeMode()]),
@@ -139,22 +141,22 @@ void main() {
             ),
           ],
           child: const HomeScreen(),
-        ));
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // The zero-contacts banner contains an error_outline icon; find its
-        // parent InkWell by looking for the icon first and walking up.
-        // Alternatively, look for the banner's container via its unique icon.
-        final bannerIcon = find.byIcon(Icons.error_outline);
-        check(bannerIcon.evaluate()).isNotEmpty();
+      // The zero-contacts banner contains an error_outline icon; find its
+      // parent InkWell by looking for the icon first and walking up.
+      // Alternatively, look for the banner's container via its unique icon.
+      final bannerIcon = find.byIcon(Icons.error_outline);
+      check(bannerIcon.evaluate()).isNotEmpty();
 
-        // Tap the InkWell ancestor of the icon.
-        await tester.tap(bannerIcon.first);
-        await tester.pumpAndSettle();
+      // Tap the InkWell ancestor of the icon.
+      await tester.tap(bannerIcon.first);
+      await tester.pumpAndSettle();
 
-        // Navigation must have succeeded — Contacts placeholder visible.
-        check(find.text('Contacts').evaluate()).isNotEmpty();
-      },
-    );
+      // Navigation must have succeeded — Contacts placeholder visible.
+      check(find.text('Contacts').evaluate()).isNotEmpty();
+    });
   });
 }

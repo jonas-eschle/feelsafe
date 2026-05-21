@@ -90,87 +90,88 @@ List<Override> _overrides({
 ];
 
 void main() {
-  testWidgets(
-    'SessionScreen null session renders the idle ended text',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen null session renders the idle ended text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(seed: null),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // An idle/null session should render without a HoldToTrigger.
-      check(find.byType(HoldToTriggerButton).evaluate()).isEmpty();
-      check(find.byType(SessionScreen).evaluate().length).equals(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // An idle/null session should render without a HoldToTrigger.
+    check(find.byType(HoldToTriggerButton).evaluate()).isEmpty();
+    check(find.byType(SessionScreen).evaluate().length).equals(1);
+  });
 
-  testWidgets(
-    'SessionScreen simulation session shows the simulation banner',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen simulation session shows the simulation banner', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(seed: _session(isSimulation: true)),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // Simulation banner is the only Container coloured with
-      // tertiaryContainer; asserting that at least one exists.
-      final banners = find.descendant(
-        of: find.byType(SessionScreen),
-        matching: find.byType(Container),
-      );
-      check(banners.evaluate().length).isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Simulation banner is the only Container coloured with
+    // tertiaryContainer; asserting that at least one exists.
+    final banners = find.descendant(
+      of: find.byType(SessionScreen),
+      matching: find.byType(Container),
+    );
+    check(banners.evaluate().length).isGreaterOrEqual(1);
+  });
 
-  testWidgets(
-    'SessionScreen paused phase shows the paused badge chip',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen paused phase shows the paused badge chip', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(
           seed: _session(phase: const SessionPhasePaused()),
         ),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      check(find.byType(Chip).evaluate().length).isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    check(find.byType(Chip).evaluate().length).isGreaterOrEqual(1);
+  });
 
-  testWidgets(
-    'SessionScreen miss-count and step-index text render',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen miss-count and step-index text render', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(
           seed: _session(currentStepIndex: 2, missCount: 3),
         ),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // Some Text widget contains the miss count or step numbers.
-      final texts = find.byType(Text).evaluate();
-      final combined = texts
-          .map((e) => (e.widget as Text).data ?? '')
-          .join(' ');
-      check(combined.contains('3')).isTrue();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Some Text widget contains the miss count or step numbers.
+    final texts = find.byType(Text).evaluate();
+    final combined = texts.map((e) => (e.widget as Text).data ?? '').join(' ');
+    check(combined.contains('3')).isTrue();
+  });
 
   testWidgets(
     'SessionScreen AppBar branding hidden under sessionScreenStealth',
     (tester) async {
-      const stealth = StealthConfig(
-        enabled: true,
-        sessionScreenStealth: true,
-      );
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _overrides(
-          seed: _session(),
-          settings: const AppSettings(
-            defaults: AppDefaults(stealth: stealth),
+      const stealth = StealthConfig(enabled: true, sessionScreenStealth: true);
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _overrides(
+            seed: _session(),
+            settings: const AppSettings(
+              defaults: AppDefaults(stealth: stealth),
+            ),
           ),
+          child: const SessionScreen(),
         ),
-        child: const SessionScreen(),
-      ));
+      );
       await tester.pumpAndSettle();
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       final title = appBar.title;
@@ -180,50 +181,54 @@ void main() {
     },
   );
 
-  testWidgets(
-    'SessionScreen hold-button press + release calls controller',
-    (tester) async {
-      final controller = _FakeSessionController(_session());
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen hold-button press + release calls controller', (
+    tester,
+  ) async {
+    final controller = _FakeSessionController(_session());
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(seed: _session(), controller: controller),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final button = find.byType(HoldToTriggerButton);
-      final gesture = await tester.startGesture(tester.getCenter(button));
-      await tester.pump(const Duration(milliseconds: 100));
-      await gesture.up();
-      await tester.pump();
-      check(controller.holdStarts).isGreaterOrEqual(1);
-      check(controller.holdReleases).isGreaterOrEqual(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final button = find.byType(HoldToTriggerButton);
+    final gesture = await tester.startGesture(tester.getCenter(button));
+    await tester.pump(const Duration(milliseconds: 100));
+    await gesture.up();
+    await tester.pump();
+    check(controller.holdStarts).isGreaterOrEqual(1);
+    check(controller.holdReleases).isGreaterOrEqual(1);
+  });
 
-  testWidgets(
-    'SessionScreen pause OutlinedButton invokes controller.pause',
-    (tester) async {
-      final controller = _FakeSessionController(_session());
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen pause OutlinedButton invokes controller.pause', (
+    tester,
+  ) async {
+    final controller = _FakeSessionController(_session());
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(seed: _session(), controller: controller),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final pauseBtn = find.byType(OutlinedButton);
-      await tester.tap(pauseBtn);
-      await tester.pumpAndSettle();
-      check(controller.pauseCalls).equals(1);
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final pauseBtn = find.byType(OutlinedButton);
+    await tester.tap(pauseBtn);
+    await tester.pumpAndSettle();
+    check(controller.pauseCalls).equals(1);
+  });
 
   testWidgets(
     'SessionScreen loudAlarm step does not render HoldToTriggerButton',
     (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _overrides(
-          seed: _session(stepType: ChainStepType.loudAlarm),
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _overrides(
+            seed: _session(stepType: ChainStepType.loudAlarm),
+          ),
+          child: const SessionScreen(),
         ),
-        child: const SessionScreen(),
-      ));
+      );
       await tester.pumpAndSettle();
       check(find.byType(HoldToTriggerButton).evaluate()).isEmpty();
     },
@@ -232,46 +237,48 @@ void main() {
   testWidgets(
     'SessionScreen disguisedReminder step does not render HoldToTriggerButton',
     (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _overrides(
-          seed: _session(stepType: ChainStepType.disguisedReminder),
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: _overrides(
+            seed: _session(stepType: ChainStepType.disguisedReminder),
+          ),
+          child: const SessionScreen(),
         ),
-        child: const SessionScreen(),
-      ));
+      );
       await tester.pumpAndSettle();
       check(find.byType(HoldToTriggerButton).evaluate()).isEmpty();
     },
   );
 
-  testWidgets(
-    'SessionScreen remainingSeconds null omits countdown text',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
+  testWidgets('SessionScreen remainingSeconds null omits countdown text', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
         overrides: _overrides(seed: _session(remainingSeconds: null)),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // No '42' or raw seconds text rendered since remainingSeconds is null.
-      check(find.textContaining('42').evaluate()).isEmpty();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // No '42' or raw seconds text rendered since remainingSeconds is null.
+    check(find.textContaining('42').evaluate()).isEmpty();
+  });
 
-  testWidgets(
-    'SessionScreen ended-phase triggers post-frame navigation',
-    (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: _overrides(
-          seed: _session(phase: const SessionPhaseEnded()),
-        ),
+  testWidgets('SessionScreen ended-phase triggers post-frame navigation', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: _overrides(seed: _session(phase: const SessionPhaseEnded())),
         child: const SessionScreen(),
-      ));
-      await tester.pumpAndSettle();
-      // Once ended, the post-frame pushes us onto the completed
-      // route; the session screen should no longer be visible.
-      // The /session-completed route is unknown to our minimal
-      // router, so we allow the test to settle silently — the key
-      // check is that no exception is thrown.
-      check(tester.takeException()).isNull();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    // Once ended, the post-frame pushes us onto the completed
+    // route; the session screen should no longer be visible.
+    // The /session-completed route is unknown to our minimal
+    // router, so we allow the test to settle silently — the key
+    // check is that no exception is thrown.
+    check(tester.takeException()).isNull();
+  });
 }

@@ -224,10 +224,7 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
           return;
         }
         try {
-          await audio.playVoiceRecording(
-            assetPath: path,
-            isSimulation: isSim,
-          );
+          await audio.playVoiceRecording(assetPath: path, isSimulation: isSim);
         } on Object {
           await _speakTtsFallback();
         }
@@ -274,10 +271,7 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
     _declineTimer = Timer(_declineHoldDuration, _onDeclineDistressFire);
     // Haptic at 800ms confirms the gesture is being detected before
     // the full hold completes. Spec 01 §Fake Call Lifecycle.
-    _hapticTimer = Timer(
-      _declineDistressHaptic,
-      HapticFeedback.mediumImpact,
-    );
+    _hapticTimer = Timer(_declineDistressHaptic, HapticFeedback.mediumImpact);
   }
 
   void _onDeclineHoldEnd() {
@@ -337,10 +331,9 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
-    final callerName =
-        (_cfg.callerName?.trim().isNotEmpty ?? false)
-            ? _cfg.callerName!
-            : l.fakeCallUnknownCaller;
+    final callerName = (_cfg.callerName?.trim().isNotEmpty ?? false)
+        ? _cfg.callerName!
+        : l.fakeCallUnknownCaller;
     final photoPath = _cfg.callerPhotoPath;
     return Scaffold(
       backgroundColor: _backgroundColor(_cfg.callStyle),
@@ -375,14 +368,13 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen>
     CallStyle.signal => const Color(0xFF1B1B1B),
   };
 
-  String _incomingLabel(AppLocalizations l, CallStyle style) =>
-      switch (style) {
-        CallStyle.whatsapp => l.fakeCallIncomingWhatsapp,
-        CallStyle.telegram => l.fakeCallIncomingTelegram,
-        CallStyle.signal => l.fakeCallIncomingSignal,
-        CallStyle.android => l.fakeCallTitle,
-        CallStyle.ios => l.fakeCallTitle,
-      };
+  String _incomingLabel(AppLocalizations l, CallStyle style) => switch (style) {
+    CallStyle.whatsapp => l.fakeCallIncomingWhatsapp,
+    CallStyle.telegram => l.fakeCallIncomingTelegram,
+    CallStyle.signal => l.fakeCallIncomingSignal,
+    CallStyle.android => l.fakeCallTitle,
+    CallStyle.ios => l.fakeCallTitle,
+  };
 
   String? _brandBadge(CallStyle style, AppLocalizations l) => switch (style) {
     CallStyle.whatsapp => l.fakeCallBrandWhatsapp,
@@ -537,10 +529,7 @@ class _MaterialLayout extends StatelessWidget {
         ),
       ),
       const SizedBox(height: 24),
-      _CallerAvatar(
-        photoPath: callerPhotoPath,
-        accent: _styleAccent(style),
-      ),
+      _CallerAvatar(photoPath: callerPhotoPath, accent: _styleAccent(style)),
       const SizedBox(height: 16),
       Text(
         callerName,
@@ -623,10 +612,7 @@ class _IosLayout extends StatelessWidget {
       const SizedBox(height: 60),
       Text(
         incomingLabel,
-        style: const TextStyle(
-          color: Colors.white70,
-          fontSize: 14,
-        ),
+        style: const TextStyle(color: Colors.white70, fontSize: 14),
       ),
       const SizedBox(height: 40),
       _CallerAvatar(
@@ -744,10 +730,7 @@ class _IosSliderState extends State<_IosSlider> {
                 children: [
                   Text(
                     widget.label,
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 16),
                   ),
                   Positioned(
                     left: _drag,
@@ -796,11 +779,7 @@ class _CallerAvatar extends StatelessWidget {
     return CircleAvatar(
       radius: 64,
       backgroundColor: accent.withValues(alpha: 0.2),
-      child: Icon(
-        Icons.person,
-        color: accent,
-        size: 56,
-      ),
+      child: Icon(Icons.person, color: accent, size: 56),
     );
   }
 }

@@ -35,15 +35,14 @@ class _FakeAndroidNotificationChannel extends Fake
 // Builders
 // ---------------------------------------------------------------------------
 
-_MockPlugin _makePlugin({
-  AndroidFlutterLocalNotificationsPlugin? androidImpl,
-}) {
+_MockPlugin _makePlugin({AndroidFlutterLocalNotificationsPlugin? androidImpl}) {
   final p = _MockPlugin();
   when(
     () => p.initialize(
       settings: any(named: 'settings'),
-      onDidReceiveNotificationResponse:
-          any(named: 'onDidReceiveNotificationResponse'),
+      onDidReceiveNotificationResponse: any(
+        named: 'onDidReceiveNotificationResponse',
+      ),
     ),
   ).thenAnswer((_) async => true);
   when(
@@ -54,22 +53,20 @@ _MockPlugin _makePlugin({
       notificationDetails: any(named: 'notificationDetails'),
     ),
   ).thenAnswer((_) async {});
-  when(
-    () => p.cancel(id: any(named: 'id')),
-  ).thenAnswer((_) async {});
+  when(() => p.cancel(id: any(named: 'id'))).thenAnswer((_) async {});
   when(p.cancelAll).thenAnswer((_) async {});
   when(
-    () => p.resolvePlatformSpecificImplementation<
-        AndroidFlutterLocalNotificationsPlugin>(),
+    () => p
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >(),
   ).thenReturn(androidImpl);
   return p;
 }
 
 _MockAndroidPlugin _makeAndroidPlugin() {
   final a = _MockAndroidPlugin();
-  when(
-    () => a.createNotificationChannel(any()),
-  ).thenAnswer((_) async {});
+  when(() => a.createNotificationChannel(any())).thenAnswer((_) async {});
   return a;
 }
 
@@ -92,26 +89,21 @@ void main() {
   });
 
   group('NotificationService.init — Android channel creation', () {
-    test(
-      'creates all 3 channels when Android impl is non-null',
-      () async {
-        final androidPlugin = _makeAndroidPlugin();
-        final plugin = _makePlugin(androidImpl: androidPlugin);
-        final s = _build(
-          plugin: plugin,
-          platform: const FakePlatformInfo(isAndroid: true),
-        );
-        await s.init();
+    test('creates all 3 channels when Android impl is non-null', () async {
+      final androidPlugin = _makeAndroidPlugin();
+      final plugin = _makePlugin(androidImpl: androidPlugin);
+      final s = _build(
+        plugin: plugin,
+        platform: const FakePlatformInfo(isAndroid: true),
+      );
+      await s.init();
 
-        // All 3 channel IDs (ga_session, ga_reminders, ga_toasts) must
-        // have been created exactly once each.
-        verify(
-          () => androidPlugin.createNotificationChannel(any()),
-        ).called(3);
+      // All 3 channel IDs (ga_session, ga_reminders, ga_toasts) must
+      // have been created exactly once each.
+      verify(() => androidPlugin.createNotificationChannel(any())).called(3);
 
-        await s.dispose();
-      },
-    );
+      await s.dispose();
+    });
 
     test('does not create channels on iOS (no Android impl)', () async {
       final plugin = _makePlugin();
@@ -123,8 +115,10 @@ void main() {
       // On iOS resolvePlatformSpecificImplementation returns null →
       // createNotificationChannel is never invoked.
       verifyNever(
-        () => plugin.resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>(),
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
       );
       await s.dispose();
     });
@@ -167,8 +161,9 @@ void main() {
       verify(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse:
-              any(named: 'onDidReceiveNotificationResponse'),
+          onDidReceiveNotificationResponse: any(
+            named: 'onDidReceiveNotificationResponse',
+          ),
         ),
       ).called(1);
       await s.dispose();
@@ -180,14 +175,14 @@ void main() {
       when(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse:
-              any(named: 'onDidReceiveNotificationResponse'),
+          onDidReceiveNotificationResponse: any(
+            named: 'onDidReceiveNotificationResponse',
+          ),
         ),
       ).thenAnswer((inv) async {
-        final sym =
-            const Symbol('onDidReceiveNotificationResponse');
-        captured = inv.namedArguments[sym]
-            as DidReceiveNotificationResponseCallback?;
+        final sym = const Symbol('onDidReceiveNotificationResponse');
+        captured =
+            inv.namedArguments[sym] as DidReceiveNotificationResponseCallback?;
         return true;
       });
 
@@ -202,11 +197,13 @@ void main() {
       final taps = <String>[];
       final sub = s.actionTaps.listen(taps.add);
 
-      captured!(NotificationResponse(
-        notificationResponseType:
-            NotificationResponseType.selectedNotificationAction,
-        actionId: 'disarmTriggerEnd',
-      ));
+      captured!(
+        NotificationResponse(
+          notificationResponseType:
+              NotificationResponseType.selectedNotificationAction,
+          actionId: 'disarmTriggerEnd',
+        ),
+      );
       await Future<void>.delayed(Duration.zero);
 
       check(taps).contains('disarmTriggerEnd');

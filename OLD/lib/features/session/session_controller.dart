@@ -470,9 +470,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     final appL = await AppLocalizations.delegate.load(
       Locale(settings.languageCode),
     );
-    final smsResolver = _buildSmsTemplateResolver(
-      pick: _smsDefaultTemplateOf,
-    );
+    final smsResolver = _buildSmsTemplateResolver(pick: _smsDefaultTemplateOf);
     final preSmsResolver = _buildSmsTemplateResolver(
       pick: _preSmsDefaultTemplateOf,
     );
@@ -720,10 +718,7 @@ class SessionController extends AsyncNotifier<WalkSession?> {
     if (current == null) return;
     state = AsyncValue.data(
       current.copyWith(
-        firedStepDescriptions: [
-          ...current.firedStepDescriptions,
-          description,
-        ],
+        firedStepDescriptions: [...current.firedStepDescriptions, description],
         lastSimulationDescription: description,
       ),
     );

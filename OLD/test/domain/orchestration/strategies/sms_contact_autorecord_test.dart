@@ -23,10 +23,8 @@ void main() {
 
     setUp(() => strategy = const SmsContactStrategy());
 
-    test(
-        'executeReal completes without error when autoRecordAudio=true '
-        'in a real session',
-        () async {
+    test('executeReal completes without error when autoRecordAudio=true '
+        'in a real session', () async {
       final harness = StrategyHarness(
         contacts: [makeContact(id: 'c1')],
         isSimulation: false,
@@ -55,10 +53,8 @@ void main() {
       check(sends).equals(1);
     });
 
-    test(
-        'executeReal completes without error when autoRecordVideo=true '
-        'in a real session',
-        () async {
+    test('executeReal completes without error when autoRecordVideo=true '
+        'in a real session', () async {
       final harness = StrategyHarness(
         contacts: [makeContact(id: 'c1')],
         isSimulation: false,
@@ -79,10 +75,8 @@ void main() {
       ).completes();
     });
 
-    test(
-        'auto-record branch is skipped in simulation mode '
-        '(no log, but still sends SMS)',
-        () async {
+    test('auto-record branch is skipped in simulation mode '
+        '(no log, but still sends SMS)', () async {
       final harness = StrategyHarness(
         contacts: [makeContact(id: 'c1')],
         isSimulation: true,

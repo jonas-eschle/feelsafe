@@ -85,8 +85,7 @@ void main() {
   });
 
   group('FakeBatteryMonitorService', () {
-    test('start/stop toggles isActive and stream injection works',
-        () async {
+    test('start/stop toggles isActive and stream injection works', () async {
       final s = FakeBatteryMonitorService();
       check(s.isActive).isFalse();
       final fut = s.onLowBattery.first;
@@ -97,10 +96,7 @@ void main() {
       check(received).equals(15);
       await s.stopMonitoring();
       check(s.isActive).isFalse();
-      check(s.calls).deepEquals([
-        'startMonitoring:20',
-        'stopMonitoring',
-      ]);
+      check(s.calls).deepEquals(['startMonitoring:20', 'stopMonitoring']);
       s.dispose();
     });
   });
@@ -114,8 +110,7 @@ void main() {
       s.silent = true;
       check(await s.isDndOn()).isTrue();
       check(await s.isSilent()).isTrue();
-      check(s.calls)
-          .deepEquals(['isDndOn', 'isSilent', 'isDndOn', 'isSilent']);
+      check(s.calls).deepEquals(['isDndOn', 'isSilent', 'isDndOn', 'isSilent']);
       s.dispose();
     });
   });
@@ -129,18 +124,19 @@ void main() {
         longitude: 8.0,
         radiusMeters: 50,
       );
-      s.injectArrival(LocationPoint(
-        latitude: 47.0,
-        longitude: 8.0,
-        timestamp: DateTime.utc(2026, 1, 1),
-      ));
+      s.injectArrival(
+        LocationPoint(
+          latitude: 47.0,
+          longitude: 8.0,
+          timestamp: DateTime.utc(2026, 1, 1),
+        ),
+      );
       final received = await fut;
       check(received.latitude).equals(47.0);
       await s.removeGeofence();
-      check(s.calls).deepEquals([
-        'registerGeofence:47.0,8.0/50.0',
-        'removeGeofence',
-      ]);
+      check(
+        s.calls,
+      ).deepEquals(['registerGeofence:47.0,8.0/50.0', 'removeGeofence']);
       s.dispose();
     });
   });
@@ -152,17 +148,18 @@ void main() {
       final fut = s.panicEvents.first;
       await s.start(buttonType: 'volume', pattern: '5x_press');
       check(s.isListening).isTrue();
-      s.injectPanic(HardwarePanicEvent(
-        buttonType: 'volume',
-        pattern: '5x_press',
-        timestamp: DateTime.utc(2026, 1, 1),
-      ));
+      s.injectPanic(
+        HardwarePanicEvent(
+          buttonType: 'volume',
+          pattern: '5x_press',
+          timestamp: DateTime.utc(2026, 1, 1),
+        ),
+      );
       final event = await fut;
       check(event.buttonType).equals('volume');
       await s.stop();
       check(s.isListening).isFalse();
-      check(s.calls)
-          .deepEquals(['start:volume/5x_press', 'stop']);
+      check(s.calls).deepEquals(['start:volume/5x_press', 'stop']);
       s.dispose();
     });
   });
@@ -202,8 +199,7 @@ void main() {
       s.injectState(CallState.ringing);
       s.injectState(CallState.active);
       await s.stopListening();
-      check(await fut)
-          .deepEquals([CallState.ringing, CallState.active]);
+      check(await fut).deepEquals([CallState.ringing, CallState.active]);
       check(s.calls).deepEquals(['startListening', 'stopListening']);
       s.dispose();
     });
@@ -227,8 +223,9 @@ void main() {
       );
       s.injectPoint(p);
       check(s.getLastLocationPoint()).equals(p);
-      check(s.getLastLocationUrl())
-          .equals('https://maps.google.com/?q=1.0,2.0');
+      check(
+        s.getLastLocationUrl(),
+      ).equals('https://maps.google.com/?q=1.0,2.0');
       check(s.history).deepEquals([p]);
       s.clearHistory();
       check(s.history).isEmpty();
@@ -256,8 +253,7 @@ void main() {
       ];
       final list = await s.sendToAll(contacts: contacts, message: 'h');
       check(list.length).equals(2);
-      check(list.map((w) => w.value).toList())
-          .deepEquals(['fake-1', 'fake-2']);
+      check(list.map((w) => w.value).toList()).deepEquals(['fake-1', 'fake-2']);
       await s.cancelPending(list);
       await s.retryExhaustedSms('fake-1');
       s.injectDeliveryUpdate(
@@ -265,11 +261,13 @@ void main() {
       );
       final delivery = await deliveryFut;
       check(delivery.status).equals('queued');
-      s.injectRetryExhausted(const SmsRetryExhaustedEvent(
-        workId: 'y',
-        recipient: '+1',
-        message: 'hi',
-      ));
+      s.injectRetryExhausted(
+        const SmsRetryExhaustedEvent(
+          workId: 'y',
+          recipient: '+1',
+          message: 'hi',
+        ),
+      );
       final retry = await retryFut;
       check(retry.workId).equals('y');
       check(s.calls.contains('canAutoSend:sms')).isTrue();
@@ -343,11 +341,9 @@ void main() {
       check(await s.getCurrentPreset()).equals(StealthIconPreset.calendar);
       await s.setPreset(StealthIconPreset.music);
       check(await s.getCurrentPreset()).equals(StealthIconPreset.music);
-      check(s.calls).deepEquals([
-        'getCurrentPreset',
-        'setPreset:music',
-        'getCurrentPreset',
-      ]);
+      check(
+        s.calls,
+      ).deepEquals(['getCurrentPreset', 'setPreset:music', 'getCurrentPreset']);
       s.dispose();
     });
   });
@@ -406,39 +402,44 @@ void main() {
     });
   });
 
-  test('FakeMessagingService isSimulation flag is ignored by recorded fake',
-      () async {
-    final s = FakeMessagingService();
-    final w = await s.sendMessage(
-      contact: _fakeContact(),
-      message: 'x',
-      channel: MessageChannel.whatsapp,
-      isSimulation: true,
-    );
-    check(w.value).equals('fake-0');
-    // Fake doesn't record isSimulation, verifying contract passes.
-    check(s.calls.single).equals('sendMessage:+15551234567/whatsapp');
-    s.dispose();
-  });
+  test(
+    'FakeMessagingService isSimulation flag is ignored by recorded fake',
+    () async {
+      final s = FakeMessagingService();
+      final w = await s.sendMessage(
+        contact: _fakeContact(),
+        message: 'x',
+        channel: MessageChannel.whatsapp,
+        isSimulation: true,
+      );
+      check(w.value).equals('fake-0');
+      // Fake doesn't record isSimulation, verifying contract passes.
+      check(s.calls.single).equals('sendMessage:+15551234567/whatsapp');
+      s.dispose();
+    },
+  );
 
-  test('FakeLocationService unmodifiable history throws on external mutate',
-      () {
-    final s = FakeLocationService();
-    s.injectPoint(LocationPoint(
-      latitude: 1,
-      longitude: 2,
-      timestamp: DateTime.utc(2026),
-    ));
-    final hist = s.history;
-    check(() => hist.add(LocationPoint(
-          latitude: 3,
-          longitude: 4,
-          timestamp: DateTime.utc(2026),
-        ))).throws<UnsupportedError>();
-  });
+  test(
+    'FakeLocationService unmodifiable history throws on external mutate',
+    () {
+      final s = FakeLocationService();
+      s.injectPoint(
+        LocationPoint(latitude: 1, longitude: 2, timestamp: DateTime.utc(2026)),
+      );
+      final hist = s.history;
+      check(
+        () => hist.add(
+          LocationPoint(
+            latitude: 3,
+            longitude: 4,
+            timestamp: DateTime.utc(2026),
+          ),
+        ),
+      ).throws<UnsupportedError>();
+    },
+  );
 
-  test('FakeBatteryMonitorService stream only delivers after inject',
-      () async {
+  test('FakeBatteryMonitorService stream only delivers after inject', () async {
     final s = FakeBatteryMonitorService();
     final events = <int>[];
     final sub = s.onLowBattery.listen(events.add);
@@ -465,11 +466,9 @@ void main() {
       b.add(p);
       cb.complete();
     });
-    s.injectArrival(LocationPoint(
-      latitude: 1,
-      longitude: 2,
-      timestamp: DateTime.utc(2026),
-    ));
+    s.injectArrival(
+      LocationPoint(latitude: 1, longitude: 2, timestamp: DateTime.utc(2026)),
+    );
     await Future.wait([ca.future, cb.future]);
     check(a.length).equals(1);
     check(b.length).equals(1);

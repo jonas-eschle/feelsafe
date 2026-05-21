@@ -72,8 +72,7 @@ class StealthScreen extends ConsumerWidget {
             subtitle: Text(_timerDisplayLabel(l, stealth.timerDisplay)),
             trailing: PopupMenuButton<StealthTimerDisplay>(
               initialValue: stealth.timerDisplay,
-              onSelected: (v) =>
-                  update(stealth.copyWith(timerDisplay: v)),
+              onSelected: (v) => update(stealth.copyWith(timerDisplay: v)),
               itemBuilder: (_) => StealthTimerDisplay.values
                   .map(
                     (v) => PopupMenuItem<StealthTimerDisplay>(
@@ -243,17 +242,17 @@ class _IconPresetPicker extends StatelessWidget {
       };
 
   static IconData _iconFor(StealthIconPreset preset) => switch (preset) {
-        StealthIconPreset.music => Icons.music_note,
-        StealthIconPreset.calendar => Icons.calendar_today,
-        StealthIconPreset.fitness => Icons.fitness_center,
-        StealthIconPreset.weather => Icons.wb_sunny,
-        StealthIconPreset.news => Icons.article,
-        StealthIconPreset.photos => Icons.photo,
-        StealthIconPreset.notes => Icons.note,
-        StealthIconPreset.clock => Icons.access_time,
-        StealthIconPreset.podcast => Icons.podcasts,
-        StealthIconPreset.none => Icons.shield_outlined,
-      };
+    StealthIconPreset.music => Icons.music_note,
+    StealthIconPreset.calendar => Icons.calendar_today,
+    StealthIconPreset.fitness => Icons.fitness_center,
+    StealthIconPreset.weather => Icons.wb_sunny,
+    StealthIconPreset.news => Icons.article,
+    StealthIconPreset.photos => Icons.photo,
+    StealthIconPreset.notes => Icons.note,
+    StealthIconPreset.clock => Icons.access_time,
+    StealthIconPreset.podcast => Icons.podcasts,
+    StealthIconPreset.none => Icons.shield_outlined,
+  };
 }
 
 class _PresetTile extends StatelessWidget {

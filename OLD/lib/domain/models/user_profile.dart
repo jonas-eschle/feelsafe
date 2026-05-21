@@ -106,8 +106,7 @@ final class UserProfile {
     allergies: allergies ?? this.allergies,
     medications: medications ?? this.medications,
     medicalConditions: medicalConditions ?? this.medicalConditions,
-    emergencyInstructions:
-        emergencyInstructions ?? this.emergencyInstructions,
+    emergencyInstructions: emergencyInstructions ?? this.emergencyInstructions,
   );
 
   /// Serializes to JSON.

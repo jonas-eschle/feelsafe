@@ -25,38 +25,44 @@ ReminderTemplate _t(String id) => ReminderTemplate(
 
 void main() {
   testWidgets('TemplatesScreen renders empty state', (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: [
-        templatesRepositoryProvider
-            .overrideWithValue(FakeTemplatesRepository()),
-      ],
-      child: const TemplatesScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreen(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(
+            FakeTemplatesRepository(),
+          ),
+        ],
+        child: const TemplatesScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.byType(TemplatesScreen).evaluate().length).equals(1);
   });
 
   testWidgets('TemplatesScreen renders each template', (tester) async {
-    await tester.pumpWidget(hostScreen(
-      overrides: [
-        templatesRepositoryProvider.overrideWithValue(
-          FakeTemplatesRepository([_t('cal'), _t('duo')]),
-        ),
-      ],
-      child: const TemplatesScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreen(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(
+            FakeTemplatesRepository([_t('cal'), _t('duo')]),
+          ),
+        ],
+        child: const TemplatesScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     check(find.text('cal').evaluate().length).equals(1);
     check(find.text('duo').evaluate().length).equals(1);
   });
 
-  testWidgets('TemplatesScreen delete icon removes template',
-      (tester) async {
+  testWidgets('TemplatesScreen delete icon removes template', (tester) async {
     final repo = FakeTemplatesRepository([_t('x')]);
-    await tester.pumpWidget(hostScreenWithRouter(
-      overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-      child: const TemplatesScreen(),
-    ));
+    await tester.pumpWidget(
+      hostScreenWithRouter(
+        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+        child: const TemplatesScreen(),
+      ),
+    );
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();

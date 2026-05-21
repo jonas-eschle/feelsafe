@@ -110,11 +110,7 @@ class EventSpecificConfig extends ConsumerWidget {
       notification: ref.read(simulationNotificationProvider),
       vibration: ref.read(simulationVibrationProvider),
       context: SessionContext(
-        mode: SessionMode(
-          id: 'preview',
-          name: 'Preview',
-          chainSteps: [step],
-        ),
+        mode: SessionMode(id: 'preview', name: 'Preview', chainSteps: [step]),
         contacts: const [],
         userProfile: null,
         isSimulation: true,
@@ -493,9 +489,7 @@ class _HardwareFormState extends State<_HardwareForm> {
               labelText: l.stepConfigHardwarePressWindow,
             ),
             onChanged: (v) => _emit(
-              cfg.copyWith(
-                pressWindowMs: int.tryParse(v) ?? cfg.pressWindowMs,
-              ),
+              cfg.copyWith(pressWindowMs: int.tryParse(v) ?? cfg.pressWindowMs),
             ),
           ),
         ] else ...[
@@ -539,8 +533,7 @@ class _StepMoreSettings extends ConsumerWidget {
     // hydration.
     final fallback = settings?.defaults.gpsLogging.enabled ?? true;
     final currentLogGps = step.config?.logGps ?? LogGpsOverride.useDefault;
-    final customizedCount =
-        currentLogGps == LogGpsOverride.useDefault ? 0 : 1;
+    final customizedCount = currentLogGps == LogGpsOverride.useDefault ? 0 : 1;
     return MoreSettingsPanel(
       customizedCount: customizedCount,
       children: [

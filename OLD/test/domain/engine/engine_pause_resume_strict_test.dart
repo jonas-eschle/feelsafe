@@ -22,10 +22,10 @@ import '../../helpers/test_helpers.dart';
 SessionEngine _mk({int wait = 60, int dur = 30, int grace = 10}) =>
     SessionEngine(
       chainSteps: [
-        smsStep(durationSeconds: dur, gracePeriodSeconds: grace).copyWith(
-          waitSeconds: wait,
-          randomize: 0.0,
-        ),
+        smsStep(
+          durationSeconds: dur,
+          gracePeriodSeconds: grace,
+        ).copyWith(waitSeconds: wait, randomize: 0.0),
       ],
       random: FixedRandom(),
     );
@@ -140,22 +140,24 @@ void main() {
       const Duration(milliseconds: 1),
       const Duration(hours: 1),
     ]) {
-      test('pause for ${pauseDur.inMicroseconds}µs still resumes correctly',
-          () {
-        fakeAsync((async) {
-          final e = _mk(wait: 0, dur: 60, grace: 0);
-          e.start();
-          async.flushMicrotasks();
-          async.elapse(const Duration(seconds: 10));
-          e.pause();
-          final remaining = (e.state as EnginePaused).snapshot.remaining;
-          async.elapse(pauseDur);
-          e.resume();
-          final s = e.state as EngineRunning;
-          check(s.remaining).equals(remaining);
-          e.dispose();
-        });
-      });
+      test(
+        'pause for ${pauseDur.inMicroseconds}µs still resumes correctly',
+        () {
+          fakeAsync((async) {
+            final e = _mk(wait: 0, dur: 60, grace: 0);
+            e.start();
+            async.flushMicrotasks();
+            async.elapse(const Duration(seconds: 10));
+            e.pause();
+            final remaining = (e.state as EnginePaused).snapshot.remaining;
+            async.elapse(pauseDur);
+            e.resume();
+            final s = e.state as EngineRunning;
+            check(s.remaining).equals(remaining);
+            e.dispose();
+          });
+        },
+      );
     }
   });
 
@@ -189,9 +191,7 @@ void main() {
     test('pause during sensitivity preserves exact ms remaining', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [
-            holdStep(releaseSensitivity: 2.0, durationSeconds: 10),
-          ],
+          chainSteps: [holdStep(releaseSensitivity: 2.0, durationSeconds: 10)],
           random: FixedRandom(),
         );
         e.start();
@@ -337,8 +337,9 @@ void main() {
         e.start();
         async.flushMicrotasks();
         e.pause(reason: PauseReason.userRequested);
-        check((e.state as EnginePaused).reason)
-            .equals(PauseReason.userRequested);
+        check(
+          (e.state as EnginePaused).reason,
+        ).equals(PauseReason.userRequested);
         e.dispose();
       });
     });
@@ -349,7 +350,9 @@ void main() {
         e.start();
         async.flushMicrotasks();
         e.pause(reason: PauseReason.incomingCall);
-        check((e.state as EnginePaused).reason).equals(PauseReason.incomingCall);
+        check(
+          (e.state as EnginePaused).reason,
+        ).equals(PauseReason.incomingCall);
         e.dispose();
       });
     });
@@ -374,17 +377,20 @@ void main() {
   // Timer cancelled during pause
   // -------------------------------------------------------------------------
   group('timer cancellation on pause', () {
-    test('paused engine does not advance even after 10x the phase duration', () {
-      fakeAsync((async) {
-        final e = _mk(wait: 0, dur: 10, grace: 5);
-        e.start();
-        async.flushMicrotasks();
-        e.pause();
-        async.elapse(const Duration(seconds: 500));
-        check(e.state).isA<EnginePaused>();
-        e.dispose();
-      });
-    });
+    test(
+      'paused engine does not advance even after 10x the phase duration',
+      () {
+        fakeAsync((async) {
+          final e = _mk(wait: 0, dur: 10, grace: 5);
+          e.start();
+          async.flushMicrotasks();
+          e.pause();
+          async.elapse(const Duration(seconds: 500));
+          check(e.state).isA<EnginePaused>();
+          e.dispose();
+        });
+      },
+    );
   });
 
   // -------------------------------------------------------------------------

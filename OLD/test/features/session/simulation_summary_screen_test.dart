@@ -75,10 +75,7 @@ void main() {
       check(
         resolveSimulationDescription(
           l,
-          const SimulationDescription(
-            'simFakeCallRing',
-            {'caller': 'Angela'},
-          ),
+          const SimulationDescription('simFakeCallRing', {'caller': 'Angela'}),
         ),
       ).equals('[SIM] Incoming call from Angela');
     });
@@ -87,10 +84,7 @@ void main() {
       check(
         resolveSimulationDescription(
           l,
-          const SimulationDescription(
-            'simCountdownWarning',
-            {'seconds': 42},
-          ),
+          const SimulationDescription('simCountdownWarning', {'seconds': 42}),
         ),
       ).equals('[SIM] 42s countdown warning');
     });
@@ -144,10 +138,9 @@ void main() {
       check(
         resolveSimulationDescription(
           l,
-          const SimulationDescription(
-            'simDisguisedReminder',
-            {'title': 'Milk tomorrow'},
-          ),
+          const SimulationDescription('simDisguisedReminder', {
+            'title': 'Milk tomorrow',
+          }),
         ),
       ).equals('[SIM] Would show "Milk tomorrow"');
     });

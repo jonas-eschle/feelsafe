@@ -20,27 +20,27 @@ import '../widget_test_helpers.dart';
 
 void main() {
   group('StealthScreen _FakeNameField', () {
-    testWidgets('submitting a new fake name fires onChanged (line 63)',
-        (tester) async {
+    testWidgets('submitting a new fake name fires onChanged (line 63)', (
+      tester,
+    ) async {
       final repo = FakeSettingsRepository();
       final fake = FakeStealthIconService();
-      await tester.pumpWidget(hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(repo),
-          stealthIconServiceProvider.overrideWithValue(fake),
-        ],
-        child: const StealthScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreen(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(repo),
+            stealthIconServiceProvider.overrideWithValue(fake),
+          ],
+          child: const StealthScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Find the fake-name TextField and enter + submit text.
       final textField = find.byType(TextField);
       if (textField.evaluate().isEmpty) {
         // If not immediately visible, scroll to reveal it.
-        await tester.drag(
-          find.byType(Scrollable).first,
-          const Offset(0, -200),
-        );
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -200));
         await tester.pumpAndSettle();
       }
 
@@ -57,13 +57,15 @@ void main() {
     testWidgets('onEditingComplete fires _commit (line 176)', (tester) async {
       final repo = FakeSettingsRepository();
       final fake = FakeStealthIconService();
-      await tester.pumpWidget(hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(repo),
-          stealthIconServiceProvider.overrideWithValue(fake),
-        ],
-        child: const StealthScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreen(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(repo),
+            stealthIconServiceProvider.overrideWithValue(fake),
+          ],
+          child: const StealthScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);
@@ -75,17 +77,20 @@ void main() {
       check(find.byType(StealthScreen).evaluate()).isNotEmpty();
     });
 
-    testWidgets('empty fake name is rejected by _commit (line 160)',
-        (tester) async {
+    testWidgets('empty fake name is rejected by _commit (line 160)', (
+      tester,
+    ) async {
       final repo = FakeSettingsRepository();
       final fake = FakeStealthIconService();
-      await tester.pumpWidget(hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(repo),
-          stealthIconServiceProvider.overrideWithValue(fake),
-        ],
-        child: const StealthScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreen(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(repo),
+            stealthIconServiceProvider.overrideWithValue(fake),
+          ],
+          child: const StealthScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       final textField = find.byType(TextField);

@@ -112,10 +112,7 @@ List<_TemplateEntry> _templateEntries(List<SessionMode> userModes) {
 /// Returns a fresh [SessionMode] with a new id and "Copy of …" name
 /// that mirrors [source]'s chain, triggers, overrides, and tracking.
 SessionMode _cloneAsNewMode(SessionMode source, {required String copyName}) =>
-    source.copyWith(
-      id: const Uuid().v4(),
-      name: copyName,
-    );
+    source.copyWith(id: const Uuid().v4(), name: copyName);
 
 sealed class _NewModeChoice {
   const _NewModeChoice();
@@ -179,8 +176,7 @@ class _NewModePicker extends StatelessWidget {
                 ],
               ),
               subtitle: Text(l.modesNewPickerFromTemplateSubtitle),
-              onTap: () =>
-                  Navigator.of(context).pop(_TemplateChoice(e.mode)),
+              onTap: () => Navigator.of(context).pop(_TemplateChoice(e.mode)),
             ),
         ],
       ),
@@ -204,9 +200,9 @@ class _BuiltInBadge extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: scheme.onSecondaryContainer,
-            ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelSmall?.copyWith(color: scheme.onSecondaryContainer),
       ),
     );
   }

@@ -42,10 +42,9 @@ void main() {
     await dao.save(c);
     final read = await dao.getById('x');
     check(read!.name).equals('Xena');
-    check(read.channels).deepEquals(const [
-      MessageChannel.sms,
-      MessageChannel.whatsapp,
-    ]);
+    check(
+      read.channels,
+    ).deepEquals(const [MessageChannel.sms, MessageChannel.whatsapp]);
   });
 
   test('save overwrites existing contact', () async {

@@ -71,7 +71,10 @@ void main() {
   group('SettingsController.setAppPinHash', () {
     test('null hash clears existing appPinHash', () async {
       final container = _makeContainer(
-        seed: const AppSettings(defaults: AppDefaults(), appPinHash: 'existing'),
+        seed: const AppSettings(
+          defaults: AppDefaults(),
+          appPinHash: 'existing',
+        ),
       );
       addTearDown(container.dispose);
       final notifier = container.read(settingsControllerProvider.notifier);
@@ -96,9 +99,7 @@ void main() {
       addTearDown(container.dispose);
       await container.read(settingsControllerProvider.future);
       final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setAppPinHash('x'),
-      ).throws<SessionLockedError>();
+      await check(notifier.setAppPinHash('x')).throws<SessionLockedError>();
     });
   });
 
@@ -168,9 +169,7 @@ void main() {
       addTearDown(container.dispose);
       await container.read(settingsControllerProvider.future);
       final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setDuressPinHash('x'),
-      ).throws<SessionLockedError>();
+      await check(notifier.setDuressPinHash('x')).throws<SessionLockedError>();
     });
   });
 
@@ -239,15 +238,18 @@ void main() {
       check(s.sessionEndPinBiometricEnabled).isFalse();
     });
 
-    test('setSessionEndPinBiometricEnabled throws when session active', () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setSessionEndPinBiometricEnabled(true),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setSessionEndPinBiometricEnabled throws when session active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setSessionEndPinBiometricEnabled(true),
+        ).throws<SessionLockedError>();
+      },
+    );
 
     test('setDistressCancelBiometricEnabled persists true', () async {
       final container = _makeContainer();
@@ -274,15 +276,18 @@ void main() {
       check(s.distressCancelBiometricEnabled).isFalse();
     });
 
-    test('setDistressCancelBiometricEnabled throws when session active', () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setDistressCancelBiometricEnabled(true),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setDistressCancelBiometricEnabled throws when session active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setDistressCancelBiometricEnabled(true),
+        ).throws<SessionLockedError>();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -300,59 +305,70 @@ void main() {
       ).throws<SessionLockedError>();
     });
 
-    test('setThemeMode throws SessionLockedError when session is active', () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setThemeMode(AppThemeMode.dark),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setThemeMode throws SessionLockedError when session is active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setThemeMode(AppThemeMode.dark),
+        ).throws<SessionLockedError>();
+      },
+    );
 
-    test('setLanguageCode throws SessionLockedError when session is active',
-        () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setLanguageCode('de'),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setLanguageCode throws SessionLockedError when session is active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setLanguageCode('de'),
+        ).throws<SessionLockedError>();
+      },
+    );
 
-    test('setEmergencyCallNumber throws SessionLockedError when session active',
-        () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setEmergencyCallNumber('911'),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setEmergencyCallNumber throws SessionLockedError when session active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setEmergencyCallNumber('911'),
+        ).throws<SessionLockedError>();
+      },
+    );
 
-    test('setPinTimeoutSeconds throws SessionLockedError when session active',
-        () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setPinTimeoutSeconds(30),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setPinTimeoutSeconds throws SessionLockedError when session active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setPinTimeoutSeconds(30),
+        ).throws<SessionLockedError>();
+      },
+    );
 
-    test('setAlarmDndOverride throws SessionLockedError when session active',
-        () async {
-      final container = _makeContainer(sessionActive: true);
-      addTearDown(container.dispose);
-      await container.read(settingsControllerProvider.future);
-      final notifier = container.read(settingsControllerProvider.notifier);
-      await check(
-        notifier.setAlarmDndOverride(true),
-      ).throws<SessionLockedError>();
-    });
+    test(
+      'setAlarmDndOverride throws SessionLockedError when session active',
+      () async {
+        final container = _makeContainer(sessionActive: true);
+        addTearDown(container.dispose);
+        await container.read(settingsControllerProvider.future);
+        final notifier = container.read(settingsControllerProvider.notifier);
+        await check(
+          notifier.setAlarmDndOverride(true),
+        ).throws<SessionLockedError>();
+      },
+    );
 
     test('setDefaults throws SessionLockedError when session active', () async {
       final container = _makeContainer(sessionActive: true);

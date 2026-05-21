@@ -48,8 +48,9 @@ class _FakeSessionController extends SessionController {
 
 void main() {
   group('EmergencyConfirmScreen renders', () {
-    testWidgets('shows countdown value equal to durationSeconds',
-        (tester) async {
+    testWidgets('shows countdown value equal to durationSeconds', (
+      tester,
+    ) async {
       // Arrange
       await tester.pumpWidget(
         hostScreen(
@@ -154,36 +155,35 @@ void main() {
   });
 
   group('EmergencyConfirmScreen Cancel action', () {
-    testWidgets(
-      'Cancel calls disarm when no session-end PIN is configured',
-      (tester) async {
-        // Arrange — settings with no session-end PIN hash (null).
-        const settings = AppSettings(defaults: AppDefaults());
-        final ctrl = _FakeSessionController();
+    testWidgets('Cancel calls disarm when no session-end PIN is configured', (
+      tester,
+    ) async {
+      // Arrange — settings with no session-end PIN hash (null).
+      const settings = AppSettings(defaults: AppDefaults());
+      final ctrl = _FakeSessionController();
 
-        await tester.pumpWidget(
-          hostScreen(
-            overrides: [
-              settingsRepositoryProvider.overrideWithValue(
-                FakeSettingsRepository(settings),
-              ),
-              sessionControllerProvider.overrideWith(() => ctrl),
-            ],
-            child: const EmergencyConfirmScreen(
-              number: '112',
-              durationSeconds: 5,
+      await tester.pumpWidget(
+        hostScreen(
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(settings),
             ),
+            sessionControllerProvider.overrideWith(() => ctrl),
+          ],
+          child: const EmergencyConfirmScreen(
+            number: '112',
+            durationSeconds: 5,
           ),
-        );
-        await tester.pumpAndSettle();
+        ),
+      );
+      await tester.pumpAndSettle();
 
-        // Act — tap the Cancel button (call_end icon).
-        await tester.tap(find.byIcon(Icons.call_end));
-        await tester.pumpAndSettle();
+      // Act — tap the Cancel button (call_end icon).
+      await tester.tap(find.byIcon(Icons.call_end));
+      await tester.pumpAndSettle();
 
-        // Assert — disarm was called.
-        check(ctrl.calls).contains('disarm');
-      },
-    );
+      // Assert — disarm was called.
+      check(ctrl.calls).contains('disarm');
+    });
   });
 }

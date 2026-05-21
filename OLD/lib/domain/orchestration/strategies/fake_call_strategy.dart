@@ -36,10 +36,9 @@ final class FakeCallStrategy extends EventStrategy {
     // Fix for bugs.json Bug #4 (FakeCallConfig semantics): default
     // caller name is "Angela". Null callerName uses the same
     // fallback since the UI shows the same display.
-    return SimulationDescription(
-      'simFakeCallRing',
-      {'caller': config.callerName ?? 'Angela'},
-    );
+    return SimulationDescription('simFakeCallRing', {
+      'caller': config.callerName ?? 'Angela',
+    });
   }
 
   /// Resolves the step's config.

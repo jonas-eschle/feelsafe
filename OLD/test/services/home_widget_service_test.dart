@@ -33,24 +33,28 @@ void main() {
   // FakeHomeWidgetService — protocol contract
   // -------------------------------------------------------------------------
   group('FakeHomeWidgetService — updateStatus', () {
-    test('records an updateStatus call containing status, modeName, isRunning',
-        () async {
-      final fake = FakeHomeWidgetService();
-      addTearDown(fake.dispose);
+    test(
+      'records an updateStatus call containing status, modeName, isRunning',
+      () async {
+        final fake = FakeHomeWidgetService();
+        addTearDown(fake.dispose);
 
-      await fake.updateStatus(
-        status: 'Running',
-        modeName: 'Walk Mode',
-        isRunning: true,
-      );
+        await fake.updateStatus(
+          status: 'Running',
+          modeName: 'Walk Mode',
+          isRunning: true,
+        );
 
-      final call = fake.calls
-          .firstWhere((c) => c.startsWith('updateStatus:'), orElse: () => '');
-      check(call).isNotEmpty();
-      check(call).contains('Running');
-      check(call).contains('Walk Mode');
-      check(call).contains('true');
-    });
+        final call = fake.calls.firstWhere(
+          (c) => c.startsWith('updateStatus:'),
+          orElse: () => '',
+        );
+        check(call).isNotEmpty();
+        check(call).contains('Running');
+        check(call).contains('Walk Mode');
+        check(call).contains('true');
+      },
+    );
 
     test('records different calls for idle vs active state', () async {
       final fake = FakeHomeWidgetService();
@@ -67,25 +71,28 @@ void main() {
         isRunning: true,
       );
 
-      check(fake.calls.where((c) => c.startsWith('updateStatus:')).length)
-          .equals(2);
+      check(
+        fake.calls.where((c) => c.startsWith('updateStatus:')).length,
+      ).equals(2);
     });
 
-    test('writeLastMarker records the call and consumePendingMarker returns it',
-        () async {
-      final fake = FakeHomeWidgetService();
-      addTearDown(fake.dispose);
+    test(
+      'writeLastMarker records the call and consumePendingMarker returns it',
+      () async {
+        final fake = FakeHomeWidgetService();
+        addTearDown(fake.dispose);
 
-      await fake.writeLastMarker('arm_session');
-      check(fake.calls).contains('writeLastMarker:arm_session');
+        await fake.writeLastMarker('arm_session');
+        check(fake.calls).contains('writeLastMarker:arm_session');
 
-      final marker = await fake.consumePendingMarker();
-      check(marker).equals('arm_session');
+        final marker = await fake.consumePendingMarker();
+        check(marker).equals('arm_session');
 
-      // Second consume returns null — the marker was cleared.
-      final second = await fake.consumePendingMarker();
-      check(second).isNull();
-    });
+        // Second consume returns null — the marker was cleared.
+        final second = await fake.consumePendingMarker();
+        check(second).isNull();
+      },
+    );
 
     test('widgetClicked stream delivers injected clicks', () async {
       final fake = FakeHomeWidgetService();
@@ -113,8 +120,7 @@ void main() {
     // The home_widget package uses this channel.
     const hwChannel = MethodChannel('home_widget');
 
-    test(
-        'updateStatus issues saveWidgetData + updateWidget calls to the '
+    test('updateStatus issues saveWidgetData + updateWidget calls to the '
         'home_widget channel', () async {
       final methodCalls = installMethodChannelMock(
         hwChannel,
@@ -146,8 +152,7 @@ void main() {
       check(updateCount).isGreaterOrEqual(1);
     });
 
-    test(
-        'updateWidget call includes androidName=GuardianAngelaAppWidget '
+    test('updateWidget call includes androidName=GuardianAngelaAppWidget '
         'and iOSName=GuardianAngelaWidget', () async {
       MethodCall? updateCall;
       installMethodChannelMock(

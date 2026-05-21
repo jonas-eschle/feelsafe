@@ -14,10 +14,7 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 // ---------------------------------------------------------------------------
 
 /// Minimal mode for these tests — no chain steps needed.
-SessionMode _mode({
-  bool? pauseAllowed,
-  int? maxPauseMinutes,
-}) => SessionMode(
+SessionMode _mode({bool? pauseAllowed, int? maxPauseMinutes}) => SessionMode(
   id: 'test-pause',
   name: 'Pause Test',
   pauseAllowed: pauseAllowed ?? true,
@@ -73,10 +70,7 @@ void main() {
 
     test('legacy JSON without pause keys deserializes to defaults', () {
       // Arrange — omit both keys from the raw JSON map.
-      final raw = <String, Object?>{
-        'id': 'legacy',
-        'name': 'Legacy',
-      };
+      final raw = <String, Object?>{'id': 'legacy', 'name': 'Legacy'};
       // Act
       final m = SessionMode.fromJson(raw);
       // Assert — defaults apply.
@@ -108,14 +102,11 @@ void main() {
       check(copy.maxPauseMinutes).isNull();
     });
 
-    test(
-      'copyWith without clearMaxPauseMinutes preserves existing value',
-      () {
-        final original = _mode(maxPauseMinutes: 15);
-        final copy = original.copyWith(pauseAllowed: false);
-        check(copy.maxPauseMinutes).equals(15);
-      },
-    );
+    test('copyWith without clearMaxPauseMinutes preserves existing value', () {
+      final original = _mode(maxPauseMinutes: 15);
+      final copy = original.copyWith(pauseAllowed: false);
+      check(copy.maxPauseMinutes).equals(15);
+    });
   });
 
   group('SessionMode equality accounts for pause fields', () {

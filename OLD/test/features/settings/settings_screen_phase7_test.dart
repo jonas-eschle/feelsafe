@@ -36,10 +36,12 @@ Future<FakeSettingsRepository> _pump(
   addTearDown(tester.view.resetDevicePixelRatio);
 
   final repo = FakeSettingsRepository(initial);
-  await tester.pumpWidget(hostScreenWithRouter(
-    overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-    child: const SettingsScreen(),
-  ));
+  await tester.pumpWidget(
+    hostScreenWithRouter(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const SettingsScreen(),
+    ),
+  );
   await tester.pumpAndSettle();
   return repo;
 }
@@ -49,33 +51,38 @@ void main() {
   // Language picker
   // -------------------------------------------------------------------------
   group('Phase 7 — language picker', () {
-    testWidgets('SettingsScreen renders a DropdownButton<String> for language',
-        (tester) async {
-      await _pump(tester);
-      // _LanguagePicker uses DropdownButton<String>. There may also be
-      // the theme DropdownButton<AppThemeMode> — verify at least one
-      // DropdownButton<String> exists.
-      final langDropdowns = find.byType(DropdownButton<String>);
-      check(langDropdowns.evaluate().length).isGreaterThan(0);
-    });
+    testWidgets(
+      'SettingsScreen renders a DropdownButton<String> for language',
+      (tester) async {
+        await _pump(tester);
+        // _LanguagePicker uses DropdownButton<String>. There may also be
+        // the theme DropdownButton<AppThemeMode> — verify at least one
+        // DropdownButton<String> exists.
+        final langDropdowns = find.byType(DropdownButton<String>);
+        check(langDropdowns.evaluate().length).isGreaterThan(0);
+      },
+    );
 
-    testWidgets('language DropdownButton persists new language code via callback',
-        (tester) async {
-      final repo = await _pump(tester);
-      // Drive onChanged directly — the dropdown popup is unreliable in
-      // widget tests (flutter#84518). This still verifies the full
-      // controller wiring.
-      final langDropdown = tester.widget<DropdownButton<String>>(
-        find.byType(DropdownButton<String>),
-      );
-      langDropdown.onChanged!('de');
-      await tester.pumpAndSettle();
-      check(repo.stored).isNotNull();
-      check(repo.stored!.languageCode).equals('de');
-    });
+    testWidgets(
+      'language DropdownButton persists new language code via callback',
+      (tester) async {
+        final repo = await _pump(tester);
+        // Drive onChanged directly — the dropdown popup is unreliable in
+        // widget tests (flutter#84518). This still verifies the full
+        // controller wiring.
+        final langDropdown = tester.widget<DropdownButton<String>>(
+          find.byType(DropdownButton<String>),
+        );
+        langDropdown.onChanged!('de');
+        await tester.pumpAndSettle();
+        check(repo.stored).isNotNull();
+        check(repo.stored!.languageCode).equals('de');
+      },
+    );
 
-    testWidgets('language DropdownButton initial value reflects stored code',
-        (tester) async {
+    testWidgets('language DropdownButton initial value reflects stored code', (
+      tester,
+    ) async {
       await _pump(
         tester,
         initial: const AppSettings(defaults: AppDefaults(), languageCode: 'fr'),
@@ -91,8 +98,9 @@ void main() {
   // Emergency number tile
   // -------------------------------------------------------------------------
   group('Phase 7 — emergency number tile', () {
-    testWidgets('emergency-number ListTile renders with the current number',
-        (tester) async {
+    testWidgets('emergency-number ListTile renders with the current number', (
+      tester,
+    ) async {
       await _pump(
         tester,
         initial: const AppSettings(
@@ -104,8 +112,9 @@ void main() {
       check(find.text('999').evaluate().length).isGreaterThan(0);
     });
 
-    testWidgets('tapping emergency-number tile opens an AlertDialog',
-        (tester) async {
+    testWidgets('tapping emergency-number tile opens an AlertDialog', (
+      tester,
+    ) async {
       await _pump(tester);
       // The number tile contains the default '112' as subtitle text.
       final tile = find.ancestor(
@@ -118,8 +127,9 @@ void main() {
       check(find.byType(AlertDialog).evaluate().length).equals(1);
     });
 
-    testWidgets('emergency-number AlertDialog contains a TextField',
-        (tester) async {
+    testWidgets('emergency-number AlertDialog contains a TextField', (
+      tester,
+    ) async {
       // Verify the dialog has a TextField where a number can be entered.
       // (Interaction test kept minimal to avoid controller-dispose race
       // in the autofocus rebuild path.)
@@ -142,8 +152,9 @@ void main() {
   // Redo-onboarding tile
   // -------------------------------------------------------------------------
   group('Phase 7 — redo-onboarding tile', () {
-    testWidgets('redo-onboarding ListTile is present in the screen',
-        (tester) async {
+    testWidgets('redo-onboarding ListTile is present in the screen', (
+      tester,
+    ) async {
       await _pump(tester);
       // Locate the tile by its title text containing "redo" (case-insensitive).
       final tiles = find.byWidgetPredicate(
@@ -155,22 +166,25 @@ void main() {
       check(tiles.evaluate().length).isGreaterThan(0);
     });
 
-    testWidgets('tapping redo-onboarding tile opens a confirmation AlertDialog',
-        (tester) async {
-      await _pump(tester);
-      final redoTile = find.byWidgetPredicate(
-        (w) =>
-            w is ListTile &&
-            w.title is Text &&
-            (w.title! as Text).data!.toLowerCase().contains('redo'),
-      );
-      await tester.tap(redoTile.first);
-      await tester.pumpAndSettle();
-      check(find.byType(AlertDialog).evaluate().length).equals(1);
-    });
+    testWidgets(
+      'tapping redo-onboarding tile opens a confirmation AlertDialog',
+      (tester) async {
+        await _pump(tester);
+        final redoTile = find.byWidgetPredicate(
+          (w) =>
+              w is ListTile &&
+              w.title is Text &&
+              (w.title! as Text).data!.toLowerCase().contains('redo'),
+        );
+        await tester.tap(redoTile.first);
+        await tester.pumpAndSettle();
+        check(find.byType(AlertDialog).evaluate().length).equals(1);
+      },
+    );
 
-    testWidgets('cancelling redo-onboarding dialog dismisses it',
-        (tester) async {
+    testWidgets('cancelling redo-onboarding dialog dismisses it', (
+      tester,
+    ) async {
       await _pump(tester);
 
       final redoTile = find.byWidgetPredicate(
@@ -205,8 +219,9 @@ void main() {
       check(volTile.evaluate().length).isGreaterThan(0);
     });
 
-    testWidgets('toggling gradual-volume switch persists alarmGradualVolume',
-        (tester) async {
+    testWidgets('toggling gradual-volume switch persists alarmGradualVolume', (
+      tester,
+    ) async {
       final repo = await _pump(tester);
       final volTile = find.byWidgetPredicate(
         (w) =>
@@ -222,32 +237,34 @@ void main() {
     });
 
     testWidgets(
-        'gradual-volume duration Slider appears when alarmGradualVolume=true',
-        (tester) async {
-      await _pump(
-        tester,
-        initial: const AppSettings(
-          defaults: AppDefaults(),
-          alarmGradualVolume: true,
-          alarmGradualVolumeDurationSeconds: 10,
-        ),
-      );
-      // _GradualVolumeDurationSlider wraps a Material Slider.
-      check(find.byType(Slider).evaluate().length).isGreaterThan(0);
-    });
+      'gradual-volume duration Slider appears when alarmGradualVolume=true',
+      (tester) async {
+        await _pump(
+          tester,
+          initial: const AppSettings(
+            defaults: AppDefaults(),
+            alarmGradualVolume: true,
+            alarmGradualVolumeDurationSeconds: 10,
+          ),
+        );
+        // _GradualVolumeDurationSlider wraps a Material Slider.
+        check(find.byType(Slider).evaluate().length).isGreaterThan(0);
+      },
+    );
 
     testWidgets(
-        'gradual-volume Slider is absent when alarmGradualVolume=false',
-        (tester) async {
-      await _pump(
-        tester,
-        initial: const AppSettings(
-          defaults: AppDefaults(),
-          // ignore: avoid_redundant_argument_values
-          alarmGradualVolume: false,
-        ),
-      );
-      check(find.byType(Slider).evaluate().length).equals(0);
-    });
+      'gradual-volume Slider is absent when alarmGradualVolume=false',
+      (tester) async {
+        await _pump(
+          tester,
+          initial: const AppSettings(
+            defaults: AppDefaults(),
+            // ignore: avoid_redundant_argument_values
+            alarmGradualVolume: false,
+          ),
+        );
+        check(find.byType(Slider).evaluate().length).equals(0);
+      },
+    );
   });
 }

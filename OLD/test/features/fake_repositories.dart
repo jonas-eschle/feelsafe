@@ -53,8 +53,7 @@ class FakeModesRepository extends ModesRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((m) => m.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((m) => m.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -87,8 +86,7 @@ class FakeContactsRepository extends ContactsRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((c) => c.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((c) => c.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -143,8 +141,7 @@ class FakeTemplatesRepository extends TemplatesRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((t) => t.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((t) => t.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();
@@ -212,8 +209,7 @@ class FakeSessionLogsRepository extends SessionLogsRepository {
   }
 
   @override
-  Future<void> delete(String id) async =>
-      _items.removeWhere((l) => l.id == id);
+  Future<void> delete(String id) async => _items.removeWhere((l) => l.id == id);
 
   @override
   Future<void> deleteAll() async => _items.clear();

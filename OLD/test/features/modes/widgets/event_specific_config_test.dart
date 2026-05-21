@@ -47,31 +47,33 @@ void main() {
     check(find.byIcon(Icons.play_arrow).evaluate()).isEmpty();
   });
 
-  testWidgets('EventSpecificConfig renders for disguisedReminder + preview',
-      (tester) async {
-    await tester.pumpWidget(
-      _host(_step(ChainStepType.disguisedReminder)),
-    );
+  testWidgets('EventSpecificConfig renders for disguisedReminder + preview', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_host(_step(ChainStepType.disguisedReminder)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate().length).equals(1);
   });
 
-  testWidgets('EventSpecificConfig renders for countdownWarning + preview',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for countdownWarning + preview', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.countdownWarning)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate().length).equals(1);
   });
 
-  testWidgets('EventSpecificConfig renders for fakeCall + preview',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for fakeCall + preview', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.fakeCall)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate().length).equals(1);
   });
 
-  testWidgets('EventSpecificConfig renders for smsContact (no preview)',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for smsContact (no preview)', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.smsContact)));
     await tester.pumpAndSettle();
     // SMS/phone contact do not expose a preview — side effects would
@@ -79,39 +81,42 @@ void main() {
     check(find.byIcon(Icons.play_arrow).evaluate()).isEmpty();
   });
 
-  testWidgets('EventSpecificConfig renders for phoneCallContact (no preview)',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for phoneCallContact (no preview)', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.phoneCallContact)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate()).isEmpty();
   });
 
-  testWidgets('EventSpecificConfig renders for loudAlarm + preview',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for loudAlarm + preview', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.loudAlarm)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate().length).equals(1);
   });
 
-  testWidgets('EventSpecificConfig renders for callEmergency (no preview)',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for callEmergency (no preview)', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.callEmergency)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate()).isEmpty();
   });
 
-  testWidgets('EventSpecificConfig renders for hardwareButton (no preview)',
-      (tester) async {
+  testWidgets('EventSpecificConfig renders for hardwareButton (no preview)', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.hardwareButton)));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.play_arrow).evaluate()).isEmpty();
   });
 
-  testWidgets('Preview button fires a SnackBar for disguisedReminder',
-      (tester) async {
-    await tester.pumpWidget(
-      _host(_step(ChainStepType.disguisedReminder)),
-    );
+  testWidgets('Preview button fires a SnackBar for disguisedReminder', (
+    tester,
+  ) async {
+    await tester.pumpWidget(_host(_step(ChainStepType.disguisedReminder)));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.play_arrow));
     // The preview path calls executeReal() on the simulation
@@ -122,8 +127,9 @@ void main() {
     check(find.byType(SnackBar).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets('Preview button fires a SnackBar for countdownWarning',
-      (tester) async {
+  testWidgets('Preview button fires a SnackBar for countdownWarning', (
+    tester,
+  ) async {
     await tester.pumpWidget(_host(_step(ChainStepType.countdownWarning)));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.play_arrow));
@@ -136,21 +142,20 @@ void main() {
   // ─── onChanged interaction tests, one per editable field ───
   // Hit the inner onChanged closures across all 9 step types.
 
-  Widget hostWith(
-    ChainStep step,
-    ValueChanged<ChainStep> onChanged,
-  ) => hostScreen(
-    child: Scaffold(
-      body: SingleChildScrollView(
-        child: EventSpecificConfig(step: step, onChanged: onChanged),
-      ),
-    ),
-  );
+  Widget hostWith(ChainStep step, ValueChanged<ChainStep> onChanged) =>
+      hostScreen(
+        child: Scaffold(
+          body: SingleChildScrollView(
+            child: EventSpecificConfig(step: step, onChanged: onChanged),
+          ),
+        ),
+      );
 
   // holdButton step UI is now empty — release sensitivity is a
   // global default in Settings → Defaults → Hold button.
-  testWidgets('holdButton: form renders empty (no per-step fields)',
-      (tester) async {
+  testWidgets('holdButton: form renders empty (no per-step fields)', (
+    tester,
+  ) async {
     final step = _step(
       ChainStepType.holdButton,
       config: const HoldButtonConfig(releaseSensitivity: 2.0),
@@ -166,8 +171,9 @@ void main() {
   // model for round-trip but the engine drives reminder cadence
   // from ChainStep.waitSeconds. The form body is empty, so this
   // smoke test verifies it renders without crashing.
-  testWidgets('disguisedReminder form renders (no interval input)',
-      (tester) async {
+  testWidgets('disguisedReminder form renders (no interval input)', (
+    tester,
+  ) async {
     final step = _step(
       ChainStepType.disguisedReminder,
       config: const DisguisedReminderConfig(intervalSeconds: 45),
@@ -184,8 +190,9 @@ void main() {
 
   // countdownWarning step UI is now empty — vibrate + playTone are
   // global defaults in Settings → Defaults → Countdown warning.
-  testWidgets('countdownWarning: form renders empty (no per-step fields)',
-      (tester) async {
+  testWidgets('countdownWarning: form renders empty (no per-step fields)', (
+    tester,
+  ) async {
     final step = _step(
       ChainStepType.countdownWarning,
       config: const CountdownWarningConfig(vibrate: false, playTone: false),
@@ -210,8 +217,7 @@ void main() {
   });
 
   // fakeCall.declineIsSafe is a global default — no per-step toggle.
-  testWidgets('fakeCall: form has no decline-is-safe switch',
-      (tester) async {
+  testWidgets('fakeCall: form has no decline-is-safe switch', (tester) async {
     final step = _step(
       ChainStepType.fakeCall,
       config: const FakeCallConfig(declineIsSafe: false),
@@ -225,8 +231,9 @@ void main() {
 
   // smsContact.includeLocation is a global default — no per-step
   // toggle. The first SwitchListTile is now includeMedicalInfo.
-  testWidgets('smsContact: toggle includeMedicalInfo (first switch)',
-      (tester) async {
+  testWidgets('smsContact: toggle includeMedicalInfo (first switch)', (
+    tester,
+  ) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.smsContact,
@@ -255,8 +262,9 @@ void main() {
 
   // loudAlarm step UI is now empty — flashScreen, maxVolume,
   // soundChoice, flashLight all live in Settings → Defaults.
-  testWidgets('loudAlarm: form renders empty (no per-step fields)',
-      (tester) async {
+  testWidgets('loudAlarm: form renders empty (no per-step fields)', (
+    tester,
+  ) async {
     final step = _step(
       ChainStepType.loudAlarm,
       config: const LoudAlarmConfig(flashScreen: false, maxVolume: false),
@@ -266,8 +274,9 @@ void main() {
     check(find.byType(SwitchListTile).evaluate()).isEmpty();
   });
 
-  testWidgets('callEmergency: edit emergency number (non-empty)',
-      (tester) async {
+  testWidgets('callEmergency: edit emergency number (non-empty)', (
+    tester,
+  ) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.callEmergency,
@@ -278,12 +287,14 @@ void main() {
     await tester.enterText(find.byType(TextFormField), '112');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as CallEmergencyConfig).emergencyNumber)
-        .equals('112');
+    check(
+      (latest!.config! as CallEmergencyConfig).emergencyNumber,
+    ).equals('112');
   });
 
-  testWidgets('callEmergency: edit emergency number (empty clears)',
-      (tester) async {
+  testWidgets('callEmergency: edit emergency number (empty clears)', (
+    tester,
+  ) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.callEmergency,
@@ -299,8 +310,7 @@ void main() {
 
   // callEmergency.showConfirmation is a global default — not exposed
   // per-step. The only per-step field is the emergency-number override.
-  testWidgets('callEmergency: form has no confirmation switch',
-      (tester) async {
+  testWidgets('callEmergency: form has no confirmation switch', (tester) async {
     final step = _step(
       ChainStepType.callEmergency,
       config: const CallEmergencyConfig(showConfirmation: false),
@@ -311,8 +321,9 @@ void main() {
     check(find.byType(TextFormField).evaluate().length).equals(1);
   });
 
-  testWidgets('hardwareButton: edit press count TextField (#9)',
-      (tester) async {
+  testWidgets('hardwareButton: edit press count TextField (#9)', (
+    tester,
+  ) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.hardwareButton,
@@ -346,12 +357,12 @@ void main() {
     await tester.enterText(fields.last, '1500');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as HardwareButtonConfig).pressWindowMs)
-        .equals(1500);
+    check((latest!.config! as HardwareButtonConfig).pressWindowMs).equals(1500);
   });
 
-  testWidgets('hardwareButton: long-press shows long-duration field (#9)',
-      (tester) async {
+  testWidgets('hardwareButton: long-press shows long-duration field (#9)', (
+    tester,
+  ) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.hardwareButton,
@@ -368,8 +379,9 @@ void main() {
     await tester.enterText(fields.first, '4.0');
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as HardwareButtonConfig).longPressDurationSeconds)
-        .equals(4.0);
+    check(
+      (latest!.config! as HardwareButtonConfig).longPressDurationSeconds,
+    ).equals(4.0);
   });
 
   testWidgets(
@@ -389,9 +401,7 @@ void main() {
       // Tap the pattern dropdown and pick long-press.
       await tester.tap(find.byType(DropdownButtonFormField<HardwarePattern>));
       await tester.pumpAndSettle();
-      await tester.tap(
-        find.byType(DropdownMenuItem<HardwarePattern>).last,
-      );
+      await tester.tap(find.byType(DropdownMenuItem<HardwarePattern>).last);
       await tester.pumpAndSettle();
       check(latest).isNotNull();
       // Re-pump with the updated step so the form rebuilds.
@@ -414,22 +424,18 @@ void main() {
     // Open the DropdownButtonFormField, then tap the "specific"
     // item. The dropdown title strings come from l10n; tap by the
     // item type rather than by string.
-    await tester.tap(
-      find.byType(DropdownButtonFormField<SmsContactSelection>),
-    );
+    await tester.tap(find.byType(DropdownButtonFormField<SmsContactSelection>));
     await tester.pumpAndSettle();
     // A second "Specific" entry is rendered in the overlay.
-    await tester.tap(
-      find.byType(DropdownMenuItem<SmsContactSelection>).last,
-    );
+    await tester.tap(find.byType(DropdownMenuItem<SmsContactSelection>).last);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as SmsContactConfig).contactSelection)
-        .equals(SmsContactSelection.specificIds);
+    check(
+      (latest!.config! as SmsContactConfig).contactSelection,
+    ).equals(SmsContactSelection.specificIds);
   });
 
-  testWidgets('hardwareButton: dropdown changes button type',
-      (tester) async {
+  testWidgets('hardwareButton: dropdown changes button type', (tester) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.hardwareButton,
@@ -443,17 +449,16 @@ void main() {
     await tester.tap(find.byType(DropdownMenuItem<ButtonType>).last);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as HardwareButtonConfig).buttonType)
-        .equals(ButtonType.power);
+    check(
+      (latest!.config! as HardwareButtonConfig).buttonType,
+    ).equals(ButtonType.power);
   });
 
   testWidgets('hardwareButton: dropdown changes pattern', (tester) async {
     ChainStep? latest;
     final step = _step(
       ChainStepType.hardwareButton,
-      config: const HardwareButtonConfig(
-        pattern: HardwarePattern.repeatPress,
-      ),
+      config: const HardwareButtonConfig(pattern: HardwarePattern.repeatPress),
     );
     await tester.pumpWidget(hostWith(step, (s) => latest = s));
     await tester.pumpAndSettle();
@@ -462,7 +467,8 @@ void main() {
     await tester.tap(find.byType(DropdownMenuItem<HardwarePattern>).last);
     await tester.pumpAndSettle();
     check(latest).isNotNull();
-    check((latest!.config! as HardwareButtonConfig).pattern)
-        .equals(HardwarePattern.longPress);
+    check(
+      (latest!.config! as HardwareButtonConfig).pattern,
+    ).equals(HardwarePattern.longPress);
   });
 }

@@ -45,19 +45,19 @@ void main() {
 
   test('all 7 expected tables exist in sqlite_master', () async {
     final rows = await db
-        .customSelect(
-          "SELECT name FROM sqlite_master WHERE type = 'table'",
-        )
+        .customSelect("SELECT name FROM sqlite_master WHERE type = 'table'")
         .get();
     final names = rows.map((QueryRow r) => r.read<String>('name')).toSet();
-    check(names.containsAll({
-      'modes',
-      'contacts',
-      'templates',
-      'session_logs',
-      'settings',
-      'user_profile',
-      'battery_alert',
-    })).isTrue();
+    check(
+      names.containsAll({
+        'modes',
+        'contacts',
+        'templates',
+        'session_logs',
+        'settings',
+        'user_profile',
+        'battery_alert',
+      }),
+    ).isTrue();
   });
 }

@@ -23,43 +23,49 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets(
-    'ContactFormScreen Save with blank name does not persist',
-    (tester) async {
-      final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('ContactFormScreen Save with blank name does not persist', (
+    tester,
+  ) async {
+    final repo = FakeContactsRepository();
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
         child: const ContactFormScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final save = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.widgetWithText(FilledButton, 'Save'),
-      );
-      await tester.dragUntilVisible(
-        save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
-        const Offset(0, -100),
-      );
-      await tester.tap(save);
-      await tester.pumpAndSettle();
-      check(await repo.getAll()).isEmpty();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final save = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.widgetWithText(FilledButton, 'Save'),
+    );
+    await tester.dragUntilVisible(
+      save,
+      find
+          .descendant(
+            of: find.byType(ContactFormScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, -100),
+    );
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    check(await repo.getAll()).isEmpty();
+  });
 
   testWidgets(
     'ContactFormScreen tapping a selected channel chip deselects it',
     (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: [
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-        ],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+          ],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final smsChip = find.byType(FilterChip).first;
       // Default = all selected, so the SMS chip starts selected.
@@ -73,13 +79,16 @@ void main() {
   testWidgets(
     'ContactFormScreen all four channel chips render and start selected',
     (tester) async {
-      await tester.pumpWidget(hostScreenWithRouter(
-        overrides: [
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository()),
-        ],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenWithRouter(
+          overrides: [
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+          ],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final chips = find.descendant(
         of: find.byType(ContactFormScreen),
@@ -96,10 +105,12 @@ void main() {
     'ContactFormScreen saving with all channels unchecked shows SnackBar',
     (tester) async {
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.descendant(
         of: find.byType(ContactFormScreen),
@@ -124,10 +135,12 @@ void main() {
       );
       await tester.dragUntilVisible(
         save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(ContactFormScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
         const Offset(0, -100),
       );
       await tester.tap(save);
@@ -143,10 +156,12 @@ void main() {
       // Spec 04 line 1357: language is a Dropdown, not a free-form
       // text field. Pick "es" via the DropdownButtonFormField path.
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.descendant(
         of: find.byType(ContactFormScreen),
@@ -165,10 +180,12 @@ void main() {
       );
       await tester.dragUntilVisible(
         save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(ContactFormScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
         const Offset(0, -100),
       );
       await tester.tap(save);
@@ -181,97 +198,104 @@ void main() {
     },
   );
 
-  testWidgets(
-    'ContactFormScreen saves with all four channels by default',
-    (tester) async {
-      final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('ContactFormScreen saves with all four channels by default', (
+    tester,
+  ) async {
+    final repo = FakeContactsRepository();
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
         child: const ContactFormScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final fields = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.byType(TextFormField),
-      );
-      await tester.enterText(fields.at(0), 'Bob');
-      await tester.enterText(fields.at(1), '+15550002222');
-      await tester.pump();
-      // The default state is "all 4 channels selected"; no toggling
-      // needed before save.
-      final save = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.widgetWithText(FilledButton, 'Save'),
-      );
-      await tester.dragUntilVisible(
-        save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
-        const Offset(0, -100),
-      );
-      await tester.tap(save);
-      await tester.pumpAndSettle();
-      final stored = await repo.getAll();
-      final channels = stored.single.channels.toSet();
-      check(channels.contains(MessageChannel.sms)).isTrue();
-      check(channels.contains(MessageChannel.whatsapp)).isTrue();
-      check(channels.contains(MessageChannel.telegram)).isTrue();
-      check(channels.contains(MessageChannel.phoneCall)).isTrue();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.byType(TextFormField),
+    );
+    await tester.enterText(fields.at(0), 'Bob');
+    await tester.enterText(fields.at(1), '+15550002222');
+    await tester.pump();
+    // The default state is "all 4 channels selected"; no toggling
+    // needed before save.
+    final save = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.widgetWithText(FilledButton, 'Save'),
+    );
+    await tester.dragUntilVisible(
+      save,
+      find
+          .descendant(
+            of: find.byType(ContactFormScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, -100),
+    );
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    final stored = await repo.getAll();
+    final channels = stored.single.channels.toSet();
+    check(channels.contains(MessageChannel.sms)).isTrue();
+    check(channels.contains(MessageChannel.whatsapp)).isTrue();
+    check(channels.contains(MessageChannel.telegram)).isTrue();
+    check(channels.contains(MessageChannel.phoneCall)).isTrue();
+  });
 
-  testWidgets(
-    'ContactFormScreen hydrates via query-parameter id',
-    (tester) async {
-      final existing = EmergencyContact(
-        id: 'c-42',
-        name: 'Via Query',
-        phoneNumber: '+15551112222',
-        sortOrder: 0,
-        relationship: 'Dad',
-        languageCode: 'de',
-        channels: const [MessageChannel.sms, MessageChannel.phoneCall],
-      );
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('ContactFormScreen hydrates via query-parameter id', (
+    tester,
+  ) async {
+    final existing = EmergencyContact(
+      id: 'c-42',
+      name: 'Via Query',
+      phoneNumber: '+15551112222',
+      sortOrder: 0,
+      relationship: 'Dad',
+      languageCode: 'de',
+      channels: const [MessageChannel.sms, MessageChannel.phoneCall],
+    );
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository([existing])),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository([existing]),
+          ),
         ],
         initialQuery: 'id=c-42',
         child: const ContactFormScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final fields = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.byType(TextFormField),
-      );
-      final nameField = tester.widget<TextFormField>(fields.at(0));
-      check(nameField.controller!.text).equals('Via Query');
-      final relField = tester.widget<TextFormField>(fields.at(2));
-      check(relField.controller!.text).equals('Dad');
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.byType(TextFormField),
+    );
+    final nameField = tester.widget<TextFormField>(fields.at(0));
+    check(nameField.controller!.text).equals('Via Query');
+    final relField = tester.widget<TextFormField>(fields.at(2));
+    check(relField.controller!.text).equals('Dad');
+  });
 
-  testWidgets(
-    'ContactFormScreen query-param id with unknown id stays blank',
-    (tester) async {
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('ContactFormScreen query-param id with unknown id stays blank', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [
-          contactsRepositoryProvider
-              .overrideWithValue(FakeContactsRepository([makeContact()])),
+          contactsRepositoryProvider.overrideWithValue(
+            FakeContactsRepository([makeContact()]),
+          ),
         ],
         initialQuery: 'id=non-existent',
         child: const ContactFormScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final fields = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.byType(TextFormField),
-      );
-      final nameField = tester.widget<TextFormField>(fields.at(0));
-      check(nameField.controller!.text).equals('');
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.byType(TextFormField),
+    );
+    final nameField = tester.widget<TextFormField>(fields.at(0));
+    check(nameField.controller!.text).equals('');
+  });
 }

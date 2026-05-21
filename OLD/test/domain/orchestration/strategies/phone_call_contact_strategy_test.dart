@@ -143,28 +143,31 @@ void main() {
     });
 
     // Spec 02 §7.phoneCallContact Retry Logic + alternatives.
-    test('alternativeContactIds tried after primary succeeds is no-op', () async {
-      final harness = StrategyHarness(
-        contacts: [
-          makeContact(id: 'a', phoneNumber: '+111'),
-          makeContact(id: 'b', phoneNumber: '+222'),
-        ],
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(
-          type: ChainStepType.phoneCallContact,
-          config: const PhoneCallContactConfig(
-            contactId: 'a',
-            alternativeContactIds: ['b'],
+    test(
+      'alternativeContactIds tried after primary succeeds is no-op',
+      () async {
+        final harness = StrategyHarness(
+          contacts: [
+            makeContact(id: 'a', phoneNumber: '+111'),
+            makeContact(id: 'b', phoneNumber: '+222'),
+          ],
+        );
+        addTearDown(harness.dispose);
+        await strategy.executeReal(
+          step(
+            type: ChainStepType.phoneCallContact,
+            config: const PhoneCallContactConfig(
+              contactId: 'a',
+              alternativeContactIds: ['b'],
+            ),
           ),
-        ),
-        harness.build(),
-      );
-      // Primary succeeded (no retry) → no call to alternate.
-      expect(harness.phone.calls, contains('call:+111'));
-      expect(harness.phone.calls.contains('call:+222'), isFalse);
-    });
+          harness.build(),
+        );
+        // Primary succeeded (no retry) → no call to alternate.
+        expect(harness.phone.calls, contains('call:+111'));
+        expect(harness.phone.calls.contains('call:+222'), isFalse);
+      },
+    );
 
     test('retryCount triggers multiple attempts when phone throws', () async {
       final explodingPhone = _ExplodingPhone(failures: 99);

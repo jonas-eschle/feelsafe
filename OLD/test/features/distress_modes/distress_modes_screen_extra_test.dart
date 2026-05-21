@@ -31,8 +31,7 @@ Widget _hostWithDistressEditorRoute({
       GoRoute(path: '/', builder: (ctx, st) => child),
       GoRoute(
         path: RouteNames.distressModeEditor,
-        builder: (ctx, st) =>
-            const Scaffold(body: Text('DistressModeEditor')),
+        builder: (ctx, st) => const Scaffold(body: Text('DistressModeEditor')),
       ),
     ],
   );
@@ -53,8 +52,7 @@ Widget _hostWithDistressEditorRoute({
 
 void main() {
   group('DistressModesScreen — extra branches', () {
-    testWidgets(
-        'non-const constructor instruments line 16', (tester) async {
+    testWidgets('non-const constructor instruments line 16', (tester) async {
       // ignore: prefer_const_constructors
       final widget = DistressModesScreen(key: UniqueKey());
       await tester.pumpWidget(
@@ -70,36 +68,37 @@ void main() {
     });
 
     testWidgets(
-        'tapping a tile navigates to distressModeEditor (lines 37–38)',
-        (tester) async {
-      await tester.pumpWidget(
-        _hostWithDistressEditorRoute(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(
-              FakeModesRepository([
-                makeDistressMode(id: 'd1', name: 'Alpha'),
-                makeDistressMode(id: 'd2', name: 'Beta'),
-              ]),
-            ),
-          ],
-          child: const DistressModesScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      // Tap the first tile — executes onTap (lines 37–38).
-      await tester.tap(find.text('Alpha'));
-      await tester.pumpAndSettle();
-      // Navigation must succeed — distress mode editor placeholder visible.
-      check(find.text('DistressModeEditor').evaluate()).isNotEmpty();
-    });
+      'tapping a tile navigates to distressModeEditor (lines 37–38)',
+      (tester) async {
+        await tester.pumpWidget(
+          _hostWithDistressEditorRoute(
+            overrides: [
+              modesRepositoryProvider.overrideWithValue(
+                FakeModesRepository([
+                  makeDistressMode(id: 'd1', name: 'Alpha'),
+                  makeDistressMode(id: 'd2', name: 'Beta'),
+                ]),
+              ),
+            ],
+            child: const DistressModesScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
+        // Tap the first tile — executes onTap (lines 37–38).
+        await tester.tap(find.text('Alpha'));
+        await tester.pumpAndSettle();
+        // Navigation must succeed — distress mode editor placeholder visible.
+        check(find.text('DistressModeEditor').evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('FAB navigates to distressModeEditor (line 59)',
-        (tester) async {
+    testWidgets('FAB navigates to distressModeEditor (line 59)', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         _hostWithDistressEditorRoute(
           overrides: [
-            modesRepositoryProvider
-                .overrideWithValue(FakeModesRepository([])),
+            modesRepositoryProvider.overrideWithValue(FakeModesRepository([])),
           ],
           child: const DistressModesScreen(),
         ),

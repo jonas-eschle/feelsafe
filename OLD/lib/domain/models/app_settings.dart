@@ -95,10 +95,8 @@ final class AppSettings {
     telemetryOptOut: json['telemetryOptOut'] as bool? ?? false,
     sessionLogRetentionDays:
         (json['sessionLogRetentionDays'] as num?)?.toInt() ?? 180,
-    wrongPinThreshold:
-        (json['wrongPinThreshold'] as num?)?.toInt() ?? 5,
-    appPinBiometricEnabled:
-        json['appPinBiometricEnabled'] as bool? ?? false,
+    wrongPinThreshold: (json['wrongPinThreshold'] as num?)?.toInt() ?? 5,
+    appPinBiometricEnabled: json['appPinBiometricEnabled'] as bool? ?? false,
     sessionEndPinBiometricEnabled:
         json['sessionEndPinBiometricEnabled'] as bool? ?? false,
     distressCancelBiometricEnabled:
@@ -106,8 +104,7 @@ final class AppSettings {
     requireLaunchAuth: json['requireLaunchAuth'] as bool? ?? false,
     launchAuthBiometric: json['launchAuthBiometric'] as bool? ?? true,
     sentryEnabled: json['sentryEnabled'] as bool? ?? false,
-    alarmGradualVolume:
-        json['alarmGradualVolume'] as bool? ?? false,
+    alarmGradualVolume: json['alarmGradualVolume'] as bool? ?? false,
     alarmGradualVolumeDurationSeconds:
         (json['alarmGradualVolumeDurationSeconds'] as num?)?.toInt() ?? 5,
   );
@@ -258,13 +255,14 @@ final class AppSettings {
         appPinBiometricEnabled ?? this.appPinBiometricEnabled,
     sessionEndPinBiometricEnabled:
         sessionEndPinBiometricEnabled ?? this.sessionEndPinBiometricEnabled,
-    distressCancelBiometricEnabled: distressCancelBiometricEnabled ??
-        this.distressCancelBiometricEnabled,
+    distressCancelBiometricEnabled:
+        distressCancelBiometricEnabled ?? this.distressCancelBiometricEnabled,
     requireLaunchAuth: requireLaunchAuth ?? this.requireLaunchAuth,
     launchAuthBiometric: launchAuthBiometric ?? this.launchAuthBiometric,
     sentryEnabled: sentryEnabled ?? this.sentryEnabled,
     alarmGradualVolume: alarmGradualVolume ?? this.alarmGradualVolume,
-    alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds ??
+    alarmGradualVolumeDurationSeconds:
+        alarmGradualVolumeDurationSeconds ??
         this.alarmGradualVolumeDurationSeconds,
   );
 

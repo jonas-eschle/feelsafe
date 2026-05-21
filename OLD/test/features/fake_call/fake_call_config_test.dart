@@ -29,15 +29,26 @@ import '../../helpers/test_helpers.dart';
 
 class _A implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp}) async {}
+  Future<void> playAlarm({
+    bool maxVolume = true,
+    bool isSimulation = false,
+    Duration? gradualVolumeRamp,
+  }) async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({String? assetPath, bool isSimulation = false}) async {}
+  Future<void> playRingtone({
+    String? assetPath,
+    bool isSimulation = false,
+  }) async {}
   @override
   Future<void> stopRingtone() async {}
   @override
-  Future<void> playVoiceRecording({required String assetPath, bool isSimulation = false, String? ttsFallbackPhrase}) async {}
+  Future<void> playVoiceRecording({
+    required String assetPath,
+    bool isSimulation = false,
+    String? ttsFallbackPhrase,
+  }) async {}
   @override
   Future<void> stopVoiceRecording() async {}
 }
@@ -50,9 +61,18 @@ class _M implements MessagingServiceProtocol {
   @override
   Future<bool> canAutoSend(MessageChannel channel) async => true;
   @override
-  Future<MessageWorkId> sendMessage({required EmergencyContact contact, required String message, required MessageChannel channel, bool isSimulation = false}) async => const MessageWorkId('w');
+  Future<MessageWorkId> sendMessage({
+    required EmergencyContact contact,
+    required String message,
+    required MessageChannel channel,
+    bool isSimulation = false,
+  }) async => const MessageWorkId('w');
   @override
-  Future<List<MessageWorkId>> sendToAll({required List<EmergencyContact> contacts, required String message, bool isSimulation = false}) async => const [];
+  Future<List<MessageWorkId>> sendToAll({
+    required List<EmergencyContact> contacts,
+    required String message,
+    bool isSimulation = false,
+  }) async => const [];
   @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async {}
   @override
@@ -63,18 +83,33 @@ class _P implements PhoneServiceProtocol {
   @override
   Future<void> call(String number, {bool isSimulation = false}) async {}
   @override
-  Future<void> callEmergency(String number, {bool isSimulation = false}) async {}
+  Future<void> callEmergency(
+    String number, {
+    bool isSimulation = false,
+  }) async {}
 }
 
 class _N implements NotificationServiceProtocol {
   @override
   Future<void> init() async {}
   @override
-  Future<void> showSessionNotification({required String title, required String body, bool isSimulation = false}) async {}
+  Future<void> showSessionNotification({
+    required String title,
+    required String body,
+    bool isSimulation = false,
+  }) async {}
   @override
-  Future<void> showDisguisedReminder({required ReminderTemplate template, bool isSimulation = false}) async {}
+  Future<void> showDisguisedReminder({
+    required ReminderTemplate template,
+    bool isSimulation = false,
+  }) async {}
   @override
-  Future<int> scheduleNotification({required String title, required String body, required Duration delay, bool isSimulation = false}) async => 0;
+  Future<int> scheduleNotification({
+    required String title,
+    required String body,
+    required Duration delay,
+    bool isSimulation = false,
+  }) async => 0;
   @override
   Future<void> cancelNotification(int id) async {}
   @override
@@ -84,7 +119,12 @@ class _N implements NotificationServiceProtocol {
   @override
   Future<void> showToast(String message) async {}
   @override
-  Future<void> showDisarmTriggerNotification({required String title, required String body, required String endSessionLabel, required String continueLabel}) async {}
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {}
 }
 
 class _V implements VibrationServiceProtocol {
@@ -104,7 +144,13 @@ class _H implements HardwareButtonServiceProtocol {
   @override
   bool get isListening => false;
   @override
-  Future<void> start({required String buttonType, required String pattern, int pressCount = 5, int pressWindowMs = 500, double longPressDurationSeconds = 2.0}) async {}
+  Future<void> start({
+    required String buttonType,
+    required String pattern,
+    int pressCount = 5,
+    int pressWindowMs = 500,
+    double longPressDurationSeconds = 2.0,
+  }) async {}
   @override
   Future<void> stop() async {}
 }
@@ -113,7 +159,11 @@ class _G implements GeofenceServiceProtocol {
   @override
   Stream<LocationPoint> get arrivals => const Stream.empty();
   @override
-  Future<void> registerGeofence({required double latitude, required double longitude, required double radiusMeters}) async {}
+  Future<void> registerGeofence({
+    required double latitude,
+    required double longitude,
+    required double radiusMeters,
+  }) async {}
   @override
   Future<void> removeGeofence() async {}
 }
@@ -140,7 +190,9 @@ class _L implements LocationServiceProtocol {
   @override
   Future<bool> requestPermission() async => true;
   @override
-  Future<void> startTracking({Duration interval = const Duration(seconds: 60)}) async {}
+  Future<void> startTracking({
+    Duration interval = const Duration(seconds: 60),
+  }) async {}
   @override
   Future<void> stopTracking() async {}
   @override
@@ -170,7 +222,9 @@ List<Override> _serviceOverrides(FakeModesRepository modes) => [
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
   userProfileRepositoryProvider.overrideWithValue(FakeUserProfileRepository()),
-  batteryAlertRepositoryProvider.overrideWithValue(FakeBatteryAlertRepository()),
+  batteryAlertRepositoryProvider.overrideWithValue(
+    FakeBatteryAlertRepository(),
+  ),
   sessionLogsRepositoryProvider.overrideWithValue(FakeSessionLogsRepository()),
   audioServiceProvider.overrideWithValue(_A()),
   simulationAudioProvider.overrideWithValue(_A()),
@@ -224,8 +278,7 @@ void main() {
       check(cfg).equals(const FakeCallConfig());
     });
 
-    test('declineWithDistress is a no-op when no session is running',
-        () async {
+    test('declineWithDistress is a no-op when no session is running', () async {
       final repo = FakeModesRepository([]);
       final container = ProviderContainer(overrides: _serviceOverrides(repo));
       addTearDown(container.dispose);
@@ -248,9 +301,9 @@ void main() {
       addTearDown(container.dispose);
 
       await container.read(fakeCallControllerProvider.future);
-      final cfg =
-          await container.read(fakeCallControllerProvider.notifier)
-              .currentFakeCallConfig();
+      final cfg = await container
+          .read(fakeCallControllerProvider.notifier)
+          .currentFakeCallConfig();
       check(cfg).equals(const FakeCallConfig());
     });
 
@@ -268,9 +321,9 @@ void main() {
 
       await container.read(fakeCallControllerProvider.future);
       // Without an active session the WalkSession is null → returns default.
-      final cfg =
-          await container.read(fakeCallControllerProvider.notifier)
-              .currentFakeCallConfig();
+      final cfg = await container
+          .read(fakeCallControllerProvider.notifier)
+          .currentFakeCallConfig();
       // Still default because the walk is null, not because step is fakeCall.
       check(cfg).equals(const FakeCallConfig());
     });

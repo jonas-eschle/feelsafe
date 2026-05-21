@@ -69,16 +69,18 @@ Future<void> _settleRealAsync(WidgetTester tester, {int seconds = 3}) async {
 }
 
 void main() {
-  testWidgets('PinEntryDialog renders with a PinKeypad + Cancel button',
-      (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('1234')))!;
+  testWidgets('PinEntryDialog renders with a PinKeypad + Cancel button', (
+    tester,
+  ) async {
+    final stored = (await tester.runAsync(() => PinHasher.hash('1234')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: stored,
-      duressHash: null,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: stored,
+        duressHash: null,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -91,14 +93,15 @@ void main() {
   });
 
   testWidgets('Correct PIN resolves with PinResult.correct', (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('1234')))!;
+    final stored = (await tester.runAsync(() => PinHasher.hash('1234')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: stored,
-      duressHash: null,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: stored,
+        duressHash: null,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -113,16 +116,18 @@ void main() {
     check(resolved).equals(PinResult.correct);
   });
 
-  testWidgets('Wrong PIN at 8 digits resolves with PinResult.wrong',
-      (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('99999999')))!;
+  testWidgets('Wrong PIN at 8 digits resolves with PinResult.wrong', (
+    tester,
+  ) async {
+    final stored = (await tester.runAsync(() => PinHasher.hash('99999999')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: stored,
-      duressHash: null,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: stored,
+        duressHash: null,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -137,16 +142,18 @@ void main() {
     check(resolved).equals(PinResult.wrong);
   });
 
-  testWidgets('Cancel button resolves with PinResult.cancelled',
-      (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('5555')))!;
+  testWidgets('Cancel button resolves with PinResult.cancelled', (
+    tester,
+  ) async {
+    final stored = (await tester.runAsync(() => PinHasher.hash('5555')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: stored,
-      duressHash: null,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: stored,
+        duressHash: null,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -156,18 +163,19 @@ void main() {
     check(resolved).equals(PinResult.cancelled);
   });
 
-  testWidgets('Duress PIN resolves with PinResult.duress (checked first)',
-      (tester) async {
-    final sessionEnd =
-        (await tester.runAsync(() => PinHasher.hash('1234')))!;
-    final duress =
-        (await tester.runAsync(() => PinHasher.hash('9999')))!;
+  testWidgets('Duress PIN resolves with PinResult.duress (checked first)', (
+    tester,
+  ) async {
+    final sessionEnd = (await tester.runAsync(() => PinHasher.hash('1234')))!;
+    final duress = (await tester.runAsync(() => PinHasher.hash('9999')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: sessionEnd,
-      duressHash: duress,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: sessionEnd,
+        duressHash: duress,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -182,45 +190,45 @@ void main() {
     check(resolved).equals(PinResult.duress);
   });
 
-  testWidgets('hashPin helper round-trips with PinHasher.verify',
-      (tester) async {
+  testWidgets('hashPin helper round-trips with PinHasher.verify', (
+    tester,
+  ) async {
     final hash = (await tester.runAsync(() => hashPin('4242')))!;
-    final ok = (await tester.runAsync(
-          () => PinHasher.verify('4242', hash),
-        )) ??
-        false;
+    final ok =
+        (await tester.runAsync(() => PinHasher.verify('4242', hash))) ?? false;
     check(ok).isTrue();
   });
 
   testWidgets('Timeout resolves with PinResult.timeout', (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('1234')))!;
+    final stored = (await tester.runAsync(() => PinHasher.hash('1234')))!;
     PinResult? resolved;
-    await tester.pumpWidget(MaterialApp(
-      localizationsDelegates: const [
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Builder(
-        builder: (context) => Scaffold(
-          body: ElevatedButton(
-            onPressed: () async {
-              final r = await showPinEntryDialog(
-                context: context,
-                sessionEndHash: stored,
-                duressHash: null,
-                timeout: 1,
-              );
-              resolved = r;
-            },
-            child: const Text('open'),
+    await tester.pumpWidget(
+      MaterialApp(
+        localizationsDelegates: const [
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Builder(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () async {
+                final r = await showPinEntryDialog(
+                  context: context,
+                  sessionEndHash: stored,
+                  duressHash: null,
+                  timeout: 1,
+                );
+                resolved = r;
+              },
+              child: const Text('open'),
+            ),
           ),
         ),
       ),
-    ));
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();
@@ -231,16 +239,16 @@ void main() {
     check(resolved).equals(PinResult.timeout);
   });
 
-  testWidgets('Backspace removes one digit from the buffer',
-      (tester) async {
-    final stored =
-        (await tester.runAsync(() => PinHasher.hash('7777')))!;
+  testWidgets('Backspace removes one digit from the buffer', (tester) async {
+    final stored = (await tester.runAsync(() => PinHasher.hash('7777')))!;
     PinResult? resolved;
-    await tester.pumpWidget(_appHost(
-      sessionEndHash: stored,
-      duressHash: null,
-      onResolved: (r) => resolved = r,
-    ));
+    await tester.pumpWidget(
+      _appHost(
+        sessionEndHash: stored,
+        duressHash: null,
+        onResolved: (r) => resolved = r,
+      ),
+    );
     await tester.pump();
     await tester.tap(find.text('open'));
     await tester.pump();

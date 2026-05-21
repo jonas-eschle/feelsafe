@@ -165,15 +165,17 @@ void main() {
       check(sim.isSimulation).isTrue();
     });
 
-    test('startingReal always has simulationSilent=false regardless of args',
-        () {
-      // Real sessions don't have a silent parameter — it's always false.
-      final real = WalkSession.startingReal(
-        id: 'r',
-        modeId: 'm',
-        startedAt: start,
-      );
-      check(real.simulationSilent).isFalse();
-    });
+    test(
+      'startingReal always has simulationSilent=false regardless of args',
+      () {
+        // Real sessions don't have a silent parameter — it's always false.
+        final real = WalkSession.startingReal(
+          id: 'r',
+          modeId: 'm',
+          startedAt: start,
+        );
+        check(real.simulationSilent).isFalse();
+      },
+    );
   });
 }

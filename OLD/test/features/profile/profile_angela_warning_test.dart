@@ -39,12 +39,12 @@ void main() {
     testWidgets('saving "Angela" triggers the warning dialog', (tester) async {
       // Arrange
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act — enter "Angela" into the name field and save.
@@ -56,35 +56,36 @@ void main() {
     });
 
     testWidgets(
-        'saving "angela smith" (lowercase) triggers the warning dialog',
-        (tester) async {
-      // Arrange
-      final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
-      await tester.pumpAndSettle();
+      'saving "angela smith" (lowercase) triggers the warning dialog',
+      (tester) async {
+        // Arrange
+        final repo = FakeUserProfileRepository();
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+            child: const ProfileScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Act
-      await tester.enterText(find.byType(TextField).first, 'angela smith');
-      await _tapSave(tester);
+        // Act
+        await tester.enterText(find.byType(TextField).first, 'angela smith');
+        await _tapSave(tester);
 
-      // Assert
-      check(find.byType(AlertDialog).evaluate().length).isGreaterOrEqual(1);
-    });
+        // Assert
+        check(find.byType(AlertDialog).evaluate().length).isGreaterOrEqual(1);
+      },
+    );
 
     testWidgets('"Angelas" triggers the warning dialog', (tester) async {
       // Arrange
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act
@@ -95,16 +96,17 @@ void main() {
       check(find.byType(AlertDialog).evaluate().length).isGreaterOrEqual(1);
     });
 
-    testWidgets('"Angelica" does NOT trigger the warning dialog',
-        (tester) async {
+    testWidgets('"Angelica" does NOT trigger the warning dialog', (
+      tester,
+    ) async {
       // Arrange
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act
@@ -119,12 +121,12 @@ void main() {
     testWidgets('"Angelo" does NOT trigger the warning dialog', (tester) async {
       // Arrange
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act
@@ -136,16 +138,17 @@ void main() {
       check(find.byType(AlertDialog).evaluate().length).equals(0);
     });
 
-    testWidgets('"ANGELA" (all caps) triggers the warning dialog',
-        (tester) async {
+    testWidgets('"ANGELA" (all caps) triggers the warning dialog', (
+      tester,
+    ) async {
       // Case-insensitive match.
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Act
@@ -159,12 +162,12 @@ void main() {
     testWidgets('dialog OK button dismisses dialog', (tester) async {
       // Arrange
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(repo),
-        ],
-        child: const ProfileScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
 
       // Show dialog.

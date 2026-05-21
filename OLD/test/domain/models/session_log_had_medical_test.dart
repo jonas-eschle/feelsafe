@@ -16,20 +16,21 @@ import '../../data/db/dao_test_support.dart';
 // Shared factory
 // ---------------------------------------------------------------------------
 
-SessionLog _log({required String id, required bool hadMedicalInfo}) => SessionLog(
-  id: id,
-  modeId: 'mode-test',
-  modeName: 'Test Mode',
-  startedAt: DateTime.utc(2026, 5, 1, 12),
-  isSimulation: false,
-  hadMedicalInfo: hadMedicalInfo,
-  events: [
-    SessionLogEvent(
-      timestamp: DateTime.utc(2026, 5, 1, 12),
-      event: ChainEvent.sessionStarted,
-    ),
-  ],
-);
+SessionLog _log({required String id, required bool hadMedicalInfo}) =>
+    SessionLog(
+      id: id,
+      modeId: 'mode-test',
+      modeName: 'Test Mode',
+      startedAt: DateTime.utc(2026, 5, 1, 12),
+      isSimulation: false,
+      hadMedicalInfo: hadMedicalInfo,
+      events: [
+        SessionLogEvent(
+          timestamp: DateTime.utc(2026, 5, 1, 12),
+          event: ChainEvent.sessionStarted,
+        ),
+      ],
+    );
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -112,14 +113,16 @@ void main() {
       check(restored!.hadMedicalInfo).isFalse();
     });
 
-    test('saving with hadMedicalInfo=true then false updates correctly',
-        () async {
-      await dao.save(_log(id: 'd3', hadMedicalInfo: true));
-      check((await dao.getById('d3'))!.hadMedicalInfo).isTrue();
+    test(
+      'saving with hadMedicalInfo=true then false updates correctly',
+      () async {
+        await dao.save(_log(id: 'd3', hadMedicalInfo: true));
+        check((await dao.getById('d3'))!.hadMedicalInfo).isTrue();
 
-      await dao.save(_log(id: 'd3', hadMedicalInfo: false));
-      check((await dao.getById('d3'))!.hadMedicalInfo).isFalse();
-    });
+        await dao.save(_log(id: 'd3', hadMedicalInfo: false));
+        check((await dao.getById('d3'))!.hadMedicalInfo).isFalse();
+      },
+    );
 
     test('getAll preserves hadMedicalInfo across multiple logs', () async {
       await dao.save(_log(id: 'a', hadMedicalInfo: true));

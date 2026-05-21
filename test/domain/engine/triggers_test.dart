@@ -1,6 +1,7 @@
 import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
@@ -8,7 +9,6 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
-
 import 'engine_test_helpers.dart';
 
 void main() {

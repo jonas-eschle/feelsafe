@@ -44,8 +44,7 @@ final class StrategyHarness {
          isSimulation: isSimulation,
          reminderTemplates: reminderTemplates ?? const [],
          eventDefaults: eventDefaults,
-         defaultSmsTemplate:
-             defaultSmsTemplate ?? kFallbackSmsTemplate,
+         defaultSmsTemplate: defaultSmsTemplate ?? kFallbackSmsTemplate,
          defaultPreSmsTemplate:
              defaultPreSmsTemplate ?? kFallbackPreSmsTemplate,
          smsTemplateForLanguage: smsTemplateForLanguage,

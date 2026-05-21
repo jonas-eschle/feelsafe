@@ -20,10 +20,12 @@ void main() {
     'ContactFormScreen Save with blank relationship + language persists nulls',
     (tester) async {
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final fields = find.descendant(
         of: find.byType(ContactFormScreen),
@@ -39,10 +41,12 @@ void main() {
       );
       await tester.dragUntilVisible(
         save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
+        find
+            .descendant(
+              of: find.byType(ContactFormScreen),
+              matching: find.byType(Scrollable),
+            )
+            .first,
         const Offset(0, -100),
       );
       await tester.tap(save);
@@ -61,10 +65,12 @@ void main() {
       // selected. Tap each non-SMS chip twice (off, then on); SMS
       // gets tapped once (off) to verify a single-tap deselection.
       final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactFormScreen(),
-      ));
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+          child: const ContactFormScreen(),
+        ),
+      );
       await tester.pumpAndSettle();
       final chips = find.byType(FilterChip);
       // Order: 0=SMS, 1=WhatsApp, 2=Telegram, 3=Phone.
@@ -84,38 +90,41 @@ void main() {
     },
   );
 
-  testWidgets(
-    'ContactFormScreen Save flows through the mounted pop guard',
-    (tester) async {
-      final repo = FakeContactsRepository();
-      await tester.pumpWidget(hostScreenPushed(
+  testWidgets('ContactFormScreen Save flows through the mounted pop guard', (
+    tester,
+  ) async {
+    final repo = FakeContactsRepository();
+    await tester.pumpWidget(
+      hostScreenPushed(
         overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
         child: const ContactFormScreen(),
-      ));
-      await tester.pumpAndSettle();
-      final fields = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.byType(TextFormField),
-      );
-      await tester.enterText(fields.at(0), 'Pop');
-      await tester.enterText(fields.at(1), '+15551111');
-      await tester.pump();
-      final save = find.descendant(
-        of: find.byType(ContactFormScreen),
-        matching: find.widgetWithText(FilledButton, 'Save'),
-      );
-      await tester.dragUntilVisible(
-        save,
-        find.descendant(
-          of: find.byType(ContactFormScreen),
-          matching: find.byType(Scrollable),
-        ).first,
-        const Offset(0, -100),
-      );
-      await tester.tap(save);
-      await tester.pumpAndSettle();
-      // After pop, the form screen should no longer be visible.
-      check(find.byType(ContactFormScreen).evaluate()).isEmpty();
-    },
-  );
+      ),
+    );
+    await tester.pumpAndSettle();
+    final fields = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.byType(TextFormField),
+    );
+    await tester.enterText(fields.at(0), 'Pop');
+    await tester.enterText(fields.at(1), '+15551111');
+    await tester.pump();
+    final save = find.descendant(
+      of: find.byType(ContactFormScreen),
+      matching: find.widgetWithText(FilledButton, 'Save'),
+    );
+    await tester.dragUntilVisible(
+      save,
+      find
+          .descendant(
+            of: find.byType(ContactFormScreen),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+      const Offset(0, -100),
+    );
+    await tester.tap(save);
+    await tester.pumpAndSettle();
+    // After pop, the form screen should no longer be visible.
+    check(find.byType(ContactFormScreen).evaluate()).isEmpty();
+  });
 }

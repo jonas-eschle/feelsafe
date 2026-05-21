@@ -49,15 +49,25 @@ void main() {
 
   group('AppColors palettes', () {
     test('light palette is fully populated', () {
-      check(AppColors.light.safe).not((it) => it.equals(const Color(0x00000000)));
-      check(AppColors.light.warning).not((it) => it.equals(const Color(0x00000000)));
-      check(AppColors.light.danger).not((it) => it.equals(const Color(0x00000000)));
+      check(
+        AppColors.light.safe,
+      ).not((it) => it.equals(const Color(0x00000000)));
+      check(
+        AppColors.light.warning,
+      ).not((it) => it.equals(const Color(0x00000000)));
+      check(
+        AppColors.light.danger,
+      ).not((it) => it.equals(const Color(0x00000000)));
     });
 
     test('dark palette differs from light', () {
       check(AppColors.dark.safe).not((it) => it.equals(AppColors.light.safe));
-      check(AppColors.dark.warning).not((it) => it.equals(AppColors.light.warning));
-      check(AppColors.dark.danger).not((it) => it.equals(AppColors.light.danger));
+      check(
+        AppColors.dark.warning,
+      ).not((it) => it.equals(AppColors.light.warning));
+      check(
+        AppColors.dark.danger,
+      ).not((it) => it.equals(AppColors.light.danger));
     });
 
     test('"on" colors complement their background', () {
@@ -115,7 +125,9 @@ void main() {
       check(captured).identicalTo(AppColors.light);
     });
 
-    testWidgets('falls back to light palette without extension', (tester) async {
+    testWidgets('falls back to light palette without extension', (
+      tester,
+    ) async {
       AppColors? captured;
       await tester.pumpWidget(
         MaterialApp(

@@ -76,9 +76,7 @@ void main() {
 
   testWidgets('drag fires onChanged with a log-scaled value', (tester) async {
     double? received;
-    await tester.pumpWidget(
-      _host(value: 1, onChanged: (v) => received = v),
-    );
+    await tester.pumpWidget(_host(value: 1, onChanged: (v) => received = v));
     // Drag the thumb to the right — this drives Slider.onChanged,
     // which exercises _toValue via the closure.
     await tester.drag(find.byType(Slider), const Offset(400, 0));
@@ -89,12 +87,11 @@ void main() {
     check(received! <= 1000.0).isTrue();
   });
 
-  testWidgets('midpoint drag emits values through the _toValue curve',
-      (tester) async {
+  testWidgets('midpoint drag emits values through the _toValue curve', (
+    tester,
+  ) async {
     final values = <double>[];
-    await tester.pumpWidget(
-      _host(value: 1, onChanged: values.add),
-    );
+    await tester.pumpWidget(_host(value: 1, onChanged: values.add));
     await tester.drag(find.byType(Slider), const Offset(200, 0));
     await tester.pump();
     check(values).isNotEmpty();

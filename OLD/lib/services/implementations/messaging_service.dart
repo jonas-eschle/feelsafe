@@ -31,7 +31,7 @@ final class MessagingService implements MessagingServiceProtocol {
   /// [platform] defaults to the const production [PlatformInfo()];
   /// tests inject a [FakePlatformInfo] to exercise the Android path.
   MessagingService({PlatformInfo platform = const PlatformInfo()})
-      : _platform = platform {
+    : _platform = platform {
     _subscribeToNativeDelivery();
   }
 

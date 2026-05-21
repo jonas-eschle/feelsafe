@@ -30,15 +30,26 @@ import '../fake_repositories.dart';
 
 class _A implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp}) async {}
+  Future<void> playAlarm({
+    bool maxVolume = true,
+    bool isSimulation = false,
+    Duration? gradualVolumeRamp,
+  }) async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({String? assetPath, bool isSimulation = false}) async {}
+  Future<void> playRingtone({
+    String? assetPath,
+    bool isSimulation = false,
+  }) async {}
   @override
   Future<void> stopRingtone() async {}
   @override
-  Future<void> playVoiceRecording({required String assetPath, bool isSimulation = false, String? ttsFallbackPhrase}) async {}
+  Future<void> playVoiceRecording({
+    required String assetPath,
+    bool isSimulation = false,
+    String? ttsFallbackPhrase,
+  }) async {}
   @override
   Future<void> stopVoiceRecording() async {}
 }
@@ -51,9 +62,18 @@ class _M implements MessagingServiceProtocol {
   @override
   Future<bool> canAutoSend(MessageChannel ch) async => true;
   @override
-  Future<MessageWorkId> sendMessage({required EmergencyContact contact, required String message, required MessageChannel channel, bool isSimulation = false}) async => const MessageWorkId('w');
+  Future<MessageWorkId> sendMessage({
+    required EmergencyContact contact,
+    required String message,
+    required MessageChannel channel,
+    bool isSimulation = false,
+  }) async => const MessageWorkId('w');
   @override
-  Future<List<MessageWorkId>> sendToAll({required List<EmergencyContact> contacts, required String message, bool isSimulation = false}) async => const [];
+  Future<List<MessageWorkId>> sendToAll({
+    required List<EmergencyContact> contacts,
+    required String message,
+    bool isSimulation = false,
+  }) async => const [];
   @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async {}
   @override
@@ -64,18 +84,33 @@ class _P implements PhoneServiceProtocol {
   @override
   Future<void> call(String number, {bool isSimulation = false}) async {}
   @override
-  Future<void> callEmergency(String number, {bool isSimulation = false}) async {}
+  Future<void> callEmergency(
+    String number, {
+    bool isSimulation = false,
+  }) async {}
 }
 
 class _N implements NotificationServiceProtocol {
   @override
   Future<void> init() async {}
   @override
-  Future<void> showSessionNotification({required String title, required String body, bool isSimulation = false}) async {}
+  Future<void> showSessionNotification({
+    required String title,
+    required String body,
+    bool isSimulation = false,
+  }) async {}
   @override
-  Future<void> showDisguisedReminder({required ReminderTemplate template, bool isSimulation = false}) async {}
+  Future<void> showDisguisedReminder({
+    required ReminderTemplate template,
+    bool isSimulation = false,
+  }) async {}
   @override
-  Future<int> scheduleNotification({required String title, required String body, required Duration delay, bool isSimulation = false}) async => 0;
+  Future<int> scheduleNotification({
+    required String title,
+    required String body,
+    required Duration delay,
+    bool isSimulation = false,
+  }) async => 0;
   @override
   Future<void> cancelNotification(int id) async {}
   @override
@@ -85,7 +120,12 @@ class _N implements NotificationServiceProtocol {
   @override
   Future<void> showToast(String message) async {}
   @override
-  Future<void> showDisarmTriggerNotification({required String title, required String body, required String endSessionLabel, required String continueLabel}) async {}
+  Future<void> showDisarmTriggerNotification({
+    required String title,
+    required String body,
+    required String endSessionLabel,
+    required String continueLabel,
+  }) async {}
 }
 
 class _V implements VibrationServiceProtocol {
@@ -105,7 +145,13 @@ class _H implements HardwareButtonServiceProtocol {
   @override
   bool get isListening => false;
   @override
-  Future<void> start({required String buttonType, required String pattern, int pressCount = 5, int pressWindowMs = 500, double longPressDurationSeconds = 2.0}) async {}
+  Future<void> start({
+    required String buttonType,
+    required String pattern,
+    int pressCount = 5,
+    int pressWindowMs = 500,
+    double longPressDurationSeconds = 2.0,
+  }) async {}
   @override
   Future<void> stop() async {}
 }
@@ -114,7 +160,11 @@ class _G implements GeofenceServiceProtocol {
   @override
   Stream<LocationPoint> get arrivals => const Stream.empty();
   @override
-  Future<void> registerGeofence({required double latitude, required double longitude, required double radiusMeters}) async {}
+  Future<void> registerGeofence({
+    required double latitude,
+    required double longitude,
+    required double radiusMeters,
+  }) async {}
   @override
   Future<void> removeGeofence() async {}
 }
@@ -141,7 +191,9 @@ class _L implements LocationServiceProtocol {
   @override
   Future<bool> requestPermission() async => true;
   @override
-  Future<void> startTracking({Duration interval = const Duration(seconds: 60)}) async {}
+  Future<void> startTracking({
+    Duration interval = const Duration(seconds: 60),
+  }) async {}
   @override
   Future<void> stopTracking() async {}
   @override
@@ -189,7 +241,9 @@ List<Override> _overrides({
   templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
   settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
   userProfileRepositoryProvider.overrideWithValue(FakeUserProfileRepository()),
-  batteryAlertRepositoryProvider.overrideWithValue(FakeBatteryAlertRepository()),
+  batteryAlertRepositoryProvider.overrideWithValue(
+    FakeBatteryAlertRepository(),
+  ),
   sessionLogsRepositoryProvider.overrideWithValue(FakeSessionLogsRepository()),
   sessionControllerProvider.overrideWith(
     () => _StaticSessionController(session),
@@ -231,156 +285,178 @@ WalkSession _fakeCallSession({String modeId = 'm1', int stepIndex = 0}) =>
 
 void main() {
   group('FakeCallController.currentFakeCallConfig', () {
-    test('returns default FakeCallConfig when session is null (walk==null)',
-        () async {
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: FakeModesRepository(), session: null),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+    test(
+      'returns default FakeCallConfig when session is null (walk==null)',
+      () async {
+        final container = ProviderContainer(
+          overrides: _overrides(
+            modesRepo: FakeModesRepository(),
+            session: null,
+          ),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(const FakeCallConfig());
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(const FakeCallConfig());
+      },
+    );
 
     test(
-        'returns default FakeCallConfig when active step is not fakeCall (line 62)',
-        () async {
-      final session = WalkSession(
-        id: 's1',
-        modeId: 'm1',
-        isSimulation: false,
-        startedAt: DateTime.utc(2025),
-        phase: const SessionPhaseActive(),
-        currentStepType: ChainStepType.holdButton,
-      );
-      final container = ProviderContainer(
-        overrides:
-            _overrides(modesRepo: FakeModesRepository(), session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+      'returns default FakeCallConfig when active step is not fakeCall (line 62)',
+      () async {
+        final session = WalkSession(
+          id: 's1',
+          modeId: 'm1',
+          isSimulation: false,
+          startedAt: DateTime.utc(2025),
+          phase: const SessionPhaseActive(),
+          currentStepType: ChainStepType.holdButton,
+        );
+        final container = ProviderContainer(
+          overrides: _overrides(
+            modesRepo: FakeModesRepository(),
+            session: session,
+          ),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(const FakeCallConfig());
-    });
-
-    test('strategy 1: resolves config from original mode (lines 64–70)',
-        () async {
-      const customCfg = FakeCallConfig(declineIsSafe: true);
-      final fcStep = fakeCallStep(order: 0, declineIsSafe: true);
-      final mode = makeMode(id: 'm1', steps: [fcStep]);
-      final repo = FakeModesRepository([mode]);
-      final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
-
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: repo, session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
-
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(customCfg);
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(const FakeCallConfig());
+      },
+    );
 
     test(
-        'strategy 2: scans all modes when original mode id is absent (lines 75–78)',
-        () async {
-      const customCfg = FakeCallConfig(declineIsSafe: true);
-      final fcStep = fakeCallStep(order: 0, declineIsSafe: true);
-      // mode id 'other' does not match session's modeId 'm1'.
-      final otherMode = makeMode(id: 'other', steps: [fcStep]);
-      final repo = FakeModesRepository([otherMode]);
-      // Session references modeId 'm1' which has no entry in the repo.
-      final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
+      'strategy 1: resolves config from original mode (lines 64–70)',
+      () async {
+        const customCfg = FakeCallConfig(declineIsSafe: true);
+        final fcStep = fakeCallStep(order: 0, declineIsSafe: true);
+        final mode = makeMode(id: 'm1', steps: [fcStep]);
+        final repo = FakeModesRepository([mode]);
+        final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
 
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: repo, session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+        final container = ProviderContainer(
+          overrides: _overrides(modesRepo: repo, session: session),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(customCfg);
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(customCfg);
+      },
+    );
 
-    test('strategy 3: returns default when no mode has matching fakeCall step',
-        () async {
-      // Mode has a holdButton step at index 0, not a fakeCall.
-      final mode = makeMode(id: 'm1', steps: [holdStep(order: 0)]);
-      final repo = FakeModesRepository([mode]);
-      final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
+    test(
+      'strategy 2: scans all modes when original mode id is absent (lines 75–78)',
+      () async {
+        const customCfg = FakeCallConfig(declineIsSafe: true);
+        final fcStep = fakeCallStep(order: 0, declineIsSafe: true);
+        // mode id 'other' does not match session's modeId 'm1'.
+        final otherMode = makeMode(id: 'other', steps: [fcStep]);
+        final repo = FakeModesRepository([otherMode]);
+        // Session references modeId 'm1' which has no entry in the repo.
+        final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
 
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: repo, session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+        final container = ProviderContainer(
+          overrides: _overrides(modesRepo: repo, session: session),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(const FakeCallConfig());
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(customCfg);
+      },
+    );
 
-    test('_fakeCallAt returns null when stepIndex is out of range (line 89)',
-        () async {
-      final fcStep = fakeCallStep(order: 0);
-      final mode = makeMode(id: 'm1', steps: [fcStep]);
-      final repo = FakeModesRepository([mode]);
-      // stepIndex=5 is beyond mode.chainSteps.length.
-      final session = _fakeCallSession(modeId: 'm1', stepIndex: 5);
+    test(
+      'strategy 3: returns default when no mode has matching fakeCall step',
+      () async {
+        // Mode has a holdButton step at index 0, not a fakeCall.
+        final mode = makeMode(id: 'm1', steps: [holdStep(order: 0)]);
+        final repo = FakeModesRepository([mode]);
+        final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
 
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: repo, session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+        final container = ProviderContainer(
+          overrides: _overrides(modesRepo: repo, session: session),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      // Out of range → strategy 3 → default.
-      check(cfg).equals(const FakeCallConfig());
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(const FakeCallConfig());
+      },
+    );
 
-    test('_fakeCallAt returns null when step type is not fakeCall (line 91)',
-        () async {
-      // Mode has smsContact at index 0, not fakeCall.
-      final mode = makeMode(id: 'm1', steps: [smsStep(order: 0)]);
-      final repo = FakeModesRepository([mode]);
-      final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
+    test(
+      '_fakeCallAt returns null when stepIndex is out of range (line 89)',
+      () async {
+        final fcStep = fakeCallStep(order: 0);
+        final mode = makeMode(id: 'm1', steps: [fcStep]);
+        final repo = FakeModesRepository([mode]);
+        // stepIndex=5 is beyond mode.chainSteps.length.
+        final session = _fakeCallSession(modeId: 'm1', stepIndex: 5);
 
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: repo, session: session),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
+        final container = ProviderContainer(
+          overrides: _overrides(modesRepo: repo, session: session),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
 
-      final cfg = await container
-          .read(fakeCallControllerProvider.notifier)
-          .currentFakeCallConfig();
-      check(cfg).equals(const FakeCallConfig());
-    });
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        // Out of range → strategy 3 → default.
+        check(cfg).equals(const FakeCallConfig());
+      },
+    );
 
-    test('declineWithDistress delegates to sessionController (no exception)',
-        () async {
-      final container = ProviderContainer(
-        overrides: _overrides(modesRepo: FakeModesRepository(), session: null),
-      );
-      addTearDown(container.dispose);
-      await container.read(fakeCallControllerProvider.future);
-      await container
-          .read(fakeCallControllerProvider.notifier)
-          .declineWithDistress();
-    });
+    test(
+      '_fakeCallAt returns null when step type is not fakeCall (line 91)',
+      () async {
+        // Mode has smsContact at index 0, not fakeCall.
+        final mode = makeMode(id: 'm1', steps: [smsStep(order: 0)]);
+        final repo = FakeModesRepository([mode]);
+        final session = _fakeCallSession(modeId: 'm1', stepIndex: 0);
+
+        final container = ProviderContainer(
+          overrides: _overrides(modesRepo: repo, session: session),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
+
+        final cfg = await container
+            .read(fakeCallControllerProvider.notifier)
+            .currentFakeCallConfig();
+        check(cfg).equals(const FakeCallConfig());
+      },
+    );
+
+    test(
+      'declineWithDistress delegates to sessionController (no exception)',
+      () async {
+        final container = ProviderContainer(
+          overrides: _overrides(
+            modesRepo: FakeModesRepository(),
+            session: null,
+          ),
+        );
+        addTearDown(container.dispose);
+        await container.read(fakeCallControllerProvider.future);
+        await container
+            .read(fakeCallControllerProvider.notifier)
+            .declineWithDistress();
+      },
+    );
   });
 }

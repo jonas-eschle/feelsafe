@@ -49,7 +49,8 @@ void main() {
     goldenTest(
       'settings_screen_$themeName',
       fileName: 'settings_screen_$themeName',
-      builder: () => goldenWrapper(child: _settingsStandin(), themeMode: themeMode),
+      builder: () =>
+          goldenWrapper(child: _settingsStandin(), themeMode: themeMode),
     );
   }
 }

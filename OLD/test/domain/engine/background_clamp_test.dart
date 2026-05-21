@@ -46,15 +46,17 @@ void main() {
       check(e.backgroundClamp).isFalse();
     });
 
-    test('effectiveSpeedMultiplier equals speedMultiplier when clamp is off',
-        () {
-      // Arrange
-      final e = _simEngine(500.0);
-      addTearDown(e.dispose);
-      // Assert — stored and effective are identical without clamp.
-      check(e.speedMultiplier).equals(500.0);
-      check(e.effectiveSpeedMultiplier).equals(500.0);
-    });
+    test(
+      'effectiveSpeedMultiplier equals speedMultiplier when clamp is off',
+      () {
+        // Arrange
+        final e = _simEngine(500.0);
+        addTearDown(e.dispose);
+        // Assert — stored and effective are identical without clamp.
+        check(e.speedMultiplier).equals(500.0);
+        check(e.effectiveSpeedMultiplier).equals(500.0);
+      },
+    );
   });
 
   group('setBackgroundClamp(true) caps at 60×', () {

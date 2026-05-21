@@ -89,104 +89,89 @@ void main() {
       await check(notifier.delete('x')).throws<SessionLockedError>();
     });
 
-    test(
-      'reorder throws SessionLockedError when session is active',
-      () async {
-        final container = _makeContainer(
-          seed: [
-            makeMode(id: 'a', name: 'A'),
-            makeMode(id: 'b', name: 'B'),
-          ],
-          sessionActive: true,
-        );
-        addTearDown(container.dispose);
+    test('reorder throws SessionLockedError when session is active', () async {
+      final container = _makeContainer(
+        seed: [
+          makeMode(id: 'a', name: 'A'),
+          makeMode(id: 'b', name: 'B'),
+        ],
+        sessionActive: true,
+      );
+      addTearDown(container.dispose);
 
-        final notifier = container.read(modesControllerProvider.notifier);
-        await container.read(modesControllerProvider.future);
+      final notifier = container.read(modesControllerProvider.notifier);
+      await container.read(modesControllerProvider.future);
 
-        await check(notifier.reorder(0, 1)).throws<SessionLockedError>();
-      },
-    );
+      await check(notifier.reorder(0, 1)).throws<SessionLockedError>();
+    });
   });
 
   group('ModesController.reorder – boundary / edge cases', () {
-    test(
-      'reorder with oldIndex == length throws RangeError',
-      () async {
-        // `length == 2`, valid range [0,1]; oldIndex == 2 is out-of-range.
-        final container = _makeContainer(
-          seed: [
-            makeMode(id: 'a', name: 'A'),
-            makeMode(id: 'b', name: 'B'),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('reorder with oldIndex == length throws RangeError', () async {
+      // `length == 2`, valid range [0,1]; oldIndex == 2 is out-of-range.
+      final container = _makeContainer(
+        seed: [
+          makeMode(id: 'a', name: 'A'),
+          makeMode(id: 'b', name: 'B'),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        final notifier = container.read(modesControllerProvider.notifier);
-        await container.read(modesControllerProvider.future);
+      final notifier = container.read(modesControllerProvider.notifier);
+      await container.read(modesControllerProvider.future);
 
-        await check(notifier.reorder(2, 0)).throws<RangeError>();
-      },
-    );
+      await check(notifier.reorder(2, 0)).throws<RangeError>();
+    });
 
-    test(
-      'reorder on empty list throws RangeError for any oldIndex',
-      () async {
-        final container = _makeContainer(seed: []);
-        addTearDown(container.dispose);
+    test('reorder on empty list throws RangeError for any oldIndex', () async {
+      final container = _makeContainer(seed: []);
+      addTearDown(container.dispose);
 
-        final notifier = container.read(modesControllerProvider.notifier);
-        await container.read(modesControllerProvider.future);
+      final notifier = container.read(modesControllerProvider.notifier);
+      await container.read(modesControllerProvider.future);
 
-        // state.value is empty; oldIndex 0 >= length(0) so it's invalid.
-        await check(notifier.reorder(0, 0)).throws<RangeError>();
-      },
-    );
+      // state.value is empty; oldIndex 0 >= length(0) so it's invalid.
+      await check(notifier.reorder(0, 0)).throws<RangeError>();
+    });
 
-    test(
-      'reorder moves the last item to the front',
-      () async {
-        final container = _makeContainer(
-          seed: [
-            makeMode(id: 'a', name: 'A'),
-            makeMode(id: 'b', name: 'B'),
-            makeMode(id: 'c', name: 'C'),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('reorder moves the last item to the front', () async {
+      final container = _makeContainer(
+        seed: [
+          makeMode(id: 'a', name: 'A'),
+          makeMode(id: 'b', name: 'B'),
+          makeMode(id: 'c', name: 'C'),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        final notifier = container.read(modesControllerProvider.notifier);
-        await container.read(modesControllerProvider.future);
+      final notifier = container.read(modesControllerProvider.notifier);
+      await container.read(modesControllerProvider.future);
 
-        // Move index 2 (c) before index 0 → [c, a, b].
-        await notifier.reorder(2, 0);
+      // Move index 2 (c) before index 0 → [c, a, b].
+      await notifier.reorder(2, 0);
 
-        final list = container.read(modesControllerProvider).value!;
-        check(list.map((m) => m.id).toList()).deepEquals(['c', 'a', 'b']);
-      },
-    );
+      final list = container.read(modesControllerProvider).value!;
+      check(list.map((m) => m.id).toList()).deepEquals(['c', 'a', 'b']);
+    });
 
-    test(
-      'reorder with newIndex clamped to list end does not crash',
-      () async {
-        final container = _makeContainer(
-          seed: [
-            makeMode(id: 'a', name: 'A'),
-            makeMode(id: 'b', name: 'B'),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('reorder with newIndex clamped to list end does not crash', () async {
+      final container = _makeContainer(
+        seed: [
+          makeMode(id: 'a', name: 'A'),
+          makeMode(id: 'b', name: 'B'),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        final notifier = container.read(modesControllerProvider.notifier);
-        await container.read(modesControllerProvider.future);
+      final notifier = container.read(modesControllerProvider.notifier);
+      await container.read(modesControllerProvider.future);
 
-        // ReorderableListView calls reorder(0, length) to move first
-        // item to last; insertAt = length - 1 = 1 → [b, a].
-        await notifier.reorder(0, 2);
+      // ReorderableListView calls reorder(0, length) to move first
+      // item to last; insertAt = length - 1 = 1 → [b, a].
+      await notifier.reorder(0, 2);
 
-        final list = container.read(modesControllerProvider).value!;
-        check(list.map((m) => m.id).toList()).deepEquals(['b', 'a']);
-      },
-    );
+      final list = container.read(modesControllerProvider).value!;
+      check(list.map((m) => m.id).toList()).deepEquals(['b', 'a']);
+    });
   });
 }

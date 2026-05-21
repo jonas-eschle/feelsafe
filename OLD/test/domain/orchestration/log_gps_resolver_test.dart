@@ -73,9 +73,7 @@ void main() {
     });
 
     test('step.useDefault → per-type default decides', () {
-      final step = _step(
-        config: const SmsContactConfig(),
-      );
+      final step = _step(config: const SmsContactConfig());
       final s = _services(
         eventDefaults: const EventDefaults(
           smsContact: SmsContactConfig(logGps: LogGpsOverride.forceOff),

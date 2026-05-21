@@ -54,19 +54,20 @@ Widget _app({required void Function(PinResult) onResolved}) => MaterialApp(
 void main() {
   group('PinEntryDialog — biometric exception falls back to keypad', () {
     testWidgets(
-        'platform error from authenticate falls back to keypad (lines 140–141)',
-        (tester) async {
-      PinResult? resolved;
-      await tester.pumpWidget(_app(onResolved: (r) => resolved = r));
-      await tester.tap(find.byKey(const Key('open')));
-      await tester.pump();
-      await tester.pump(const Duration(milliseconds: 200));
+      'platform error from authenticate falls back to keypad (lines 140–141)',
+      (tester) async {
+        PinResult? resolved;
+        await tester.pumpWidget(_app(onResolved: (r) => resolved = r));
+        await tester.tap(find.byKey(const Key('open')));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 200));
 
-      // The dialog should still be visible after the exception — the widget
-      // falls back to the keypad instead of crashing.
-      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
-      // No result resolved yet (dialog still open).
-      check(resolved).isNull();
-    });
+        // The dialog should still be visible after the exception — the widget
+        // falls back to the keypad instead of crashing.
+        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+        // No result resolved yet (dialog still open).
+        check(resolved).isNull();
+      },
+    );
   });
 }

@@ -29,22 +29,26 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('DeviceStateService (non-Android host — short-circuits)', () {
-    test('isDndOn returns false on non-Android without touching channel',
-        () async {
-      const channel = MethodChannel('com.guardianangela.app/device_state');
-      final calls = installMethodChannelMock(channel);
-      final s = DeviceStateService();
-      check(await s.isDndOn()).isFalse();
-      check(await s.isSilent()).isFalse();
-      check(calls).isEmpty();
-    });
+    test(
+      'isDndOn returns false on non-Android without touching channel',
+      () async {
+        const channel = MethodChannel('com.guardianangela.app/device_state');
+        final calls = installMethodChannelMock(channel);
+        final s = DeviceStateService();
+        check(await s.isDndOn()).isFalse();
+        check(await s.isSilent()).isFalse();
+        check(calls).isEmpty();
+      },
+    );
   });
 
   group('HardwareButtonService', () {
-    const methodChannel =
-        MethodChannel('com.guardianangela.app/hardware_buttons');
-    const eventChannel =
-        EventChannel('com.guardianangela.app/hardware_button_events');
+    const methodChannel = MethodChannel(
+      'com.guardianangela.app/hardware_buttons',
+    );
+    const eventChannel = EventChannel(
+      'com.guardianangela.app/hardware_button_events',
+    );
 
     test('start passes correct args and sets listening=true', () async {
       final methodCalls = installMethodChannelMock(methodChannel);
@@ -79,22 +83,25 @@ void main() {
       await s.dispose();
     });
 
-    test('start surfaces "Not wired — Phase 10" on MissingPluginException',
-        () async {
-      installMissingPluginMock(methodChannel);
-      installEventChannelMock(eventChannel);
-      final s = HardwareButtonService();
-      await check(s.start(buttonType: 'v', pattern: 'p')).throws<Object>();
-      check(s.isListening).isFalse();
-      await s.dispose();
-    });
+    test(
+      'start surfaces "Not wired — Phase 10" on MissingPluginException',
+      () async {
+        installMissingPluginMock(methodChannel);
+        installEventChannelMock(eventChannel);
+        final s = HardwareButtonService();
+        await check(s.start(buttonType: 'v', pattern: 'p')).throws<Object>();
+        check(s.isListening).isFalse();
+        await s.dispose();
+      },
+    );
 
     test('start rethrows PlatformException', () async {
       installPlatformErrorMock(methodChannel);
       installEventChannelMock(eventChannel);
       final s = HardwareButtonService();
-      await check(s.start(buttonType: 'v', pattern: 'p'))
-          .throws<PlatformException>();
+      await check(
+        s.start(buttonType: 'v', pattern: 'p'),
+      ).throws<PlatformException>();
       await s.dispose();
     });
 
@@ -105,8 +112,7 @@ void main() {
       await s.start(buttonType: 'v', pattern: 'p');
       await s.stop();
       check(s.isListening).isFalse();
-      check(calls.map((c) => c.method).toList())
-          .deepEquals(['start', 'stop']);
+      check(calls.map((c) => c.method).toList()).deepEquals(['start', 'stop']);
       await s.dispose();
     });
 
@@ -183,10 +189,10 @@ void main() {
   });
 
   group('IncomingCallService', () {
-    const methodChannel =
-        MethodChannel('com.guardianangela.app/call_state');
-    const eventChannel =
-        EventChannel('com.guardianangela.app/call_state_events');
+    const methodChannel = MethodChannel('com.guardianangela.app/call_state');
+    const eventChannel = EventChannel(
+      'com.guardianangela.app/call_state_events',
+    );
 
     test('startListening invokes start and is idempotent', () async {
       final calls = installMethodChannelMock(methodChannel);
@@ -199,8 +205,7 @@ void main() {
       await s.dispose();
     });
 
-    test('startListening surfaces Phase 10 error on missing plugin',
-        () async {
+    test('startListening surfaces Phase 10 error on missing plugin', () async {
       installMissingPluginMock(methodChannel);
       installEventChannelMock(eventChannel);
       final s = IncomingCallService();
@@ -222,8 +227,7 @@ void main() {
       final s = IncomingCallService();
       await s.startListening();
       await s.stopListening();
-      check(calls.map((c) => c.method).toList())
-          .deepEquals(['start', 'stop']);
+      check(calls.map((c) => c.method).toList()).deepEquals(['start', 'stop']);
       await s.dispose();
     });
 
@@ -285,8 +289,7 @@ void main() {
       check(calls).isEmpty();
     });
 
-    test(
-        'non-Android real call goes to url_launcher which throws '
+    test('non-Android real call goes to url_launcher which throws '
         'in unit test harness', () async {
       // url_launcher throws MissingPluginException in pure Dart test harness.
       final s = PhoneService();
@@ -296,17 +299,19 @@ void main() {
   });
 
   group('StealthIconService (non-Android host — caches only)', () {
-    test('setPreset caches preset; non-Android does not invoke channel',
-        () async {
-      const channel = MethodChannel('com.guardianangela.app/stealth_icon');
-      final calls = installMethodChannelMock(channel);
-      final s = StealthIconService();
-      await s.setPreset(StealthIconPreset.music);
-      check(calls).isEmpty();
-      check(await s.getCurrentPreset()).equals(StealthIconPreset.music);
-      await s.setPreset(StealthIconPreset.fitness);
-      check(await s.getCurrentPreset()).equals(StealthIconPreset.fitness);
-    });
+    test(
+      'setPreset caches preset; non-Android does not invoke channel',
+      () async {
+        const channel = MethodChannel('com.guardianangela.app/stealth_icon');
+        final calls = installMethodChannelMock(channel);
+        final s = StealthIconService();
+        await s.setPreset(StealthIconPreset.music);
+        check(calls).isEmpty();
+        check(await s.getCurrentPreset()).equals(StealthIconPreset.music);
+        await s.setPreset(StealthIconPreset.fitness);
+        check(await s.getCurrentPreset()).equals(StealthIconPreset.fitness);
+      },
+    );
 
     test('default cached preset is calendar', () async {
       final s = StealthIconService();

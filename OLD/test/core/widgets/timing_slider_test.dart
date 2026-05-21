@@ -46,15 +46,12 @@ void main() {
 
     test('clamps above last stop to last index', () {
       check(closestSnapStopIndex(31536000)).equals(kTimingSnapStops.length - 1);
-      check(closestSnapStopIndex(99999999))
-          .equals(kTimingSnapStops.length - 1);
+      check(closestSnapStopIndex(99999999)).equals(kTimingSnapStops.length - 1);
     });
 
     test('exact match returns the matching index', () {
-      check(closestSnapStopIndex(60))
-          .equals(kTimingSnapStops.indexOf(60));
-      check(closestSnapStopIndex(3600))
-          .equals(kTimingSnapStops.indexOf(3600));
+      check(closestSnapStopIndex(60)).equals(kTimingSnapStops.indexOf(60));
+      check(closestSnapStopIndex(3600)).equals(kTimingSnapStops.indexOf(3600));
     });
 
     test('between two stops returns the nearest', () {
@@ -91,40 +88,34 @@ void main() {
 
   group('TimingSlider widget', () {
     testWidgets('renders the formatted label in the chip', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: TimingSlider(
-            seconds: 90,
-            onChanged: (_) {},
-          ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: TimingSlider(seconds: 90, onChanged: (_) {})),
         ),
-      ));
+      );
       check(find.text('1m 30s').evaluate().length).isGreaterThan(0);
     });
 
     testWidgets('renders an immediate label for 0s', (tester) async {
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: TimingSlider(
-            seconds: 0,
-            onChanged: (_) {},
-          ),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: TimingSlider(seconds: 0, onChanged: (_) {})),
         ),
-      ));
+      );
       check(find.text('0s (immediate)').evaluate().length).isGreaterThan(0);
     });
 
-    testWidgets('moving the Slider snaps to a stop and notifies',
-        (tester) async {
+    testWidgets('moving the Slider snaps to a stop and notifies', (
+      tester,
+    ) async {
       int? captured;
-      await tester.pumpWidget(MaterialApp(
-        home: Scaffold(
-          body: TimingSlider(
-            seconds: 0,
-            onChanged: (v) => captured = v,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: TimingSlider(seconds: 0, onChanged: (v) => captured = v),
           ),
         ),
-      ));
+      );
       // Drag the slider to the right end of the track. Material's
       // `Slider` reports the new value via onChanged on each update,
       // and TimingSlider snaps it to the closest stop.

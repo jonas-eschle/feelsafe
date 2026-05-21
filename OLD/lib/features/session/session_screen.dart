@@ -67,19 +67,19 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
       // pushes the full-screen countdown so the user can cancel before
       // the call is placed. The strategy's own silent delay runs in
       // parallel; the screen pops itself when the countdown expires.
-      _emergencyConfirmSub = controller.emergencyConfirmationRequests.listen(
-        (req) {
-          if (!mounted) return;
-          Navigator.of(context).push<void>(
-            MaterialPageRoute<void>(
-              builder: (_) => EmergencyConfirmScreen(
-                number: req.number,
-                durationSeconds: req.durationSeconds,
-              ),
+      _emergencyConfirmSub = controller.emergencyConfirmationRequests.listen((
+        req,
+      ) {
+        if (!mounted) return;
+        Navigator.of(context).push<void>(
+          MaterialPageRoute<void>(
+            builder: (_) => EmergencyConfirmScreen(
+              number: req.number,
+              durationSeconds: req.durationSeconds,
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
     });
   }
 
@@ -102,7 +102,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
     // background clamp to match OS doze reality.
     final session = ref.read(sessionControllerProvider).value;
     if (session?.isSimulation ?? false) {
-      final isPaused = state == AppLifecycleState.paused ||
+      final isPaused =
+          state == AppLifecycleState.paused ||
           state == AppLifecycleState.hidden ||
           state == AppLifecycleState.inactive;
       controller.setSimulationBackgroundClamp(isPaused);
@@ -261,7 +262,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen>
     // remaining-seconds text AND the hold-button countdown when
     // stealth is active and `timerDisplay` is false. Settings UI has
     // always persisted this flag; until now nothing consumed it.
-    final hideTimer = stealth != null &&
+    final hideTimer =
+        stealth != null &&
         stealth.enabled &&
         stealth.timerDisplay == StealthTimerDisplay.none;
     return Scaffold(

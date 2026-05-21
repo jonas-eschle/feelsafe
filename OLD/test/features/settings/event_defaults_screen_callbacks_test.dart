@@ -50,8 +50,7 @@ Future<bool> _expandTileAt(WidgetTester tester, int tileIndex) async {
 }
 
 void main() {
-  group('EventDefaultsScreen — callerName + channel onChanged (lines 186–223)',
-      () {
+  group('EventDefaultsScreen — callerName + channel onChanged (lines 186–223)', () {
     testWidgets(
       '_FakeCallEditor callerName TextFormField.onChanged updates repo '
       '(lines 186–187)',
@@ -99,9 +98,7 @@ void main() {
         check(expanded).isTrue();
 
         // The SmsContactEditor renders a DropdownButtonFormField<MessageChannel>.
-        final dropdowns = find.byType(
-          DropdownButtonFormField<MessageChannel>,
-        );
+        final dropdowns = find.byType(DropdownButtonFormField<MessageChannel>);
         if (dropdowns.evaluate().isNotEmpty) {
           await tester.ensureVisible(dropdowns.first);
           await tester.pump();

@@ -65,55 +65,46 @@ Future<void> _expandTileAt(WidgetTester tester, int tileIndex) async {
 
 void main() {
   group('EventDefaultsScreen tile rendering', () {
-    testWidgets(
-      'renders at least one ExpansionTile',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('renders at least one ExpansionTile', (tester) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        check(find.byType(ExpansionTile).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(ExpansionTile).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'ChainStepType has exactly 9 values',
-      (tester) async {
-        check(ChainStepType.values.length).equals(9);
-      },
-    );
+    testWidgets('ChainStepType has exactly 9 values', (tester) async {
+      check(ChainStepType.values.length).equals(9);
+    });
 
-    testWidgets(
-      'scrolling to end reveals all 9 ExpansionTiles',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('scrolling to end reveals all 9 ExpansionTiles', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        // Scroll to the end to build all tiles.
-        for (var i = 0; i < 15; i++) {
-          await tester.drag(find.byType(ListView).first, const Offset(0, -300));
-          await tester.pump();
-        }
-        await tester.pumpAndSettle();
+      // Scroll to the end to build all tiles.
+      for (var i = 0; i < 15; i++) {
+        await tester.drag(find.byType(ListView).first, const Offset(0, -300));
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
 
-        // At least some tiles are rendered; count rendered ones.
-        check(find.byType(ExpansionTile).evaluate().length)
-            .isGreaterOrEqual(1);
-      },
-    );
+      // At least some tiles are rendered; count rendered ones.
+      check(find.byType(ExpansionTile).evaluate().length).isGreaterOrEqual(1);
+    });
   });
 
   group('EventDefaultsScreen _currentConfig paths (expand each tile)', () {
-    testWidgets(
-      'holdButton tile (index 0) — expands and shows TextFormField',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('holdButton tile (index 0) — expands and shows TextFormField', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 0);
+      await _expandTileAt(tester, 0);
 
-        check(find.byType(TextFormField).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(TextFormField).evaluate()).isNotEmpty();
+    });
 
     testWidgets(
       'disguisedReminder tile (index 1) — expands and shows TimingSlider',
@@ -153,78 +144,72 @@ void main() {
       },
     );
 
-    testWidgets(
-      'fakeCall tile (index 3) — expands and shows form widgets',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('fakeCall tile (index 3) — expands and shows form widgets', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 3);
+      await _expandTileAt(tester, 3);
 
-        // FakeCall form has a TextFormField for callerName.
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      // FakeCall form has a TextFormField for callerName.
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'smsContact tile (index 4) — expands and shows dropdown',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('smsContact tile (index 4) — expands and shows dropdown', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 4);
+      await _expandTileAt(tester, 4);
 
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'phoneCallContact tile (index 5) — expands without error',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('phoneCallContact tile (index 5) — expands without error', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 5);
+      await _expandTileAt(tester, 5);
 
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'loudAlarm tile (index 6) — expands without error',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('loudAlarm tile (index 6) — expands without error', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 6);
+      await _expandTileAt(tester, 6);
 
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'callEmergency tile (index 7) — expands without error',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('callEmergency tile (index 7) — expands without error', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 7);
+      await _expandTileAt(tester, 7);
 
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
 
-    testWidgets(
-      'hardwareButton tile (index 8) — expands without error',
-      (tester) async {
-        await tester.pumpWidget(_host(_defaultSettings));
-        await tester.pumpAndSettle();
+    testWidgets('hardwareButton tile (index 8) — expands without error', (
+      tester,
+    ) async {
+      await tester.pumpWidget(_host(_defaultSettings));
+      await tester.pumpAndSettle();
 
-        await _expandTileAt(tester, 8);
+      await _expandTileAt(tester, 8);
 
-        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
-      },
-    );
+      check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+    });
   });
 
   group('EventDefaultsScreen _replaceConfig paths (onChanged wiring)', () {
@@ -235,10 +220,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // Expand holdButton tile (index 0).
@@ -268,10 +255,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         await _expandTileAt(tester, 1);
@@ -287,7 +276,11 @@ void main() {
 
           check(repo.stored).isNotNull();
           check(
-            repo.stored!.defaults.eventDefaults.disguisedReminder
+            repo
+                .stored!
+                .defaults
+                .eventDefaults
+                .disguisedReminder
                 .intervalSeconds,
           ).equals(120);
         }
@@ -302,10 +295,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         await _expandTileAt(tester, 2);
@@ -327,10 +322,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // fakeCall = index 3.
@@ -355,10 +352,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // smsContact = index 4.
@@ -382,10 +381,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // phoneCallContact = index 5.
@@ -409,10 +410,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // loudAlarm = index 6.
@@ -436,10 +439,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // callEmergency = index 7.
@@ -463,10 +468,12 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(hostScreen(
-          overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-          child: const EventDefaultsScreen(),
-        ));
+        await tester.pumpWidget(
+          hostScreen(
+            overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+            child: const EventDefaultsScreen(),
+          ),
+        );
         await tester.pumpAndSettle();
 
         // hardwareButton = index 8.

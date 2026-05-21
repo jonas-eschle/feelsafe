@@ -16,30 +16,29 @@ import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/features/modes/widgets/step_type_picker.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
-Widget _appWithPicker({
-  void Function(ChainStepType?)? onResolved,
-}) => MaterialApp(
-  localizationsDelegates: const [
-    AppLocalizations.delegate,
-    GlobalMaterialLocalizations.delegate,
-    GlobalWidgetsLocalizations.delegate,
-    GlobalCupertinoLocalizations.delegate,
-  ],
-  supportedLocales: AppLocalizations.supportedLocales,
-  home: Builder(
-    builder: (context) => Scaffold(
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () async {
-            final result = await showStepTypePicker(context);
-            onResolved?.call(result);
-          },
-          child: const Text('open'),
+Widget _appWithPicker({void Function(ChainStepType?)? onResolved}) =>
+    MaterialApp(
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      home: Builder(
+        builder: (context) => Scaffold(
+          body: Center(
+            child: ElevatedButton(
+              onPressed: () async {
+                final result = await showStepTypePicker(context);
+                onResolved?.call(result);
+              },
+              child: const Text('open'),
+            ),
+          ),
         ),
       ),
-    ),
-  ),
-);
+    );
 
 Future<void> _openPicker(WidgetTester tester) async {
   await tester.tap(find.text('open'));
@@ -52,8 +51,9 @@ Future<void> _expandToAll(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('stepTypeLabel returns a non-empty string for every step type',
-      (tester) async {
+  testWidgets('stepTypeLabel returns a non-empty string for every step type', (
+    tester,
+  ) async {
     await tester.pumpWidget(_appWithPicker());
     await tester.pumpAndSettle();
     final context = tester.element(find.text('open'));
@@ -62,12 +62,11 @@ void main() {
     }
   });
 
-  testWidgets('showStepTypePicker renders a list of ListTile rows',
-      (tester) async {
+  testWidgets('showStepTypePicker renders a list of ListTile rows', (
+    tester,
+  ) async {
     ChainStepType? chosen;
-    await tester.pumpWidget(
-      _appWithPicker(onResolved: (r) => chosen = r),
-    );
+    await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
     await _openPicker(tester);
     // The sheet ListView lazily builds rows as the viewport scrolls.
@@ -80,8 +79,9 @@ void main() {
     check(chosen).isNull();
   });
 
-  testWidgets('tapping hold-button tile pops the picker with holdButton',
-      (tester) async {
+  testWidgets('tapping hold-button tile pops the picker with holdButton', (
+    tester,
+  ) async {
     ChainStepType? chosen;
     await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
@@ -91,8 +91,9 @@ void main() {
     check(chosen).equals(ChainStepType.holdButton);
   });
 
-  testWidgets('tapping loudAlarm row pops the picker with loudAlarm',
-      (tester) async {
+  testWidgets('tapping loudAlarm row pops the picker with loudAlarm', (
+    tester,
+  ) async {
     ChainStepType? chosen;
     await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
@@ -110,8 +111,9 @@ void main() {
     check(chosen).equals(ChainStepType.loudAlarm);
   });
 
-  testWidgets('initial picker view shows only the top-3 plus More options',
-      (tester) async {
+  testWidgets('initial picker view shows only the top-3 plus More options', (
+    tester,
+  ) async {
     await tester.pumpWidget(_appWithPicker());
     await tester.pumpAndSettle();
     await _openPicker(tester);
@@ -129,8 +131,9 @@ void main() {
     check(find.byIcon(Icons.emergency).evaluate()).isEmpty();
   });
 
-  testWidgets('expanding to "More options..." reveals the rest',
-      (tester) async {
+  testWidgets('expanding to "More options..." reveals the rest', (
+    tester,
+  ) async {
     await tester.pumpWidget(_appWithPicker());
     await tester.pumpAndSettle();
     await _openPicker(tester);
@@ -140,15 +143,19 @@ void main() {
     // icons should now exist somewhere in the tree.
     final scrollable = find.byType(Scrollable).last;
     for (final icon in const [Icons.timer, Icons.emergency, Icons.alarm]) {
-      await tester.scrollUntilVisible(find.byIcon(icon), 60,
-          scrollable: scrollable);
+      await tester.scrollUntilVisible(
+        find.byIcon(icon),
+        60,
+        scrollable: scrollable,
+      );
       await tester.pumpAndSettle();
       check(find.byIcon(icon).evaluate().length).isGreaterOrEqual(1);
     }
   });
 
-  testWidgets('picker lists all 9 step-type icons after expanding',
-      (tester) async {
+  testWidgets('picker lists all 9 step-type icons after expanding', (
+    tester,
+  ) async {
     ChainStepType? chosen;
     await tester.pumpWidget(_appWithPicker(onResolved: (r) => chosen = r));
     await tester.pumpAndSettle();
@@ -167,8 +174,11 @@ void main() {
     ];
     final scrollable = find.byType(Scrollable).last;
     for (final icon in expected) {
-      await tester.scrollUntilVisible(find.byIcon(icon), 60,
-          scrollable: scrollable);
+      await tester.scrollUntilVisible(
+        find.byIcon(icon),
+        60,
+        scrollable: scrollable,
+      );
       await tester.pumpAndSettle();
       check(find.byIcon(icon).evaluate().length).isGreaterOrEqual(1);
     }

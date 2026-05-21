@@ -48,10 +48,7 @@ Widget _host(ChainStep step, {ValueChanged<ChainStep>? onChanged}) =>
     hostScreen(
       child: Scaffold(
         body: SingleChildScrollView(
-          child: StepConfigForm(
-            step: step,
-            onChanged: onChanged ?? (_) {},
-          ),
+          child: StepConfigForm(step: step, onChanged: onChanged ?? (_) {}),
         ),
       ),
     );
@@ -74,10 +71,7 @@ void main() {
       (tester) async {
         ChainStep? received;
         await tester.pumpWidget(
-          _host(
-            _step(wait: 60),
-            onChanged: (s) => received = s,
-          ),
+          _host(_step(wait: 60), onChanged: (s) => received = s),
         );
         await tester.pumpAndSettle();
         await _expandTiming(tester);
@@ -106,10 +100,7 @@ void main() {
       (tester) async {
         ChainStep? received;
         await tester.pumpWidget(
-          _host(
-            _step(grace: 15),
-            onChanged: (s) => received = s,
-          ),
+          _host(_step(grace: 15), onChanged: (s) => received = s),
         );
         await tester.pumpAndSettle();
         await _expandTiming(tester);
@@ -135,10 +126,7 @@ void main() {
       (tester) async {
         ChainStep? received;
         await tester.pumpWidget(
-          _host(
-            _step(duration: 30),
-            onChanged: (s) => received = s,
-          ),
+          _host(_step(duration: 30), onChanged: (s) => received = s),
         );
         await tester.pumpAndSettle();
         await _expandTiming(tester);
@@ -159,5 +147,4 @@ void main() {
       },
     );
   });
-
 }

@@ -8,18 +8,16 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/core/theme/app_theme.dart';
 import 'package:guardianangela/core/widgets/im_safe_slider.dart';
 
-Widget _host({
-  required VoidCallback onConfirmed,
-  String label = 'I am safe',
-}) => MaterialApp(
-  theme: AppTheme.light(),
-  home: Scaffold(
-    body: Padding(
-      padding: const EdgeInsets.all(16),
-      child: ImSafeSlider(label: label, onConfirmed: onConfirmed),
-    ),
-  ),
-);
+Widget _host({required VoidCallback onConfirmed, String label = 'I am safe'}) =>
+    MaterialApp(
+      theme: AppTheme.light(),
+      home: Scaffold(
+        body: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ImSafeSlider(label: label, onConfirmed: onConfirmed),
+        ),
+      ),
+    );
 
 void main() {
   testWidgets('shows the provided label', (tester) async {

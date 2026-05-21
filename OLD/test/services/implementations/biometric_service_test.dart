@@ -22,9 +22,9 @@ _MockLocalAuthentication _makeAvailableMock() {
   final m = _MockLocalAuthentication();
   when(m.isDeviceSupported).thenAnswer((_) async => true);
   when(() => m.canCheckBiometrics).thenAnswer((_) async => true);
-  when(m.getAvailableBiometrics).thenAnswer(
-    (_) async => <BiometricType>[BiometricType.fingerprint],
-  );
+  when(
+    m.getAvailableBiometrics,
+  ).thenAnswer((_) async => <BiometricType>[BiometricType.fingerprint]);
   return m;
 }
 
@@ -62,9 +62,9 @@ void main() {
       final mock = _MockLocalAuthentication();
       when(mock.isDeviceSupported).thenAnswer((_) async => true);
       when(() => mock.canCheckBiometrics).thenAnswer((_) async => true);
-      when(mock.getAvailableBiometrics).thenAnswer(
-        (_) async => <BiometricType>[],
-      );
+      when(
+        mock.getAvailableBiometrics,
+      ).thenAnswer((_) async => <BiometricType>[]);
 
       final service = BiometricService(auth: mock);
       final result = await service.isAvailable();
@@ -72,20 +72,20 @@ void main() {
       check(result).isFalse();
     });
 
-    test('returns true when device supported, can check, and enrolled',
-        () async {
-      final mock = _makeAvailableMock();
-      final service = BiometricService(auth: mock);
-      final result = await service.isAvailable();
+    test(
+      'returns true when device supported, can check, and enrolled',
+      () async {
+        final mock = _makeAvailableMock();
+        final service = BiometricService(auth: mock);
+        final result = await service.isAvailable();
 
-      check(result).isTrue();
-    });
+        check(result).isTrue();
+      },
+    );
 
     test('returns false and logs when plugin throws', () async {
       final mock = _MockLocalAuthentication();
-      when(mock.isDeviceSupported).thenThrow(
-        PlatformException(code: 'no_hw'),
-      );
+      when(mock.isDeviceSupported).thenThrow(PlatformException(code: 'no_hw'));
 
       final service = BiometricService(auth: mock);
       // Must NOT throw — falls back to false gracefully.
@@ -96,8 +96,7 @@ void main() {
   });
 
   group('BiometricService.authenticate', () {
-    test('returns unavailable when isAvailable is false (no hw)',
-        () async {
+    test('returns unavailable when isAvailable is false (no hw)', () async {
       final mock = _MockLocalAuthentication();
       when(mock.isDeviceSupported).thenAnswer((_) async => false);
 
@@ -110,8 +109,7 @@ void main() {
         () => mock.authenticate(
           localizedReason: any(named: 'localizedReason'),
           biometricOnly: any(named: 'biometricOnly'),
-          persistAcrossBackgrounding:
-              any(named: 'persistAcrossBackgrounding'),
+          persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
         ),
       );
     });
@@ -122,8 +120,7 @@ void main() {
         () => mock.authenticate(
           localizedReason: any(named: 'localizedReason'),
           biometricOnly: any(named: 'biometricOnly'),
-          persistAcrossBackgrounding:
-              any(named: 'persistAcrossBackgrounding'),
+          persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
         ),
       ).thenAnswer((_) async => true);
 
@@ -146,8 +143,7 @@ void main() {
         () => mock.authenticate(
           localizedReason: any(named: 'localizedReason'),
           biometricOnly: any(named: 'biometricOnly'),
-          persistAcrossBackgrounding:
-              any(named: 'persistAcrossBackgrounding'),
+          persistAcrossBackgrounding: any(named: 'persistAcrossBackgrounding'),
         ),
       ).thenAnswer((_) async => false);
 
@@ -157,24 +153,27 @@ void main() {
       check(result).equals(BiometricResult.cancelled);
     });
 
-    test('returns unavailable and logs when plugin throws during auth',
-        () async {
-      final mock = _makeAvailableMock();
-      when(
-        () => mock.authenticate(
-          localizedReason: any(named: 'localizedReason'),
-          biometricOnly: any(named: 'biometricOnly'),
-          persistAcrossBackgrounding:
-              any(named: 'persistAcrossBackgrounding'),
-        ),
-      ).thenThrow(PlatformException(code: 'locked_out'));
+    test(
+      'returns unavailable and logs when plugin throws during auth',
+      () async {
+        final mock = _makeAvailableMock();
+        when(
+          () => mock.authenticate(
+            localizedReason: any(named: 'localizedReason'),
+            biometricOnly: any(named: 'biometricOnly'),
+            persistAcrossBackgrounding: any(
+              named: 'persistAcrossBackgrounding',
+            ),
+          ),
+        ).thenThrow(PlatformException(code: 'locked_out'));
 
-      final service = BiometricService(auth: mock);
-      // Must NOT rethrow — callers treat unavailable as "show PIN".
-      final result = await service.authenticate(reason: 'Check');
+        final service = BiometricService(auth: mock);
+        // Must NOT rethrow — callers treat unavailable as "show PIN".
+        final result = await service.authenticate(reason: 'Check');
 
-      check(result).equals(BiometricResult.unavailable);
-    });
+        check(result).equals(BiometricResult.unavailable);
+      },
+    );
   });
 
   group('BiometricService default constructor', () {

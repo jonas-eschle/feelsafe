@@ -101,8 +101,7 @@ void main() {
 
     test('equality: differs by distressModes', () {
       check(
-        const BackupSelection() ==
-            const BackupSelection(distressModes: false),
+        const BackupSelection() == const BackupSelection(distressModes: false),
       ).isFalse();
     });
 

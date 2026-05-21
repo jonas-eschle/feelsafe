@@ -51,9 +51,7 @@ void main() {
     });
 
     test('save overwrites existing profile', () async {
-      final container = _makeContainer(
-        seed: const UserProfile(name: 'Old'),
-      );
+      final container = _makeContainer(seed: const UserProfile(name: 'Old'));
       addTearDown(container.dispose);
       final notifier = container.read(profileControllerProvider.notifier);
       await container.read(profileControllerProvider.future);
