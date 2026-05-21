@@ -13,7 +13,10 @@ void main() {
     test('sessionStarted emitted on start()', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
@@ -66,10 +69,7 @@ void main() {
         final engine = buildEngine(
           sessionMode: mode(
             chainSteps: [
-              step(
-                type: ChainStepType.disguisedReminder,
-                durationSeconds: 5,
-              ),
+              step(type: ChainStepType.disguisedReminder, durationSeconds: 5),
             ],
           ),
           random: const FixedRandom(),
@@ -82,7 +82,7 @@ void main() {
       });
     });
 
-    test('stepMissed emitted when grace expires without disarm', () {
+    test('graceExpired emitted when grace expires without disarm', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
         final m = mode(
@@ -98,6 +98,80 @@ void main() {
         check(missed).isNotEmpty();
         check(missed.first.metadata['missCount']).equals(1);
         engine.endSession(); // Already ended (chain exhausted) — no-op.
+      });
+    });
+
+    test('repeatMissed emitted on disguised-reminder retry (spec 01 '
+        '§Events Emitted, §Disguised Reminder State Machine)', () {
+      fakeAsync((async) {
+        final events = <ChainEventData>[];
+        // disguisedReminder with retryCount=1 means: first grace expiry
+        // is a retry (graceExpired + repeatMissed), second grace expiry
+        // advances out of the step (graceExpired + stepAdvancing). Only
+        // disguisedReminder emits repeatMissed per spec 01 §Events
+        // Emitted line 712-713.
+        final m = mode(
+          chainSteps: [
+            step(
+              type: ChainStepType.disguisedReminder,
+              durationSeconds: 1,
+              gracePeriodSeconds: 1,
+              retryCount: 1,
+            ),
+            step(type: ChainStepType.callEmergency),
+          ],
+        );
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
+        engine.events.listen(events.add);
+        engine.start();
+        async.flushMicrotasks();
+
+        // Elapse through duration(1s) + grace(1s) = 2s → first miss
+        // triggers a retry (repeatMissed) because missCount (1) ≤
+        // retryCount (1).
+        async.elapse(const Duration(seconds: 2));
+        final retryMisses =
+            events.where((e) => e.event == ChainEvent.repeatMissed).toList();
+        check(retryMisses).isNotEmpty();
+        check(retryMisses.first.metadata['missCount']).equals(1);
+        check(retryMisses.first.stepType).equals(ChainStepType.disguisedReminder);
+
+        // Elapse through one more duration+grace; second grace expiry
+        // does NOT emit repeatMissed (missCount > retryCount → advance).
+        // Still must have exactly one repeatMissed in total.
+        async.elapse(const Duration(seconds: 2));
+        final allRetry =
+            events.where((e) => e.event == ChainEvent.repeatMissed).toList();
+        check(allRetry.length).equals(1);
+
+        engine.endSession();
+      });
+    });
+
+    test('repeatMissed is NOT emitted for non-disguised-reminder steps', () {
+      fakeAsync((async) {
+        final events = <ChainEventData>[];
+        // loudAlarm with retryCount=1 retries on grace expiry but never
+        // emits repeatMissed (spec narrows that event to
+        // disguisedReminder).
+        final m = mode(
+          chainSteps: [
+            step(durationSeconds: 1, gracePeriodSeconds: 1, retryCount: 1),
+            step(type: ChainStepType.callEmergency),
+          ],
+        );
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
+        engine.events.listen(events.add);
+        engine.start();
+        async.flushMicrotasks();
+        async.elapse(const Duration(seconds: 5)); // enough to retry once
+
+        // graceExpired must fire; repeatMissed must NOT.
+        check(events.where((e) => e.event == ChainEvent.graceExpired))
+            .isNotEmpty();
+        check(events.where((e) => e.event == ChainEvent.repeatMissed)).isEmpty();
+
+        engine.endSession();
       });
     });
 
@@ -161,7 +235,10 @@ void main() {
     test('replaceWithDistress emitted with triggerReason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -185,16 +262,17 @@ void main() {
     test('pausedRequested emitted with reason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
 
         engine.pause();
 
-        final paused = events.where(
-          (e) => e.event == ChainEvent.sessionPaused,
-        );
+        final paused = events.where((e) => e.event == ChainEvent.sessionPaused);
         check(paused).isNotEmpty();
         check(
           paused.first.metadata['reason'],
@@ -206,7 +284,10 @@ void main() {
     test('resumed emitted after resume()', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
@@ -220,8 +301,8 @@ void main() {
     test('pauseExpired emitted when maxPauseDuration exceeded', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = buildEngine(sessionMode: 
-          mode(),
+        final engine = buildEngine(
+          sessionMode: mode(),
           maxPauseDuration: const Duration(seconds: 3),
           random: const FixedRandom(),
         );
@@ -238,7 +319,10 @@ void main() {
     test('sessionEnded emitted with reason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -253,7 +337,10 @@ void main() {
     test('deceptiveOldPinShown emitted by notifyWrongPin', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -273,7 +360,10 @@ void main() {
     test('notifyWrongPin carries correct attemptCount', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -297,7 +387,10 @@ void main() {
     test('notifyWrongPin no-op after endSession', () {
       fakeAsync((async) {
         int count = 0;
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
