@@ -682,6 +682,7 @@ void setSpeedMultiplier(double value)
 void setBackgroundClamp(bool value)
 ```
 - **Simulation mode only** — engages a 60× cap on the *effective* speed multiplier when the OS pushes the simulation app into the background. The stored `speedMultiplier` is left untouched; `effectiveSpeedMultiplier` returns `min(speedMultiplier, 60)` while engaged. No-op for real (non-simulation) sessions — real timers are already wall-clock-driven.
+- **Layer ownership (G-013):** `SessionController` (the Riverpod layer that wraps the engine) observes `AppLifecycleState` via `WidgetsBindingObserver`. On `AppLifecycleState.paused` or `AppLifecycleState.hidden` it calls `engine.setBackgroundClamp(true)`; on `AppLifecycleState.resumed` it calls `engine.setBackgroundClamp(false)`. The engine itself has no Flutter dependency and cannot read lifecycle — the controller is the single owner of this signal. The foreground cap remains 1000× (the engine's `speedMultiplier` clamp range `[0.01, 1000.0]`); the background cap is 60× applied via `setBackgroundClamp`.
 
 ---
 

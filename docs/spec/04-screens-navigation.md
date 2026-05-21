@@ -926,9 +926,9 @@ When stealth mode is enabled in settings, the session screen transforms:
 - Timer shows as music playback time (corner, if configured)
 
 **Timer Display Options (configurable per user):**
-1. **Normal:** Full timer at top
-2. **Small (corner):** "2:35" in corner, looks like playback time
-3. **None:** No timer visible
+1. **Normal:** Full timer at top of the session screen, monospace font sized at the screen's heading scale (~24pt at default text scale).
+2. **Small (corner) — stealth mode (G-018):** Digital clock rendered in the **top-right** corner of the session screen as `M:SS` (no seconds shown for sessions > 99 min — falls back to `H:MM`), in a **12pt monospace** font matched to the system's media-player time indicator. After **10 seconds of no user interaction** the corner clock fades to **50% opacity** via a 400 ms opacity animation; any tap or swipe restores it to 100% opacity instantly. No app branding, no border, no background — the clock floats above the stealth background. Mimics a media-player playback time indicator so a casual observer reads it as such.
+3. **None:** No timer visible — session screen renders only the stealth background (or whatever `sessionScreenStealth` produces).
 
 **Stealth Mode and PIN (Orthogonal):**
 Stealth mode is orthogonal to PIN configuration. If a PIN is required to disarm or end a session, PIN screens appear with stealth appearance modifications:

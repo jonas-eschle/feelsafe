@@ -274,7 +274,7 @@ The engine supports condition-triggered chains. A **distress mode** is a regular
 - **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the engine calls `replaceWithDistressChain(steps, triggerReason: ...)` — the main chain is discarded permanently and the distress mode's chain runs from step 0. When it exhausts, the session ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`). The duress-PIN path also shows a fake "Session ended" to the attacker.
 - **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
 - **Disarm during distress is configurable per mode (G-014):** When a distress mode runs (i.e., the engine entered it via `replaceWithDistressChain`), the engine consults `SessionMode.allowDisarmAsDistress` (default `true`) to decide whether `disarmTriggers` still fire. Default `true` honours the user's configured escape conditions (GPS arrival, timer). Setting `false` on a distress mode locks disarm — only chain exhaustion or app/device shutdown stops the session. The trade is recovery convenience vs. coercion resistance. This supersedes the earlier "Disarm during duress: hard-coded IGNORE" invariant.
-- **Low battery alert:** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + chain).
+- **Low battery alert (G-020):** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Runs on a **separate `SessionEngine` instance** with its own `BatteryAlertController`; both engines register with the **same `SessionLogRecorder`** so the timeline stays unified. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + chain).
 
 ### 10. Session End & Quick Exit
 
@@ -580,7 +580,7 @@ Strategy pattern for the 9 step types:
 | **08** | [Design Decisions](08-decisions-consolidated.md) | Design decisions log, rationale, trade-offs, alternatives considered |
 | **09** | [Glossary](09-glossary.md) | Terminology reference for terms, fields, and concepts used across the spec set |
 | **10** | [Platform Matrix](10-platform-matrix.md) | Per-feature Android / iOS capability matrix, permissions, and workarounds |
-| **11** | [Deferred Enhancements](11-deferred-enhancements.md) | Landed / deferred / rejected enhancements (DE-1..5, REJ-1) |
+| **11** | [Enhancement History](11-deferred-enhancements.md) | Historical pointer file — promotion log for former optional add-ons (all now part of normative spec) + rejected enhancements (REJ-1). Zero post-GA features remain. |
 
 ---
 

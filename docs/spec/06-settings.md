@@ -96,7 +96,7 @@ The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`,
 - `fakeName`: "App appears under this name in notifications and the app switcher."
 - `fakeIcon`: "App uses a generic icon (e.g., calendar or fitness) instead of the Guardian Angela logo."
 - `notificationDisguise`: "Notifications use a generic channel name like 'Reminders' or 'Updates'."
-- `timerDisplay`: "Normal = timer at top. Small = clock-style in corner. None = hidden."
+- `timerDisplay`: "Normal = full timer at top. Small = 12pt monospace M:SS in the top-right corner that fades to 50% opacity after 10 s of no interaction (G-018 wireframe in spec 04 §Session Screen Timer Display). None = hidden."
 - `sessionScreenStealth`: "Removes Guardian Angela branding (logo, name) from the session screen."
 
 Modes can override via `ModeOverrides.stealth`. The Defaults submenu (`/settings/defaults`) no longer contains a separate Stealth sub-screen — stealth is configured entirely from this collapsible section.

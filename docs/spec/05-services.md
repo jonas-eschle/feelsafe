@@ -1079,9 +1079,9 @@ or interrupted — battery alert is a side action only.
 ### Low Battery Alert (One-Shot)
 
 1. Shows a notification to the user: "Battery low — [X]% remaining"
-2. Runs `BatteryAlertConfig.chain` through the same engine/orchestrator used for session chains (no legacy `smsEnabled` boolean)
-3. Fires ONCE per session only (subsequent drops below threshold are ignored)
-4. Main chain continues uninterrupted
+2. Runs `BatteryAlertConfig.chain` on a **separate `SessionEngine` instance** with its **own `BatteryAlertController`** (a thin Riverpod controller wrapping the engine). The main session's `SessionEngine` is NOT reused (instances cannot run two chains concurrently). Both engines register with the **same `SessionLogRecorder`** so the timeline stays unified — the main session's events and the battery alert's events end up interleaved in one `SessionLog` for that session (G-020).
+3. Fires ONCE per session only (subsequent drops below threshold are ignored).
+4. Main chain continues uninterrupted; the battery-alert engine runs to completion independently of the main engine's state (it does not pause when the main engine pauses, and ending the main session does not auto-cancel a running battery-alert chain — the battery chain finishes its remaining steps and then terminates).
 
 ### Configuration
 
