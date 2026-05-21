@@ -11,9 +11,6 @@ analyzer:
     - "**/*.g.dart"
     - "**/*.freezed.dart"
     - lib/l10n/**
-    # test_helpers.dart references domain types created in Phase 1.
-    # Remove this exclude when Phase 1 lands and the domain types exist.
-    - test/helpers/test_helpers.dart
 
   errors:
     missing_return: error

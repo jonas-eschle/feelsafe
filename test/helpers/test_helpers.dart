@@ -38,7 +38,6 @@ import 'dart:math';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 
-import 'package:guardianangela/data/models/enums.dart';
 import 'package:guardianangela/domain/models/models.dart';
 
 /// Deterministic [Random] that always returns a fixed double.
@@ -81,7 +80,7 @@ final class FixedRandom implements Random {
 /// [gracePeriodSeconds] — defaults to 5.
 /// [waitSeconds] — defaults to 0.
 /// [retryCount] — defaults to 0.
-/// [randomize] — defaults to 0.0.
+/// [randomize] — defaults to false.
 /// [config] — defaults to null (engine falls back to event defaults).
 ChainStep step({
   String? id,
@@ -91,7 +90,7 @@ ChainStep step({
   int gracePeriodSeconds = 5,
   int waitSeconds = 0,
   int retryCount = 0,
-  double randomize = 0.0,
+  bool randomize = false,
   StepConfig? config,
 }) => ChainStep(
   id: id ?? 'step-$order-${type.name}',
@@ -114,7 +113,6 @@ ChainStep holdStep({
   double releaseSensitivity = 0.3,
 }) => step(
   id: id,
-  type: ChainStepType.holdButton,
   order: order,
   durationSeconds: durationSeconds,
   gracePeriodSeconds: gracePeriodSeconds,
