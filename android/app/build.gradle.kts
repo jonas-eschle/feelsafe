@@ -23,7 +23,8 @@ android {
 
     defaultConfig {
         applicationId = "com.guardianangela.app"
-        minSdk = flutter.minSdkVersion
+        // Spec 00 §Platform Targets + spec 10: Android API 26 (Oreo) minimum.
+        minSdk = 26
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
