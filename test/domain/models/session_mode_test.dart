@@ -10,6 +10,7 @@
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
@@ -18,7 +19,6 @@ import 'package:guardianangela/domain/models/mode_overrides.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
-
 import '../../helpers/test_helpers.dart';
 
 void main() {

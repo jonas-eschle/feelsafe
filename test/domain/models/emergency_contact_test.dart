@@ -10,9 +10,9 @@
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
-
 import '../../helpers/test_helpers.dart';
 
 void main() {

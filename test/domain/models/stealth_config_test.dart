@@ -7,6 +7,7 @@
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';

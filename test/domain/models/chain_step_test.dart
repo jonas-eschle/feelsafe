@@ -10,12 +10,12 @@
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/hold_style.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
-
 import '../../helpers/test_helpers.dart';
 
 void main() {

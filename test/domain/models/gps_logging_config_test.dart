@@ -6,6 +6,7 @@
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
+
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
 import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
