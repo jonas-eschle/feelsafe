@@ -890,7 +890,7 @@ As new features are added:
 - Add corresponding test cases to the test plan
 - Maintain ≥ 85% overall coverage
 - Update priority tiers if safety criticality changes
-- Document rationale for any deferred tests
+- Document rationale for any temporarily-skipped tests (e.g., flaky on CI) — per D13 NO-STUBS, `@skip` and `.skip` are CI hard-fails so a skipped test must be tracked in the next-iteration backlog with a clear ETA
 
 ### Continuous Improvement
 

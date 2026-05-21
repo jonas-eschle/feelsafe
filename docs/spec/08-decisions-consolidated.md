@@ -229,13 +229,13 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
   - `{location}`: Last known GPS coordinates (if enabled)
   - `{time}`: Current time
   - `{description}`: Session/event description
-  - `{photo}`: (Future) Will include photo; currently deferred
 - **No name set**: Default to "the owner of this phone"
 - **Default template**: "Automated safety alert from Guardian Angela.\n{name} may need help.\n..." (fully editable/deletable)
+- **`{photo}` placeholder rejected (G-017):** not supported; MMS is unreliable and embedding photo URLs requires hosting/privacy infrastructure outside v3 GA scope. See spec 11 REJ-2 and spec 02 §6.
 
-### Photo & Recording (Deferred)
-- **Photo**: NOT sent via SMS (future channel feature, requires backend)
-- **Recording**: NOT attached to messages (deferred — would require cloud upload)
+### Photo & Recording attachment (out of scope)
+- **Photo**: NOT sent via SMS/messaging — see spec 11 REJ-2 (rejected).
+- **Recording**: stored locally only, NOT attached to messages — see spec 11 REJ-2 (rejected, by design).
 
 ### Retry & Reliability
 - **SMS retry**: Indefinite via native Kotlin WorkManager (Android)
@@ -267,7 +267,7 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
 ### Phone Call Behavior
 - **Android**: Uses CALL_PHONE permission for auto-dial (no confirmation dialog)
 - **iOS**: Always shows confirmation dialog (limitation, documented)
-- **Future**: Server-side dispatch (like Noonlight model) for true auto-calling
+- **Server-side dispatch (Noonlight-style) is rejected** — see spec 11 REJ-4. Guardian Angela is offline-first by design; introducing a monitoring backend conflicts with the no-server invariant.
 
 ### Pre-SMS
 - **Optional**: Send SMS before making voice call
@@ -324,9 +324,8 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
 - **Validation warnings**: If user enters non-standard number, show warning but allow override
 - **Recommendation**: Suggest locale-appropriate number
 
-### Future Server-Side Dispatch
-- **Model**: Similar to Noonlight (professional monitoring center)
-- **Deferred**: Complex integration, requires backend
+### Server-side dispatch — rejected
+Noonlight-style monitoring backend integration is rejected for v3 GA; see spec 11 REJ-4. The offline-first invariant rules out a server dependency for core escalation, and a monitoring-centre tier is not on the v3 product roadmap.
 
 ---
 
@@ -449,7 +448,7 @@ All pages are skippable:
 3. **Permissions**: `POST_NOTIFICATIONS` first, then location, phone, SMS.
 
 After onboarding: guided setup banner ("Safety Setup" checklist) on home screen. Advanced
-setup (PIN, duress PIN, mode customization, additional contacts) deferred to Settings.
+setup (PIN, duress PIN, mode customization, additional contacts) is reached via Settings — onboarding intentionally surfaces only the minimum to start the first session.
 
 ### Post-Onboarding
 - **Simulation suggestion**: Highlight 30-second simulation (not forced)
@@ -885,15 +884,11 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 - **Decryption**: On playback only, in-memory
 - **Deletion**: User can delete recordings at any time
 
-### Data Deletion (Deferred)
-- **Panic wipe**: NOT implemented
-- **Rationale**: Low-value feature (user can manually delete app)
-- **Alternative**: Emphasize backup/recovery for legitimate data loss
+### Data Deletion — rejected
+Panic-wipe of session data is rejected (see spec 11 REJ-5). The user can manually uninstall the app to remove local data; emphasising backup/recovery serves the legitimate data-loss case better than a destructive one-tap.
 
-### App Identity Concealment (Deferred)
-- **Future feature**: Ability to rename app label on home screen
-- **Complexity**: Requires platform-specific APIs
-- **Not trivial**: Deferred to future release
+### App Identity Concealment beyond stealth mode — rejected
+Renaming the home-screen app label dynamically is rejected (see spec 11 REJ-6). The shipped stealth mode (`StealthConfig.fakeName` + `StealthConfig.fakeIcon` + activity-alias toggles on Android) covers the same threat model with less platform-API risk; full dynamic label-renaming is platform-locked and high-risk.
 
 ### Notification Channels
 - **Innocuous names from start**: "System Service", "Reminders", "Alarm", "Updates" (never "Safety Alerts")
@@ -919,71 +914,27 @@ Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` 
 
 ---
 
-## Future Features (Deferred)
+## Rejected enhancements
 
-### Recording & Evidence
-- **Recording attachment**: Audio recording attachment to SMS/WhatsApp
-  - Requires: Cloud upload service or base64 encoding
-  - Deferred: Backend infrastructure needed
+Per D15, v3 GA ships every feature in the spec — there are no "deferred" or "post-GA" items. Features previously catalogued as future work are now either part of the normative spec (see spec 11 §Promotion log) or explicitly rejected as out-of-scope. Rejected entries live in **spec 11 §Rejected enhancements** as numbered `REJ-N` items with the rationale recorded once. The current REJ list at the time of pre-Phase-0 commit:
 
-### Server-Side Dispatch
-- **Noonlight model**: Professional monitoring center receives alert, makes call
-- **Complex**: Requires backend, compliance, operator training
-- **Deferred**: Consider for future premium tier
+| ID | Title | Reason for rejection |
+|---|---|---|
+| REJ-1 | Shake-to-SOS (accelerometer trigger) | False-positive rate from pocket jostling / exercise outweighs benefit. |
+| REJ-2 | Photo / audio attachment to SMS / WhatsApp / Telegram | MMS unreliable; cloud upload backend out of v3 scope; local-only recording (with session-log evidence) serves the same use case. |
+| REJ-3 | Video recording | Storage cost, privacy considerations, platform-permission overhead; audio + location capture the same evidence with lower friction. |
+| REJ-4 | Server-side dispatch (Noonlight-style monitoring) | Conflicts with offline-first invariant; commercial-tier feature not on v3 roadmap. |
+| REJ-5 | Panic data-wipe ("nuke") | Low value (uninstall achieves the same); risks accidental data loss for legitimate users. |
+| REJ-6 | Dynamic app-label rename (beyond stealth alias) | Platform-API constrained; existing stealth mode (`StealthConfig.fakeName/fakeIcon` + Android activity-aliases) covers the threat model. |
+| REJ-7 | what3words / external location-code services | Requires internet for paid tier; conflicts with offline-first. |
+| REJ-8 | Live location streaming to contacts | Backend dependency + privacy management complexity outside v3 scope. |
+| REJ-9 | Companion app for contacts | Large multi-platform engineering scope. |
+| REJ-10 | Lock-screen shortcuts | Not exposed by Android 11+ or iOS APIs. |
+| REJ-11 | Crash / accident detection (sensor fusion) | ML model + tuning complexity; false positives undermine trust. |
+| REJ-12 | Crisis-hotline directory | 195+ country dataset requires constant curation. |
+| REJ-13 | Telegram Bot auto-send | Requires backend; spoofing risk without server-side authentication. |
 
-### Noonlight Integration
-- **Direct integration**: As escalation step
-- **Deferred**: Licensing, API integration
-
-### App Identity Concealment
-- **Rename app label**: On home screen show innocuous name (e.g., "Utilities")
-- **Complex**: Requires platform-specific APIs, may not be feasible
-- **Deferred**: Research feasibility before committing
-
-### what3words Integration
-- **Location sharing**: 3-word location codes
-- **Barrier**: Requires internet (not free tier); poor fit for offline-first app
-- **Deferred**: Unlikely to implement (doesn't align with offline-first design)
-
-### Shake-to-Trigger
-- **Gesture detection**: Accelerometer shake triggers escalation
-- **Issue**: Too many false positives (exercise, car bumps, etc.)
-- **Deferred**: Not pursuing (sensor fusion complexity + unreliability)
-
-### Live Location Sharing
-- **Share location**: Real-time location stream to contacts
-- **Requires**: Backend, permissions, privacy management
-- **Deferred**: High complexity, privacy concerns
-
-### Companion App
-- **For contacts**: Separate app contacts can use to monitor
-- **Requires**: Backend, server authentication
-- **Deferred**: Large scope, multi-platform engineering
-
-### Lock Screen Shortcuts
-- **Quick access**: Trigger session from lock screen
-- **Barrier**: Android 11+ doesn't allow lock screen custom actions; iOS doesn't expose lock screen API
-- **Deferred**: Not feasible on either platform
-
-### Crash/Accident Detection
-- **Sensor fusion**: Detect falls, car crashes via accelerometer + gyro
-- **Complexity**: Machine learning model, false positive tuning
-- **Deferred**: Complex, outside current scope
-
-### Crisis Hotline Directory
-- **In-app resource**: Links to local crisis hotlines
-- **Scope**: 195+ countries, constant updates required
-- **Deferred**: Too large to maintain reliably
-
-### Telegram Bot API
-- **Auto-send**: Telegram bot sends message instead of user
-- **Risk**: Security issue without secure backend
-- **Deferred**: Not implementing without backend (risks message spoofing)
-
-### Video Recording
-- **Capture video**: Record session/surroundings
-- **Status**: Planned if not difficult
-- **Dependencies**: Storage requirements, privacy, platform APIs
+For details on each REJ-N entry (rationale, possible re-visit conditions), see `docs/spec/11-deferred-enhancements.md`.
 
 ---
 
@@ -994,13 +945,8 @@ Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` 
 - **Implication**: Cannot offer monitoring-centre upsell (key revenue model for traditional apps)
 - **Advantage**: No subscription required for core safety functionality
 
-### Potential Future Model
-- **Free core**: Basic safety escalation, offline
-- **Optional premium**:
-  - Cloud evidence backup (encrypted, off-device storage)
-  - Professional monitoring partnership (like Noonlight)
-  - Extended features (companion app, advanced reporting)
-- **No decision made**: Community feedback needed before monetization
+### Out-of-scope for v3 GA
+A premium-tier monetization model (cloud evidence backup, professional monitoring partnership, companion app) is **not part of v3 GA**. These all depend on backend infrastructure that the offline-first invariant rules out at this stage; relevant entries are catalogued in spec 11 §Rejected enhancements (REJ-2 cloud upload, REJ-4 monitoring centre, REJ-9 companion app). Re-visiting requires a product-level decision and is out of pre-Phase-0 scope.
 
 ---
 
@@ -1104,7 +1050,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 
 | # | Topic | Resolution |
 |---|-------|------------|
-| Q1 | Deferred enhancements DE-1..5 | DE-1 / DE-2 / DE-3 / DE-4 LANDED. DE-5 LANDED on Android; iOS interactive widget deferred (see spec 11 §DE-5). |
+| Q1 | Former optional enhancements | All landed at v3 GA per the D15 decision: timer slider, per-event GPS override, interval GPS tracking, "More settings" panel, Android home-screen widget, iOS home-screen widget (D14 — AppIntent on iOS 17+, `Link(destination:)` fallback on iOS 16), 14-locale voice asset TTS pipeline. See `docs/spec/11-deferred-enhancements.md` §Promotion log for promotion targets. |
 | Q6 | Distress unification (Pivot 3) | `DistressChain` deleted. Distress modes are `SessionMode`s with `isDistressMode = true`. Field renamed `distressChainId` → `distressModeId`. UI route is `/distress-modes` using `ModeEditorScreen(isDistress: true)`. |
 | Q7 | `pauseExpired` and `stepExecutionFailed` events | Both are now emitted (not "reserved"). Engine constructor accepts `maxPauseDuration`. |
 | Q8 | `disarm()` semantics | Re-arms the chain to step 0; does NOT end the session. |

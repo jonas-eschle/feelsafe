@@ -267,7 +267,7 @@ Each contact has one or more messaging channels. `sendMessage()` dispatches to t
 
 #### SMS (Android Native)
 
-**Android:** Uses native Kotlin `SmsManager.sendTextMessage()` via MethodChannel (`guardianangela/sms`). Auto-sends without user interaction.
+**Android:** Uses native Kotlin `SmsManager.sendTextMessage()` via MethodChannel (`com.guardianangela.app/sms`). Auto-sends without user interaction.
 
 **iOS:** Falls back to `sms:` URI + `url_launcher`, which opens the Messages app pre-filled. User must press Send (documented limitation).
 
@@ -547,9 +547,9 @@ This warning is mandatory and configurable per region.
 
 Microphone permission is requested **when the recording option is toggled on** in settings, not upfront during app launch. This reduces initial permission burden.
 
-### Future Enhancement
+### Out-of-scope: video recording
 
-Video recording is planned for a future release but is not currently implemented.
+v3 GA records audio only. Video recording is explicitly rejected (see spec 11 REJ-3) — storage cost, privacy considerations, and platform-permission overhead outweigh the marginal evidence value over audio + location.
 
 ---
 

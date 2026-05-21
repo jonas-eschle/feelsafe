@@ -328,7 +328,7 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 
 **SMS Retry:** Indefinite retry queue via native Kotlin WorkManager. Queues SMS when no signal, retries until delivered or session ends. Survives process death.
 
-**Auto-Recording:** Starts audio recording when step fires (option, default off). Recording stored locally only — NOT attached to messages (deferred feature). Greyed out if channel is SMS.
+**Auto-Recording:** Starts audio recording when step fires (option, default off). Recording is stored locally only — by design NOT attached to messages (MMS is unreliable, cloud upload is out of v3 GA scope; see spec 11 REJ-2). Greyed out if channel is SMS.
 
 **Legal Warning:** Shown during setup and before session start.
 

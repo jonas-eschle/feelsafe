@@ -293,7 +293,7 @@ MediaPlayer             — Audio session management
 ### Permission Handling
 - **At app launch**: Request notification permission (required)
 - **Before session start**: Request specific permissions for chain steps
-- **User can defer**: Some permissions deferred until step fires
+- **User can delay**: Some permissions are requested lazily — the OS prompt fires only when the relevant step executes for the first time, not at app launch
 - **Settings access**: User can re-grant in app settings or OS settings
 - **Battery optimization**: Warn user (don't block) if app not whitelisted
 
