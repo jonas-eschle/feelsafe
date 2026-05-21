@@ -145,7 +145,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 
 | Feature | Android | iOS | Permission | Notes |
 |---|---|---|---|---|
-| **Home widget interactivity** | YES | PARTIAL | — | Android: full interactive AppWidget (Quick Exit broadcasts to a Dart interactivity callback, Fake Call deep-links to `/fake-call`). iOS 17+: SwiftUI WidgetKit extension with `AppIntent`-based interactive buttons. iOS 16 and below: static widget with deep-link URLs only (buttons open the app instead of acting in place). |
+| **Home widget interactivity** | YES | YES (iOS 17+) / PARTIAL (iOS 16) | — | Android: full interactive AppWidget (Quick Exit broadcasts to a Dart interactivity callback, Fake Call deep-links to `/fake-call`). iOS 17+: SwiftUI WidgetKit extension with `AppIntent`-based interactive buttons (`QuickExitIntent`, `FakeCallIntent`). iOS 16 fallback: same widget surface but buttons rendered as `Link(destination:)` deep-links (`guardianangela://quick-exit`, `guardianangela://fake-call`); tapping launches the host app at the appropriate route and the app completes the action. Both platforms ship at v3 GA per spec audit D14. |
 | **Status line (live)** | YES | YES | — | `"Idle"`, `"Session active"`, `"Simulation active"`, `"Battery alert"` plus an `mm:ss` elapsed timer. Updated on every engine event from `SessionController`. |
 | **Quick Exit button** | YES | YES | — | PIN-gated via Session End PIN. Duress PIN fires the distress chain. Widget writes a pending marker; Flutter drains it on next foreground. |
 | **Fake Call button** | YES | YES | — | Deep-links to `/fake-call` (GoRouter). On widget→app launch the URI is read via `HomeWidget.initiallyLaunchedFromHomeWidget()`. |
@@ -187,7 +187,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 | **Session End PIN** | YES | YES | — | PIN required to disarm or end active session. Biometric may substitute. 15s timeout. |
 | **Duress PIN** | YES | YES | — | Third PIN: enters at any prompt → silently fires the mode's resolved distress mode (`SessionMode.distressModeId` → `AppDefaults.defaultDistressModeId`). No error message shown. |
 | **Simulation Mode (SMS/calls blocked)** | YES | YES | — | SMS, phone calls, emergency calls, loud alarm audio, audio recording all blocked / muted (logged as `sim_blocked`). Fake call, vibration, reminders fire normally. |
-| **Encryption at Rest** | YES | YES | — | AES-256 via HiveAesCipher, key in secure storage |
+| **Encryption at Rest** | YES | YES | — | AES-256 via `sqlite3mc` (Drift DB) + AES-256 envelope on JSON-backed singleton/list repositories; encryption key generated on first launch and stored in `flutter_secure_storage` (Android Keystore / iOS Keychain). |
 
 ---
 
@@ -195,7 +195,8 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 
 | Feature | Android | iOS | Permission | Notes |
 |---|---|---|---|---|
-| **JSON-backed Repositories (Local Storage)** | YES | YES | — | `JsonSingletonRepository` / `JsonListRepository`; always encrypted at rest (Hive CE retired) |
+| **Drift DB (Local Storage)** | YES | YES | — | Typed SQL on top of `sqlite3mc`-encrypted SQLite. Relational data (modes, contacts, templates, session logs). |
+| **JSON-backed Repositories (Local Storage)** | YES | YES | — | `JsonSingletonRepository` / `JsonListRepository` for singleton blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`); always encrypted at rest. |
 | **flutter_secure_storage** | YES | YES | — | Secure key storage (Android Keystore / iOS Keychain) |
 | **Google Auto Backup** | YES | — | — | Android system backup to Google Drive (encrypted, no code needed) |
 | **iCloud Backup** | — | YES | — | iOS system backup to iCloud (user opt-in, automatic) |

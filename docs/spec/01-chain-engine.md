@@ -1035,6 +1035,8 @@ After a distress trigger fires, a **5-second configurable confirmation window** 
 
 12. **No step content changes mid-session** — steps immutable after `start()`.
 
+13. **Disarm during distress is per-mode configurable (G-014)** — when the engine is running a distress chain (entered via `replaceWithDistressChain`), it checks the active mode's `allowDisarmAsDistress` flag. If `true` (default), `disarmTriggers` (`GpsArrivalDisarmTrigger`, `TimerDisarmTrigger`) fire normally. If `false`, the engine ignores them and the chain runs to exhaustion. Hardware-button distress, duress PIN, and wrong-PIN threshold continue to be the only paths INTO distress; this invariant only controls whether disarm can take you OUT.
+
 ---
 
 ## Randomization Details

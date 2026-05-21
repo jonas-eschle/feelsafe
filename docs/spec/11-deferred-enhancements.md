@@ -1,106 +1,34 @@
-# 11 — Deferred Enhancements
+# 11 — Enhancement History
 
-> **Status (2026-05-08).** DE-1, DE-2, DE-3, DE-4 LANDED. DE-5 LANDED
-> on Android; iOS interactive widget remains deferred (see iOS gap
-> note below).
+> **Normative status:** This document is HISTORICAL. As of the
+> pre-Phase 0 spec rework (2026-05-21), every prior optional add-on
+> has been either PROMOTED to a normative spec section (and is
+> shipped at v3 GA) or DELETED from scope. Per the D15 decision,
+> the v3 GA target ships every feature in the spec — the prior
+> "post-GA add-on" doctrine is retired.
 
----
+## Promotion log (where former optional enhancements now live)
 
-## DE-2: Per-Event GPS Override — LANDED
+The following promotions all landed in the pre-Phase 0 spec rework
+commit. Each entry was an optional add-on in earlier spec drafts;
+each one is now part of the normative spec set and a GA requirement.
 
-Per-step `LogGpsOverride` enum (`useDefault` / `forceOn` / `forceOff`)
-on every relevant `StepConfig`. The strategy resolves the effective
-value against `AppDefaults.gpsLogging.enabled` (with optional
-`ModeOverrides.gpsLogging.enabled`). Defined in spec 03.
+| Enhancement | Normative home |
+|---|---|
+| Timer slider widget (logarithmic scale, snap stops, tap-to-edit chip, "0 s (immediate)" pill) | `04-screens-navigation.md` → Shared Widgets → TimingSlider |
+| Per-step GPS-logging override (`LogGpsOverride { useDefault, forceOn, forceOff }`) | `03-data-models.md` → StepConfig (`logGps` field on every relevant subclass) + `02-event-types.md` (per-step config rows) |
+| Interval GPS tracking on the active session | `03-data-models.md` → SessionMode (`trackingEnabled`, `trackingIntervalSeconds`, `trackingBufferSize`) + `05-services.md` → LocationService |
+| "More settings" collapsible panel for rare step toggles | `04-screens-navigation.md` → Shared Widgets → MoreSettingsPanel |
+| Android home-screen widget (Quick Exit, Fake Call, live status line) | `04-screens-navigation.md` → Shared Widgets → Home Screen Widget (Android section) + `10-platform-matrix.md` → Home Screen Widget |
+| iOS home-screen widget (D14 — `AppIntent` on iOS 17+, `Link(destination:)` deep-link fallback on iOS 16) | `04-screens-navigation.md` → Shared Widgets → Home Screen Widget (iOS section) + `10-platform-matrix.md` |
+| Voice recording assets for 14 locales (D14 — first-launch TTS pipeline via `flutter_tts.synthesizeToFile()`, user-recordable in Settings → Voice Recordings) | `05-services.md` → AudioService → "Voice recording assets — TTS placeholder pipeline" |
 
----
-
-## DE-3: Interval GPS Tracking — LANDED
-
-`SessionMode.trackingEnabled` (default `false`),
-`trackingIntervalSeconds` (default `300`), and `trackingBufferSize`
-(default `50`). When `trackingEnabled` is true, `LocationService`
-samples at the configured interval and stores the last
-`trackingBufferSize` points in `SessionLog`. Defined in spec 03.
-
----
-
-## DE-1: Timer Sliders — Minimum Zero, Extended Range, Logarithmic Scale — DONE
-
-`lib/core/widgets/timing_slider.dart` provides snap-stops over the
-full `0s–1y` range, an "0s (immediate)" label, and a tap-to-edit
-numeric chip. Used in `step_config_form.dart` for wait / duration /
-grace; the disguised reminder's `intervalSeconds` retains a
-`TextFormField` since it is already deprecated in favour of
-`ChainStep.waitSeconds`.
-
----
-
-## DE-4: "More Settings" Pattern for Step Configuration — DONE
-
-`lib/features/modes/widgets/more_settings_panel.dart` provides the
-collapsible host. Each step's config form mounts its rare-toggle
-subset (currently the GPS-logging tri-state) inside the panel; the
-collapsed header shows a "(N customized)" badge when any of the
-wrapped fields differs from its default.
-
-Applies to:
-- Mode editor — per-step config dialog
-- Event defaults — per-type detail screen
-- Distress mode editor (`/distress-modes/edit`)
-
----
-
-## DE-5: Home Screen Widget
-
-### Android — DONE
-
-Android AppWidget shipped:
-- Quick Exit button — PIN-gated via the Session End PIN; the Duress
-  PIN still fires the distress chain.
-- Fake Call button — deep-links to `/fake-call` via GoRouter.
-- Current session status: `Idle`, `Session active`,
-  `Simulation active`, `Battery alert`, plus an `mm:ss` elapsed
-  timer when applicable.
-
-Implementation: the `home_widget` package (0.9.x) bridges Flutter
-↔ Android `AppWidgetProvider`; widget metadata in
-`android/app/src/main/res/xml/guardian_angela_widget_info.xml`;
-layout in
-`android/app/src/main/res/layout/guardian_angela_widget.xml`. Dart
-wrapper: `lib/services/implementations/home_widget_service.dart`.
-`SessionController` emits widget updates on every session
-transition; `HomeScreen` registers the interactivity callback and
-observes deep-link URIs and pending action markers.
-
-### iOS — DEFERRED
-
-iOS WidgetKit interactive widget is not yet implemented. The
-`home_widget_service` calls become no-ops on iOS. When the iOS side
-ships, it will follow the same App-Group / `AppIntent` pattern
-documented in earlier drafts of this section, scoped to the same
-two buttons (Quick Exit + Fake Call) and the same status text. iOS
-16 fallbacks would use a deep-link `Link(destination:)` since
-interactive `AppIntent` requires iOS 17+.
-
----
-
-## Voice Recording Assets (14 Languages)
-
-Referenced by `FakeCallConfig.voiceRecordingPath = null` fallback.
-Files needed at `assets/voice/angela_<langCode>.m4a` for all 14
-supported languages. Current state: the asset manifest is declared
-but the M4A files are placeholders / missing. Implementing this task
-is pure content production (voice-talent recording + licensing).
-
----
-
-## Rejected Enhancements
+## Rejected enhancements (kept for posterity)
 
 ### REJ-1: Shake-to-SOS (Accelerometer-Based Emergency Trigger)
 
 **Rejected.** False positive risk from pocket jostling, accidental
 device handling, or physical activity outweighs the benefit of an
-accelerometer-based SOS trigger. Users expect deliberate,
-intentional escalation mechanisms. This feature will NOT be
-implemented.
+accelerometer-based SOS trigger. Users expect intentional escalation
+mechanisms. This feature will NOT be implemented. Cross-reference:
+`docs/rewrite/lessons-learned.md` §5.6.

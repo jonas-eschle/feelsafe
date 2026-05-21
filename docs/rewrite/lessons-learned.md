@@ -569,9 +569,19 @@ Per `project_rewrite_decisions.md`. Add to spec explicitly so a
 future agent doesn't propose it. Accelerometer triggers are
 permanently off the table.
 
-### 5.7 Hard-coded distress invariants
+### 5.7 Distress invariants
 
-- Disarm during duress: hard-coded IGNORE. Non-negotiable.
+**Updated 2026-05-21 (pre-Phase 0 spec rework, G-014).** The earlier
+"Disarm during duress: hard-coded IGNORE. Non-negotiable." rule has
+been replaced by a per-mode configurable flag:
+
+- Disarm during duress: configurable per mode via
+  `SessionMode.allowDisarmAsDistress` (default `true`). When `true`,
+  the configured `disarmTriggers` (GPS arrival, timer) fire even
+  when the chain is running as the distress chain. When `false`,
+  they are ignored and the chain runs to exhaustion. Default `true`
+  supports user-recoverable distress (e.g., "if I reach safety,
+  stop"); set `false` for stricter coercion resistance.
 - Distress chain REPLACES main chain. No sub-chains. No going back.
 - Three distress triggers: hardware panic (5x volume), wrong-PIN
   threshold, duress PIN. No more.

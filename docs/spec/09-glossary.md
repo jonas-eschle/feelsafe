@@ -64,12 +64,12 @@ These step types let the user disarm the chain by responding. Any step type can 
 |---|---|---|---|---|
 | **Session Mode** | Defines a chain of ChainSteps + `distressModeId` + triggers. Every step in `chainSteps` is on equal footing; the first step simply runs first. Distress modes are SessionModes with `isDistressMode = true`. May have per-mode `ModeOverrides`. | `SessionMode` | modes.json, settings, home screen | "Walk Mode": holdButton first, then fake call → alarm → emergency |
 | **Chain Step** | One escalation step with timing, config, and type. | `ChainStep` | SessionMode, settings, engine | Fake call step: 30s ring, 5s grace, 2 retries |
-| **Emergency Contact** | Named contact with phone + enabled messaging channels. All enabled channels are used (no single preferred channel). Includes `languageCode` and `relationship`. | `EmergencyContact` (typeId 1) | Hive box, settings, SMS/call services | "Alice" — SMS + WhatsApp enabled |
-| **Event Defaults** | Global per-step-type configuration defaults. | `EventDefaults` (typeId 13) | Hive box, settings | Default fake call: 30s ring, Android native style |
-| **Session Log** | Persisted record of completed sessions with events, timing, GPS location. | `SessionLog` (typeId 15) | Hive box, history screen | "Walk home - 45 min - 2 missed reminders" |
-| **App Settings** | Global app configuration (theme, language, three PIN hashes, `AppDefaults`, etc.). | `AppSettings` (typeId 9) | Hive box, settings screens | `appPinHash=...`, `languageCode='de'`, `defaults=AppDefaults(...)` |
+| **Emergency Contact** | Named contact with phone + enabled messaging channels. All enabled channels are used (no single preferred channel). Includes `languageCode` and `relationship`. | `EmergencyContact` | Drift `contacts` table, settings, SMS/call services | "Alice" — SMS + WhatsApp enabled |
+| **Event Defaults** | Global per-step-type configuration defaults. | `EventDefaults` (embedded in `AppDefaults`) | JSON singleton (in `app_settings.json`), settings | Default fake call: 30s ring, Android native style |
+| **Session Log** | Persisted record of completed sessions with events, timing, GPS location. | `SessionLog` | Drift `session_logs` table, history screen | "Walk home - 45 min - 2 missed reminders" |
+| **App Settings** | Global app configuration (theme, language, three PIN hashes, `AppDefaults`, etc.). | `AppSettings` | JSON singleton `app_settings.json`, settings screens | `appPinHash=...`, `languageCode='de'`, `defaults=AppDefaults(...)` |
 | **Walk Session** | Ephemeral (non-persisted) session state object. | `WalkSession` | SessionController, UI | Current step=1, missCount=1, elapsed=2m30s |
-| **Reminder Template** | Disguised notification design (Calendar, Duolingo, Delivery, etc.). `isGlobal=true` if from AppDefaults; `isGlobal=false` if mode-local. | `ReminderTemplate` | Hive box, settings | Template ID "duolingo": "Time for a lesson!" with Duolingo icon |
+| **Reminder Template** | Disguised notification design (Calendar, Duolingo, Delivery, etc.). `isGlobal=true` if from AppDefaults; `isGlobal=false` if mode-local. | `ReminderTemplate` | Drift `reminder_templates` table, settings | Template ID "duolingo": "Time for a lesson!" with Duolingo icon |
 | **Distress Mode** | A `SessionMode` flagged with `isDistressMode = true`; its `chainSteps` are the distress chain. | `SessionMode` (with `isDistressMode = true`) | modes.json, AppDefaults.defaultDistressModeId | Default distress mode: SMS + call emergency |
 | **App Defaults** | Master defaults for all modes: gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId. Modes inherit and may override per-field. | `AppDefaults` | AppSettings.defaults | Global GPS interval=30s, stealth disabled |
 | **Mode Overrides** | Per-mode optional override of any AppDefaults field. null field = inherit from AppDefaults. `localTemplates` appended to global templates. | `ModeOverrides` (inline in SessionMode) | SessionMode.overrides | Override stealth for Walk Mode only |
@@ -136,7 +136,8 @@ These step types let the user disarm the chain by responding. Any step type can 
 | **App Kill Detection** | Android watchdog to detect when app is killed by OS. | AlarmManager, periodic alarm | App kill detection | Alarm fires every 3 min; if app is dead, shows notification |
 | **Call Observer** | iOS API to detect incoming phone calls. | `CXCallObserver` | Real phone call detection | App pauses session when real call arrives |
 | **Biometric Auth** | Fingerprint or Face ID authentication. | `local_auth` package | App lock, session end | User unlocks app with fingerprint instead of PIN |
-| **Hive CE** | Lightweight local NoSQL database for mobile (Flutter). | `hive`, `flutter_secure_storage` | Data persistence | All data stored in encrypted Hive boxes |
+| **Drift** | Typed SQL ORM for Flutter; generates code from table definitions. | `drift`, `drift_dev` | Data persistence | `EmergencyContact` table queried via `db.contactsDao.watchAll()` |
+| **sqlite3mc** | SQLite3 Multiple Ciphers — the encrypted SQLite engine backing Drift. | `sqlite3` package with sqlite3mc build hook, `flutter_secure_storage` | Data persistence | Drift database file encrypted at rest with AES-256 |
 
 ---
 
@@ -211,7 +212,8 @@ These step types let the user disarm the chain by responding. Any step type can 
 | **Strategy Pattern** | 9 step type implementations with common interface. | `EventStrategy` base class | Event execution | FakeCallStrategy, LoudAlarmStrategy, etc. |
 | **Riverpod Provider** | Reactive dependency injection for services and controllers. | `Provider<T>`, `NotifierProvider` | State management | `audioServiceProvider`, `sessionControllerProvider` |
 | **GoRouter** | Declarative routing with deep linking support. | `GoRouter`, `GoRoute` | Navigation | `/modes/edit?id=123` → ModeEditorScreen with ID |
-| **Hive Box** | Type-safe key-value collection for a single model type. | `Box<SessionMode>`, `openBox<T>()` | Data persistence | All session modes stored in 'modes' box |
+| **Drift Table** | Typed SQL table with code-generated Dart data class via `@DataClassName('Name')`. Canonical persistence layer for relational data. | `@DataClassName('SessionMode')`, `appDatabase.sessionModesDao` | Data persistence | All session modes stored in the `session_modes` table |
+| **JSON-backed Singleton/List Repository** | Encrypted JSON blob stored under the app documents directory; used for small singletons (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) and lightweight lists. | `JsonSingletonRepository`, `JsonListRepository` | Data persistence | `AppSettings` lives in `app_settings.json` |
 | **Feature-First Architecture** | Code organized by feature (session, home, settings) not by type (models, views). | `lib/features/` folder | Project structure | `lib/features/session/`, `lib/features/home/`, etc. |
 
 ---
@@ -220,8 +222,8 @@ These step types let the user disarm the chain by responding. Any step type can 
 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
-| **Schema Version** | Version number for data model structure (Hive types, field counts). | `_schemaVersion` in export, typeId | Data migrations | Current schema: version 4 |
-| **Migration** | Code to upgrade data when schema changes. | `_migrateIfNeeded()` | `lib/main.dart` | Rename `repeatCount` → `retryCount` in all ChainSteps |
+| **Schema Version** | Version number for the Drift schema (`schemaVersion` on `GuardianAngelaDatabase`) plus the `_schemaVersion` integer written into JSON export blobs. | `schemaVersion`, `_schemaVersion` | Data migrations | Current schema: tracked in `AppConstants.currentSchemaVersion` |
+| **MigrationStrategy** | Drift's mechanism for handling schema upgrades. Pre-alpha policy wipes-and-reseeds on mismatch rather than running stepwise migrations. | `MigrationStrategy.onUpgrade` | `lib/data/db/app_database.dart` | Schema mismatch → `nukeAndReseed()` |
 | **Semantic Versioning** | Version format: MAJOR.MINOR.PATCH (e.g., 1.0.0). | `pubspec.yaml` | App versioning | 0.x.y pre-release; 1.0.0+ stable |
 | **Minimum SDK** | Oldest OS version supported. | Android API 26, iOS 16.0 | Platform targets | App requires Android 8.0+ or iOS 16.0+ |
 

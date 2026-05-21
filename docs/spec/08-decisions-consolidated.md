@@ -732,7 +732,7 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 ## Data & Storage
 
 ### Encryption
-- **Always encrypt**: All Hive boxes encrypted with HiveAesCipher + flutter_secure_storage
+- **Always encrypt**: Drift database encrypted with `sqlite3mc` + JSON singletons enveloped with the same AES-256 key from `flutter_secure_storage`
 - **No option to disable**: Changed from optional to mandatory
 - **Rationale**: Privacy and plausible deniability
 
@@ -753,8 +753,8 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 
 ### Backwards Compatibility
 - **Pre-alpha stance**: OK to break backwards compatibility during pre-alpha
-- **Hive schema**: Version management in `lib/main.dart` via `_migrateIfNeeded()`
-- **Persistence**: JSON-backed `JsonSingletonRepository` / `JsonListRepository`. Models live in `lib/domain/models/` with hand-rolled `toJson` / `fromJson`. Hive has been retired.
+- **Drift schema**: Schema version managed via Drift's `MigrationStrategy.onUpgrade` (pre-alpha policy wipes and re-seeds on mismatch — no migration scripts)
+- **Persistence**: Relational data lives in the Drift database (`sqlite3mc`-encrypted); singleton blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) use `JsonSingletonRepository` / `JsonListRepository`. Models live in `lib/domain/models/` with hand-rolled `toJson` / `fromJson`.
 
 ---
 
@@ -852,8 +852,8 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 ## Security Audit Recommendations
 
 ### Always-Encrypt (Mandatory)
-- **Changed**: From optional to mandatory encryption of all Hive boxes
-- **Cipher**: HiveAesCipher + flutter_secure_storage
+- **Changed**: From optional to mandatory encryption of all persisted data (Drift database file + JSON-backed singletons)
+- **Cipher**: `sqlite3mc` (AES-256) + AES-256 JSON envelope, sharing one key from `flutter_secure_storage`
 - **Reason**: User privacy, plausible deniability in hostile situations
 
 ### Three Distinct PINs

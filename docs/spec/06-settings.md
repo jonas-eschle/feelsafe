@@ -6,7 +6,7 @@
 
 ## Overview
 
-Guardian Angela's settings system provides comprehensive control over every aspect of the app's behavior. Settings are persisted in the encrypted Hive database (`AppSettings`, typeId 9) and can be accessed via `/settings` route. All configurable options have sensible defaults; users customize only what they need.
+Guardian Angela's settings system provides comprehensive control over every aspect of the app's behavior. Settings are persisted in the encrypted JSON-backed `app_settings.json` singleton (the `AppSettings` value type defined in spec 03) and can be accessed via `/settings` route. All configurable options have sensible defaults; users customize only what they need.
 
 ### Top-level = Theme + Language only (UI convention)
 
@@ -132,7 +132,7 @@ The shared global PIN length has been **removed**. Each PIN's length is now dete
 - **Info:** "Locks the app each time you open it. Anyone picking up your phone cannot see Guardian Angela without this PIN."
 - **Control:** "Set PIN" / "Change PIN" / "Remove" button
 - **Options:** Length chosen at setup (4–8 digits). Disabled by default.
-- **Persistence:** `AppSettings.appPinHash` (hashed, stored in Hive)
+- **Persistence:** `AppSettings.appPinHash` (hashed, stored in the encrypted `app_settings.json` singleton)
 - **Effect:** All app screens require PIN entry on launch.
 
 #### Session End PIN
@@ -298,7 +298,7 @@ Global alarm behavior (affects all loudAlarm steps).
 
 #### Backup & Export
 - Label: "Backup & Data"
-- Icon: cloud or archive
+- Icon: cloud or folder
 - Navigation: `/settings/backup`
 - Screen includes:
   - Export session logs (JSON / PDF)
@@ -329,7 +329,7 @@ Global alarm behavior (affects all loudAlarm steps).
 
 ### Simple Toggles & Single-Field Settings
 
-- **Auto-save:** Changes saved to Hive immediately on toggle/selection
+- **Auto-save:** Changes persisted immediately on toggle/selection (Drift transaction for relational data, JSON write for `AppSettings` singleton)
 - **Feedback:** Brief undo snackbar appears: "Setting changed" with optional "Undo" button
 - **No confirmation:** User can undo within 3 seconds before actual persistence
 
@@ -738,10 +738,10 @@ Located at `/settings/about`. Displays app information, legal disclaimers, and l
 
 | Link | URL | Notes |
 |------|-----|-------|
-| Privacy Policy | (TBD: hosted URL) | Opens in browser; required before app store submission |
-| Terms of Service | (TBD: hosted URL) | Opens in browser; required before app store submission |
-| Source Code Repository | (TBD: GitHub URL) | Public or private repo; opens in browser |
-| Donation / Support | (TBD: funding page URL) | Optional; opens browser |
+| Privacy Policy | `https://guardianangela.app/legal/privacy` (placeholder until live; loaded from `AppConstants.privacyPolicyUrl`) | Opens in browser; required before app store submission. The constant is the single source of truth so the URL can flip on a code-change rather than a spec edit. |
+| Terms of Service | `https://guardianangela.app/legal/terms` (placeholder until live; loaded from `AppConstants.termsOfServiceUrl`) | Opens in browser; required before app store submission. |
+| Source Code Repository | `https://github.com/jonas-eschle/guardianangela` (current repo; loaded from `AppConstants.repositoryUrl`) | Public repo; opens in browser. |
+| Donation / Support | `https://github.com/sponsors/jonas-eschle` (current sponsor page; loaded from `AppConstants.supportUrl`) | Optional; opens in browser. |
 
 #### Open Source Licenses
 - Button: "View Open Source Licenses"
@@ -846,7 +846,7 @@ Located at Settings > Backup & Data (`/settings/backup`).
    - User selects `.guardianangela.bak` file
    - If encrypted, prompt for password
    - Confirmation: "This will replace all current data. Continue?" with undo option
-   - Overwrites entire Hive database with backup contents
+   - Overwrites the entire Drift database (and JSON-backed singletons) with backup contents inside a single transaction
 
 ### Data Usage Summary
 
@@ -875,16 +875,11 @@ Placeholder section for planned advanced features:
 
 ## Persistence & Data Model
 
-All settings stored in encrypted Hive database:
+All settings stored in encrypted local storage (Drift database for relational tables, JSON-backed singletons for blobs):
 
-**Primary model:** `AppSettings` (typeId 9). The canonical Dart
-sketch is the one in **`03-data-models.md` → AppSettings**
-(`themeMode`, biometric / launch-auth toggles, `wrongPinThreshold`,
-`sentryEnabled`, `telemetryOptOut`, `sessionLogRetentionDays`,
-`trashRetentionDays`, etc.). Do not duplicate the field list here.
+**Primary model:** `AppSettings` is persisted as the `app_settings.json` JSON-backed singleton (encrypted at rest via the AES-256 envelope shared with the Drift database). The canonical Dart sketch is the one in **`03-data-models.md` → AppSettings** (`themeMode`, biometric / launch-auth toggles, `wrongPinThreshold`, `sentryEnabled`, `telemetryOptOut`, `sessionLogRetentionDays`, `trashRetentionDays`, etc.). Do not duplicate the field list here.
 
-**Security settings** all live in `AppSettings` (encrypted in Hive via HiveAesCipher).
-PIN hashes stored as bcrypt hashes. No separate `flutter_secure_storage` entries for PINs.
+**Security settings** all live in `AppSettings` (encrypted via the same `EncryptionService` key used by Drift `sqlite3mc`). PIN hashes stored as bcrypt hashes. No separate `flutter_secure_storage` entries for PINs.
 
 **Distress modes:** Stored alongside regular modes in `modes.json` and discriminated by `SessionMode.isDistressMode = true`. The default distress mode id is on `AppDefaults.defaultDistressModeId`. Managed via Settings → Session → Distress modes (`DistressModesScreen` at `/distress-modes`); each is edited via `ModeEditorScreen(isDistress: true)` at `/distress-modes/edit?id=...`.
 

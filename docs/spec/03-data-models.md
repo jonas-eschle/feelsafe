@@ -10,46 +10,45 @@
 > another mode by id. The `distress_chains` table / DAO / repository
 > have been deleted; pre-alpha policy is nuke-and-reseed on schema
 > mismatch.
->
-> **Storage backend.** Persistence uses JSON-backed repositories
-> (`JsonSingletonRepository`, `JsonListRepository`) — each model is
-> serialized to a JSON string keyed by id. The `@HiveType` /
-> `@HiveField` annotations below are kept for historical context but
-> the runtime no longer uses Hive. Models live in `lib/domain/models/`
-> with hand-rolled `toJson`/`fromJson`.
 
-Guardian Angela's data models are built on **Hive CE** (Community Edition), a lightweight local NoSQL database optimized for mobile. All persistent data is encrypted at rest and supports automatic cloud backup on both Android and iOS.
+Guardian Angela's data models are persisted via **Drift** (typed SQL on top of `sqlite3mc`) for relational tables and **JSON-backed singleton/list repositories** for small singleton blobs. All persistent data is encrypted at rest (sqlite3mc + flutter_secure_storage) and supports automatic cloud backup on both Android and iOS.
 
 ## Storage Architecture
 
-### Hive CE (Local NoSQL)
+### Drift + sqlite3mc (Encrypted SQLite)
 
-Hive CE provides fast, type-safe key-value storage with minimal overhead:
-- Stores Dart objects directly (no SQL/queries required)
-- Schema defined via `@HiveType` and `@HiveField` annotations
-- Generated adapters (`.g.dart` files) handle serialization
-- Box-based API: `Box<T>` for each model type
+Drift provides typed, code-generated SQL access on top of an encrypted SQLite database:
+- Drift tables expose Dart data classes via `@DataClassName('Name')` annotations
+- Generated companions (`.drift.dart` files) handle serialization and query construction
+- The underlying engine is `sqlite3mc` (SQLite3 Multiple Ciphers) for at-rest AES-256 encryption
+- Schema versioning is handled by Drift's `MigrationStrategy` — pre-alpha policy nukes the database on mismatch instead of running migrations
+
+### JSON-backed Singleton/List Repositories
+
+A small number of singleton blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) and lightweight collections live in `JsonSingletonRepository` / `JsonListRepository` rather than Drift. Each blob serializes to a JSON string keyed by id under the app's encrypted document directory. Hand-rolled `toJson` / `fromJson` on each model under `lib/domain/models/` keep the JSON layer schema-stable without code generation.
 
 ### Encryption: Always-On
 
 **Guardian Angela encrypts ALL data at rest without exception.**
 
-- **Cipher:** `HiveAesCipher` with 256-bit AES encryption
-- **Key generation:** Randomly generated on first app launch (if no key exists)
+- **Cipher:** `sqlite3mc` AES-256 for the Drift database + AES-256 envelope on JSON-backed blobs
+- **Key generation:** Randomly generated 32-byte key on first app launch (if no key exists)
 - **Key storage:** Platform-native secure storage:
   - **Android:** Android Keystore System (requires Google Play Services for hardware-backed security)
   - **iOS:** Keychain (always encrypted at OS level)
-- **Encryption key:** Retrieved from `flutter_secure_storage` when opening Hive boxes
+- **Encryption key:** Retrieved from `flutter_secure_storage` when opening the Drift database / JSON repositories
 - **No opt-out:** Encryption is mandatory — there is no "unencrypted" mode
 
-All Hive boxes are opened with encryption enabled. Code pattern:
+The Drift database is opened with a `sqlite3mc` connection that applies the encryption key via `PRAGMA key = ...` before any read or write. Code pattern (Drift + sqlite3mc):
 
 ```dart
-final cipher = HiveAesCipher(encryptionKey);  // 32-byte key from secure storage
-final box = await Hive.openBox<SessionMode>(
-  'modes',
-  encryptionCipher: cipher,
-);
+final key = await secureStorage.read(key: 'db_encryption_key');
+final executor = LazyDatabase(() async {
+  final dir = await getApplicationDocumentsDirectory();
+  final file = File(p.join(dir.path, 'guardian_angela.db'));
+  return Sqlite3McConnection.openFile(file, encryptionKey: key);
+});
+final db = GuardianAngelaDatabase(executor);
 ```
 
 ### Backup Strategy
@@ -62,22 +61,24 @@ final box = await Hive.openBox<SessionMode>(
   ```xml
   <?xml version="1.0" encoding="utf-8"?>
   <full-backup-content>
-    <!-- Include Hive database files (already encrypted) -->
+    <!-- Include the encrypted Drift database file -->
     <include domain="database" path="." />
+    <!-- Include the JSON-backed singleton/list repository files -->
+    <include domain="file" path="json_store" />
     <!-- Include flutter_secure_storage encrypted files -->
     <include domain="sharedpref" path="FlutterSecureStorage" />
   </full-backup-content>
   ```
 - **Manifest:** Add `android:allowBackup="true"` and `android:backupAgent` if custom agent needed
-- **Encryption:** Hive files are already encrypted; Android transport layer adds another layer
+- **Encryption:** Drift and JSON files are already encrypted at rest; Android transport layer adds another layer
 
 #### iOS iCloud Backup
 
 - **What:** System-level backup to iCloud (user opt-in, managed in Settings > iCloud)
 - **When:** Automatic when device plugged in and connected to WiFi
 - **Configuration:** No code needed — works by default for files in `Documents/` and app data directory
-- **Path:** Hive creates databases in app-internal directory, automatically included in iCloud backup
-- **Encryption:** iCloud transport is encrypted; Hive adds application-level encryption
+- **Path:** Drift creates `guardian_angela.db` and JSON blobs in the app-internal documents directory, automatically included in iCloud backup
+- **Encryption:** iCloud transport is encrypted; Drift (sqlite3mc) and JSON envelopes add application-level encryption
 
 #### Manual JSON Export/Import
 
@@ -128,43 +129,42 @@ For reliable cross-device migration when cloud backup may fail (e.g., keystore k
 
 ---
 
-## Hive TypeId Registry
+## Persistence Layout
 
-The Hive type-id table below is **historical**. The current persistence layer is JSON files, not Hive. Models map one-to-one to JSON repositories under `lib/data/repositories/`:
+Each model is persisted in one of two places: a Drift table (relational data with many rows, queries, joins) or a JSON-backed singleton/list repository (small blobs read in their entirety on launch). Drift models carry a `@DataClassName('Name')` annotation; JSON models live as hand-serialized Dart classes under `lib/domain/models/`.
 
-| Model | Repository file (JSON) | Notes |
-|-------|------------------------|-------|
+| Model | Storage | Notes |
+|-------|---------|-------|
 | MessageChannel (enum) | — | SMS, WhatsApp, Telegram, Phone |
-| EmergencyContact | `contacts.json` | name, phone, channels, languageCode, sortOrder |
+| EmergencyContact | Drift table `contacts` | name, phone, channels, languageCode, sortOrder |
 | ConfirmationType (enum) | — | tapButton, tapWord, swipe, dismiss |
-| ReminderTemplate | `templates.json` | title, body, confirmationType, displayStyle, isGlobal |
-| SessionMode | `modes.json` | name, chainSteps, distressModeId, isDistressMode, triggers, overrides |
-| AppSettings | `app_settings.json` (singleton) | three PIN hashes, theme, language, emergencyNumber, alarmDndOverride, biometric/telemetry/launch-auth toggles, alarm gradual-volume settings, `AppDefaults` |
-| ChainStep | — | part of `SessionMode.chainSteps` |
+| ReminderTemplate | Drift table `reminder_templates` | title, body, confirmationType, displayStyle, isGlobal |
+| SessionMode | Drift table `session_modes` | name, chainSteps, distressModeId, isDistressMode, triggers, overrides |
+| AppSettings | JSON singleton (`app_settings.json`) | three PIN hashes, theme, language, emergencyNumber, alarmDndOverride, biometric/telemetry/launch-auth toggles, alarm gradual-volume settings, `AppDefaults` |
+| ChainStep | — | part of `SessionMode.chainSteps`; serialized as JSON inside the parent row |
 | ChainStepType (enum) | — | 9 escalation step types |
-| UserProfile | `user_profile.json` (singleton) | name, age, phoneNumber, photoPath, physicalDescription, medical fields |
-| EventDefaults | (in AppSettings.defaults) | per-step-type configuration |
+| UserProfile | JSON singleton (`user_profile.json`) | name, age, phoneNumber, photoPath, physicalDescription, medical fields |
+| EventDefaults | (in `AppSettings.defaults`) | per-step-type configuration |
 | ReminderDisplayStyle (enum) | — | fullScreen, subtle |
-| SessionLog | `session_logs.json` | mode, timestamps, events, isSimulation, hadMedicalInfo |
-| SessionLogEvent | — | part of `SessionLog.events` |
-| AppDefaults | (in AppSettings) | gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId |
-| BatteryAlertConfig | `battery_alert.json` (singleton) | low-battery alert config (enabled, thresholdPercent, chain: List<ChainStep>) |
+| SessionLog | Drift table `session_logs` | mode, timestamps, events, isSimulation, hadMedicalInfo |
+| SessionLogEvent | — | part of `SessionLog.events`; serialized as JSON in the parent row |
+| AppDefaults | (in `AppSettings`) | gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId |
+| BatteryAlertConfig | JSON singleton (`battery_alert.json`) | low-battery alert config (enabled, thresholdPercent, chain: List<ChainStep>) |
 
-The former `DistressChain` Hive type (`typeId 17`) and `distress_chains` box are gone. Distress modes are stored alongside regular modes in `modes.json` and discriminated via `isDistressMode = true`.
+The former `DistressChain` model and its dedicated Drift table are gone. Distress modes are stored alongside regular modes in the `session_modes` table and discriminated via `isDistressMode = true`.
 
 ---
 
 ## Model Definitions
 
-### MessageChannel (typeId: 0)
+### MessageChannel
 
 ```dart
-@HiveType(typeId: 0)
 enum MessageChannel {
-  @HiveField(0) sms,
-  @HiveField(1) whatsapp,
-  @HiveField(2) telegram,
-  @HiveField(3) phoneCall,
+  sms,
+  whatsapp,
+  telegram,
+  phoneCall,
 }
 ```
 
@@ -172,18 +172,19 @@ enum MessageChannel {
 
 ---
 
-### EmergencyContact (typeId: 1)
+### EmergencyContact
+
+Persisted as one row in the Drift `contacts` table; the Dart data class is named via `@DataClassName('EmergencyContact')`.
 
 ```dart
-@HiveType(typeId: 1)
-class EmergencyContact extends HiveObject {
-  @HiveField(0) final String id;              // UUID
-  @HiveField(1) String name;
-  @HiveField(2) String phoneNumber;           // E.164 format preferred
-  @HiveField(3) String? relationship;         // Optional: "Mom", "Friend", etc.
-  @HiveField(4) int sortOrder;                // 0-based, ascending
-  @HiveField(5) List<MessageChannel> channels;   // Active channels; default [MessageChannel.sms]
-  @HiveField(6) String? languageCode;         // Per-contact SMS language (null = app language)
+class EmergencyContact {
+  final String id;                    // UUID — primary key
+  String name;
+  String phoneNumber;                 // E.164 format preferred
+  String? relationship;               // Optional: "Mom", "Friend", etc.
+  int sortOrder;                      // 0-based, ascending
+  List<MessageChannel> channels;      // Active channels; default [MessageChannel.sms]
+  String? languageCode;               // Per-contact SMS language (null = app language)
 }
 ```
 
@@ -203,15 +204,14 @@ class EmergencyContact extends HiveObject {
 
 ---
 
-### ConfirmationType (typeId: 4)
+### ConfirmationType
 
 ```dart
-@HiveType(typeId: 4)
 enum ConfirmationType {
-  @HiveField(0) tapButton,   // Tap labeled button
-  @HiveField(1) tapWord,     // Tap correct word from grid
-  @HiveField(2) swipe,       // Swipe in direction
-  @HiveField(3) dismiss,     // Tap to dismiss (no confirmation)
+  tapButton,   // Tap labeled button
+  tapWord,     // Tap correct word from grid
+  swipe,       // Swipe in direction
+  dismiss,     // Tap to dismiss (no confirmation)
 }
 ```
 
@@ -219,24 +219,25 @@ enum ConfirmationType {
 
 ---
 
-### ReminderTemplate (typeId: 5)
+### ReminderTemplate
+
+Persisted as one row in the Drift `reminder_templates` table; the Dart data class is named via `@DataClassName('ReminderTemplate')`.
 
 ```dart
-@HiveType(typeId: 5)
-class ReminderTemplate extends HiveObject {
-  @HiveField(0) final String id;                  // UUID
-  @HiveField(1) String name;                      // "Calendar Event", "Weather Alert", etc.
-  @HiveField(2) String title;
-  @HiveField(3) String body;
-  @HiveField(4) String? iconAsset;                // e.g., "assets/icons/calendar.png"
-  @HiveField(5) ConfirmationType confirmationType;
-  @HiveField(6) String? keyword;                  // For tapWord: correct word
-  @HiveField(7) String? buttonLabel;              // For tapButton: button text
-  @HiveField(8) bool isCustom;                    // true = user-created, false = built-in
-  @HiveField(9) String? imagePath;                // Custom image path (optional)
-  @HiveField(10) String? subtitle;                // Optional subtitle between title/body
-  @HiveField(11) ReminderDisplayStyle displayStyle;  // fullScreen or subtle
-  @HiveField(12) bool isGlobal;                   // true = from AppDefaults.templates; false = mode-local (ModeOverrides.localTemplates)
+class ReminderTemplate {
+  final String id;                      // UUID — primary key
+  String name;                          // "Calendar Event", "Weather Alert", etc.
+  String title;
+  String body;
+  String? iconAsset;                    // e.g., "assets/icons/calendar.png"
+  ConfirmationType confirmationType;
+  String? keyword;                      // For tapWord: correct word
+  String? buttonLabel;                  // For tapButton: button text
+  bool isCustom;                        // true = user-created, false = built-in
+  String? imagePath;                    // Custom image path (optional)
+  String? subtitle;                     // Optional subtitle between title/body
+  ReminderDisplayStyle displayStyle;    // fullScreen or subtle
+  bool isGlobal;                        // true = from AppDefaults.templates; false = mode-local (ModeOverrides.localTemplates)
 }
 ```
 
@@ -264,20 +265,19 @@ class ReminderTemplate extends HiveObject {
 
 ---
 
-### ChainStepType (typeId: 11)
+### ChainStepType
 
 ```dart
-@HiveType(typeId: 11)
 enum ChainStepType {
-  @HiveField(0) holdButton,          // Check-in: hold button or release
-  @HiveField(1) disguisedReminder,   // Periodic disguised notification
-  @HiveField(2) countdownWarning,    // Visible countdown before escalation
-  @HiveField(3) fakeCall,            // Simulated incoming call
-  @HiveField(4) smsContact,          // Send SMS to contact
-  @HiveField(5) phoneCallContact,    // Call contact
-  @HiveField(6) loudAlarm,           // Play loud alarm
-  @HiveField(7) callEmergency,       // Call emergency number
-  @HiveField(8) hardwareButton,      // Panic trigger via volume/power button
+  holdButton,          // Check-in: hold button or release
+  disguisedReminder,   // Periodic disguised notification
+  countdownWarning,    // Visible countdown before escalation
+  fakeCall,            // Simulated incoming call
+  smsContact,          // Send SMS to contact
+  phoneCallContact,    // Call contact
+  loudAlarm,           // Play loud alarm
+  callEmergency,       // Call emergency number
+  hardwareButton,      // Panic trigger via volume/power button
 }
 ```
 
@@ -285,25 +285,24 @@ enum ChainStepType {
 
 ---
 
-### ChainStep (typeId: 10)
+### ChainStep
 
-**Core model for the safety chain.** Drives SessionEngine timing and escalation logic.
+**Core model for the safety chain.** Drives SessionEngine timing and escalation logic. Persisted as JSON inside the parent `SessionMode.chainSteps` column (no dedicated table — chain steps are owned by their mode).
 
 ```dart
-@HiveType(typeId: 10)
-class ChainStep extends HiveObject {
-  @HiveField(0) final String id;           // UUID
-  @HiveField(1) ChainStepType type;
-  @HiveField(2) int order;                 // 0-based position in chain
-  
+class ChainStep {
+  final String id;                  // UUID
+  ChainStepType type;
+  int order;                        // 0-based position in chain
+
   // Three-phase timing (most steps):
-  @HiveField(5) int waitSeconds;           // Delay before event fires (0 for most)
-  @HiveField(7) int durationSeconds;       // How long event runs
-  @HiveField(3) int gracePeriodSeconds;    // Dead time after event before escalating
-  
-  @HiveField(4) int retryCount;           // 0 = no repeat, N = up to N misses
-  @HiveField(8) bool randomize;            // ±20% jitter on all timing
-  @HiveField(6) StepConfig? config;        // Typed, per-step-type config (sealed class)
+  int waitSeconds;                  // Delay before event fires (0 for most)
+  int durationSeconds;              // How long event runs
+  int gracePeriodSeconds;           // Dead time after event before escalating
+
+  int retryCount;                   // 0 = no repeat, N = up to N misses
+  bool randomize;                   // ±20% jitter on all timing
+  StepConfig? config;               // Typed, per-step-type config (sealed class)
 }
 ```
 
@@ -432,9 +431,7 @@ final class PhoneCallContactConfig extends StepConfig {
 
 final class LoudAlarmConfig extends StepConfig {
   final bool flashScreen;                 // default: false (photosensitive warning)
-  final double flashSpeed;                // legacy — seconds per flash cycle (default 0.5)
   final int flashSpeedMs;                 // canonical — flash cycle in ms (default 500)
-  final bool maxVolume;                   // legacy — force system media to max (default true)
   final double volume;                    // 0.0–1.0 linear (default 1.0)
   final LoudAlarmSound soundChoice;       // siren | custom (default siren) — Q9
   final bool gradualVolume;               // default: false (ramp from 0 → volume)
@@ -492,7 +489,7 @@ class HardwareButtonConfig extends StepConfig {
 }
 ```
 
-**Hive serialization:** StepConfig subclasses serialize to/from JSON via `toJson()`/`fromJson()`. Stored in Hive as a JSON string within the ChainStep adapter. The `ChainStepType` discriminator selects the correct subclass during deserialization.
+**Serialization:** `StepConfig` subclasses serialize to/from JSON via `toJson()` / `fromJson()`. Stored as a JSON string inside the parent `SessionMode.chainSteps` Drift column. The `ChainStepType` discriminator selects the correct subclass during deserialization.
 
 **EventDefaults:** `EventDefaults` stores one instance of each `StepConfig` subclass as the global default. When a `ChainStep.config` is null, the matching `EventDefaults` config is used. When non-null, per-step values override defaults field by field via `copyWith`.
 
@@ -607,7 +604,9 @@ blocks saving a `GpsArrivalDisarmTrigger` with
 
 ---
 
-### SessionMode (typeId: 8)
+### SessionMode
+
+Persisted as one row in the Drift `session_modes` table (`@DataClassName('SessionMode')`). The chain steps and trigger lists serialize as JSON columns within the row.
 
 ```dart
 final class SessionMode {
@@ -629,12 +628,20 @@ final class SessionMode {
                                             // other modes reference via distressModeId.
                                             // Distress modes are managed under
                                             // /distress-modes (separate UI list).
+  final bool allowDisarmAsDistress;         // default true — when this mode runs AS a
+                                            // distress chain (via replaceWithDistressChain),
+                                            // should `disarmTriggers` (GPS arrival, timer)
+                                            // still fire? (G-014). Default true means the
+                                            // user can configure escape conditions. Setting
+                                            // false locks disarm during distress and makes
+                                            // the chain run to exhaustion (paranoid mode).
 }
 ```
 
 **Key design decisions:**
 - **Unified chain:** Every step in `chainSteps` is on equal footing. The first step simply runs first; nothing labels it as "the check-in".
 - **Distress mode by id:** `distressModeId` references another `SessionMode` (with `isDistressMode = true`) by id. `null` means "inherit `AppDefaults.defaultDistressModeId`". If neither resolves, the mode blocks at session start (validation error).
+- **Disarm during distress is configurable per mode (G-014):** `allowDisarmAsDistress` (default `true`) decides whether `disarmTriggers` (GPS arrival, timer) fire when this mode runs AS a distress chain. Default `true` lets the user configure escape conditions ("if I reach safety, stop"). Setting `false` locks the chain — only chain exhaustion or app/device shutdown stops it. This supersedes the earlier "Disarm during duress: hard-coded IGNORE" invariant. **Threat-model caveat:** allowing disarm during distress means an attacker who can coerce the user into a specific location (GPS arrival) or wait out a timer can silently stop the chain. Users opting into stricter safety should set `allowDisarmAsDistress = false` on their distress modes. The default is `true` because the typical use case is the user themselves recovering from a wrong-PIN / hardware-panic mistrigger.
 - **Inheritance:** When `overrides` is null, all per-mode settings (GPS logging, stealth, templates, event defaults) are inherited from `AppDefaults`. When `overrides` is non-null, any non-null field in `ModeOverrides` replaces the corresponding `AppDefaults` value for that mode only.
 - **Template lists:** The effective reminder template list for a mode = `AppDefaults.templates` + `ModeOverrides.localTemplates` (if any). Local templates are appended, not replacing.
 - **All modes deletable:** Every mode, including Walk Mode and Date Mode, can be deleted. There are no protected built-in modes.
@@ -654,7 +661,7 @@ final class SessionMode {
 
 ---
 
-### AppSettings (typeId: 9)
+### AppSettings
 
 ```dart
 final class AppSettings {
@@ -737,7 +744,7 @@ final class AppSettings {
 
 ---
 
-### UserProfile (typeId: 12)
+### UserProfile
 
 ```dart
 final class UserProfile {
@@ -765,21 +772,22 @@ Every medical field is `String?` (free-form text) — not a typed list. The form
 
 ---
 
-### EventDefaults (typeId: 13)
+### EventDefaults
+
+`EventDefaults` is an in-memory value type embedded inside `AppDefaults` (which is itself part of the `AppSettings` JSON singleton). It is not a Drift row.
 
 ```dart
-@HiveType(typeId: 13)
-class EventDefaults extends HiveObject {
-  @HiveField(0) HoldButtonConfig holdButton;
-  @HiveField(1) DisguisedReminderConfig disguisedReminder;
-  @HiveField(2) CountdownWarningConfig countdownWarning;
-  @HiveField(3) FakeCallConfig fakeCall;
-  @HiveField(4) SmsContactConfig smsContact;
-  @HiveField(5) PhoneCallContactConfig phoneCallContact;
-  @HiveField(6) LoudAlarmConfig loudAlarm;
-  @HiveField(7) CallEmergencyConfig callEmergency;
-  @HiveField(8) HardwareButtonConfig hardwareButton;
-  
+class EventDefaults {
+  HoldButtonConfig holdButton;
+  DisguisedReminderConfig disguisedReminder;
+  CountdownWarningConfig countdownWarning;
+  FakeCallConfig fakeCall;
+  SmsContactConfig smsContact;
+  PhoneCallContactConfig phoneCallContact;
+  LoudAlarmConfig loudAlarm;
+  CallEmergencyConfig callEmergency;
+  HardwareButtonConfig hardwareButton;
+
   /// Returns the typed default config for a given step type.
   StepConfig forType(ChainStepType type) => switch (type) {
     ChainStepType.holdButton => holdButton,
@@ -794,9 +802,9 @@ class EventDefaults extends HiveObject {
 **Seed defaults:** Each `StepConfig` subclass has a constructor with sensible defaults (see field defaults in the sealed class definitions above). The `EventDefaults` object is seeded on first launch with default-constructed instances of each config class.
 
 **Immutable copy pattern:**
-- Stored once in Hive, retrieved once at app startup
-- Loaded into memory singleton
-- Updates via `copyWith()` → save back to Hive → broadcast update notification
+- Persisted inside the `AppSettings` JSON singleton, loaded once at app startup
+- Held in memory by the settings provider
+- Updates via `copyWith()` → save back to `AppSettings` → broadcast update notification
 
 **Locale-aware overrides:**
 Emergency number defaults by region (80+ countries):
@@ -810,13 +818,12 @@ Emergency number defaults by region (80+ countries):
 
 ---
 
-### ReminderDisplayStyle (typeId: 14)
+### ReminderDisplayStyle
 
 ```dart
-@HiveType(typeId: 14)
 enum ReminderDisplayStyle {
-  @HiveField(0) fullScreen,    // Takes over entire screen
-  @HiveField(1) subtle,        // Overlay/notification card
+  fullScreen,    // Takes over entire screen
+  subtle,        // Overlay/notification card
 }
 ```
 
@@ -852,7 +859,7 @@ final class SessionLog {
 - `hadMedicalInfo` *(Extra 47)*: `true` iff at least one `smsContact` step in the session had `includeMedicalInfo=true` AND the user profile had any medical information at session start. Stamped at log creation by the `SessionLogRecorder` from the resolved `SessionContext`. Export logic uses this flag to decide whether the exported log should surface medical info — logs that captured medical info can be exported with it, logs that did not cannot fabricate it retroactively.
 
 **Storage & retention (B8):**
-- All session logs persisted in Hive (encrypted)
+- All session logs persisted in the Drift `session_logs` table (encrypted at rest via sqlite3mc)
 - Auto-delete: configurable via `AppSettings.sessionLogRetentionDays` (default **180 days**)
 - **Smart retention algorithm (B8):** at app startup the data layer calls
   `SessionLogRepository.purgeExpiredLogs(retentionDays: N, now: now)`:
@@ -880,19 +887,20 @@ final class SessionLog {
 
 ---
 
-### SessionLogEvent (typeId: 16)
+### SessionLogEvent
+
+Serialized as JSON inside the parent `SessionLog.events` Drift column — no dedicated table. The Dart class is a plain value type.
 
 ```dart
-@HiveType(typeId: 16)
-class SessionLogEvent extends HiveObject {
-  @HiveField(0) DateTime timestamp;
-  @HiveField(1) String eventType;              // "started", "step_fired", "disarmed", etc.
-  @HiveField(2) String? stepType;              // ChainStepType name or null
-  @HiveField(3) int stepIndex;                 // Position in chain
-  @HiveField(4) String description;            // Human-readable summary
-  @HiveField(5) double? latitude;              // Nullable, only if GPS logging enabled
-  @HiveField(6) double? longitude;             // Nullable, only if GPS logging enabled
-  @HiveField(7) String? deliveryStatus;        // "sent", "queued", "failed", "simBlocked" (for message steps)
+class SessionLogEvent {
+  DateTime timestamp;
+  String eventType;                // "started", "step_fired", "disarmed", etc.
+  String? stepType;                // ChainStepType name or null
+  int stepIndex;                   // Position in chain
+  String description;              // Human-readable summary
+  double? latitude;                // Nullable, only if GPS logging enabled
+  double? longitude;               // Nullable, only if GPS logging enabled
+  String? deliveryStatus;          // "sent", "queued", "failed", "simBlocked" (for message steps)
 }
 ```
 
@@ -1269,35 +1277,37 @@ Falls back to `112` (GSM international standard) for unmapped locales. Users can
 
 ## Migration Strategy
 
-No backwards compatibility is maintained. On schema version mismatch, all Hive boxes are nuked and re-seeded from defaults. User data loss is acceptable during pre-release development.
+No backwards compatibility is maintained. On schema version mismatch, both the Drift database and the JSON-backed singletons are nuked and re-seeded from defaults. User data loss is acceptable during pre-release development.
 
 **On launch:**
-1. Try to read `AppSettings.schemaVersion`
-2. If it doesn't match `AppConstants.currentSchemaVersion` (5), delete all boxes
-3. Re-run `seedDefaults()` to populate fresh data
-4. Set `schemaVersion = 5`
+1. Open the Drift database; Drift's `MigrationStrategy.onUpgrade` callback compares the persisted schema version against `AppConstants.currentSchemaVersion`.
+2. If versions differ, the strategy deletes every Drift table, then `JsonRepositories.init()` wipes and re-creates the JSON store.
+3. `seedDefaults()` repopulates Walk Mode, Date Mode, the default distress mode, the eight reminder templates, and `AppSettings` / `AppDefaults`.
+4. The new `schemaVersion` is written by Drift's strategy in the same transaction.
 
 ---
 
 ## Type Safety & Code Generation
 
-All Hive models use code generation via `build_runner`:
+Drift models use code generation via `build_runner` to produce companion classes (`*.drift.dart`) and a generated `GuardianAngelaDatabase` class:
 
 ```bash
 flutter pub run build_runner build
 ```
 
-This generates `*.g.dart` files with:
-- `TypeAdapter<T>` implementations for serialization
-- Field mappings for binary format
-- Backward compatibility helpers
+This generates `*.drift.dart` files with:
+- Data classes for each `@DataClassName('Name')` table
+- Typed query builders and DAOs
+- Schema metadata used by `MigrationStrategy`
 
 **Pre-commit hook:** `lefthook` runs import_sorter and lint checks. Pre-push runs `flutter test`.
 
-**After any `@HiveType` or `@HiveField` change:**
+**After any Drift table change:**
 ```bash
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
+
+JSON-backed models are hand-serialized — no code generation step. Field changes to `AppSettings`, `UserProfile`, or `BatteryAlertConfig` only require updating their `toJson` / `fromJson` methods (and bumping `currentSchemaVersion` to trigger the wipe-and-reseed path on next launch).
 
 ---
 
@@ -1309,7 +1319,7 @@ flutter pub run build_runner build --delete-conflicting-outputs
 2. **Storage:** Save to platform-native secure storage
    - Android: Android Keystore (requires Google Play Services for hardware-backed keys)
    - iOS: Keychain (automatic encryption at OS level)
-3. **Retrieval:** Load from secure storage before opening Hive boxes
+3. **Retrieval:** Load from secure storage before opening the Drift database or the JSON repositories
 4. **No export:** Never write key to file or log
 
 ### Secure Storage Implementation
@@ -1318,12 +1328,13 @@ Using `flutter_secure_storage`:
 
 ```dart
 final secureStorage = FlutterSecureStorage();
-final keyString = await secureStorage.read(key: 'hive_encryption_key');
+final keyString = await secureStorage.read(key: 'db_encryption_key');
 if (keyString == null) {
-  // Generate new key on first launch
-  final newKey = Hive.generateSecureKey();
+  // Generate new key on first launch (32 bytes from a cryptographically
+  // secure RNG)
+  final newKey = generateSecureKeyBytes(length: 32);
   await secureStorage.write(
-    key: 'hive_encryption_key',
+    key: 'db_encryption_key',
     value: base64Encode(newKey),
   );
 }
@@ -1331,17 +1342,18 @@ if (keyString == null) {
 
 ### Backup Encryption
 
-- **Android Auto Backup:** Hive files already encrypted; Android adds transport encryption
-- **iOS iCloud:** Hive files already encrypted; iCloud adds transport encryption
+- **Android Auto Backup:** Drift database (sqlite3mc) and JSON envelopes are already encrypted; Android adds transport encryption
+- **iOS iCloud:** Drift database (sqlite3mc) and JSON envelopes are already encrypted; iCloud adds transport encryption
 - **Manual export:** Optional encryption of JSON export (not implemented yet, future enhancement)
 
 ### Data at Rest
 
 All persistent data encrypted at rest:
-- Hive boxes: `HiveAesCipher` with 256-bit key
+- Drift database file: AES-256 via `sqlite3mc` with 32-byte key from secure storage
+- JSON-backed singletons: AES-256 envelope using the same key
 - Audio files: Innocuous filenames + OS sandboxing
 - Photos: App-internal directory + OS sandboxing
-- Session logs: Same encryption as other Hive data
+- Session logs: Stored in the encrypted Drift database
 
 ---
 
@@ -1355,20 +1367,20 @@ All persistent data encrypted at rest:
 - **EventDefaults tests:** Type-specific config lookups
 - **AppSettings tests:** Theme/language/stealth option combinations
 - **SessionLog tests:** Event ordering, timestamp validation
-- **Hive TypeId test:** All typeIds unique, no collisions
+- **Drift schema test:** All declared tables present, primary keys unique, `MigrationStrategy` round-trips a known fixture
 
 ### Integration Tests
 
 `test/integration/` includes:
-- **Hive lifecycle:** Open, encrypt, close, re-open
-- **Migration:** Schema version bump, data preservation
+- **Drift lifecycle:** Open (with sqlite3mc key), write, close, re-open
+- **Schema migration:** Bumping `currentSchemaVersion` triggers wipe-and-reseed; data is gone after upgrade per pre-alpha policy
 - **Seed data:** All defaults load, no corruption
 
 ### Property-based Tests
 
 Using `proptest` (Dart equivalent) for randomized input validation:
 - ChainStep timing always positive, total < max
-- SessionMode chain non-empty, typeIds unique
+- SessionMode chain non-empty, ids unique across the modes table
 - Contact phone numbers E.164 compliant or gracefully fail
 
 ---
@@ -1376,10 +1388,10 @@ Using `proptest` (Dart equivalent) for randomized input validation:
 ## Summary
 
 Guardian Angela's data models prioritize:
-- **Security:** Always-encrypted, no opt-out
+- **Security:** Always-encrypted, no opt-out (sqlite3mc + flutter_secure_storage)
 - **Portability:** Cloud backup + JSON export fallback
 - **User control:** Editable modes, custom contacts, rich configuration
-- **Data integrity:** Type-safe Hive, migrations, version tracking
+- **Data integrity:** Typed Drift tables, Drift `MigrationStrategy` (wipe-and-reseed in pre-alpha), version tracking
 - **Privacy:** Local-first, minimal third-party dependencies, transparent logs
 
 All models are immutable where possible, use `copyWith()` for updates, and follow Effective Dart guidelines.

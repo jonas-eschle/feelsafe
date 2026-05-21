@@ -219,8 +219,9 @@ Every completed session is logged with:
 - **Session mode** (which chain was used)
 - **Event timeline** (which events were triggered and when)
 - **GPS location** (if permission granted) — periodically recorded during session
-- **Screenshots** of key UI states (optional, for debugging)
 - **Duration** and **completion status** (ended normally, interrupted, escalated)
+
+The session log captures every event with timestamp, step type, delivery status, and (when enabled) GPS coordinates — the structured timeline replaces ad-hoc screenshot capture, which is explicitly out of scope (resolved as out-of-scope per spec audit G-016).
 
 Users can:
 - View past sessions from home screen
@@ -250,7 +251,7 @@ When stealth is active:
 
 ### 7. Encryption & Data Security
 
-- **At-rest encryption:** Hive database encrypted with AES-256 via `HiveAesCipher`
+- **At-rest encryption:** Drift database (sqlite3mc) and JSON-backed singletons encrypted with AES-256
 - **Encryption key management:** Key stored in platform-secure storage (`flutter_secure_storage`)
 - **Backup:** Automatic (Android Auto Backup + iOS iCloud) with encrypted backup key
 - **Manual export/import:** JSON format with optional encryption
@@ -272,6 +273,7 @@ The engine supports condition-triggered chains. A **distress mode** is a regular
 
 - **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the engine calls `replaceWithDistressChain(steps, triggerReason: ...)` — the main chain is discarded permanently and the distress mode's chain runs from step 0. When it exhausts, the session ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`). The duress-PIN path also shows a fake "Session ended" to the attacker.
 - **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
+- **Disarm during distress is configurable per mode (G-014):** When a distress mode runs (i.e., the engine entered it via `replaceWithDistressChain`), the engine consults `SessionMode.allowDisarmAsDistress` (default `true`) to decide whether `disarmTriggers` still fire. Default `true` honours the user's configured escape conditions (GPS arrival, timer). Setting `false` on a distress mode locks disarm — only chain exhaustion or app/device shutdown stops the session. The trade is recovery convenience vs. coercion resistance. This supersedes the earlier "Disarm during duress: hard-coded IGNORE" invariant.
 - **Low battery alert:** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + chain).
 
 ### 10. Session End & Quick Exit
@@ -393,7 +395,7 @@ The app works completely offline:
 - No server dependency for core features
 - Fake calls and notifications work without internet
 - GPS logging is local (optional upload later)
-- Hive database is local
+- Drift (sqlite3mc) database is local
 - SMS/calls use platform APIs (require cellular/data)
 
 ### 7. Privacy by Default
@@ -429,11 +431,11 @@ The app works completely offline:
 
 ### Local Storage
 
-- **Hive CE** — Type-safe NoSQL with code generation
-  - Always-encrypted via `HiveAesCipher`
-  - Adapters generated via `build_runner`
-  - Schema versioning and migrations in `lib/main.dart`
-  - Hive type IDs allocated 0–19; next available: 20 (see 03-data-models.md for current registry)
+- **Drift + sqlite3mc** — Typed SQL on top of encrypted SQLite
+  - Always-encrypted via `sqlite3mc` (AES-256, key from `flutter_secure_storage`)
+  - Drift data classes generated via `build_runner` (`@DataClassName('Name')` → `*.drift.dart`)
+  - Schema versioning handled by Drift's `MigrationStrategy`; pre-alpha policy wipes and re-seeds on mismatch (see 03-data-models.md)
+- **JSON-backed singleton/list repositories** — for small blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) outside the relational store; same AES-256 envelope
 
 ### Encryption & Security
 
@@ -500,9 +502,11 @@ lib/
 │   ├── onboarding/             # First-launch flow
 │   ├── settings/               # Configuration UI
 │   └── ...
-├── data/                        # Models + Repositories
-│   ├── models/                 # @HiveType classes
-│   ├── repositories/           # Hive CRUD
+├── domain/
+│   └── models/                 # Plain Dart classes (Drift data classes + JSON-backed value types)
+├── data/                        # Drift database + repositories
+│   ├── db/                     # Drift database, DAOs, table definitions
+│   ├── repositories/           # Drift-backed repositories + JSON singleton/list repositories
 │   └── seed_data.dart          # Built-in modes and defaults
 ├── services/                    # Platform API wrappers
 │   ├── audio_service.dart
@@ -568,7 +572,7 @@ Strategy pattern for the 9 step types:
 | **00** | **Overview** (this file) | App concept, identity, user personas, feature summary, design principles, tech stack |
 | **01** | [Chain Engine](01-chain-engine.md) | State machine spec, timing logic, event types, state diagrams, distress chain replacement |
 | **02** | [Event Types](02-event-types.md) | Detailed spec for each of the 9 step types |
-| **03** | [Data Models](03-data-models.md) | All persistent and ephemeral models, Hive schema, migrations |
+| **03** | [Data Models](03-data-models.md) | All persistent and ephemeral models, Drift schema, JSON-backed singletons, migrations |
 | **04** | [Screens & Navigation](04-screens-navigation.md) | Every screen, user flows, navigation map, routing setup |
 | **05** | [Services](05-services.md) | Platform services, real vs simulated execution, permission handling |
 | **06** | [Settings & Configuration](06-settings.md) | All configurable options, defaults, stealth mode, export/import |
@@ -590,8 +594,8 @@ Strategy pattern for the 9 step types:
 
 ### Data Persistence
 
-- Hive schema versioning via type ID allocation (currently 0–19)
-- Migrations handled in `lib/main.dart` via `_migrateIfNeeded()`
+- Drift schema versioning via `MigrationStrategy` (current `currentSchemaVersion` tracked in `AppConstants`)
+- Migrations handled via Drift's `MigrationStrategy.onUpgrade` callback (pre-alpha policy wipes and re-seeds on mismatch)
 - Export/import always available for user data portability
 
 ### Platform Support
@@ -644,7 +648,7 @@ The following must be completed before app store submission:
 # Install dependencies
 flutter pub get
 
-# Generate Hive adapters
+# Generate Drift companions / *.drift.dart files
 flutter pub run build_runner build
 
 # Generate localization files

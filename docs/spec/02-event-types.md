@@ -289,7 +289,8 @@ If a real phone call comes in while a fake call is active, the fake call auto-di
 - `{location}`: Google Maps URL if available. If no GPS: "Location unavailable". If only stale location: "Last known location at {timestamp}: {url}" with accuracy info
 - `{time}`: timestamp
 - `{description}`: user-defined physical description
-- `{photo}`: NOT sent via SMS (MMS unreliable). Reserved for future channels
+
+Resolved per spec audit G-017: `{photo}` is NOT a supported placeholder. MMS is unreliable, and embedding photo URLs introduces hosting/privacy questions outside v3 scope; the user profile photo travels with the session log instead. If photo embedding lands for WhatsApp/Telegram later it will be reintroduced as a typed placeholder at that time.
 
 **Default Template:**
 ```
@@ -427,12 +428,12 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 | soundChoice | LoudAlarmSound | siren | `siren` or `custom` |
 | flashLight | bool | true | Strobe camera flashlight |
 | flashScreen | bool | false | Strobe screen (photosensitive warning) |
-| flashSpeed | double | 0.5 | (legacy) seconds per flash cycle |
 | flashSpeedMs | int | 500 | Flash cycle length in ms |
-| maxVolume | bool | true | (legacy) force system media volume to max |
 | gradualVolume | bool | false | Ramp volume from silence to `volume` |
 | blackScreenMode | bool | false | Render under black overlay (stealth alarm) |
-| logGps | LogGpsOverride | useDefault | Per-step GPS-logging override (DE-2) |
+| logGps | LogGpsOverride | useDefault | Per-step GPS-logging override |
+
+`flashSpeedMs` is the canonical flash cycle length; the legacy `flashSpeed` (seconds-per-cycle double) field has been removed. System-media-volume override is governed at app scope by `AppSettings.alarmDndOverride` (default `false`, opt-in); the per-step `maxVolume` boolean has been removed.
 
 The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppSettings.alarmGradualVolumeDurationSeconds` (default 5 s). The ramp fires only when BOTH `AppSettings.alarmGradualVolume = true` AND `LoudAlarmConfig.gradualVolume = true`. If global gradual volume is OFF, the per-step `gradualVolume = true` is suppressed (no ramp). If global is ON but per-step is OFF, the step jumps straight to `volume`.
 

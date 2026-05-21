@@ -1022,7 +1022,7 @@ Quick Exit allows users to immediately exit the app while preserving all session
 
 **Data Preservation:**
 - Session data NEVER wiped or deleted on exit
-- Data encrypted at rest in `Hive` boxes
+- Data encrypted at rest in the Drift database (sqlite3mc) and the JSON-backed singletons
 - Encrypted file system automatically locks data when app closes
 - User can reopen app anytime to recover encrypted session data
 - Data includes full event timeline for emergency responders
@@ -1644,6 +1644,7 @@ Create or edit a distress mode. Route name: `distress_mode_editor`; the screen i
 - Hides the check-in step (distress chains don't have a `holdButton` / `disguisedReminder` first step).
 - Sets `SessionMode.isDistressMode = true` on save.
 - Hides the "Distress mode" picker in the Safety Options section (a distress mode doesn't reference another distress mode).
+- **Shows an "Allow disarm while active as distress" toggle (G-014)** in the Safety Options section, backed by `SessionMode.allowDisarmAsDistress` (default `true`). When `true`, the configured `disarmTriggers` (GPS arrival, timer) fire even when this mode is running as the distress chain — supports user-recoverable distress (e.g., "if I reach safety, stop"). When `false`, disarm triggers are ignored once the chain enters distress mode and the chain runs to exhaustion (paranoid mode). ℹ info button explains the trade-off ("Enabling allows you to stop the alert by reaching safety or letting a timer expire. Disabling means only chain completion or shutting down the app stops the alert — stronger against coercion.") The disarm-triggers section itself remains editable so users with `allowDisarmAsDistress = true` can configure GPS / timer values.
 
 All other behavior — step list, drag-to-reorder, expansion tiles, dirty-flag guard, save validation — matches the regular Mode Editor.
 
@@ -1768,12 +1769,7 @@ identical to normal mode steps.
 **Semantics:** the chain runs exactly once per session. Main session
 continues uninterrupted. See `lib/domain/models/battery_alert_config.dart`.
 
-**TODO:** `lib/features/session/session_controller.dart`
-(`_startBatteryMonitor`) and the `BatteryMonitorService`
-implementation must be updated to drive the full chain via the
-session engine. For now, the session controller falls back to the
-legacy `sendSms` derived getter (true when any chain step is
-`smsContact`), preserving pre-ITEM-8 behaviour.
+**Implementation contract (G-020):** `BatteryMonitorService` instantiates its **own dedicated `SessionEngine` instance** (separate from the main session engine) when the OS battery hits `BatteryAlertConfig.thresholdPercent` during an active session. The battery engine consumes `BatteryAlertConfig.chain` as its `chainSteps` and runs end-to-end exactly once per session; the main `SessionEngine` continues uninterrupted on its own timer. Both engines register with the same `SessionLogRecorder`, so the alert's events are appended to the active session log under a `batteryAlert` event kind. There is no legacy `sendSms` shortcut — the dedicated battery engine drives every chain step through the standard strategy registry.
 
 ---
 
@@ -2344,7 +2340,7 @@ In-app feedback form, also shown post-session.
 - On send:
   1. Validate message
   2. Build feedback object (email, category, message, optional log)
-  3. Save to local history or send to backend (TBD)
+  3. Save to the local `feedback_history` Drift table (offline-first; no remote backend in v3). The history is exportable via Settings → Backup.
   4. Show toast: "Thanks for your feedback!"
   5. Return to previous screen
 
@@ -2588,6 +2584,83 @@ Modal dialog shown on every wrong-PIN entry when `AppSettings.deceptivePinDialog
 **Localization:** the title and body strings are localised verbatim — translations must preserve the deceptive intent (the literal "Old PIN entered" phrasing, not a translation of "incorrect PIN").
 
 **Bypass:** When `deceptivePinDialogEnabled` is `false`, the prior plain shake + "Incorrect PIN" feedback is used instead.
+
+### TimingSlider (`lib/core/widgets/timing_slider.dart`)
+
+Promoted from prior DE-1 ("Timer Sliders — Minimum Zero, Extended Range, Logarithmic Scale"). The widget used wherever the user picks a time duration (step waitSeconds / durationSeconds / gracePeriodSeconds, retry intervals, GPS tracking interval, alarm gradual-volume ramp).
+
+```dart
+class TimingSlider extends StatefulWidget {
+  final int valueSeconds;                       // current value
+  final ValueChanged<int> onChanged;            // called on commit
+  final int minSeconds;                         // typically 0
+  final int maxSeconds;                         // typically 31_536_000 (1 year)
+  final String? label;                          // accessibility label
+}
+```
+
+**Visual rules:**
+- Single horizontal slider with logarithmic scale (1s, 5s, 30s, 1min, 5min, 30min, 1h, 6h, 1d, 1w, 1mo, 1y snap stops).
+- Below the slider: a tap-to-edit numeric chip showing the current value (e.g., "2 min 30 s"). Tapping opens a `NumericKeyboardSheet` for exact entry.
+- A "0 s (immediate)" pill replaces the chip when `valueSeconds == 0`.
+- Above the slider: optional `label` and an ℹ button (when the parent passes one).
+
+**Behaviour:**
+- Snap-stops apply to the slider drag; the numeric editor accepts any integer in `[minSeconds, maxSeconds]`.
+- `onChanged` fires on slider release and on numeric submit (no live-fire during drag).
+- Accessibility: every snap-stop has a Semantics label ("30 seconds", "5 minutes", …).
+
+**Used by:** `step_config_form.dart` (waitSeconds / durationSeconds / gracePeriodSeconds), `gps_logging_settings.dart` (tracking interval), `battery_alert_settings.dart` (threshold-percent slider uses a related but separate widget — `PercentSlider` — not this one), `alarm_settings.dart` (gradual-volume duration).
+
+### MoreSettingsPanel (`lib/features/modes/widgets/more_settings_panel.dart`)
+
+Promoted from prior DE-4 ("'More Settings' pattern for step configuration"). A collapsible host that hides rare-toggle subsets behind a "More settings" disclosure.
+
+```dart
+class MoreSettingsPanel extends StatefulWidget {
+  final String headerLabel;                     // e.g., "More settings"
+  final int customizedCount;                    // number of wrapped fields differing from default
+  final Widget child;                           // the inner column of rare fields
+}
+```
+
+**Visual rules:**
+- Collapsed: a single row `[▸ More settings ▸ (N customized)]` where `N` is the count of fields inside that differ from their defaults. When `N == 0`, the suffix is omitted.
+- Expanded: child is rendered inline beneath the header.
+- Animated 200 ms expansion via `AnimatedSize`.
+
+**Behaviour:**
+- The host doesn't own the wrapped fields' state — it only renders/hides them.
+- `customizedCount` is computed by the parent (which knows the default values).
+
+**Applies to:**
+- Mode editor — per-step config dialog (currently hosts the GPS-logging tri-state and the blackScreenMode toggle).
+- Event defaults — per-type detail screen.
+- Distress mode editor (`/distress-modes/edit`).
+
+### Home Screen Widget (`lib/services/implementations/home_widget_service.dart`)
+
+Promoted from prior DE-5 ("Home Screen Widget"). Shipped on both Android and iOS at v3 GA.
+
+**Surface (cross-platform):**
+- **Current session status:** one of `Idle`, `Session active`, `Simulation active`, `Battery alert` plus an `mm:ss` elapsed timer when applicable.
+- **Quick Exit button:** ends the active session. **PIN-gated via the Session End PIN** (if configured); Duress PIN still fires the distress chain when entered at the gate. When no Session End PIN is configured, the button ends the session immediately.
+- **Fake Call button:** deep-links to `/fake-call` via GoRouter.
+
+**Android (DE-5 Android — landed at v3 GA):**
+- `home_widget` package (0.9.x) bridges Flutter ↔ Android `AppWidgetProvider`.
+- Widget metadata: `android/app/src/main/res/xml/guardian_angela_widget_info.xml`.
+- Layout: `android/app/src/main/res/layout/guardian_angela_widget.xml`.
+- Quick Exit broadcasts an intent to a Dart interactivity callback registered by `HomeScreen`; Fake Call broadcasts a deep-link URI.
+- `SessionController` calls `HomeWidgetService.publishStatus(...)` on every session transition (start, stop, escalation, simulation toggle, battery alert).
+
+**iOS (DE-5 iOS — added at v3 GA per D14):**
+- SwiftUI WidgetKit extension at `ios/GuardianAngelaWidget/` with `WidgetBundle`, `Widget`, `TimelineProvider`, `IntentConfiguration`, and an App Group (`group.com.guardianangela.shared`) for shared state with the host app.
+- **iOS 17+:** interactive buttons via `AppIntent` — `QuickExitIntent` and `FakeCallIntent`. Both intents check the App Group for the active-session token and current PIN configuration before performing the action; Quick Exit additionally surfaces the PIN gate via the host app when the Session End PIN is configured.
+- **iOS 16 fallback:** non-interactive widget. The Quick Exit and Fake Call buttons render as SwiftUI `Link(destination:)` views with custom deep-link URLs (`guardianangela://quick-exit`, `guardianangela://fake-call`); tapping launches the host app at the appropriate route, the host app then completes the action.
+- `home_widget_service` writes timeline updates via `UserDefaults(suiteName: "group.com.guardianangela.shared")` and calls `WidgetCenter.shared.reloadAllTimelines()` after each transition.
+
+**Capability matrix:** see also spec 10 §"Home Screen Widget" for the per-platform fall-back table.
 
 ---
 

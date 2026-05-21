@@ -283,7 +283,7 @@ Verify immutability, correctness, and serialization of persistent models.
 | 58 | AppSettings: three PIN fields default to null (disabled) | appPinHash, sessionEndPinHash, duressPinHash all null by default |
 | 59 | EventDefaults: all 9 step types mapped | All 9 types have default configs |
 | 60 | Seed data Walk vs Date modes differ | Walk mode first step ≠ Date mode first step (hold vs reminder) |
-| 61 | Hive typeIds: all unique across models | No collisions in typeId allocation (0–19) |
+| 61 | Drift schema: all declared tables unique by name; primary keys collision-free | `GuardianAngelaDatabase.schemaVersion` round-trips through `MigrationStrategy.onCreate`; reading the generated `*.drift.dart` confirms every `@DataClassName('Name')` table is registered |
 | 61a | AppDefaults: mode inherits all defaults when ModeOverrides is null | SessionMode with overrides=null, AppDefaults with GPS enabled | Resolve effective GPS config | Returns AppDefaults.gpsLogging |
 | 61b | ModeOverrides: non-null field overrides AppDefaults | SessionMode with overrides.stealth set, AppDefaults.stealth differs | Resolve effective stealth config | Returns overrides.stealth |
 | 61c | ModeOverrides: null field inherits from AppDefaults | SessionMode with overrides.gpsLogging=null | Resolve effective GPS config | Returns AppDefaults.gpsLogging |
@@ -301,7 +301,7 @@ Verify session logs capture all relevant event data and persist correctly.
 
 | # | Test | Expected |
 |---|------|----------|
-| 62 | Session log created on chainExhausted | SessionLog saved to Hive with all events |
+| 62 | Session log created on chainExhausted | SessionLog saved to the Drift `session_logs` table with all events |
 | 63 | Session log created on manual endSession | SessionLog saved when user ends early |
 | 64 | All events timestamped | Every SessionLogEvent has non-null timestamp |
 | 65 | Step type + event type mapped correctly | SessionLogEvent.eventType matches ChainEvent, stepType matches ChainStepType |
@@ -1030,8 +1030,8 @@ This table maps all critical spec requirements to their corresponding test cases
 | ChainStep field: retryCount (not retryCount) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
 | SessionMode: chainSteps ordered by order field | TC-74 | session_mode_test.dart | P2 |
 | SessionLog: all events timestamped and categorized | TC-62, TC-63, TC-64, TC-65 | session_log_test.dart | P2 |
-| Hive encryption always-on (no opt-out) | TC-75 | encryption_test.dart | P1 |
-| Hive typeIds: 0–19 allocated, all unique | TC-61 | hive_schema_test.dart | P1 |
+| Drift / JSON encryption always-on (no opt-out) | TC-75 | encryption_test.dart | P1 |
+| Drift schema: tables present and PK collision-free; `MigrationStrategy` round-trips | TC-61 | drift_schema_test.dart | P1 |
 
 ### Localization (P2 - User-Facing)
 
@@ -1325,7 +1325,7 @@ end-to-end timer-driven flows. These scenarios close that gap.
 | Simulation leap to next event (D2) | Partial | **INT-009** |
 | Disarm cancels queued SMS (A5) | Partial (orchestrator cleanDisarm no-op) | **INT-010** |
 | Distress via wrongPinThreshold (A3) | Settings round-trip only | (future) |
-| Crash recovery dialog (Extra 13) | No | (future, requires Hive) |
+| Crash recovery dialog (Extra 13) | No | (future, requires the persisted recovery-marker row in Drift) |
 | Smart retention (B8) | No | (future) |
 | Soft-delete log (Extra 11) | No | (future) |
 | Onboarding full flow | No | (future, widget-level) |

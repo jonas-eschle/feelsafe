@@ -137,7 +137,16 @@ Plays a voice recording once. The `filePath` parameter is now nullable:
 
 Missing asset files at runtime cause `just_audio.setAsset` to throw `PlayerException`, which is caught and logged; the caller's `playVoiceRecording` Future completes with the same exception so the upstream strategy can fall back to a disguised reminder or surface an error toast.
 
-**TODO (asset production):** all 14 M4A files are listed in the asset manifest but the audio bytes still need to be recorded — track this under `docs/spec/11-deferred-enhancements.md` as a content-production task. Until real clips ship, the fake-call step with `voiceRecordingPath=null` plays whatever placeholder file sits at each path (or silently skips playback if a file is missing).
+**Voice recording assets — TTS placeholder pipeline (D14, promoted from former deferred enhancement):**
+
+All 14 M4A files are required at v3 GA. Because human voice talent recordings are out of scope for the engineering build, the app ships with a `flutter_tts`-based placeholder pipeline that synthesizes each clip on first launch:
+
+1. On first launch (after `seedDefaults()` completes), `AudioService.bootstrapVoiceAssets()` runs in the background.
+2. For each of the 14 locales, it picks an `Angela`-style line for the locale (canonical English text: *"Hey, it's Angela, just checking in. Can you call me back?"* — translated per locale via the same ARB strings used elsewhere) and calls `flutter_tts.synthesizeToFile()` to produce `assets/voice/angela_<lang>.m4a` in the app documents directory.
+3. The fake-call step's voice playback first checks the documents directory; if no TTS clip is found there, it falls back to the bundled placeholder in `assets/voice/`. If neither exists, playback is silently skipped and the fake call still rings.
+4. Users can record their own per-locale clips from Settings → Voice Recordings, which overrides the TTS placeholder.
+
+The TTS pipeline runs once per locale; subsequent launches reuse the cached file. Failures are logged via Sentry but never block app start.
 
 Default output routing is through the earpiece (receiver). A `useSpeaker` parameter routes playback through the speaker instead (useful for testing).
 
@@ -264,15 +273,15 @@ Each contact has one or more messaging channels. `sendMessage()` dispatches to t
 
 #### SMS Retry Queue (Android) — Extra-40/45
 
-On Android, native code implements a persistent retry queue for SMS delivery backed by Hive:
+On Android, native code implements a persistent retry queue for SMS delivery backed by a small Drift-side metadata table (`sms_retry_jobs`):
 
 - **Native:** `SmsWorker` extends `CoroutineWorker` in Kotlin, uses `SmsManager` directly
-- **Persistence:** WorkManager manages lifecycle; pending job metadata stored in Hive so the Dart layer can enumerate and cancel jobs (Extra-45)
+- **Persistence:** WorkManager manages lifecycle; pending job metadata is mirrored into the Drift `sms_retry_jobs` table so the Dart layer can enumerate and cancel jobs (Extra-45)
 - **Constraint:** Only fires when device has `NetworkType.CONNECTED` connectivity
 - **Backoff:** Exponential backoff starting at 30 seconds, maximum 10 retries
 - **Resilience:** Survives process death (WorkManager re-enqueues on device restart via `BootReceiver`)
 - **Enqueue:** Exposed via MethodChannel `enqueueSms(phoneNumber, message)` which returns the WorkManager job ID
-- **Cancellation:** Job IDs are stored in Hive and passed back to Dart as `MessageWorkId` strings; `cancelPending()` calls WorkManager cancellation via MethodChannel
+- **Cancellation:** Job IDs are stored in `sms_retry_jobs` and passed back to Dart as `MessageWorkId` strings; `cancelPending()` calls WorkManager cancellation via MethodChannel
 
 **SMS Retry Exhaustion Notification (Extra 14/21):**
 
@@ -291,7 +300,7 @@ When `SmsWorker` exhausts all retries without delivering (10 attempts failed), i
 
 This notification is shown even if the session has already ended (the queued job is independent of the session lifecycle), so late-arriving retries are still surfaced.
 
-**Native TODO:** the Kotlin `SmsWorker.doWork` currently returns `Result.failure` on exhaustion but does not yet invoke the channel method that triggers `smsRetryExhausted`. Wiring that hop up in `MainActivity` / `SmsChannel.kt` is the remaining platform task; the Dart side is ready to consume events the moment the native side starts emitting them.
+**Native platform task:** the Kotlin `SmsWorker.doWork` MUST invoke the channel method that triggers `smsRetryExhausted` on the final failure path. `MainActivity` / `SmsChannel.kt` is the platform-side owner of this hop; the Dart side consumes the event via the `actionTaps` stream described above and re-enqueues through `retryExhaustedSms`.
 
 #### WhatsApp
 
@@ -519,7 +528,7 @@ Starts a user-supplied voice recording for the fake-call feature with a hard dur
 
 ### Encryption and Privacy
 
-Recordings are encrypted at rest using Hive's AES cipher. Filenames use innocuous patterns (e.g., timestamps) to avoid revealing content.
+Recordings are encrypted at rest using the same AES-256 key as the Drift database (managed by `EncryptionService`). Filenames use innocuous patterns (e.g., timestamps) to avoid revealing content.
 
 ### Limits
 
@@ -1035,7 +1044,7 @@ Parses and validates the JSON:
 - **Format validation:** Rejects malformed JSON
 - **Type checking:** Validates all nested objects
 
-On success, writes all data to Hive boxes, overwriting existing data.
+On success, writes all data to the Drift database and JSON-backed singletons, overwriting existing data inside a single transaction.
 
 On failure, throws an exception with a descriptive message and does NOT modify existing data.
 
@@ -1205,14 +1214,16 @@ UI shows errors and blocks session start, shows warnings but allows user to proc
 
 ## EncryptionService
 
-Manages the Hive AES cipher key lifecycle for encrypted local storage.
+Manages the AES-256 key lifecycle for encrypted local storage (Drift database via `sqlite3mc`, JSON-backed singletons via an envelope using the same key).
 
 ```dart
 class EncryptionService {
   Future<Uint8List> generateKey();
   Future<Uint8List?> getKey();
   Future<void> saveKey(Uint8List key);
-  Future<HiveAesCipher> openEncryptedBox<T>(String name);
+  Future<DatabaseConnection> openEncryptedDatabase(String path);
+  Future<Uint8List> decryptJsonBlob(Uint8List ciphertext);
+  Future<Uint8List> encryptJsonBlob(Uint8List plaintext);
 }
 ```
 
@@ -1220,7 +1231,7 @@ class EncryptionService {
 
 **`generateKey()`**
 
-Generates a random 256-bit AES key on first app launch.
+Generates a cryptographically secure random 256-bit AES key on first app launch (32 bytes from a CSPRNG; never derived from a password).
 
 ### Key Storage
 
@@ -1228,15 +1239,15 @@ Generates a random 256-bit AES key on first app launch.
 
 Retrieves the key from `flutter_secure_storage` (encrypted in the OS keychain/Keystore).
 
-### Box Encryption
+### Database Encryption
 
-**`openEncryptedBox<T>(name)`**
+**`openEncryptedDatabase(path)`**
 
-Convenience wrapper for `Hive.openBox<T>(name, encryptionCipher: cipher)`.
+Opens the Drift database file at `path` using a `sqlite3mc`-backed `DatabaseConnection`. Sets `PRAGMA key = ...` with the secure-storage key before any read or write.
 
 ### Always Encrypted
 
-All Hive boxes are **always encrypted** — there is no opt-out. This ensures session logs, contacts, and settings are protected at rest.
+The Drift database file and every JSON-backed singleton are **always encrypted** — there is no opt-out. This ensures session logs, contacts, and settings are protected at rest.
 
 ---
 
