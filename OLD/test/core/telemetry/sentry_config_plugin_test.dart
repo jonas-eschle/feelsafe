@@ -19,40 +19,39 @@ void main() {
   setUp(resetSentryForTesting);
 
   group('initSentry (override seam)', () {
-    test(
-      'calls the override with EU DSN, runs appRunner, flips latch',
-      () async {
-        FlutterOptionsConfiguration? capturedBuilder;
-        var ranAppRunner = 0;
-        sentryInitOverride = (builder, runner) async {
-          capturedBuilder = builder;
-          await runner();
-        };
-        var appRan = 0;
-        await initSentry(
-          enabled: true,
-          dsn: 'https://x@o0.ingest.de.sentry.io/0',
-          release: '1.0.0',
-          appRunner: () async {
-            appRan++;
-          },
-        );
-        check(capturedBuilder).isNotNull();
-        // Drive the builder so the options block runs — asserts it sets
-        // the DSN/release/environment fields.
-        final options = SentryFlutterOptions()..dsn = 'placeholder';
-        capturedBuilder!(options);
-        check(options.dsn).equals('https://x@o0.ingest.de.sentry.io/0');
-        check(options.release).equals('1.0.0');
-        check(options.sendDefaultPii).isFalse();
-        check(options.attachStacktrace).isTrue();
-        check(appRan).equals(1);
-        check(ranAppRunner).equals(0); // we never incremented this
-        check(sentryInitialized).isTrue();
-      },
-    );
+    test('calls the override with EU DSN, runs appRunner, flips latch',
+        () async {
+      FlutterOptionsConfiguration? capturedBuilder;
+      var ranAppRunner = 0;
+      sentryInitOverride = (builder, runner) async {
+        capturedBuilder = builder;
+        await runner();
+      };
+      var appRan = 0;
+      await initSentry(
+        enabled: true,
+        dsn: 'https://x@o0.ingest.de.sentry.io/0',
+        release: '1.0.0',
+        appRunner: () async {
+          appRan++;
+        },
+      );
+      check(capturedBuilder).isNotNull();
+      // Drive the builder so the options block runs — asserts it sets
+      // the DSN/release/environment fields.
+      final options = SentryFlutterOptions()..dsn = 'placeholder';
+      capturedBuilder!(options);
+      check(options.dsn).equals('https://x@o0.ingest.de.sentry.io/0');
+      check(options.release).equals('1.0.0');
+      check(options.sendDefaultPii).isFalse();
+      check(options.attachStacktrace).isTrue();
+      check(appRan).equals(1);
+      check(ranAppRunner).equals(0); // we never incremented this
+      check(sentryInitialized).isTrue();
+    });
 
-    test('opt-out short-circuits and does NOT call the override', () async {
+    test('opt-out short-circuits and does NOT call the override',
+        () async {
       var overrideCalls = 0;
       sentryInitOverride = (builder, runner) async {
         overrideCalls++;
@@ -131,27 +130,24 @@ void main() {
   });
 
   group('reportException (override seam)', () {
-    test(
-      'silent when not initialized — capture override never called',
-      () async {
-        var captured = 0;
-        sentryCaptureOverride =
-            (
-              Object _, {
-              StackTrace? stackTrace,
-              ScopeCallback? withScope,
-            }) async {
-              captured++;
-              return const SentryId.empty();
-            };
-        await reportException(
-          Exception('x'),
-          StackTrace.current,
-          context: 'unit-test',
-        );
-        check(captured).equals(0);
-      },
-    );
+    test('silent when not initialized — capture override never called',
+        () async {
+      var captured = 0;
+      sentryCaptureOverride = (
+        Object _, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async {
+        captured++;
+        return const SentryId.empty();
+      };
+      await reportException(
+        Exception('x'),
+        StackTrace.current,
+        context: 'unit-test',
+      );
+      check(captured).equals(0);
+    });
 
     test('routes through override once initialized', () async {
       sentryInitOverride = (_, runner) async => runner();
@@ -163,16 +159,15 @@ void main() {
       );
       Object? seenError;
       StackTrace? seenStack;
-      sentryCaptureOverride =
-          (
-            Object error, {
-            StackTrace? stackTrace,
-            ScopeCallback? withScope,
-          }) async {
-            seenError = error;
-            seenStack = stackTrace;
-            return const SentryId.empty();
-          };
+      sentryCaptureOverride = (
+        Object error, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async {
+        seenError = error;
+        seenStack = stackTrace;
+        return const SentryId.empty();
+      };
       final err = Exception('routed');
       final stack = StackTrace.current;
       await reportException(err, stack, context: 'ctx');
@@ -189,11 +184,14 @@ void main() {
         appRunner: () async {},
       );
       ScopeCallback? capturedScope;
-      sentryCaptureOverride =
-          (Object _, {StackTrace? stackTrace, ScopeCallback? withScope}) async {
-            capturedScope = withScope;
-            return const SentryId.empty();
-          };
+      sentryCaptureOverride = (
+        Object _, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async {
+        capturedScope = withScope;
+        return const SentryId.empty();
+      };
       await reportException(
         Exception('e'),
         StackTrace.current,
@@ -205,7 +203,8 @@ void main() {
       verify(() => scope.setTag('context', 'my-ctx')).called(1);
     });
 
-    test('withScope callback skips setTag when context is null', () async {
+    test('withScope callback skips setTag when context is null',
+        () async {
       sentryInitOverride = (_, runner) async => runner();
       await initSentry(
         enabled: true,
@@ -214,11 +213,14 @@ void main() {
         appRunner: () async {},
       );
       ScopeCallback? capturedScope;
-      sentryCaptureOverride =
-          (Object _, {StackTrace? stackTrace, ScopeCallback? withScope}) async {
-            capturedScope = withScope;
-            return const SentryId.empty();
-          };
+      sentryCaptureOverride = (
+        Object _, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async {
+        capturedScope = withScope;
+        return const SentryId.empty();
+      };
       await reportException(Exception('e'), StackTrace.current);
       final scope = _MockScope();
       when(() => scope.setTag(any(), any())).thenAnswer((_) async {});
@@ -235,11 +237,14 @@ void main() {
         appRunner: () async {},
       );
       var captured = 0;
-      sentryCaptureOverride =
-          (Object _, {StackTrace? stackTrace, ScopeCallback? withScope}) async {
-            captured++;
-            return const SentryId.empty();
-          };
+      sentryCaptureOverride = (
+        Object _, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async {
+        captured++;
+        return const SentryId.empty();
+      };
       await reportException(Exception('no-ctx'), StackTrace.current);
       check(captured).equals(1);
     });
@@ -248,12 +253,12 @@ void main() {
   group('sentry_config lifecycle', () {
     test('resetSentryForTesting clears overrides and latch', () async {
       sentryInitOverride = (_, runner) async => runner();
-      sentryCaptureOverride =
-          (
-            Object _, {
-            StackTrace? stackTrace,
-            ScopeCallback? withScope,
-          }) async => const SentryId.empty();
+      sentryCaptureOverride = (
+        Object _, {
+        StackTrace? stackTrace,
+        ScopeCallback? withScope,
+      }) async =>
+          const SentryId.empty();
       await initSentry(
         enabled: true,
         dsn: 'https://x@o0.ingest.de.sentry.io/0',

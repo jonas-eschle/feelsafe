@@ -24,7 +24,9 @@ void main() {
       await svc.updateStatus(title: 'updated', body: 'new body');
 
       check(notif.calls.length).isGreaterThan(callsBeforeUpdate.length);
-      check(notif.calls.any((c) => c.contains('updated'))).isTrue();
+      check(
+        notif.calls.any((c) => c.contains('updated')),
+      ).isTrue();
 
       await svc.dispose();
     });

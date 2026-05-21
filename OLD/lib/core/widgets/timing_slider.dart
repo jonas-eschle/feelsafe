@@ -123,7 +123,9 @@ class TimingSlider extends StatelessWidget {
                 max: (stops.length - 1).toDouble(),
                 divisions: stops.length - 1,
                 label: formatTimingLabel(stops[idx]),
-                onChanged: enabled ? (v) => onChanged(stops[v.round()]) : null,
+                onChanged: enabled
+                    ? (v) => onChanged(stops[v.round()])
+                    : null,
               ),
             ),
             const SizedBox(width: 8),

@@ -155,13 +155,22 @@ void main() {
 
     test('inequality when tracking fields differ', () {
       final a = makeMode();
-      check(a).not((it) => it.equals(a.copyWith(trackingEnabled: true)));
-      check(a).not((it) => it.equals(a.copyWith(trackingIntervalSeconds: 600)));
-      check(a).not((it) => it.equals(a.copyWith(trackingBufferSize: 75)));
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingEnabled: true)),
+      );
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingIntervalSeconds: 600)),
+      );
+      check(a).not(
+        (it) => it.equals(a.copyWith(trackingBufferSize: 75)),
+      );
     });
 
     test('fromJson defaults missing tracking fields', () {
-      final json = {'id': 'm1', 'name': 'X'};
+      final json = {
+        'id': 'm1',
+        'name': 'X',
+      };
       final m = SessionMode.fromJson(json);
       check(m.trackingEnabled).isFalse();
       check(m.trackingIntervalSeconds).equals(300);
@@ -176,9 +185,8 @@ void main() {
     test('JSON round-trip preserves iconName', () {
       final m = makeMode().copyWith(iconName: 'directions_walk');
       check(SessionMode.fromJson(m.toJson())).equals(m);
-      check(
-        SessionMode.fromJson(m.toJson()).iconName,
-      ).equals('directions_walk');
+      check(SessionMode.fromJson(m.toJson()).iconName)
+          .equals('directions_walk');
     });
 
     test('copyWith clearIconName resets the icon to null', () {
@@ -189,7 +197,9 @@ void main() {
 
     test('inequality when iconName differs', () {
       final a = makeMode();
-      check(a).not((it) => it.equals(a.copyWith(iconName: 'fitness_center')));
+      check(a).not(
+        (it) => it.equals(a.copyWith(iconName: 'fitness_center')),
+      );
     });
 
     test('isDistressMode defaults to false', () {
@@ -204,13 +214,18 @@ void main() {
     });
 
     test('fromJson defaults missing isDistressMode to false', () {
-      final json = {'id': 'm1', 'name': 'X'};
+      final json = {
+        'id': 'm1',
+        'name': 'X',
+      };
       check(SessionMode.fromJson(json).isDistressMode).isFalse();
     });
 
     test('inequality when isDistressMode differs', () {
       final a = makeMode();
-      check(a).not((it) => it.equals(a.copyWith(isDistressMode: true)));
+      check(a).not(
+        (it) => it.equals(a.copyWith(isDistressMode: true)),
+      );
     });
   });
 }

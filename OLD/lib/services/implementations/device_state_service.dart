@@ -21,7 +21,7 @@ final class DeviceStateService implements DeviceStateServiceProtocol {
   /// [platform] defaults to the const production [PlatformInfo()];
   /// tests inject a [FakePlatformInfo] to reach the Android branch.
   DeviceStateService({PlatformInfo platform = const PlatformInfo()})
-    : _platform = platform;
+      : _platform = platform;
 
   /// Method channel name. Native side lands in Phase 10.
   static const MethodChannel _channel = MethodChannel(

@@ -25,7 +25,11 @@ import '../widget_test_helpers.dart';
 // Helpers
 // ---------------------------------------------------------------------------
 
-SessionLog _log(String id, String mode, {DateTime? startedAt}) => SessionLog(
+SessionLog _log(
+  String id,
+  String mode, {
+  DateTime? startedAt,
+}) => SessionLog(
   id: id,
   modeId: 'mode-$id',
   modeName: mode,
@@ -51,9 +55,10 @@ void main() {
     testWidgets(
       'typing in search field narrows visible logs to matching mode names',
       (tester) async {
-        await tester.pumpWidget(
-          _host([_log('a', 'Walk Mode'), _log('b', 'Date Mode')]),
-        );
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+        ]));
         await tester.pumpAndSettle();
 
         // Both logs visible initially.
@@ -69,67 +74,74 @@ void main() {
       },
     );
 
-    testWidgets('search is case-insensitive', (tester) async {
-      await tester.pumpWidget(
-        _host([_log('a', 'Walk Mode'), _log('b', 'Date Mode')]),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'search is case-insensitive',
+      (tester) async {
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+        ]));
+        await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), 'DATE');
-      await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), 'DATE');
+        await tester.pumpAndSettle();
 
-      check(find.text('Date Mode').evaluate().length).equals(1);
-      check(find.text('Walk Mode').evaluate()).isEmpty();
-    });
+        check(find.text('Date Mode').evaluate().length).equals(1);
+        check(find.text('Walk Mode').evaluate()).isEmpty();
+      },
+    );
 
-    testWidgets('empty search after clearing shows all logs again', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _host([_log('a', 'Walk Mode'), _log('b', 'Date Mode')]),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'empty search after clearing shows all logs again',
+      (tester) async {
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+        ]));
+        await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), 'walk');
-      await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), 'walk');
+        await tester.pumpAndSettle();
 
-      // Clear search.
-      await tester.enterText(find.byType(TextField), '');
-      await tester.pumpAndSettle();
+        // Clear search.
+        await tester.enterText(find.byType(TextField), '');
+        await tester.pumpAndSettle();
 
-      check(find.text('Walk Mode').evaluate().length).equals(1);
-      check(find.text('Date Mode').evaluate().length).equals(1);
-    });
+        check(find.text('Walk Mode').evaluate().length).equals(1);
+        check(find.text('Date Mode').evaluate().length).equals(1);
+      },
+    );
 
-    testWidgets('search with no match shows historyEmptyFiltered message', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'search with no match shows historyEmptyFiltered message',
+      (tester) async {
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+        ]));
+        await tester.pumpAndSettle();
 
-      await tester.enterText(find.byType(TextField), 'xyz-no-match');
-      await tester.pumpAndSettle();
+        await tester.enterText(find.byType(TextField), 'xyz-no-match');
+        await tester.pumpAndSettle();
 
-      // The filtered empty state must appear; the list must be gone.
-      check(find.byType(ListView).evaluate()).isEmpty();
-      // Check some widget is shown in the expanded area (the
-      // historyEmptyFiltered Text); we verify via Center presence
-      // since the exact localised string may differ.
-      check(find.byType(Center).evaluate()).isNotEmpty();
-    });
+        // The filtered empty state must appear; the list must be gone.
+        check(find.byType(ListView).evaluate()).isEmpty();
+        // Check some widget is shown in the expanded area (the
+        // historyEmptyFiltered Text); we verify via Center presence
+        // since the exact localised string may differ.
+        check(find.byType(Center).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('PastEventsScreen – mode dropdown', () {
     testWidgets(
       'DropdownButtonFormField shows "All modes" null entry and one per unique mode',
       (tester) async {
-        await tester.pumpWidget(
-          _host([
-            _log('a', 'Walk Mode'),
-            _log('b', 'Date Mode'),
-            _log('c', 'Date Mode'), // duplicate — must appear once in dropdown
-          ]),
-        );
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+          _log('c', 'Date Mode'), // duplicate — must appear once in dropdown
+        ]));
         await tester.pumpAndSettle();
 
         // Open the dropdown.
@@ -149,20 +161,16 @@ void main() {
 
         // Specifically confirm both unique mode names are present.
         check(
-          find
-              .descendant(
-                of: find.byType(DropdownMenuItem<String?>),
-                matching: find.text('Walk Mode'),
-              )
-              .evaluate(),
+          find.descendant(
+            of: find.byType(DropdownMenuItem<String?>),
+            matching: find.text('Walk Mode'),
+          ).evaluate(),
         ).isNotEmpty();
         check(
-          find
-              .descendant(
-                of: find.byType(DropdownMenuItem<String?>),
-                matching: find.text('Date Mode'),
-              )
-              .evaluate(),
+          find.descendant(
+            of: find.byType(DropdownMenuItem<String?>),
+            matching: find.text('Date Mode'),
+          ).evaluate(),
         ).isNotEmpty();
       },
     );
@@ -170,13 +178,11 @@ void main() {
     testWidgets(
       'selecting a specific mode filters list to matching logs only',
       (tester) async {
-        await tester.pumpWidget(
-          _host([
-            _log('a', 'Walk Mode'),
-            _log('b', 'Date Mode'),
-            _log('c', 'Walk Mode'),
-          ]),
-        );
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+          _log('c', 'Walk Mode'),
+        ]));
         await tester.pumpAndSettle();
 
         // Open and select "Date Mode".
@@ -199,9 +205,10 @@ void main() {
     testWidgets(
       'selecting a mode then "All modes" resets filter to show all logs',
       (tester) async {
-        await tester.pumpWidget(
-          _host([_log('a', 'Walk Mode'), _log('b', 'Date Mode')]),
-        );
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+        ]));
         await tester.pumpAndSettle();
 
         // Select "Date Mode".
@@ -239,13 +246,11 @@ void main() {
     testWidgets(
       'combining mode filter and search shows only matching intersection',
       (tester) async {
-        await tester.pumpWidget(
-          _host([
-            _log('a', 'Walk Mode'),
-            _log('b', 'Date Mode'),
-            _log('c', 'Walk Mode'),
-          ]),
-        );
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+          _log('c', 'Walk Mode'),
+        ]));
         await tester.pumpAndSettle();
 
         // Apply mode filter: Walk Mode.
@@ -264,17 +269,18 @@ void main() {
   });
 
   group('PastEventsScreen – date range chip', () {
-    testWidgets('date-range OutlinedButton is present when no range is set', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'date-range OutlinedButton is present when no range is set',
+      (tester) async {
+        await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
+        await tester.pumpAndSettle();
 
-      // The "Date range" outlined button must be present.
-      check(find.byType(OutlinedButton).evaluate()).isNotEmpty();
-      // InputChip (shown when a range is active) must not be present.
-      check(find.byType(InputChip).evaluate()).isEmpty();
-    });
+        // The "Date range" outlined button must be present.
+        check(find.byType(OutlinedButton).evaluate()).isNotEmpty();
+        // InputChip (shown when a range is active) must not be present.
+        check(find.byType(InputChip).evaluate()).isEmpty();
+      },
+    );
 
     testWidgets(
       'showDateRangePicker is invoked when the date-range button is tapped',
@@ -350,115 +356,136 @@ void main() {
       },
     );
 
-    testWidgets('date range filter excludes logs outside the range', (
-      tester,
-    ) async {
-      final inRange = _log('in', 'Walk Mode', startedAt: DateTime(2025, 6, 15));
-      final outRange = _log(
-        'out',
-        'Date Mode',
-        startedAt: DateTime(2024, 1, 5),
-      );
-      await tester.pumpWidget(_host([inRange, outRange]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'date range filter excludes logs outside the range',
+      (tester) async {
+        final inRange = _log(
+          'in',
+          'Walk Mode',
+          startedAt: DateTime(2025, 6, 15),
+        );
+        final outRange = _log(
+          'out',
+          'Date Mode',
+          startedAt: DateTime(2024, 1, 5),
+        );
+        await tester.pumpWidget(_host([inRange, outRange]));
+        await tester.pumpAndSettle();
 
-      // Open picker and confirm a range covering only June 2025.
-      await tester.tap(find.byType(OutlinedButton));
-      await tester.pumpAndSettle();
+        // Open picker and confirm a range covering only June 2025.
+        await tester.tap(find.byType(OutlinedButton));
+        await tester.pumpAndSettle();
 
-      final NavigatorState nav = tester.state(find.byType(Navigator).first);
-      nav.pop(
-        DateTimeRange(start: DateTime(2025, 6, 1), end: DateTime(2025, 6, 30)),
-      );
-      await tester.pumpAndSettle();
+        final NavigatorState nav = tester.state(find.byType(Navigator).first);
+        nav.pop(
+          DateTimeRange(
+            start: DateTime(2025, 6, 1),
+            end: DateTime(2025, 6, 30),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Only the in-range log (Walk Mode) should be listed.
-      check(find.text('Walk Mode').evaluate().length).equals(1);
-      check(find.text('Date Mode').evaluate()).isEmpty();
-    });
+        // Only the in-range log (Walk Mode) should be listed.
+        check(find.text('Walk Mode').evaluate().length).equals(1);
+        check(find.text('Date Mode').evaluate()).isEmpty();
+      },
+    );
 
-    testWidgets('tapping InputChip label re-opens the date picker', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'tapping InputChip label re-opens the date picker',
+      (tester) async {
+        await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
+        await tester.pumpAndSettle();
 
-      // Inject a date range by confirming via picker.
-      await tester.tap(find.byType(OutlinedButton));
-      await tester.pumpAndSettle();
-      final NavigatorState nav = tester.state(find.byType(Navigator).first);
-      nav.pop(
-        DateTimeRange(start: DateTime(2025, 1, 1), end: DateTime(2025, 1, 31)),
-      );
-      await tester.pumpAndSettle();
+        // Inject a date range by confirming via picker.
+        await tester.tap(find.byType(OutlinedButton));
+        await tester.pumpAndSettle();
+        final NavigatorState nav = tester.state(find.byType(Navigator).first);
+        nav.pop(
+          DateTimeRange(
+            start: DateTime(2025, 1, 1),
+            end: DateTime(2025, 1, 31),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      check(find.byType(InputChip).evaluate()).isNotEmpty();
+        check(find.byType(InputChip).evaluate()).isNotEmpty();
 
-      // Tap the chip body (onPressed = onPickDateRange).
-      // InputChip renders a GestureDetector around the label; tapping
-      // the chip itself triggers onPressed.
-      final chip = find.byType(InputChip);
-      await tester.tap(chip);
-      await tester.pumpAndSettle();
+        // Tap the chip body (onPressed = onPickDateRange).
+        // InputChip renders a GestureDetector around the label; tapping
+        // the chip itself triggers onPressed.
+        final chip = find.byType(InputChip);
+        await tester.tap(chip);
+        await tester.pumpAndSettle();
 
-      // Picker must re-open.
-      check(find.byType(DateRangePickerDialog).evaluate()).isNotEmpty();
+        // Picker must re-open.
+        check(find.byType(DateRangePickerDialog).evaluate()).isNotEmpty();
 
-      // Dismiss without picking.
-      final NavigatorState nav2 = tester.state(find.byType(Navigator).first);
-      nav2.pop();
-      await tester.pumpAndSettle();
-    });
+        // Dismiss without picking.
+        final NavigatorState nav2 = tester.state(find.byType(Navigator).first);
+        nav2.pop();
+        await tester.pumpAndSettle();
+      },
+    );
 
-    testWidgets('InputChip label shows formatted start – end date', (
-      tester,
-    ) async {
-      await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'InputChip label shows formatted start – end date',
+      (tester) async {
+        await tester.pumpWidget(_host([_log('a', 'Walk Mode')]));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(OutlinedButton));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byType(OutlinedButton));
+        await tester.pumpAndSettle();
 
-      final NavigatorState nav = tester.state(find.byType(Navigator).first);
-      nav.pop(
-        DateTimeRange(start: DateTime(2025, 3, 5), end: DateTime(2025, 3, 20)),
-      );
-      await tester.pumpAndSettle();
+        final NavigatorState nav = tester.state(find.byType(Navigator).first);
+        nav.pop(
+          DateTimeRange(
+            start: DateTime(2025, 3, 5),
+            end: DateTime(2025, 3, 20),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Chip label should contain the formatted dates.
-      check(find.textContaining('2025-03-05').evaluate()).isNotEmpty();
-      check(find.textContaining('2025-03-20').evaluate()).isNotEmpty();
-    });
+        // Chip label should contain the formatted dates.
+        check(find.textContaining('2025-03-05').evaluate()).isNotEmpty();
+        check(find.textContaining('2025-03-20').evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('PastEventsScreen – empty filtered state', () {
-    testWidgets('mode filter yielding no matches shows filtered-empty widget', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        _host([_log('a', 'Walk Mode'), _log('b', 'Date Mode')]),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'mode filter yielding no matches shows filtered-empty widget',
+      (tester) async {
+        await tester.pumpWidget(_host([
+          _log('a', 'Walk Mode'),
+          _log('b', 'Date Mode'),
+        ]));
+        await tester.pumpAndSettle();
 
-      // Select "Walk Mode" via dropdown.
-      await tester.tap(find.byType(DropdownButtonFormField<String?>));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text('Walk Mode').last);
-      await tester.pumpAndSettle();
+        // Select "Walk Mode" via dropdown.
+        await tester.tap(find.byType(DropdownButtonFormField<String?>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Walk Mode').last);
+        await tester.pumpAndSettle();
 
-      // Additionally apply a date range that excludes all logs.
-      await tester.tap(find.byType(OutlinedButton));
-      await tester.pumpAndSettle();
+        // Additionally apply a date range that excludes all logs.
+        await tester.tap(find.byType(OutlinedButton));
+        await tester.pumpAndSettle();
 
-      final NavigatorState nav = tester.state(find.byType(Navigator).first);
-      nav.pop(
-        DateTimeRange(start: DateTime(2020, 1, 1), end: DateTime(2020, 1, 2)),
-      );
-      await tester.pumpAndSettle();
+        final NavigatorState nav = tester.state(find.byType(Navigator).first);
+        nav.pop(
+          DateTimeRange(
+            start: DateTime(2020, 1, 1),
+            end: DateTime(2020, 1, 2),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // ListView is absent; filtered-empty message is shown.
-      check(find.byType(ListView).evaluate()).isEmpty();
-      check(find.byType(Center).evaluate()).isNotEmpty();
-    });
+        // ListView is absent; filtered-empty message is shown.
+        check(find.byType(ListView).evaluate()).isEmpty();
+        check(find.byType(Center).evaluate()).isNotEmpty();
+      },
+    );
   });
 }

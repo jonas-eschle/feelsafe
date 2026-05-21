@@ -64,24 +64,22 @@ void main() {
       ).throws<ArgumentError>();
     });
 
-    test(
-      'ticks getter is a broadcast stream (multiple listeners allowed)',
-      () async {
-        final svc = SimulationScreenFlashService();
-        final received1 = <bool>[];
-        final received2 = <bool>[];
-        final sub1 = svc.ticks.listen(received1.add);
-        final sub2 = svc.ticks.listen(received2.add);
-        await svc.start(interval: const Duration(milliseconds: 200));
-        await Future<void>.delayed(const Duration(milliseconds: 1));
-        await svc.stop();
-        // Both listeners should have received events.
-        check(received1).isNotEmpty();
-        check(received2).isNotEmpty();
-        await sub1.cancel();
-        await sub2.cancel();
-      },
-    );
+    test('ticks getter is a broadcast stream (multiple listeners allowed)',
+        () async {
+      final svc = SimulationScreenFlashService();
+      final received1 = <bool>[];
+      final received2 = <bool>[];
+      final sub1 = svc.ticks.listen(received1.add);
+      final sub2 = svc.ticks.listen(received2.add);
+      await svc.start(interval: const Duration(milliseconds: 200));
+      await Future<void>.delayed(const Duration(milliseconds: 1));
+      await svc.stop();
+      // Both listeners should have received events.
+      check(received1).isNotEmpty();
+      check(received2).isNotEmpty();
+      await sub1.cancel();
+      await sub2.cancel();
+    });
 
     test('stop emits false tick when last phase was true', () {
       fakeAsync((async) {

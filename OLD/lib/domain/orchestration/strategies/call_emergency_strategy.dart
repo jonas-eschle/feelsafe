@@ -51,9 +51,10 @@ final class CallEmergencyStrategy extends EventStrategy {
   SimulationDescription simulationDescription(
     ChainStep step,
     EventServices services,
-  ) => SimulationDescription('simCallEmergency', {
-    'number': _resolveNumber(step, services),
-  });
+  ) => SimulationDescription(
+    'simCallEmergency',
+    {'number': _resolveNumber(step, services)},
+  );
 
   /// Resolves the number to dial.
   ///

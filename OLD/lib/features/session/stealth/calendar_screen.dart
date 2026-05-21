@@ -46,7 +46,7 @@ class CalendarScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final stealth =
         ref.watch(settingsControllerProvider).value?.defaults.stealth ??
-        const StealthConfig();
+            const StealthConfig();
     final fakeName = stealth.fakeName.isNotEmpty
         ? stealth.fakeName
         : l.stealthPresetCalendar;
@@ -115,7 +115,10 @@ class _SectionHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8, top: 4),
-      child: Text(text, style: Theme.of(context).textTheme.titleMedium),
+      child: Text(
+        text,
+        style: Theme.of(context).textTheme.titleMedium,
+      ),
     );
   }
 }
@@ -159,7 +162,10 @@ class _UpcomingEventCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: Theme.of(context).textTheme.titleSmall),
+                    Text(
+                      title,
+                      style: Theme.of(context).textTheme.titleSmall,
+                    ),
                     if (countdown.isNotEmpty) ...[
                       const SizedBox(height: 4),
                       Text(
@@ -170,10 +176,7 @@ class _UpcomingEventCard extends StatelessWidget {
                   ],
                 ),
               ),
-              Icon(
-                Icons.notifications_outlined,
-                color: scheme.onPrimaryContainer,
-              ),
+              Icon(Icons.notifications_outlined, color: scheme.onPrimaryContainer),
             ],
           ),
         ),
@@ -199,7 +202,10 @@ class _EventRow extends StatelessWidget {
     return ListTile(
       leading: SizedBox(
         width: 48,
-        child: Text(time, style: Theme.of(context).textTheme.labelMedium),
+        child: Text(
+          time,
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
       ),
       title: Text(title),
       trailing: const Icon(Icons.chevron_right),

@@ -25,10 +25,10 @@ import '../../helpers/test_helpers.dart';
 SessionEngine _mk({Duration maxPauseDuration = const Duration(minutes: 5)}) =>
     SessionEngine(
       chainSteps: [
-        smsStep(
-          durationSeconds: 60,
-          gracePeriodSeconds: 0,
-        ).copyWith(waitSeconds: 0, randomize: 0.0),
+        smsStep(durationSeconds: 60, gracePeriodSeconds: 0).copyWith(
+          waitSeconds: 0,
+          randomize: 0.0,
+        ),
       ],
       random: FixedRandom(),
       maxPauseDuration: maxPauseDuration,
@@ -40,7 +40,8 @@ SessionEngine _mk({Duration maxPauseDuration = const Duration(minutes: 5)}) =>
 
 void main() {
   group('pauseExpired — basic emission', () {
-    test('emits sessionPaused, pauseExpired, sessionResumed in order '
+    test(
+        'emits sessionPaused, pauseExpired, sessionResumed in order '
         'when pause exceeds maxPauseDuration', () {
       fakeAsync((async) {
         final engine = _mk(maxPauseDuration: const Duration(minutes: 5));
@@ -110,33 +111,33 @@ void main() {
 
   group('pauseExpired — dispose cancels the timer', () {
     test(
-      'disposing before maxPauseDuration fires does NOT emit pauseExpired',
-      () {
-        fakeAsync((async) {
-          final engine = _mk(maxPauseDuration: const Duration(minutes: 5));
-          final events = <ChainEvent>[];
-          engine.events.listen((e) => events.add(e.event));
-          engine.start();
-          async.flushMicrotasks();
-          engine.pause();
-          async.flushMicrotasks();
+        'disposing before maxPauseDuration fires does NOT emit pauseExpired',
+        () {
+      fakeAsync((async) {
+        final engine = _mk(maxPauseDuration: const Duration(minutes: 5));
+        final events = <ChainEvent>[];
+        engine.events.listen((e) => events.add(e.event));
+        engine.start();
+        async.flushMicrotasks();
+        engine.pause();
+        async.flushMicrotasks();
 
-          // Dispose while still within the pause window.
-          async.elapse(const Duration(minutes: 2));
-          engine.dispose();
+        // Dispose while still within the pause window.
+        async.elapse(const Duration(minutes: 2));
+        engine.dispose();
 
-          // Advance past where pauseExpired would have fired.
-          async.elapse(const Duration(minutes: 10));
-          async.flushMicrotasks();
+        // Advance past where pauseExpired would have fired.
+        async.elapse(const Duration(minutes: 10));
+        async.flushMicrotasks();
 
-          check(events.contains(ChainEvent.pauseExpired)).isFalse();
-        });
-      },
-    );
+        check(events.contains(ChainEvent.pauseExpired)).isFalse();
+      });
+    });
   });
 
   group('pauseExpired — manual resume cancels pending timer', () {
-    test('manually resuming before maxPauseDuration fires prevents later '
+    test(
+        'manually resuming before maxPauseDuration fires prevents later '
         'pauseExpired emission', () {
       fakeAsync((async) {
         final engine = _mk(maxPauseDuration: const Duration(minutes: 5));
@@ -156,9 +157,8 @@ void main() {
         // No extra pauseExpired should fire even after the original timeout.
         async.elapse(const Duration(minutes: 10));
         async.flushMicrotasks();
-        final expiredCount = events
-            .where((e) => e == ChainEvent.pauseExpired)
-            .length;
+        final expiredCount =
+            events.where((e) => e == ChainEvent.pauseExpired).length;
         check(expiredCount).equals(0);
 
         engine.dispose();

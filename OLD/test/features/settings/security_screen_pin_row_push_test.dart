@@ -26,22 +26,28 @@ import '../fake_repositories.dart';
 // Helper: router with /pin-setup registered so push succeeds
 // ---------------------------------------------------------------------------
 
-Widget _hostWithPinSetupRoute({required AppSettings settings}) {
+Widget _hostWithPinSetupRoute({
+  required AppSettings settings,
+}) {
   final repo = FakeSettingsRepository(settings);
   final router = GoRouter(
     initialLocation: '/',
     routes: [
-      GoRoute(path: '/', builder: (context, state) => const SecurityScreen()),
+      GoRoute(
+        path: '/',
+        builder: (context, state) => const SecurityScreen(),
+      ),
       GoRoute(
         path: RouteNames.pinSetup,
-        builder: (context, state) => Scaffold(
-          body: Text('PinSetup which=${state.uri.queryParameters['which']}'),
-        ),
+        builder: (context, state) =>
+            Scaffold(body: Text('PinSetup which=${state.uri.queryParameters['which']}')),
       ),
     ],
   );
   return ProviderScope(
-    overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+    overrides: [
+      settingsRepositoryProvider.overrideWithValue(repo),
+    ],
     child: MaterialApp.router(
       localizationsDelegates: const [
         AppLocalizations.delegate,
@@ -61,24 +67,25 @@ Widget _hostWithPinSetupRoute({required AppSettings settings}) {
 
 void main() {
   group('SecurityScreen _PinRow context.push lambda', () {
-    testWidgets('tapping Set PIN FilledButton pushes to /pin-setup route', (
-      tester,
-    ) async {
-      // No PINs set — three FilledButtons all say "Set PIN".
-      await tester.pumpWidget(
-        _hostWithPinSetupRoute(
-          settings: const AppSettings(defaults: AppDefaults()),
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'tapping Set PIN FilledButton pushes to /pin-setup route',
+      (tester) async {
+        // No PINs set — three FilledButtons all say "Set PIN".
+        await tester.pumpWidget(
+          _hostWithPinSetupRoute(
+            settings: const AppSettings(defaults: AppDefaults()),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Tap the first FilledButton (App PIN "Set PIN").
-      await tester.tap(find.byType(FilledButton).first);
-      await tester.pumpAndSettle();
+        // Tap the first FilledButton (App PIN "Set PIN").
+        await tester.tap(find.byType(FilledButton).first);
+        await tester.pumpAndSettle();
 
-      // The pin-setup scaffold should now be visible.
-      check(find.textContaining('PinSetup').evaluate()).isNotEmpty();
-    });
+        // The pin-setup scaffold should now be visible.
+        check(find.textContaining('PinSetup').evaluate()).isNotEmpty();
+      },
+    );
 
     testWidgets(
       'tapping Change PIN FilledButton when app PIN is set pushes to /pin-setup',

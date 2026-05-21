@@ -165,7 +165,9 @@ void main() {
         e.start();
         async.flushMicrotasks();
         // Elapse 1s/60 to pass duration.
-        async.elapse(Duration(microseconds: _us(1, 60.0)));
+        async.elapse(
+          Duration(microseconds: _us(1, 60.0)),
+        );
         async.flushMicrotasks();
         final s = e.state as EngineRunning;
         check(s.phase).equals(TimerPhase.grace);
@@ -316,7 +318,9 @@ void main() {
     test('sensitivity=1.0s at 10× becomes 100ms', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [holdStep(releaseSensitivity: 1.0, durationSeconds: 10)],
+          chainSteps: [
+            holdStep(releaseSensitivity: 1.0, durationSeconds: 10),
+          ],
           isSimulation: true,
           speedMultiplier: 10.0,
           random: FixedRandom(),
@@ -335,7 +339,9 @@ void main() {
     test('sensitivity=2.0s at 4× becomes 500ms', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [holdStep(releaseSensitivity: 2.0, durationSeconds: 10)],
+          chainSteps: [
+            holdStep(releaseSensitivity: 2.0, durationSeconds: 10),
+          ],
           isSimulation: true,
           speedMultiplier: 4.0,
           random: FixedRandom(),

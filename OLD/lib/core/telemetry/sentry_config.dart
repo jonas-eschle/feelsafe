@@ -38,21 +38,19 @@ const String telemetryOptInStorageKey = 'ga_telemetry_optin';
 /// Signature of the wrapped `SentryFlutter.init` call. Tests replace
 /// this via [sentryInitOverride] to observe the configured options
 /// without actually spinning up the native Sentry transport.
-typedef SentryInitFn =
-    Future<void> Function(
-      FlutterOptionsConfiguration optionsBuilder,
-      Future<void> Function() appRunner,
-    );
+typedef SentryInitFn = Future<void> Function(
+  FlutterOptionsConfiguration optionsBuilder,
+  Future<void> Function() appRunner,
+);
 
 /// Signature of the wrapped `Sentry.captureException` call. Tests set
 /// [sentryCaptureOverride] to a spy; production defers to the real
 /// Sentry SDK.
-typedef SentryCaptureFn =
-    Future<SentryId> Function(
-      Object error, {
-      StackTrace? stackTrace,
-      ScopeCallback? withScope,
-    });
+typedef SentryCaptureFn = Future<SentryId> Function(
+  Object error, {
+  StackTrace? stackTrace,
+  ScopeCallback? withScope,
+});
 
 /// Test seam: replaces `SentryFlutter.init` when set. Production keeps
 /// this `null` so the real SDK is used.

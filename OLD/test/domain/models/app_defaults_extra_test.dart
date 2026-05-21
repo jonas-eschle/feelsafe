@@ -33,7 +33,8 @@ void main() {
 
     test('providing a new distressModeId replaces the old one', () {
       const d = AppDefaults(defaultDistressModeId: 'old-id');
-      final replaced = d.copyWith(defaultDistressModeId: 'new-id');
+      final replaced =
+          d.copyWith(defaultDistressModeId: 'new-id');
       check(replaced.defaultDistressModeId).equals('new-id');
     });
   });

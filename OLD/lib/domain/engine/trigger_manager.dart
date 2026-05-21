@@ -47,7 +47,7 @@ final class TriggerManager {
     this.onDistressConfirmation,
     this.distressStepsResolver,
     DateTime Function()? clock,
-  }) : _clock = clock ?? DateTime.now;
+  })  : _clock = clock ?? DateTime.now;
 
   /// Minimum time between successive trigger fires.
   static const Duration cooldown = Duration(milliseconds: 500);

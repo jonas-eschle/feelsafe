@@ -52,75 +52,78 @@ class _FakeBiometricService implements BiometricServiceProtocol {
       BiometricResult.success;
 }
 
+
 // ---------------------------------------------------------------------------
 // Tests
 // ---------------------------------------------------------------------------
 
 void main() {
   group('EmergencyConfirmScreen — countdown auto-pop', () {
-    testWidgets('countdown expiry pops the screen (screen disappears)', (
-      tester,
-    ) async {
-      final ctrl = _FakeSessionController();
+    testWidgets(
+      'countdown expiry pops the screen (screen disappears)',
+      (tester) async {
+        final ctrl = _FakeSessionController();
 
-      // Use hostScreenPushed so there is a parent to pop back to.
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(),
+        // Use hostScreenPushed so there is a parent to pop back to.
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: [
+              settingsRepositoryProvider.overrideWithValue(
+                FakeSettingsRepository(),
+              ),
+              sessionControllerProvider.overrideWith(() => ctrl),
+            ],
+            child: const EmergencyConfirmScreen(
+              number: '112',
+              durationSeconds: 2,
             ),
-            sessionControllerProvider.overrideWith(() => ctrl),
-          ],
-          child: const EmergencyConfirmScreen(
-            number: '112',
-            durationSeconds: 2,
           ),
-        ),
-      );
-      // Allow initial navigation push to complete.
-      await tester.pumpAndSettle();
+        );
+        // Allow initial navigation push to complete.
+        await tester.pumpAndSettle();
 
-      // The screen should be visible now.
-      check(find.byType(EmergencyConfirmScreen).evaluate()).isNotEmpty();
+        // The screen should be visible now.
+        check(find.byType(EmergencyConfirmScreen).evaluate()).isNotEmpty();
 
-      // Advance to just before expiry.
-      await tester.pump(const Duration(seconds: 1));
-      check(find.byType(EmergencyConfirmScreen).evaluate()).isNotEmpty();
+        // Advance to just before expiry.
+        await tester.pump(const Duration(seconds: 1));
+        check(find.byType(EmergencyConfirmScreen).evaluate()).isNotEmpty();
 
-      // Advance past expiry — screen should pop itself.
-      await tester.pump(const Duration(seconds: 2));
-      await tester.pumpAndSettle();
+        // Advance past expiry — screen should pop itself.
+        await tester.pump(const Duration(seconds: 2));
+        await tester.pumpAndSettle();
 
-      // After popping the EmergencyConfirmScreen is no longer in the tree.
-      check(find.byType(EmergencyConfirmScreen).evaluate()).isEmpty();
-    });
+        // After popping the EmergencyConfirmScreen is no longer in the tree.
+        check(find.byType(EmergencyConfirmScreen).evaluate()).isEmpty();
+      },
+    );
 
-    testWidgets('countdown decrements to 0 then stops (does not go negative)', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(),
+    testWidgets(
+      'countdown decrements to 0 then stops (does not go negative)',
+      (tester) async {
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: [
+              settingsRepositoryProvider.overrideWithValue(
+                FakeSettingsRepository(),
+              ),
+              sessionControllerProvider.overrideWith(
+                () => _FakeSessionController(),
+              ),
+            ],
+            child: const EmergencyConfirmScreen(
+              number: '112',
+              durationSeconds: 3,
             ),
-            sessionControllerProvider.overrideWith(
-              () => _FakeSessionController(),
-            ),
-          ],
-          child: const EmergencyConfirmScreen(
-            number: '112',
-            durationSeconds: 3,
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        );
+        await tester.pumpAndSettle();
 
-      // At 2 s the counter shows 1.
-      await tester.pump(const Duration(seconds: 2));
-      check(find.text('1').evaluate()).isNotEmpty();
-    });
+        // At 2 s the counter shows 1.
+        await tester.pump(const Duration(seconds: 2));
+        check(find.text('1').evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('EmergencyConfirmScreen — Cancel with session-end PIN', () {

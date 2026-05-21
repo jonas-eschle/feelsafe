@@ -45,7 +45,10 @@ Widget hostScreenWithRouter({
   final router = GoRouter(
     initialLocation: initialLocation,
     routes: [
-      GoRoute(path: '/', builder: (context, state) => child),
+      GoRoute(
+        path: '/',
+        builder: (context, state) => child,
+      ),
       GoRoute(
         path: '/other',
         builder: (context, state) => const Scaffold(body: SizedBox()),
@@ -87,7 +90,10 @@ Widget hostScreenPushed({
         path: '/',
         builder: (context, state) => _PushRoot(target: route),
       ),
-      GoRoute(path: '/screen', builder: (context, state) => child),
+      GoRoute(
+        path: '/screen',
+        builder: (context, state) => child,
+      ),
     ],
   );
   return ProviderScope(

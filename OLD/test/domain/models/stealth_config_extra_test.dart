@@ -11,14 +11,15 @@ import 'package:guardianangela/domain/models/models.dart';
 
 void main() {
   group('StealthConfig._timerDisplayFromJson', () {
-    StealthConfig fromRaw(Object? timerDisplayValue) => StealthConfig.fromJson({
-      'enabled': false,
-      'fakeName': 'Test',
-      'fakeIcon': 'calendar',
-      'notificationDisguise': true,
-      'timerDisplay': timerDisplayValue,
-      'sessionScreenStealth': true,
-    });
+    StealthConfig fromRaw(Object? timerDisplayValue) =>
+        StealthConfig.fromJson({
+          'enabled': false,
+          'fakeName': 'Test',
+          'fakeIcon': 'calendar',
+          'notificationDisguise': true,
+          'timerDisplay': timerDisplayValue,
+          'sessionScreenStealth': true,
+        });
 
     test('string "none" maps to StealthTimerDisplay.none', () {
       final c = fromRaw('none');
@@ -44,11 +45,12 @@ void main() {
       check(() => fromRaw('bogus_value')).throws<ArgumentError>();
     });
 
-    test('round-trip StealthTimerDisplay.none via toJson preserves value', () {
+    test(
+        'round-trip StealthTimerDisplay.none via toJson preserves value',
+        () {
       const c = StealthConfig(timerDisplay: StealthTimerDisplay.none);
-      check(
-        StealthConfig.fromJson(c.toJson()).timerDisplay,
-      ).equals(StealthTimerDisplay.none);
+      check(StealthConfig.fromJson(c.toJson()).timerDisplay)
+          .equals(StealthTimerDisplay.none);
     });
   });
 }

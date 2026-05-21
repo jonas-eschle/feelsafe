@@ -30,13 +30,14 @@ EmergencyContact _contact({
   String id = 'c1',
   String phone = '+15551234567',
   List<MessageChannel> channels = const [MessageChannel.sms],
-}) => EmergencyContact(
-  id: id,
-  name: 'Alice',
-  phoneNumber: phone,
-  sortOrder: 0,
-  channels: channels,
-);
+}) =>
+    EmergencyContact(
+      id: id,
+      name: 'Alice',
+      phoneNumber: phone,
+      sortOrder: 0,
+      channels: channels,
+    );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -54,7 +55,8 @@ void main() {
   });
 
   group('MessagingService.sendMessage isSimulation', () {
-    test('returns sim id and emits a "simulated" delivery update', () async {
+    test('returns sim id and emits a "simulated" delivery update',
+        () async {
       installMethodChannelMock(smsChannel);
       final s = MessagingService();
       final update = s.deliveryUpdates.first;
@@ -76,53 +78,44 @@ void main() {
     test('throws ArgumentError — handled by PhoneService', () async {
       installMethodChannelMock(smsChannel);
       final s = MessagingService();
-      await check(
-        s.sendMessage(
-          contact: _contact(channels: const [MessageChannel.phoneCall]),
-          message: 'hi',
-          channel: MessageChannel.phoneCall,
-        ),
-      ).throws<ArgumentError>();
+      await check(s.sendMessage(
+        contact: _contact(channels: const [MessageChannel.phoneCall]),
+        message: 'hi',
+        channel: MessageChannel.phoneCall,
+      )).throws<ArgumentError>();
       await s.dispose();
     });
   });
 
   group('MessagingService.sendMessage whatsapp/telegram', () {
-    test(
-      'WhatsApp — url_launcher plugin missing in tests surfaces error',
-      () async {
-        installMethodChannelMock(smsChannel);
-        final s = MessagingService();
-        await check(
-          s.sendMessage(
-            contact: _contact(),
-            message: 'hi',
-            channel: MessageChannel.whatsapp,
-          ),
-        ).throws<Object>();
-        await s.dispose();
-      },
-    );
+    test('WhatsApp — url_launcher plugin missing in tests surfaces error',
+        () async {
+      installMethodChannelMock(smsChannel);
+      final s = MessagingService();
+      await check(s.sendMessage(
+        contact: _contact(),
+        message: 'hi',
+        channel: MessageChannel.whatsapp,
+      )).throws<Object>();
+      await s.dispose();
+    });
 
-    test(
-      'Telegram — url_launcher plugin missing in tests surfaces error',
-      () async {
-        installMethodChannelMock(smsChannel);
-        final s = MessagingService();
-        await check(
-          s.sendMessage(
-            contact: _contact(),
-            message: 'hi',
-            channel: MessageChannel.telegram,
-          ),
-        ).throws<Object>();
-        await s.dispose();
-      },
-    );
+    test('Telegram — url_launcher plugin missing in tests surfaces error',
+        () async {
+      installMethodChannelMock(smsChannel);
+      final s = MessagingService();
+      await check(s.sendMessage(
+        contact: _contact(),
+        message: 'hi',
+        channel: MessageChannel.telegram,
+      )).throws<Object>();
+      await s.dispose();
+    });
   });
 
   group('MessagingService.sendToAll', () {
-    test('simulation fan-out emits one simulated update per channel', () async {
+    test('simulation fan-out emits one simulated update per channel',
+        () async {
       installMethodChannelMock(smsChannel);
       final s = MessagingService();
       final updates = <MessageDeliveryUpdate>[];
@@ -166,9 +159,8 @@ void main() {
     test('PlatformException is rethrown', () async {
       installPlatformErrorMock(smsChannel);
       final s = MessagingService();
-      await check(
-        s.cancelPending([const MessageWorkId('x')]),
-      ).throws<PlatformException>();
+      await check(s.cancelPending([const MessageWorkId('x')]))
+          .throws<PlatformException>();
       await s.dispose();
     });
 
@@ -179,7 +171,8 @@ void main() {
         const MessageWorkId('a'),
         const MessageWorkId('b'),
       ]);
-      final cancel = calls.firstWhere((c) => c.method == 'cancelPending');
+      final cancel =
+          calls.firstWhere((c) => c.method == 'cancelPending');
       final arg = cancel.arguments as Map<Object?, Object?>;
       check((arg['workIds']! as List).length).equals(2);
       await s.dispose();
@@ -195,7 +188,8 @@ void main() {
       await s.dispose();
     });
 
-    test('retry after a successful send uses cached pending entry', () async {
+    test('retry after a successful send uses cached pending entry',
+        () async {
       // Populate the pending cache via a non-simulation SMS send.
       final successMock = installMethodChannelMock(smsChannel);
       final s = MessagingService();

@@ -61,10 +61,9 @@ class _PodcastPlayerScreenState extends ConsumerState<PodcastPlayerScreen> {
     final l = AppLocalizations.of(context);
     final stealth =
         ref.watch(settingsControllerProvider).value?.defaults.stealth ??
-        const StealthConfig();
-    final fakeName = stealth.fakeName.isNotEmpty
-        ? stealth.fakeName
-        : l.stealthPresetPodcast;
+            const StealthConfig();
+    final fakeName =
+        stealth.fakeName.isNotEmpty ? stealth.fakeName : l.stealthPresetPodcast;
 
     return Scaffold(
       appBar: AppBar(
@@ -82,7 +81,8 @@ class _PodcastPlayerScreenState extends ConsumerState<PodcastPlayerScreen> {
                 showName: l.stealthPodcastShowName,
                 episodeTitle: l.stealthPodcastEpisodeTitle,
                 session: widget.session,
-                hideDigits: stealth.timerDisplay == StealthTimerDisplay.none,
+                hideDigits:
+                    stealth.timerDisplay == StealthTimerDisplay.none,
               ),
               const SizedBox(height: 16),
               _SpeedSelector(
@@ -134,9 +134,8 @@ class _NowPlayingCard extends StatelessWidget {
     final scheme = Theme.of(context).colorScheme;
     final remaining = session.remainingSeconds ?? 0;
     final total = remaining > 0 ? remaining * 3 : 1800;
-    final fraction = total == 0
-        ? 0.0
-        : ((total - remaining) / total).clamp(0.0, 1.0);
+    final fraction =
+        total == 0 ? 0.0 : ((total - remaining) / total).clamp(0.0, 1.0);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -228,7 +227,10 @@ class _SpeedSelector extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelLarge),
+        Text(
+          label,
+          style: Theme.of(context).textTheme.labelLarge,
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 8,

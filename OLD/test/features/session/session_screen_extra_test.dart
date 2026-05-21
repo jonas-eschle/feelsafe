@@ -43,7 +43,9 @@ class _FakeSessionController extends SessionController {
 }
 
 class _FakeSettingsRepository extends SettingsRepository {
-  _FakeSettingsRepository([AppSettings? s]) : _stored = s, super.forTesting();
+  _FakeSettingsRepository([AppSettings? s])
+    : _stored = s,
+      super.forTesting();
   AppSettings? _stored;
   @override
   Future<AppSettings?> get() async => _stored;
@@ -139,11 +141,15 @@ List<Override> _overrides({
     _FakeSettingsRepository(const AppSettings(defaults: AppDefaults())),
   ),
   modesRepositoryProvider.overrideWithValue(_FakeModesRepository(modes)),
-  if (messaging != null) messagingServiceProvider.overrideWithValue(messaging),
+  if (messaging != null)
+    messagingServiceProvider.overrideWithValue(messaging),
 ];
 
-SessionMode _mode({required List<ChainStep> steps}) =>
-    SessionMode(id: 'mode-1', name: 'Test Mode', chainSteps: steps);
+SessionMode _mode({required List<ChainStep> steps}) => SessionMode(
+  id: 'mode-1',
+  name: 'Test Mode',
+  chainSteps: steps,
+);
 
 ChainStep _step(ChainStepType type, {StepConfig? config}) => ChainStep(
   id: 'step-0',
@@ -163,52 +169,56 @@ ChainStep _step(ChainStepType type, {StepConfig? config}) => ChainStep(
 
 void main() {
   group('_HardwareButtonStep._buttonLabel (lines 854–855)', () {
-    testWidgets('volumeDown button type renders correctly (line 854)', (
-      tester,
-    ) async {
-      final mode = _mode(
-        steps: [
-          _step(
-            ChainStepType.hardwareButton,
-            config: const HardwareButtonConfig(
-              buttonType: ButtonType.volumeDown,
+    testWidgets(
+      'volumeDown button type renders correctly (line 854)',
+      (tester) async {
+        final mode = _mode(
+          steps: [
+            _step(
+              ChainStepType.hardwareButton,
+              config: const HardwareButtonConfig(
+                buttonType: ButtonType.volumeDown,
+              ),
             ),
+          ],
+        );
+        final session = _session(stepType: ChainStepType.hardwareButton);
+        await tester.pumpWidget(
+          hostScreenWithRouter(
+            overrides: _overrides(seed: session, modes: [mode]),
+            child: const SessionScreen(),
           ),
-        ],
-      );
-      final session = _session(stepType: ChainStepType.hardwareButton);
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(seed: session, modes: [mode]),
-          child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      // Screen renders without error.
-      check(find.byType(SessionScreen).evaluate()).isNotEmpty();
-    });
+        );
+        await tester.pumpAndSettle();
+        // Screen renders without error.
+        check(find.byType(SessionScreen).evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('power button type renders correctly (line 855)', (
-      tester,
-    ) async {
-      final mode = _mode(
-        steps: [
-          _step(
-            ChainStepType.hardwareButton,
-            config: const HardwareButtonConfig(buttonType: ButtonType.power),
+    testWidgets(
+      'power button type renders correctly (line 855)',
+      (tester) async {
+        final mode = _mode(
+          steps: [
+            _step(
+              ChainStepType.hardwareButton,
+              config: const HardwareButtonConfig(
+                buttonType: ButtonType.power,
+              ),
+            ),
+          ],
+        );
+        final session = _session(stepType: ChainStepType.hardwareButton);
+        await tester.pumpWidget(
+          hostScreenWithRouter(
+            overrides: _overrides(seed: session, modes: [mode]),
+            child: const SessionScreen(),
           ),
-        ],
-      );
-      final session = _session(stepType: ChainStepType.hardwareButton);
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(seed: session, modes: [mode]),
-          child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      check(find.byType(SessionScreen).evaluate()).isNotEmpty();
-    });
+        );
+        await tester.pumpAndSettle();
+        check(find.byType(SessionScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('_LoudAlarmStep flash warning (lines 765–770)', () {
@@ -297,13 +307,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Emit each status variant to exercise the switch arms.
-        for (final status in [
-          'delivered',
-          'sent',
-          'queued',
-          'failed',
-          'unknown',
-        ]) {
+        for (final status in ['delivered', 'sent', 'queued', 'failed', 'unknown']) {
           messaging.emit(
             MessageDeliveryUpdate(workId: 'w-$status', status: status),
           );
@@ -378,7 +382,9 @@ void main() {
     testWidgets(
       '_resolveStepConfig returns null when stepIndex out of range (line 932)',
       (tester) async {
-        final mode = _mode(steps: [_step(ChainStepType.loudAlarm)]);
+        final mode = _mode(
+          steps: [_step(ChainStepType.loudAlarm)],
+        );
         // stepIndex=5 is out of range (mode only has 1 step).
         final session = WalkSession(
           id: 'sess',

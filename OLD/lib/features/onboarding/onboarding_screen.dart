@@ -155,8 +155,7 @@ class _ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l = AppLocalizations.of(context);
     final contacts =
-        ref.watch(contactsControllerProvider).value ??
-        const <EmergencyContact>[];
+        ref.watch(contactsControllerProvider).value ?? const <EmergencyContact>[];
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
       child: Column(

@@ -46,7 +46,8 @@ class AppDatabase extends _$AppDatabase {
   ///
   /// When [executor] is null the default lazy connection (encrypted
   /// file in the application documents directory) is used.
-  AppDatabase({QueryExecutor? executor}) : super(executor ?? _openConnection());
+  AppDatabase({QueryExecutor? executor})
+    : super(executor ?? _openConnection());
 
   /// Creates an in-memory test instance. Not used by production code.
   @visibleForTesting

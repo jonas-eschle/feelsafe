@@ -41,17 +41,14 @@ List<MethodCall> installUrlLauncherMock({
   const fallback = MethodChannel('plugins.flutter.io/url_launcher');
   final all = <MethodCall>[];
   for (final c in [ch, ios, android, fallback]) {
-    installMethodChannelMock(
-      c,
-      responder: (call) {
-        all.add(call);
-        if (call.method == 'canLaunch') return canLaunch;
-        if (call.method == 'launch') return launchResult;
-        if (call.method == 'supportsMode') return true;
-        if (call.method == 'supportsCloseForMode') return true;
-        return null;
-      },
-    );
+    installMethodChannelMock(c, responder: (call) {
+      all.add(call);
+      if (call.method == 'canLaunch') return canLaunch;
+      if (call.method == 'launch') return launchResult;
+      if (call.method == 'supportsMode') return true;
+      if (call.method == 'supportsCloseForMode') return true;
+      return null;
+    });
   }
   return all;
 }
@@ -60,13 +57,14 @@ EmergencyContact _contact({
   String id = 'c1',
   String phone = '+15551234567',
   List<MessageChannel> channels = const [MessageChannel.sms],
-}) => EmergencyContact(
-  id: id,
-  name: 'Alice',
-  phoneNumber: phone,
-  sortOrder: 0,
-  channels: channels,
-);
+}) =>
+    EmergencyContact(
+      id: id,
+      name: 'Alice',
+      phoneNumber: phone,
+      sortOrder: 0,
+      channels: channels,
+    );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -140,7 +138,9 @@ void main() {
     test('iOS SMS → handoff (success)', () async {
       installMethodChannelMock(smsChannel);
       installUrlLauncherMock();
-      final s = MessagingService(platform: const FakePlatformInfo(isIOS: true));
+      final s = MessagingService(
+        platform: const FakePlatformInfo(isIOS: true),
+      );
       final fut = s.deliveryUpdates.first;
       await s.sendMessage(
         contact: _contact(),
@@ -155,7 +155,9 @@ void main() {
     test('iOS SMS → failed (launch=false)', () async {
       installMethodChannelMock(smsChannel);
       installUrlLauncherMock(launchResult: false);
-      final s = MessagingService(platform: const FakePlatformInfo(isIOS: true));
+      final s = MessagingService(
+        platform: const FakePlatformInfo(isIOS: true),
+      );
       final fut = s.deliveryUpdates.first;
       await s.sendMessage(
         contact: _contact(),
@@ -167,37 +169,34 @@ void main() {
       await s.dispose();
     });
 
-    test(
-      'Android: event-channel error callback path fires no update',
-      () async {
-        const eventChannel = EventChannel('com.guardianangela.app/sms_events');
-        final mock = installEventChannelMock(eventChannel);
-        installMethodChannelMock(smsChannel);
-        final s = MessagingService(
-          platform: const FakePlatformInfo(isAndroid: true),
+    test('Android: event-channel error callback path fires no update',
+        () async {
+      const eventChannel =
+          EventChannel('com.guardianangela.app/sms_events');
+      final mock = installEventChannelMock(eventChannel);
+      installMethodChannelMock(smsChannel);
+      final s = MessagingService(
+        platform: const FakePlatformInfo(isAndroid: true),
+      );
+      final received = <MessageDeliveryUpdate>[];
+      final sub = s.deliveryUpdates.listen(received.add);
+      // Simulate an error on the native stream via binary messenger.
+      final emc = MethodChannel(eventChannel.name, eventChannel.codec);
+      await _binaryMessenger((bm) {
+        return bm.handlePlatformMessage(
+          emc.name,
+          const StandardMethodCodec()
+              .encodeErrorEnvelope(code: 'E', message: 'native err'),
+          (_) {},
         );
-        final received = <MessageDeliveryUpdate>[];
-        final sub = s.deliveryUpdates.listen(received.add);
-        // Simulate an error on the native stream via binary messenger.
-        final emc = MethodChannel(eventChannel.name, eventChannel.codec);
-        await _binaryMessenger((bm) {
-          return bm.handlePlatformMessage(
-            emc.name,
-            const StandardMethodCodec().encodeErrorEnvelope(
-              code: 'E',
-              message: 'native err',
-            ),
-            (_) {},
-          );
-        });
-        await Future<void>.delayed(Duration.zero);
-        check(received).isEmpty();
-        await sub.cancel();
-        // Keep mock referenced so lints don't trigger.
-        check(mock).isNotNull();
-        await s.dispose();
-      },
-    );
+      });
+      await Future<void>.delayed(Duration.zero);
+      check(received).isEmpty();
+      await sub.cancel();
+      // Keep mock referenced so lints don't trigger.
+      check(mock).isNotNull();
+      await s.dispose();
+    });
 
     test('dispose called twice is safe (idempotent)', () async {
       installMethodChannelMock(smsChannel);
@@ -255,30 +254,27 @@ void main() {
     // so the `Vibration.vibrate(...)` body is unreachable from the
     // host. The alarm/warning/fakeCall real paths therefore remain
     // covered only via Android instrumentation tests.
-    test('alarmPattern real path on non-physical device is a no-op', () async {
+    test('alarmPattern real path on non-physical device is a no-op',
+        () async {
       final calls = installMethodChannelMock(channel);
       await VibrationService().alarmPattern();
       // On Linux the plugin short-circuits before dispatching.
       check(calls.where((c) => c.method == 'vibrate')).isEmpty();
     });
 
-    test(
-      'warningPattern real path on non-physical device is a no-op',
-      () async {
-        final calls = installMethodChannelMock(channel);
-        await VibrationService().warningPattern();
-        check(calls.where((c) => c.method == 'vibrate')).isEmpty();
-      },
-    );
+    test('warningPattern real path on non-physical device is a no-op',
+        () async {
+      final calls = installMethodChannelMock(channel);
+      await VibrationService().warningPattern();
+      check(calls.where((c) => c.method == 'vibrate')).isEmpty();
+    });
 
-    test(
-      'fakeCallPattern real path on non-physical device is a no-op',
-      () async {
-        final calls = installMethodChannelMock(channel);
-        await VibrationService().fakeCallPattern();
-        check(calls.where((c) => c.method == 'vibrate')).isEmpty();
-      },
-    );
+    test('fakeCallPattern real path on non-physical device is a no-op',
+        () async {
+      final calls = installMethodChannelMock(channel);
+      await VibrationService().fakeCallPattern();
+      check(calls.where((c) => c.method == 'vibrate')).isEmpty();
+    });
 
     test('stop cancels vibration', () async {
       final calls = installMethodChannelMock(channel);
@@ -294,7 +290,8 @@ void main() {
   group('HomeWidgetService', () {
     const channel = MethodChannel('home_widget');
 
-    test('updateStatus writes data and triggers widget refresh', () async {
+    test('updateStatus writes data and triggers widget refresh',
+        () async {
       final calls = installMethodChannelMock(channel);
       await HomeWidgetService().updateStatus(
         status: 'armed',
@@ -316,29 +313,25 @@ void main() {
     });
 
     test('consumePendingMarker returns null when absent', () async {
-      installMethodChannelMock(
-        channel,
-        responder: (c) {
-          if (c.method == 'getWidgetData') return null;
-          return null;
-        },
-      );
+      installMethodChannelMock(channel, responder: (c) {
+        if (c.method == 'getWidgetData') return null;
+        return null;
+      });
       final m = await HomeWidgetService().consumePendingMarker();
       check(m).isNull();
     });
 
-    test('consumePendingMarker returns & clears stored value', () async {
-      final calls = installMethodChannelMock(
-        channel,
-        responder: (c) {
-          if (c.method == 'getWidgetData') return 'pending!';
-          return null;
-        },
-      );
+    test('consumePendingMarker returns & clears stored value',
+        () async {
+      final calls = installMethodChannelMock(channel, responder: (c) {
+        if (c.method == 'getWidgetData') return 'pending!';
+        return null;
+      });
       final m = await HomeWidgetService().consumePendingMarker();
       check(m).equals('pending!');
       // Second saveWidgetData call resets to null.
-      final saves = calls.where((c) => c.method == 'saveWidgetData').toList();
+      final saves =
+          calls.where((c) => c.method == 'saveWidgetData').toList();
       check(saves).which((it) => it.length.equals(1));
       check((saves.first.arguments as Map)['data']).isNull();
     });
@@ -348,7 +341,8 @@ void main() {
       await HomeWidgetService().registerInteractivity((Uri? _) {});
     });
 
-    test('initiallyLaunchedUri returns null when not available', () async {
+    test('initiallyLaunchedUri returns null when not available',
+        () async {
       installMethodChannelMock(channel);
       final u = await HomeWidgetService().initiallyLaunchedUri();
       check(u).isNull();
@@ -359,35 +353,26 @@ void main() {
   // HardwareButtonService: native event stream error-path
   // --------------------------------------------------------------------
   group('HardwareButtonService native error path', () {
-    const methodChannel = MethodChannel(
-      'com.guardianangela.app/hardware_buttons',
-    );
-    const eventChannel = EventChannel(
-      'com.guardianangela.app/hardware_button_events',
-    );
+    const methodChannel =
+        MethodChannel('com.guardianangela.app/hardware_buttons');
+    const eventChannel =
+        EventChannel('com.guardianangela.app/hardware_button_events');
 
     test('stream error is logged, does not crash', () async {
       installMethodChannelMock(methodChannel);
       final emc = MethodChannel(eventChannel.name, eventChannel.codec);
-      installMethodChannelMock(
-        emc,
-        responder: (c) {
-          if (c.method == 'listen') return null;
-          return null;
-        },
-      );
+      installMethodChannelMock(emc, responder: (c) {
+        if (c.method == 'listen') return null;
+        return null;
+      });
       final s = HardwareButtonService();
       await s.start(buttonType: 'v', pattern: 'p');
-      await _binaryMessenger(
-        (bm) => bm.handlePlatformMessage(
-          emc.name,
-          const StandardMethodCodec().encodeErrorEnvelope(
-            code: 'x',
-            message: 'y',
-          ),
-          (_) {},
-        ),
-      );
+      await _binaryMessenger((bm) => bm.handlePlatformMessage(
+            emc.name,
+            const StandardMethodCodec()
+                .encodeErrorEnvelope(code: 'x', message: 'y'),
+            (_) {},
+          ));
       await Future<void>.delayed(Duration.zero);
       await s.dispose();
     });
@@ -397,10 +382,10 @@ void main() {
   // IncomingCallService native error path
   // --------------------------------------------------------------------
   group('IncomingCallService native error path', () {
-    const methodChannel = MethodChannel('com.guardianangela.app/call_state');
-    const eventChannel = EventChannel(
-      'com.guardianangela.app/call_state_events',
-    );
+    const methodChannel =
+        MethodChannel('com.guardianangela.app/call_state');
+    const eventChannel =
+        EventChannel('com.guardianangela.app/call_state_events');
 
     test('stream error is logged, does not crash', () async {
       installMethodChannelMock(methodChannel);
@@ -408,16 +393,12 @@ void main() {
       installMethodChannelMock(emc, responder: (c) => null);
       final s = IncomingCallService();
       await s.startListening();
-      await _binaryMessenger(
-        (bm) => bm.handlePlatformMessage(
-          emc.name,
-          const StandardMethodCodec().encodeErrorEnvelope(
-            code: 'x',
-            message: 'y',
-          ),
-          (_) {},
-        ),
-      );
+      await _binaryMessenger((bm) => bm.handlePlatformMessage(
+            emc.name,
+            const StandardMethodCodec()
+                .encodeErrorEnvelope(code: 'x', message: 'y'),
+            (_) {},
+          ));
       await Future<void>.delayed(Duration.zero);
       await s.dispose();
     });
@@ -431,22 +412,18 @@ void main() {
 
     test('invalid threshold is rejected', () async {
       final s = BatteryMonitorService();
-      await check(
-        s.startMonitoring(thresholdPercent: -1),
-      ).throws<ArgumentError>();
-      await check(
-        s.startMonitoring(thresholdPercent: 101),
-      ).throws<ArgumentError>();
+      await check(s.startMonitoring(thresholdPercent: -1))
+          .throws<ArgumentError>();
+      await check(s.startMonitoring(thresholdPercent: 101))
+          .throws<ArgumentError>();
     });
 
-    test('startMonitoring sets isActive true, stopMonitoring clears', () async {
-      installMethodChannelMock(
-        channel,
-        responder: (c) {
-          if (c.method == 'getBatteryLevel') return 80;
-          return null;
-        },
-      );
+    test('startMonitoring sets isActive true, stopMonitoring clears',
+        () async {
+      installMethodChannelMock(channel, responder: (c) {
+        if (c.method == 'getBatteryLevel') return 80;
+        return null;
+      });
       final s = BatteryMonitorService();
       check(s.isActive).isFalse();
       await s.startMonitoring(thresholdPercent: 20);

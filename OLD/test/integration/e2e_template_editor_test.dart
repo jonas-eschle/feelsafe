@@ -41,25 +41,20 @@ List<Override> _overrides({List<ReminderTemplate> templates = const []}) => [
 void main() {
   group('template editor — default tapButton', () {
     testWidgets('template_editor_renders_title_field', (tester) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       check(find.byType(TextField).evaluate().length).isGreaterOrEqual(2);
     });
 
-    testWidgets('template_editor_default_confirmation_type_tapButton', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+    testWidgets('template_editor_default_confirmation_type_tapButton',
+        (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // Default is tapButton; at least one DropdownButtonFormField present.
       // Use predicate since find.byType doesn't match on generic type params.
@@ -69,19 +64,19 @@ void main() {
       check(dropdowns.length).isGreaterOrEqual(1);
     });
 
-    testWidgets('template_editor_tapButton_shows_buttonLabel_field', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+    testWidgets('template_editor_tapButton_shows_buttonLabel_field',
+        (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // tapButton is default; look for the button-label field.
       // Scroll to make fields visible.
-      await tester.drag(find.byType(ListView).first, const Offset(0, -200));
+      await tester.drag(
+        find.byType(ListView).first,
+        const Offset(0, -200),
+      );
       await tester.pumpAndSettle();
       // With tapButton there should NOT be a keyword field rendered.
       // (keyword field only appears for tapWord).
@@ -93,31 +88,25 @@ void main() {
 
   group('template editor — save', () {
     testWidgets('template_editor_save_icon_in_app_bar', (tester) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       check(find.byIcon(Icons.check).evaluate().length).isGreaterOrEqual(1);
     });
 
     testWidgets('template_editor_save_creates_template', (tester) async {
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            templatesRepositoryProvider.overrideWithValue(repo),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults()),
-              ),
-            ),
-          ],
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(repo),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(const AppSettings(defaults: AppDefaults())),
+          ),
+        ],
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // Fill name field (first TextField).
       await tester.enterText(find.byType(TextField).at(0), 'My Template');
@@ -129,23 +118,17 @@ void main() {
       check(saved.first.name).equals('My Template');
     });
 
-    testWidgets('template_editor_empty_name_defaults_to_template', (
-      tester,
-    ) async {
+    testWidgets('template_editor_empty_name_defaults_to_template', (tester) async {
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            templatesRepositoryProvider.overrideWithValue(repo),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults()),
-              ),
-            ),
-          ],
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(repo),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(const AppSettings(defaults: AppDefaults())),
+          ),
+        ],
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // Save without entering a name.
       await tester.tap(find.byIcon(Icons.check));
@@ -156,18 +139,15 @@ void main() {
   });
 
   group('template editor — confirmation type conditional fields', () {
-    testWidgets('template_editor_tapButton_confirmation_type_is_default', (
-      tester,
-    ) async {
+    testWidgets('template_editor_tapButton_confirmation_type_is_default',
+        (tester) async {
       // The TemplateEditorScreen initializes _confirm = ConfirmationType.tapButton.
       // Verify at least that the dropdowns are rendered (we cannot easily verify
       // which item is initially selected without the full gorouter query param).
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       final ddFields = find
           .byWidgetPredicate((w) => w is DropdownButtonFormField)
@@ -177,17 +157,14 @@ void main() {
       check(ddFields).isGreaterOrEqual(2);
     });
 
-    testWidgets('template_editor_keyword_field_shown_for_tapWord', (
-      tester,
-    ) async {
+    testWidgets('template_editor_keyword_field_shown_for_tapWord',
+        (tester) async {
       // To select tapWord, we need to interact with the dropdown.
       // Open the ConfirmationType dropdown and select tapWord.
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // Tap the first DropdownButtonFormField (ConfirmationType).
       await tester.tap(
@@ -198,9 +175,9 @@ void main() {
       final tapWordItems = find.text('Tap word').evaluate();
       if (tapWordItems.isEmpty) {
         // Try alternative locale string.
-        final altItems = find
-            .byWidgetPredicate((w) => w is DropdownMenuItem)
-            .evaluate();
+        final altItems = find.byWidgetPredicate(
+          (w) => w is DropdownMenuItem,
+        ).evaluate();
         // Tap the second dropdown item (index 1 = tapWord).
         if (altItems.length >= 2) {
           await tester.tap(
@@ -218,9 +195,7 @@ void main() {
       check(count).isGreaterOrEqual(4);
     });
 
-    testWidgets('template_editor_edit_existing_prefills_fields', (
-      tester,
-    ) async {
+    testWidgets('template_editor_edit_existing_prefills_fields', (tester) async {
       const existing = ReminderTemplate(
         id: 't1',
         name: 'Calendar Reminder',
@@ -232,23 +207,20 @@ void main() {
         buttonLabel: 'Got it',
       );
       final repo = FakeTemplatesRepository([existing]);
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            templatesRepositoryProvider.overrideWithValue(repo),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults()),
-              ),
-            ),
-          ],
-          initialQuery: 'id=t1',
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          templatesRepositoryProvider.overrideWithValue(repo),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(const AppSettings(defaults: AppDefaults())),
+          ),
+        ],
+        initialQuery: 'id=t1',
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // The name field should be pre-filled.
-      final fields = tester.widgetList<TextField>(find.byType(TextField));
+      final fields =
+          tester.widgetList<TextField>(find.byType(TextField));
       final hasCalendar = fields.any((f) {
         final ctrl = f.controller;
         return ctrl != null && ctrl.text == 'Calendar Reminder';
@@ -258,20 +230,15 @@ void main() {
   });
 
   group('template editor — display style', () {
-    testWidgets('template_editor_display_style_dropdown_present', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(),
-          child: const TemplateEditorScreen(),
-        ),
-      );
+    testWidgets('template_editor_display_style_dropdown_present', (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(),
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       // Use predicate since generic type params aren't preserved at runtime.
       check(
-        find
-            .byWidgetPredicate((w) => w is DropdownButtonFormField)
+        find.byWidgetPredicate((w) => w is DropdownButtonFormField)
             .evaluate()
             .length,
       ).isGreaterOrEqual(2); // ConfirmationType + DisplayStyle

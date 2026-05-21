@@ -21,49 +21,49 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('ModeEditorScreen add-step bottom sheet appends a step', (
-    tester,
-  ) async {
-    final repo = FakeModesRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'ModeEditorScreen add-step bottom sheet appends a step',
+    (tester) async {
+      final repo = FakeModesRepository();
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(repo),        ],
         child: const ModeEditorScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(
-      find.descendant(
-        of: find.byType(ModeEditorScreen),
-        matching: find.byIcon(Icons.add),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // Issues-v4 #8: the picker now shows 3 prominent step types up
-    // top + a "More options..." entry. Tap the first prominent entry
-    // by its ChainStepType label rather than the unscoped ListTile
-    // ordering (other ListTiles live in the editor body too).
-    await tester.tap(find.text('Hold button').last);
-    await tester.pumpAndSettle();
-    // Save to persist the new step.
-    await tester.tap(find.byIcon(Icons.check));
-    await tester.pumpAndSettle();
-    final saved = await repo.getAll();
-    check(saved.length).equals(1);
-    check(saved.single.chainSteps.length).equals(1);
-  });
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.descendant(
+          of: find.byType(ModeEditorScreen),
+          matching: find.byIcon(Icons.add),
+        ),
+      );
+      await tester.pumpAndSettle();
+      // Issues-v4 #8: the picker now shows 3 prominent step types up
+      // top + a "More options..." entry. Tap the first prominent entry
+      // by its ChainStepType label rather than the unscoped ListTile
+      // ordering (other ListTiles live in the editor body too).
+      await tester.tap(find.text('Hold button').last);
+      await tester.pumpAndSettle();
+      // Save to persist the new step.
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pumpAndSettle();
+      final saved = await repo.getAll();
+      check(saved.length).equals(1);
+      check(saved.single.chainSteps.length).equals(1);
+    },
+  );
 
   testWidgets(
     'ModeEditorScreen distress-chain dropdown binds selected chain id',
     (tester) async {
       final distressMode = makeDistressMode(id: 'dc-1', name: 'MyChain');
       final repo = FakeModesRepository([distressMode]);
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [modesRepositoryProvider.overrideWithValue(repo)],
-          child: const ModeEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const ModeEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(
         find.descendant(
@@ -83,62 +83,53 @@ void main() {
     },
   );
 
-  testWidgets('ModeEditorScreen existing mode renders ReorderableListView', (
-    tester,
-  ) async {
-    final mode = makeMode(
-      id: 'm7',
-      steps: [
-        holdStep(id: 's1'),
-        holdStep(id: 's2', order: 1),
-      ],
-    );
-    await tester.pumpWidget(
-      hostScreenPushed(
+  testWidgets(
+    'ModeEditorScreen existing mode renders ReorderableListView',
+    (tester) async {
+      final mode = makeMode(
+        id: 'm7',
+        steps: [holdStep(id: 's1'), holdStep(id: 's2', order: 1)],
+      );
+      await tester.pumpWidget(hostScreenPushed(
         overrides: [
-          modesRepositoryProvider.overrideWithValue(
-            FakeModesRepository([mode]),
-          ),
-        ],
+          modesRepositoryProvider
+              .overrideWithValue(FakeModesRepository([mode])),        ],
         initialQuery: 'id=m7',
         child: const ModeEditorScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(find.byType(ReorderableListView).evaluate().length).equals(1);
-    check(find.byType(ChainStepTile).evaluate().length).equals(2);
-  });
+      ));
+      await tester.pumpAndSettle();
+      check(find.byType(ReorderableListView).evaluate().length).equals(1);
+      check(find.byType(ChainStepTile).evaluate().length).equals(2);
+    },
+  );
 
-  testWidgets('ModeEditorScreen delete tile removes a chain step on save', (
-    tester,
-  ) async {
-    final mode = makeMode(
-      id: 'm8',
-      steps: [
-        holdStep(id: 's1'),
-        holdStep(id: 's2', order: 1),
-      ],
-    );
-    final repo = FakeModesRepository([mode]);
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'ModeEditorScreen delete tile removes a chain step on save',
+    (tester) async {
+      final mode = makeMode(
+        id: 'm8',
+        steps: [holdStep(id: 's1'), holdStep(id: 's2', order: 1)],
+      );
+      final repo = FakeModesRepository([mode]);
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(repo),        ],
         initialQuery: 'id=m8',
         child: const ModeEditorScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // ChainStepTile exposes a delete icon; each tile has one.
-    final deletes = find.descendant(
-      of: find.byType(ChainStepTile),
-      matching: find.byIcon(Icons.delete_outline),
-    );
-    check(deletes.evaluate().length).equals(2);
-    await tester.tap(deletes.first);
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.check));
-    await tester.pumpAndSettle();
-    final saved = await repo.getAll();
-    check(saved.single.chainSteps.length).equals(1);
-  });
+      ));
+      await tester.pumpAndSettle();
+      // ChainStepTile exposes a delete icon; each tile has one.
+      final deletes = find.descendant(
+        of: find.byType(ChainStepTile),
+        matching: find.byIcon(Icons.delete_outline),
+      );
+      check(deletes.evaluate().length).equals(2);
+      await tester.tap(deletes.first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.check));
+      await tester.pumpAndSettle();
+      final saved = await repo.getAll();
+      check(saved.single.chainSteps.length).equals(1);
+    },
+  );
 }

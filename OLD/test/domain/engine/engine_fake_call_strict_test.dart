@@ -178,23 +178,21 @@ void main() {
       });
     });
 
-    test(
-      'decline unsafe with retryCount=1: first decline re-enters duration',
-      () {
-        fakeAsync((async) {
-          final e = _fakeCallEngine(declineIsSafe: false, retryCount: 1);
-          e.start();
-          async.flushMicrotasks();
-          e.declineFakeCall();
-          async.flushMicrotasks();
-          final s = e.state as EngineRunning;
-          check(s.stepIndex).equals(0);
-          check(s.phase).equals(TimerPhase.duration);
-          check(s.missCount).equals(1);
-          e.dispose();
-        });
-      },
-    );
+    test('decline unsafe with retryCount=1: first decline re-enters duration',
+        () {
+      fakeAsync((async) {
+        final e = _fakeCallEngine(declineIsSafe: false, retryCount: 1);
+        e.start();
+        async.flushMicrotasks();
+        e.declineFakeCall();
+        async.flushMicrotasks();
+        final s = e.state as EngineRunning;
+        check(s.stepIndex).equals(0);
+        check(s.phase).equals(TimerPhase.duration);
+        check(s.missCount).equals(1);
+        e.dispose();
+      });
+    });
 
     test('decline unsafe × 2 with retryCount=1 advances', () {
       fakeAsync((async) {
@@ -392,9 +390,16 @@ void main() {
         final e = _fakeCallEngine();
         e.start();
         async.flushMicrotasks();
-        e.replaceWithDistressChain([
-          smsStep(id: 'distress', durationSeconds: 1, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [
+            smsStep(
+              id: 'distress',
+              durationSeconds: 1,
+              gracePeriodSeconds: 0,
+            ),
+          ],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.flushMicrotasks();
         check(e.isDistressChain).isTrue();
         async.elapse(const Duration(seconds: 5));
@@ -412,9 +417,16 @@ void main() {
         e.answerFakeCall();
         async.flushMicrotasks();
         // Per pivot 2 the engine is still Running (not paused).
-        e.replaceWithDistressChain([
-          smsStep(id: 'distress', durationSeconds: 1, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [
+            smsStep(
+              id: 'distress',
+              durationSeconds: 1,
+              gracePeriodSeconds: 0,
+            ),
+          ],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.flushMicrotasks();
         check(e.isDistressChain).isTrue();
         e.dispose();

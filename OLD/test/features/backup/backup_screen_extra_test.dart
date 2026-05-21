@@ -24,9 +24,8 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('toggling Contacts switch updates state (lines 83–84)', (
-      tester,
-    ) async {
+    testWidgets('toggling Contacts switch updates state (lines 83–84)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final switches = find.byType(SwitchListTile);
       check(switches.evaluate()).isNotEmpty();
@@ -41,9 +40,8 @@ void main() {
       }
     });
 
-    testWidgets('toggling Modes switch updates state (lines 90–91)', (
-      tester,
-    ) async {
+    testWidgets('toggling Modes switch updates state (lines 90–91)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final modesSwitch = find.widgetWithText(SwitchListTile, 'Modes');
       if (modesSwitch.evaluate().isNotEmpty) {
@@ -53,9 +51,8 @@ void main() {
       }
     });
 
-    testWidgets('toggling Distress modes switch updates state (lines 97–98)', (
-      tester,
-    ) async {
+    testWidgets('toggling Distress modes switch updates state (lines 97–98)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final dmSwitch = find.widgetWithText(SwitchListTile, 'Distress modes');
       if (dmSwitch.evaluate().isNotEmpty) {
@@ -65,9 +62,8 @@ void main() {
       }
     });
 
-    testWidgets('toggling Templates switch updates state (lines 104–105)', (
-      tester,
-    ) async {
+    testWidgets('toggling Templates switch updates state (lines 104–105)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final tmplSwitch = find.widgetWithText(SwitchListTile, 'Templates');
       if (tmplSwitch.evaluate().isNotEmpty) {
@@ -77,9 +73,8 @@ void main() {
       }
     });
 
-    testWidgets('toggling Session logs switch updates state (lines 111–112)', (
-      tester,
-    ) async {
+    testWidgets('toggling Session logs switch updates state (lines 111–112)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final logSwitch = find.widgetWithText(SwitchListTile, 'Session logs');
       if (logSwitch.evaluate().isNotEmpty) {
@@ -89,9 +84,8 @@ void main() {
       }
     });
 
-    testWidgets('toggling Recordings switch updates state (lines 118–119)', (
-      tester,
-    ) async {
+    testWidgets('toggling Recordings switch updates state (lines 118–119)',
+        (tester) async {
       await pumpBackupScreen(tester);
       final recSwitch = find.widgetWithText(SwitchListTile, 'Recordings');
       if (recSwitch.evaluate().isNotEmpty) {

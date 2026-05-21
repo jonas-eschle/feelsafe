@@ -32,47 +32,43 @@ void main() {
   );
 
   group('LogGpsSelector', () {
-    testWidgets('renders a SegmentedButton with three segments', (
-      tester,
-    ) async {
+    testWidgets('renders a SegmentedButton with three segments',
+        (tester) async {
       await tester.pumpWidget(
         host(value: LogGpsOverride.useDefault, resolvedFallback: true),
       );
       await tester.pumpAndSettle();
       // SegmentedButton is present.
-      check(
-        find.byType(SegmentedButton<LogGpsOverride>).evaluate(),
-      ).isNotEmpty();
+      check(find.byType(SegmentedButton<LogGpsOverride>).evaluate())
+          .isNotEmpty();
     });
 
     testWidgets(
-      'shows "Default (On)" subtitle when useDefault and fallback is true',
-      (tester) async {
-        await tester.pumpWidget(
-          host(value: LogGpsOverride.useDefault, resolvedFallback: true),
-        );
-        await tester.pumpAndSettle();
-        // subtitle text exists somewhere in the tree.
-        final texts = tester
-            .widgetList<Text>(find.byType(Text))
-            .map((t) => t.data ?? '');
-        check(texts.any((t) => t.toLowerCase().contains('on'))).isTrue();
-      },
-    );
+        'shows "Default (On)" subtitle when useDefault and fallback is true',
+        (tester) async {
+      await tester.pumpWidget(
+        host(value: LogGpsOverride.useDefault, resolvedFallback: true),
+      );
+      await tester.pumpAndSettle();
+      // subtitle text exists somewhere in the tree.
+      final texts = tester.widgetList<Text>(find.byType(Text)).map(
+        (t) => t.data ?? '',
+      );
+      check(texts.any((t) => t.toLowerCase().contains('on'))).isTrue();
+    });
 
     testWidgets(
-      'shows "Default (Off)" subtitle when useDefault and fallback is false',
-      (tester) async {
-        await tester.pumpWidget(
-          host(value: LogGpsOverride.useDefault, resolvedFallback: false),
-        );
-        await tester.pumpAndSettle();
-        final texts = tester
-            .widgetList<Text>(find.byType(Text))
-            .map((t) => t.data ?? '');
-        check(texts.any((t) => t.toLowerCase().contains('off'))).isTrue();
-      },
-    );
+        'shows "Default (Off)" subtitle when useDefault and fallback is false',
+        (tester) async {
+      await tester.pumpWidget(
+        host(value: LogGpsOverride.useDefault, resolvedFallback: false),
+      );
+      await tester.pumpAndSettle();
+      final texts = tester.widgetList<Text>(find.byType(Text)).map(
+        (t) => t.data ?? '',
+      );
+      check(texts.any((t) => t.toLowerCase().contains('off'))).isTrue();
+    });
 
     testWidgets('hides subtitle when value is forceOn', (tester) async {
       await tester.pumpWidget(
@@ -82,9 +78,8 @@ void main() {
       // subtitle Padding only renders when value == useDefault.
       // Verify no italic text for the subtitle row is shown.
       // We just ensure no exception and the widget renders.
-      check(
-        find.byType(SegmentedButton<LogGpsOverride>).evaluate(),
-      ).isNotEmpty();
+      check(find.byType(SegmentedButton<LogGpsOverride>).evaluate())
+          .isNotEmpty();
     });
 
     testWidgets('hides subtitle when value is forceOff', (tester) async {
@@ -92,9 +87,8 @@ void main() {
         host(value: LogGpsOverride.forceOff, resolvedFallback: true),
       );
       await tester.pumpAndSettle();
-      check(
-        find.byType(SegmentedButton<LogGpsOverride>).evaluate(),
-      ).isNotEmpty();
+      check(find.byType(SegmentedButton<LogGpsOverride>).evaluate())
+          .isNotEmpty();
     });
 
     testWidgets('onChanged fires when segment is tapped', (tester) async {

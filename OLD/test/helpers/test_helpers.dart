@@ -192,7 +192,12 @@ SessionMode makeDistressMode({
   List<ChainStep>? steps,
 }) {
   final s = steps ?? [smsStep()];
-  return SessionMode(id: id, name: name, chainSteps: s, isDistressMode: true);
+  return SessionMode(
+    id: id,
+    name: name,
+    chainSteps: s,
+    isDistressMode: true,
+  );
 }
 
 /// Builds a configured [ProviderContainer].

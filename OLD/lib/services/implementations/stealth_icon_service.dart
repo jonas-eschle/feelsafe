@@ -26,7 +26,7 @@ final class StealthIconService implements StealthIconServiceProtocol {
   /// [platform] defaults to the const production [PlatformInfo()];
   /// tests inject a [FakePlatformInfo] to exercise the Android path.
   StealthIconService({PlatformInfo platform = const PlatformInfo()})
-    : _platform = platform;
+      : _platform = platform;
 
   static const MethodChannel _channel = MethodChannel(
     'com.guardianangela.app/stealth_icon',

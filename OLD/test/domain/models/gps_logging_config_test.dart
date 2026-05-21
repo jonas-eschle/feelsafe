@@ -83,9 +83,8 @@ void main() {
     });
 
     test('hashCode stable for equal values', () {
-      check(
-        const GpsLoggingConfig().hashCode,
-      ).equals(const GpsLoggingConfig().hashCode);
+      check(const GpsLoggingConfig().hashCode)
+          .equals(const GpsLoggingConfig().hashCode);
     });
 
     test('toString exposes fields', () {
@@ -113,7 +112,8 @@ void main() {
 
     test('differ by intervalSeconds unequal', () {
       check(
-        const GpsLoggingConfig() == const GpsLoggingConfig(intervalSeconds: 5),
+        const GpsLoggingConfig() ==
+            const GpsLoggingConfig(intervalSeconds: 5),
       ).isFalse();
     });
   });

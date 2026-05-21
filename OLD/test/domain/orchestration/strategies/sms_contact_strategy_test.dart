@@ -291,7 +291,9 @@ void main() {
       await strategy.executeReal(
         step(
           type: ChainStepType.smsContact,
-          config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          config: const SmsContactConfig(
+            channel: MessageChannel.whatsapp,
+          ),
         ),
         harness.build(),
       );
@@ -312,7 +314,9 @@ void main() {
       await strategy.executeReal(
         step(
           type: ChainStepType.smsContact,
-          config: const SmsContactConfig(channel: MessageChannel.telegram),
+          config: const SmsContactConfig(
+            channel: MessageChannel.telegram,
+          ),
         ),
         harness.build(),
       );
@@ -325,50 +329,64 @@ void main() {
     // ----------------------------------------------------------------
     // Bugs.json Warn 4 — per-contact language template selection
     // ----------------------------------------------------------------
-    test('executeReal picks per-language template when contact has '
-        'languageCode and step has no override', () async {
-      final harness = StrategyHarness(
-        contacts: [makeContact(id: 'a', name: 'Alice', languageCode: 'de')],
-        defaultSmsTemplate: 'EN: {name}',
-        smsTemplateForLanguage: (code) => code == 'de' ? 'DE: {name}' : null,
-        userProfile: const UserProfile(name: 'Zoe'),
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(type: ChainStepType.smsContact),
-        harness.build(),
-      );
-      expect(harness.messaging.sentMessages.length, 1);
-      expect(harness.messaging.sentMessages.first.message, 'DE: Zoe');
-    });
+    test(
+      'executeReal picks per-language template when contact has '
+      'languageCode and step has no override',
+      () async {
+        final harness = StrategyHarness(
+          contacts: [
+            makeContact(
+              id: 'a',
+              name: 'Alice',
+              languageCode: 'de',
+            ),
+          ],
+          defaultSmsTemplate: 'EN: {name}',
+          smsTemplateForLanguage: (code) => code == 'de' ? 'DE: {name}' : null,
+          userProfile: const UserProfile(name: 'Zoe'),
+        );
+        addTearDown(harness.dispose);
+        await strategy.executeReal(
+          step(type: ChainStepType.smsContact),
+          harness.build(),
+        );
+        expect(harness.messaging.sentMessages.length, 1);
+        expect(harness.messaging.sentMessages.first.message, 'DE: Zoe');
+      },
+    );
 
-    test('executeReal falls back to defaultSmsTemplate when '
-        'smsTemplateForLanguage returns null', () async {
-      final harness = StrategyHarness(
-        contacts: [
-          makeContact(
-            id: 'a',
-            name: 'Alice',
-            languageCode: 'xx', // unsupported language
-          ),
-        ],
-        defaultSmsTemplate: 'EN: {name}',
-        smsTemplateForLanguage: (code) => null,
-        userProfile: const UserProfile(name: 'Zoe'),
-      );
-      addTearDown(harness.dispose);
-      await strategy.executeReal(
-        step(type: ChainStepType.smsContact),
-        harness.build(),
-      );
-      expect(harness.messaging.sentMessages.first.message, 'EN: Zoe');
-    });
+    test(
+      'executeReal falls back to defaultSmsTemplate when '
+      'smsTemplateForLanguage returns null',
+      () async {
+        final harness = StrategyHarness(
+          contacts: [
+            makeContact(
+              id: 'a',
+              name: 'Alice',
+              languageCode: 'xx', // unsupported language
+            ),
+          ],
+          defaultSmsTemplate: 'EN: {name}',
+          smsTemplateForLanguage: (code) => null,
+          userProfile: const UserProfile(name: 'Zoe'),
+        );
+        addTearDown(harness.dispose);
+        await strategy.executeReal(
+          step(type: ChainStepType.smsContact),
+          harness.build(),
+        );
+        expect(harness.messaging.sentMessages.first.message, 'EN: Zoe');
+      },
+    );
 
     test(
       'executeReal honours per-step messageTemplate over per-language',
       () async {
         final harness = StrategyHarness(
-          contacts: [makeContact(id: 'a', languageCode: 'de')],
+          contacts: [
+            makeContact(id: 'a', languageCode: 'de'),
+          ],
           defaultSmsTemplate: 'EN: {name}',
           smsTemplateForLanguage: (code) => 'DE: {name}',
           userProfile: const UserProfile(name: 'Zoe'),
@@ -377,7 +395,9 @@ void main() {
         await strategy.executeReal(
           step(
             type: ChainStepType.smsContact,
-            config: const SmsContactConfig(messageTemplate: 'STEP: {name}'),
+            config: const SmsContactConfig(
+              messageTemplate: 'STEP: {name}',
+            ),
           ),
           harness.build(),
         );

@@ -11,7 +11,11 @@ void main() {
   group('TrackingPoint', () {
     test('required fields & null optionals', () {
       final ts = DateTime.utc(2026, 4, 29, 12, 0, 0);
-      final p = TrackingPoint(timestamp: ts, latitude: 47.0, longitude: 8.0);
+      final p = TrackingPoint(
+        timestamp: ts,
+        latitude: 47.0,
+        longitude: 8.0,
+      );
       check(p.timestamp).equals(ts);
       check(p.latitude).equals(47.0);
       check(p.longitude).equals(8.0);
@@ -71,9 +75,7 @@ void main() {
         latitude: 47.123456,
         longitude: 8.987654,
       );
-      check(
-        p.toMapsUrl(),
-      ).equals('https://maps.google.com/?q=47.123456,8.987654');
+      check(p.toMapsUrl()).equals('https://maps.google.com/?q=47.123456,8.987654');
     });
 
     test('copyWith replaces a single field', () {

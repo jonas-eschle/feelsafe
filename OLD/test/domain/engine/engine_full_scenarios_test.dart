@@ -32,7 +32,11 @@ void main() {
         final e = SessionEngine(
           chainSteps: [
             holdStep(durationSeconds: 5, gracePeriodSeconds: 2),
-            smsStep(order: 1, durationSeconds: 3, gracePeriodSeconds: 0),
+            smsStep(
+              order: 1,
+              durationSeconds: 3,
+              gracePeriodSeconds: 0,
+            ),
             step(
               type: ChainStepType.loudAlarm,
               order: 2,
@@ -145,7 +149,9 @@ void main() {
     test('SMS step → distress triggered → distress SMS → chainExhausted', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [smsStep(durationSeconds: 30, gracePeriodSeconds: 30)],
+          chainSteps: [
+            smsStep(durationSeconds: 30, gracePeriodSeconds: 30),
+          ],
           random: FixedRandom(),
         );
         final evs = <ChainEvent>[];
@@ -153,9 +159,12 @@ void main() {
         e.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 5));
-        e.replaceWithDistressChain([
-          smsStep(id: 'distress', durationSeconds: 2, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [
+            smsStep(id: 'distress', durationSeconds: 2, gracePeriodSeconds: 0),
+          ],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         check(e.state).isA<EngineEnded>();
@@ -176,7 +185,9 @@ void main() {
     test('sms step: pause after 5s, resume, step fires after total 15s', () {
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [smsStep(durationSeconds: 15, gracePeriodSeconds: 0)],
+          chainSteps: [
+            smsStep(durationSeconds: 15, gracePeriodSeconds: 0),
+          ],
           random: FixedRandom(),
         );
         e.start();
@@ -203,7 +214,9 @@ void main() {
       // wait phase and is no longer holding.
       fakeAsync((async) {
         final e = SessionEngine(
-          chainSteps: [holdStep(durationSeconds: 20, gracePeriodSeconds: 10)],
+          chainSteps: [
+            holdStep(durationSeconds: 20, gracePeriodSeconds: 10),
+          ],
           random: FixedRandom(),
         );
         e.start();
@@ -297,10 +310,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(
-              durationSeconds: 30,
-              gracePeriodSeconds: 10,
-            ).copyWith(waitSeconds: 60),
+            smsStep(durationSeconds: 30, gracePeriodSeconds: 10).copyWith(
+              waitSeconds: 60,
+            ),
             smsStep(order: 1, durationSeconds: 60),
           ],
           isSimulation: true,
@@ -336,7 +348,11 @@ void main() {
           chainSteps: [
             smsStep(durationSeconds: 30),
             smsStep(order: 1, durationSeconds: 30),
-            step(type: ChainStepType.loudAlarm, order: 2, durationSeconds: 30),
+            step(
+              type: ChainStepType.loudAlarm,
+              order: 2,
+              durationSeconds: 30,
+            ),
           ],
           isSimulation: true,
           random: FixedRandom(),
@@ -363,7 +379,10 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            step(type: ChainStepType.hardwareButton, durationSeconds: 5),
+            step(
+              type: ChainStepType.hardwareButton,
+              durationSeconds: 5,
+            ),
           ],
           random: FixedRandom(),
         );
@@ -379,7 +398,10 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            step(type: ChainStepType.hardwareButton, durationSeconds: 5),
+            step(
+              type: ChainStepType.hardwareButton,
+              durationSeconds: 5,
+            ),
             smsStep(order: 1, durationSeconds: 30),
           ],
           random: FixedRandom(),
@@ -401,10 +423,9 @@ void main() {
       fakeAsync((async) {
         final e = SessionEngine(
           chainSteps: [
-            smsStep(
-              durationSeconds: 20,
-              gracePeriodSeconds: 5,
-            ).copyWith(waitSeconds: 10),
+            smsStep(durationSeconds: 20, gracePeriodSeconds: 5).copyWith(
+              waitSeconds: 10,
+            ),
           ],
           random: FixedRandom(),
         );
@@ -437,9 +458,12 @@ void main() {
         async.flushMicrotasks();
         e.pause(reason: PauseReason.userRequested);
         check(e.state).isA<EnginePaused>();
-        e.replaceWithDistressChain([
-          smsStep(id: 'distress', durationSeconds: 1, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [
+            smsStep(id: 'distress', durationSeconds: 1, gracePeriodSeconds: 0),
+          ],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.flushMicrotasks();
         check(e.state).isA<EngineRunning>();
         check(e.isDistressChain).isTrue();

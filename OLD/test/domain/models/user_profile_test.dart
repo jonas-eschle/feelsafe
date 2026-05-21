@@ -149,7 +149,8 @@ void main() {
 
     test('differ by allergies unequal', () {
       check(
-        const UserProfile(allergies: 'a') == const UserProfile(allergies: 'b'),
+        const UserProfile(allergies: 'a') ==
+            const UserProfile(allergies: 'b'),
       ).isFalse();
     });
 

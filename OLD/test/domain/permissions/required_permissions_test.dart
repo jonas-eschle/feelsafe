@@ -13,18 +13,20 @@ import 'package:guardianangela/domain/models/trigger.dart';
 import 'package:guardianangela/domain/permissions/required_permissions.dart';
 import 'package:guardianangela/services/fakes/fake_permission_service.dart';
 
-ChainStep _step(ChainStepType type, int order, {StepConfig? config}) =>
-    ChainStep(
-      id: 'step.$order',
-      type: type,
-      order: order,
-      durationSeconds: 5,
-      gracePeriodSeconds: 0,
-      config: config,
-    );
+ChainStep _step(
+  ChainStepType type,
+  int order, {
+  StepConfig? config,
+}) => ChainStep(
+  id: 'step.$order',
+  type: type,
+  order: order,
+  durationSeconds: 5,
+  gracePeriodSeconds: 0,
+  config: config,
+);
 
-SessionMode _mode(
-  List<ChainStep> steps, {
+SessionMode _mode(List<ChainStep> steps, {
   List<DisarmTrigger> disarmTriggers = const [],
   bool trackingEnabled = false,
 }) => SessionMode(
@@ -49,9 +51,8 @@ void main() {
 
     test('disguisedReminder step requires notification', () {
       final mode = _mode([_step(ChainStepType.disguisedReminder, 0)]);
-      check(
-        requiredPermissionsForMode(mode),
-      ).deepEquals({RequiredPermission.notification});
+      check(requiredPermissionsForMode(mode))
+          .deepEquals({RequiredPermission.notification});
     });
 
     test(
@@ -59,9 +60,10 @@ void main() {
       '(SmsContactConfig defaults to channel.sms + includeLocation=true)',
       () {
         final mode = _mode([_step(ChainStepType.smsContact, 0)]);
-        check(
-          requiredPermissionsForMode(mode),
-        ).deepEquals({RequiredPermission.sendSms, RequiredPermission.location});
+        check(requiredPermissionsForMode(mode)).deepEquals({
+          RequiredPermission.sendSms,
+          RequiredPermission.location,
+        });
       },
     );
 
@@ -75,9 +77,8 @@ void main() {
             config: const SmsContactConfig(includeLocation: false),
           ),
         ]);
-        check(
-          requiredPermissionsForMode(mode),
-        ).deepEquals({RequiredPermission.sendSms});
+        check(requiredPermissionsForMode(mode))
+            .deepEquals({RequiredPermission.sendSms});
       },
     );
 
@@ -95,30 +96,31 @@ void main() {
       }
     });
 
-    test('smsContact via phoneCall channel triggers callPhone permission', () {
-      final mode = _mode([
-        _step(
-          ChainStepType.smsContact,
-          0,
-          config: const SmsContactConfig(
-            channel: MessageChannel.phoneCall,
-            includeLocation: false,
+    test(
+      'smsContact via phoneCall channel triggers callPhone permission',
+      () {
+        final mode = _mode([
+          _step(
+            ChainStepType.smsContact,
+            0,
+            config: const SmsContactConfig(
+              channel: MessageChannel.phoneCall,
+              includeLocation: false,
+            ),
           ),
-        ),
-      ]);
-      check(
-        requiredPermissionsForMode(mode),
-      ).deepEquals({RequiredPermission.callPhone});
-    });
+        ]);
+        check(requiredPermissionsForMode(mode))
+            .deepEquals({RequiredPermission.callPhone});
+      },
+    );
 
     test('phoneCallContact + callEmergency need callPhone', () {
       final mode = _mode([
         _step(ChainStepType.phoneCallContact, 0),
         _step(ChainStepType.callEmergency, 1),
       ]);
-      check(
-        requiredPermissionsForMode(mode),
-      ).deepEquals({RequiredPermission.callPhone});
+      check(requiredPermissionsForMode(mode))
+          .deepEquals({RequiredPermission.callPhone});
     });
 
     test('GpsArrivalDisarmTrigger adds location', () {
@@ -132,18 +134,17 @@ void main() {
           ),
         ],
       );
-      check(
-        requiredPermissionsForMode(mode),
-      ).deepEquals({RequiredPermission.location});
+      check(requiredPermissionsForMode(mode))
+          .deepEquals({RequiredPermission.location});
     });
 
     test('trackingEnabled adds location', () {
-      final mode = _mode([
-        _step(ChainStepType.holdButton, 0),
-      ], trackingEnabled: true);
-      check(
-        requiredPermissionsForMode(mode),
-      ).deepEquals({RequiredPermission.location});
+      final mode = _mode(
+        [_step(ChainStepType.holdButton, 0)],
+        trackingEnabled: true,
+      );
+      check(requiredPermissionsForMode(mode))
+          .deepEquals({RequiredPermission.location});
     });
 
     test('full Walk-Mode-like chain accumulates everything', () {

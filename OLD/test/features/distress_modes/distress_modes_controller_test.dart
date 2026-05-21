@@ -39,9 +39,8 @@ void main() {
     test('build returns only distress-flagged modes', () async {
       final repo = makeRepo(includeDistress: true, includeRegular: true);
       final container = makeContainer(repo);
-      final modes = await container.read(
-        distressModesControllerProvider.future,
-      );
+      final modes =
+          await container.read(distressModesControllerProvider.future);
       check(modes.length).equals(1);
       check(modes.first.id).equals('d1');
       check(modes.first.isDistressMode).isTrue();
@@ -50,9 +49,8 @@ void main() {
     test('build returns empty list when no distress modes exist', () async {
       final repo = makeRepo(includeRegular: true);
       final container = makeContainer(repo);
-      final modes = await container.read(
-        distressModesControllerProvider.future,
-      );
+      final modes =
+          await container.read(distressModesControllerProvider.future);
       check(modes).isEmpty();
     });
 
@@ -63,22 +61,21 @@ void main() {
       // Build controller first.
       await container.read(distressModesControllerProvider.future);
 
-      final notifier = container.read(distressModesControllerProvider.notifier);
+      final notifier =
+          container.read(distressModesControllerProvider.notifier);
 
       // Pass a regular mode — controller must flag it as distress.
-      final mode = makeMode(
-        id: 'new',
-        name: 'New',
-      ).copyWith(chainSteps: [smsStep()]);
+      final mode = makeMode(id: 'new', name: 'New').copyWith(
+        chainSteps: [smsStep()],
+      );
       await notifier.save(mode);
 
       final saved = await repo.getById('new');
       check(saved).isNotNull();
       check(saved!.isDistressMode).isTrue();
 
-      final state = await container.read(
-        distressModesControllerProvider.future,
-      );
+      final state =
+          await container.read(distressModesControllerProvider.future);
       check(state.any((m) => m.id == 'new')).isTrue();
     });
 
@@ -87,7 +84,8 @@ void main() {
       final container = makeContainer(repo);
       await container.read(distressModesControllerProvider.future);
 
-      final notifier = container.read(distressModesControllerProvider.notifier);
+      final notifier =
+          container.read(distressModesControllerProvider.notifier);
       final mode = makeDistressMode(id: 'dm', name: 'DM');
       await notifier.save(mode);
 
@@ -100,7 +98,8 @@ void main() {
       final container = makeContainer(repo);
       await container.read(distressModesControllerProvider.future);
 
-      final notifier = container.read(distressModesControllerProvider.notifier);
+      final notifier =
+          container.read(distressModesControllerProvider.notifier);
       // makeMode defaults to one holdStep; clear it.
       final emptyMode = makeMode(id: 'bad', name: 'Bad', steps: []);
       await check(notifier.save(emptyMode)).throws<ArgumentError>();
@@ -114,12 +113,12 @@ void main() {
       final container = makeContainer(repo);
       await container.read(distressModesControllerProvider.future);
 
-      final notifier = container.read(distressModesControllerProvider.notifier);
+      final notifier =
+          container.read(distressModesControllerProvider.notifier);
       await notifier.delete('d1');
 
-      final state = await container.read(
-        distressModesControllerProvider.future,
-      );
+      final state =
+          await container.read(distressModesControllerProvider.future);
       check(state.map((m) => m.id).toList()).not((it) => it.contains('d1'));
       check(state.any((m) => m.id == 'd2')).isTrue();
     });
@@ -135,12 +134,12 @@ void main() {
       await repo.save(makeDistressMode(id: 'd2', name: 'D2'));
 
       // Reload should pick it up.
-      final notifier = container.read(distressModesControllerProvider.notifier);
+      final notifier =
+          container.read(distressModesControllerProvider.notifier);
       await notifier.reload();
 
-      final state = await container.read(
-        distressModesControllerProvider.future,
-      );
+      final state =
+          await container.read(distressModesControllerProvider.future);
       check(state.length).equals(2);
     });
   });

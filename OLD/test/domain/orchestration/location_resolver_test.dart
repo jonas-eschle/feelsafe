@@ -62,36 +62,36 @@ void main() {
   group('LocationResolver.resolve', () {
     test('returns "Location unavailable" when logGpsEnabled is false', () {
       final svc = _services(
-        location: FakeLocationService()
-          ..injectPoint(
-            LocationPoint(
-              latitude: 47.0,
-              longitude: 8.0,
-              timestamp: DateTime.utc(2024),
-            ),
+        location: FakeLocationService()..injectPoint(
+          LocationPoint(
+            latitude: 47.0,
+            longitude: 8.0,
+            timestamp: DateTime.utc(2024),
           ),
+        ),
       );
       final result = LocationResolver.resolve(svc, logGpsEnabled: false);
       check(result).equals('Location unavailable');
     });
 
-    test(
-      'prefers tracking buffer over live location when buffer has a point',
-      () {
-        final buf = TrackingBuffer();
-        final pt = _point(lat: 47.0, lon: 8.0, accuracy: 15);
-        buf.add(pt);
-        final loc = FakeLocationService();
-        final svc = _services(location: loc, buffer: buf);
+    test('prefers tracking buffer over live location when buffer has a point',
+        () {
+      final buf = TrackingBuffer();
+      final pt = _point(lat: 47.0, lon: 8.0, accuracy: 15);
+      buf.add(pt);
+      final loc = FakeLocationService();
+      final svc = _services(location: loc, buffer: buf);
 
-        final result = LocationResolver.resolve(svc, now: _clock());
-        // Should contain the Google Maps URL for the tracking buffer point.
-        check(result).contains('maps.google.com');
-        check(result).contains('47.0');
-        // Live location was NOT consulted.
-        check(loc.calls).not((it) => it.contains('getLastLocationUrl'));
-      },
-    );
+      final result = LocationResolver.resolve(
+        svc,
+        now: _clock(),
+      );
+      // Should contain the Google Maps URL for the tracking buffer point.
+      check(result).contains('maps.google.com');
+      check(result).contains('47.0');
+      // Live location was NOT consulted.
+      check(loc.calls).not((it) => it.contains('getLastLocationUrl'));
+    });
 
     test('falls through to live location when buffer is empty', () {
       final buf = TrackingBuffer(); // empty
@@ -110,7 +110,8 @@ void main() {
       check(loc.calls).contains('getLastLocationUrl');
     });
 
-    test('falls through to "Location unavailable" when all sources empty', () {
+    test('falls through to "Location unavailable" when all sources empty',
+        () {
       final svc = _services();
       check(LocationResolver.resolve(svc)).equals('Location unavailable');
     });

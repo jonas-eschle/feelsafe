@@ -48,9 +48,9 @@ final class AudioService implements AudioServiceProtocol {
     PlatformInfo platform = const PlatformInfo(),
     AudioPlayerFactory? playerFactory,
     FlutterTtsFactory? ttsFactory,
-  }) : _platform = platform,
-       _playerFactory = playerFactory ?? AudioPlayer.new,
-       _ttsFactory = ttsFactory ?? FlutterTts.new;
+  })  : _platform = platform,
+        _playerFactory = playerFactory ?? AudioPlayer.new,
+        _ttsFactory = ttsFactory ?? FlutterTts.new;
 
   // ignore: unused_field
   final PlatformInfo _platform;

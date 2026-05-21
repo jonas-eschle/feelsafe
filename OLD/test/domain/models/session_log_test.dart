@@ -184,7 +184,10 @@ void main() {
       log = log.copyWith(
         events: [
           ...log.events,
-          SessionLogEvent(timestamp: start, event: ChainEvent.sessionStarted),
+          SessionLogEvent(
+            timestamp: start,
+            event: ChainEvent.sessionStarted,
+          ),
         ],
       );
       check(log.events.length).equals(1);
@@ -211,9 +214,8 @@ void main() {
       );
       final newEvents = [...log.events]..[1] = updated;
       log = log.copyWith(events: newEvents);
-      check(
-        log.events[1].deliveryStatus,
-      ).equals(const ActionDeliveryStatus.sent());
+      check(log.events[1].deliveryStatus)
+          .equals(const ActionDeliveryStatus.sent());
 
       // Finish: endedAt null -> set via sessionEnded flow.
       final endTs = start.add(const Duration(minutes: 5));
@@ -222,7 +224,10 @@ void main() {
         endReason: EndReason.disarm,
         events: [
           ...log.events,
-          SessionLogEvent(timestamp: endTs, event: ChainEvent.sessionEnded),
+          SessionLogEvent(
+            timestamp: endTs,
+            event: ChainEvent.sessionEnded,
+          ),
         ],
       );
       check(log.endedAt).equals(endTs);
@@ -233,12 +238,12 @@ void main() {
 
   group('SessionLog equality / hashCode / toString', () {
     SessionLog base() => SessionLog(
-      id: 'log1',
-      modeId: 'm1',
-      modeName: 'Walk',
-      startedAt: DateTime.utc(2026, 4, 1),
-      isSimulation: false,
-    );
+          id: 'log1',
+          modeId: 'm1',
+          modeName: 'Walk',
+          startedAt: DateTime.utc(2026, 4, 1),
+          isSimulation: false,
+        );
 
     test('identical equals', () {
       final a = base();
@@ -268,15 +273,21 @@ void main() {
     });
 
     test('different startedAt unequal', () {
-      check(base() == base().copyWith(startedAt: DateTime.utc(2027))).isFalse();
+      check(
+        base() == base().copyWith(startedAt: DateTime.utc(2027)),
+      ).isFalse();
     });
 
     test('different endedAt unequal', () {
-      check(base() == base().copyWith(endedAt: DateTime.utc(2027))).isFalse();
+      check(
+        base() == base().copyWith(endedAt: DateTime.utc(2027)),
+      ).isFalse();
     });
 
     test('different endReason unequal', () {
-      check(base() == base().copyWith(endReason: EndReason.userQuit)).isFalse();
+      check(
+        base() == base().copyWith(endReason: EndReason.userQuit),
+      ).isFalse();
     });
 
     test('different isSimulation unequal', () {
@@ -316,8 +327,10 @@ void main() {
   group('SessionLogEvent equality / hashCode / toString', () {
     final ts = DateTime.utc(2026, 4, 1, 12);
 
-    SessionLogEvent base() =>
-        SessionLogEvent(timestamp: ts, event: ChainEvent.stepStarted);
+    SessionLogEvent base() => SessionLogEvent(
+          timestamp: ts,
+          event: ChainEvent.stepStarted,
+        );
 
     test('identical equals', () {
       final e = base();
@@ -343,7 +356,10 @@ void main() {
     });
 
     test('differ by event', () {
-      final b = SessionLogEvent(timestamp: ts, event: ChainEvent.stepAdvancing);
+      final b = SessionLogEvent(
+        timestamp: ts,
+        event: ChainEvent.stepAdvancing,
+      );
       check(base() == b).isFalse();
     });
 
@@ -376,7 +392,10 @@ void main() {
     });
 
     test('toString exposes event + stepIndex + stepType', () {
-      final e = base().copyWith(stepIndex: 3, stepType: ChainStepType.fakeCall);
+      final e = base().copyWith(
+        stepIndex: 3,
+        stepType: ChainStepType.fakeCall,
+      );
       final str = e.toString();
       check(str).contains('stepStarted');
       check(str).contains('3');

@@ -47,9 +47,10 @@ final class DisguisedReminderStrategy extends EventStrategy {
     if (template == null) {
       return const SimulationDescription('simDisguisedReminderEmpty');
     }
-    return SimulationDescription('simDisguisedReminder', {
-      'title': template.title,
-    });
+    return SimulationDescription(
+      'simDisguisedReminder',
+      {'title': template.title},
+    );
   }
 
   /// Resolves the template for [step] from [services.context].

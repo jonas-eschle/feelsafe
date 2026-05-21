@@ -45,18 +45,13 @@ class _FakeModesRepository extends ModesRepository {
 
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
+      async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -73,18 +68,13 @@ class _NoopAudio implements AudioServiceProtocol {
 /// exercise the error-catch path in [_SimulationStrategyPreview._run].
 class _ThrowingAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) => Future.error(StateError('playAlarm simulated failure'));
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp}) =>
+      Future.error(StateError('playAlarm simulated failure'));
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -102,8 +92,7 @@ class _NoopTts implements FlutterTts {
   dynamic noSuchMethod(Invocation i) async => 1;
 }
 
-FakeCallTtsFactory _noopTtsFactory() =>
-    () => _NoopTts();
+FakeCallTtsFactory _noopTtsFactory() => () => _NoopTts();
 
 ChainStep _step({
   required String id,
@@ -122,8 +111,14 @@ ChainStep _step({
   randomize: 0,
 );
 
-SessionMode _mode({required String id, required List<ChainStep> steps}) =>
-    SessionMode(id: id, name: 'Test mode $id', chainSteps: steps);
+SessionMode _mode({
+  required String id,
+  required List<ChainStep> steps,
+}) => SessionMode(
+  id: id,
+  name: 'Test mode $id',
+  chainSteps: steps,
+);
 
 List<Override> _overrides(
   _FakeModesRepository repo, {
@@ -141,35 +136,38 @@ List<Override> _overrides(
 
 void main() {
   group('_HoldButtonPreview — onHoldRelease (lines 147–158)', () {
-    testWidgets('pressing and releasing HoldToTriggerButton fires onHoldRelease '
-        '(lines 147–148)', (tester) async {
-      final step = _step(id: 's1', type: ChainStepType.holdButton);
-      final mode = _mode(id: 'm1', steps: [step]);
-      final repo = _FakeModesRepository([mode]);
+    testWidgets(
+      'pressing and releasing HoldToTriggerButton fires onHoldRelease '
+      '(lines 147–148)',
+      (tester) async {
+        final step = _step(id: 's1', type: ChainStepType.holdButton);
+        final mode = _mode(id: 'm1', steps: [step]);
+        final repo = _FakeModesRepository([mode]);
 
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: _overrides(repo),
-          initialQuery: 'stepId=s1&modeId=m1',
-          child: const StepPreviewScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: _overrides(repo),
+            initialQuery: 'stepId=s1&modeId=m1',
+            child: const StepPreviewScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // The HoldToTriggerButton uses GestureDetector onTapDown/onTapUp.
-      final btnFinder = find.byType(HoldToTriggerButton);
-      check(btnFinder.evaluate()).isNotEmpty();
+        // The HoldToTriggerButton uses GestureDetector onTapDown/onTapUp.
+        final btnFinder = find.byType(HoldToTriggerButton);
+        check(btnFinder.evaluate()).isNotEmpty();
 
-      // Tap down → onHoldStart fires (line 147 covered implicitly via render).
-      // Tap up → onHoldRelease fires → setState(_heldOnce = true).
-      await tester.tap(btnFinder);
-      await tester.pumpAndSettle();
+        // Tap down → onHoldStart fires (line 147 covered implicitly via render).
+        // Tap up → onHoldRelease fires → setState(_heldOnce = true).
+        await tester.tap(btnFinder);
+        await tester.pumpAndSettle();
 
-      // After release, the "released" text should appear (lines 154–158).
-      // The text key is l.stepPreviewHoldButtonReleased ('You may stop now.')
-      // Accept any non-empty text as evidence the if(_heldOnce) branch ran.
-      check(find.byType(StepPreviewScreen).evaluate()).isNotEmpty();
-    });
+        // After release, the "released" text should appear (lines 154–158).
+        // The text key is l.stepPreviewHoldButtonReleased ('You may stop now.')
+        // Accept any non-empty text as evidence the if(_heldOnce) branch ran.
+        check(find.byType(StepPreviewScreen).evaluate()).isNotEmpty();
+      },
+    );
 
     testWidgets(
       'after hold-release, _heldOnce=true text appears (lines 154–158)',
@@ -258,8 +256,7 @@ void main() {
 
         // pump() advances exactly one frame — after the addPostFrameCallback
         // fires and calls setState(_running=true) but before executeReal resolves.
-        await tester
-            .pump(); // frame 1: initial build, postFrameCallback registered
+        await tester.pump(); // frame 1: initial build, postFrameCallback registered
         await tester.pump(); // frame 2: setState(_running=true) applied
 
         // At this point _running may be true → CircularProgressIndicator shown.

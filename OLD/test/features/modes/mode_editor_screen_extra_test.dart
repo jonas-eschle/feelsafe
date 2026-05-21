@@ -58,32 +58,30 @@ Widget _host({
 
 void main() {
   group('_duplicateStep (lines 198–216)', () {
-    testWidgets('tapping Duplicate on a chain step inserts a copy below it', (
-      tester,
-    ) async {
-      final mode = makeMode(
-        id: 'm1',
-        steps: [holdStep(id: 's1')],
-      );
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm1'));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'tapping Duplicate on a chain step inserts a copy below it',
+      (tester) async {
+        final mode = makeMode(id: 'm1', steps: [holdStep(id: 's1')]);
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm1'));
+        await tester.pumpAndSettle();
 
-      // Exactly one tile before duplicate.
-      check(find.byType(ChainStepTile).evaluate().length).equals(1);
+        // Exactly one tile before duplicate.
+        check(find.byType(ChainStepTile).evaluate().length).equals(1);
 
-      // Each ChainStepTile has a Duplicate IconButton (content_copy_outlined).
-      await tester.tap(
-        find.descendant(
-          of: find.byType(ChainStepTile),
-          matching: find.byIcon(Icons.content_copy_outlined),
-        ),
-      );
-      await tester.pumpAndSettle();
+        // Each ChainStepTile has a Duplicate IconButton (content_copy_outlined).
+        await tester.tap(
+          find.descendant(
+            of: find.byType(ChainStepTile),
+            matching: find.byIcon(Icons.content_copy_outlined),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Now two tiles.
-      check(find.byType(ChainStepTile).evaluate().length).equals(2);
-    });
+        // Now two tiles.
+        check(find.byType(ChainStepTile).evaluate().length).equals(2);
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -137,9 +135,8 @@ void main() {
         // Tap the button-type dropdown directly (it is now visible).
         // Use ensureVisible to scroll the dropdown into view without
         // requiring a single Scrollable ancestor.
-        final buttonTypeDropdown = find.byType(
-          DropdownButtonFormField<ButtonType>,
-        );
+        final buttonTypeDropdown =
+            find.byType(DropdownButtonFormField<ButtonType>);
         if (buttonTypeDropdown.evaluate().isNotEmpty) {
           await tester.ensureVisible(buttonTypeDropdown.first);
           await tester.pumpAndSettle();
@@ -157,37 +154,37 @@ void main() {
       },
     );
 
-    testWidgets('deleting the trigger removes the card (lines 238–241)', (
-      tester,
-    ) async {
-      final mode = makeMode(id: 'm4');
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm4'));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'deleting the trigger removes the card (lines 238–241)',
+      (tester) async {
+        final mode = makeMode(id: 'm4');
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm4'));
+        await tester.pumpAndSettle();
 
-      // Add a trigger — _DistressTriggerCard appears (ExpansionTile in a Card).
-      final beforeCount = find.byType(ExpansionTile).evaluate().length;
-      final addBtn = find.byIcon(Icons.add_alert_outlined);
-      await tester.ensureVisible(addBtn);
-      await tester.pumpAndSettle();
-      await tester.tap(addBtn);
-      await tester.pumpAndSettle();
+        // Add a trigger — _DistressTriggerCard appears (ExpansionTile in a Card).
+        final beforeCount = find.byType(ExpansionTile).evaluate().length;
+        final addBtn = find.byIcon(Icons.add_alert_outlined);
+        await tester.ensureVisible(addBtn);
+        await tester.pumpAndSettle();
+        await tester.tap(addBtn);
+        await tester.pumpAndSettle();
 
-      // Confirm one more ExpansionTile appeared.
-      check(
-        find.byType(ExpansionTile).evaluate().length,
-      ).equals(beforeCount + 1);
+        // Confirm one more ExpansionTile appeared.
+        check(find.byType(ExpansionTile).evaluate().length)
+            .equals(beforeCount + 1);
 
-      // Delete by tapping the delete icon in the trigger card's trailing area.
-      final deleteBtn = find.byIcon(Icons.delete_outline).first;
-      await tester.ensureVisible(deleteBtn);
-      await tester.pumpAndSettle();
-      await tester.tap(deleteBtn);
-      await tester.pumpAndSettle();
+        // Delete by tapping the delete icon in the trigger card's trailing area.
+        final deleteBtn = find.byIcon(Icons.delete_outline).first;
+        await tester.ensureVisible(deleteBtn);
+        await tester.pumpAndSettle();
+        await tester.tap(deleteBtn);
+        await tester.pumpAndSettle();
 
-      // Back to the original count.
-      check(find.byType(ExpansionTile).evaluate().length).equals(beforeCount);
-    });
+        // Back to the original count.
+        check(find.byType(ExpansionTile).evaluate().length).equals(beforeCount);
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -195,78 +192,81 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('_confirmDiscard (lines 245–266)', () {
-    testWidgets('back on a dirty form shows discard dialog (lines 245–266)', (
-      tester,
-    ) async {
-      final repo = FakeModesRepository();
-      await tester.pumpWidget(_host(repo: repo));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'back on a dirty form shows discard dialog (lines 245–266)',
+      (tester) async {
+        final repo = FakeModesRepository();
+        await tester.pumpWidget(_host(repo: repo));
+        await tester.pumpAndSettle();
 
-      // Make the form dirty by typing a name.
-      await tester.enterText(find.byType(TextField).first, 'My Mode');
-      await tester.pump();
+        // Make the form dirty by typing a name.
+        await tester.enterText(find.byType(TextField).first, 'My Mode');
+        await tester.pump();
 
-      // Trigger system back via the AppBar back button (GoRouter back).
-      // The AppBar leading icon pops the current route, which is intercepted
-      // by PopScope when the form is dirty.
-      await tester.tap(find.byType(BackButton));
-      await tester.pumpAndSettle();
+        // Trigger system back via the AppBar back button (GoRouter back).
+        // The AppBar leading icon pops the current route, which is intercepted
+        // by PopScope when the form is dirty.
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
 
-      // AlertDialog should appear from _confirmDiscard.
-      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
-    });
+        // AlertDialog should appear from _confirmDiscard.
+        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('tapping Discard in the dialog closes the screen (line 259)', (
-      tester,
-    ) async {
-      final repo = FakeModesRepository();
-      await tester.pumpWidget(_host(repo: repo));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'tapping Discard in the dialog closes the screen (line 259)',
+      (tester) async {
+        final repo = FakeModesRepository();
+        await tester.pumpWidget(_host(repo: repo));
+        await tester.pumpAndSettle();
 
-      // Make form dirty.
-      await tester.enterText(find.byType(TextField).first, 'Dirty');
-      await tester.pump();
+        // Make form dirty.
+        await tester.enterText(find.byType(TextField).first, 'Dirty');
+        await tester.pump();
 
-      // Tap back button to trigger PopScope interception.
-      await tester.tap(find.byType(BackButton));
-      await tester.pumpAndSettle();
+        // Tap back button to trigger PopScope interception.
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
 
-      // Confirm dialog is open.
-      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+        // Confirm dialog is open.
+        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
 
-      // Tap the Discard (FilledButton).
-      await tester.tap(find.byType(FilledButton));
-      await tester.pumpAndSettle();
+        // Tap the Discard (FilledButton).
+        await tester.tap(find.byType(FilledButton));
+        await tester.pumpAndSettle();
 
-      // The ModeEditorScreen should be gone.
-      check(find.byType(ModeEditorScreen).evaluate()).isEmpty();
-    });
+        // The ModeEditorScreen should be gone.
+        check(find.byType(ModeEditorScreen).evaluate()).isEmpty();
+      },
+    );
 
-    testWidgets('tapping Keep in the dialog keeps the screen open (line 255)', (
-      tester,
-    ) async {
-      final repo = FakeModesRepository();
-      await tester.pumpWidget(_host(repo: repo));
-      await tester.pumpAndSettle();
+    testWidgets(
+      'tapping Keep in the dialog keeps the screen open (line 255)',
+      (tester) async {
+        final repo = FakeModesRepository();
+        await tester.pumpWidget(_host(repo: repo));
+        await tester.pumpAndSettle();
 
-      // Make form dirty.
-      await tester.enterText(find.byType(TextField).first, 'Dirty');
-      await tester.pump();
+        // Make form dirty.
+        await tester.enterText(find.byType(TextField).first, 'Dirty');
+        await tester.pump();
 
-      // Tap back button to trigger PopScope interception.
-      await tester.tap(find.byType(BackButton));
-      await tester.pumpAndSettle();
+        // Tap back button to trigger PopScope interception.
+        await tester.tap(find.byType(BackButton));
+        await tester.pumpAndSettle();
 
-      // Confirm dialog is open.
-      check(find.byType(AlertDialog).evaluate()).isNotEmpty();
+        // Confirm dialog is open.
+        check(find.byType(AlertDialog).evaluate()).isNotEmpty();
 
-      // Tap the Keep (TextButton).
-      await tester.tap(find.byType(TextButton));
-      await tester.pumpAndSettle();
+        // Tap the Keep (TextButton).
+        await tester.tap(find.byType(TextButton));
+        await tester.pumpAndSettle();
 
-      // The ModeEditorScreen is still on screen.
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        // The ModeEditorScreen is still on screen.
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -373,56 +373,58 @@ void main() {
       },
     );
 
-    testWidgets('interval slider onChanged updates state (line 586)', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(800, 4000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets(
+      'interval slider onChanged updates state (line 586)',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 4000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      final mode = makeMode(id: 'm9');
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm9'));
-      await tester.pumpAndSettle();
+        final mode = makeMode(id: 'm9');
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm9'));
+        await tester.pumpAndSettle();
 
-      // Enable tracking (last SwitchListTile is the tracking one).
-      await tester.tap(find.byType(SwitchListTile).last);
-      await tester.pumpAndSettle();
+        // Enable tracking (last SwitchListTile is the tracking one).
+        await tester.tap(find.byType(SwitchListTile).last);
+        await tester.pumpAndSettle();
 
-      // Drag the first slider (interval slider) slightly.
-      final sliders = find.byType(Slider);
-      check(sliders.evaluate().length).isGreaterOrEqual(2);
-      await tester.drag(sliders.first, const Offset(20, 0));
-      await tester.pumpAndSettle();
+        // Drag the first slider (interval slider) slightly.
+        final sliders = find.byType(Slider);
+        check(sliders.evaluate().length).isGreaterOrEqual(2);
+        await tester.drag(sliders.first, const Offset(20, 0));
+        await tester.pumpAndSettle();
 
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('buffer-size slider onChanged updates state (lines 532–541)', (
-      tester,
-    ) async {
-      tester.view.physicalSize = const Size(800, 4000);
-      tester.view.devicePixelRatio = 1.0;
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
+    testWidgets(
+      'buffer-size slider onChanged updates state (lines 532–541)',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 4000);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
 
-      final mode = makeMode(id: 'm10');
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm10'));
-      await tester.pumpAndSettle();
+        final mode = makeMode(id: 'm10');
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm10'));
+        await tester.pumpAndSettle();
 
-      // Enable tracking.
-      await tester.tap(find.byType(SwitchListTile).last);
-      await tester.pumpAndSettle();
+        // Enable tracking.
+        await tester.tap(find.byType(SwitchListTile).last);
+        await tester.pumpAndSettle();
 
-      // Drag the second slider (buffer-size slider).
-      final sliders = find.byType(Slider);
-      await tester.drag(sliders.last, const Offset(20, 0));
-      await tester.pumpAndSettle();
+        // Drag the second slider (buffer-size slider).
+        final sliders = find.byType(Slider);
+        await tester.drag(sliders.last, const Offset(20, 0));
+        await tester.pumpAndSettle();
 
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -450,7 +452,8 @@ void main() {
         await tester.pumpAndSettle();
 
         // Switch pattern to LongPress (second item in bool dropdown).
-        final patternDropdown = find.byType(DropdownButtonFormField<bool>);
+        final patternDropdown =
+            find.byType(DropdownButtonFormField<bool>);
         if (patternDropdown.evaluate().isNotEmpty) {
           await tester.ensureVisible(patternDropdown.first);
           await tester.pumpAndSettle();
@@ -474,31 +477,32 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('_RepeatPressEditor text fields (lines 818–850)', () {
-    testWidgets('editing press-count field fires onChanged (line 821)', (
-      tester,
-    ) async {
-      final mode = makeMode(id: 'm12');
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm12'));
-      await tester.pumpAndSettle();
-
-      // Add a trigger with RepeatPress (default) pattern.
-      await tester.tap(find.byIcon(Icons.add_alert_outlined));
-      await tester.pumpAndSettle();
-
-      // Expand the card.
-      await tester.tap(find.byType(ExpansionTile).first);
-      await tester.pumpAndSettle();
-
-      // Enter a number in the first text field (press count).
-      final fields = find.byType(TextField);
-      if (fields.evaluate().isNotEmpty) {
-        await tester.enterText(fields.last, '7');
+    testWidgets(
+      'editing press-count field fires onChanged (line 821)',
+      (tester) async {
+        final mode = makeMode(id: 'm12');
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm12'));
         await tester.pumpAndSettle();
-      }
 
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        // Add a trigger with RepeatPress (default) pattern.
+        await tester.tap(find.byIcon(Icons.add_alert_outlined));
+        await tester.pumpAndSettle();
+
+        // Expand the card.
+        await tester.tap(find.byType(ExpansionTile).first);
+        await tester.pumpAndSettle();
+
+        // Enter a number in the first text field (press count).
+        final fields = find.byType(TextField);
+        if (fields.evaluate().isNotEmpty) {
+          await tester.enterText(fields.last, '7');
+          await tester.pumpAndSettle();
+        }
+
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -506,48 +510,50 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('_LongPressEditor text field (lines 853–893)', () {
-    testWidgets('editing duration field fires onChanged (lines 887–890)', (
-      tester,
-    ) async {
-      final mode = makeMode(id: 'm13');
-      final repo = FakeModesRepository([mode]);
-      await tester.pumpWidget(_host(repo: repo, modeId: 'm13'));
-      await tester.pumpAndSettle();
-
-      // Add a trigger.
-      await tester.tap(find.byIcon(Icons.add_alert_outlined));
-      await tester.pumpAndSettle();
-
-      // Expand the trigger card.
-      final triggerCard = find.byType(ExpansionTile).first;
-      await tester.ensureVisible(triggerCard);
-      await tester.pumpAndSettle();
-      await tester.tap(triggerCard);
-      await tester.pumpAndSettle();
-
-      // Switch to LongPress pattern.
-      final patternDropdown = find.byType(DropdownButtonFormField<bool>);
-      if (patternDropdown.evaluate().isNotEmpty) {
-        await tester.ensureVisible(patternDropdown.first);
+    testWidgets(
+      'editing duration field fires onChanged (lines 887–890)',
+      (tester) async {
+        final mode = makeMode(id: 'm13');
+        final repo = FakeModesRepository([mode]);
+        await tester.pumpWidget(_host(repo: repo, modeId: 'm13'));
         await tester.pumpAndSettle();
-        await tester.tap(patternDropdown.first);
+
+        // Add a trigger.
+        await tester.tap(find.byIcon(Icons.add_alert_outlined));
         await tester.pumpAndSettle();
-        final patternItems = find.byType(DropdownMenuItem<bool>);
-        if (patternItems.evaluate().length >= 2) {
-          await tester.tap(patternItems.last, warnIfMissed: false);
+
+        // Expand the trigger card.
+        final triggerCard = find.byType(ExpansionTile).first;
+        await tester.ensureVisible(triggerCard);
+        await tester.pumpAndSettle();
+        await tester.tap(triggerCard);
+        await tester.pumpAndSettle();
+
+        // Switch to LongPress pattern.
+        final patternDropdown =
+            find.byType(DropdownButtonFormField<bool>);
+        if (patternDropdown.evaluate().isNotEmpty) {
+          await tester.ensureVisible(patternDropdown.first);
+          await tester.pumpAndSettle();
+          await tester.tap(patternDropdown.first);
+          await tester.pumpAndSettle();
+          final patternItems = find.byType(DropdownMenuItem<bool>);
+          if (patternItems.evaluate().length >= 2) {
+            await tester.tap(patternItems.last, warnIfMissed: false);
+            await tester.pumpAndSettle();
+          }
+        }
+
+        // Enter a duration value.
+        final fields = find.byType(TextField);
+        if (fields.evaluate().isNotEmpty) {
+          await tester.enterText(fields.last, '3.0');
           await tester.pumpAndSettle();
         }
-      }
 
-      // Enter a duration value.
-      final fields = find.byType(TextField);
-      if (fields.evaluate().isNotEmpty) {
-        await tester.enterText(fields.last, '3.0');
-        await tester.pumpAndSettle();
-      }
-
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -595,42 +601,43 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('_GpsOverrideEditor fields (lines 1082–1108)', () {
-    testWidgets('GPS override editor fields fire onChanged (lines 1082–1108)', (
-      tester,
-    ) async {
-      final mode = makeMode(id: 'm15');
-      final repo = FakeModesRepository([mode]);
-      final settings = FakeSettingsRepository(
-        const AppSettings(defaults: AppDefaults()),
-      );
-      await tester.pumpWidget(
-        _host(repo: repo, settings: settings, modeId: 'm15'),
-      );
-      await tester.pumpAndSettle();
-
-      // Expand overrides panel.
-      final overridesPanel = find.byType(ExpansionTile);
-      if (overridesPanel.evaluate().isNotEmpty) {
-        await tester.tap(overridesPanel.first);
+    testWidgets(
+      'GPS override editor fields fire onChanged (lines 1082–1108)',
+      (tester) async {
+        final mode = makeMode(id: 'm15');
+        final repo = FakeModesRepository([mode]);
+        final settings = FakeSettingsRepository(
+          const AppSettings(defaults: AppDefaults()),
+        );
+        await tester.pumpWidget(
+          _host(repo: repo, settings: settings, modeId: 'm15'),
+        );
         await tester.pumpAndSettle();
-      }
 
-      // Enable GPS override by toggling the switch.
-      final gpsSwitches = find.byType(Switch);
-      if (gpsSwitches.evaluate().isNotEmpty) {
-        await tester.tap(gpsSwitches.first);
-        await tester.pumpAndSettle();
-      }
+        // Expand overrides panel.
+        final overridesPanel = find.byType(ExpansionTile);
+        if (overridesPanel.evaluate().isNotEmpty) {
+          await tester.tap(overridesPanel.first);
+          await tester.pumpAndSettle();
+        }
 
-      // Enter a value in the interval field.
-      final intervalField = find.byType(TextFormField);
-      if (intervalField.evaluate().isNotEmpty) {
-        await tester.enterText(intervalField.first, '120');
-        await tester.pumpAndSettle();
-      }
+        // Enable GPS override by toggling the switch.
+        final gpsSwitches = find.byType(Switch);
+        if (gpsSwitches.evaluate().isNotEmpty) {
+          await tester.tap(gpsSwitches.first);
+          await tester.pumpAndSettle();
+        }
 
-      check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
-    });
+        // Enter a value in the interval field.
+        final intervalField = find.byType(TextFormField);
+        if (intervalField.evaluate().isNotEmpty) {
+          await tester.enterText(intervalField.first, '120');
+          await tester.pumpAndSettle();
+        }
+
+        check(find.byType(ModeEditorScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   // --------------------------------------------------------------------------
@@ -669,10 +676,8 @@ void main() {
       (tester) async {
         // Pre-populate with an existing distress mode that has steps so
         // the save validation passes (D-SAFETY-17: empty chain prohibited).
-        final existing = makeDistressMode(
-          id: 'dm-new',
-          name: 'Panic',
-        ).copyWith(chainSteps: [smsStep()]);
+        final existing = makeDistressMode(id: 'dm-new', name: 'Panic')
+            .copyWith(chainSteps: [smsStep()]);
         final repo = FakeModesRepository([existing]);
         await tester.pumpWidget(
           hostScreenPushed(

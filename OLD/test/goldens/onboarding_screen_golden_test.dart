@@ -98,10 +98,10 @@ void main() {
     final themeName = themeMode == ThemeMode.light ? 'light' : 'dark';
     pages.forEach((pageName, pageWidget) {
       goldenTest(
-        'onboarding_${pageName}_$themeName',
-        fileName: 'onboarding_${pageName}_$themeName',
-        builder: () => goldenWrapper(child: pageWidget, themeMode: themeMode),
-      );
+      'onboarding_${pageName}_$themeName',
+      fileName: 'onboarding_${pageName}_$themeName',
+      builder: () => goldenWrapper(child: pageWidget, themeMode: themeMode),
+    );
     });
   }
 }

@@ -16,7 +16,9 @@ import '../widget_test_helpers.dart';
 /// Intercepts `Clipboard.setData` (and other platform-channel calls)
 /// so the widget's `await Clipboard.setData(...)` resolves under test.
 void _mockClipboard() {
-  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+  TestDefaultBinaryMessengerBinding
+      .instance
+      .defaultBinaryMessenger
       .setMockMethodCallHandler(SystemChannels.platform, (call) async => null);
 }
 
@@ -30,54 +32,45 @@ SessionLog _log(String id) => SessionLog(
 );
 
 void main() {
-  testWidgets('EvidenceExportScreen renders without throwing', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          sessionLogsRepositoryProvider.overrideWithValue(
-            FakeSessionLogsRepository(),
-          ),
-        ],
-        child: const EvidenceExportScreen(),
-      ),
-    );
+  testWidgets('EvidenceExportScreen renders without throwing',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        sessionLogsRepositoryProvider
+            .overrideWithValue(FakeSessionLogsRepository()),
+      ],
+      child: const EvidenceExportScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(EvidenceExportScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets('EvidenceExportScreen disables buttons when no id', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          sessionLogsRepositoryProvider.overrideWithValue(
-            FakeSessionLogsRepository(),
-          ),
-        ],
-        child: const EvidenceExportScreen(),
-      ),
-    );
+  testWidgets('EvidenceExportScreen disables buttons when no id',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        sessionLogsRepositoryProvider
+            .overrideWithValue(FakeSessionLogsRepository()),
+      ],
+      child: const EvidenceExportScreen(),
+    ));
     await tester.pumpAndSettle();
     final filled = tester.widget<FilledButton>(find.byType(FilledButton));
     check(filled.onPressed).isNull();
   });
 
-  testWidgets('EvidenceExportScreen enables buttons for existing log', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          sessionLogsRepositoryProvider.overrideWithValue(
-            FakeSessionLogsRepository([_log('log-7')]),
-          ),
-        ],
-        initialLocation: '/?id=log-7',
-        child: const EvidenceExportScreen(),
-      ),
-    );
+  testWidgets('EvidenceExportScreen enables buttons for existing log',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        sessionLogsRepositoryProvider.overrideWithValue(
+          FakeSessionLogsRepository([_log('log-7')]),
+        ),
+      ],
+      initialLocation: '/?id=log-7',
+      child: const EvidenceExportScreen(),
+    ));
     await tester.pumpAndSettle();
     final filled = tester.widget<FilledButton>(find.byType(FilledButton));
     check(filled.onPressed).isNotNull();
@@ -87,17 +80,15 @@ void main() {
     'EvidenceExportScreen copies text to clipboard and shows snackbar',
     (tester) async {
       _mockClipboard();
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            sessionLogsRepositoryProvider.overrideWithValue(
-              FakeSessionLogsRepository([_log('log-9')]),
-            ),
-          ],
-          initialLocation: '/?id=log-9',
-          child: const EvidenceExportScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-9')]),
+          ),
+        ],
+        initialLocation: '/?id=log-9',
+        child: const EvidenceExportScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
@@ -109,17 +100,15 @@ void main() {
     'EvidenceExportScreen copies JSON to clipboard via outlined button',
     (tester) async {
       _mockClipboard();
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            sessionLogsRepositoryProvider.overrideWithValue(
-              FakeSessionLogsRepository([_log('log-json')]),
-            ),
-          ],
-          initialLocation: '/?id=log-json',
-          child: const EvidenceExportScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          sessionLogsRepositoryProvider.overrideWithValue(
+            FakeSessionLogsRepository([_log('log-json')]),
+          ),
+        ],
+        initialLocation: '/?id=log-json',
+        child: const EvidenceExportScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(OutlinedButton));
       await tester.pumpAndSettle();

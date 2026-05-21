@@ -43,18 +43,13 @@ class _StubSessionController extends SessionController {
 
 class _A implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
+      async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -97,10 +92,8 @@ class _P implements PhoneServiceProtocol {
   @override
   Future<void> call(String number, {bool isSimulation = false}) async {}
   @override
-  Future<void> callEmergency(
-    String number, {
-    bool isSimulation = false,
-  }) async {}
+  Future<void> callEmergency(String number, {bool isSimulation = false})
+      async {}
 }
 
 class _N implements NotificationServiceProtocol {
@@ -204,9 +197,8 @@ class _L implements LocationServiceProtocol {
   @override
   Future<bool> requestPermission() async => true;
   @override
-  Future<void> startTracking({
-    Duration interval = const Duration(seconds: 60),
-  }) async {}
+  Future<void> startTracking({Duration interval = const Duration(seconds: 60)})
+      async {}
   @override
   Future<void> stopTracking() async {}
   @override
@@ -284,33 +276,36 @@ SessionMode _modeWithFakeCall({
       config: config,
     ),
   );
-  return SessionMode(id: id, name: 'Mode $id', chainSteps: steps);
+  return SessionMode(
+    id: id,
+    name: 'Mode $id',
+    chainSteps: steps,
+  );
 }
 
 /// Builds a [ProviderContainer] with the given [session] and [modes].
 ///
 /// [session] is returned by a stub [SessionController].
 /// [modes] are returned by [FakeModesRepository].
-ProviderContainer _container(WalkSession? session, List<SessionMode> modes) {
+ProviderContainer _container(
+  WalkSession? session,
+  List<SessionMode> modes,
+) {
   final modesRepo = FakeModesRepository(modes);
   return ProviderContainer(
     overrides: [
-      sessionControllerProvider.overrideWith(
-        () => _StubSessionController(session),
-      ),
+      sessionControllerProvider
+          .overrideWith(() => _StubSessionController(session)),
       modesRepositoryProvider.overrideWithValue(modesRepo),
       contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
       templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
       settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-      userProfileRepositoryProvider.overrideWithValue(
-        FakeUserProfileRepository(),
-      ),
-      batteryAlertRepositoryProvider.overrideWithValue(
-        FakeBatteryAlertRepository(),
-      ),
-      sessionLogsRepositoryProvider.overrideWithValue(
-        FakeSessionLogsRepository(),
-      ),
+      userProfileRepositoryProvider
+          .overrideWithValue(FakeUserProfileRepository()),
+      batteryAlertRepositoryProvider
+          .overrideWithValue(FakeBatteryAlertRepository()),
+      sessionLogsRepositoryProvider
+          .overrideWithValue(FakeSessionLogsRepository()),
       audioServiceProvider.overrideWithValue(_A()),
       simulationAudioProvider.overrideWithValue(_A()),
       messagingServiceProvider.overrideWithValue(_M()),
@@ -365,7 +360,9 @@ void main() {
       'returns default when current step is not fakeCall (line 61)',
       () async {
         // Active session whose current step type is smsContact — not fakeCall.
-        final session = _fakeCallSession(stepType: ChainStepType.smsContact);
+        final session = _fakeCallSession(
+          stepType: ChainStepType.smsContact,
+        );
         final c = _container(session, const []);
         addTearDown(c.dispose);
         // Line 61-62: early return with default.
@@ -411,42 +408,48 @@ void main() {
       },
     );
 
-    test('strategy 3: falls back to default when no mode has fakeCall at index '
-        '(line 81)', () async {
-      // Mode has an smsContact at step 0, not a fakeCall.
-      const mode = SessionMode(
-        id: 'mode-x',
-        name: 'Mode X',
-        chainSteps: [
-          ChainStep(
-            id: 'sms-0',
-            type: ChainStepType.smsContact,
-            order: 0,
-            durationSeconds: 5,
-            gracePeriodSeconds: 0,
-            waitSeconds: 0,
-            retryCount: 0,
-            randomize: 0,
-          ),
-        ],
-      );
-      // stepIndex=5 — way out of range for every mode.
-      final session = _fakeCallSession(modeId: 'mode-x', stepIndex: 5);
-      final c = _container(session, const [mode]);
-      addTearDown(c.dispose);
-      // Strategies 1 & 2 both return null → strategy 3 default.
-      check(await resolve(c)).equals(const FakeCallConfig());
-    });
+    test(
+      'strategy 3: falls back to default when no mode has fakeCall at index '
+      '(line 81)',
+      () async {
+        // Mode has an smsContact at step 0, not a fakeCall.
+        const mode = SessionMode(
+          id: 'mode-x',
+          name: 'Mode X',
+          chainSteps: [
+            ChainStep(
+              id: 'sms-0',
+              type: ChainStepType.smsContact,
+              order: 0,
+              durationSeconds: 5,
+              gracePeriodSeconds: 0,
+              waitSeconds: 0,
+              retryCount: 0,
+              randomize: 0,
+            ),
+          ],
+        );
+        // stepIndex=5 — way out of range for every mode.
+        final session = _fakeCallSession(modeId: 'mode-x', stepIndex: 5);
+        final c = _container(session, const [mode]);
+        addTearDown(c.dispose);
+        // Strategies 1 & 2 both return null → strategy 3 default.
+        check(await resolve(c)).equals(const FakeCallConfig());
+      },
+    );
 
-    test('_fakeCallAt returns null when mode is null (line 88)', () async {
-      // Strategy 1: getById('missing') returns null → _fakeCallAt(null, 0)
-      // must return null and fall through to strategy 2.
-      final session = _fakeCallSession(modeId: 'missing', stepIndex: 0);
-      final c = _container(session, const []);
-      addTearDown(c.dispose);
-      // No modes → strategy 2 loop is empty → strategy 3 default.
-      check(await resolve(c)).equals(const FakeCallConfig());
-    });
+    test(
+      '_fakeCallAt returns null when mode is null (line 88)',
+      () async {
+        // Strategy 1: getById('missing') returns null → _fakeCallAt(null, 0)
+        // must return null and fall through to strategy 2.
+        final session = _fakeCallSession(modeId: 'missing', stepIndex: 0);
+        final c = _container(session, const []);
+        addTearDown(c.dispose);
+        // No modes → strategy 2 loop is empty → strategy 3 default.
+        check(await resolve(c)).equals(const FakeCallConfig());
+      },
+    );
 
     test(
       '_fakeCallAt returns null when stepIndex out of range (line 89)',
@@ -489,31 +492,34 @@ void main() {
       },
     );
 
-    test('_fakeCallAt returns null when fakeCall step has no FakeCallConfig '
-        '(line 92–93)', () async {
-      // A fakeCall step with config == null (should use defaults).
-      const mode = SessionMode(
-        id: 'mode-1',
-        name: 'Mode 1',
-        chainSteps: [
-          ChainStep(
-            id: 'fc-0',
-            type: ChainStepType.fakeCall,
-            order: 0,
-            durationSeconds: 30,
-            gracePeriodSeconds: 5,
-            waitSeconds: 0,
-            retryCount: 0,
-            randomize: 0,
-            // config is null → _fakeCallAt returns null.
-          ),
-        ],
-      );
-      final session = _fakeCallSession(modeId: 'mode-1', stepIndex: 0);
-      final c = _container(session, const [mode]);
-      addTearDown(c.dispose);
-      // cfg is null → falls through all strategies → default.
-      check(await resolve(c)).equals(const FakeCallConfig());
-    });
+    test(
+      '_fakeCallAt returns null when fakeCall step has no FakeCallConfig '
+      '(line 92–93)',
+      () async {
+        // A fakeCall step with config == null (should use defaults).
+        const mode = SessionMode(
+          id: 'mode-1',
+          name: 'Mode 1',
+          chainSteps: [
+            ChainStep(
+              id: 'fc-0',
+              type: ChainStepType.fakeCall,
+              order: 0,
+              durationSeconds: 30,
+              gracePeriodSeconds: 5,
+              waitSeconds: 0,
+              retryCount: 0,
+              randomize: 0,
+              // config is null → _fakeCallAt returns null.
+            ),
+          ],
+        );
+        final session = _fakeCallSession(modeId: 'mode-1', stepIndex: 0);
+        final c = _container(session, const [mode]);
+        addTearDown(c.dispose);
+        // cfg is null → falls through all strategies → default.
+        check(await resolve(c)).equals(const FakeCallConfig());
+      },
+    );
   });
 }

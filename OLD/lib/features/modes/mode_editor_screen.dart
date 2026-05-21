@@ -359,14 +359,18 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
               const SizedBox(height: 12),
               DropdownButtonFormField<String?>(
                 initialValue: _distressModeId,
-                decoration: InputDecoration(labelText: l.modeFieldDistressMode),
+                decoration:
+                    InputDecoration(labelText: l.modeFieldDistressMode),
                 items: [
                   DropdownMenuItem<String?>(
                     value: null,
                     child: Text(l.modeFieldDistressModeDefault),
                   ),
                   for (final c in distressChains)
-                    DropdownMenuItem<String?>(value: c.id, child: Text(c.name)),
+                    DropdownMenuItem<String?>(
+                      value: c.id,
+                      child: Text(c.name),
+                    ),
                 ],
                 onChanged: (v) => setState(() => _distressModeId = v),
               ),
@@ -433,7 +437,8 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                 enabled: _trackingEnabled,
                 intervalSeconds: _trackingIntervalSeconds,
                 bufferSize: _trackingBufferSize,
-                onEnabledChanged: (v) => setState(() => _trackingEnabled = v),
+                onEnabledChanged: (v) =>
+                    setState(() => _trackingEnabled = v),
                 onIntervalChanged: (v) =>
                     setState(() => _trackingIntervalSeconds = v),
                 onBufferSizeChanged: (v) =>
@@ -499,7 +504,8 @@ class _TrackingSection extends StatelessWidget {
           Slider(
             min: _kMinTrackingBufferSize.toDouble(),
             max: _kMaxTrackingBufferSize.toDouble(),
-            divisions: _kMaxTrackingBufferSize - _kMinTrackingBufferSize,
+            divisions:
+                _kMaxTrackingBufferSize - _kMinTrackingBufferSize,
             value: bufferSize
                 .clamp(_kMinTrackingBufferSize, _kMaxTrackingBufferSize)
                 .toDouble(),
@@ -784,10 +790,10 @@ class _RepeatPressEditorState extends State<_RepeatPressEditor> {
   void _emit() {
     widget.onChanged(
       RepeatPressTrigger(
-        pressCount:
-            int.tryParse(_countCtrl.text.trim()) ?? widget.trigger.pressCount,
-        pressWindowMs:
-            int.tryParse(_winCtrl.text.trim()) ?? widget.trigger.pressWindowMs,
+        pressCount: int.tryParse(_countCtrl.text.trim()) ??
+            widget.trigger.pressCount,
+        pressWindowMs: int.tryParse(_winCtrl.text.trim()) ??
+            widget.trigger.pressWindowMs,
       ),
     );
   }
@@ -920,8 +926,7 @@ class _ModeOverridesSection extends ConsumerWidget {
               onChanged(_normalize(next));
             },
             child: _GpsOverrideEditor(
-              gps:
-                  _ensure().gpsLogging ??
+              gps: _ensure().gpsLogging ??
                   defaults?.gpsLogging ??
                   const GpsLoggingConfig(),
               onChanged: (g) =>
@@ -947,8 +952,7 @@ class _ModeOverridesSection extends ConsumerWidget {
               onChanged(_normalize(next));
             },
             child: _StealthOverrideEditor(
-              stealth:
-                  _ensure().stealth ??
+              stealth: _ensure().stealth ??
                   defaults?.stealth ??
                   const StealthConfig(),
               onChanged: (s) =>
@@ -1019,7 +1023,10 @@ class _OverrideToggleRow extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(label, style: Theme.of(context).textTheme.titleSmall),
+              child: Text(
+                label,
+                style: Theme.of(context).textTheme.titleSmall,
+              ),
             ),
             // Switch is "on" when the user is *overriding* (NOT using
             // the app default). The label below clarifies polarity.

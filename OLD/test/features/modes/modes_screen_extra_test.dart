@@ -20,13 +20,16 @@ import '../widget_test_helpers.dart';
 
 void main() {
   group('ModesScreen — extra branches', () {
-    testWidgets('shows loading spinner briefly on first frame', (tester) async {
+    testWidgets('shows loading spinner briefly on first frame',
+        (tester) async {
       // The screen starts with an async provider. On the first pump
       // (before settlement) a CircularProgressIndicator may appear.
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
-            modesRepositoryProvider.overrideWithValue(FakeModesRepository([])),
+            modesRepositoryProvider.overrideWithValue(
+              FakeModesRepository([]),
+            ),
           ],
           child: const ModesScreen(),
         ),
@@ -54,7 +57,9 @@ void main() {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
-            modesRepositoryProvider.overrideWithValue(FakeModesRepository([])),
+            modesRepositoryProvider.overrideWithValue(
+              FakeModesRepository([]),
+            ),
           ],
           child: const ModesScreen(),
         ),
@@ -90,5 +95,6 @@ void main() {
 
 class _ThrowingController extends ModesController {
   @override
-  Future<List<SessionMode>> build() async => throw Exception('modes error');
+  Future<List<SessionMode>> build() async =>
+      throw Exception('modes error');
 }

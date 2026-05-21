@@ -58,7 +58,10 @@ void main() {
     return t;
   }
 
-  AudioService build({List<AudioPlayer>? players, FlutterTts? tts}) {
+  AudioService build({
+    List<AudioPlayer>? players,
+    FlutterTts? tts,
+  }) {
     final queue = _PlayerQueue(
       players ?? [makePlayer(), makePlayer(), makePlayer()],
     );
@@ -102,7 +105,8 @@ void main() {
       verify(player.play).called(1);
     });
 
-    test('second call reuses the same alarm player (lazy singleton)', () async {
+    test('second call reuses the same alarm player (lazy singleton)',
+        () async {
       final p1 = makePlayer();
       final p2 = makePlayer();
       final s = build(players: [p1, p2, makePlayer(), makePlayer()]);
@@ -114,7 +118,8 @@ void main() {
   });
 
   group('AudioService.stopAlarm', () {
-    test('no-op before first play (lazy player never constructed)', () async {
+    test('no-op before first play (lazy player never constructed)',
+        () async {
       var built = 0;
       final s = AudioService(
         playerFactory: () {
@@ -256,11 +261,9 @@ void main() {
       () async {
         final tts = makeTts();
         final s = AudioService(
-          playerFactory: _PlayerQueue([
-            makePlayer(),
-            makePlayer(),
-            makePlayer(),
-          ]).next,
+          playerFactory: _PlayerQueue(
+            [makePlayer(), makePlayer(), makePlayer()],
+          ).next,
           ttsFactory: () => tts,
         );
         const localized = 'Hallo, ich verspäte mich.';
@@ -272,25 +275,28 @@ void main() {
       },
     );
 
-    test('TTS fallback uses the universal English fallback when '
-        'ttsFallbackPhrase is null', () async {
-      final tts = makeTts();
-      final s = AudioService(
-        playerFactory: _PlayerQueue([
-          makePlayer(),
-          makePlayer(),
-          makePlayer(),
-        ]).next,
-        ttsFactory: () => tts,
-      );
-      await s.playVoiceRecording(
-        assetPath: 'assets/voice/missing.wav',
-        // ttsFallbackPhrase intentionally omitted
-      );
-      verify(
-        () => tts.speak('Hi, I am running late. I will call you back soon.'),
-      ).called(1);
-    });
+    test(
+      'TTS fallback uses the universal English fallback when '
+      'ttsFallbackPhrase is null',
+      () async {
+        final tts = makeTts();
+        final s = AudioService(
+          playerFactory: _PlayerQueue(
+            [makePlayer(), makePlayer(), makePlayer()],
+          ).next,
+          ttsFactory: () => tts,
+        );
+        await s.playVoiceRecording(
+          assetPath: 'assets/voice/missing.wav',
+          // ttsFallbackPhrase intentionally omitted
+        );
+        verify(
+          () => tts.speak(
+            'Hi, I am running late. I will call you back soon.',
+          ),
+        ).called(1);
+      },
+    );
   });
 
   group('AudioService.stopVoiceRecording', () {
@@ -323,14 +329,14 @@ void main() {
     test('stops the tts engine after a fallback', () async {
       final tts = makeTts();
       final s = AudioService(
-        playerFactory: _PlayerQueue([
-          makePlayer(),
-          makePlayer(),
-          makePlayer(),
-        ]).next,
+        playerFactory: _PlayerQueue(
+          [makePlayer(), makePlayer(), makePlayer()],
+        ).next,
         ttsFactory: () => tts,
       );
-      await s.playVoiceRecording(assetPath: 'assets/voice/missing.wav');
+      await s.playVoiceRecording(
+        assetPath: 'assets/voice/missing.wav',
+      );
       await s.stopVoiceRecording();
       verify(tts.stop).called(1);
     });

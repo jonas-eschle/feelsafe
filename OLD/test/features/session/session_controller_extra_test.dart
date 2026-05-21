@@ -36,18 +36,13 @@ import '../fake_repositories.dart';
 
 class _A implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
+      async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -90,10 +85,8 @@ class _P implements PhoneServiceProtocol {
   @override
   Future<void> call(String number, {bool isSimulation = false}) async {}
   @override
-  Future<void> callEmergency(
-    String number, {
-    bool isSimulation = false,
-  }) async {}
+  Future<void> callEmergency(String number, {bool isSimulation = false})
+      async {}
 }
 
 class _N implements NotificationServiceProtocol {
@@ -197,9 +190,8 @@ class _L implements LocationServiceProtocol {
   @override
   Future<bool> requestPermission() async => true;
   @override
-  Future<void> startTracking({
-    Duration interval = const Duration(seconds: 60),
-  }) async {}
+  Future<void> startTracking({Duration interval = const Duration(seconds: 60)})
+      async {}
   @override
   Future<void> stopTracking() async {}
   @override
@@ -230,27 +222,23 @@ class _IC implements IncomingCallServiceProtocol {
 ProviderContainer _makeContainer({List<SessionMode>? modes}) {
   final distressMode = makeDistressMode(steps: [smsStep(order: 0)]);
   final allModes = [
-    ...modes ??
-        [
-          makeMode(id: 'mode-1', steps: [holdStep()]),
-        ],
+    ...modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
     distressMode,
   ];
   return ProviderContainer(
     overrides: [
-      modesRepositoryProvider.overrideWithValue(FakeModesRepository(allModes)),
+      modesRepositoryProvider.overrideWithValue(
+        FakeModesRepository(allModes),
+      ),
       contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
       templatesRepositoryProvider.overrideWithValue(FakeTemplatesRepository()),
       settingsRepositoryProvider.overrideWithValue(FakeSettingsRepository()),
-      userProfileRepositoryProvider.overrideWithValue(
-        FakeUserProfileRepository(),
-      ),
-      batteryAlertRepositoryProvider.overrideWithValue(
-        FakeBatteryAlertRepository(),
-      ),
-      sessionLogsRepositoryProvider.overrideWithValue(
-        FakeSessionLogsRepository(),
-      ),
+      userProfileRepositoryProvider
+          .overrideWithValue(FakeUserProfileRepository()),
+      batteryAlertRepositoryProvider
+          .overrideWithValue(FakeBatteryAlertRepository()),
+      sessionLogsRepositoryProvider
+          .overrideWithValue(FakeSessionLogsRepository()),
       audioServiceProvider.overrideWithValue(_A()),
       simulationAudioProvider.overrideWithValue(_A()),
       messagingServiceProvider.overrideWithValue(_M()),
@@ -313,41 +301,47 @@ void main() {
       },
     );
 
-    test('isPauseAllowed returns mode.pauseAllowed when session is active '
-        '(line 101)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'isPauseAllowed returns mode.pauseAllowed when session is active '
+      '(line 101)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      // Before start: defaults to true.
-      check(ctrl.isPauseAllowed).isTrue();
+        // Before start: defaults to true.
+        check(ctrl.isPauseAllowed).isTrue();
 
-      // After start: reads from runtime.mode.pauseAllowed (line 101).
-      await ctrl.startSession(modeId: 'mode-1');
-      // mode-1 has default pauseAllowed=true.
-      check(ctrl.isPauseAllowed).isTrue();
+        // After start: reads from runtime.mode.pauseAllowed (line 101).
+        await ctrl.startSession(modeId: 'mode-1');
+        // mode-1 has default pauseAllowed=true.
+        check(ctrl.isPauseAllowed).isTrue();
 
-      await ctrl.disarm();
-    });
+        await ctrl.disarm();
+      },
+    );
 
-    test('setSimulationBackgroundClamp with active session calls engine '
-        '(lines 126–129)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'setSimulationBackgroundClamp with active session calls engine '
+      '(lines 126–129)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      // No-op when no session is active.
-      ctrl.setSimulationBackgroundClamp(true);
+        // No-op when no session is active.
+        ctrl.setSimulationBackgroundClamp(true);
 
-      // With an active session, the engine's clamp is engaged.
-      await ctrl.startSession(modeId: 'mode-1', isSimulation: true);
-      ctrl.setSimulationBackgroundClamp(true); // line 129 executed
-      ctrl.setSimulationBackgroundClamp(false);
+        // With an active session, the engine's clamp is engaged.
+        await ctrl.startSession(modeId: 'mode-1', isSimulation: true);
+        ctrl.setSimulationBackgroundClamp(true); // line 129 executed
+        ctrl.setSimulationBackgroundClamp(false);
 
-      await ctrl.disarm();
-    });
+        await ctrl.disarm();
+      },
+    );
 
     test(
       'setSimulationSpeedMultiplier with active session (lines 301–304)',
@@ -389,62 +383,74 @@ void main() {
       },
     );
 
-    test('simulateLowBattery with active session is a no-op on engine '
-        '(lines 317–319)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'simulateLowBattery with active session is a no-op on engine '
+      '(lines 317–319)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      // No-op without an active session.
-      await ctrl.simulateLowBattery();
+        // No-op without an active session.
+        await ctrl.simulateLowBattery();
 
-      await ctrl.startSession(modeId: 'mode-1', isSimulation: true);
-      await ctrl.simulateLowBattery(); // lines 317-319
-      // Session is still running.
-      await ctrl.disarm();
-    });
+        await ctrl.startSession(modeId: 'mode-1', isSimulation: true);
+        await ctrl.simulateLowBattery(); // lines 317-319
+        // Session is still running.
+        await ctrl.disarm();
+      },
+    );
 
-    test('answerFakeCall with active session calls engine.answerFakeCall '
-        '(line 327)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'answerFakeCall with active session calls engine.answerFakeCall '
+      '(line 327)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      await ctrl.startSession(modeId: 'mode-1');
-      // answerFakeCall calls runtime.engine.answerFakeCall() at line 327.
-      // The engine ignores this call when not in a fakeCall phase, so no
-      // exception is expected.
-      await ctrl.answerFakeCall();
+        await ctrl.startSession(modeId: 'mode-1');
+        // answerFakeCall calls runtime.engine.answerFakeCall() at line 327.
+        // The engine ignores this call when not in a fakeCall phase, so no
+        // exception is expected.
+        await ctrl.answerFakeCall();
 
-      await ctrl.disarm();
-    });
+        await ctrl.disarm();
+      },
+    );
 
-    test('hangUp with active session calls engine.hangUp (line 335)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'hangUp with active session calls engine.hangUp (line 335)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      await ctrl.startSession(modeId: 'mode-1');
-      await ctrl.hangUp(); // line 335
+        await ctrl.startSession(modeId: 'mode-1');
+        await ctrl.hangUp(); // line 335
 
-      await ctrl.disarm();
-    });
+        await ctrl.disarm();
+      },
+    );
 
-    test('declineFakeCall with active session calls engine.declineFakeCall '
-        '(line 342)', () async {
-      final c = _makeContainer();
-      addTearDown(c.dispose);
-      final ctrl = c.read(sessionControllerProvider.notifier);
-      await c.read(sessionControllerProvider.future);
+    test(
+      'declineFakeCall with active session calls engine.declineFakeCall '
+      '(line 342)',
+      () async {
+        final c = _makeContainer();
+        addTearDown(c.dispose);
+        final ctrl = c.read(sessionControllerProvider.notifier);
+        await c.read(sessionControllerProvider.future);
 
-      await ctrl.startSession(modeId: 'mode-1');
-      await ctrl.declineFakeCall(); // line 342
+        await ctrl.startSession(modeId: 'mode-1');
+        await ctrl.declineFakeCall(); // line 342
 
-      await ctrl.disarm();
-    });
+        await ctrl.disarm();
+      },
+    );
 
     test(
       'holdStart with active session calls engine.holdStart (lines 351–354)',

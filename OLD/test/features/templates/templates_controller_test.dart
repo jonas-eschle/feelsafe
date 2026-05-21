@@ -45,10 +45,7 @@ void main() {
 
     test('hydrates persisted templates', () async {
       final container = _makeContainer(
-        seed: [
-          _template(),
-          _template(id: 't2', name: 'Other'),
-        ],
+        seed: [_template(), _template(id: 't2', name: 'Other')],
       );
       addTearDown(container.dispose);
       final list = await container.read(templatesControllerProvider.future);
@@ -84,10 +81,7 @@ void main() {
   group('TemplatesController.delete', () {
     test('removes matching template', () async {
       final container = _makeContainer(
-        seed: [
-          _template(id: 'a'),
-          _template(id: 'b', name: 'Other'),
-        ],
+        seed: [_template(id: 'a'), _template(id: 'b', name: 'Other')],
       );
       addTearDown(container.dispose);
       final notifier = container.read(templatesControllerProvider.notifier);

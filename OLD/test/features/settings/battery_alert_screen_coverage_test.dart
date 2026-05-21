@@ -20,7 +20,8 @@ import '../widget_test_helpers.dart';
 class _ThrowBatteryRepo extends BatteryAlertRepository {
   _ThrowBatteryRepo() : super.forTesting();
   @override
-  Future<BatteryAlertConfig?> get() async => throw StateError('battery-boom');
+  Future<BatteryAlertConfig?> get() async =>
+      throw StateError('battery-boom');
 }
 
 void main() {
@@ -30,43 +31,41 @@ void main() {
       final cfg = BatteryAlertConfig(
         enabled: true,
         thresholdPercent: 20,
-        chain: [
-          smsStep(id: 'a', order: 0),
-          smsStep(id: 'b', order: 1),
-        ],
+        chain: [smsStep(id: 'a', order: 0), smsStep(id: 'b', order: 1)],
       );
       final repo = FakeBatteryAlertRepository(cfg);
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       check(find.byType(ChainStepTile).evaluate().length).equals(2);
     },
   );
 
-  testWidgets('BatteryAlertScreen delete-tile icon removes the step', (
-    tester,
-  ) async {
-    final cfg = BatteryAlertConfig(
-      enabled: true,
-      thresholdPercent: 20,
-      chain: [smsStep(id: 'a', order: 0)],
-    );
-    final repo = FakeBatteryAlertRepository(cfg);
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'BatteryAlertScreen delete-tile icon removes the step',
+    (tester) async {
+      final cfg = BatteryAlertConfig(
+        enabled: true,
+        thresholdPercent: 20,
+        chain: [smsStep(id: 'a', order: 0)],
+      );
+      final repo = FakeBatteryAlertRepository(cfg);
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
         child: const BatteryAlertScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.byIcon(Icons.delete_outline));
-    await tester.pumpAndSettle();
-    check(repo.stored!.chain).isEmpty();
-  });
+      ));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+      check(repo.stored!.chain).isEmpty();
+    },
+  );
 
   testWidgets(
     'BatteryAlertScreen add-step OutlinedButton opens the step picker',
@@ -74,12 +73,12 @@ void main() {
       final repo = FakeBatteryAlertRepository(
         const BatteryAlertConfig(enabled: true, thresholdPercent: 15),
       );
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       // Tap the + Add step button (the only OutlinedButton.icon).
       await tester.tap(find.byIcon(Icons.add));
@@ -98,12 +97,12 @@ void main() {
       final repo = FakeBatteryAlertRepository(
         const BatteryAlertConfig(enabled: true, thresholdPercent: 15),
       );
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.add));
       await tester.pumpAndSettle();
@@ -122,33 +121,32 @@ void main() {
       // ensuring the tree builds without crashing. Guard against the
       // tile's SizedBox.shrink sub-widget disappearing.
       final repo = FakeBatteryAlertRepository();
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       check(find.byType(BatteryAlertScreen).evaluate().length).equals(1);
     },
   );
 
-  testWidgets('BatteryAlertScreen error state renders error text', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
+  testWidgets(
+    'BatteryAlertScreen error state renders error text',
+    (tester) async {
+      await tester.pumpWidget(hostScreen(
         overrides: [
-          batteryAlertRepositoryProvider.overrideWithValue(_ThrowBatteryRepo()),
+          batteryAlertRepositoryProvider
+              .overrideWithValue(_ThrowBatteryRepo()),
         ],
         child: const BatteryAlertScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(
-      find.textContaining('battery-boom').evaluate().length,
-    ).isGreaterOrEqual(1);
-  });
+      ));
+      await tester.pumpAndSettle();
+      check(find.textContaining('battery-boom').evaluate().length)
+          .isGreaterOrEqual(1);
+    },
+  );
 
   testWidgets(
     'BatteryAlertScreen toggling enable-switch when starting disabled calls enable',
@@ -156,12 +154,12 @@ void main() {
       final repo = FakeBatteryAlertRepository(
         const BatteryAlertConfig(enabled: false, thresholdPercent: 10),
       );
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byType(SwitchListTile));
       await tester.pumpAndSettle();
@@ -178,12 +176,12 @@ void main() {
         chain: [smsStep(id: 's1', durationSeconds: 30)],
       );
       final repo = FakeBatteryAlertRepository(cfg);
-      await tester.pumpWidget(
-        hostScreen(
-          overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
-          child: const BatteryAlertScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const BatteryAlertScreen(),
+      ));
       await tester.pumpAndSettle();
       final tile = tester.widget<ChainStepTile>(find.byType(ChainStepTile));
       final updated = tile.step.copyWith(durationSeconds: 77);
@@ -193,27 +191,29 @@ void main() {
     },
   );
 
-  testWidgets('BatteryAlertScreen chain-step tile onChanged persists to repo', (
-    tester,
-  ) async {
-    final cfg = BatteryAlertConfig(
-      enabled: true,
-      thresholdPercent: 20,
-      chain: [smsStep(id: 'a', order: 0)],
-    );
-    final repo = FakeBatteryAlertRepository(cfg);
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [batteryAlertRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'BatteryAlertScreen chain-step tile onChanged persists to repo',
+    (tester) async {
+      final cfg = BatteryAlertConfig(
+        enabled: true,
+        thresholdPercent: 20,
+        chain: [smsStep(id: 'a', order: 0)],
+      );
+      final repo = FakeBatteryAlertRepository(cfg);
+      await tester.pumpWidget(hostScreen(
+        overrides: [
+          batteryAlertRepositoryProvider.overrideWithValue(repo),
+        ],
         child: const BatteryAlertScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // Open the ExpansionTile so the inline config form is built.
-    await tester.tap(find.byType(ExpansionTile));
-    await tester.pumpAndSettle();
-    // We don't need to actually type a value — the widget rebuilds
-    // which covers the surrounding `onChanged`-wire-up branches.
-    check(find.byType(ChainStepTile).evaluate().length).equals(1);
-  });
+      ));
+      await tester.pumpAndSettle();
+      // Open the ExpansionTile so the inline config form is built.
+      await tester.tap(find.byType(ExpansionTile));
+      await tester.pumpAndSettle();
+      // We don't need to actually type a value — the widget rebuilds
+      // which covers the surrounding `onChanged`-wire-up branches.
+      check(find.byType(ChainStepTile).evaluate().length).equals(1);
+    },
+  );
 }
+

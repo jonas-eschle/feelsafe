@@ -28,44 +28,40 @@ void main() {
       // Verify the plain localized header text is rendered (contains
       // "More settings" in the English locale).
       final titleText = tester
-          .widgetList<Text>(
-            find.descendant(
-              of: find.byType(ExpansionTile),
-              matching: find.byType(Text),
-            ),
-          )
+          .widgetList<Text>(find.descendant(
+            of: find.byType(ExpansionTile),
+            matching: find.byType(Text),
+          ))
           .first;
       check(titleText.data).isNotNull();
     });
 
     testWidgets(
-      'shows customized badge header when customizedCount is positive',
-      (tester) async {
-        await tester.pumpWidget(
-          hostScreen(
-            child: const MoreSettingsPanel(
-              customizedCount: 3,
-              children: [Text('body')],
-              // children is last per sort_child_properties_last.
-            ),
+        'shows customized badge header when customizedCount is positive',
+        (tester) async {
+      await tester.pumpWidget(
+        hostScreen(
+          child: const MoreSettingsPanel(
+            customizedCount: 3,
+            children: [Text('body')],
+            // children is last per sort_child_properties_last.
           ),
-        );
-        await tester.pumpAndSettle();
-        // The title Text widget should have a non-null color (primary color
-        // applied via copyWith) — verify it is not the default null style.
-        final expansionTile = tester.widget<ExpansionTile>(
-          find.byType(ExpansionTile),
-        );
-        final titleWidget = expansionTile.title as Text;
-        // The title style is overridden: color must be set.
-        check(titleWidget.style).isNotNull();
-        check(titleWidget.style!.color).isNotNull();
-      },
-    );
+        ),
+      );
+      await tester.pumpAndSettle();
+      // The title Text widget should have a non-null color (primary color
+      // applied via copyWith) — verify it is not the default null style.
+      final expansionTile = tester.widget<ExpansionTile>(
+        find.byType(ExpansionTile),
+      );
+      final titleWidget = expansionTile.title as Text;
+      // The title style is overridden: color must be set.
+      check(titleWidget.style).isNotNull();
+      check(titleWidget.style!.color).isNotNull();
+    });
 
-    testWidgets('body children are shown when tile is expanded', (
-      tester,
-    ) async {
+    testWidgets('body children are shown when tile is expanded',
+        (tester) async {
       await tester.pumpWidget(
         hostScreen(
           child: const MoreSettingsPanel(
@@ -79,12 +75,13 @@ void main() {
       check(find.text('secret child').evaluate()).isNotEmpty();
     });
 
-    testWidgets('customizedCount=0 does not apply primary color', (
-      tester,
-    ) async {
+    testWidgets('customizedCount=0 does not apply primary color', (tester) async {
       await tester.pumpWidget(
         hostScreen(
-          child: const MoreSettingsPanel(customizedCount: 0, children: []),
+          child: const MoreSettingsPanel(
+            customizedCount: 0,
+            children: [],
+          ),
         ),
       );
       await tester.pumpAndSettle();

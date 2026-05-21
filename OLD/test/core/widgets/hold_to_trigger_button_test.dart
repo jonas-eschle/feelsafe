@@ -28,20 +28,20 @@ Widget _host({
 
 void main() {
   testWidgets('shows the label', (tester) async {
-    await tester.pumpWidget(
-      _host(onHoldStart: () {}, onHoldRelease: () {}, label: 'Press Me'),
-    );
+    await tester.pumpWidget(_host(
+      onHoldStart: () {},
+      onHoldRelease: () {},
+      label: 'Press Me',
+    ));
     check(find.text('Press Me').evaluate().length).equals(1);
   });
 
   testWidgets('tap down + up fires both callbacks in order', (tester) async {
     final events = <String>[];
-    await tester.pumpWidget(
-      _host(
-        onHoldStart: () => events.add('start'),
-        onHoldRelease: () => events.add('release'),
-      ),
-    );
+    await tester.pumpWidget(_host(
+      onHoldStart: () => events.add('start'),
+      onHoldRelease: () => events.add('release'),
+    ));
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(HoldToTriggerButton)),
     );
@@ -56,9 +56,10 @@ void main() {
     // should not call onHoldRelease again.
     var starts = 0;
     var releases = 0;
-    await tester.pumpWidget(
-      _host(onHoldStart: () => starts++, onHoldRelease: () => releases++),
-    );
+    await tester.pumpWidget(_host(
+      onHoldStart: () => starts++,
+      onHoldRelease: () => releases++,
+    ));
     final gesture = await tester.startGesture(
       tester.getCenter(find.byType(HoldToTriggerButton)),
     );
@@ -83,19 +84,17 @@ void main() {
           ),
         )
         .toList();
-    check(
-      semanticsWidgets.any((s) => s.properties.label == 'hold button'),
-    ).isTrue();
+    check(semanticsWidgets.any((s) => s.properties.label == 'hold button'))
+        .isTrue();
   });
 
-  testWidgets('pan gesture fires onPanEnd (line 68 coverage)', (tester) async {
+  testWidgets('pan gesture fires onPanEnd (line 68 coverage)',
+      (tester) async {
     final events = <String>[];
-    await tester.pumpWidget(
-      _host(
-        onHoldStart: () => events.add('start'),
-        onHoldRelease: () => events.add('release'),
-      ),
-    );
+    await tester.pumpWidget(_host(
+      onHoldStart: () => events.add('start'),
+      onHoldRelease: () => events.add('release'),
+    ));
     // fling dispatches a pan that wins the arena, so onPanEnd
     // fires (hitting line 68 of the widget). onTapDown fires first
     // and calls _start, so we expect exactly one start and at

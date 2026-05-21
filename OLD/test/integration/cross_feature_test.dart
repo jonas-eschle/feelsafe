@@ -32,8 +32,8 @@ class _FakeModesRepo extends ModesRepository {
   _FakeModesRepo(
     List<SessionMode> initial, {
     List<SessionMode> extraModes = const [],
-  }) : _items = [...initial, ...extraModes],
-       super.forTesting();
+  })  : _items = [...initial, ...extraModes],
+        super.forTesting();
   final List<SessionMode> _items;
 
   @override
@@ -392,10 +392,7 @@ _Fx _fx({
     steps: [smsStep(order: 0, durationSeconds: 0, gracePeriodSeconds: 0)],
   );
   final modesRepo = _FakeModesRepo(
-    modes ??
-        [
-          makeMode(id: 'mode-1', steps: [holdStep()]),
-        ],
+    modes ?? [makeMode(id: 'mode-1', steps: [holdStep()])],
     extraModes: [defaultDistressMode],
   );
   final contactsRepo = _FakeContactsRepo(contacts ?? const []);

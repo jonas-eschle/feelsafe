@@ -12,49 +12,41 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('NotificationSettingsScreen renders without throwing', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const NotificationSettingsScreen(),
-      ),
-    );
+  testWidgets('NotificationSettingsScreen renders without throwing',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const NotificationSettingsScreen(),
+    ));
     await tester.pumpAndSettle();
-    check(find.byType(NotificationSettingsScreen).evaluate().length).equals(1);
+    check(find.byType(NotificationSettingsScreen).evaluate().length)
+        .equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets('NotificationSettingsScreen shows DND toggle', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const NotificationSettingsScreen(),
-      ),
-    );
+  testWidgets('NotificationSettingsScreen shows DND toggle',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const NotificationSettingsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(SwitchListTile).evaluate().length).equals(1);
   });
 
-  testWidgets('NotificationSettingsScreen toggle persists alarm DND', (
-    tester,
-  ) async {
+  testWidgets('NotificationSettingsScreen toggle persists alarm DND',
+      (tester) async {
     final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        child: const NotificationSettingsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const NotificationSettingsScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(SwitchListTile));
     await tester.pumpAndSettle();

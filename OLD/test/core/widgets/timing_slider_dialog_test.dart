@@ -35,14 +35,15 @@ void main() {
     });
 
     testWidgets('does not render label when label is null', (tester) async {
-      await tester.pumpWidget(_host(seconds: 60, onChanged: (_) {}));
+      await tester.pumpWidget(
+        _host(seconds: 60, onChanged: (_) {}),
+      );
       // No extra Text node for a label.
       final textWidgets = tester.widgetList<Text>(find.byType(Text));
       final labels = textWidgets.map((t) => t.data ?? '').toList();
       // The only texts should be the chip label (slider label is internal).
-      check(
-        labels.every((t) => t.isEmpty || t == '1m' || t.isNotEmpty),
-      ).isTrue();
+      check(labels.every((t) => t.isEmpty || t == '1m' || t.isNotEmpty))
+          .isTrue();
     });
   });
 
@@ -65,11 +66,12 @@ void main() {
   });
 
   group('TimingSlider — numeric entry dialog', () {
-    testWidgets('opens dialog on chip tap and confirms a value', (
-      tester,
-    ) async {
+    testWidgets('opens dialog on chip tap and confirms a value',
+        (tester) async {
       int? result;
-      await tester.pumpWidget(_host(seconds: 60, onChanged: (v) => result = v));
+      await tester.pumpWidget(
+        _host(seconds: 60, onChanged: (v) => result = v),
+      );
 
       // Tap the ActionChip to open the dialog.
       await tester.tap(find.byType(ActionChip));
@@ -108,9 +110,8 @@ void main() {
       check(called).isFalse();
     });
 
-    testWidgets('dialog ignores non-numeric input and closes without update', (
-      tester,
-    ) async {
+    testWidgets('dialog ignores non-numeric input and closes without update',
+        (tester) async {
       bool called = false;
       await tester.pumpWidget(
         _host(seconds: 60, onChanged: (_) => called = true),
@@ -137,7 +138,9 @@ void main() {
 
     testWidgets('dialog clamps value above kTimingMaxSeconds', (tester) async {
       int? result;
-      await tester.pumpWidget(_host(seconds: 60, onChanged: (v) => result = v));
+      await tester.pumpWidget(
+        _host(seconds: 60, onChanged: (v) => result = v),
+      );
 
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
@@ -155,7 +158,9 @@ void main() {
       // Negative values are filtered by the digit-only formatter; however
       // 0 is valid — just verify 0 passes through.
       int? result;
-      await tester.pumpWidget(_host(seconds: 60, onChanged: (v) => result = v));
+      await tester.pumpWidget(
+        _host(seconds: 60, onChanged: (v) => result = v),
+      );
 
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();

@@ -466,7 +466,8 @@ void main() {
             .any((line) => importRe.hasMatch(line));
         check(
           hasImport,
-          because: '${file.path} must not import flutter_local_notifications',
+          because:
+              '${file.path} must not import flutter_local_notifications',
         ).isFalse();
       }
     });

@@ -66,17 +66,15 @@ void main() {
           config: const HoldButtonConfig(releaseSensitivity: 0.5),
         );
 
-        await tester.pumpWidget(
-          hostScreen(
-            child: SingleChildScrollView(
-              child: ChainStepTile(
-                step: original,
-                onChanged: (s) => received = s,
-                onDelete: () {},
-              ),
+        await tester.pumpWidget(hostScreen(
+          child: SingleChildScrollView(
+            child: ChainStepTile(
+              step: original,
+              onChanged: (s) => received = s,
+              onDelete: () {},
             ),
           ),
-        );
+        ));
         await tester.pumpAndSettle();
 
         // Expand the tile to reveal the dropdown.
@@ -115,13 +113,12 @@ void main() {
       },
     );
 
-    testWidgets('selecting the SAME type does NOT fire onChanged', (
-      tester,
-    ) async {
-      var callCount = 0;
+    testWidgets(
+      'selecting the SAME type does NOT fire onChanged',
+      (tester) async {
+        var callCount = 0;
 
-      await tester.pumpWidget(
-        hostScreen(
+        await tester.pumpWidget(hostScreen(
           child: SingleChildScrollView(
             child: ChainStepTile(
               step: _step(type: ChainStepType.holdButton),
@@ -129,40 +126,40 @@ void main() {
               onDelete: () {},
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // Expand to reveal dropdown.
-      await tester.tap(find.byType(ExpansionTile));
-      await tester.pumpAndSettle();
+        // Expand to reveal dropdown.
+        await tester.tap(find.byType(ExpansionTile));
+        await tester.pumpAndSettle();
 
-      // Open dropdown.
-      await tester.tap(find.byType(DropdownButtonFormField<ChainStepType>));
-      await tester.pumpAndSettle();
+        // Open dropdown.
+        await tester.tap(find.byType(DropdownButtonFormField<ChainStepType>));
+        await tester.pumpAndSettle();
 
-      // Re-select "holdButton" (the current type — index 0).
-      await tester.tap(find.byType(DropdownMenuItem<ChainStepType>).first);
-      await tester.pumpAndSettle();
+        // Re-select "holdButton" (the current type — index 0).
+        await tester.tap(
+          find.byType(DropdownMenuItem<ChainStepType>).first,
+        );
+        await tester.pumpAndSettle();
 
-      // onChanged must NOT have been called.
-      check(callCount).equals(0);
-    });
+        // onChanged must NOT have been called.
+        check(callCount).equals(0);
+      },
+    );
 
     testWidgets(
       'each ChainStepType value appears as a DropdownMenuItem in the tile',
       (tester) async {
-        await tester.pumpWidget(
-          hostScreen(
-            child: SingleChildScrollView(
-              child: ChainStepTile(
-                step: _step(),
-                onChanged: (_) {},
-                onDelete: () {},
-              ),
+        await tester.pumpWidget(hostScreen(
+          child: SingleChildScrollView(
+            child: ChainStepTile(
+              step: _step(),
+              onChanged: (_) {},
+              onDelete: () {},
             ),
           ),
-        );
+        ));
         await tester.pumpAndSettle();
 
         // Expand the tile.
@@ -181,26 +178,25 @@ void main() {
         check(items.length).isGreaterOrEqual(ChainStepType.values.length);
         for (final t in ChainStepType.values) {
           check(
-            find
-                .byWidgetPredicate(
-                  (w) => w is DropdownMenuItem<ChainStepType> && w.value == t,
-                )
-                .evaluate(),
+            find.byWidgetPredicate(
+              (w) => w is DropdownMenuItem<ChainStepType> && w.value == t,
+            ).evaluate(),
           ).isNotEmpty();
         }
       },
     );
 
-    testWidgets('type swap preserves id and order fields', (tester) async {
-      ChainStep? received;
-      final original = _step(
-        id: 'custom-id',
-        type: ChainStepType.holdButton,
-        order: 3,
-      );
+    testWidgets(
+      'type swap preserves id and order fields',
+      (tester) async {
+        ChainStep? received;
+        final original = _step(
+          id: 'custom-id',
+          type: ChainStepType.holdButton,
+          order: 3,
+        );
 
-      await tester.pumpWidget(
-        hostScreen(
+        await tester.pumpWidget(hostScreen(
           child: SingleChildScrollView(
             child: ChainStepTile(
               step: original,
@@ -208,79 +204,78 @@ void main() {
               onDelete: () {},
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(ExpansionTile));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byType(ExpansionTile));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byType(DropdownButtonFormField<ChainStepType>));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byType(DropdownButtonFormField<ChainStepType>));
+        await tester.pumpAndSettle();
 
-      // Pick smsContact — use predicate to avoid index confusion with
-      // the hidden selected-value copy the overlay prepends.
-      final smsItem = find.byWidgetPredicate(
-        (w) =>
-            w is DropdownMenuItem<ChainStepType> &&
-            w.value == ChainStepType.smsContact,
-      );
-      await tester.tap(smsItem.last);
-      await tester.pumpAndSettle();
+        // Pick smsContact — use predicate to avoid index confusion with
+        // the hidden selected-value copy the overlay prepends.
+        final smsItem = find.byWidgetPredicate(
+          (w) =>
+              w is DropdownMenuItem<ChainStepType> &&
+              w.value == ChainStepType.smsContact,
+        );
+        await tester.tap(smsItem.last);
+        await tester.pumpAndSettle();
 
-      check(received).isNotNull();
-      check(received!.id).equals('custom-id');
-      check(received!.order).equals(3);
-    });
+        check(received).isNotNull();
+        check(received!.id).equals('custom-id');
+        check(received!.order).equals(3);
+      },
+    );
   });
 
   group('ChainStepTile – delete button', () {
-    testWidgets('onDelete callback fires exactly once on tap', (tester) async {
-      var deleteCount = 0;
+    testWidgets(
+      'onDelete callback fires exactly once on tap',
+      (tester) async {
+        var deleteCount = 0;
 
-      await tester.pumpWidget(
-        hostScreen(
+        await tester.pumpWidget(hostScreen(
           child: ChainStepTile(
             step: _step(),
             onChanged: (_) {},
             onDelete: () => deleteCount++,
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.delete_outline));
-      await tester.pumpAndSettle();
+        await tester.tap(find.byIcon(Icons.delete_outline));
+        await tester.pumpAndSettle();
 
-      check(deleteCount).equals(1);
-    });
+        check(deleteCount).equals(1);
+      },
+    );
 
-    testWidgets('delete icon is visible even when tile is collapsed', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreen(
+    testWidgets(
+      'delete icon is visible even when tile is collapsed',
+      (tester) async {
+        await tester.pumpWidget(hostScreen(
           child: ChainStepTile(
             step: _step(),
             onChanged: (_) {},
             onDelete: () {},
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // The tile is collapsed by default; delete icon must still be
-      // visible in the trailing slot of ExpansionTile.
-      check(find.byIcon(Icons.delete_outline).evaluate()).isNotEmpty();
-    });
+        // The tile is collapsed by default; delete icon must still be
+        // visible in the trailing slot of ExpansionTile.
+        check(find.byIcon(Icons.delete_outline).evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('ChainStepTile – expansion reveals StepConfigForm', () {
-    testWidgets('tapping the tile expands it and reveals StepConfigForm', (
-      tester,
-    ) async {
-      await tester.pumpWidget(
-        hostScreen(
+    testWidgets(
+      'tapping the tile expands it and reveals StepConfigForm',
+      (tester) async {
+        await tester.pumpWidget(hostScreen(
           child: SingleChildScrollView(
             child: ChainStepTile(
               step: _step(),
@@ -288,19 +283,19 @@ void main() {
               onDelete: () {},
             ),
           ),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // Collapsed state: no StepConfigForm.
-      check(find.byType(StepConfigForm).evaluate()).isEmpty();
+        // Collapsed state: no StepConfigForm.
+        check(find.byType(StepConfigForm).evaluate()).isEmpty();
 
-      // Expand by tapping the ListTile header area.
-      await tester.tap(find.byType(ExpansionTile));
-      await tester.pumpAndSettle();
+        // Expand by tapping the ListTile header area.
+        await tester.tap(find.byType(ExpansionTile));
+        await tester.pumpAndSettle();
 
-      // Expanded: StepConfigForm must be present.
-      check(find.byType(StepConfigForm).evaluate()).isNotEmpty();
-    });
+        // Expanded: StepConfigForm must be present.
+        check(find.byType(StepConfigForm).evaluate()).isNotEmpty();
+      },
+    );
   });
 }

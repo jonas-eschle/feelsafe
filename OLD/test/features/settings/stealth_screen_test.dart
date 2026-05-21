@@ -14,60 +14,50 @@ import '../widget_test_helpers.dart';
 
 void main() {
   testWidgets('StealthScreen renders without throwing', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(StealthScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
   testWidgets('StealthScreen shows toggles', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(SwitchListTile).evaluate().length).isGreaterThan(0);
   });
 
-  testWidgets('StealthScreen enable toggle persists defaults', (tester) async {
+  testWidgets('StealthScreen enable toggle persists defaults',
+      (tester) async {
     final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byType(SwitchListTile).first);
     await tester.pumpAndSettle();
     check(repo.stored!.defaults.stealth.enabled).isTrue();
   });
 
-  testWidgets('StealthScreen notificationDisguise toggle persists', (
-    tester,
-  ) async {
+  testWidgets('StealthScreen notificationDisguise toggle persists',
+      (tester) async {
     final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     // Second switch = notificationDisguise.
     await tester.tap(find.byType(SwitchListTile).at(1));
@@ -79,12 +69,10 @@ void main() {
     // Spec Q26: timerDisplay is an enum (normal / small / none),
     // surfaced via a PopupMenuButton in the settings screen.
     final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     final list = find.descendant(
       of: find.byType(StealthScreen),
@@ -96,21 +84,17 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Hide timer').last);
     await tester.pumpAndSettle();
-    check(
-      repo.stored!.defaults.stealth.timerDisplay,
-    ).equals(StealthTimerDisplay.none);
+    check(repo.stored!.defaults.stealth.timerDisplay)
+        .equals(StealthTimerDisplay.none);
   });
 
-  testWidgets('StealthScreen sessionScreenStealth toggle persists', (
-    tester,
-  ) async {
+  testWidgets('StealthScreen sessionScreenStealth toggle persists',
+      (tester) async {
     final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
-        child: const StealthScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+      child: const StealthScreen(),
+    ));
     await tester.pumpAndSettle();
     final tile = find.widgetWithText(
       SwitchListTile,

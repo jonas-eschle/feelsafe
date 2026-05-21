@@ -51,9 +51,8 @@ class _FakeSessionController extends SessionController {
 
 void main() {
   group('SimulationAdvancedControls renders', () {
-    testWidgets('ExpansionTile with "Advanced" title is present', (
-      tester,
-    ) async {
+    testWidgets('ExpansionTile with "Advanced" title is present',
+        (tester) async {
       // Arrange
       await tester.pumpWidget(
         hostScreen(
@@ -168,7 +167,9 @@ void main() {
       tester.view.devicePixelRatio = 1.0;
       await tester.pumpWidget(
         hostScreen(
-          overrides: [sessionControllerProvider.overrideWith(() => ctrl)],
+          overrides: [
+            sessionControllerProvider.overrideWith(() => ctrl),
+          ],
           child: const SingleChildScrollView(
             child: SimulationAdvancedControls(),
           ),
@@ -179,9 +180,8 @@ void main() {
       await tester.pumpAndSettle();
     }
 
-    testWidgets('"Trigger arrival" button calls simulateGpsArrival', (
-      tester,
-    ) async {
+    testWidgets('"Trigger arrival" button calls simulateGpsArrival',
+        (tester) async {
       // Arrange
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -196,9 +196,8 @@ void main() {
       check(ctrl.calls).contains('gpsArrival');
     });
 
-    testWidgets('"Trigger low battery" button calls simulateLowBattery', (
-      tester,
-    ) async {
+    testWidgets('"Trigger low battery" button calls simulateLowBattery',
+        (tester) async {
       // Arrange
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
@@ -213,9 +212,8 @@ void main() {
       check(ctrl.calls).contains('battery');
     });
 
-    testWidgets('"Trigger panic" button calls triggerDistressChain', (
-      tester,
-    ) async {
+    testWidgets('"Trigger panic" button calls triggerDistressChain',
+        (tester) async {
       // Arrange
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);

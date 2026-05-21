@@ -19,12 +19,14 @@ import '../../helpers/test_helpers.dart';
 // Helpers
 // ---------------------------------------------------------------------------
 
-SessionEngine _mk(List<Object?> stepList, {bool isSimulation = false}) =>
-    SessionEngine(
-      chainSteps: stepList.cast(),
-      isSimulation: isSimulation,
-      random: FixedRandom(),
-    );
+SessionEngine _mk(
+  List<Object?> stepList, {
+  bool isSimulation = false,
+}) => SessionEngine(
+  chainSteps: stepList.cast(),
+  isSimulation: isSimulation,
+  random: FixedRandom(),
+);
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -91,9 +93,10 @@ void main() {
         e.events.listen((ev) => evs.add(ev.event));
         e.start();
         async.flushMicrotasks();
-        e.replaceWithDistressChain([
-          smsStep(id: 'ds', durationSeconds: 1, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [smsStep(id: 'ds', durationSeconds: 1, gracePeriodSeconds: 0)],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.elapse(const Duration(seconds: 5));
         async.flushMicrotasks();
         check(evs.last).equals(ChainEvent.sessionEnded);
@@ -106,29 +109,27 @@ void main() {
   // Event ordering for single-step chain
   // -------------------------------------------------------------------------
   group('single smsStep: event sequence', () {
-    test(
-      'smsStep(dur=5, grace=0) → [started,stepStarted,stepAdvancing,ended]',
-      () {
-        fakeAsync((async) {
-          final e = _mk([smsStep(durationSeconds: 5, gracePeriodSeconds: 0)]);
-          final evs = <ChainEvent>[];
-          e.events.listen((ev) => evs.add(ev.event));
-          e.start();
-          async.elapse(const Duration(seconds: 6));
-          async.flushMicrotasks();
-          // Verify the subsequence: started < stepStarted < stepAdvancing < ended.
-          final si = evs.indexOf(ChainEvent.sessionStarted);
-          final ssi = evs.indexOf(ChainEvent.stepStarted);
-          final sai = evs.indexOf(ChainEvent.stepAdvancing);
-          final sei = evs.indexOf(ChainEvent.sessionEnded);
-          check(si).isGreaterOrEqual(0);
-          check(ssi).isGreaterThan(si);
-          check(sai).isGreaterThan(ssi);
-          check(sei).isGreaterThan(sai);
-          e.dispose();
-        });
-      },
-    );
+    test('smsStep(dur=5, grace=0) → [started,stepStarted,stepAdvancing,ended]',
+        () {
+      fakeAsync((async) {
+        final e = _mk([smsStep(durationSeconds: 5, gracePeriodSeconds: 0)]);
+        final evs = <ChainEvent>[];
+        e.events.listen((ev) => evs.add(ev.event));
+        e.start();
+        async.elapse(const Duration(seconds: 6));
+        async.flushMicrotasks();
+        // Verify the subsequence: started < stepStarted < stepAdvancing < ended.
+        final si = evs.indexOf(ChainEvent.sessionStarted);
+        final ssi = evs.indexOf(ChainEvent.stepStarted);
+        final sai = evs.indexOf(ChainEvent.stepAdvancing);
+        final sei = evs.indexOf(ChainEvent.sessionEnded);
+        check(si).isGreaterOrEqual(0);
+        check(ssi).isGreaterThan(si);
+        check(sai).isGreaterThan(ssi);
+        check(sei).isGreaterThan(sai);
+        e.dispose();
+      });
+    });
 
     test('graceExpired precedes stepAdvancing', () {
       fakeAsync((async) {
@@ -314,8 +315,12 @@ void main() {
         async.flushMicrotasks();
         e.disarm();
         async.flushMicrotasks();
-        check(evs.any((ev) => ev.event == ChainEvent.userDisarmed)).isTrue();
-        check(evs.any((ev) => ev.event == ChainEvent.sessionEnded)).isFalse();
+        check(
+          evs.any((ev) => ev.event == ChainEvent.userDisarmed),
+        ).isTrue();
+        check(
+          evs.any((ev) => ev.event == ChainEvent.sessionEnded),
+        ).isFalse();
         e.dispose();
       });
     });
@@ -351,7 +356,11 @@ void main() {
       fakeAsync((async) {
         final e = _mk([
           smsStep(durationSeconds: 1, gracePeriodSeconds: 0),
-          step(type: ChainStepType.loudAlarm, order: 1, durationSeconds: 30),
+          step(
+            type: ChainStepType.loudAlarm,
+            order: 1,
+            durationSeconds: 30,
+          ),
         ]);
         final evs = <ChainEventData>[];
         e.events.listen(evs.add);

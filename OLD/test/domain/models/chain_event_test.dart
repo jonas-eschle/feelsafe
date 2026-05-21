@@ -264,39 +264,31 @@ void main() {
 
   group('ActionDeliveryStatus equality / hashCode / toString', () {
     test('queued equals queued', () {
-      check(
-        const ActionDeliveryStatus.queued(),
-      ).equals(const ActionDeliveryStatus.queued());
-      check(
-        const ActionDeliveryStatus.queued().hashCode,
-      ).equals(const ActionDeliveryStatus.queued().hashCode);
+      check(const ActionDeliveryStatus.queued())
+          .equals(const ActionDeliveryStatus.queued());
+      check(const ActionDeliveryStatus.queued().hashCode)
+          .equals(const ActionDeliveryStatus.queued().hashCode);
     });
 
     test('sent equals sent', () {
-      check(
-        const ActionDeliveryStatus.sent(),
-      ).equals(const ActionDeliveryStatus.sent());
-      check(
-        const ActionDeliveryStatus.sent().hashCode,
-      ).equals(const ActionDeliveryStatus.sent().hashCode);
+      check(const ActionDeliveryStatus.sent())
+          .equals(const ActionDeliveryStatus.sent());
+      check(const ActionDeliveryStatus.sent().hashCode)
+          .equals(const ActionDeliveryStatus.sent().hashCode);
     });
 
     test('failed equals failed', () {
-      check(
-        const ActionDeliveryStatus.failed(),
-      ).equals(const ActionDeliveryStatus.failed());
-      check(
-        const ActionDeliveryStatus.failed().hashCode,
-      ).equals(const ActionDeliveryStatus.failed().hashCode);
+      check(const ActionDeliveryStatus.failed())
+          .equals(const ActionDeliveryStatus.failed());
+      check(const ActionDeliveryStatus.failed().hashCode)
+          .equals(const ActionDeliveryStatus.failed().hashCode);
     });
 
     test('simBlocked equals simBlocked', () {
-      check(
-        const ActionDeliveryStatus.simBlocked(),
-      ).equals(const ActionDeliveryStatus.simBlocked());
-      check(
-        const ActionDeliveryStatus.simBlocked().hashCode,
-      ).equals(const ActionDeliveryStatus.simBlocked().hashCode);
+      check(const ActionDeliveryStatus.simBlocked())
+          .equals(const ActionDeliveryStatus.simBlocked());
+      check(const ActionDeliveryStatus.simBlocked().hashCode)
+          .equals(const ActionDeliveryStatus.simBlocked().hashCode);
     });
 
     test('queued != sent', () {
@@ -307,18 +299,14 @@ void main() {
     });
 
     test('toString for every status', () {
-      check(
-        const ActionDeliveryStatus.queued().toString(),
-      ).equals('ActionDeliveryStatus.queued');
-      check(
-        const ActionDeliveryStatus.sent().toString(),
-      ).equals('ActionDeliveryStatus.sent');
-      check(
-        const ActionDeliveryStatus.failed().toString(),
-      ).equals('ActionDeliveryStatus.failed');
-      check(
-        const ActionDeliveryStatus.simBlocked().toString(),
-      ).equals('ActionDeliveryStatus.simBlocked');
+      check(const ActionDeliveryStatus.queued().toString())
+          .equals('ActionDeliveryStatus.queued');
+      check(const ActionDeliveryStatus.sent().toString())
+          .equals('ActionDeliveryStatus.sent');
+      check(const ActionDeliveryStatus.failed().toString())
+          .equals('ActionDeliveryStatus.failed');
+      check(const ActionDeliveryStatus.simBlocked().toString())
+          .equals('ActionDeliveryStatus.simBlocked');
     });
 
     test('cross-type != literal', () {

@@ -22,31 +22,29 @@ SessionLog _log(String id, String mode) => SessionLog(
 
 void main() {
   testWidgets('PastEventsScreen renders empty when no logs', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          sessionLogsRepositoryProvider.overrideWithValue(
-            FakeSessionLogsRepository(),
-          ),
-        ],
-        child: const PastEventsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        sessionLogsRepositoryProvider
+            .overrideWithValue(FakeSessionLogsRepository()),
+      ],
+      child: const PastEventsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(PastEventsScreen).evaluate().length).equals(1);
   });
 
   testWidgets('PastEventsScreen lists each log', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          sessionLogsRepositoryProvider.overrideWithValue(
-            FakeSessionLogsRepository([_log('a', 'Walk'), _log('b', 'Date')]),
-          ),
-        ],
-        child: const PastEventsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        sessionLogsRepositoryProvider.overrideWithValue(
+          FakeSessionLogsRepository([
+            _log('a', 'Walk'),
+            _log('b', 'Date'),
+          ]),
+        ),
+      ],
+      child: const PastEventsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.text('Walk').evaluate().length).equals(1);
     check(find.text('Date').evaluate().length).equals(1);
@@ -54,12 +52,10 @@ void main() {
 
   testWidgets('PastEventsScreen delete icon removes log', (tester) async {
     final repo = FakeSessionLogsRepository([_log('a', 'Walk')]);
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [sessionLogsRepositoryProvider.overrideWithValue(repo)],
-        child: const PastEventsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [sessionLogsRepositoryProvider.overrideWithValue(repo)],
+      child: const PastEventsScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();

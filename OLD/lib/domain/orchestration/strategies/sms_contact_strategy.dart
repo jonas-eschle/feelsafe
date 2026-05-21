@@ -120,8 +120,7 @@ final class SmsContactStrategy extends EventStrategy {
       // default for the contact's `languageCode`, falling back to
       // `SessionContext.defaultSmsTemplate` when the language is
       // unknown. Fix for bugs.json Warn 4.
-      final template =
-          stepTemplate ??
+      final template = stepTemplate ??
           services.context.resolveSmsTemplateForContact(contact);
       final message = services.context.resolvePlaceholders(
         template,
@@ -151,10 +150,10 @@ final class SmsContactStrategy extends EventStrategy {
       for (final c in candidates)
         if (c.channels.contains(channel)) c,
     ];
-    return SimulationDescription('simSmsContact', {
-      'channel': channel.name,
-      'count': contacts.length,
-    });
+    return SimulationDescription(
+      'simSmsContact',
+      {'channel': channel.name, 'count': contacts.length},
+    );
   }
 
   /// Resolves the step config.

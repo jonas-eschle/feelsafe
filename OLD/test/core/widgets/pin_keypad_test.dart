@@ -29,7 +29,9 @@ void main() {
 
   testWidgets('digit tap fires onDigit with correct value', (tester) async {
     final taps = <int>[];
-    await tester.pumpWidget(_host(onDigit: taps.add, onBackspace: () {}));
+    await tester.pumpWidget(
+      _host(onDigit: taps.add, onBackspace: () {}),
+    );
     await tester.tap(find.text('7'));
     await tester.tap(find.text('0'));
     await tester.tap(find.text('3'));
@@ -38,7 +40,9 @@ void main() {
 
   testWidgets('backspace tap fires onBackspace', (tester) async {
     var calls = 0;
-    await tester.pumpWidget(_host(onDigit: (_) {}, onBackspace: () => calls++));
+    await tester.pumpWidget(
+      _host(onDigit: (_) {}, onBackspace: () => calls++),
+    );
     await tester.tap(find.text('⌫'));
     check(calls).equals(1);
   });

@@ -43,94 +43,91 @@ Future<void> _expandTile(WidgetTester tester, int index) async {
 void main() {
   group('EventDefaultsScreen — extra onChanged branches', () {
     testWidgets(
-      'FakeCall callerName TextFormField onChanged persists (lines 186–187)',
-      (tester) async {
-        await tester.binding.setSurfaceSize(_bigViewport);
-        addTearDown(() async => tester.binding.setSurfaceSize(null));
+        'FakeCall callerName TextFormField onChanged persists (lines 186–187)',
+        (tester) async {
+      await tester.binding.setSurfaceSize(_bigViewport);
+      addTearDown(() async => tester.binding.setSurfaceSize(null));
 
-        final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(_host(repo));
+      final repo = FakeSettingsRepository(_defaultSettings);
+      await tester.pumpWidget(_host(repo));
+      await tester.pumpAndSettle();
+
+      // fakeCall tile is index 3.
+      await _expandTile(tester, 3);
+
+      // Find the callerName TextFormField and enter text.
+      final textFields = find.byType(TextFormField);
+      if (textFields.evaluate().isNotEmpty) {
+        await tester.ensureVisible(textFields.first);
+        await tester.pump();
+        // Type a caller name to fire onChanged.
+        await tester.enterText(textFields.first, 'Angela');
         await tester.pumpAndSettle();
-
-        // fakeCall tile is index 3.
-        await _expandTile(tester, 3);
-
-        // Find the callerName TextFormField and enter text.
-        final textFields = find.byType(TextFormField);
-        if (textFields.evaluate().isNotEmpty) {
-          await tester.ensureVisible(textFields.first);
-          await tester.pump();
-          // Type a caller name to fire onChanged.
-          await tester.enterText(textFields.first, 'Angela');
-          await tester.pumpAndSettle();
-          // The repository should now be updated.
-          check(repo.stored).isNotNull();
-        }
-      },
-    );
+        // The repository should now be updated.
+        check(repo.stored).isNotNull();
+      }
+    });
 
     testWidgets(
-      'SmsContact channel dropdown onChanged persists (lines 222–223)',
-      (tester) async {
-        await tester.binding.setSurfaceSize(_bigViewport);
-        addTearDown(() async => tester.binding.setSurfaceSize(null));
+        'SmsContact channel dropdown onChanged persists (lines 222–223)',
+        (tester) async {
+      await tester.binding.setSurfaceSize(_bigViewport);
+      addTearDown(() async => tester.binding.setSurfaceSize(null));
 
-        final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(_host(repo));
+      final repo = FakeSettingsRepository(_defaultSettings);
+      await tester.pumpWidget(_host(repo));
+      await tester.pumpAndSettle();
+
+      // smsContact tile is index 4.
+      await _expandTile(tester, 4);
+
+      // The SmsContactForm has a DropdownButtonFormField for channel.
+      // Open the dropdown and tap a menu item.
+      final dropdowns = find.byType(DropdownButtonFormField<dynamic>);
+      if (dropdowns.evaluate().isNotEmpty) {
+        await tester.ensureVisible(dropdowns.first);
+        await tester.pump();
+        await tester.tap(dropdowns.first);
         await tester.pumpAndSettle();
-
-        // smsContact tile is index 4.
-        await _expandTile(tester, 4);
-
-        // The SmsContactForm has a DropdownButtonFormField for channel.
-        // Open the dropdown and tap a menu item.
-        final dropdowns = find.byType(DropdownButtonFormField<dynamic>);
-        if (dropdowns.evaluate().isNotEmpty) {
-          await tester.ensureVisible(dropdowns.first);
-          await tester.pump();
-          await tester.tap(dropdowns.first);
-          await tester.pumpAndSettle();
-          // Tap 'WhatsApp' menu item if visible, else tap the first item.
-          final whatsapp = find.text('WhatsApp');
-          if (whatsapp.evaluate().isNotEmpty) {
-            await tester.tap(whatsapp.first);
-          } else {
-            // Fallback: tap first item in dropdown.
-            final items = find.byType(DropdownMenuItem<dynamic>);
-            if (items.evaluate().isNotEmpty) {
-              await tester.tap(items.first);
-            }
+        // Tap 'WhatsApp' menu item if visible, else tap the first item.
+        final whatsapp = find.text('WhatsApp');
+        if (whatsapp.evaluate().isNotEmpty) {
+          await tester.tap(whatsapp.first);
+        } else {
+          // Fallback: tap first item in dropdown.
+          final items = find.byType(DropdownMenuItem<dynamic>);
+          if (items.evaluate().isNotEmpty) {
+            await tester.tap(items.first);
           }
-          await tester.pumpAndSettle();
-          check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
         }
-      },
-    );
+        await tester.pumpAndSettle();
+        check(find.byType(EventDefaultsScreen).evaluate()).isNotEmpty();
+      }
+    });
 
     testWidgets(
-      'HardwareButton pressCount TextFormField onChanged persists (lines 282–284)',
-      (tester) async {
-        await tester.binding.setSurfaceSize(_bigViewport);
-        addTearDown(() async => tester.binding.setSurfaceSize(null));
+        'HardwareButton pressCount TextFormField onChanged persists (lines 282–284)',
+        (tester) async {
+      await tester.binding.setSurfaceSize(_bigViewport);
+      addTearDown(() async => tester.binding.setSurfaceSize(null));
 
-        final repo = FakeSettingsRepository(_defaultSettings);
-        await tester.pumpWidget(_host(repo));
+      final repo = FakeSettingsRepository(_defaultSettings);
+      await tester.pumpWidget(_host(repo));
+      await tester.pumpAndSettle();
+
+      // hardwareButton tile is index 8.
+      await _expandTile(tester, 8);
+
+      // HardwareButtonForm has a TextFormField for pressCount.
+      final textFields = find.byType(TextFormField);
+      if (textFields.evaluate().isNotEmpty) {
+        await tester.ensureVisible(textFields.first);
+        await tester.pump();
+        // Enter a valid press count integer.
+        await tester.enterText(textFields.first, '7');
         await tester.pumpAndSettle();
-
-        // hardwareButton tile is index 8.
-        await _expandTile(tester, 8);
-
-        // HardwareButtonForm has a TextFormField for pressCount.
-        final textFields = find.byType(TextFormField);
-        if (textFields.evaluate().isNotEmpty) {
-          await tester.ensureVisible(textFields.first);
-          await tester.pump();
-          // Enter a valid press count integer.
-          await tester.enterText(textFields.first, '7');
-          await tester.pumpAndSettle();
-          check(repo.stored).isNotNull();
-        }
-      },
-    );
+        check(repo.stored).isNotNull();
+      }
+    });
   });
 }

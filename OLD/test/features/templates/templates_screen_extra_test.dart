@@ -35,9 +35,8 @@ void main() {
       await tester.pumpWidget(
         hostScreen(
           overrides: [
-            templatesRepositoryProvider.overrideWithValue(
-              FakeTemplatesRepository(),
-            ),
+            templatesRepositoryProvider
+                .overrideWithValue(FakeTemplatesRepository()),
           ],
           child: const TemplatesScreen(),
         ),
@@ -59,9 +58,8 @@ void main() {
       check(find.textContaining('templates error').evaluate()).isNotEmpty();
     });
 
-    testWidgets('tapping a template tile navigates (no exception)', (
-      tester,
-    ) async {
+    testWidgets('tapping a template tile navigates (no exception)',
+        (tester) async {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
@@ -81,9 +79,8 @@ void main() {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
-            templatesRepositoryProvider.overrideWithValue(
-              FakeTemplatesRepository(),
-            ),
+            templatesRepositoryProvider
+                .overrideWithValue(FakeTemplatesRepository()),
           ],
           child: const TemplatesScreen(),
         ),

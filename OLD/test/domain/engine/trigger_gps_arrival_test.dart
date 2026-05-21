@@ -39,7 +39,12 @@ import '../../helpers/test_helpers.dart';
 // Haversine reference calculator (mirrors TriggerManager._withinRadius)
 // ---------------------------------------------------------------------------
 
-double _haversineMeters(double lat1, double lon1, double lat2, double lon2) {
+double _haversineMeters(
+  double lat1,
+  double lon1,
+  double lat2,
+  double lon2,
+) {
   const earth = 6371000.0;
   final la1 = lat1 * (math.pi / 180.0);
   final la2 = lat2 * (math.pi / 180.0);
@@ -449,7 +454,8 @@ void main() {
   // Group 3: Boundary at exactly radius distance
   // -------------------------------------------------------------------------
   group('GPS arrival — exactly at radius boundary', () {
-    test('arrival inside radius (haversine ≤ radiusMeters) fires '
+    test(
+        'arrival inside radius (haversine ≤ radiusMeters) fires '
         '(spec: distance <= radius)', () {
       // Spec: _withinRadius uses `distance <= trigger.radiusMeters`.
       // We inject a point at a computed ≤100 m distance.

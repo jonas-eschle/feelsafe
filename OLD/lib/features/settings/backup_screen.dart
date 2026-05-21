@@ -80,14 +80,16 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
             ),
             SwitchListTile(
               value: _selection.contacts,
-              onChanged: (v) =>
-                  setState(() => _selection = _selection.copyWith(contacts: v)),
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(contacts: v),
+              ),
               title: Text(l.backupToggleContacts),
             ),
             SwitchListTile(
               value: _selection.modes,
-              onChanged: (v) =>
-                  setState(() => _selection = _selection.copyWith(modes: v)),
+              onChanged: (v) => setState(
+                () => _selection = _selection.copyWith(modes: v),
+              ),
               title: Text(l.backupToggleModes),
             ),
             SwitchListTile(
@@ -147,7 +149,10 @@ class _BackupScreenState extends ConsumerState<BackupScreen> {
     try {
       final payload = await ref
           .read(backupControllerProvider.notifier)
-          .exportAll(pin: pin.isEmpty ? null : pin, selection: _selection);
+          .exportAll(
+            pin: pin.isEmpty ? null : pin,
+            selection: _selection,
+          );
       if (!mounted) return;
       final encoded = const JsonEncoder.withIndent('  ').convert(payload);
       await showDialog<void>(

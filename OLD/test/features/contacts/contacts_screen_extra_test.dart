@@ -25,9 +25,8 @@ void main() {
       await tester.pumpWidget(
         hostScreen(
           overrides: [
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
+            contactsRepositoryProvider
+                .overrideWithValue(FakeContactsRepository()),
           ],
           child: const ContactsScreen(),
         ),
@@ -54,9 +53,8 @@ void main() {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
+            contactsRepositoryProvider
+                .overrideWithValue(FakeContactsRepository()),
           ],
           child: const ContactsScreen(),
         ),
@@ -69,14 +67,15 @@ void main() {
       await tester.pumpAndSettle();
     });
 
-    testWidgets('tapping a contact tile navigates (no exception)', (
-      tester,
-    ) async {
+    testWidgets('tapping a contact tile navigates (no exception)',
+        (tester) async {
       await tester.pumpWidget(
         hostScreenWithRouter(
           overrides: [
             contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository([makeContact(id: 'c1', name: 'Eve')]),
+              FakeContactsRepository([
+                makeContact(id: 'c1', name: 'Eve'),
+              ]),
             ),
           ],
           child: const ContactsScreen(),

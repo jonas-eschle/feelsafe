@@ -14,35 +14,28 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('TemplateEditorScreen renders a blank form for creation', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          templatesRepositoryProvider.overrideWithValue(
-            FakeTemplatesRepository(),
-          ),
-        ],
-        child: const TemplateEditorScreen(),
-      ),
-    );
+  testWidgets('TemplateEditorScreen renders a blank form for creation',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        templatesRepositoryProvider
+            .overrideWithValue(FakeTemplatesRepository()),
+      ],
+      child: const TemplateEditorScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(TemplateEditorScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
   testWidgets('TemplateEditorScreen shows TextField inputs', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          templatesRepositoryProvider.overrideWithValue(
-            FakeTemplatesRepository(),
-          ),
-        ],
-        child: const TemplateEditorScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        templatesRepositoryProvider
+            .overrideWithValue(FakeTemplatesRepository()),
+      ],
+      child: const TemplateEditorScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(TextField).evaluate().length).isGreaterThan(1);
   });
@@ -61,17 +54,14 @@ void main() {
         keyword: 'ok',
         buttonLabel: 'Dismiss',
       );
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            templatesRepositoryProvider.overrideWithValue(
-              FakeTemplatesRepository([existing]),
-            ),
-          ],
-          initialQuery: 'id=t1',
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          templatesRepositoryProvider
+              .overrideWithValue(FakeTemplatesRepository([existing])),
+        ],
+        initialQuery: 'id=t1',
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       final fields = find.byType(TextField);
       final nameField = tester.widget<TextField>(fields.at(0));
@@ -81,16 +71,13 @@ void main() {
     },
   );
 
-  testWidgets('TemplateEditorScreen save persists a new template', (
-    tester,
-  ) async {
+  testWidgets('TemplateEditorScreen save persists a new template',
+      (tester) async {
     final repo = FakeTemplatesRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-        child: const TemplateEditorScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenPushed(
+      overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+      child: const TemplateEditorScreen(),
+    ));
     await tester.pumpAndSettle();
     final fields = find.byType(TextField);
     await tester.enterText(fields.at(0), 'Custom');
@@ -109,12 +96,10 @@ void main() {
     'TemplateEditorScreen empty name falls back to default "Template"',
     (tester) async {
       final repo = FakeTemplatesRepository();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
-          child: const TemplateEditorScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [templatesRepositoryProvider.overrideWithValue(repo)],
+        child: const TemplateEditorScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();

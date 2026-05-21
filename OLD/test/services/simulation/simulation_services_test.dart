@@ -28,27 +28,29 @@ import 'package:guardianangela/services/simulation/simulation_system_ui_service.
 import 'package:guardianangela/services/simulation/simulation_vibration_service.dart';
 import 'package:guardianangela/services/simulation/simulation_wakelock_service.dart';
 
-EmergencyContact _contact({String phone = '+15551234567'}) => EmergencyContact(
-  id: 'c',
-  name: 'Alice',
-  phoneNumber: phone,
-  sortOrder: 0,
-  channels: const [MessageChannel.sms],
-);
+EmergencyContact _contact({String phone = '+15551234567'}) =>
+    EmergencyContact(
+      id: 'c',
+      name: 'Alice',
+      phoneNumber: phone,
+      sortOrder: 0,
+      channels: const [MessageChannel.sms],
+    );
 
 ReminderTemplate _template() => const ReminderTemplate(
-  id: 't1',
-  name: 'ping',
-  title: 'Hello',
-  body: 'body',
-  confirmationType: ConfirmationType.tapButton,
-  displayStyle: ReminderDisplayStyle.fullScreen,
-  isGlobal: true,
-);
+      id: 't1',
+      name: 'ping',
+      title: 'Hello',
+      body: 'body',
+      confirmationType: ConfirmationType.tapButton,
+      displayStyle: ReminderDisplayStyle.fullScreen,
+      isGlobal: true,
+    );
 
 void main() {
   group('SimulationAudioService', () {
-    test('every method completes without touching a platform API', () async {
+    test('every method completes without touching a platform API',
+        () async {
       final s = SimulationAudioService();
       await s.playAlarm();
       await s.playAlarm(maxVolume: false);
@@ -101,7 +103,11 @@ void main() {
     test('start/stop + isListening + stream lifecycle', () async {
       final s = SimulationHardwareButtonService();
       check(s.isListening).isFalse();
-      await s.start(buttonType: 'volume', pattern: '5x_press', pressCount: 3);
+      await s.start(
+        buttonType: 'volume',
+        pattern: '5x_press',
+        pressCount: 3,
+      );
       check(s.isListening).isTrue();
       await s.stop();
       check(s.isListening).isFalse();
@@ -115,7 +121,11 @@ void main() {
       final s = SimulationHomeWidgetService();
       await s.registerInteractivity(() {});
       check(await s.initiallyLaunchedUri()).isNull();
-      await s.updateStatus(status: 'Idle', modeName: 'Walk', isRunning: false);
+      await s.updateStatus(
+        status: 'Idle',
+        modeName: 'Walk',
+        isRunning: false,
+      );
       await s.writeLastMarker('m');
       check(await s.consumePendingMarker()).isNull();
       check(s.widgetClicked.isBroadcast).isTrue();
@@ -148,7 +158,8 @@ void main() {
   });
 
   group('SimulationMessagingService', () {
-    test('sendMessage returns unique sim ids and does not send', () async {
+    test('sendMessage returns unique sim ids and does not send',
+        () async {
       final s = SimulationMessagingService();
       check(await s.canAutoSend(MessageChannel.sms)).isTrue();
       check(await s.canAutoSend(MessageChannel.whatsapp)).isTrue();
@@ -165,10 +176,7 @@ void main() {
       check(a.value).equals('sim-0');
       check(b.value).equals('sim-1');
       final group = await s.sendToAll(
-        contacts: [
-          _contact(),
-          _contact(phone: '+1'),
-        ],
+        contacts: [_contact(), _contact(phone: '+1')],
         message: 'hi',
       );
       check(group.length).equals(2);

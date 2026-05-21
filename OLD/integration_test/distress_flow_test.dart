@@ -23,51 +23,52 @@ import 'package:guardianangela/main.dart' as app;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  patrolTest('distress: hardware-panic fires -> distress chain runs', (
-    $,
-  ) async {
-    app.main();
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
+  patrolTest(
+    'distress: hardware-panic fires -> distress chain runs',
+    ($) async {
+      app.main();
+      await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
-    // Skip onboarding if present.
-    for (var i = 0; i < 3; i++) {
-      final btns = find.byType(FilledButton);
-      if (btns.evaluate().isEmpty) break;
-      await $.tester.tap(btns.first);
+      // Skip onboarding if present.
+      for (var i = 0; i < 3; i++) {
+        final btns = find.byType(FilledButton);
+        if (btns.evaluate().isEmpty) break;
+        await $.tester.tap(btns.first);
+        await $.pumpAndSettle();
+      }
+
+      // Start Walk Mode simulation.
+      await $.tester.tap(find.text('Walk').first);
       await $.pumpAndSettle();
-    }
+      final simBtn = find.textContaining('Simulat');
+      if (simBtn.evaluate().isNotEmpty) {
+        await $.tester.tap(simBtn.first);
+        await $.pumpAndSettle();
+      }
 
-    // Start Walk Mode simulation.
-    await $.tester.tap(find.text('Walk').first);
-    await $.pumpAndSettle();
-    final simBtn = find.textContaining('Simulat');
-    if (simBtn.evaluate().isNotEmpty) {
-      await $.tester.tap(simBtn.first);
-      await $.pumpAndSettle();
-    }
+      // Fire the hardware-panic trigger.
+      final debugBtn = find.byKey(const Key('debugDistressButton'));
+      if (debugBtn.evaluate().isNotEmpty) {
+        await $.tester.tap(debugBtn.first);
+      } else {
+        // TODO(e2e-owner): wire up a debug-only method-channel that
+        // simulates the 5x volume-button press so this test can fire
+        // distress without a dev-only UI affordance.
+        debugPrint('distress hook absent — fire step skipped');
+      }
 
-    // Fire the hardware-panic trigger.
-    final debugBtn = find.byKey(const Key('debugDistressButton'));
-    if (debugBtn.evaluate().isNotEmpty) {
-      await $.tester.tap(debugBtn.first);
-    } else {
-      // TODO(e2e-owner): wire up a debug-only method-channel that
-      // simulates the 5x volume-button press so this test can fire
-      // distress without a dev-only UI affordance.
-      debugPrint('distress hook absent — fire step skipped');
-    }
+      await $.pumpAndSettle(duration: const Duration(seconds: 3));
 
-    await $.pumpAndSettle(duration: const Duration(seconds: 3));
-
-    // After distress fires the session screen should show one of
-    // these distress-specific labels.
-    final distressFinder = find.textContaining(
-      RegExp('Distress|Emergency|SOS'),
-    );
-    // Informational — do not hard-fail until the debug hook lands.
-    debugPrint(
-      'distress UI matches: '
-      '${distressFinder.evaluate().length}',
-    );
-  });
+      // After distress fires the session screen should show one of
+      // these distress-specific labels.
+      final distressFinder = find.textContaining(
+        RegExp('Distress|Emergency|SOS'),
+      );
+      // Informational — do not hard-fail until the debug hook lands.
+      debugPrint(
+        'distress UI matches: '
+        '${distressFinder.evaluate().length}',
+      );
+    },
+  );
 }

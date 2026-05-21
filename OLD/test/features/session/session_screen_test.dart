@@ -77,48 +77,37 @@ List<Override> _overrides({
 }) => [
   sessionControllerProvider.overrideWith(() => _FakeSessionController(seed)),
   settingsRepositoryProvider.overrideWithValue(
-    _FakeSettingsRepository(
-      settings ?? const AppSettings(defaults: AppDefaults()),
-    ),
+    _FakeSettingsRepository(settings ?? const AppSettings(defaults: AppDefaults())),
   ),
 ];
 
 void main() {
-  testWidgets('SessionScreen renders scaffold + body once session hydrates', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: _overrides(seed: _session()),
-        child: const SessionScreen(),
-      ),
-    );
+  testWidgets('SessionScreen renders scaffold + body once session hydrates',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: _overrides(seed: _session()),
+      child: const SessionScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(SessionScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets(
-    'SessionScreen shows HoldToTriggerButton during holdButton step',
-    (tester) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(seed: _session()),
-          child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-      check(find.byType(HoldToTriggerButton).evaluate().length).equals(1);
-    },
-  );
+  testWidgets('SessionScreen shows HoldToTriggerButton during holdButton step',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: _overrides(seed: _session()),
+      child: const SessionScreen(),
+    ));
+    await tester.pumpAndSettle();
+    check(find.byType(HoldToTriggerButton).evaluate().length).equals(1);
+  });
 
   testWidgets('SessionScreen shows ImSafeSlider disarm CTA', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: _overrides(seed: _session()),
-        child: const SessionScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: _overrides(seed: _session()),
+      child: const SessionScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(ImSafeSlider).evaluate().length).equals(1);
   });
@@ -126,14 +115,12 @@ void main() {
   testWidgets(
     'SessionScreen hides HoldToTriggerButton outside holdButton steps',
     (tester) async {
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(
-            seed: _session(stepType: ChainStepType.loudAlarm),
-          ),
-          child: const SessionScreen(),
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(
+          seed: _session(stepType: ChainStepType.loudAlarm),
         ),
-      );
+        child: const SessionScreen(),
+      ));
       await tester.pumpAndSettle();
       check(find.byType(HoldToTriggerButton).evaluate()).isEmpty();
     },
@@ -150,17 +137,15 @@ void main() {
         sessionScreenStealth: false,
         timerDisplay: StealthTimerDisplay.none,
       );
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: _overrides(
-            seed: _session(),
-            settings: const AppSettings(
-              defaults: AppDefaults(stealth: stealth),
-            ),
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: _overrides(
+          seed: _session(),
+          settings: const AppSettings(
+            defaults: AppDefaults(stealth: stealth),
           ),
-          child: const SessionScreen(),
         ),
-      );
+        child: const SessionScreen(),
+      ));
       await tester.pumpAndSettle();
       // The remaining-seconds Text uses l.sessionRemaining which
       // interpolates the seconds number. With stealth hiding the

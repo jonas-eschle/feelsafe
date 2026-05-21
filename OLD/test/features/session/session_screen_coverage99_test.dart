@@ -62,8 +62,10 @@ class _FakeSettingsRepository extends SettingsRepository {
 /// [SessionController] subclass that pre-seeds state and records
 /// callback registrations.
 class _FakeSessionController extends SessionController {
-  _FakeSessionController(this._seed, {Set<String>? recordedCalls})
-    : recordedCalls = recordedCalls ?? {};
+  _FakeSessionController(
+    this._seed, {
+    Set<String>? recordedCalls,
+  }) : recordedCalls = recordedCalls ?? {};
   final WalkSession? _seed;
   final Set<String> recordedCalls;
   int disarmCalls = 0;
@@ -193,30 +195,31 @@ List<Override> _overrides({
 void main() {
   // -------------------------------------------------------------------------
   group('didChangeAppLifecycleState', () {
-    testWidgets('lifecycle change calls controller.setAppLifecycleState', (
-      tester,
-    ) async {
-      // Arrange
-      final calls = <String>{};
-      final ctrl = _FakeSessionController(
-        _session(isSimulation: false),
-        recordedCalls: calls,
-      );
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'lifecycle change calls controller.setAppLifecycleState',
+      (tester) async {
+        // Arrange
+        final calls = <String>{};
+        final ctrl = _FakeSessionController(
+          _session(isSimulation: false),
+          recordedCalls: calls,
+        );
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(build: () => ctrl),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // Act — simulate the app going to background.
-      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-      await tester.pump();
+        // Act — simulate the app going to background.
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.paused,
+        );
+        await tester.pump();
 
-      // Assert — setAppLifecycleState was called with paused.
-      check(calls.any((c) => c.contains('paused'))).isTrue();
-    });
+        // Assert — setAppLifecycleState was called with paused.
+        check(calls.any((c) => c.contains('paused'))).isTrue();
+      },
+    );
 
     testWidgets(
       'lifecycle paused with simulation session calls setSimulationBackgroundClamp(true)',
@@ -227,16 +230,16 @@ void main() {
           _session(isSimulation: true),
           recordedCalls: calls,
         );
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Act
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.paused,
+        );
         await tester.pump();
 
         // Assert — background clamp was engaged for simulation session.
@@ -252,16 +255,16 @@ void main() {
           _session(isSimulation: true),
           recordedCalls: calls,
         );
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // First pause, then resume.
-        tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.paused,
+        );
         await tester.pump();
         tester.binding.handleAppLifecycleStateChanged(
           AppLifecycleState.resumed,
@@ -273,25 +276,26 @@ void main() {
       },
     );
 
-    testWidgets('lifecycle change with null session does not throw', (
-      tester,
-    ) async {
-      // Covers the `if (session == null) return;` guard in
-      // didChangeAppLifecycleState (line 89).
-      final ctrl = _FakeSessionController(null);
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'lifecycle change with null session does not throw',
+      (tester) async {
+        // Covers the `if (session == null) return;` guard in
+        // didChangeAppLifecycleState (line 89).
+        final ctrl = _FakeSessionController(null);
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(build: () => ctrl),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.paused);
-      await tester.pump();
+        tester.binding.handleAppLifecycleStateChanged(
+          AppLifecycleState.paused,
+        );
+        await tester.pump();
 
-      check(tester.takeException()).isNull();
-    });
+        check(tester.takeException()).isNull();
+      },
+    );
 
     testWidgets(
       'lifecycle change with inactive state covered (not paused/hidden)',
@@ -303,12 +307,10 @@ void main() {
           _session(isSimulation: true),
           recordedCalls: calls,
         );
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         tester.binding.handleAppLifecycleStateChanged(
@@ -323,35 +325,34 @@ void main() {
 
   // -------------------------------------------------------------------------
   group('_onEmergencyConfirm route push', () {
-    testWidgets('emergency confirmation fires push to emergencyConfirm route', (
-      tester,
-    ) async {
-      // The _onEmergencyConfirm method (lines 98-106) pushes to the
-      // /emergency-confirm route. We fire it via the stream.
-      final seed = _session();
-      final ctrl = _EmergencyConfirmController(seed);
+    testWidgets(
+      'emergency confirmation fires push to emergencyConfirm route',
+      (tester) async {
+        // The _onEmergencyConfirm method (lines 98-106) pushes to the
+        // /emergency-confirm route. We fire it via the stream.
+        final seed = _session();
+        final ctrl = _EmergencyConfirmController(seed);
 
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(build: () => ctrl),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // Fire an emergency confirm request via the controller stream.
-      // The post-frame callback in initState subscribes after one frame.
-      ctrl.fireEmergencyConfirm(
-        const EmergencyConfirmRequest(number: '112', durationSeconds: 5),
-      );
-      await tester.pump();
-      await tester.pump();
+        // Fire an emergency confirm request via the controller stream.
+        // The post-frame callback in initState subscribes after one frame.
+        ctrl.fireEmergencyConfirm(
+          const EmergencyConfirmRequest(number: '112', durationSeconds: 5),
+        );
+        await tester.pump();
+        await tester.pump();
 
-      // The router will attempt to navigate to /emergency-confirm which
-      // is not in our minimal router — it routes to '/other' as a fallback.
-      // We just verify no unhandled exception is thrown.
-      check(tester.takeException()).isNull();
-    });
+        // The router will attempt to navigate to /emergency-confirm which
+        // is not in our minimal router — it routes to '/other' as a fallback.
+        // We just verify no unhandled exception is thrown.
+        check(tester.takeException()).isNull();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -362,12 +363,10 @@ void main() {
         // Arrange — wire the Angela deceptive dialog callback via the
         // initState post-frame hook, then call it directly.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // After the post-frame callback, onAngelaDeceptiveDialog is set.
@@ -383,53 +382,51 @@ void main() {
       },
     );
 
-    testWidgets('tapping Cancel button on Angela dialog dismisses it', (
-      tester,
-    ) async {
-      final ctrl = _AngelaDialogController(_session());
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'tapping Cancel button on Angela dialog dismisses it',
+      (tester) async {
+        final ctrl = _AngelaDialogController(_session());
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(build: () => ctrl),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      unawaited(ctrl.onAngelaDeceptiveDialog!());
-      await tester.pump();
-      await tester.pump();
+        unawaited(ctrl.onAngelaDeceptiveDialog!());
+        await tester.pump();
+        await tester.pump();
 
-      // Tap Cancel (TextButton).
-      await tester.tap(find.byType(TextButton).last);
-      await tester.pumpAndSettle();
+        // Tap Cancel (TextButton).
+        await tester.tap(find.byType(TextButton).last);
+        await tester.pumpAndSettle();
 
-      check(find.byType(AlertDialog).evaluate()).isEmpty();
-      check(tester.takeException()).isNull();
-    });
+        check(find.byType(AlertDialog).evaluate()).isEmpty();
+        check(tester.takeException()).isNull();
+      },
+    );
 
-    testWidgets('tapping Confirm button on Angela dialog dismisses it', (
-      tester,
-    ) async {
-      final ctrl = _AngelaDialogController(_session());
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'tapping Confirm button on Angela dialog dismisses it',
+      (tester) async {
+        final ctrl = _AngelaDialogController(_session());
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(build: () => ctrl),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      unawaited(ctrl.onAngelaDeceptiveDialog!());
-      await tester.pump();
-      await tester.pump();
+        unawaited(ctrl.onAngelaDeceptiveDialog!());
+        await tester.pump();
+        await tester.pump();
 
-      // Tap Confirm (FilledButton).
-      await tester.tap(find.byType(FilledButton).last);
-      await tester.pumpAndSettle();
+        // Tap Confirm (FilledButton).
+        await tester.tap(find.byType(FilledButton).last);
+        await tester.pumpAndSettle();
 
-      check(find.byType(AlertDialog).evaluate()).isEmpty();
-      check(tester.takeException()).isNull();
-    });
+        check(find.byType(AlertDialog).evaluate()).isEmpty();
+        check(tester.takeException()).isNull();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -439,12 +436,10 @@ void main() {
       (tester) async {
         // Covers lines 156-201: cancel path → confirmed != true → return.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         check(ctrl.onDisarmRequested).isNotNull();
@@ -472,18 +467,16 @@ void main() {
         // Covers the `pinHash == null → controller.disarm()` path (line 185).
         // Settings have no sessionEndPinHash.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(
-              build: () => ctrl,
-              settings: const AppSettings(
-                defaults: AppDefaults(),
-                // sessionEndPinHash intentionally null — no PIN required.
-              ),
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(
+            build: () => ctrl,
+            settings: const AppSettings(
+              defaults: AppDefaults(),
+              // sessionEndPinHash intentionally null — no PIN required.
             ),
-            child: const SessionScreen(),
           ),
-        );
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Fire the disarm-trigger callback.
@@ -502,13 +495,12 @@ void main() {
       },
     );
 
-    testWidgets('confirming disarm trigger with PIN opens PIN dialog', (
-      tester,
-    ) async {
-      // Covers the `pinHash != null → showPinEntryDialog` path (line 189+).
-      final ctrl = _AngelaDialogController(_session());
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'confirming disarm trigger with PIN opens PIN dialog',
+      (tester) async {
+        // Covers the `pinHash != null → showPinEntryDialog` path (line 189+).
+        final ctrl = _AngelaDialogController(_session());
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: _overrides(
             build: () => ctrl,
             settings: const AppSettings(
@@ -518,62 +510,65 @@ void main() {
             ),
           ),
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      // Fire the disarm-trigger callback.
-      ctrl.onDisarmRequested!();
-      await tester.pump();
-      await tester.pump();
-
-      // Confirm the disarm-trigger dialog.
-      await tester.tap(find.byType(FilledButton).last);
-      await tester.pumpAndSettle();
-
-      // The PIN entry dialog now shows. Cancel it.
-      final cancelBtns = find.byType(TextButton);
-      if (cancelBtns.evaluate().isNotEmpty) {
-        await tester.tap(cancelBtns.last);
+        ));
         await tester.pumpAndSettle();
-      }
 
-      check(tester.takeException()).isNull();
-    });
+        // Fire the disarm-trigger callback.
+        ctrl.onDisarmRequested!();
+        await tester.pump();
+        await tester.pump();
+
+        // Confirm the disarm-trigger dialog.
+        await tester.tap(find.byType(FilledButton).last);
+        await tester.pumpAndSettle();
+
+        // The PIN entry dialog now shows. Cancel it.
+        final cancelBtns = find.byType(TextButton);
+        if (cancelBtns.evaluate().isNotEmpty) {
+          await tester.tap(cancelBtns.last);
+          await tester.pumpAndSettle();
+        }
+
+        check(tester.takeException()).isNull();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
   group('stealth timerDisplay=false hides remaining seconds', () {
-    testWidgets('hideTimer=true suppresses the remaining-seconds text', (
-      tester,
-    ) async {
-      // Covers the `hideTimer` branch in _SessionBody (line 343-347 plus
-      // line 251-253 in build). Q26: timerDisplay is now an enum;
-      // `none` suppresses the seconds text.
-      const stealth = StealthConfig(
-        enabled: true,
-        timerDisplay: StealthTimerDisplay.none,
-      );
-      await tester.pumpWidget(
-        hostScreenWithRouter(
+    testWidgets(
+      'hideTimer=true suppresses the remaining-seconds text',
+      (tester) async {
+        // Covers the `hideTimer` branch in _SessionBody (line 343-347 plus
+        // line 251-253 in build). Q26: timerDisplay is now an enum;
+        // `none` suppresses the seconds text.
+        const stealth = StealthConfig(
+          enabled: true,
+          timerDisplay: StealthTimerDisplay.none,
+        );
+        await tester.pumpWidget(hostScreenWithRouter(
           overrides: [
             sessionControllerProvider.overrideWith(
-              () => _FakeSessionController(_session(remainingSeconds: 77)),
+              () => _FakeSessionController(
+                _session(remainingSeconds: 77),
+              ),
             ),
             settingsRepositoryProvider.overrideWithValue(
               _FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults(stealth: stealth)),
+                const AppSettings(
+                  defaults: AppDefaults(stealth: stealth),
+                ),
               ),
             ),
           ],
           child: const SessionScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // The remaining seconds text ('77') must not appear.
-      check(find.textContaining('77').evaluate()).isEmpty();
-    });
+        // The remaining seconds text ('77') must not appear.
+        check(find.textContaining('77').evaluate()).isEmpty();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -584,26 +579,24 @@ void main() {
         // Covers line 269: session.isSimulation → simulationSummary.
         // The existing extended test covers the real-session path;
         // this covers the simulation path.
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: [
-              sessionControllerProvider.overrideWith(
-                () => _FakeSessionController(
-                  _session(
-                    phase: const SessionPhaseEnded(),
-                    isSimulation: true,
-                  ),
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: [
+            sessionControllerProvider.overrideWith(
+              () => _FakeSessionController(
+                _session(
+                  phase: const SessionPhaseEnded(),
+                  isSimulation: true,
                 ),
               ),
-              settingsRepositoryProvider.overrideWithValue(
-                _FakeSettingsRepository(
-                  const AppSettings(defaults: AppDefaults()),
-                ),
+            ),
+            settingsRepositoryProvider.overrideWithValue(
+              _FakeSettingsRepository(
+                const AppSettings(defaults: AppDefaults()),
               ),
-            ],
-            child: const SessionScreen(),
-          ),
-        );
+            ),
+          ],
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // No crash = the navigation callback was exercised. The test
@@ -622,21 +615,19 @@ void main() {
         // Covers line 195: sessionEndPinBiometricEnabled=true →
         // ref.read(biometricServiceProvider) is called.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(
-              build: () => ctrl,
-              settings: const AppSettings(
-                defaults: AppDefaults(),
-                sessionEndPinHash: 'dummy-hash',
-                sessionEndPinBiometricEnabled: true,
-                pinTimeoutSeconds: 0,
-              ),
-              includeBiometric: true,
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(
+            build: () => ctrl,
+            settings: const AppSettings(
+              defaults: AppDefaults(),
+              sessionEndPinHash: 'dummy-hash',
+              sessionEndPinBiometricEnabled: true,
+              pinTimeoutSeconds: 0,
             ),
-            child: const SessionScreen(),
+            includeBiometric: true,
           ),
-        );
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Fire the disarm-trigger callback.
@@ -669,21 +660,19 @@ void main() {
         // → ref.read(biometricServiceProvider) called when user taps Cancel in
         // the distress countdown.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(
-              build: () => ctrl,
-              settings: const AppSettings(
-                defaults: AppDefaults(),
-                appPinHash: 'dummy-app-pin',
-                distressCancelBiometricEnabled: true,
-                pinTimeoutSeconds: 0,
-              ),
-              includeBiometric: true,
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(
+            build: () => ctrl,
+            settings: const AppSettings(
+              defaults: AppDefaults(),
+              appPinHash: 'dummy-app-pin',
+              distressCancelBiometricEnabled: true,
+              pinTimeoutSeconds: 0,
             ),
-            child: const SessionScreen(),
+            includeBiometric: true,
           ),
-        );
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Fire distress confirmation — shows countdown dialog.
@@ -711,12 +700,10 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
-  group(
-    '_confirmDisarmTrigger: controller.disarm() called when PIN correct (line 199)',
-    () {
-      testWidgets('disarm triggered when PIN check returns correct result', (
-        tester,
-      ) async {
+  group('_confirmDisarmTrigger: controller.disarm() called when PIN correct (line 199)', () {
+    testWidgets(
+      'disarm triggered when PIN check returns correct result',
+      (tester) async {
         // This is a controller-level test exercised via the disarm-trigger dialog.
         // We use _AngelaDialogController whose disarm() is the real one
         // (inherits from SessionController) but since there is no active runtime,
@@ -734,19 +721,17 @@ void main() {
         // knowing the hash, we use a _FakeSessionController subclass that
         // overrides handlePinResult to return true:
         final ctrl = _DisarmController(_session(), pinAlwaysCorrect: true);
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(
-              build: () => ctrl,
-              settings: const AppSettings(
-                defaults: AppDefaults(),
-                sessionEndPinHash: 'dummy-hash',
-                pinTimeoutSeconds: 0,
-              ),
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(
+            build: () => ctrl,
+            settings: const AppSettings(
+              defaults: AppDefaults(),
+              sessionEndPinHash: 'dummy-hash',
+              pinTimeoutSeconds: 0,
             ),
-            child: const SessionScreen(),
           ),
-        );
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Fire the disarm-trigger callback.
@@ -768,9 +753,9 @@ void main() {
 
         // disarm() was called (from _DisarmController).
         check(ctrl.disarmed).isTrue();
-      });
-    },
-  );
+      },
+    );
+  });
 
   // -------------------------------------------------------------------------
   group('_disarm biometric branch (line 302)', () {
@@ -780,22 +765,21 @@ void main() {
         // Covers line 302: settings.sessionEndPinBiometricEnabled=true
         // → ref.read(biometricServiceProvider) passed to showPinEntryDialog.
         // We drag the ImSafeSlider past threshold to fire onConfirmed → _disarm.
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(
-              build: () =>
-                  _FakeSessionController(_session(remainingSeconds: 30)),
-              settings: const AppSettings(
-                defaults: AppDefaults(),
-                sessionEndPinHash: 'dummy-hash',
-                sessionEndPinBiometricEnabled: true,
-                pinTimeoutSeconds: 0,
-              ),
-              includeBiometric: true,
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(
+            build: () => _FakeSessionController(
+              _session(remainingSeconds: 30),
             ),
-            child: const SessionScreen(),
+            settings: const AppSettings(
+              defaults: AppDefaults(),
+              sessionEndPinHash: 'dummy-hash',
+              sessionEndPinBiometricEnabled: true,
+              pinTimeoutSeconds: 0,
+            ),
+            includeBiometric: true,
           ),
-        );
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Drag the ImSafeSlider all the way to the right to trigger onConfirmed.
@@ -821,22 +805,18 @@ void main() {
         // Exercises the dispose() path (lines 136-150) including clearing
         // the controller callbacks and cancelling the emergency sub.
         final ctrl = _AngelaDialogController(_session());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const SessionScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const SessionScreen(),
+        ));
         await tester.pumpAndSettle();
         check(ctrl.onDistressConfirmation).isNotNull();
 
         // Replace the widget tree so the state disposes.
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: _overrides(build: () => ctrl),
-            child: const Scaffold(body: SizedBox()),
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: _overrides(build: () => ctrl),
+          child: const Scaffold(body: SizedBox()),
+        ));
         await tester.pumpAndSettle();
 
         // After dispose, the controller callback is cleared.

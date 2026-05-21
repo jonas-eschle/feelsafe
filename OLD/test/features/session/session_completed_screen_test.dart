@@ -10,9 +10,8 @@ import 'package:guardianangela/features/session/session_completed_screen.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('SessionCompletedScreen renders without throwing', (
-    tester,
-  ) async {
+  testWidgets('SessionCompletedScreen renders without throwing',
+      (tester) async {
     await tester.pumpWidget(
       hostScreenWithRouter(child: const SessionCompletedScreen()),
     );
@@ -21,7 +20,8 @@ void main() {
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
-  testWidgets('SessionCompletedScreen shows a return-home CTA', (tester) async {
+  testWidgets('SessionCompletedScreen shows a return-home CTA',
+      (tester) async {
     await tester.pumpWidget(
       hostScreenWithRouter(child: const SessionCompletedScreen()),
     );

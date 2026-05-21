@@ -512,30 +512,24 @@ void main() {
       });
     });
 
-    test(
-      'pause during sensitivity, resume resumes sensitivity with remaining',
-      () {
-        fakeAsync((async) {
-          final e = _holdEngine(sensitivity: 2.0, dur: 10);
-          e.start();
-          async.flushMicrotasks();
-          e.holdStart();
-          e.holdRelease();
-          async.elapse(const Duration(milliseconds: 500));
-          e.pause();
-          final p = e.state as EnginePaused;
-          check(p.snapshot.phase).equals(TimerPhase.sensitivity);
-          check(
-            p.snapshot.remaining,
-          ).equals(const Duration(milliseconds: 1500));
-          e.resume();
-          check(
-            (e.state as EngineRunning).phase,
-          ).equals(TimerPhase.sensitivity);
-          e.dispose();
-        });
-      },
-    );
+    test('pause during sensitivity, resume resumes sensitivity with remaining',
+        () {
+      fakeAsync((async) {
+        final e = _holdEngine(sensitivity: 2.0, dur: 10);
+        e.start();
+        async.flushMicrotasks();
+        e.holdStart();
+        e.holdRelease();
+        async.elapse(const Duration(milliseconds: 500));
+        e.pause();
+        final p = e.state as EnginePaused;
+        check(p.snapshot.phase).equals(TimerPhase.sensitivity);
+        check(p.snapshot.remaining).equals(const Duration(milliseconds: 1500));
+        e.resume();
+        check((e.state as EngineRunning).phase).equals(TimerPhase.sensitivity);
+        e.dispose();
+      });
+    });
 
     test('pause during duration while holding, resume continues duration', () {
       fakeAsync((async) {
@@ -560,12 +554,7 @@ void main() {
   group('hold with retry', () {
     test('miss in holdButton grace fires repeatMissed when retryCount=1', () {
       fakeAsync((async) {
-        final e = _holdEngine(
-          sensitivity: 1.0,
-          dur: 3,
-          grace: 2,
-          retryCount: 1,
-        );
+        final e = _holdEngine(sensitivity: 1.0, dur: 3, grace: 2, retryCount: 1);
         var missCount = 0;
         e.events.listen((ev) {
           if (ev.event == ChainEvent.repeatMissed) missCount++;

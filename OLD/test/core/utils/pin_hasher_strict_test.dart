@@ -87,14 +87,11 @@ void main() {
   // ---------------------------------------------------------------------------
 
   group('PinHasher.hash — salt randomness', () {
-    test(
-      'two calls with identical PIN produce different PHC strings',
-      () async {
-        final a = await PinHasher.hash('1234');
-        final b = await PinHasher.hash('1234');
-        check(a).not((m) => m.equals(b));
-      },
-    );
+    test('two calls with identical PIN produce different PHC strings', () async {
+      final a = await PinHasher.hash('1234');
+      final b = await PinHasher.hash('1234');
+      check(a).not((m) => m.equals(b));
+    });
 
     test('two calls produce different salts (segment[4])', () async {
       final a = await PinHasher.hash('9999');

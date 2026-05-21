@@ -126,7 +126,8 @@ void main() {
 
     test('differ by stealth unequal', () {
       check(
-        const ModeOverrides() == const ModeOverrides(stealth: StealthConfig()),
+        const ModeOverrides() ==
+            const ModeOverrides(stealth: StealthConfig()),
       ).isFalse();
     });
 
@@ -178,9 +179,8 @@ void main() {
     });
 
     test('toString includes distressModeId', () {
-      check(
-        const ModeOverrides(distressModeId: 'abc').toString(),
-      ).contains('abc');
+      check(const ModeOverrides(distressModeId: 'abc').toString())
+          .contains('abc');
     });
   });
 }

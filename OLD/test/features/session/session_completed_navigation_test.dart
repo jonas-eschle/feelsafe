@@ -60,28 +60,29 @@ Widget _host({required List<String> navigatedTo}) {
 
 void main() {
   group('SessionCompletedScreen — return-home button (line 36)', () {
-    testWidgets('tapping the FilledButton navigates to home (line 36)', (
-      tester,
-    ) async {
-      final navigatedTo = <String>[];
+    testWidgets(
+      'tapping the FilledButton navigates to home (line 36)',
+      (tester) async {
+        final navigatedTo = <String>[];
 
-      await tester.pumpWidget(_host(navigatedTo: navigatedTo));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_host(navigatedTo: navigatedTo));
+        await tester.pumpAndSettle();
 
-      // The screen must be visible.
-      check(find.byType(SessionCompletedScreen).evaluate()).isNotEmpty();
+        // The screen must be visible.
+        check(find.byType(SessionCompletedScreen).evaluate()).isNotEmpty();
 
-      // The FilledButton with the "return home" label should be present.
-      final button = find.byType(FilledButton);
-      check(button.evaluate()).isNotEmpty();
+        // The FilledButton with the "return home" label should be present.
+        final button = find.byType(FilledButton);
+        check(button.evaluate()).isNotEmpty();
 
-      // Tap the button — this fires `context.go(RouteNames.home)`.
-      await tester.tap(button);
-      await tester.pumpAndSettle();
+        // Tap the button — this fires `context.go(RouteNames.home)`.
+        await tester.tap(button);
+        await tester.pumpAndSettle();
 
-      // Navigation to home must have occurred.
-      check(navigatedTo).isNotEmpty();
-      check(navigatedTo.first).equals(RouteNames.home);
-    });
+        // Navigation to home must have occurred.
+        check(navigatedTo).isNotEmpty();
+        check(navigatedTo.first).equals(RouteNames.home);
+      },
+    );
   });
 }

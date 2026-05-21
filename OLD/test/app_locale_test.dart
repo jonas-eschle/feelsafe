@@ -27,7 +27,9 @@ void main() {
       );
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [settingsRepositoryProvider.overrideWithValue(seeded)],
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(seeded),
+          ],
           child: const GuardianAngelaApp(),
         ),
       );
@@ -52,7 +54,9 @@ void main() {
       );
       await tester.pumpWidget(
         ProviderScope(
-          overrides: [settingsRepositoryProvider.overrideWithValue(seeded)],
+          overrides: [
+            settingsRepositoryProvider.overrideWithValue(seeded),
+          ],
           child: const GuardianAngelaApp(),
         ),
       );
@@ -67,13 +71,18 @@ void main() {
 
   testWidgets('Resolves AppThemeMode.light correctly', (tester) async {
     final seeded = FakeSettingsRepository(
-      const AppSettings(themeMode: AppThemeMode.light, defaults: AppDefaults()),
+      const AppSettings(
+        themeMode: AppThemeMode.light,
+        defaults: AppDefaults(),
+      ),
     );
     // Exercise the `key:` parameter branch of the const ctor.
     const appKey = Key('ga-app-under-test');
     await tester.pumpWidget(
       ProviderScope(
-        overrides: [settingsRepositoryProvider.overrideWithValue(seeded)],
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(seeded),
+        ],
         child: const GuardianAngelaApp(key: appKey),
       ),
     );

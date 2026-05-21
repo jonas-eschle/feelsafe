@@ -26,49 +26,39 @@ Future<void> _settleRealAsync(WidgetTester tester, {int seconds = 4}) async {
 
 void main() {
   testWidgets('PinSetupScreen renders without throwing', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const PinSetupScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const PinSetupScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(PinSetupScreen).evaluate().length).equals(1);
     check(find.byType(AppBar).evaluate().length).equals(1);
   });
 
   testWidgets('PinSetupScreen shows the shared PinKeypad', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const PinSetupScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const PinSetupScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(PinKeypad).evaluate().length).equals(1);
   });
 
-  testWidgets('PinSetupScreen collects digits and shows bullets', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const PinSetupScreen(),
-      ),
-    );
+  testWidgets('PinSetupScreen collects digits and shows bullets',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const PinSetupScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.text('1'));
     await tester.tap(find.text('2'));
@@ -79,16 +69,13 @@ void main() {
   });
 
   testWidgets('PinSetupScreen backspace removes a digit', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const PinSetupScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const PinSetupScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.text('1'));
     await tester.tap(find.text('2'));
@@ -98,150 +85,148 @@ void main() {
     check(find.text('\u2022').evaluate().length).equals(1);
   });
 
-  testWidgets('PinSetupScreen mismatch resets both buffers and shows error', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
+  testWidgets(
+    'PinSetupScreen mismatch resets both buffers and shows error',
+    (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
         ],
         child: const PinSetupScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // First PIN: 1234
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.text(d));
-    }
-    await tester.pumpAndSettle();
-    // Second PIN: 9999 (mismatch)
-    for (final d in ['9', '9', '9', '9']) {
-      await tester.tap(find.text(d));
-    }
-    await tester.pumpAndSettle();
-    // Error text is visible; buffers cleared (no bullets).
-    check(find.text('\u2022').evaluate()).isEmpty();
-  });
+      ));
+      await tester.pumpAndSettle();
+      // First PIN: 1234
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.text(d));
+      }
+      await tester.pumpAndSettle();
+      // Second PIN: 9999 (mismatch)
+      for (final d in ['9', '9', '9', '9']) {
+        await tester.tap(find.text(d));
+      }
+      await tester.pumpAndSettle();
+      // Error text is visible; buffers cleared (no bullets).
+      check(find.text('\u2022').evaluate()).isEmpty();
+    },
+  );
 
-  testWidgets('PinSetupScreen match saves hash to session-end when no which', (
-    tester,
-  ) async {
-    final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'PinSetupScreen match saves hash to session-end when no which',
+    (tester) async {
+      final repo = FakeSettingsRepository();
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(repo),
+        ],
         child: const PinSetupScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final keypad = find.byType(PinKeypad);
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    await _settleRealAsync(tester);
-    check(repo.stored).isNotNull();
-    check(repo.stored!.sessionEndPinHash).isNotNull();
-  });
+      ));
+      await tester.pumpAndSettle();
+      final keypad = find.byType(PinKeypad);
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      await _settleRealAsync(tester);
+      check(repo.stored).isNotNull();
+      check(repo.stored!.sessionEndPinHash).isNotNull();
+    },
+  );
 
-  testWidgets('PinSetupScreen saves to app PIN hash when which=app', (
-    tester,
-  ) async {
-    final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'PinSetupScreen saves to app PIN hash when which=app',
+    (tester) async {
+      final repo = FakeSettingsRepository();
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(repo),
+        ],
         initialQuery: 'which=app',
         child: const PinSetupScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final keypad = find.byType(PinKeypad);
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    await _settleRealAsync(tester);
-    check(repo.stored).isNotNull();
-    check(repo.stored!.appPinHash).isNotNull();
-  });
+      ));
+      await tester.pumpAndSettle();
+      final keypad = find.byType(PinKeypad);
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      await _settleRealAsync(tester);
+      check(repo.stored).isNotNull();
+      check(repo.stored!.appPinHash).isNotNull();
+    },
+  );
 
-  testWidgets('PinSetupScreen saves to duress hash when which=duress', (
-    tester,
-  ) async {
-    final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'PinSetupScreen saves to duress hash when which=duress',
+    (tester) async {
+      final repo = FakeSettingsRepository();
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(repo),
+        ],
         initialQuery: 'which=duress',
         child: const PinSetupScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final keypad = find.byType(PinKeypad);
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    await _settleRealAsync(tester);
-    check(repo.stored).isNotNull();
-    check(repo.stored!.duressPinHash).isNotNull();
-  });
+      ));
+      await tester.pumpAndSettle();
+      final keypad = find.byType(PinKeypad);
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      await _settleRealAsync(tester);
+      check(repo.stored).isNotNull();
+      check(repo.stored!.duressPinHash).isNotNull();
+    },
+  );
 
-  testWidgets('PinSetupScreen saves to sessionEnd when which=sessionEnd', (
-    tester,
-  ) async {
-    final repo = FakeSettingsRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [settingsRepositoryProvider.overrideWithValue(repo)],
+  testWidgets(
+    'PinSetupScreen saves to sessionEnd when which=sessionEnd',
+    (tester) async {
+      final repo = FakeSettingsRepository();
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          settingsRepositoryProvider.overrideWithValue(repo),
+        ],
         initialQuery: 'which=sessionEnd',
         child: const PinSetupScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    final keypad = find.byType(PinKeypad);
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    for (final d in ['1', '2', '3', '4']) {
-      await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
-      await tester.pump();
-    }
-    await _settleRealAsync(tester);
-    check(repo.stored).isNotNull();
-    check(repo.stored!.sessionEndPinHash).isNotNull();
-  });
+      ));
+      await tester.pumpAndSettle();
+      final keypad = find.byType(PinKeypad);
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      for (final d in ['1', '2', '3', '4']) {
+        await tester.tap(find.descendant(of: keypad, matching: find.text(d)));
+        await tester.pump();
+      }
+      await _settleRealAsync(tester);
+      check(repo.stored).isNotNull();
+      check(repo.stored!.sessionEndPinHash).isNotNull();
+    },
+  );
 
-  testWidgets('PinSetupScreen backspace on empty buffer is a no-op', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
-        ],
-        child: const PinSetupScreen(),
-      ),
-    );
+  testWidgets('PinSetupScreen backspace on empty buffer is a no-op',
+      (tester) async {
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [
+        settingsRepositoryProvider
+            .overrideWithValue(FakeSettingsRepository()),
+      ],
+      child: const PinSetupScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.text('\u232b'));
     await tester.pump();

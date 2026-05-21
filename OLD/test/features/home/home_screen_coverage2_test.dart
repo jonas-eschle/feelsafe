@@ -65,12 +65,11 @@ Widget _hostWithContacts({
 
 void main() {
   group('HomeScreen contacts-banner tap (line 236)', () {
-    testWidgets('tapping the zero-contacts banner navigates to contacts', (
-      tester,
-    ) async {
-      // No contacts → banner is rendered with count < 3.
-      await tester.pumpWidget(
-        _hostWithContacts(
+    testWidgets(
+      'tapping the zero-contacts banner navigates to contacts',
+      (tester) async {
+        // No contacts → banner is rendered with count < 3.
+        await tester.pumpWidget(_hostWithContacts(
           overrides: [
             modesRepositoryProvider.overrideWithValue(
               FakeModesRepository([makeMode()]),
@@ -83,21 +82,21 @@ void main() {
             ),
           ],
           child: const HomeScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // The contacts-warning banner renders as an InkWell.
-      final inkWells = find.byType(InkWell);
-      check(inkWells.evaluate()).isNotEmpty();
+        // The contacts-warning banner renders as an InkWell.
+        final inkWells = find.byType(InkWell);
+        check(inkWells.evaluate()).isNotEmpty();
 
-      // Tap the contacts banner.
-      await tester.tap(inkWells.first);
-      await tester.pumpAndSettle();
+        // Tap the contacts banner.
+        await tester.tap(inkWells.first);
+        await tester.pumpAndSettle();
 
-      // Navigation succeeded — Contacts placeholder should be visible.
-      check(find.text('Contacts').evaluate()).isNotEmpty();
-    });
+        // Navigation succeeded — Contacts placeholder should be visible.
+        check(find.text('Contacts').evaluate()).isNotEmpty();
+      },
+    );
   });
 
   group('HomeScreen non-const constructor (line 23)', () {
@@ -107,20 +106,18 @@ void main() {
         // Instantiate without const to ensure coverage instruments the ctor.
         // ignore: prefer_const_constructors
         final widget = HomeScreen(key: UniqueKey());
-        await tester.pumpWidget(
-          hostScreenWithRouter(
-            overrides: [
-              modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-              contactsRepositoryProvider.overrideWithValue(
-                FakeContactsRepository(),
-              ),
-              settingsRepositoryProvider.overrideWithValue(
-                FakeSettingsRepository(),
-              ),
-            ],
-            child: widget,
-          ),
-        );
+        await tester.pumpWidget(hostScreenWithRouter(
+          overrides: [
+            modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+            contactsRepositoryProvider.overrideWithValue(
+              FakeContactsRepository(),
+            ),
+            settingsRepositoryProvider.overrideWithValue(
+              FakeSettingsRepository(),
+            ),
+          ],
+          child: widget,
+        ));
         await tester.pumpAndSettle();
         check(find.byType(HomeScreen).evaluate()).isNotEmpty();
       },

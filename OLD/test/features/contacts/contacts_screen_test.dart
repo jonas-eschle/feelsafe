@@ -14,70 +14,56 @@ import '../fake_repositories.dart';
 import '../widget_test_helpers.dart';
 
 void main() {
-  testWidgets('ContactsScreen shows empty text with no contacts', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository(),
-          ),
-        ],
-        child: const ContactsScreen(),
-      ),
-    );
+  testWidgets('ContactsScreen shows empty text with no contacts',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        contactsRepositoryProvider
+            .overrideWithValue(FakeContactsRepository()),
+      ],
+      child: const ContactsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(ContactsScreen).evaluate().length).equals(1);
   });
 
-  testWidgets('ContactsScreen renders list tile per contact', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository([
-              makeContact(id: 'c1', name: 'Alice'),
-              makeContact(id: 'c2', name: 'Bob'),
-            ]),
-          ),
-        ],
-        child: const ContactsScreen(),
-      ),
-    );
+  testWidgets('ContactsScreen renders list tile per contact',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        contactsRepositoryProvider.overrideWithValue(FakeContactsRepository([
+          makeContact(id: 'c1', name: 'Alice'),
+          makeContact(id: 'c2', name: 'Bob'),
+        ])),
+      ],
+      child: const ContactsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(ListTile).evaluate().length).isGreaterThan(0);
     check(find.text('Alice').evaluate().length).equals(1);
     check(find.text('Bob').evaluate().length).equals(1);
   });
 
-  testWidgets('ContactsScreen shows a FAB to add a new contact', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository(),
-          ),
-        ],
-        child: const ContactsScreen(),
-      ),
-    );
+  testWidgets('ContactsScreen shows a FAB to add a new contact',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        contactsRepositoryProvider
+            .overrideWithValue(FakeContactsRepository()),
+      ],
+      child: const ContactsScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(FloatingActionButton).evaluate().length).equals(1);
   });
 
-  testWidgets('ContactsScreen delete dialog cancel button leaves contact', (
-    tester,
-  ) async {
+  testWidgets('ContactsScreen delete dialog cancel button leaves contact',
+      (tester) async {
     final repo = FakeContactsRepository([makeContact(id: 'c1', name: 'A')]);
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+      child: const ContactsScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();
@@ -86,16 +72,13 @@ void main() {
     check((await repo.getAll()).length).equals(1);
   });
 
-  testWidgets('ContactsScreen delete dialog confirm removes contact', (
-    tester,
-  ) async {
+  testWidgets('ContactsScreen delete dialog confirm removes contact',
+      (tester) async {
     final repo = FakeContactsRepository([makeContact(id: 'c1', name: 'A')]);
-    await tester.pumpWidget(
-      hostScreenWithRouter(
-        overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
-        child: const ContactsScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenWithRouter(
+      overrides: [contactsRepositoryProvider.overrideWithValue(repo)],
+      child: const ContactsScreen(),
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();

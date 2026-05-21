@@ -184,7 +184,8 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
                 ])
                   DropdownMenuItem<String>(value: code, child: Text(code)),
               ],
-              onChanged: (v) => setState(() => _languageCtrl.text = v ?? ''),
+              onChanged: (v) =>
+                  setState(() => _languageCtrl.text = v ?? ''),
             ),
             const SizedBox(height: 24),
             Text(

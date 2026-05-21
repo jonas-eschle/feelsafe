@@ -101,7 +101,9 @@ void main() {
 
     test('legacy JSON without biometric keys deserializes to false', () {
       // Arrange — omit all three keys.
-      final raw = <String, Object?>{'defaults': const AppDefaults().toJson()};
+      final raw = <String, Object?>{
+        'defaults': const AppDefaults().toJson(),
+      };
       // Act
       final s = AppSettings.fromJson(raw);
       // Assert
@@ -148,14 +150,17 @@ void main() {
   });
 
   group('AppSettings equality accounts for biometric toggles', () {
-    test('settings differing only in appPinBiometricEnabled are NOT equal', () {
-      const a = AppSettings(defaults: AppDefaults());
-      const b = AppSettings(
-        defaults: AppDefaults(),
-        appPinBiometricEnabled: true,
-      );
-      check(a).not((m) => m.equals(b));
-    });
+    test(
+      'settings differing only in appPinBiometricEnabled are NOT equal',
+      () {
+        const a = AppSettings(defaults: AppDefaults());
+        const b = AppSettings(
+          defaults: AppDefaults(),
+          appPinBiometricEnabled: true,
+        );
+        check(a).not((m) => m.equals(b));
+      },
+    );
 
     test(
       'settings differing only in sessionEndPinBiometricEnabled are NOT equal',

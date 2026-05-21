@@ -74,18 +74,13 @@ class _FakeFakeCallController extends FakeCallController {
 /// from reaching real platform plugins (which throw / hang in tests).
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
+      async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -101,8 +96,7 @@ class _NoopAudio implements AudioServiceProtocol {
 /// A no-op TTS factory so `_speakTtsFallback` never touches
 /// `flutter_tts` (which requires the platform channel and hangs
 /// in `pumpAndSettle`).
-FakeCallTtsFactory _noopTtsFactory() =>
-    () => _NoopTts();
+FakeCallTtsFactory _noopTtsFactory() => () => _NoopTts();
 
 class _NoopTts implements FlutterTts {
   @override
@@ -115,7 +109,8 @@ class _NoopTts implements FlutterTts {
 
 void main() {
   group('FakeCallScreen — answer flow', () {
-    testWidgets('Answer shows hang-up and records answer call', (tester) async {
+    testWidgets('Answer shows hang-up and records answer call',
+        (tester) async {
       final sess = _FakeSessionController();
       await tester.pumpWidget(
         hostScreenWithRouter(
@@ -141,9 +136,8 @@ void main() {
   });
 
   group('FakeCallScreen — decline flow', () {
-    testWidgets('Tapping Decline records decline call and pops', (
-      tester,
-    ) async {
+    testWidgets('Tapping Decline records decline call and pops',
+        (tester) async {
       final sess = _FakeSessionController();
       await tester.pumpWidget(
         hostScreenPushed(
@@ -171,7 +165,8 @@ void main() {
   });
 
   group('FakeCallScreen — hang-up flow', () {
-    testWidgets('HangUp after answer records hangUp and pops', (tester) async {
+    testWidgets('HangUp after answer records hangUp and pops',
+        (tester) async {
       final sess = _FakeSessionController();
       // Override the audio + TTS factories so _onAnswerTap's audio
       // pipeline doesn't try to talk to real platform plugins (which
@@ -325,84 +320,90 @@ void main() {
       },
     );
 
-    testWidgets('long-press released early does NOT trigger distress; '
-        'subsequent tap performs normal decline', (tester) async {
-      final sess = _FakeSessionController();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            sessionControllerProvider.overrideWith(() => sess),
-            fakeCallControllerProvider.overrideWith(
-              () => _FakeFakeCallController(sess),
-            ),
-          ],
-          child: const FakeCallScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'long-press released early does NOT trigger distress; '
+      'subsequent tap performs normal decline',
+      (tester) async {
+        final sess = _FakeSessionController();
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: [
+              sessionControllerProvider.overrideWith(() => sess),
+              fakeCallControllerProvider.overrideWith(
+                () => _FakeFakeCallController(sess),
+              ),
+            ],
+            child: const FakeCallScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Target the GestureDetector that wraps the decline button.
-      final gestureDetector = find.ancestor(
-        of: find.byIcon(Icons.call_end).first,
-        matching: find.byType(GestureDetector),
-      );
+        // Target the GestureDetector that wraps the decline button.
+        final gestureDetector = find.ancestor(
+          of: find.byIcon(Icons.call_end).first,
+          matching: find.byType(GestureDetector),
+        );
 
-      final declineGesture = await tester.startGesture(
-        tester.getCenter(gestureDetector.first),
-      );
-      // Hold for 500 ms — well short of the 5 s threshold.
-      await tester.pump(const Duration(milliseconds: 500));
-      await declineGesture.cancel();
-      await tester.pump();
+        final declineGesture = await tester.startGesture(
+          tester.getCenter(gestureDetector.first),
+        );
+        // Hold for 500 ms — well short of the 5 s threshold.
+        await tester.pump(const Duration(milliseconds: 500));
+        await declineGesture.cancel();
+        await tester.pump();
 
-      // No distress should have been triggered.
-      check(sess.calls.where((c) => c == 'distress')).isEmpty();
+        // No distress should have been triggered.
+        check(sess.calls.where((c) => c == 'distress')).isEmpty();
 
-      // Now a normal tap on the GestureDetector should decline.
-      await tester.tap(gestureDetector.first);
-      await tester.pumpAndSettle();
+        // Now a normal tap on the GestureDetector should decline.
+        await tester.tap(gestureDetector.first);
+        await tester.pumpAndSettle();
 
-      check(sess.calls).contains('decline');
-    });
+        check(sess.calls).contains('decline');
+      },
+    );
 
-    testWidgets('holding Decline for the full duration fires distress chain', (
-      tester,
-    ) async {
-      final sess = _FakeSessionController();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [
-            sessionControllerProvider.overrideWith(() => sess),
-            fakeCallControllerProvider.overrideWith(
-              () => _FakeFakeCallController(sess),
-            ),
-          ],
-          child: const FakeCallScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+    testWidgets(
+      'holding Decline for the full duration fires distress chain',
+      (tester) async {
+        final sess = _FakeSessionController();
+        await tester.pumpWidget(
+          hostScreenPushed(
+            overrides: [
+              sessionControllerProvider.overrideWith(() => sess),
+              fakeCallControllerProvider.overrideWith(
+                () => _FakeFakeCallController(sess),
+              ),
+            ],
+            child: const FakeCallScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Find the GestureDetector wrapping the decline button (the
-      // call_end icon is nested inside the GestureDetector's child).
-      final gestureDetector = find.ancestor(
-        of: find.byIcon(Icons.call_end).first,
-        matching: find.byType(GestureDetector),
-      );
+        // Find the GestureDetector wrapping the decline button (the
+        // call_end icon is nested inside the GestureDetector's child).
+        final gestureDetector = find.ancestor(
+          of: find.byIcon(Icons.call_end).first,
+          matching: find.byType(GestureDetector),
+        );
 
-      // Start a long-press gesture on the GestureDetector directly.
-      final gesture = await tester.startGesture(
-        tester.getCenter(gestureDetector.first),
-      );
+        // Start a long-press gesture on the GestureDetector directly.
+        final gesture = await tester.startGesture(
+          tester.getCenter(gestureDetector.first),
+        );
 
-      // Pump beyond the 5 s hold duration so the internal Timer fires.
-      await tester.pump(const Duration(seconds: 6));
-      await gesture.cancel();
-      await tester.pumpAndSettle();
+        // Pump beyond the 5 s hold duration so the internal Timer fires.
+        await tester.pump(const Duration(seconds: 6));
+        await gesture.cancel();
+        await tester.pumpAndSettle();
 
-      // Either distress was triggered or normal decline happened.
-      // The important thing is no crash and the session controller was
-      // called.
-      check(find.byType(FakeCallScreen).evaluate().length).isLessOrEqual(1);
-    });
+        // Either distress was triggered or normal decline happened.
+        // The important thing is no crash and the session controller was
+        // called.
+        check(
+          find.byType(FakeCallScreen).evaluate().length,
+        ).isLessOrEqual(1);
+      },
+    );
   });
 }

@@ -23,23 +23,20 @@ import '../../helpers/test_helpers.dart';
 
 /// Engine that cycles a single SMS step [retryCount] times before
 /// advancing to a long-duration second step.
-SessionEngine _retryEngine(
-  int retryCount, {
-  int durSecs = 1,
-  int graceSecs = 1,
-}) => SessionEngine(
-  chainSteps: [
-    step(
-      type: ChainStepType.smsContact,
-      durationSeconds: durSecs,
-      gracePeriodSeconds: graceSecs,
-      waitSeconds: 10, // wait phase — skipped on retries.
-      retryCount: retryCount,
-    ),
-    smsStep(order: 1, durationSeconds: 60, gracePeriodSeconds: 0),
-  ],
-  random: FixedRandom(),
-);
+SessionEngine _retryEngine(int retryCount, {int durSecs = 1, int graceSecs = 1}) =>
+    SessionEngine(
+      chainSteps: [
+        step(
+          type: ChainStepType.smsContact,
+          durationSeconds: durSecs,
+          gracePeriodSeconds: graceSecs,
+          waitSeconds: 10, // wait phase — skipped on retries.
+          retryCount: retryCount,
+        ),
+        smsStep(order: 1, durationSeconds: 60, gracePeriodSeconds: 0),
+      ],
+      random: FixedRandom(),
+    );
 
 /// Total seconds for [n] retry cycles (skip wait on retry).
 /// Initial attempt: wait (10) + dur + grace.
@@ -211,40 +208,38 @@ void main() {
   });
 
   group('wait-phase skip on retry (spec 01 §3.1)', () {
-    test(
-      'first attempt enters wait; retry bypasses wait → duration directly',
-      () {
-        fakeAsync((async) {
-          // Step has a 10s wait. Verify that after first miss, the retry
-          // enters duration directly (no 10s wait).
-          final e = SessionEngine(
-            chainSteps: [
-              step(
-                type: ChainStepType.smsContact,
-                durationSeconds: 2,
-                gracePeriodSeconds: 2,
-                waitSeconds: 10,
-                retryCount: 1,
-              ),
-              smsStep(order: 1, durationSeconds: 60),
-            ],
-            random: FixedRandom(),
-          );
-          e.start();
-          async.flushMicrotasks();
-          // Verify initial wait phase.
-          check((e.state as EngineRunning).phase).equals(TimerPhase.wait);
-          // Elapse through initial wait + dur + grace.
-          async.elapse(const Duration(seconds: 14));
-          async.flushMicrotasks();
-          // After miss 1, retry: no wait → duration immediately.
-          final s = e.state as EngineRunning;
-          check(s.phase).equals(TimerPhase.duration);
-          check(s.missCount).equals(1);
-          e.dispose();
-        });
-      },
-    );
+    test('first attempt enters wait; retry bypasses wait → duration directly',
+        () {
+      fakeAsync((async) {
+        // Step has a 10s wait. Verify that after first miss, the retry
+        // enters duration directly (no 10s wait).
+        final e = SessionEngine(
+          chainSteps: [
+            step(
+              type: ChainStepType.smsContact,
+              durationSeconds: 2,
+              gracePeriodSeconds: 2,
+              waitSeconds: 10,
+              retryCount: 1,
+            ),
+            smsStep(order: 1, durationSeconds: 60),
+          ],
+          random: FixedRandom(),
+        );
+        e.start();
+        async.flushMicrotasks();
+        // Verify initial wait phase.
+        check((e.state as EngineRunning).phase).equals(TimerPhase.wait);
+        // Elapse through initial wait + dur + grace.
+        async.elapse(const Duration(seconds: 14));
+        async.flushMicrotasks();
+        // After miss 1, retry: no wait → duration immediately.
+        final s = e.state as EngineRunning;
+        check(s.phase).equals(TimerPhase.duration);
+        check(s.missCount).equals(1);
+        e.dispose();
+      });
+    });
   });
 
   group('retry interaction with distress chain', () {
@@ -256,9 +251,16 @@ void main() {
         async.elapse(const Duration(seconds: 12));
         async.flushMicrotasks();
         // Trigger distress during retry.
-        e.replaceWithDistressChain([
-          smsStep(id: 'distress-0', durationSeconds: 1, gracePeriodSeconds: 0),
-        ], triggerReason: TriggerReason.hardwarePanic);
+        e.replaceWithDistressChain(
+          [
+            smsStep(
+              id: 'distress-0',
+              durationSeconds: 1,
+              gracePeriodSeconds: 0,
+            ),
+          ],
+          triggerReason: TriggerReason.hardwarePanic,
+        );
         async.flushMicrotasks();
         check(e.isDistressChain).isTrue();
         async.elapse(const Duration(seconds: 2));

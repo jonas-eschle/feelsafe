@@ -20,10 +20,10 @@ import '../../helpers/test_helpers.dart';
 
 SessionEngine _sim(double speed) => SessionEngine(
   chainSteps: [
-    smsStep(
-      durationSeconds: 60,
-      gracePeriodSeconds: 30,
-    ).copyWith(waitSeconds: 60, randomize: 0.0),
+    smsStep(durationSeconds: 60, gracePeriodSeconds: 30).copyWith(
+      waitSeconds: 60,
+      randomize: 0.0,
+    ),
   ],
   isSimulation: true,
   speedMultiplier: speed,
@@ -98,14 +98,20 @@ void main() {
   // -------------------------------------------------------------------------
   group('real session: setBackgroundClamp is always a no-op', () {
     test('real session clamp stays false after setBackgroundClamp(true)', () {
-      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
+      final e = SessionEngine(
+        chainSteps: [holdStep()],
+        random: FixedRandom(),
+      );
       addTearDown(e.dispose);
       e.setBackgroundClamp(true);
       check(e.backgroundClamp).isFalse();
     });
 
     test('real session effective multiplier always 1.0', () {
-      final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
+      final e = SessionEngine(
+        chainSteps: [holdStep()],
+        random: FixedRandom(),
+      );
       addTearDown(e.dispose);
       e.setBackgroundClamp(true);
       check(e.effectiveSpeedMultiplier).equals(1.0);
@@ -193,24 +199,21 @@ void main() {
       });
     });
 
-    test(
-      'toggle clamp mid-session: effectiveSpeedMultiplier reflects clamp',
-      () {
-        fakeAsync((async) {
-          // Start at 200×; verify clamp changes effective mult at any
-          // point. Already-scheduled timers are NOT rescheduled (spec).
-          final e = _sim(200.0);
-          addTearDown(e.dispose);
-          e.start();
-          async.flushMicrotasks();
-          check(e.effectiveSpeedMultiplier).equals(200.0);
-          e.setBackgroundClamp(true);
-          check(e.effectiveSpeedMultiplier).equals(60.0);
-          e.setBackgroundClamp(false);
-          check(e.effectiveSpeedMultiplier).equals(200.0);
-        });
-      },
-    );
+    test('toggle clamp mid-session: effectiveSpeedMultiplier reflects clamp', () {
+      fakeAsync((async) {
+        // Start at 200×; verify clamp changes effective mult at any
+        // point. Already-scheduled timers are NOT rescheduled (spec).
+        final e = _sim(200.0);
+        addTearDown(e.dispose);
+        e.start();
+        async.flushMicrotasks();
+        check(e.effectiveSpeedMultiplier).equals(200.0);
+        e.setBackgroundClamp(true);
+        check(e.effectiveSpeedMultiplier).equals(60.0);
+        e.setBackgroundClamp(false);
+        check(e.effectiveSpeedMultiplier).equals(200.0);
+      });
+    });
   });
 
   // -------------------------------------------------------------------------

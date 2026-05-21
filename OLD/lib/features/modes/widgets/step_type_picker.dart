@@ -154,7 +154,8 @@ class _StepTypePickerSheetState extends State<_StepTypePickerSheet> {
               children: [
                 if (!_showAll) ...[
                   // Issues-v4 #8: prominent top-3 entries.
-                  for (final type in kTopStepTypes) _entryTile(context, type),
+                  for (final type in kTopStepTypes)
+                    _entryTile(context, type),
                   ListTile(
                     leading: const Icon(Icons.more_horiz),
                     title: Text(l.stepPickerMore),
@@ -173,11 +174,8 @@ class _StepTypePickerSheetState extends State<_StepTypePickerSheet> {
   /// Returns entries filtered by the active category.
   List<(ChainStepType, IconData)> get _filteredEntries =>
       _filter == StepCategory.all
-      ? _entries
-      : [
-          for (final e in _entries)
-            if (categoryOf(e.$1) == _filter) e,
-        ];
+          ? _entries
+          : [for (final e in _entries) if (categoryOf(e.$1) == _filter) e];
 
   /// Renders one ListTile entry. Looks up the icon from [_entries].
   Widget _entryTile(BuildContext context, ChainStepType type) {

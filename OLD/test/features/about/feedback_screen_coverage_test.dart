@@ -31,8 +31,8 @@ void main() {
         // canLaunch so the `await launchUrl(uri)` branch is executed.
         // The exact channel name varies by platform; we intercept all
         // url_launcher channels by patching the default binary messenger.
-        final handler =
-            TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+        final handler = TestDefaultBinaryMessengerBinding
+            .instance.defaultBinaryMessenger;
 
         // Intercept url_launcher method channel calls.
         for (final channelName in [
@@ -47,7 +47,9 @@ void main() {
             }
             return null;
           });
-          addTearDown(() => handler.setMockMethodCallHandler(channel, null));
+          addTearDown(
+            () => handler.setMockMethodCallHandler(channel, null),
+          );
         }
 
         await tester.pumpWidget(hostScreen(child: const FeedbackScreen()));

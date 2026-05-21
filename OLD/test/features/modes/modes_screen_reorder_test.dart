@@ -21,72 +21,81 @@ import '../widget_test_helpers.dart';
 
 void main() {
   group('ModesScreen — constructor + onReorder (lines 17, 32–33)', () {
-    testWidgets('non-const instantiation covers line 17', (tester) async {
-      // ignore: prefer_const_constructors
-      final widget = ModesScreen(key: UniqueKey());
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(FakeModesRepository([])),
-          ],
-          child: widget,
-        ),
-      );
-      await tester.pumpAndSettle();
-      check(find.byType(ModesScreen).evaluate()).isNotEmpty();
-    });
+    testWidgets(
+      'non-const instantiation covers line 17',
+      (tester) async {
+        // ignore: prefer_const_constructors
+        final widget = ModesScreen(key: UniqueKey());
+        await tester.pumpWidget(
+          hostScreenWithRouter(
+            overrides: [
+              modesRepositoryProvider.overrideWithValue(
+                FakeModesRepository([]),
+              ),
+            ],
+            child: widget,
+          ),
+        );
+        await tester.pumpAndSettle();
+        check(find.byType(ModesScreen).evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('onReorder callback can be invoked directly (lines 32–33)', (
-      tester,
-    ) async {
-      final repo = FakeModesRepository([
-        makeMode(id: 'm1', name: 'Mode One'),
-        makeMode(id: 'm2', name: 'Mode Two'),
-        makeMode(id: 'm3', name: 'Mode Three'),
-      ]);
+    testWidgets(
+      'onReorder callback can be invoked directly (lines 32–33)',
+      (tester) async {
+        final repo = FakeModesRepository([
+          makeMode(id: 'm1', name: 'Mode One'),
+          makeMode(id: 'm2', name: 'Mode Two'),
+          makeMode(id: 'm3', name: 'Mode Three'),
+        ]);
 
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [modesRepositoryProvider.overrideWithValue(repo)],
-          child: const ModesScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          hostScreenWithRouter(
+            overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+            child: const ModesScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      // Find the ReorderableListView and invoke onReorder directly.
-      final rlv = tester.widget<ReorderableListView>(
-        find.byType(ReorderableListView),
-      );
-      // Call the callback with a valid reorder (move index 0 to 2).
-      rlv.onReorder(0, 2);
-      await tester.pumpAndSettle();
+        // Find the ReorderableListView and invoke onReorder directly.
+        final rlv = tester.widget<ReorderableListView>(
+          find.byType(ReorderableListView),
+        );
+        // Call the callback with a valid reorder (move index 0 to 2).
+        rlv.onReorder(0, 2);
+        await tester.pumpAndSettle();
 
-      // The screen must still be visible after the reorder.
-      check(find.byType(ModesScreen).evaluate()).isNotEmpty();
-    });
+        // The screen must still be visible after the reorder.
+        check(find.byType(ModesScreen).evaluate()).isNotEmpty();
+      },
+    );
 
-    testWidgets('reorder in reverse direction (lines 32–33)', (tester) async {
-      final repo = FakeModesRepository([
-        makeMode(id: 'm1', name: 'Alpha'),
-        makeMode(id: 'm2', name: 'Beta'),
-      ]);
+    testWidgets(
+      'reorder in reverse direction (lines 32–33)',
+      (tester) async {
+        final repo = FakeModesRepository([
+          makeMode(id: 'm1', name: 'Alpha'),
+          makeMode(id: 'm2', name: 'Beta'),
+        ]);
 
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [modesRepositoryProvider.overrideWithValue(repo)],
-          child: const ModesScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(
+          hostScreenWithRouter(
+            overrides: [modesRepositoryProvider.overrideWithValue(repo)],
+            child: const ModesScreen(),
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      final rlv = tester.widget<ReorderableListView>(
-        find.byType(ReorderableListView),
-      );
-      // Move index 1 to 0.
-      rlv.onReorder(1, 0);
-      await tester.pumpAndSettle();
+        final rlv = tester.widget<ReorderableListView>(
+          find.byType(ReorderableListView),
+        );
+        // Move index 1 to 0.
+        rlv.onReorder(1, 0);
+        await tester.pumpAndSettle();
 
-      check(find.byType(ModesScreen).evaluate()).isNotEmpty();
-    });
+        check(find.byType(ModesScreen).evaluate()).isNotEmpty();
+      },
+    );
   });
 }

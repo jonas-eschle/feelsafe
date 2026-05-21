@@ -113,6 +113,9 @@ flutter_launcher_icons:
 import_sorter:
   comments: false
   emojis: false
+  # OLD/ is an inert archive — never touch it.
+  ignored_files:
+    - '^/OLD/'
 
 hooks:
   user_defines:

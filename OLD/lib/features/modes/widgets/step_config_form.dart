@@ -48,7 +48,8 @@ class StepConfigForm extends StatelessWidget {
 /// toggle. SMS / alarm / emergency-confirm are excluded by design
 /// (the user wants those at predictable times).
 bool stepSupportsRandomizeToggle(ChainStepType type) =>
-    type == ChainStepType.disguisedReminder || type == ChainStepType.fakeCall;
+    type == ChainStepType.disguisedReminder ||
+    type == ChainStepType.fakeCall;
 
 /// Collapsible panel grouping the three timing fields plus retries.
 ///
@@ -106,7 +107,8 @@ class _TimingPanel extends StatelessWidget {
               label: l.stepFieldGrace,
               tooltip: l.stepFieldReminderGraceTooltip,
               seconds: step.gracePeriodSeconds,
-              onChanged: (v) => onChanged(step.copyWith(gracePeriodSeconds: v)),
+              onChanged: (v) =>
+                  onChanged(step.copyWith(gracePeriodSeconds: v)),
             ),
             _TimingRow(
               label: l.stepFieldDuration,
@@ -131,7 +133,8 @@ class _TimingPanel extends StatelessWidget {
               label: l.stepFieldGrace,
               tooltip: l.stepFieldGraceTooltip,
               seconds: step.gracePeriodSeconds,
-              onChanged: (v) => onChanged(step.copyWith(gracePeriodSeconds: v)),
+              onChanged: (v) =>
+                  onChanged(step.copyWith(gracePeriodSeconds: v)),
             ),
           ],
           _RetriesField(step: step, onChanged: onChanged),
@@ -184,11 +187,17 @@ class _TimingRow extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8),
             child: Row(
               children: [
-                Text(label, style: Theme.of(context).textTheme.bodyMedium),
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
                 const SizedBox(width: 4),
                 Tooltip(
                   message: tip,
-                  child: const Icon(Icons.info_outline, size: 16),
+                  child: const Icon(
+                    Icons.info_outline,
+                    size: 16,
+                  ),
                 ),
               ],
             ),

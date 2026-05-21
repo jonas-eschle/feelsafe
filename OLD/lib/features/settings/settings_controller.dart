@@ -165,7 +165,9 @@ class SettingsController extends AsyncNotifier<AppSettings> {
   /// Updates the gradual alarm-volume ramp duration in seconds.
   Future<void> setAlarmGradualVolumeDuration(int seconds) async {
     final current = await future;
-    await save(current.copyWith(alarmGradualVolumeDurationSeconds: seconds));
+    await save(
+      current.copyWith(alarmGradualVolumeDurationSeconds: seconds),
+    );
   }
 }
 

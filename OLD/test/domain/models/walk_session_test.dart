@@ -208,12 +208,12 @@ void main() {
       check(s2.missCount).equals(2);
       check(s2.remainingSeconds).equals(9);
       check(s2.simulatedElapsed).equals(const Duration(seconds: 5));
-      check(
-        s2.firedStepDescriptions,
-      ).deepEquals(const [SimulationDescription('a')]);
-      check(
-        s2.lastSimulationDescription,
-      ).equals(const SimulationDescription('desc'));
+      check(s2.firedStepDescriptions).deepEquals(
+        const [SimulationDescription('a')],
+      );
+      check(s2.lastSimulationDescription).equals(
+        const SimulationDescription('desc'),
+      );
       check(s2.isBackgroundAlert).isTrue();
     });
   });
@@ -224,15 +224,13 @@ void main() {
     });
 
     test('active toString', () {
-      check(
-        const SessionPhaseActive().toString(),
-      ).equals('SessionPhase.active');
+      check(const SessionPhaseActive().toString())
+          .equals('SessionPhase.active');
     });
 
     test('paused toString', () {
-      check(
-        const SessionPhasePaused().toString(),
-      ).equals('SessionPhase.paused');
+      check(const SessionPhasePaused().toString())
+          .equals('SessionPhase.paused');
     });
 
     test('ended toString', () {
@@ -240,18 +238,14 @@ void main() {
     });
 
     test('hashCode stable for same phase', () {
-      check(
-        const SessionPhaseIdle().hashCode,
-      ).equals(const SessionPhaseIdle().hashCode);
-      check(
-        const SessionPhaseActive().hashCode,
-      ).equals(const SessionPhaseActive().hashCode);
-      check(
-        const SessionPhasePaused().hashCode,
-      ).equals(const SessionPhasePaused().hashCode);
-      check(
-        const SessionPhaseEnded().hashCode,
-      ).equals(const SessionPhaseEnded().hashCode);
+      check(const SessionPhaseIdle().hashCode)
+          .equals(const SessionPhaseIdle().hashCode);
+      check(const SessionPhaseActive().hashCode)
+          .equals(const SessionPhaseActive().hashCode);
+      check(const SessionPhasePaused().hashCode)
+          .equals(const SessionPhasePaused().hashCode);
+      check(const SessionPhaseEnded().hashCode)
+          .equals(const SessionPhaseEnded().hashCode);
     });
 
     test('cross-type inequality', () {
@@ -266,12 +260,12 @@ void main() {
     final startedAt = DateTime.utc(2026, 4, 1);
 
     WalkSession base() => WalkSession(
-      id: 'w1',
-      modeId: 'm1',
-      isSimulation: false,
-      startedAt: startedAt,
-      phase: const SessionPhaseActive(),
-    );
+          id: 'w1',
+          modeId: 'm1',
+          isSimulation: false,
+          startedAt: startedAt,
+          phase: const SessionPhaseActive(),
+        );
 
     test('identical equals', () {
       final s = base();
@@ -297,10 +291,9 @@ void main() {
 
     test('different startedAt unequal', () {
       check(
-        base() ==
-            base().copyWith(
-              startedAt: startedAt.add(const Duration(seconds: 1)),
-            ),
+        base() == base().copyWith(startedAt: startedAt.add(
+          const Duration(seconds: 1),
+        )),
       ).isFalse();
     });
 
@@ -309,9 +302,8 @@ void main() {
     });
 
     test('different phase unequal', () {
-      check(
-        base() == base().copyWith(phase: const SessionPhaseIdle()),
-      ).isFalse();
+      check(base() == base().copyWith(phase: const SessionPhaseIdle()))
+          .isFalse();
     });
 
     test('different currentStepIndex unequal', () {
@@ -334,7 +326,9 @@ void main() {
 
     test('different simulatedElapsed unequal', () {
       check(
-        base() == base().copyWith(simulatedElapsed: const Duration(seconds: 1)),
+        base() == base().copyWith(
+          simulatedElapsed: const Duration(seconds: 1),
+        ),
       ).isFalse();
     });
 

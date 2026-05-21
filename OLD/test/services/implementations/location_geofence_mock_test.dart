@@ -19,63 +19,53 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const geoChannel = MethodChannel('flutter.baseflow.com/geolocator');
-  const eventChannel = EventChannel('flutter.baseflow.com/geolocator_updates');
+  const eventChannel =
+      EventChannel('flutter.baseflow.com/geolocator_updates');
 
   group('LocationService.requestPermission', () {
     test('denied then denied on request returns false', () async {
-      installMethodChannelMock(
-        geoChannel,
-        responder: (call) {
-          if (call.method == 'checkPermission') return 0; // denied
-          if (call.method == 'requestPermission') return 0; // denied
-          return null;
-        },
-      );
+      installMethodChannelMock(geoChannel, responder: (call) {
+        if (call.method == 'checkPermission') return 0; // denied
+        if (call.method == 'requestPermission') return 0; // denied
+        return null;
+      });
       final s = LocationService();
       check(await s.requestPermission()).isFalse();
     });
 
     test('denied then whileInUse on request returns true', () async {
-      installMethodChannelMock(
-        geoChannel,
-        responder: (call) {
-          if (call.method == 'checkPermission') return 0; // denied
-          if (call.method == 'requestPermission') return 2; // whileInUse
-          return null;
-        },
-      );
+      installMethodChannelMock(geoChannel, responder: (call) {
+        if (call.method == 'checkPermission') return 0; // denied
+        if (call.method == 'requestPermission') return 2; // whileInUse
+        return null;
+      });
       final s = LocationService();
       check(await s.requestPermission()).isTrue();
     });
 
     test('always on check returns true without requesting', () async {
-      final calls = installMethodChannelMock(
-        geoChannel,
-        responder: (call) {
-          if (call.method == 'checkPermission') return 3; // always
-          return null;
-        },
-      );
+      final calls = installMethodChannelMock(geoChannel, responder: (call) {
+        if (call.method == 'checkPermission') return 3; // always
+        return null;
+      });
       final s = LocationService();
       check(await s.requestPermission()).isTrue();
       check(calls.where((c) => c.method == 'requestPermission')).isEmpty();
     });
 
     test('deniedForever returns false', () async {
-      installMethodChannelMock(
-        geoChannel,
-        responder: (call) {
-          if (call.method == 'checkPermission') return 1; // deniedForever
-          return null;
-        },
-      );
+      installMethodChannelMock(geoChannel, responder: (call) {
+        if (call.method == 'checkPermission') return 1; // deniedForever
+        return null;
+      });
       final s = LocationService();
       check(await s.requestPermission()).isFalse();
     });
   });
 
   group('LocationService.startTracking', () {
-    test('startTracking subscribes and _onPosition adds to history', () async {
+    test('startTracking subscribes and _onPosition adds to history',
+        () async {
       installMethodChannelMock(geoChannel);
       final evt = installEventChannelMock(eventChannel);
       final s = LocationService();
@@ -99,9 +89,8 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 5));
       check(s.history.length).equals(1);
       check(s.getLastLocationPoint()!.latitude).equals(47.5);
-      check(
-        s.getLastLocationUrl(),
-      ).equals('https://maps.google.com/?q=47.5,8.5');
+      check(s.getLastLocationUrl())
+          .equals('https://maps.google.com/?q=47.5,8.5');
       await s.stopTracking();
     });
 
@@ -148,7 +137,8 @@ void main() {
   });
 
   group('GeofenceService with mocked geolocator', () {
-    test('enter + exit + re-entry fires arrival once per entry', () async {
+    test('enter + exit + re-entry fires arrival once per entry',
+        () async {
       installMethodChannelMock(geoChannel);
       final evt = installEventChannelMock(eventChannel);
       final s = GeofenceService();

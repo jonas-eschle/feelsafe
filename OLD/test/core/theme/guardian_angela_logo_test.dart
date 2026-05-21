@@ -23,7 +23,9 @@ void main() {
 
   testWidgets('respects custom size', (tester) async {
     await tester.pumpWidget(
-      const MaterialApp(home: Scaffold(body: GuardianAngelaLogo(size: 48))),
+      const MaterialApp(
+        home: Scaffold(body: GuardianAngelaLogo(size: 48)),
+      ),
     );
     final box = tester.getSize(find.byType(GuardianAngelaLogo));
     check(box.width).equals(48.0);
@@ -33,14 +35,9 @@ void main() {
     await tester.pumpWidget(
       const MaterialApp(home: Scaffold(body: GuardianAngelaLogo())),
     );
-    check(
-      find
-          .descendant(
-            of: find.byType(GuardianAngelaLogo),
-            matching: find.byType(CustomPaint),
-          )
-          .evaluate()
-          .isNotEmpty,
-    ).isTrue();
+    check(find.descendant(
+      of: find.byType(GuardianAngelaLogo),
+      matching: find.byType(CustomPaint),
+    ).evaluate().isNotEmpty).isTrue();
   });
 }

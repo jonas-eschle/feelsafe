@@ -30,13 +30,17 @@ void main() {
     });
 
     test('canonical wire values "default"/"true"/"false"', () {
-      check(logGpsOverrideToJson(LogGpsOverride.useDefault)).equals('default');
+      check(
+        logGpsOverrideToJson(LogGpsOverride.useDefault),
+      ).equals('default');
       check(logGpsOverrideToJson(LogGpsOverride.forceOn)).equals('true');
       check(logGpsOverrideToJson(LogGpsOverride.forceOff)).equals('false');
     });
 
     test('unknown raw value throws ArgumentError', () {
-      check(() => logGpsOverrideFromJson('bogus')).throws<ArgumentError>();
+      check(
+        () => logGpsOverrideFromJson('bogus'),
+      ).throws<ArgumentError>();
     });
   });
 

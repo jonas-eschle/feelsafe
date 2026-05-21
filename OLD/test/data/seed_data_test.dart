@@ -166,9 +166,12 @@ void main() {
     check(mode!.chainSteps.length).equals(3);
   });
 
-  test('seeded settings default to AppDefaults (first-launch true)', () async {
-    await runSeed();
-    final s = await container.read(settingsRepositoryProvider).get();
-    check(s!.isFirstLaunch).isTrue();
-  });
+  test(
+    'seeded settings default to AppDefaults (first-launch true)',
+    () async {
+      await runSeed();
+      final s = await container.read(settingsRepositoryProvider).get();
+      check(s!.isFirstLaunch).isTrue();
+    },
+  );
 }

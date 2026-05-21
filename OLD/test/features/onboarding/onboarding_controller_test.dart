@@ -64,7 +64,8 @@ void main() {
       await notifier.completeOnboarding();
       final ob = container.read(onboardingControllerProvider).value!;
       check(ob.isComplete).isTrue();
-      final s = await container.read(settingsControllerProvider.future);
+      final s =
+          await container.read(settingsControllerProvider.future);
       check(s.isFirstLaunch).isFalse();
     });
   });

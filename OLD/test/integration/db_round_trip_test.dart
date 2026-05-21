@@ -104,17 +104,14 @@ void main() {
   });
 
   group('Distress modes round-trip (Phase 2.5: in modes table)', () {
-    test(
-      'distress-flagged mode round-trips with isDistressMode=true',
-      () async {
-        final repo = ModesRepository(ModesDao(db));
-        final mode = makeDistressMode(id: 'd1', steps: [smsStep(order: 0)]);
-        await repo.save(mode);
-        final read = await repo.getById('d1');
-        check(read!.chainSteps.length).equals(1);
-        check(read.isDistressMode).isTrue();
-      },
-    );
+    test('distress-flagged mode round-trips with isDistressMode=true', () async {
+      final repo = ModesRepository(ModesDao(db));
+      final mode = makeDistressMode(id: 'd1', steps: [smsStep(order: 0)]);
+      await repo.save(mode);
+      final read = await repo.getById('d1');
+      check(read!.chainSteps.length).equals(1);
+      check(read.isDistressMode).isTrue();
+    });
 
     test('multi-step distress mode round-trips', () async {
       final repo = ModesRepository(ModesDao(db));

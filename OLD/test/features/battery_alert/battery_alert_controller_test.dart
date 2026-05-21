@@ -50,7 +50,8 @@ void main() {
     test('save overwrites config', () async {
       final container = _makeContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(batteryAlertControllerProvider.notifier);
+      final notifier =
+          container.read(batteryAlertControllerProvider.notifier);
       await container.read(batteryAlertControllerProvider.future);
       await notifier.save(const BatteryAlertConfig(thresholdPercent: 20));
       final cfg = container.read(batteryAlertControllerProvider).value!;
@@ -62,7 +63,8 @@ void main() {
         seed: const BatteryAlertConfig(enabled: false),
       );
       addTearDown(container.dispose);
-      final notifier = container.read(batteryAlertControllerProvider.notifier);
+      final notifier =
+          container.read(batteryAlertControllerProvider.notifier);
       await container.read(batteryAlertControllerProvider.future);
       await notifier.enable();
       final cfg = container.read(batteryAlertControllerProvider).value!;
@@ -72,7 +74,8 @@ void main() {
     test('disable sets enabled=false', () async {
       final container = _makeContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(batteryAlertControllerProvider.notifier);
+      final notifier =
+          container.read(batteryAlertControllerProvider.notifier);
       await container.read(batteryAlertControllerProvider.future);
       await notifier.disable();
       final cfg = container.read(batteryAlertControllerProvider).value!;
@@ -82,7 +85,8 @@ void main() {
     test('setChain replaces chain steps', () async {
       final container = _makeContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(batteryAlertControllerProvider.notifier);
+      final notifier =
+          container.read(batteryAlertControllerProvider.notifier);
       await container.read(batteryAlertControllerProvider.future);
       await notifier.setChain([smsStep(order: 0)]);
       final cfg = container.read(batteryAlertControllerProvider).value!;
@@ -92,7 +96,8 @@ void main() {
     test('setThresholdPercent updates threshold', () async {
       final container = _makeContainer();
       addTearDown(container.dispose);
-      final notifier = container.read(batteryAlertControllerProvider.notifier);
+      final notifier =
+          container.read(batteryAlertControllerProvider.notifier);
       await container.read(batteryAlertControllerProvider.future);
       await notifier.setThresholdPercent(42);
       final cfg = container.read(batteryAlertControllerProvider).value!;

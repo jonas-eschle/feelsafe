@@ -22,9 +22,7 @@ SessionLog _log({
   modeName: 'Test Mode',
   startedAt: startedAt,
   isSimulation: isSimulation,
-  events:
-      events ??
-      [SessionLogEvent(event: ChainEvent.sessionStarted, timestamp: startedAt)],
+  events: events ?? [SessionLogEvent(event: ChainEvent.sessionStarted, timestamp: startedAt)],
 );
 
 void main() {

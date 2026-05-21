@@ -47,24 +47,21 @@ void main() {
       // configured mode. When modes exist but none is the *selected*
       // one yet, Start renders but with onPressed=null (a clear
       // "can't start now" affordance).
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(
-              FakeModesRepository([makeMode(id: 'm1', name: 'Walk')]),
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(
+            FakeModesRepository([makeMode(id: 'm1', name: 'Walk')]),
+          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(
+              const AppSettings(defaults: AppDefaults()),
             ),
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults()),
-              ),
-            ),
-          ],
-          child: const HomeScreen(),
-        ),
-      );
+          ),
+        ],
+        child: const HomeScreen(),
+      ));
       await tester.pumpAndSettle();
       // Tap the mode tile so the Start button becomes enabled (and
       // we exercise the per-tile selection).
@@ -72,11 +69,10 @@ void main() {
     },
   );
 
-  testWidgets('HomeScreen with contacts hides the no-contacts hint', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
+  testWidgets(
+    'HomeScreen with contacts hides the no-contacts hint',
+    (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
           modesRepositoryProvider.overrideWithValue(
             FakeModesRepository([makeMode(id: 'm1', name: 'Walk')]),
@@ -84,16 +80,15 @@ void main() {
           contactsRepositoryProvider.overrideWithValue(
             FakeContactsRepository([makeContact(id: 'c1')]),
           ),
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
         ],
         child: const HomeScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(tester.takeException()).isNull();
-  });
+      ));
+      await tester.pumpAndSettle();
+      check(tester.takeException()).isNull();
+    },
+  );
 
   testWidgets(
     'HomeScreen tapping a mode tile updates selected mode in settings',
@@ -101,23 +96,20 @@ void main() {
       // Spec 04 §Mode Selector: tap-to-select on the Card+InkWell
       // tile updates the persisted selectedModeId.
       final settings = FakeSettingsRepository();
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(
-              FakeModesRepository([
-                makeMode(id: 'm1', name: 'Walk'),
-                makeMode(id: 'm2', name: 'Date'),
-              ]),
-            ),
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
-            settingsRepositoryProvider.overrideWithValue(settings),
-          ],
-          child: const HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(
+            FakeModesRepository([
+              makeMode(id: 'm1', name: 'Walk'),
+              makeMode(id: 'm2', name: 'Date'),
+            ]),
+          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider.overrideWithValue(settings),
+        ],
+        child: const HomeScreen(),
+      ));
       await tester.pumpAndSettle();
       // Two cards (one per mode). Tap the Date one.
       await tester.tap(find.text('Date'));
@@ -130,55 +122,53 @@ void main() {
   testWidgets(
     'HomeScreen stealth title is a Column with subtitle when fakeIcon set',
     (tester) async {
-      const stealth = StealthConfig(enabled: true, fakeName: 'Calendar');
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(
-                const AppSettings(defaults: AppDefaults(stealth: stealth)),
+      const stealth = StealthConfig(
+        enabled: true,
+        fakeName: 'Calendar',
+      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider.overrideWithValue(
+            FakeSettingsRepository(
+              const AppSettings(
+                defaults: AppDefaults(stealth: stealth),
               ),
             ),
-          ],
-          child: const HomeScreen(),
-        ),
-      );
+          ),
+        ],
+        child: const HomeScreen(),
+      ));
       await tester.pumpAndSettle();
       final appBar = tester.widget<AppBar>(find.byType(AppBar));
       check(appBar.title).isA<Column>();
     },
   );
 
-  testWidgets('HomeScreen renders three navigation shortcuts', (tester) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
+  testWidgets(
+    'HomeScreen renders three navigation shortcuts',
+    (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
           modesRepositoryProvider.overrideWithValue(FakeModesRepository()),
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository(),
-          ),
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
         ],
         child: const HomeScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(
-      find
-          .descendant(
-            of: find.byType(HomeScreen),
-            matching: find.byType(OutlinedButton),
-          )
-          .evaluate()
-          .length,
-    ).equals(3);
-  });
+      ));
+      await tester.pumpAndSettle();
+      check(
+        find.descendant(
+          of: find.byType(HomeScreen),
+          matching: find.byType(OutlinedButton),
+        ).evaluate().length,
+      ).equals(3);
+    },
+  );
 
   testWidgets(
     'HomeScreen simulate button is rendered as a TextButton next to Start',
@@ -186,94 +176,83 @@ void main() {
       // Spec 04 §Simulate Button: outlined TextButton (less
       // prominent), not a switch. The home screen now uses a
       // TextButton with the science_outlined icon.
-      await tester.pumpWidget(
-        hostScreenWithRouter(
-          overrides: [
-            modesRepositoryProvider.overrideWithValue(
-              FakeModesRepository([makeMode()]),
-            ),
-            contactsRepositoryProvider.overrideWithValue(
-              FakeContactsRepository(),
-            ),
-            settingsRepositoryProvider.overrideWithValue(
-              FakeSettingsRepository(),
-            ),
-          ],
-          child: const HomeScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenWithRouter(
+        overrides: [
+          modesRepositoryProvider.overrideWithValue(
+            FakeModesRepository([makeMode()]),
+          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
+        ],
+        child: const HomeScreen(),
+      ));
       await tester.pumpAndSettle();
       check(
-        find
-            .widgetWithIcon(TextButton, Icons.science_outlined)
+        find.widgetWithIcon(TextButton, Icons.science_outlined)
             .evaluate()
             .length,
       ).equals(1);
     },
   );
 
-  testWidgets('HomeScreen active session renders the shield card', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
+  testWidgets(
+    'HomeScreen active session renders the shield card',
+    (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
           modesRepositoryProvider.overrideWithValue(
             FakeModesRepository([makeMode(id: 'm1')]),
           ),
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository(),
-          ),
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
           sessionControllerProvider.overrideWith(
             () => _FakeSessionController(_activeSession()),
           ),
         ],
         child: const HomeScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // Active session card uses a shield icon.
-    check(find.byIcon(Icons.shield).evaluate().length).equals(1);
-  });
+      ));
+      await tester.pumpAndSettle();
+      // Active session card uses a shield icon.
+      check(find.byIcon(Icons.shield).evaluate().length).equals(1);
+    },
+  );
 
-  testWidgets('HomeScreen active session disables the Start button', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreenWithRouter(
+  testWidgets(
+    'HomeScreen active session disables the Start button',
+    (tester) async {
+      await tester.pumpWidget(hostScreenWithRouter(
         overrides: [
           modesRepositoryProvider.overrideWithValue(
             FakeModesRepository([makeMode(id: 'm1')]),
           ),
-          contactsRepositoryProvider.overrideWithValue(
-            FakeContactsRepository(),
-          ),
-          settingsRepositoryProvider.overrideWithValue(
-            FakeSettingsRepository(),
-          ),
+          contactsRepositoryProvider
+              .overrideWithValue(FakeContactsRepository()),
+          settingsRepositoryProvider
+              .overrideWithValue(FakeSettingsRepository()),
           sessionControllerProvider.overrideWith(
             () => _FakeSessionController(_activeSession()),
           ),
         ],
         child: const HomeScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // Among the FilledButtons on the home screen, the play_arrow
-    // Start button should now have a null onPressed handler.
-    final startButton = find.descendant(
-      of: find.byType(HomeScreen),
-      matching: find.byType(FilledButton),
-    );
-    final buttons = startButton
-        .evaluate()
-        .map((e) => e.widget as FilledButton)
-        .toList();
-    // At least one FilledButton exists (Resume + Start = two;
-    // Start has onPressed==null when active session is present).
-    check(buttons.any((b) => b.onPressed == null)).equals(true);
-  });
+      ));
+      await tester.pumpAndSettle();
+      // Among the FilledButtons on the home screen, the play_arrow
+      // Start button should now have a null onPressed handler.
+      final startButton = find.descendant(
+        of: find.byType(HomeScreen),
+        matching: find.byType(FilledButton),
+      );
+      final buttons = startButton
+          .evaluate()
+          .map((e) => e.widget as FilledButton)
+          .toList();
+      // At least one FilledButton exists (Resume + Start = two;
+      // Start has onPressed==null when active session is present).
+      check(buttons.any((b) => b.onPressed == null)).equals(true);
+    },
+  );
 }

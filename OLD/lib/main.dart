@@ -112,7 +112,11 @@ void main() async {
         final seedProvider = Provider<Future<void>>((ref) => seedData(ref));
         await container.read(seedProvider);
       } on Object catch (e, s) {
-        developer.log('main: seedData failed', error: e, stackTrace: s);
+        developer.log(
+          'main: seedData failed',
+          error: e,
+          stackTrace: s,
+        );
       }
       // Fix for bugs.json Warn (NotificationService.init never
       // called): register Android channels before the first show*().
@@ -166,6 +170,10 @@ Future<void> _startBatteryAlertWatcher(ProviderContainer container) async {
     });
     await monitor.startMonitoring(thresholdPercent: config.thresholdPercent);
   } on Object catch (e, s) {
-    developer.log('battery-alert watcher init failed', error: e, stackTrace: s);
+    developer.log(
+      'battery-alert watcher init failed',
+      error: e,
+      stackTrace: s,
+    );
   }
 }

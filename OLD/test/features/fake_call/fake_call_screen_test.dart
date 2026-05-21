@@ -18,7 +18,8 @@ void main() {
     check(find.byType(FakeCallScreen).evaluate().length).equals(1);
   });
 
-  testWidgets('FakeCallScreen has answer and decline buttons', (tester) async {
+  testWidgets('FakeCallScreen has answer and decline buttons',
+      (tester) async {
     await tester.pumpWidget(
       hostScreenWithRouter(child: const FakeCallScreen()),
     );
@@ -33,13 +34,13 @@ void main() {
       hostScreenWithRouter(child: const FakeCallScreen()),
     );
     await tester.pumpAndSettle();
-    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    final scaffold =
+        tester.widget<Scaffold>(find.byType(Scaffold).first);
     check(scaffold.backgroundColor).equals(Colors.black);
   });
 
-  testWidgets('FakeCallScreen tapping Answer shows Hang Up button', (
-    tester,
-  ) async {
+  testWidgets('FakeCallScreen tapping Answer shows Hang Up button',
+      (tester) async {
     await tester.pumpWidget(
       hostScreenWithRouter(child: const FakeCallScreen()),
     );
@@ -50,10 +51,11 @@ void main() {
     check(find.byIcon(Icons.call).evaluate()).isEmpty();
   });
 
-  testWidgets('FakeCallScreen tapping Decline triggers controller.decline', (
-    tester,
-  ) async {
-    await tester.pumpWidget(hostScreenPushed(child: const FakeCallScreen()));
+  testWidgets('FakeCallScreen tapping Decline triggers controller.decline',
+      (tester) async {
+    await tester.pumpWidget(
+      hostScreenPushed(child: const FakeCallScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(
@@ -66,10 +68,11 @@ void main() {
     check(find.byType(FakeCallScreen).evaluate().length).isLessOrEqual(1);
   });
 
-  testWidgets('FakeCallScreen tapping Hang-up after answer ends call', (
-    tester,
-  ) async {
-    await tester.pumpWidget(hostScreenPushed(child: const FakeCallScreen()));
+  testWidgets('FakeCallScreen tapping Hang-up after answer ends call',
+      (tester) async {
+    await tester.pumpWidget(
+      hostScreenPushed(child: const FakeCallScreen()),
+    );
     await tester.pumpAndSettle();
     await tester.tap(
       find.descendant(

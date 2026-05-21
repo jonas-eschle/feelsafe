@@ -24,11 +24,14 @@ import 'dao_test_support.dart';
 void main() {
   setUpAll(overrideSqliteOpen);
 
-  test('AppDatabase default constructor accepts injected executor', () async {
-    final db = AppDatabase(executor: NativeDatabase.memory());
-    check(db.schemaVersion).equals(3);
-    await db.close();
-  });
+  test(
+    'AppDatabase default constructor accepts injected executor',
+    () async {
+      final db = AppDatabase(executor: NativeDatabase.memory());
+      check(db.schemaVersion).equals(3);
+      await db.close();
+    },
+  );
 
   test('AppDatabase migration.onUpgrade throws StateError', () async {
     final db = makeMemoryDb();
@@ -54,11 +57,14 @@ void main() {
     },
   );
 
-  test('AppDatabase close completes without error', () async {
-    final db = makeMemoryDb();
-    await db.close();
-    // Closing twice on drift raises; test just one close.
-  });
+  test(
+    'AppDatabase close completes without error',
+    () async {
+      final db = makeMemoryDb();
+      await db.close();
+      // Closing twice on drift raises; test just one close.
+    },
+  );
 
   test('AppDatabase dbFileName is the documented value', () {
     check(AppDatabase.dbFileName).equals('guardian_angela.sqlite');
@@ -74,7 +80,8 @@ class _NoopMigrator implements Migrator {
   GeneratedDatabase get database => _db;
 
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
 }
 
 /// [Migrator] double that records `createAll` invocations.
@@ -92,7 +99,8 @@ class _RecordingMigrator implements Migrator {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+  dynamic noSuchMethod(Invocation invocation) =>
+      super.noSuchMethod(invocation);
 }
 
 // Keep a tiny unawaited shim that's clearer than `ignore:`:

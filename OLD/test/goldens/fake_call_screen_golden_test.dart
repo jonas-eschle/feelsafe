@@ -60,8 +60,7 @@ void main() {
     goldenTest(
       'fake_call_screen_$themeName',
       fileName: 'fake_call_screen_$themeName',
-      builder: () =>
-          goldenWrapper(child: _fakeCallStandin(), themeMode: themeMode),
+      builder: () => goldenWrapper(child: _fakeCallStandin(), themeMode: themeMode),
     );
   }
 }

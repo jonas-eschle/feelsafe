@@ -20,35 +20,34 @@ import '../widget_test_helpers.dart';
 
 void main() {
   group('ProfileScreen line 73 — non-null emergencyInstructions', () {
-    testWidgets('saving with non-empty instructions stores the value', (
-      tester,
-    ) async {
-      final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(
-        hostScreenPushed(
+    testWidgets(
+      'saving with non-empty instructions stores the value',
+      (tester) async {
+        final repo = FakeUserProfileRepository();
+        await tester.pumpWidget(hostScreenPushed(
           overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
           child: const ProfileScreen(),
-        ),
-      );
-      await tester.pumpAndSettle();
+        ));
+        await tester.pumpAndSettle();
 
-      // Scroll to the bottom to ensure the instructions field is visible.
-      await tester.drag(find.byType(Scrollable).first, const Offset(0, -600));
-      await tester.pumpAndSettle();
+        // Scroll to the bottom to ensure the instructions field is visible.
+        await tester.drag(find.byType(Scrollable).first, const Offset(0, -600));
+        await tester.pumpAndSettle();
 
-      // The instructions field is the last TextField.
-      final instructionsField = find.byType(TextField).last;
-      await tester.ensureVisible(instructionsField);
-      await tester.pump();
-      await tester.enterText(instructionsField, 'Call my husband');
-      await tester.pump();
+        // The instructions field is the last TextField.
+        final instructionsField = find.byType(TextField).last;
+        await tester.ensureVisible(instructionsField);
+        await tester.pump();
+        await tester.enterText(instructionsField, 'Call my husband');
+        await tester.pump();
 
-      // Save.
-      await tester.tap(find.byIcon(Icons.check));
-      await tester.pumpAndSettle();
+        // Save.
+        await tester.tap(find.byIcon(Icons.check));
+        await tester.pumpAndSettle();
 
-      check(repo.stored!.emergencyInstructions).equals('Call my husband');
-    });
+        check(repo.stored!.emergencyInstructions).equals('Call my husband');
+      },
+    );
   });
 
   group('ProfileScreen line 164 — medications _ListEditor onChanged', () {
@@ -60,12 +59,10 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeUserProfileRepository();
-        await tester.pumpWidget(
-          hostScreenPushed(
-            overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
-            child: const ProfileScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ));
         await tester.pumpAndSettle();
 
         // Find the "Medications" label text, then find the TextField that
@@ -114,12 +111,10 @@ void main() {
         addTearDown(() => tester.binding.setSurfaceSize(null));
 
         final repo = FakeUserProfileRepository();
-        await tester.pumpWidget(
-          hostScreenPushed(
-            overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
-            child: const ProfileScreen(),
-          ),
-        );
+        await tester.pumpWidget(hostScreenPushed(
+          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
+          child: const ProfileScreen(),
+        ));
         await tester.pumpAndSettle();
 
         final textFields = find.byType(TextField);

@@ -50,18 +50,13 @@ class _FakeModesRepository extends ModesRepository {
 /// No-op audio so [FakeCallScreen] doesn't reach real platform code.
 class _NoopAudio implements AudioServiceProtocol {
   @override
-  Future<void> playAlarm({
-    bool maxVolume = true,
-    bool isSimulation = false,
-    Duration? gradualVolumeRamp,
-  }) async {}
+  Future<void> playAlarm({bool maxVolume = true, bool isSimulation = false, Duration? gradualVolumeRamp})
+      async {}
   @override
   Future<void> stopAlarm() async {}
   @override
-  Future<void> playRingtone({
-    String? assetPath,
-    bool isSimulation = false,
-  }) async {}
+  Future<void> playRingtone({String? assetPath, bool isSimulation = false})
+      async {}
   @override
   Future<void> stopRingtone() async {}
   @override
@@ -79,8 +74,7 @@ class _NoopTts implements FlutterTts {
   dynamic noSuchMethod(Invocation i) async => 1;
 }
 
-FakeCallTtsFactory _noopTtsFactory() =>
-    () => _NoopTts();
+FakeCallTtsFactory _noopTtsFactory() => () => _NoopTts();
 
 ChainStep _step({
   required String id,
@@ -89,27 +83,35 @@ ChainStep _step({
   int wait = 1,
   int duration = 30,
   int grace = 5,
-}) => ChainStep(
-  id: id,
-  type: type,
-  order: 0,
-  durationSeconds: duration,
-  gracePeriodSeconds: grace,
-  waitSeconds: wait,
-  retryCount: 0,
-  randomize: 0,
-  config: config,
-);
+}) =>
+    ChainStep(
+      id: id,
+      type: type,
+      order: 0,
+      durationSeconds: duration,
+      gracePeriodSeconds: grace,
+      waitSeconds: wait,
+      retryCount: 0,
+      randomize: 0,
+      config: config,
+    );
 
-SessionMode _mode({required String id, required List<ChainStep> steps}) =>
-    SessionMode(id: id, name: 'Test mode $id', chainSteps: steps);
+SessionMode _mode({
+  required String id,
+  required List<ChainStep> steps,
+}) =>
+    SessionMode(
+      id: id,
+      name: 'Test mode $id',
+      chainSteps: steps,
+    );
 
 List<Override> _commonOverrides(_FakeModesRepository repo) => [
-  modesRepositoryProvider.overrideWithValue(repo),
-  audioServiceProvider.overrideWithValue(_NoopAudio()),
-  simulationAudioProvider.overrideWithValue(_NoopAudio()),
-  fakeCallTtsFactoryProvider.overrideWithValue(_noopTtsFactory()),
-];
+      modesRepositoryProvider.overrideWithValue(repo),
+      audioServiceProvider.overrideWithValue(_NoopAudio()),
+      simulationAudioProvider.overrideWithValue(_NoopAudio()),
+      fakeCallTtsFactoryProvider.overrideWithValue(_noopTtsFactory()),
+    ];
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -133,41 +135,42 @@ void main() {
     },
   );
 
-  testWidgets('StepPreviewScreen shows mode-not-found when modeId is unknown', (
-    tester,
-  ) async {
-    final repo = _FakeModesRepository(const []);
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: _commonOverrides(repo),
-        initialQuery: 'stepId=s1&modeId=missing',
-        child: const StepPreviewScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(find.text('Mode not found.').evaluate().length).equals(1);
-  });
+  testWidgets(
+    'StepPreviewScreen shows mode-not-found when modeId is unknown',
+    (tester) async {
+      final repo = _FakeModesRepository(const []);
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: _commonOverrides(repo),
+          initialQuery: 'stepId=s1&modeId=missing',
+          child: const StepPreviewScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      check(find.text('Mode not found.').evaluate().length).equals(1);
+    },
+  );
 
-  testWidgets('StepPreviewScreen shows step-not-found when stepId is unknown', (
-    tester,
-  ) async {
-    final mode = _mode(
-      id: 'm1',
-      steps: [_step(id: 's1', type: ChainStepType.holdButton)],
-    );
-    final repo = _FakeModesRepository([mode]);
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: _commonOverrides(repo),
-        initialQuery: 'stepId=missing&modeId=m1',
-        child: const StepPreviewScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    check(
-      find.text('Step not found in this mode.').evaluate().length,
-    ).equals(1);
-  });
+  testWidgets(
+    'StepPreviewScreen shows step-not-found when stepId is unknown',
+    (tester) async {
+      final mode = _mode(
+        id: 'm1',
+        steps: [_step(id: 's1', type: ChainStepType.holdButton)],
+      );
+      final repo = _FakeModesRepository([mode]);
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: _commonOverrides(repo),
+          initialQuery: 'stepId=missing&modeId=m1',
+          child: const StepPreviewScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+      check(find.text('Step not found in this mode.').evaluate().length)
+          .equals(1);
+    },
+  );
 
   testWidgets(
     'StepPreviewScreen renders HoldToTriggerButton for holdButton steps',
@@ -189,31 +192,32 @@ void main() {
     },
   );
 
-  testWidgets('StepPreviewScreen pushes FakeCallScreen for fakeCall steps', (
-    tester,
-  ) async {
-    final mode = _mode(
-      id: 'm1',
-      steps: [
-        _step(
-          id: 's1',
-          type: ChainStepType.fakeCall,
-          config: const FakeCallConfig(callerName: 'Angela'),
+  testWidgets(
+    'StepPreviewScreen pushes FakeCallScreen for fakeCall steps',
+    (tester) async {
+      final mode = _mode(
+        id: 'm1',
+        steps: [
+          _step(
+            id: 's1',
+            type: ChainStepType.fakeCall,
+            config: const FakeCallConfig(callerName: 'Angela'),
+          ),
+        ],
+      );
+      final repo = _FakeModesRepository([mode]);
+      await tester.pumpWidget(
+        hostScreenPushed(
+          overrides: _commonOverrides(repo),
+          initialQuery: 'stepId=s1&modeId=m1',
+          child: const StepPreviewScreen(),
         ),
-      ],
-    );
-    final repo = _FakeModesRepository([mode]);
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: _commonOverrides(repo),
-        initialQuery: 'stepId=s1&modeId=m1',
-        child: const StepPreviewScreen(),
-      ),
-    );
-    await tester.pumpAndSettle();
-    // Auto-pushes FakeCallScreen on first frame.
-    check(find.byType(FakeCallScreen).evaluate().length).equals(1);
-  });
+      );
+      await tester.pumpAndSettle();
+      // Auto-pushes FakeCallScreen on first frame.
+      check(find.byType(FakeCallScreen).evaluate().length).equals(1);
+    },
+  );
 
   testWidgets(
     'StepPreviewScreen renders the simulation card for smsContact steps',

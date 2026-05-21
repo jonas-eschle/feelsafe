@@ -48,66 +48,69 @@ class _ColoredLogoState extends State<_ColoredLogo> {
 
 void main() {
   group('GuardianAngelaLogo — shouldRepaint (lines 91–93)', () {
-    testWidgets('rebuilding with different colors triggers shouldRepaint', (
-      tester,
-    ) async {
-      final scheme1 = ColorScheme.fromSeed(seedColor: Colors.blue);
-      final scheme2 = ColorScheme.fromSeed(seedColor: Colors.red);
+    testWidgets(
+      'rebuilding with different colors triggers shouldRepaint',
+      (tester) async {
+        final scheme1 = ColorScheme.fromSeed(seedColor: Colors.blue);
+        final scheme2 = ColorScheme.fromSeed(seedColor: Colors.red);
 
-      final notifier = ValueNotifier<ColorScheme>(scheme1);
+        final notifier = ValueNotifier<ColorScheme>(scheme1);
 
-      await tester.pumpWidget(_ColoredLogo(notifier: notifier));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_ColoredLogo(notifier: notifier));
+        await tester.pumpAndSettle();
 
-      // Verify logo is rendered.
-      check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
+        // Verify logo is rendered.
+        check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
 
-      // Swap to a different color scheme — the framework will call
-      // shouldRepaint with the old and new _LogoPainter instances.
-      notifier.value = scheme2;
-      await tester.pumpAndSettle();
+        // Swap to a different color scheme — the framework will call
+        // shouldRepaint with the old and new _LogoPainter instances.
+        notifier.value = scheme2;
+        await tester.pumpAndSettle();
 
-      // Logo must still be present after the repaint cycle.
-      check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
+        // Logo must still be present after the repaint cycle.
+        check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
 
-      notifier.dispose();
-    });
+        notifier.dispose();
+      },
+    );
 
-    testWidgets('rebuilding with identical colors skips repaint', (
-      tester,
-    ) async {
-      final scheme = ColorScheme.fromSeed(seedColor: Colors.green);
-      final notifier = ValueNotifier<ColorScheme>(scheme);
+    testWidgets(
+      'rebuilding with identical colors skips repaint',
+      (tester) async {
+        final scheme = ColorScheme.fromSeed(seedColor: Colors.green);
+        final notifier = ValueNotifier<ColorScheme>(scheme);
 
-      await tester.pumpWidget(_ColoredLogo(notifier: notifier));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_ColoredLogo(notifier: notifier));
+        await tester.pumpAndSettle();
 
-      // Trigger a rebuild with the same scheme — shouldRepaint returns
-      // false and paint is skipped, but the widget must still render.
-      notifier.value = ColorScheme.fromSeed(seedColor: Colors.green);
-      await tester.pumpAndSettle();
+        // Trigger a rebuild with the same scheme — shouldRepaint returns
+        // false and paint is skipped, but the widget must still render.
+        notifier.value = ColorScheme.fromSeed(seedColor: Colors.green);
+        await tester.pumpAndSettle();
 
-      check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
+        check(find.byType(GuardianAngelaLogo).evaluate()).isNotEmpty();
 
-      notifier.dispose();
-    });
+        notifier.dispose();
+      },
+    );
 
-    testWidgets('rebuilding with same scheme instance skips repaint', (
-      tester,
-    ) async {
-      final scheme = ColorScheme.fromSeed(seedColor: Colors.purple);
-      final notifier = ValueNotifier<ColorScheme>(scheme);
+    testWidgets(
+      'rebuilding with same scheme instance skips repaint',
+      (tester) async {
+        final scheme = ColorScheme.fromSeed(seedColor: Colors.purple);
+        final notifier = ValueNotifier<ColorScheme>(scheme);
 
-      await tester.pumpWidget(_ColoredLogo(notifier: notifier));
-      await tester.pumpAndSettle();
+        await tester.pumpWidget(_ColoredLogo(notifier: notifier));
+        await tester.pumpAndSettle();
 
-      // Same instance — shouldRepaint must return false.
-      notifier.value = scheme;
-      await tester.pumpAndSettle();
+        // Same instance — shouldRepaint must return false.
+        notifier.value = scheme;
+        await tester.pumpAndSettle();
 
-      check(find.byType(CustomPaint).evaluate()).isNotEmpty();
+        check(find.byType(CustomPaint).evaluate()).isNotEmpty();
 
-      notifier.dispose();
-    });
+        notifier.dispose();
+      },
+    );
   });
 }

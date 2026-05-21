@@ -87,9 +87,8 @@ class _FakeGeofence implements GeofenceServiceProtocol {
 }
 
 class _FakeBatteryMonitor implements BatteryMonitorServiceProtocol {
-  final StreamController<int> _ctrl = StreamController<int>.broadcast(
-    sync: true,
-  );
+  final StreamController<int> _ctrl =
+      StreamController<int>.broadcast(sync: true);
   bool _active = false;
 
   @override
@@ -151,10 +150,7 @@ void main() {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
         final bm = _FakeBatteryMonitor();
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
         var disarmCount = 0;
         final mgr = TriggerManager(
           engine: e,
@@ -188,10 +184,7 @@ void main() {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
         final bm = _FakeBatteryMonitor();
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
         final mgr = TriggerManager(
           engine: e,
           mode: _timerMode(5),
@@ -222,10 +215,7 @@ void main() {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
         final bm = _FakeBatteryMonitor();
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
         var disarmCount = 0;
         final mgr = TriggerManager(
           engine: e,
@@ -251,15 +241,13 @@ void main() {
       });
     });
 
-    test('timer cooldown suppresses a double-fire from duplicate triggers', () {
+    test('timer cooldown suppresses a double-fire from duplicate triggers',
+        () {
       fakeAsync((async) {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
         final bm = _FakeBatteryMonitor();
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
         var disarmCount = 0;
         // Two identical timer triggers — both fire at t=5 s.
         final mode = SessionMode(
@@ -301,7 +289,8 @@ void main() {
   });
 
   group('TriggerManager — panic with empty steps fallback', () {
-    test('panic with no steps resolver and empty engine.steps is a no-op', () {
+    test('panic with no steps resolver and empty engine.steps is a no-op',
+        () {
       fakeAsync((async) {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
@@ -338,10 +327,7 @@ void main() {
         final hw = _FakeHardwareButton();
         final gf = _FakeGeofence();
         final bm = _FakeBatteryMonitor();
-        final e = SessionEngine(
-          chainSteps: [holdStep()],
-          random: FixedRandom(),
-        );
+        final e = SessionEngine(chainSteps: [holdStep()], random: FixedRandom());
         final mgr = TriggerManager(
           engine: e,
           mode: _timerMode(30),

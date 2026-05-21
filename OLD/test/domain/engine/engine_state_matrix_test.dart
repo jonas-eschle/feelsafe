@@ -70,19 +70,17 @@ void main() {
       });
     });
 
-    test(
-      'holdButton remaining is zero in holdWait (engine does not schedule)',
-      () {
-        fakeAsync((async) {
-          final e = _engine([holdStep(durationSeconds: 30)]);
-          e.start();
-          async.flushMicrotasks();
-          final s = e.state as EngineRunning;
-          check(s.remaining).equals(Duration.zero);
-          e.dispose();
-        });
-      },
-    );
+    test('holdButton remaining is zero in holdWait (engine does not schedule)',
+        () {
+      fakeAsync((async) {
+        final e = _engine([holdStep(durationSeconds: 30)]);
+        e.start();
+        async.flushMicrotasks();
+        final s = e.state as EngineRunning;
+        check(s.remaining).equals(Duration.zero);
+        e.dispose();
+      });
+    });
 
     for (final type in _standardTypes) {
       test('${type.name} with zero wait enters duration immediately', () {
@@ -144,9 +142,7 @@ void main() {
           async.elapse(const Duration(seconds: 15)); // 10 dur + 5 grace
           async.flushMicrotasks();
           check(e.state).isA<EngineEnded>();
-          check(
-            (e.state as EngineEnded).reason,
-          ).equals(EndReason.chainExhausted);
+          check((e.state as EngineEnded).reason).equals(EndReason.chainExhausted);
           e.dispose();
         });
       });
@@ -219,9 +215,7 @@ void main() {
 
     test('grace remaining equals gracePeriodSeconds', () {
       fakeAsync((async) {
-        final e = _engine([
-          smsStep(durationSeconds: 5, gracePeriodSeconds: 12),
-        ]);
+        final e = _engine([smsStep(durationSeconds: 5, gracePeriodSeconds: 12)]);
         e.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 5));
@@ -251,9 +245,7 @@ void main() {
 
     test('missCount remains 0 through duration phase', () {
       fakeAsync((async) {
-        final e = _engine([
-          smsStep(durationSeconds: 10, gracePeriodSeconds: 5),
-        ]);
+        final e = _engine([smsStep(durationSeconds: 10, gracePeriodSeconds: 5)]);
         e.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 10));
@@ -329,9 +321,7 @@ void main() {
         e.start();
         async.elapse(const Duration(seconds: 2));
         async.flushMicrotasks();
-        final adv = evs.firstWhere(
-          (ev) => ev.event == ChainEvent.stepAdvancing,
-        );
+        final adv = evs.firstWhere((ev) => ev.event == ChainEvent.stepAdvancing);
         check(adv.metadata.containsKey('nextStepId')).isTrue();
         check(adv.metadata['nextStepId']).equals(step2.id);
         e.dispose();
@@ -346,9 +336,7 @@ void main() {
         e.start();
         async.elapse(const Duration(seconds: 2));
         async.flushMicrotasks();
-        final adv = evs.firstWhere(
-          (ev) => ev.event == ChainEvent.stepAdvancing,
-        );
+        final adv = evs.firstWhere((ev) => ev.event == ChainEvent.stepAdvancing);
         // No nextStep on last step.
         check(adv.metadata.containsKey('nextStepId')).isFalse();
         e.dispose();
@@ -425,7 +413,11 @@ void main() {
         final e = _engine([
           holdStep(durationSeconds: 5, gracePeriodSeconds: 2),
           smsStep(order: 1, durationSeconds: 2, gracePeriodSeconds: 0),
-          fakeCallStep(order: 2, durationSeconds: 2, gracePeriodSeconds: 0),
+          fakeCallStep(
+            order: 2,
+            durationSeconds: 2,
+            gracePeriodSeconds: 0,
+          ),
         ]);
         final evs = <ChainEventData>[];
         e.events.listen(evs.add);
@@ -478,7 +470,9 @@ void main() {
 
     test('repeatMissed not emitted when retryCount=0', () {
       fakeAsync((async) {
-        final e = _engine([smsStep(durationSeconds: 1, gracePeriodSeconds: 1)]);
+        final e = _engine([
+          smsStep(durationSeconds: 1, gracePeriodSeconds: 1),
+        ]);
         var missCount = 0;
         e.events.listen((ev) {
           if (ev.event == ChainEvent.repeatMissed) missCount++;

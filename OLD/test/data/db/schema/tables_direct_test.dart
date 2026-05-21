@@ -40,7 +40,8 @@ bool _executesAndThrows(void Function() access) {
 
 void main() {
   group('schema/tables.dart declarative coverage', () {
-    test('ModesTable — id + jsonPayload getters + primaryKey + tableName', () {
+    test('ModesTable — id + jsonPayload getters + primaryKey + tableName',
+        () {
       final t = ModesTable();
       check(_executesAndThrows(() => t.id)).isTrue();
       check(_executesAndThrows(() => t.jsonPayload)).isTrue();
@@ -67,7 +68,8 @@ void main() {
       check(t.tableName).equals('templates');
     });
 
-    test('SessionLogsTable — id + jsonPayload + startedAt + primaryKey', () {
+    test('SessionLogsTable — id + jsonPayload + startedAt + primaryKey',
+        () {
       final t = SessionLogsTable();
       check(_executesAndThrows(() => t.id)).isTrue();
       check(_executesAndThrows(() => t.jsonPayload)).isTrue();

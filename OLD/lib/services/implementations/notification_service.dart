@@ -22,7 +22,8 @@ import 'package:guardianangela/services/protocols/notification_service_protocol.
 
 /// Factory that builds a fresh [FlutterLocalNotificationsPlugin].
 /// Injected by tests to substitute a mock.
-typedef NotificationPluginFactory = FlutterLocalNotificationsPlugin Function();
+typedef NotificationPluginFactory = FlutterLocalNotificationsPlugin
+    Function();
 
 /// Real platform-backed implementation of
 /// [NotificationServiceProtocol].
@@ -38,8 +39,8 @@ final class NotificationService implements NotificationServiceProtocol {
   NotificationService({
     PlatformInfo platform = const PlatformInfo(),
     NotificationPluginFactory? pluginFactory,
-  }) : _platform = platform,
-       _plugin = (pluginFactory ?? FlutterLocalNotificationsPlugin.new)();
+  })  : _platform = platform,
+        _plugin = (pluginFactory ?? FlutterLocalNotificationsPlugin.new)();
 
   final PlatformInfo _platform;
 
@@ -54,7 +55,8 @@ final class NotificationService implements NotificationServiceProtocol {
   static const String _disarmTriggerEndActionId = 'disarmTriggerEnd';
 
   /// Disarm-trigger continue action id (forwarded on actionTaps).
-  static const String _disarmTriggerContinueActionId = 'disarmTriggerContinue';
+  static const String _disarmTriggerContinueActionId =
+      'disarmTriggerContinue';
 
   /// Reminder-channel id.
   static const String _reminderChannelId = 'ga_reminders';
@@ -91,7 +93,9 @@ final class NotificationService implements NotificationServiceProtocol {
     // Linux desktop is non-shipping but we want `flutter run -d linux`
     // to boot for development. The default-icon name is required by
     // flutter_local_notifications even when it is never invoked.
-    const linuxInit = LinuxInitializationSettings(defaultActionName: 'Open');
+    const linuxInit = LinuxInitializationSettings(
+      defaultActionName: 'Open',
+    );
     const settings = InitializationSettings(
       android: androidInit,
       iOS: iosInit,

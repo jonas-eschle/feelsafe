@@ -28,14 +28,14 @@ class _FakeInitSettings extends Fake implements InitializationSettings {}
 class _FakeNotificationDetails extends Fake implements NotificationDetails {}
 
 ReminderTemplate _template() => const ReminderTemplate(
-  id: 't1',
-  name: 'ping',
-  title: 'Hello',
-  body: 'body text',
-  confirmationType: ConfirmationType.tapButton,
-  displayStyle: ReminderDisplayStyle.fullScreen,
-  isGlobal: true,
-);
+      id: 't1',
+      name: 'ping',
+      title: 'Hello',
+      body: 'body text',
+      confirmationType: ConfirmationType.tapButton,
+      displayStyle: ReminderDisplayStyle.fullScreen,
+      isGlobal: true,
+    );
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -50,9 +50,8 @@ void main() {
     when(
       () => p.initialize(
         settings: any(named: 'settings'),
-        onDidReceiveNotificationResponse: any(
-          named: 'onDidReceiveNotificationResponse',
-        ),
+        onDidReceiveNotificationResponse:
+            any(named: 'onDidReceiveNotificationResponse'),
       ),
     ).thenAnswer((_) async => true);
     when(
@@ -63,13 +62,13 @@ void main() {
         notificationDetails: any(named: 'notificationDetails'),
       ),
     ).thenAnswer((_) async {});
-    when(() => p.cancel(id: any(named: 'id'))).thenAnswer((_) async {});
+    when(
+      () => p.cancel(id: any(named: 'id')),
+    ).thenAnswer((_) async {});
     when(p.cancelAll).thenAnswer((_) async {});
     when(
-      () => p
-          .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin
-          >(),
+      () => p.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>(),
     ).thenReturn(null);
     return p;
   }
@@ -77,7 +76,11 @@ void main() {
   NotificationService build({
     required _MockPlugin plugin,
     PlatformInfo platform = const FakePlatformInfo(),
-  }) => NotificationService(platform: platform, pluginFactory: () => plugin);
+  }) =>
+      NotificationService(
+        platform: platform,
+        pluginFactory: () => plugin,
+      );
 
   group('NotificationService.init', () {
     test('initializes the plugin exactly once', () async {
@@ -88,70 +91,62 @@ void main() {
       verify(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse: any(
-            named: 'onDidReceiveNotificationResponse',
-          ),
+          onDidReceiveNotificationResponse:
+              any(named: 'onDidReceiveNotificationResponse'),
         ),
       ).called(1);
       await s.dispose();
     });
 
-    test('skips Android channel registration on non-Android host', () async {
+    test('skips Android channel registration on non-Android host',
+        () async {
       final plugin = makePlugin();
       final s = build(plugin: plugin);
       await s.init();
       verifyNever(
-        () => plugin
-            .resolvePlatformSpecificImplementation<
-              AndroidFlutterLocalNotificationsPlugin
-            >(),
+        () => plugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>(),
       );
       await s.dispose();
     });
 
-    test(
-      'resolves the Android plugin on Android (null impl still ok)',
-      () async {
-        final plugin = makePlugin();
-        final s = build(
-          plugin: plugin,
-          platform: const FakePlatformInfo(isAndroid: true),
-        );
-        await s.init();
-        verify(
-          () => plugin
-              .resolvePlatformSpecificImplementation<
-                AndroidFlutterLocalNotificationsPlugin
-              >(),
-        ).called(1);
-        await s.dispose();
-      },
-    );
+    test('resolves the Android plugin on Android (null impl still ok)',
+        () async {
+      final plugin = makePlugin();
+      final s = build(
+        plugin: plugin,
+        platform: const FakePlatformInfo(isAndroid: true),
+      );
+      await s.init();
+      verify(
+        () => plugin.resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin>(),
+      ).called(1);
+      await s.dispose();
+    });
   });
 
   group('NotificationService.showSessionNotification', () {
-    test(
-      'isSimulation=true routes to showToast and skips the session id',
-      () async {
-        final plugin = makePlugin();
-        final s = build(plugin: plugin);
-        await s.showSessionNotification(
-          title: 'Title',
-          body: 'Body',
-          isSimulation: true,
-        );
-        // Should not have shown anything against id=1 (session id).
-        verifyNever(
-          () => plugin.show(
-            id: 1,
-            title: any(named: 'title'),
-            body: any(named: 'body'),
-            notificationDetails: any(named: 'notificationDetails'),
-          ),
-        );
-        await s.dispose();
-      },
-    );
+    test('isSimulation=true routes to showToast and skips the session id',
+        () async {
+      final plugin = makePlugin();
+      final s = build(plugin: plugin);
+      await s.showSessionNotification(
+        title: 'Title',
+        body: 'Body',
+        isSimulation: true,
+      );
+      // Should not have shown anything against id=1 (session id).
+      verifyNever(
+        () => plugin.show(
+          id: 1,
+          title: any(named: 'title'),
+          body: any(named: 'body'),
+          notificationDetails: any(named: 'notificationDetails'),
+        ),
+      );
+      await s.dispose();
+    });
 
     test('real branch shows id=1 with the given title/body', () async {
       final plugin = makePlugin();
@@ -175,9 +170,8 @@ void main() {
       verify(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse: any(
-            named: 'onDidReceiveNotificationResponse',
-          ),
+          onDidReceiveNotificationResponse:
+              any(named: 'onDidReceiveNotificationResponse'),
         ),
       ).called(1);
       await s.dispose();
@@ -200,10 +194,14 @@ void main() {
       await s.dispose();
     });
 
-    test('isSimulation=true skips the disguised-reminder show call', () async {
+    test('isSimulation=true skips the disguised-reminder show call',
+        () async {
       final plugin = makePlugin();
       final s = build(plugin: plugin);
-      await s.showDisguisedReminder(template: _template(), isSimulation: true);
+      await s.showDisguisedReminder(
+        template: _template(),
+        isSimulation: true,
+      );
       // Toast path goes through plugin.show too, but with the toast
       // title (the message string). The disguised path used the
       // template.title = 'Hello'. A toast shows 'Hello — body text'.
@@ -220,7 +218,8 @@ void main() {
   });
 
   group('NotificationService.scheduleNotification', () {
-    test('isSimulation=true returns an id without queueing a timer', () async {
+    test('isSimulation=true returns an id without queueing a timer',
+        () async {
       final plugin = makePlugin();
       final s = build(plugin: plugin);
       final id = await s.scheduleNotification(
@@ -245,13 +244,11 @@ void main() {
       fakeAsync((async) {
         final plugin = makePlugin();
         final s = build(plugin: plugin);
-        unawaited(
-          s.scheduleNotification(
-            title: 'later',
-            body: 'body',
-            delay: const Duration(seconds: 5),
-          ),
-        );
+        unawaited(s.scheduleNotification(
+          title: 'later',
+          body: 'body',
+          delay: const Duration(seconds: 5),
+        ));
         async.elapse(const Duration(seconds: 1));
         verifyNever(
           () => plugin.show(
@@ -275,20 +272,19 @@ void main() {
       });
     });
 
-    test('cancelNotification before fire cancels the Timer and the id', () {
+    test('cancelNotification before fire cancels the Timer and the id',
+        () {
       fakeAsync((async) {
         final plugin = makePlugin();
         final s = build(plugin: plugin);
         late int id;
-        unawaited(
-          s
-              .scheduleNotification(
-                title: 'x',
-                body: 'y',
-                delay: const Duration(seconds: 10),
-              )
-              .then((v) => id = v),
-        );
+        unawaited(s
+            .scheduleNotification(
+              title: 'x',
+              body: 'y',
+              delay: const Duration(seconds: 10),
+            )
+            .then((v) => id = v));
         async.flushMicrotasks();
         unawaited(s.cancelNotification(id));
         async.elapse(const Duration(seconds: 20));
@@ -318,7 +314,8 @@ void main() {
   });
 
   group('NotificationService.cancelAll', () {
-    test('cancels the timers map and delegates to plugin.cancelAll', () async {
+    test('cancels the timers map and delegates to plugin.cancelAll',
+        () async {
       final plugin = makePlugin();
       final s = build(plugin: plugin);
       // Schedule one so there's a timer to cancel too.
@@ -350,9 +347,8 @@ void main() {
         ).called(1);
         // Auto-dismiss after 3s.
         async.elapse(const Duration(seconds: 3));
-        verify(
-          () => plugin.cancel(id: any(named: 'id')),
-        ).called(greaterThanOrEqualTo(1));
+        verify(() => plugin.cancel(id: any(named: 'id')))
+            .called(greaterThanOrEqualTo(1));
         unawaited(s.dispose());
         async.flushMicrotasks();
       });
@@ -360,65 +356,61 @@ void main() {
   });
 
   group('NotificationService.actionTaps', () {
-    test('onResponse callback forwards payload to actionTaps stream', () async {
+    test('onResponse callback forwards payload to actionTaps stream',
+        () async {
       final plugin = makePlugin();
       DidReceiveNotificationResponseCallback? captured;
       when(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse: any(
-            named: 'onDidReceiveNotificationResponse',
-          ),
+          onDidReceiveNotificationResponse:
+              any(named: 'onDidReceiveNotificationResponse'),
         ),
       ).thenAnswer((invocation) async {
-        captured =
-            invocation.namedArguments[const Symbol(
-                  'onDidReceiveNotificationResponse',
-                )]
-                as DidReceiveNotificationResponseCallback?;
+        captured = invocation.namedArguments[
+            const Symbol('onDidReceiveNotificationResponse')] as
+            DidReceiveNotificationResponseCallback?;
         return true;
       });
       final s = build(plugin: plugin);
       await s.init();
       final taps = <String>[];
       final sub = s.actionTaps.listen(taps.add);
-      captured!(
-        NotificationResponse(
-          notificationResponseType:
-              NotificationResponseType.selectedNotification,
-          payload: 'tap-42',
-        ),
-      );
+      captured!(NotificationResponse(
+        notificationResponseType:
+            NotificationResponseType.selectedNotification,
+        payload: 'tap-42',
+      ));
       await Future<void>.delayed(Duration.zero);
       check(taps).contains('tap-42');
       // Empty / null payload drops silently.
-      captured!(
-        NotificationResponse(
-          notificationResponseType:
-              NotificationResponseType.selectedNotification,
-          payload: '',
-        ),
-      );
-      captured!(
-        NotificationResponse(
-          notificationResponseType:
-              NotificationResponseType.selectedNotification,
-        ),
-      );
+      captured!(NotificationResponse(
+        notificationResponseType:
+            NotificationResponseType.selectedNotification,
+        payload: '',
+      ));
+      captured!(NotificationResponse(
+        notificationResponseType:
+            NotificationResponseType.selectedNotification,
+      ));
       await Future<void>.delayed(Duration.zero);
       check(taps).deepEquals(['tap-42']);
       await sub.cancel();
       await s.dispose();
     });
 
-    test('dispose closes the actionTaps stream (idempotent)', () async {
+    test('dispose closes the actionTaps stream (idempotent)',
+        () async {
       final plugin = makePlugin();
       final s = build(plugin: plugin);
       await s.dispose();
       await s.dispose();
       // Stream is closed — listen returns a done-closed subscription.
       var completed = false;
-      s.actionTaps.listen((_) {}, onDone: () => completed = true);
+      s.actionTaps.listen(
+        (_) {},
+        onDone: () => completed = true,
+      );
       await Future<void>.delayed(Duration.zero);
       check(completed).isTrue();
     });

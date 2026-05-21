@@ -197,12 +197,10 @@ void main() {
     });
 
     test('RepeatPressTrigger equal values equal', () {
-      check(
-        const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400),
-      ).equals(const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400));
-      check(
-        const RepeatPressTrigger(pressCount: 3).hashCode,
-      ).equals(const RepeatPressTrigger(pressCount: 3).hashCode);
+      check(const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400))
+          .equals(const RepeatPressTrigger(pressCount: 3, pressWindowMs: 400));
+      check(const RepeatPressTrigger(pressCount: 3).hashCode)
+          .equals(const RepeatPressTrigger(pressCount: 3).hashCode);
     });
 
     test('RepeatPressTrigger differ pressCount unequal', () {
@@ -239,12 +237,10 @@ void main() {
     });
 
     test('LongPressTrigger equal values equal', () {
-      check(
-        const LongPressTrigger(durationSeconds: 3.0),
-      ).equals(const LongPressTrigger(durationSeconds: 3.0));
-      check(
-        const LongPressTrigger(durationSeconds: 3.0).hashCode,
-      ).equals(const LongPressTrigger(durationSeconds: 3.0).hashCode);
+      check(const LongPressTrigger(durationSeconds: 3.0))
+          .equals(const LongPressTrigger(durationSeconds: 3.0));
+      check(const LongPressTrigger(durationSeconds: 3.0).hashCode)
+          .equals(const LongPressTrigger(durationSeconds: 3.0).hashCode);
     });
 
     test('LongPressTrigger differ duration unequal', () {
@@ -402,15 +398,13 @@ void main() {
     });
 
     test('TimerDisarmTrigger hashCode stable', () {
-      check(
-        const TimerDisarmTrigger(durationSeconds: 5).hashCode,
-      ).equals(const TimerDisarmTrigger(durationSeconds: 5).hashCode);
+      check(const TimerDisarmTrigger(durationSeconds: 5).hashCode)
+          .equals(const TimerDisarmTrigger(durationSeconds: 5).hashCode);
     });
 
     test('TimerDisarmTrigger toString', () {
-      check(
-        const TimerDisarmTrigger(durationSeconds: 30).toString(),
-      ).contains('30');
+      check(const TimerDisarmTrigger(durationSeconds: 30).toString())
+          .contains('30');
     });
 
     // Q9: WrongPinThresholdDisarmTrigger was deleted. Threshold

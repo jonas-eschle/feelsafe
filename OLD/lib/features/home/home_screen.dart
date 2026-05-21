@@ -34,11 +34,8 @@ class HomeScreen extends ConsumerWidget {
     // when stealth is enabled, render the fake name instead of the
     // "Guardian Angela" branded title, with the fake-icon preset
     // surfaced as a subtitle so the disguise reads coherently.
-    final stealth = ref
-        .watch(settingsControllerProvider)
-        .value
-        ?.defaults
-        .stealth;
+    final stealth =
+        ref.watch(settingsControllerProvider).value?.defaults.stealth;
     final useStealth = stealth != null && stealth.enabled;
     final title = useStealth ? stealth.fakeName : l.homeTitle;
     final subtitle = useStealth ? stealth.fakeIcon.name : null;
@@ -51,7 +48,10 @@ class HomeScreen extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(title),
-                  Text(subtitle, style: Theme.of(context).textTheme.labelSmall),
+                  Text(
+                    subtitle,
+                    style: Theme.of(context).textTheme.labelSmall,
+                  ),
                 ],
               ),
         actions: [
@@ -130,7 +130,8 @@ class _HomeBody extends ConsumerWidget {
                         ),
                         const SizedBox(width: 12),
                         Expanded(child: Text(m.name)),
-                        if (mode?.id == m.id) const Icon(Icons.check_circle),
+                        if (mode?.id == m.id)
+                          const Icon(Icons.check_circle),
                       ],
                     ),
                   ),
@@ -154,12 +155,12 @@ class _HomeBody extends ConsumerWidget {
                     onPressed: (mode == null || active != null)
                         ? null
                         : () => _onStart(
-                            context: context,
-                            ref: ref,
-                            mode: mode,
-                            isSimulation: false,
-                            l: l,
-                          ),
+                              context: context,
+                              ref: ref,
+                              mode: mode,
+                              isSimulation: false,
+                              l: l,
+                            ),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -169,12 +170,12 @@ class _HomeBody extends ConsumerWidget {
                   onPressed: (mode == null || active != null)
                       ? null
                       : () => _onStart(
-                          context: context,
-                          ref: ref,
-                          mode: mode,
-                          isSimulation: true,
-                          l: l,
-                        ),
+                            context: context,
+                            ref: ref,
+                            mode: mode,
+                            isSimulation: true,
+                            l: l,
+                          ),
                 ),
               ],
             ),

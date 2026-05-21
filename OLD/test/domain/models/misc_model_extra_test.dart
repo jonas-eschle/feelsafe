@@ -53,7 +53,8 @@ void main() {
   });
 
   group('ModeOverrides.copyWith null-fallback path', () {
-    test('copyWith without providing distressModeId keeps existing value', () {
+    test('copyWith without providing distressModeId keeps existing value',
+        () {
       const original = ModeOverrides(distressModeId: 'existing-id');
       final copied = original.copyWith();
       // The `?? this.distressModeId` branch must be exercised.
@@ -86,7 +87,8 @@ void main() {
     // untyped `Map<dynamic, dynamic>` to `Map<String, Object?>`. This
     // is reached when the `firedStepDescriptions` JSON entry holds an
     // untyped map (e.g. from an older JSON store or a different decoder).
-    test('fromJson handles untyped-key args map in firedStepDescriptions', () {
+    test('fromJson handles untyped-key args map in firedStepDescriptions',
+        () {
       // Build a Map<dynamic, dynamic> to simulate untyped JSON.
       final untypedArgs = <dynamic, dynamic>{'flash': true, 'volume': 80};
 
@@ -107,7 +109,8 @@ void main() {
       final ws = WalkSession.fromJson(sessionJson);
       // The SimulationDescription must survive the untyped Map round-trip.
       check(ws.firedStepDescriptions).isNotEmpty();
-      check(ws.firedStepDescriptions.first.templateKey).equals('simLoudAlarm');
+      check(ws.firedStepDescriptions.first.templateKey)
+          .equals('simLoudAlarm');
       check(ws.firedStepDescriptions.first.args['flash']).equals(true);
     });
 

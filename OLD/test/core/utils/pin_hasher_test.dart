@@ -22,15 +22,13 @@ void main() {
       check(hash.startsWith(r'$argon2id$')).isTrue();
     });
 
-    test(
-      'two calls with the same PIN produce different stored hashes',
-      () async {
-        // Per-call random salt -> outputs must differ bit-for-bit.
-        final a = await PinHasher.hash('9999');
-        final b = await PinHasher.hash('9999');
-        check(a).not((it) => it.equals(b));
-      },
-    );
+    test('two calls with the same PIN produce different stored hashes',
+        () async {
+      // Per-call random salt -> outputs must differ bit-for-bit.
+      final a = await PinHasher.hash('9999');
+      final b = await PinHasher.hash('9999');
+      check(a).not((it) => it.equals(b));
+    });
 
     test('rejects an empty PIN with ArgumentError', () async {
       await check(PinHasher.hash('')).throws<ArgumentError>();

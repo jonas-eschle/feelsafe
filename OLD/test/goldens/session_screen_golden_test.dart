@@ -71,8 +71,10 @@ void main() {
       goldenTest(
         'session_screen_${phaseName}_$themeName',
         fileName: 'session_screen_${phaseName}_$themeName',
-        builder: () =>
-            goldenWrapper(child: _sessionStandin(phase), themeMode: themeMode),
+        builder: () => goldenWrapper(
+          child: _sessionStandin(phase),
+          themeMode: themeMode,
+        ),
       );
     }
   }

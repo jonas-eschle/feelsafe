@@ -564,12 +564,10 @@ void main() {
     });
 
     test('DisguisedReminderConfig equal values equal', () {
-      check(
-        const DisguisedReminderConfig(templateId: 't'),
-      ).equals(const DisguisedReminderConfig(templateId: 't'));
-      check(
-        const DisguisedReminderConfig(templateId: 't').hashCode,
-      ).equals(const DisguisedReminderConfig(templateId: 't').hashCode);
+      check(const DisguisedReminderConfig(templateId: 't'))
+          .equals(const DisguisedReminderConfig(templateId: 't'));
+      check(const DisguisedReminderConfig(templateId: 't').hashCode)
+          .equals(const DisguisedReminderConfig(templateId: 't').hashCode);
     });
 
     test('DisguisedReminderConfig differ unequal', () {
@@ -594,9 +592,8 @@ void main() {
     });
 
     test('HardwareButtonConfig equal hashCode', () {
-      check(
-        const HardwareButtonConfig().hashCode,
-      ).equals(const HardwareButtonConfig().hashCode);
+      check(const HardwareButtonConfig().hashCode)
+          .equals(const HardwareButtonConfig().hashCode);
     });
 
     test('HardwareButtonConfig differ fields unequal', () {
@@ -623,17 +620,14 @@ void main() {
     });
 
     test('CountdownWarningConfig equality', () {
-      check(
-        const CountdownWarningConfig(),
-      ).equals(const CountdownWarningConfig());
-      check(
-        const CountdownWarningConfig(vibrate: false) ==
-            const CountdownWarningConfig(),
-      ).isFalse();
-      check(
-        const CountdownWarningConfig(playTone: true) ==
-            const CountdownWarningConfig(),
-      ).isFalse();
+      check(const CountdownWarningConfig())
+          .equals(const CountdownWarningConfig());
+      check(const CountdownWarningConfig(vibrate: false) ==
+              const CountdownWarningConfig())
+          .isFalse();
+      check(const CountdownWarningConfig(playTone: true) ==
+              const CountdownWarningConfig())
+          .isFalse();
     });
 
     test('FakeCallConfig identical', () {
@@ -661,7 +655,8 @@ void main() {
         const FakeCallConfig() == const FakeCallConfig(declineIsSafe: false),
       ).isFalse();
       check(
-        const FakeCallConfig() == const FakeCallConfig(ringDurationSeconds: 45),
+        const FakeCallConfig() ==
+            const FakeCallConfig(ringDurationSeconds: 45),
       ).isFalse();
       check(
         const FakeCallConfig() ==
@@ -685,9 +680,9 @@ void main() {
     });
 
     test('FakeCallConfig hashCode stable', () {
-      check(
+      check(const FakeCallConfig().hashCode).equals(
         const FakeCallConfig().hashCode,
-      ).equals(const FakeCallConfig().hashCode);
+      );
     });
 
     test('FakeCallConfig copyWith clearCallerName', () {
@@ -727,7 +722,8 @@ void main() {
 
     test('SmsContactConfig differ unequal', () {
       check(
-        const SmsContactConfig() == const SmsContactConfig(contactIds: ['a']),
+        const SmsContactConfig() ==
+            const SmsContactConfig(contactIds: ['a']),
       ).isFalse();
       check(
         const SmsContactConfig(contactIds: ['a']) ==
@@ -774,9 +770,8 @@ void main() {
     });
 
     test('SmsContactConfig hashCode stable', () {
-      check(
-        const SmsContactConfig().hashCode,
-      ).equals(const SmsContactConfig().hashCode);
+      check(const SmsContactConfig().hashCode)
+          .equals(const SmsContactConfig().hashCode);
     });
 
     test('PhoneCallContactConfig identical', () {
@@ -802,9 +797,8 @@ void main() {
     });
 
     test('PhoneCallContactConfig hashCode stable', () {
-      check(
-        const PhoneCallContactConfig().hashCode,
-      ).equals(const PhoneCallContactConfig().hashCode);
+      check(const PhoneCallContactConfig().hashCode)
+          .equals(const PhoneCallContactConfig().hashCode);
     });
 
     test('LoudAlarmConfig identical', () {
@@ -882,9 +876,8 @@ void main() {
     });
 
     test('CallEmergencyConfig hashCode stable', () {
-      check(
-        const CallEmergencyConfig().hashCode,
-      ).equals(const CallEmergencyConfig().hashCode);
+      check(const CallEmergencyConfig().hashCode)
+          .equals(const CallEmergencyConfig().hashCode);
     });
   });
 
@@ -895,7 +888,10 @@ void main() {
     });
 
     test('DisguisedReminderConfig', () {
-      const c = DisguisedReminderConfig(templateId: 't1', intervalSeconds: 15);
+      const c = DisguisedReminderConfig(
+        templateId: 't1',
+        intervalSeconds: 15,
+      );
       check(c.copyWith()).equals(c);
     });
 

@@ -15,35 +15,28 @@ import '../widget_test_helpers.dart';
 
 void main() {
   testWidgets('ProfileScreen renders with no profile stored', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(
-            FakeUserProfileRepository(),
-          ),
-        ],
-        child: const ProfileScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        userProfileRepositoryProvider
+            .overrideWithValue(FakeUserProfileRepository()),
+      ],
+      child: const ProfileScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(ProfileScreen).evaluate().length).equals(1);
     check(find.byType(TextField).evaluate().length).isGreaterThan(0);
   });
 
-  testWidgets('ProfileScreen hydrates form from stored profile', (
-    tester,
-  ) async {
+  testWidgets('ProfileScreen hydrates form from stored profile',
+      (tester) async {
     const profile = UserProfile(name: 'Alice', age: 30);
-    await tester.pumpWidget(
-      hostScreen(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(
-            FakeUserProfileRepository(profile),
-          ),
-        ],
-        child: const ProfileScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreen(
+      overrides: [
+        userProfileRepositoryProvider
+            .overrideWithValue(FakeUserProfileRepository(profile)),
+      ],
+      child: const ProfileScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.byType(ProfileScreen).evaluate().length).equals(1);
   });
@@ -56,28 +49,25 @@ void main() {
       medicalConditions: 'Asthma',
       emergencyInstructions: 'Call home',
     );
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [
-          userProfileRepositoryProvider.overrideWithValue(
-            FakeUserProfileRepository(profile),
-          ),
-        ],
-        child: const ProfileScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenPushed(
+      overrides: [
+        userProfileRepositoryProvider
+            .overrideWithValue(FakeUserProfileRepository(profile)),
+      ],
+      child: const ProfileScreen(),
+    ));
     await tester.pumpAndSettle();
     check(find.text('Peanuts').evaluate().length).isGreaterOrEqual(1);
   });
 
   testWidgets('ProfileScreen save persists edited profile', (tester) async {
     final repo = FakeUserProfileRepository();
-    await tester.pumpWidget(
-      hostScreenPushed(
-        overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
-        child: const ProfileScreen(),
-      ),
-    );
+    await tester.pumpWidget(hostScreenPushed(
+      overrides: [
+        userProfileRepositoryProvider.overrideWithValue(repo),
+      ],
+      child: const ProfileScreen(),
+    ));
     await tester.pumpAndSettle();
     final fields = find.byType(TextField);
     await tester.enterText(fields.at(0), 'Carol');
@@ -97,12 +87,12 @@ void main() {
     'ProfileScreen save with blank fields writes a null-filled profile',
     (tester) async {
       final repo = FakeUserProfileRepository();
-      await tester.pumpWidget(
-        hostScreenPushed(
-          overrides: [userProfileRepositoryProvider.overrideWithValue(repo)],
-          child: const ProfileScreen(),
-        ),
-      );
+      await tester.pumpWidget(hostScreenPushed(
+        overrides: [
+          userProfileRepositoryProvider.overrideWithValue(repo),
+        ],
+        child: const ProfileScreen(),
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.check));
       await tester.pumpAndSettle();

@@ -58,7 +58,10 @@ final class PhoneCallContactStrategy extends EventStrategy {
       var succeeded = false;
       for (var attempt = 0; attempt < attemptsPerContact; attempt++) {
         try {
-          await services.phone.call(contact.phoneNumber, isSimulation: isSim);
+          await services.phone.call(
+            contact.phoneNumber,
+            isSimulation: isSim,
+          );
           // TODO(phase-4b): PhoneServiceProtocol.call currently has
           // no success/fail channel. Treat every completion as
           // success until the service signature is extended.
@@ -87,7 +90,10 @@ final class PhoneCallContactStrategy extends EventStrategy {
     if (targets.isEmpty) {
       return const SimulationDescription('simNoContactToCall');
     }
-    return SimulationDescription('simPhoneCall', {'name': targets.first.name});
+    return SimulationDescription(
+      'simPhoneCall',
+      {'name': targets.first.name},
+    );
   }
 
   /// Resolves the step config.

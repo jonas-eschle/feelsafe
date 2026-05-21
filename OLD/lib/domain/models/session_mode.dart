@@ -101,7 +101,8 @@ final class SessionMode {
       trackingEnabled: json['trackingEnabled'] as bool? ?? false,
       trackingIntervalSeconds:
           (json['trackingIntervalSeconds'] as num?)?.toInt() ?? 300,
-      trackingBufferSize: (json['trackingBufferSize'] as num?)?.toInt() ?? 50,
+      trackingBufferSize:
+          (json['trackingBufferSize'] as num?)?.toInt() ?? 50,
       iconName: json['iconName'] as String?,
       pauseAllowed: json['pauseAllowed'] as bool? ?? true,
       maxPauseMinutes: (json['maxPauseMinutes'] as num?)?.toInt(),

@@ -321,7 +321,9 @@ final class WalkSession {
       ),
       firedStepDescriptions: raw is List
           ? List<SimulationDescription>.unmodifiable(
-              raw.map((e) => _simDescFromJson(e as Map<String, Object?>)),
+              raw.map(
+                (e) => _simDescFromJson(e as Map<String, Object?>),
+              ),
             )
           : const [],
       lastSimulationDescription: json['lastSimulationDescription'] == null
@@ -421,7 +423,12 @@ SimulationDescription _simDescFromJson(Map<String, Object?> json) {
   final argsMap = args is Map<String, Object?>
       ? Map<String, Object?>.unmodifiable(args)
       : args is Map
-      ? Map<String, Object?>.unmodifiable(args.cast<String, Object?>())
-      : const <String, Object?>{};
-  return SimulationDescription(json['templateKey']! as String, argsMap);
+          ? Map<String, Object?>.unmodifiable(
+              args.cast<String, Object?>(),
+            )
+          : const <String, Object?>{};
+  return SimulationDescription(
+    json['templateKey']! as String,
+    argsMap,
+  );
 }

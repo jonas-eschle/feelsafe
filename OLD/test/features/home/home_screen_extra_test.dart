@@ -87,7 +87,10 @@ List<Override> _overridesWithSelectedMode(
   contactsRepositoryProvider.overrideWithValue(FakeContactsRepository()),
   settingsRepositoryProvider.overrideWithValue(
     FakeSettingsRepository(
-      AppSettings(defaults: const AppDefaults(), selectedModeId: modeId),
+      AppSettings(
+        defaults: const AppDefaults(),
+        selectedModeId: modeId,
+      ),
     ),
   ),
   sessionControllerProvider.overrideWith(_NoSessionController.new),
@@ -95,9 +98,8 @@ List<Override> _overridesWithSelectedMode(
 
 void main() {
   group('HomeScreen simulate button — selected mode, no active session', () {
-    testWidgets('Simulate button is enabled when a mode is pre-selected', (
-      tester,
-    ) async {
+    testWidgets('Simulate button is enabled when a mode is pre-selected',
+        (tester) async {
       final mode = makeMode(id: 'm1', name: 'Walk');
       await tester.pumpWidget(
         _hostWithRoutes(
@@ -108,18 +110,15 @@ void main() {
       await tester.pumpAndSettle();
 
       // Find the Simulate TextButton — it should have a non-null onPressed.
-      final simulateBtn = find.widgetWithIcon(
-        TextButton,
-        Icons.science_outlined,
-      );
+      final simulateBtn = find.widgetWithIcon(TextButton, Icons.science_outlined);
       check(simulateBtn.evaluate()).isNotEmpty();
       final btn = tester.widget<TextButton>(simulateBtn);
       check(btn.onPressed).isNotNull();
     });
 
-    testWidgets('tapping Simulate opens confirmation dialog (lines 169, 172)', (
-      tester,
-    ) async {
+    testWidgets(
+        'tapping Simulate opens confirmation dialog (lines 169, 172)',
+        (tester) async {
       final mode = makeMode(id: 'm1', name: 'Walk');
       await tester.pumpWidget(
         _hostWithRoutes(
@@ -138,9 +137,9 @@ void main() {
       check(find.byType(AlertDialog).evaluate()).isNotEmpty();
     });
 
-    testWidgets('Cancel in confirmation dialog dismisses it (line 291)', (
-      tester,
-    ) async {
+    testWidgets(
+        'Cancel in confirmation dialog dismisses it (line 291)',
+        (tester) async {
       final mode = makeMode(id: 'm1', name: 'Walk');
       await tester.pumpWidget(
         _hostWithRoutes(

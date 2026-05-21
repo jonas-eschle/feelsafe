@@ -171,7 +171,10 @@ void main() {
       'about',
       'feedback',
     ]) {
-      check(because: 'expected named route "$n"', names.contains(n)).isTrue();
+      check(
+        because: 'expected named route "$n"',
+        names.contains(n),
+      ).isTrue();
     }
   });
 }

@@ -27,22 +27,19 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   const batteryChannel = MethodChannel('dev.fluttercommunity.plus/battery');
-  const chargingChannel = EventChannel('dev.fluttercommunity.plus/charging');
+  const chargingChannel =
+      EventChannel('dev.fluttercommunity.plus/charging');
 
   const geoChannel = MethodChannel('flutter.baseflow.com/geolocator');
-  const geoEventChannel = EventChannel(
-    'flutter.baseflow.com/geolocator_updates',
-  );
+  const geoEventChannel =
+      EventChannel('flutter.baseflow.com/geolocator_updates');
 
   group('BatteryMonitorService onError handler', () {
     test('pushed native error reaches onError and is swallowed', () async {
-      installMethodChannelMock(
-        batteryChannel,
-        responder: (call) {
-          if (call.method == 'getBatteryLevel') return 80;
-          return null;
-        },
-      );
+      installMethodChannelMock(batteryChannel, responder: (call) {
+        if (call.method == 'getBatteryLevel') return 80;
+        return null;
+      });
       final eventMock = installEventChannelMock(chargingChannel);
       final s = BatteryMonitorService();
       await s.startMonitoring(thresholdPercent: 20);
@@ -57,7 +54,8 @@ void main() {
   });
 
   group('LocationService onError handler', () {
-    test('pushed native error is logged and tracking stays alive', () async {
+    test('pushed native error is logged and tracking stays alive',
+        () async {
       installMethodChannelMock(geoChannel);
       final eventMock = installEventChannelMock(geoEventChannel);
       final s = LocationService();
@@ -71,7 +69,8 @@ void main() {
   });
 
   group('GeofenceService onError handler', () {
-    test('pushed native error is logged and subscription is intact', () async {
+    test('pushed native error is logged and subscription is intact',
+        () async {
       installMethodChannelMock(geoChannel);
       final eventMock = installEventChannelMock(geoEventChannel);
       final s = GeofenceService();

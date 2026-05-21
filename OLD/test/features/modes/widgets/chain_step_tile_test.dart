@@ -34,31 +34,29 @@ ChainStep _step({
 );
 
 void main() {
-  testWidgets('ChainStepTile renders as a Card with one ExpansionTile', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
-        child: ChainStepTile(step: _step(), onChanged: (_) {}, onDelete: () {}),
+  testWidgets('ChainStepTile renders as a Card with one ExpansionTile',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      child: ChainStepTile(
+        step: _step(),
+        onChanged: (_) {},
+        onDelete: () {},
       ),
-    );
+    ));
     await tester.pumpAndSettle();
     check(find.byType(Card).evaluate().length).equals(1);
     check(find.byType(ExpansionTile).evaluate().length).equals(1);
   });
 
-  testWidgets('ChainStepTile shows the step-type label in its title', (
-    tester,
-  ) async {
-    await tester.pumpWidget(
-      hostScreen(
-        child: ChainStepTile(
-          step: _step(type: ChainStepType.smsContact),
-          onChanged: (_) {},
-          onDelete: () {},
-        ),
+  testWidgets('ChainStepTile shows the step-type label in its title',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      child: ChainStepTile(
+        step: _step(type: ChainStepType.smsContact),
+        onChanged: (_) {},
+        onDelete: () {},
       ),
-    );
+    ));
     await tester.pumpAndSettle();
     // smsContact resolves to l.stepTypeSmsContact which in English is
     // "SMS contact" — we just check the tile renders a non-empty
@@ -66,38 +64,32 @@ void main() {
     check(find.byType(ListTile).evaluate().length).isGreaterOrEqual(1);
   });
 
-  testWidgets(
-    'ChainStepTile subtitle includes timing summary (wait/dur/grace)',
-    (tester) async {
-      await tester.pumpWidget(
-        hostScreen(
-          child: ChainStepTile(
-            step: _step(wait: 12, duration: 45, grace: 7),
-            onChanged: (_) {},
-            onDelete: () {},
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-      // The subtitle string contains the raw numbers (independent of
-      // locale, since the widget composes them with plain interpolation).
-      check(find.textContaining('12s').evaluate().length).isGreaterOrEqual(1);
-      check(find.textContaining('45s').evaluate().length).isGreaterOrEqual(1);
-      check(find.textContaining('7s').evaluate().length).isGreaterOrEqual(1);
-    },
-  );
+  testWidgets('ChainStepTile subtitle includes timing summary (wait/dur/grace)',
+      (tester) async {
+    await tester.pumpWidget(hostScreen(
+      child: ChainStepTile(
+        step: _step(wait: 12, duration: 45, grace: 7),
+        onChanged: (_) {},
+        onDelete: () {},
+      ),
+    ));
+    await tester.pumpAndSettle();
+    // The subtitle string contains the raw numbers (independent of
+    // locale, since the widget composes them with plain interpolation).
+    check(find.textContaining('12s').evaluate().length).isGreaterOrEqual(1);
+    check(find.textContaining('45s').evaluate().length).isGreaterOrEqual(1);
+    check(find.textContaining('7s').evaluate().length).isGreaterOrEqual(1);
+  });
 
   testWidgets('ChainStepTile delete icon triggers onDelete', (tester) async {
     var deleted = 0;
-    await tester.pumpWidget(
-      hostScreen(
-        child: ChainStepTile(
-          step: _step(),
-          onChanged: (_) {},
-          onDelete: () => deleted++,
-        ),
+    await tester.pumpWidget(hostScreen(
+      child: ChainStepTile(
+        step: _step(),
+        onChanged: (_) {},
+        onDelete: () => deleted++,
       ),
-    );
+    ));
     await tester.pumpAndSettle();
     await tester.tap(find.byIcon(Icons.delete_outline));
     await tester.pumpAndSettle();
@@ -105,11 +97,13 @@ void main() {
   });
 
   testWidgets('ChainStepTile renders the delete icon', (tester) async {
-    await tester.pumpWidget(
-      hostScreen(
-        child: ChainStepTile(step: _step(), onChanged: (_) {}, onDelete: () {}),
+    await tester.pumpWidget(hostScreen(
+      child: ChainStepTile(
+        step: _step(),
+        onChanged: (_) {},
+        onDelete: () {},
       ),
-    );
+    ));
     await tester.pumpAndSettle();
     check(find.byIcon(Icons.delete_outline).evaluate().length).equals(1);
     // ExpansionTile renders a StepConfigForm only after expansion —
@@ -121,15 +115,13 @@ void main() {
   testWidgets(
     'ChainStepTile hides the duplicate icon when onDuplicate is null',
     (tester) async {
-      await tester.pumpWidget(
-        hostScreen(
-          child: ChainStepTile(
-            step: _step(),
-            onChanged: (_) {},
-            onDelete: () {},
-          ),
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       check(find.byIcon(Icons.content_copy_outlined).evaluate()).isEmpty();
     },
@@ -138,16 +130,14 @@ void main() {
   testWidgets(
     'ChainStepTile shows the duplicate icon when onDuplicate is set',
     (tester) async {
-      await tester.pumpWidget(
-        hostScreen(
-          child: ChainStepTile(
-            step: _step(),
-            onChanged: (_) {},
-            onDelete: () {},
-            onDuplicate: () {},
-          ),
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
+          onDuplicate: () {},
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       check(
         find.byIcon(Icons.content_copy_outlined).evaluate().length,
@@ -159,16 +149,14 @@ void main() {
     'ChainStepTile duplicate icon triggers onDuplicate exactly once',
     (tester) async {
       var dups = 0;
-      await tester.pumpWidget(
-        hostScreen(
-          child: ChainStepTile(
-            step: _step(),
-            onChanged: (_) {},
-            onDelete: () {},
-            onDuplicate: () => dups++,
-          ),
+      await tester.pumpWidget(hostScreen(
+        child: ChainStepTile(
+          step: _step(),
+          onChanged: (_) {},
+          onDelete: () {},
+          onDuplicate: () => dups++,
         ),
-      );
+      ));
       await tester.pumpAndSettle();
       await tester.tap(find.byIcon(Icons.content_copy_outlined));
       await tester.pumpAndSettle();

@@ -62,19 +62,18 @@ void main() {
   });
 
   group('VibrationService hasVibrator=true branch', () {
-    test(
-      'alarmPattern invokes Vibration.vibrate with the alarm pattern',
-      () async {
-        final s = VibrationService();
-        await s.alarmPattern();
-        check(fake.calls).contains('hasVibrator');
-        check(fake.calls.any((c) => c.startsWith('vibrate:pattern='))).isTrue();
-        // repeat=0 for the alarm pattern (loops).
-        check(fake.calls.any((c) => c.contains('repeat=0'))).isTrue();
-      },
-    );
+    test('alarmPattern invokes Vibration.vibrate with the alarm pattern',
+        () async {
+      final s = VibrationService();
+      await s.alarmPattern();
+      check(fake.calls).contains('hasVibrator');
+      check(fake.calls.any((c) => c.startsWith('vibrate:pattern='))).isTrue();
+      // repeat=0 for the alarm pattern (loops).
+      check(fake.calls.any((c) => c.contains('repeat=0'))).isTrue();
+    });
 
-    test('warningPattern invokes Vibration.vibrate without repeat', () async {
+    test('warningPattern invokes Vibration.vibrate without repeat',
+        () async {
       final s = VibrationService();
       await s.warningPattern();
       check(fake.calls.any((c) => c.contains('repeat=-1'))).isTrue();

@@ -30,9 +30,8 @@ void main() {
       final targetStep = smsStep(order: 0);
       engine.emitStepExecutionFailed(stepIndex: 0, step: targetStep);
 
-      final failed = events.where(
-        (e) => e.event == ChainEvent.stepExecutionFailed,
-      );
+      final failed =
+          events.where((e) => e.event == ChainEvent.stepExecutionFailed);
       check(failed.length).equals(1);
       check(failed.first.stepIndex).equals(0);
     });
@@ -50,9 +49,8 @@ void main() {
       final sms = smsStep(order: 0);
       engine.emitStepExecutionFailed(stepIndex: 0, step: sms);
 
-      final ev = events.firstWhere(
-        (e) => e.event == ChainEvent.stepExecutionFailed,
-      );
+      final ev =
+          events.firstWhere((e) => e.event == ChainEvent.stepExecutionFailed);
       check(ev.stepType).equals(ChainStepType.smsContact);
     });
 
@@ -64,7 +62,10 @@ void main() {
       addTearDown(engine.dispose);
       engine.start();
 
-      engine.emitStepExecutionFailed(stepIndex: 0, step: smsStep(order: 0));
+      engine.emitStepExecutionFailed(
+        stepIndex: 0,
+        step: smsStep(order: 0),
+      );
 
       check(engine.state).isA<EngineRunning>();
     });
@@ -82,35 +83,32 @@ void main() {
       final hold = holdStep(order: 0);
       engine.emitStepExecutionFailed(stepIndex: 0, step: hold);
 
-      final ev = events.firstWhere(
-        (e) => e.event == ChainEvent.stepExecutionFailed,
-      );
+      final ev =
+          events.firstWhere((e) => e.event == ChainEvent.stepExecutionFailed);
       check(ev.stepType).equals(ChainStepType.holdButton);
       check(ev.stepIndex).equals(0);
     });
 
     test(
-      'stepExecutionFailed can be emitted from idle engine without crashing',
-      () {
-        // The orchestrator may call this before the engine moves to the next
-        // step if the strategy throws synchronously — the engine must not crash.
-        final engine = SessionEngine(
-          chainSteps: [smsStep(order: 0)],
-          random: FixedRandom(),
-        );
-        addTearDown(engine.dispose);
-        final events = <ChainEventData>[];
-        engine.events.listen(events.add);
+        'stepExecutionFailed can be emitted from idle engine without crashing',
+        () {
+      // The orchestrator may call this before the engine moves to the next
+      // step if the strategy throws synchronously — the engine must not crash.
+      final engine = SessionEngine(
+        chainSteps: [smsStep(order: 0)],
+        random: FixedRandom(),
+      );
+      addTearDown(engine.dispose);
+      final events = <ChainEventData>[];
+      engine.events.listen(events.add);
 
-        // No start() — emitting from Idle must not throw.
-        engine.emitStepExecutionFailed(stepIndex: 0, step: smsStep(order: 0));
+      // No start() — emitting from Idle must not throw.
+      engine.emitStepExecutionFailed(stepIndex: 0, step: smsStep(order: 0));
 
-        final failedCount = events
-            .where((e) => e.event == ChainEvent.stepExecutionFailed)
-            .length;
-        check(failedCount).equals(1);
-        check(engine.state).isA<EngineIdle>();
-      },
-    );
+      final failedCount =
+          events.where((e) => e.event == ChainEvent.stepExecutionFailed).length;
+      check(failedCount).equals(1);
+      check(engine.state).isA<EngineIdle>();
+    });
   });
 }

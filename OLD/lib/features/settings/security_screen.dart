@@ -96,7 +96,8 @@ class SecurityScreen extends ConsumerWidget {
             child: TimingSlider(
               label: l.securityPinTimeout,
               seconds: settings?.pinTimeoutSeconds ?? 15,
-              onChanged: (v) => notifier.setPinTimeoutSeconds(v.clamp(5, 120)),
+              onChanged: (v) =>
+                  notifier.setPinTimeoutSeconds(v.clamp(5, 120)),
             ),
           ),
         ],

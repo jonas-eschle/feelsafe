@@ -76,11 +76,14 @@ void main() {
       check(second).equals(first);
     });
 
-    test('two fresh storages produce different keys (randomness)', () async {
-      final a = await EncryptionKey.load(storage: _FakeSecureStorage());
-      final b = await EncryptionKey.load(storage: _FakeSecureStorage());
-      check(a).not((it) => it.equals(b));
-    });
+    test(
+      'two fresh storages produce different keys (randomness)',
+      () async {
+        final a = await EncryptionKey.load(storage: _FakeSecureStorage());
+        final b = await EncryptionKey.load(storage: _FakeSecureStorage());
+        check(a).not((it) => it.equals(b));
+      },
+    );
 
     test('generated key is base64 URL-safe of 32 bytes', () async {
       final key = await EncryptionKey.load(storage: _FakeSecureStorage());
