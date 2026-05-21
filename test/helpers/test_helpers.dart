@@ -1,5 +1,25 @@
 /// Shared test helpers used across unit, widget, and integration tests.
 ///
+/// **Phase 0 status (2026-05-21):** This file was extracted verbatim
+/// from the v2 archive per `docs/rewrite/v3-plan.md` §5 (sanctioned
+/// one-time extractions). It forward-references domain symbols
+/// (`ChainStep`, `SessionMode`, `EmergencyContact`, `StepConfig`,
+/// `MessageChannel`, etc.) that **do not exist yet** — Phase 1 lands
+/// `lib/domain/models/` and `lib/data/models/enums.dart`. Until then
+/// this file does not compile in isolation. `analysis_options.yaml`
+/// excludes it from analyze, no test file imports it yet, and
+/// `flutter test` ignores it (filename is not `*_test.dart`).
+///
+/// **At Phase 1**, the Phase 1 agent MUST remove the
+/// `test/helpers/test_helpers.dart` line from
+/// `analysis_options.yaml` `analyzer.exclude:` and verify
+/// `flutter analyze --fatal-infos` stays clean. The Phase 0 NO-STUBS
+/// verifier flagged this forward-reference as a QUESTION; the
+/// resolution chosen was Option B (intentional scaffold, header
+/// comment makes the staging explicit). See commit `5608102` for
+/// context.
+///
+/// Contents:
 /// - [FixedRandom] — deterministic `Random` implementation returning a
 ///   fixed double (default 0.5). Eliminates jitter in engine tests per
 ///   D-TEST-1.
