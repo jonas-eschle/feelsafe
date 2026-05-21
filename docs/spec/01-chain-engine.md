@@ -214,7 +214,7 @@ Idle → Step0_Wait → Step0_Duration → Step0_Grace → [advance or repeat]
 - **User disarms** (any phase) → reset to Step0_Wait, clear miss count.
 - **Grace expires with repeats left** → restart same step (same wait → duration → grace cycle).
 - **Grace expires with no repeats left** → advance to next step.
-- **Last step's grace expires** → `chainExhausted`, session ends.
+- **Last step's grace expires** → `stepAdvancing` is emitted, then `sessionEnded` with `reason: EndReason.chainExhausted` closes the session. (There is no standalone `ChainEvent.chainExhausted` value — the chain-exhausted condition surfaces via the `EndReason` carried in `sessionEnded`.)
 
 ### Hold Button State Machine (User-Driven)
 
@@ -274,11 +274,11 @@ During grace:
 
 #### Countdown Timer Implementation
 
-The `SessionController` MUST drive the visible countdown with a **periodic `Timer` that fires every 1 second**, independent of engine phase-transition events (which only fire on state changes, not on every tick). The implementation requirement:
+The `SessionController` MUST drive the visible countdown with a **periodic `Timer` that fires every 1 second**, independent of the engine's phase transitions (the engine does not emit a per-tick event — it transitions phases on completion only). The implementation requirement:
 
-1. When the engine emits a `durationStarted` event for a `holdButton` step, `SessionController` starts a `Timer.periodic(Duration(seconds: 1), ...)`.
+1. After the controller calls `engine.holdRelease()` (or the engine itself enters the duration phase, observable via the controller polling `EngineRunning.phase` or by subscribing to `engine.events` for `stepStarted` / `userDisarmed` / `sessionEnded`), `SessionController` starts a `Timer.periodic(Duration(seconds: 1), ...)`.
 2. On each tick, the controller reads the remaining duration from the engine and updates the UI state.
-3. The timer is cancelled when the engine emits `durationEnded`, `stepDisarmed`, or any session-terminating event.
+3. The timer is cancelled when the engine emits `userDisarmed`, `sessionEnded`, or `stepAdvancing` (whichever ends the current hold-button step), or when the controller's own `holdStart()` cancels the in-flight countdown.
 4. The UI renders the remaining seconds as a **large centered number** inside a circular progress indicator that drains from full to empty as the countdown progresses.
 5. The engine is the source of truth for timing; the periodic timer is a UI-polling mechanism only — it never mutates engine state.
 
@@ -450,22 +450,26 @@ All non-holdButton steps support the `waitSeconds` field:
 ```dart
 SessionEngine({
   required List<ChainStep> chainSteps,
+  required Triggers triggers,
+  required bool allowDisarmAsDistress,
   bool isSimulation = false,
   double speedMultiplier = 1.0,
-  Random? random,
-  DateTime Function()? clock,
   Duration? maxPauseDuration,
+  Random? random,
+  Clock? clock,
 })
 ```
 
 | Parameter | Default | Notes |
 |-----------|---------|-------|
-| `chainSteps` | — | List of steps to execute in order. Must not be empty. |
+| `chainSteps` | — | List of steps to execute in order. Must not be empty (`ArgumentError` otherwise). The engine takes an unmodifiable copy — Invariant 12. |
+| `triggers` | — | Bundle of distress + disarm triggers (`Triggers` data class in `lib/domain/engine/triggers.dart`). The engine wires both lists through its internal `TriggerManager`. |
+| `allowDisarmAsDistress` | — | Mirrors `SessionMode.allowDisarmAsDistress` (G-014, Invariant 13). Controls whether `disarmTriggers` fire while a distress chain is running. |
 | `isSimulation` | `false` | If `true`, enables simulation mode (`leap`, `jumpToStep`, mid-run `setSpeedMultiplier`). |
 | `speedMultiplier` | 1.0 | Divides all durations. Real sessions MUST be `1.0` — non-1.0 throws `ArgumentError`. Clamped to `[0.01, 1000.0]`. NaN / infinity / non-positive values throw. |
-| `random` | `Random()` | Randomizer for jitter. Pass deterministic instance for testing. |
-| `clock` | `DateTime.now` (via `package:clock`) | Wall-clock source. Pass a fake to drive tests. |
 | `maxPauseDuration` | `null` | When non-null, pausing starts a timer; on expiry the engine emits `pauseExpired` and auto-resumes. `null` disables auto-resume. |
+| `random` | `Random()` | Randomizer for jitter. Pass deterministic instance for testing. |
+| `clock` | ambient `clock` from `package:clock` | Wall-clock source. When `null`, the engine reads the ambient `clock` — which `fakeAsync` / `withClock` already override in tests. Pass an explicit `Clock` only when you need a time source independent of the ambient. |
 
 ### State Accessors
 
@@ -609,16 +613,19 @@ void restartCurrentStep()
 void advanceFromHardwarePanic()
 ```
 - Advance to the next step.
-- Called when hardware panic button (e.g., volume button) is detected.
+- Called by `SessionController` when the hardware panic button (e.g.,
+  5× volume button press) is detected while a `hardwareButton` chain
+  step is active (the step's "advance" role per §Hardware Button —
+  Triple Role).
 - Does NOT disarm — escalation happens instead.
+- **For trigger-based hardware panic** (the distress-chain entry path),
+  the controller calls `engine.replaceWithDistressChain(...)` instead;
+  see §Distress Chain Mechanics. The two paths are distinct and do not
+  share a method.
 
-```dart
-void jumpToStep(int index)
-```
-- Jump directly to a specific step index.
-- Called when hardware panic is configured with a target step.
-- Resets miss count to 0.
-- Re-executes the target step.
+`jumpToStep(int)` is **not** part of the production hardware-panic API;
+it is documented in §Simulation as a simulator-only method that throws
+unless `isSimulation == true`.
 
 ### Pause / Resume
 
@@ -1275,8 +1282,8 @@ The `SessionController` (Riverpod Notifier) wraps the `SessionEngine` and:
 - `repeatMissed` → log miss, update badge count.
 - `stepAdvancing` → trigger action service (e.g., play alarm).
 - `userDisarmed` → show confirmation, log session.
-- `chainExhausted` → show end screen (or silent exit in stealth mode).
-- `sessionEnded` → clean up foreground service, release resources.
+- `sessionEnded` (`reason: chainExhausted`) → show end screen (or silent exit in stealth mode).
+- `sessionEnded` (any other reason) → clean up foreground service, release resources.
 
 ---
 

@@ -3,21 +3,22 @@ import 'dart:math';
 
 import 'package:clock/clock.dart';
 
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/trigger_manager.dart';
+import 'package:guardianangela/domain/engine/triggers.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
-import 'package:guardianangela/domain/models/session_mode.dart';
 
-/// Pure-Dart state machine that walks a [SessionMode]'s chain of
-/// [ChainStep]s and drives the safety session lifecycle.
+/// Pure-Dart state machine that walks a chain of [ChainStep]s and drives
+/// the safety session lifecycle.
 ///
-/// **Zero Flutter dependencies** — only `dart:async` and `dart:math`. All
-/// interaction with Flutter (UI, services, navigation) is handled by
-/// `SessionController`, which wraps this engine.
+/// **Zero Flutter dependencies** — only `dart:async`, `dart:math`, and
+/// `package:clock`. All interaction with Flutter (UI, services,
+/// navigation) is handled by `SessionController`, which wraps this engine.
 ///
 /// ## Three-phase timing model
 ///
@@ -34,9 +35,15 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 final class SessionEngine {
   /// Creates a session engine.
   ///
-  /// [mode] provides the chain steps, triggers, and per-mode flags. The
-  /// engine reads [SessionMode.chainSteps] at start time and treats the
-  /// list as immutable (invariant 12).
+  /// [chainSteps] is the ordered list of steps the engine will walk. Must
+  /// not be empty (the constructor throws [ArgumentError] when it is).
+  ///
+  /// [triggers] is the per-mode bundle of distress + disarm triggers. The
+  /// engine wires both through its internal [TriggerManager].
+  ///
+  /// [allowDisarmAsDistress] mirrors `SessionMode.allowDisarmAsDistress`
+  /// (G-014). When the engine is in the distress chain, disarm triggers
+  /// fire only if this flag is `true`. See spec 01 Invariant 13.
   ///
   /// [isSimulation] enables [leap], [jumpToStep], and
   /// [setSpeedMultiplier]. Real sessions MUST have
@@ -51,33 +58,62 @@ final class SessionEngine {
   ///
   /// [random] is the randomizer used for ±20% jitter. Pass a deterministic
   /// instance in tests (e.g., `_FixedRandom(0.5)`).
-  SessionEngine(
-    SessionMode mode, {
+  ///
+  /// [clock] is the wall-clock source. When non-null it overrides the time
+  /// source used by the engine for jitter, phase-start timestamps, and
+  /// remaining-time math. When null (the common case), the engine reads
+  /// the ambient `clock` from `package:clock`, which `fakeAsync` /
+  /// `withClock` already override in tests — so tests that drive time via
+  /// `fakeAsync` do not need to pass a clock explicitly.
+  SessionEngine({
+    required List<ChainStep> chainSteps,
+    required Triggers triggers,
+    required bool allowDisarmAsDistress,
     bool isSimulation = false,
     double speedMultiplier = 1.0,
     Duration? maxPauseDuration,
     Random? random,
-  }) : _mode = mode,
+    Clock? clock,
+  }) : _chainSteps = List.unmodifiable(chainSteps),
+       _triggers = triggers,
+       _allowDisarmAsDistress = allowDisarmAsDistress,
        _isSimulation = isSimulation,
        _maxPauseDuration = maxPauseDuration,
-       _random = random ?? Random() {
+       _random = random ?? Random(),
+       _injectedClock = clock {
+    if (chainSteps.isEmpty) {
+      throw ArgumentError.value(
+        chainSteps,
+        'chainSteps',
+        'must not be empty.',
+      );
+    }
     _validateSpeedMultiplier(speedMultiplier, isSimulation);
     _speedMultiplier = speedMultiplier;
 
     _eventController = StreamController<ChainEventData>.broadcast(sync: true);
   }
 
-  final SessionMode _mode;
+  final List<ChainStep> _chainSteps;
+  final Triggers _triggers;
+  final bool _allowDisarmAsDistress;
   final bool _isSimulation;
   final Duration? _maxPauseDuration;
   final Random _random;
+
+  /// Injected clock (constructor `clock` parameter); `null` means defer to
+  /// the ambient [clock] from `package:clock`, which `fakeAsync` overrides
+  /// via `withClock`. The wrapper [_now] handles the fallback.
+  final Clock? _injectedClock;
+
+  DateTime _now() => _injectedClock?.now() ?? clock.now();
 
   late final StreamController<ChainEventData> _eventController;
 
   double _speedMultiplier = 1.0;
   bool _backgroundClamped = false;
 
-  EngineState _state = EngineIdle();
+  EngineState _state = const EngineIdle();
 
   // Active step execution state.
   List<ChainStep> _activeChain = const [];
@@ -163,21 +199,18 @@ final class SessionEngine {
       );
     }
 
-    _activeChain = List.unmodifiable(_mode.chainSteps);
-    if (_activeChain.isEmpty) {
-      throw StateError('SessionMode.chainSteps must not be empty.');
-    }
+    _activeChain = _chainSteps;
 
     _emit(ChainEvent.sessionStarted);
 
     // Start trigger manager.
     _triggerManager = TriggerManager(
-      distressTriggers: _mode.distressTriggers,
-      disarmTriggers: _mode.disarmTriggers,
+      distressTriggers: _triggers.distressTriggers,
+      disarmTriggers: _triggers.disarmTriggers,
       onDistress: (reason) =>
-          replaceWithDistressChain(chain: [], triggerReason: reason),
+          replaceWithDistressChain(chain: _activeChain, triggerReason: reason),
       onDisarm: disarm,
-      allowDisarmDuringDistress: _mode.allowDisarmAsDistress,
+      allowDisarmDuringDistress: _allowDisarmAsDistress,
     );
     _triggerManager!.start();
 
@@ -186,14 +219,18 @@ final class SessionEngine {
 
   /// Clean shutdown — cancels all timers and transitions to [EngineEnded].
   ///
-  /// Emits [ChainEvent.sessionEnded] exactly once. Idempotent.
-  /// See spec 01 §Lifecycle Methods.
+  /// Emits [ChainEvent.sessionEnded] exactly once. If ending while in the
+  /// distress chain, emits [ChainEvent.distressCompleted] first.
+  /// Idempotent. See spec 01 §Lifecycle Methods.
   void endSession({EndReason reason = EndReason.userQuit}) {
     if (_state is EngineEnded) {
       return;
     }
     _cancelTimers();
     _triggerManager?.stop();
+    if (_isDistressChain) {
+      _emit(ChainEvent.distressCompleted);
+    }
     _state = EngineEnded(reason: reason);
     _emit(ChainEvent.sessionEnded, metadata: {'reason': reason.name});
     _eventController.close();
@@ -216,7 +253,7 @@ final class SessionEngine {
 
     _cancelTimers();
     _state = EnginePaused(snapshot: snapshot, reason: reason);
-    _emit(ChainEvent.pausedRequested, metadata: {'reason': reason.name});
+    _emit(ChainEvent.sessionPaused, metadata: {'reason': reason.name});
 
     // Start max-pause timer if configured.
     final maxPause = _maxPauseDuration;
@@ -237,7 +274,7 @@ final class SessionEngine {
     _maxPauseTimer?.cancel();
     _maxPauseTimer = null;
     _state = paused.snapshot;
-    _emit(ChainEvent.resumed);
+    _emit(ChainEvent.sessionResumed);
     _restartCurrentPhase(paused.snapshot.remaining);
   }
 
@@ -248,7 +285,7 @@ final class SessionEngine {
     final paused = _state as EnginePaused;
     _state = paused.snapshot;
     _emit(ChainEvent.pauseExpired);
-    _emit(ChainEvent.resumed);
+    _emit(ChainEvent.sessionResumed);
     _restartCurrentPhase(paused.snapshot.remaining);
   }
 
@@ -261,7 +298,7 @@ final class SessionEngine {
     if (startedAt == null || total == null) {
       return Duration.zero;
     }
-    final elapsed = clock.now().difference(startedAt);
+    final elapsed = _now().difference(startedAt);
     final remaining = total - elapsed;
     return remaining < Duration.zero ? Duration.zero : remaining;
   }
@@ -287,11 +324,12 @@ final class SessionEngine {
   /// Alias for [disarm]. Expresses the "I'm safe" intent.
   void checkIn() => disarm();
 
-  /// Called when user taps a disguised-reminder notification during the wait
-  /// phase (before the reminder has fired).
+  /// Called when the user taps a disguised-reminder notification during the
+  /// wait phase (before the reminder has fired).
   ///
-  /// No-op if: not running, not a disguisedReminder step, not in wait phase,
-  /// or [resetOnEarlyCheckIn] is false. See spec 01 §Early Check-in (D4).
+  /// No-op if: not running, not a `disguisedReminder` step, not in wait
+  /// phase, or [resetOnEarlyCheckIn] is false. See spec 01 §Early Check-in
+  /// (D4).
   void earlyCheckIn({bool resetOnEarlyCheckIn = true}) {
     if (_state is! EngineRunning) {
       return;
@@ -329,10 +367,10 @@ final class SessionEngine {
 
     final running = _state as EngineRunning;
 
-    // Re-hold during grace = disarm.
+    // Re-hold during grace = disarm. (F6: do not pre-set _isHolding here —
+    // disarm() resets the chain to step 0 with _isHolding = false, which
+    // would overwrite anything set just above.)
     if (running.phase == EnginePhase.grace) {
-      _isHolding = true;
-      _state = running.copyWith(isHolding: true);
       disarm();
       return;
     }
@@ -390,18 +428,6 @@ final class SessionEngine {
     _startPhaseTimer(durationSeconds, EnginePhase.duration, _onDurationExpired);
   }
 
-  double _holdSensitivity(ChainStep step) {
-    if (step.config case final cfg?) {
-      try {
-        // Access releaseSensitivity via dynamic dispatch.
-        return (cfg as dynamic).releaseSensitivity as double;
-      } catch (_) {
-        // Fallthrough to default.
-      }
-    }
-    return 1.0; // Default 1.0s sensitivity window.
-  }
-
   // ─── Fake call interaction ────────────────────────────────────────────
 
   /// Called when the user answers the fake call.
@@ -420,7 +446,7 @@ final class SessionEngine {
     disarm();
   }
 
-  /// Restart the current step after a decline (when declineIsSafe = false).
+  /// Restart the current step after a decline (when `declineIsSafe = false`).
   ///
   /// Preserves the miss count; applies the grace period before re-execution.
   void restartCurrentStep() {
@@ -447,8 +473,8 @@ final class SessionEngine {
 
   /// Called when hardware panic (e.g., 5× volume press) is detected.
   ///
-  /// This is the step-advance path (for HardwareButton chain steps).
-  /// For trigger-based panic, [TriggerManager.notifyHardwarePanic] calls
+  /// Advance-by-one path for `hardwareButton` chain steps. For trigger-based
+  /// distress panic, [TriggerManager.notifyHardwarePanic] calls
   /// [replaceWithDistressChain] directly.
   void advanceFromHardwarePanic() {
     if (_state is! EngineRunning) {
@@ -465,13 +491,12 @@ final class SessionEngine {
   /// The main chain stops permanently. The distress chain runs from step 0.
   /// The engine ends with [triggerReason] when the distress chain completes.
   ///
-  /// [allowDisarmAsDistress] is read from [SessionMode.allowDisarmAsDistress]
-  /// (G-014). When the distress mode's own steps are provided from outside,
-  /// pass them via [chain]; passing an empty list signals that the caller
-  /// must have already set the chain on the mode (the engine re-reads
-  /// [SessionMode.chainSteps] when [chain] is empty and the mode has
-  /// [isDistressMode] = true, but in practice the controller resolves and
-  /// passes the steps).
+  /// `allowDisarmAsDistress` (constructor flag) governs whether disarm
+  /// triggers may interrupt the distress chain (G-014, spec Invariant 13).
+  ///
+  /// [chain] must be non-empty — the controller is responsible for
+  /// resolving the distress mode's chain steps and passing them in. Empty
+  /// chains are a programmer error and throw [ArgumentError].
   void replaceWithDistressChain({
     required List<ChainStep> chain,
     required EndReason triggerReason,
@@ -483,41 +508,47 @@ final class SessionEngine {
     if (_isDistressChain) {
       return;
     }
+    if (chain.isEmpty) {
+      throw ArgumentError.value(
+        chain,
+        'chain',
+        'distress chain must be non-empty — the controller resolves the '
+            "distress mode's chain steps and passes them in.",
+      );
+    }
 
     _cancelTimers();
     _isDistressChain = true;
     _distressTriggerReason = triggerReason;
 
     _emit(
-      ChainEvent.replaceWithDistress,
+      ChainEvent.distressTriggered,
       metadata: {'triggerReason': triggerReason.name},
     );
 
     _triggerManager?.enterDistressMode();
 
     // Set the active chain to the distress steps.
-    _activeChain = chain.isNotEmpty
-        ? List.unmodifiable(chain)
-        : List.unmodifiable(_mode.chainSteps);
+    _activeChain = List.unmodifiable(chain);
 
     _missCount = 0;
     _isHolding = false;
     _isFirstExecution = true;
 
     // Start distress chain from step 0.
-    _state = EngineIdle(); // Reset to allow advanceToStep.
+    _state = const EngineIdle(); // Reset to allow advanceToStep.
     _currentStepIndex = -1;
     // Manually transition to running without emitting sessionStarted again.
     _advanceToStep(0);
   }
 
-  // ─── Wrong-PIN notification ───────────────────────────────────────────
+  // ─── External event notifications ─────────────────────────────────────
 
   /// Notify the engine that a wrong PIN was entered.
   ///
   /// Emits [ChainEvent.deceptiveOldPinShown] with
   /// `metadata['attemptCount'] = attemptCount`. Called by
-  /// [SessionController] after incrementing its own wrong-PIN counter.
+  /// `SessionController` after incrementing its own wrong-PIN counter.
   /// See spec 01 §Events Emitted.
   void notifyWrongPin(int attemptCount) {
     if (_state is EngineEnded) {
@@ -529,6 +560,23 @@ final class SessionEngine {
     );
   }
 
+  /// Notify the engine that a strategy's `executeReal()` threw.
+  ///
+  /// Emits [ChainEvent.stepExecutionFailed] with metadata
+  /// `{'stepIndex': stepIndex, 'error': error.toString()}`. Called by
+  /// `SessionController`'s error-isolation catch (D-STRATEGY-2). The chain
+  /// keeps running. See spec 01 §Non-Blocking Event Execution.
+  void notifyStepExecutionFailed(int stepIndex, Object error) {
+    if (_state is EngineEnded) {
+      return;
+    }
+    _emit(
+      ChainEvent.stepExecutionFailed,
+      stepIndex: stepIndex,
+      metadata: {'stepIndex': stepIndex, 'error': error.toString()},
+    );
+  }
+
   // ─── Background clamp (G-013) ─────────────────────────────────────────
 
   /// Engage or release the background speed cap (G-013).
@@ -537,7 +585,7 @@ final class SessionEngine {
   /// `min(speedMultiplier, 60.0)`. No-op for non-simulation engines at
   /// runtime (real timers are wall-clock driven and unaffected).
   ///
-  /// Called by [SessionController] on [AppLifecycleState] changes.
+  /// Called by `SessionController` on `AppLifecycleState` changes.
   void setBackgroundClamp(bool engaged) {
     _backgroundClamped = engaged;
   }
@@ -674,11 +722,16 @@ final class SessionEngine {
       return;
     }
 
-    _emit(
-      ChainEvent.stepFired,
-      stepIndex: _currentStepIndex,
-      stepType: step.type,
-    );
+    // Spec 01 §Events Emitted: reminderFired is emitted when a
+    // disguised-reminder step enters its duration phase. Other step types
+    // do not emit an event between wait and duration.
+    if (step.type == ChainStepType.disguisedReminder) {
+      _emit(
+        ChainEvent.reminderFired,
+        stepIndex: _currentStepIndex,
+        stepType: step.type,
+      );
+    }
 
     final durationSeconds = _jitterAndAdjust(
       step.durationSeconds,
@@ -713,7 +766,7 @@ final class SessionEngine {
 
     _missCount++;
     _emit(
-      ChainEvent.stepMissed,
+      ChainEvent.graceExpired,
       stepIndex: _currentStepIndex,
       stepType: step.type,
       metadata: {'missCount': _missCount, 'stepIndex': _currentStepIndex},
@@ -722,6 +775,14 @@ final class SessionEngine {
     if (_missCount <= step.retryCount) {
       // Retry: skip wait phase.
       _isFirstExecution = false;
+      if (step.type == ChainStepType.disguisedReminder) {
+        _emit(
+          ChainEvent.repeatMissed,
+          stepIndex: _currentStepIndex,
+          stepType: step.type,
+          metadata: {'missCount': _missCount, 'stepIndex': _currentStepIndex},
+        );
+      }
       _executeStep(_currentStepIndex);
     } else {
       _advanceToNext();
@@ -729,9 +790,15 @@ final class SessionEngine {
   }
 
   void _advanceToNext() {
+    final fromIndex = _currentStepIndex;
     final nextIndex = _currentStepIndex + 1;
+    _emit(
+      ChainEvent.stepAdvancing,
+      stepIndex: fromIndex,
+      metadata: {'fromStepIndex': fromIndex, 'nextStepIndex': nextIndex},
+    );
+
     if (nextIndex >= _activeChain.length) {
-      _emit(ChainEvent.chainExhausted);
       final endReason = _isDistressChain
           ? (_distressTriggerReason ?? EndReason.chainExhausted)
           : EndReason.chainExhausted;
@@ -750,7 +817,7 @@ final class SessionEngine {
   ) {
     _phaseTimer?.cancel();
 
-    _phaseStartedAt = clock.now();
+    _phaseStartedAt = _now();
     _phaseTotalDuration = duration;
 
     // Update state with phase + remaining.
@@ -808,47 +875,44 @@ final class SessionEngine {
     _phaseCallbackFor(phase)();
   }
 
-  // ─── Randomization helpers ────────────────────────────────────────────
+  // ─── StepConfig field accessors (sealed switch, no dynamic dispatch) ──
 
-  bool _shouldRandomizeInterval(ChainStep step) {
-    if (step.config case final cfg?) {
-      final dynamic config = cfg;
-      try {
-        return (config as dynamic).randomizeInterval as bool;
-      } catch (_) {}
-    }
-    return step.randomize;
-  }
+  /// Returns the hold-release sensitivity in seconds for [step].
+  ///
+  /// Only [HoldButtonConfig] carries this field; other config types fall
+  /// back to the spec default of 1.0s.
+  double _holdSensitivity(ChainStep step) => switch (step.config) {
+    HoldButtonConfig(:final releaseSensitivity) => releaseSensitivity,
+    _ => 1.0,
+  };
 
-  bool _shouldRandomizeDuration(ChainStep step) {
-    if (step.config case final cfg?) {
-      final dynamic config = cfg;
-      try {
-        // fakeCall uses randomizeRingDuration; others use randomizeDuration.
-        if (step.type == ChainStepType.fakeCall) {
-          return (config as dynamic).randomizeRingDuration as bool;
-        }
-        return (config as dynamic).randomizeDuration as bool;
-      } catch (_) {}
-    }
-    return step.randomize;
-  }
+  /// Whether to jitter the wait/interval phase of [step].
+  ///
+  /// [DisguisedReminderConfig.randomizeInterval] is the per-field flag for
+  /// disguised-reminder steps; all other step types fall back to
+  /// [ChainStep.randomize].
+  bool _shouldRandomizeInterval(ChainStep step) => switch (step.config) {
+    DisguisedReminderConfig(:final randomizeInterval) => randomizeInterval,
+    _ => step.randomize,
+  };
 
-  bool _shouldRandomizeGrace(ChainStep step) {
-    if (step.config case final cfg?) {
-      final dynamic config = cfg;
-      try {
-        return (config as dynamic).randomizeGrace as bool;
-      } catch (_) {}
-    }
-    return step.randomize;
-  }
+  /// Whether to jitter the duration phase of [step].
+  ///
+  /// No StepConfig subclass currently exposes a per-field flag for this;
+  /// all step types fall back to [ChainStep.randomize].
+  bool _shouldRandomizeDuration(ChainStep step) => step.randomize;
+
+  /// Whether to jitter the grace phase of [step].
+  ///
+  /// No StepConfig subclass currently exposes a per-field flag for this;
+  /// all step types fall back to [ChainStep.randomize].
+  bool _shouldRandomizeGrace(ChainStep step) => step.randomize;
 
   /// Apply ±20% jitter (if enabled) and then divide by the effective speed
   /// multiplier.
   ///
   /// Formula: factor = 0.8 + random.nextDouble() * 0.4 (range 0.8–1.2).
-  /// With [_FixedRandom(0.5)]: factor = 0.8 + 0.5 * 0.4 = 1.0 (no jitter).
+  /// With `_FixedRandom(0.5)`: factor = 0.8 + 0.5 * 0.4 = 1.0 (no jitter).
   Duration _jitterAndAdjust(int seconds, bool randomize) {
     double value = seconds.toDouble();
     if (randomize) {
@@ -887,7 +951,7 @@ final class SessionEngine {
     _eventController.add(
       ChainEventData(
         event,
-        timestamp: clock.now(),
+        timestamp: _now(),
         stepIndex:
             stepIndex ?? (_currentStepIndex >= 0 ? _currentStepIndex : null),
         stepType: stepType ?? currentStep?.type,

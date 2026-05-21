@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'engine_test_helpers.dart';
@@ -18,7 +17,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -44,7 +43,7 @@ void main() {
           step(type: ChainStepType.smsContact, durationSeconds: 2),
           step(type: ChainStepType.callEmergency, durationSeconds: 1),
         ];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -63,7 +62,7 @@ void main() {
       fakeAsync((async) {
         final events = <ChainEventData>[];
         final m = mode(chainSteps: [step(durationSeconds: 100)]);
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -94,7 +93,7 @@ void main() {
     test('distress chain ends with duressPin EndReason', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -121,7 +120,7 @@ void main() {
     test('distress chain ends with wrongPinExhausted EndReason', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -155,7 +154,7 @@ void main() {
           durationSeconds: 1,
         );
         final m = mode(chainSteps: [mainStep0]);
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -175,7 +174,7 @@ void main() {
     test('replaceWithDistressChain emits replaceWithDistress event', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -186,7 +185,7 @@ void main() {
         );
 
         final distressEvent = events.where(
-          (e) => e.event == ChainEvent.replaceWithDistress,
+          (e) => e.event == ChainEvent.distressTriggered,
         );
         check(distressEvent).isNotEmpty();
         check(
@@ -199,7 +198,7 @@ void main() {
 
     test('no return to main chain after distress replacement', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -232,7 +231,7 @@ void main() {
       'replaceWithDistressChain ignored when engine is ended (A4-adjacent)',
       () {
         fakeAsync((async) {
-          final engine = SessionEngine(mode(), random: const FixedRandom());
+          final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
           engine.start();
           async.flushMicrotasks();
           engine.endSession();
@@ -251,9 +250,9 @@ void main() {
     test('second replaceWithDistressChain is no-op (A4)', () {
       fakeAsync((async) {
         int distressCount = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) {
-          if (e.event == ChainEvent.replaceWithDistress) {
+          if (e.event == ChainEvent.distressTriggered) {
             distressCount++;
           }
         });

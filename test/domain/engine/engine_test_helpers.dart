@@ -1,7 +1,10 @@
 import 'dart:math';
 
+import 'package:clock/clock.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/domain/engine/session_engine.dart';
+import 'package:guardianangela/domain/engine/triggers.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
@@ -75,3 +78,35 @@ SessionMode mode({
   isDistressMode: isDistressMode,
   maxPauseMinutes: maxPauseMinutes,
 );
+
+/// Factory for a [SessionEngine] driven by a [SessionMode].
+///
+/// Pulls `chainSteps`, `distressTriggers`, `disarmTriggers`, and
+/// `allowDisarmAsDistress` out of [sessionMode] (or a fresh [mode] when
+/// null) and forwards them to the engine's named constructor parameters.
+/// All other engine knobs are passed through verbatim.
+///
+/// [random] defaults to a [FixedRandom] so jitter is deterministic.
+SessionEngine buildEngine({
+  SessionMode? sessionMode,
+  bool isSimulation = false,
+  double speedMultiplier = 1.0,
+  Duration? maxPauseDuration,
+  Random? random,
+  Clock? clock,
+}) {
+  final m = sessionMode ?? mode();
+  return SessionEngine(
+    chainSteps: m.chainSteps,
+    triggers: Triggers(
+      distressTriggers: m.distressTriggers,
+      disarmTriggers: m.disarmTriggers,
+    ),
+    allowDisarmAsDistress: m.allowDisarmAsDistress,
+    isSimulation: isSimulation,
+    speedMultiplier: speedMultiplier,
+    maxPauseDuration: maxPauseDuration,
+    random: random ?? const FixedRandom(),
+    clock: clock,
+  );
+}

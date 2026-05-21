@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
@@ -14,7 +13,7 @@ void main() {
     test('sessionStarted emitted on start()', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
@@ -36,7 +35,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -57,17 +56,28 @@ void main() {
       });
     });
 
-    test('stepFired emitted when step enters duration phase', () {
+    test('reminderFired emitted when disguised-reminder enters duration', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = SessionEngine(
-          mode(chainSteps: [step(durationSeconds: 5)]),
+        // Spec 01 §Events Emitted: reminderFired is emitted only when a
+        // disguisedReminder step enters its duration phase (overlay
+        // visible). Other step types do not emit a per-phase-transition
+        // event.
+        final engine = buildEngine(
+          sessionMode: mode(
+            chainSteps: [
+              step(
+                type: ChainStepType.disguisedReminder,
+                durationSeconds: 5,
+              ),
+            ],
+          ),
           random: const FixedRandom(),
         );
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
-        check(events).contains(ChainEvent.stepFired);
+        check(events).contains(ChainEvent.reminderFired);
         engine.endSession();
       });
     });
@@ -78,13 +88,13 @@ void main() {
         final m = mode(
           chainSteps: [step(durationSeconds: 1, gracePeriodSeconds: 1)],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 3));
 
-        final missed = events.where((e) => e.event == ChainEvent.stepMissed);
+        final missed = events.where((e) => e.event == ChainEvent.graceExpired);
         check(missed).isNotEmpty();
         check(missed.first.metadata['missCount']).equals(1);
         engine.endSession(); // Already ended (chain exhausted) — no-op.
@@ -100,7 +110,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -121,25 +131,37 @@ void main() {
       });
     });
 
-    test('chainExhausted emitted when last step completes', () {
+    test('stepAdvancing + sessionEnded(chainExhausted) when last step '
+        'completes', () {
       fakeAsync((async) {
-        final events = <ChainEvent>[];
+        final events = <ChainEventData>[];
         final m = mode(
           chainSteps: [step(durationSeconds: 1, gracePeriodSeconds: 0)],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
-        engine.events.listen((e) => events.add(e.event));
-        engine.start();
+        final eng = buildEngine(sessionMode: m, random: const FixedRandom());
+        eng.events.listen(events.add);
+        eng.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 2));
-        check(events).contains(ChainEvent.chainExhausted);
+        // stepAdvancing fires when the engine attempts to move past the
+        // last step; immediately followed by sessionEnded with reason
+        // chainExhausted (spec 01 §EndReason).
+        final advancing = events.where(
+          (e) => e.event == ChainEvent.stepAdvancing,
+        );
+        check(advancing).isNotEmpty();
+        final ended = events.where((e) => e.event == ChainEvent.sessionEnded);
+        check(ended).isNotEmpty();
+        check(
+          ended.first.metadata['reason'],
+        ).equals(EndReason.chainExhausted.name);
       });
     });
 
     test('replaceWithDistress emitted with triggerReason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -150,7 +172,7 @@ void main() {
         );
 
         final distress = events.where(
-          (e) => e.event == ChainEvent.replaceWithDistress,
+          (e) => e.event == ChainEvent.distressTriggered,
         );
         check(distress).isNotEmpty();
         check(
@@ -163,7 +185,7 @@ void main() {
     test('pausedRequested emitted with reason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -171,7 +193,7 @@ void main() {
         engine.pause();
 
         final paused = events.where(
-          (e) => e.event == ChainEvent.pausedRequested,
+          (e) => e.event == ChainEvent.sessionPaused,
         );
         check(paused).isNotEmpty();
         check(
@@ -184,13 +206,13 @@ void main() {
     test('resumed emitted after resume()', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
         engine.pause();
         engine.resume();
-        check(events).contains(ChainEvent.resumed);
+        check(events).contains(ChainEvent.sessionResumed);
         engine.endSession();
       });
     });
@@ -198,7 +220,7 @@ void main() {
     test('pauseExpired emitted when maxPauseDuration exceeded', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           maxPauseDuration: const Duration(seconds: 3),
           random: const FixedRandom(),
@@ -216,7 +238,7 @@ void main() {
     test('sessionEnded emitted with reason metadata', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -231,7 +253,7 @@ void main() {
     test('deceptiveOldPinShown emitted by notifyWrongPin', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -251,7 +273,7 @@ void main() {
     test('notifyWrongPin carries correct attemptCount', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -275,7 +297,7 @@ void main() {
     test('notifyWrongPin no-op after endSession', () {
       fakeAsync((async) {
         int count = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -286,24 +308,28 @@ void main() {
       });
     });
 
-    test('all 14 ChainEvent values are exercised', () {
-      // Verify the enum has exactly the values we expect.
+    test('all 15 ChainEvent values are declared (spec 01 §Events Emitted)', () {
+      // Verify the enum is exhaustive against spec 01 §Events Emitted. A
+      // separate test asserts that each event is actually emitted by the
+      // engine under its triggering condition (rather than just being
+      // declared).
       const allEvents = ChainEvent.values;
       check(allEvents).contains(ChainEvent.sessionStarted);
       check(allEvents).contains(ChainEvent.stepStarted);
-      check(allEvents).contains(ChainEvent.stepFired);
-      check(allEvents).contains(ChainEvent.stepMissed);
-      check(allEvents).contains(ChainEvent.stepDisarmed);
-      check(allEvents).contains(ChainEvent.userDisarmed);
-      check(allEvents).contains(ChainEvent.chainExhausted);
-      check(allEvents).contains(ChainEvent.replaceWithDistress);
-      check(allEvents).contains(ChainEvent.pausedRequested);
-      check(allEvents).contains(ChainEvent.resumed);
+      check(allEvents).contains(ChainEvent.stepAdvancing);
+      check(allEvents).contains(ChainEvent.graceExpired);
+      check(allEvents).contains(ChainEvent.repeatMissed);
+      check(allEvents).contains(ChainEvent.reminderFired);
       check(allEvents).contains(ChainEvent.pauseExpired);
       check(allEvents).contains(ChainEvent.stepExecutionFailed);
+      check(allEvents).contains(ChainEvent.distressTriggered);
+      check(allEvents).contains(ChainEvent.distressCompleted);
+      check(allEvents).contains(ChainEvent.sessionPaused);
+      check(allEvents).contains(ChainEvent.sessionResumed);
+      check(allEvents).contains(ChainEvent.userDisarmed);
       check(allEvents).contains(ChainEvent.deceptiveOldPinShown);
       check(allEvents).contains(ChainEvent.sessionEnded);
-      check(allEvents.length).equals(14);
+      check(allEvents.length).equals(15);
     });
   });
 }

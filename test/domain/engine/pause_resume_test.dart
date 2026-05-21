@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'engine_test_helpers.dart';
@@ -18,7 +17,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -54,7 +53,7 @@ void main() {
         final m = mode(
           chainSteps: [step(durationSeconds: 100, gracePeriodSeconds: 0)],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           maxPauseDuration: const Duration(seconds: 5),
           random: const FixedRandom(),
@@ -72,7 +71,7 @@ void main() {
         // Engine should have auto-resumed.
         check(engine.isPaused).isFalse();
         check(events).contains(ChainEvent.pauseExpired);
-        check(events).contains(ChainEvent.resumed);
+        check(events).contains(ChainEvent.sessionResumed);
 
         engine.endSession();
       });
@@ -80,7 +79,7 @@ void main() {
 
     test('maxPauseDuration null = unlimited pause', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -95,7 +94,7 @@ void main() {
     test('PauseReason.incomingCall emitted correctly', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
@@ -103,7 +102,7 @@ void main() {
         engine.pause(reason: PauseReason.incomingCall);
 
         final paused = events.where(
-          (e) => e.event == ChainEvent.pausedRequested,
+          (e) => e.event == ChainEvent.sessionPaused,
         );
         check(paused).isNotEmpty();
         check(
@@ -117,13 +116,13 @@ void main() {
     test('resume() emits resumed event', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
         engine.pause();
         engine.resume();
-        check(events).contains(ChainEvent.resumed);
+        check(events).contains(ChainEvent.sessionResumed);
         engine.endSession();
       });
     });
@@ -131,9 +130,9 @@ void main() {
     test('pause() no-op when already paused', () {
       fakeAsync((async) {
         int pauseCount = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) {
-          if (e.event == ChainEvent.pausedRequested) {
+          if (e.event == ChainEvent.sessionPaused) {
             pauseCount++;
           }
         });
@@ -154,7 +153,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -193,7 +192,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -225,7 +224,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 

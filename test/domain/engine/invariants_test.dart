@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
@@ -13,7 +12,7 @@ void main() {
   group('Invariants (spec 01 §Invariants)', () {
     // Invariant 1: currentStepIndex always in range [-1, chainSteps.length).
     test('Invariant 1: currentStepIndex = -1 before start', () {
-      final engine = SessionEngine(mode(), random: const FixedRandom());
+      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
       check(engine.currentStepIndex).equals(-1);
     });
 
@@ -29,7 +28,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -52,7 +51,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 1));
@@ -68,7 +67,7 @@ void main() {
     // Invariant 3: endSession() is idempotent.
     test('Invariant 3: endSession() idempotent', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -82,7 +81,7 @@ void main() {
     test('Invariant 4: no events after endSession()', () {
       fakeAsync((async) {
         int postEndCount = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -103,7 +102,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           speedMultiplier: 10.0,
@@ -130,7 +129,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -145,7 +144,7 @@ void main() {
     // Invariant 7: Only one session active at a time (start() throws if running).
     test('Invariant 7: start() throws if not idle', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.start).throws<StateError>();
@@ -161,7 +160,7 @@ void main() {
           type: ChainStepType.smsContact,
           durationSeconds: 1,
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(chainSteps: [mainStep]),
           random: const FixedRandom(),
         );
@@ -189,7 +188,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -215,7 +214,7 @@ void main() {
     // Invariant 10: holdStart()/holdRelease() no-op on non-holdButton steps.
     test('Invariant 10: hold methods no-op on non-holdButton step', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(chainSteps: [step()]),
           random: const FixedRandom(),
         );
@@ -240,9 +239,9 @@ void main() {
           ],
         );
         int step1Misses = 0;
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen((e) {
-          if (e.event == ChainEvent.stepMissed && e.stepIndex == 1) {
+          if (e.event == ChainEvent.graceExpired && e.stepIndex == 1) {
             step1Misses++;
           }
         });
@@ -264,7 +263,7 @@ void main() {
       fakeAsync((async) {
         final chainStep = step();
         final m = mode(chainSteps: [chainStep]);
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -280,6 +279,47 @@ void main() {
     // Invariant 13: allowDisarmAsDistress controls disarm triggers during
     // distress (G-014).
     test(
+      'Invariant 13: allowDisarmAsDistress=true (default) permits disarm '
+      'triggers during distress (positive branch)',
+      () {
+        fakeAsync((async) {
+          var disarmed = false;
+          final m = mode(
+            chainSteps: [step(durationSeconds: 100)],
+            disarmTriggers: const [TimerDisarmTrigger(durationSeconds: 2)],
+            // Default — explicit for documentation.
+          );
+          final engine = buildEngine(
+            sessionMode: m,
+            random: const FixedRandom(),
+          );
+          engine.events.listen((e) {
+            if (e.event == ChainEvent.userDisarmed) {
+              disarmed = true;
+            }
+          });
+          engine.start();
+          async.flushMicrotasks();
+
+          // Replace with distress chain.
+          engine.replaceWithDistressChain(
+            chain: [
+              step(type: ChainStepType.smsContact, durationSeconds: 100),
+            ],
+            triggerReason: EndReason.hardwarePanic,
+          );
+
+          // Timer disarm trigger should fire normally because
+          // allowDisarmAsDistress defaults to true.
+          async.elapse(const Duration(seconds: 5));
+          check(disarmed).isTrue();
+
+          engine.endSession();
+        });
+      },
+    );
+
+    test(
       'Invariant 13: allowDisarmAsDistress=false blocks disarm triggers in distress',
       () {
         fakeAsync((async) {
@@ -289,7 +329,7 @@ void main() {
             disarmTriggers: const [TimerDisarmTrigger(durationSeconds: 2)],
             allowDisarmAsDistress: false,
           );
-          final engine = SessionEngine(m, random: const FixedRandom());
+          final engine = buildEngine(sessionMode: m, random: const FixedRandom());
           engine.events.listen((e) {
             if (e.event == ChainEvent.userDisarmed) {
               disarmed = true;

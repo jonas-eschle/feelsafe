@@ -2,7 +2,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -10,7 +9,7 @@ void main() {
   group('jumpToStep() — simulation only', () {
     test('jumpToStep() throws on real session', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(() => engine.jumpToStep(0)).throws<StateError>();
@@ -19,7 +18,7 @@ void main() {
     });
 
     test('jumpToStep() throws when not running', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         random: const FixedRandom(),
@@ -29,7 +28,7 @@ void main() {
 
     test('jumpToStep() throws for out-of-range index', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           random: const FixedRandom(),
@@ -51,7 +50,7 @@ void main() {
             step(type: ChainStepType.callEmergency, durationSeconds: 100),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           random: const FixedRandom(),
@@ -76,7 +75,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           random: const FixedRandom(),
@@ -105,7 +104,7 @@ void main() {
             step(type: ChainStepType.smsContact, durationSeconds: 100),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           random: const FixedRandom(),

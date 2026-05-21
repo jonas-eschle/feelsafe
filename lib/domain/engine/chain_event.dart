@@ -2,71 +2,87 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 
 /// Every observable event the [SessionEngine] emits on its event stream.
 ///
-/// Consumers subscribe via [SessionEngine.events] and respond to events
-/// (e.g., [SessionController] logs events and drives UI updates). The stream
+/// Consumers subscribe via [SessionEngine.events] and react to events (the
+/// future `SessionController` logs them and drives UI updates). The stream
 /// is broadcast and synchronous — listeners see events in emission order
-/// without microtask latency.
+/// without microtask latency. See spec 01 §Events Emitted for the canonical
+/// list.
 enum ChainEvent {
   /// A new session was started via [SessionEngine.start].
   sessionStarted,
 
-  /// A step entered its wait or duration phase.
+  /// A step entered its execution lifecycle.
   ///
-  /// Emitted at the beginning of each step execution (including retries).
+  /// Emitted at the beginning of every step (including retries).
   stepStarted,
 
-  /// A step's action phase fired (duration started).
-  ///
-  /// Signals that a strategy's executeReal() / simulationDescription()
-  /// should be invoked by the controller.
-  stepFired,
+  /// A step's grace phase expired and the engine is advancing to the next
+  /// step (or ending the chain if no next step).
+  stepAdvancing,
 
-  /// A step was missed: grace expired without user disarming.
+  /// A step's grace phase expired before the user responded.
+  ///
+  /// Always emitted on grace expiry — for retried disguised-reminder steps,
+  /// [repeatMissed] follows. For all other step types, [stepAdvancing] (or
+  /// the chain-ending [sessionEnded]) follows.
+  graceExpired,
+
+  /// A disguised-reminder retry fired with no response.
   ///
   /// Metadata: `{'missCount': int, 'stepIndex': int}`.
-  stepMissed,
+  repeatMissed,
 
-  /// The user successfully disarmed a specific step (not via the global
-  /// disarm path). Used for step-level acknowledgements.
-  stepDisarmed,
-
-  /// The user successfully disarmed: the chain reset to step 0.
-  ///
-  /// Metadata: `{'fromStepIndex': int}` — where the user was when they
-  /// disarmed.
-  userDisarmed,
-
-  /// All steps exhausted without the user disarming; session will end.
-  chainExhausted,
-
-  /// The main chain was replaced by the distress chain.
-  ///
-  /// Metadata: `{'triggerReason': String}` (name of the [EndReason] that
-  /// caused the replacement).
-  replaceWithDistress,
-
-  /// The session was paused.
-  ///
-  /// Metadata: `{'reason': String}` (name of the [PauseReason]).
-  pausedRequested,
-
-  /// The session was resumed after a pause.
-  resumed,
+  /// A disguised-reminder step entered its duration phase — the overlay is
+  /// now visible to the user.
+  reminderFired,
 
   /// A pause exceeded [SessionEngine.maxPauseDuration]; the engine
   /// auto-resumed.
   pauseExpired,
 
-  /// A strategy's executeReal() threw an exception; the chain keeps running.
+  /// A strategy's `executeReal()` threw an exception; the chain keeps
+  /// running.
   ///
-  /// Metadata: `{'stepIndex': int, 'error': String}`.
+  /// Emitted by the orchestrator (future `SessionController`) via
+  /// [SessionEngine.notifyStepExecutionFailed]. Metadata:
+  /// `{'stepIndex': int, 'error': String}`.
   stepExecutionFailed,
 
-  /// Wrong PIN entered while deceptive PIN dialog is enabled.
+  /// A distress trigger fired; the engine replaced the main chain with the
+  /// distress chain.
   ///
-  /// Emitted by [SessionEngine.notifyWrongPin] so [SessionLogRecorder]
-  /// can capture it in the unified timeline.
-  /// Metadata: `{'attemptCount': int}`.
+  /// Metadata: `{'triggerReason': String}` (name of the [EndReason] that
+  /// caused the replacement).
+  distressTriggered,
+
+  /// The distress chain finished.
+  ///
+  /// Emitted exactly once, immediately before the [sessionEnded] event
+  /// when the chain that ended was a distress chain (i.e., the session
+  /// ends with [EndReason.hardwarePanic] / [EndReason.duressPin] /
+  /// [EndReason.wrongPinExhausted]).
+  distressCompleted,
+
+  /// The session was paused.
+  ///
+  /// Metadata: `{'reason': String}` (name of the [PauseReason]).
+  sessionPaused,
+
+  /// The session was resumed after a pause.
+  sessionResumed,
+
+  /// The user disarmed (or checked-in): the chain reset to step 0 without
+  /// ending the session.
+  ///
+  /// Metadata: `{'fromStepIndex': int}` — where the user was when they
+  /// disarmed.
+  userDisarmed,
+
+  /// Wrong PIN entered while the deceptive PIN dialog is enabled.
+  ///
+  /// Emitted by [SessionEngine.notifyWrongPin] so the session-log recorder
+  /// can capture it in the unified timeline. Metadata:
+  /// `{'attemptCount': int}`.
   deceptiveOldPinShown,
 
   /// The session ended for any reason.

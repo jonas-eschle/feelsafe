@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
@@ -12,7 +11,7 @@ import 'engine_test_helpers.dart';
 void main() {
   group('State machine transitions', () {
     test('starts in EngineIdle', () {
-      final engine = SessionEngine(mode(), random: const FixedRandom());
+      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
       check(engine.isEnded).isFalse();
       check(engine.isPaused).isFalse();
       check(engine.currentStepIndex).equals(-1);
@@ -21,7 +20,7 @@ void main() {
 
     test('start() transitions to EngineRunning', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -33,7 +32,7 @@ void main() {
 
     test('start() throws on second call', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.start).throws<StateError>();
@@ -43,7 +42,7 @@ void main() {
 
     test('endSession() transitions to EngineEnded', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -53,7 +52,7 @@ void main() {
 
     test('endSession() is idempotent', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -64,7 +63,7 @@ void main() {
 
     test('pause() transitions to EnginePaused', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -75,7 +74,7 @@ void main() {
 
     test('resume() transitions back to EngineRunning', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -103,7 +102,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         // Step 0: duration=1s, grace=0s → advances to step 1 at t=1s.
         // Elapse 1.5s so we are at step 1 but haven't exhausted it yet.
@@ -122,7 +121,7 @@ void main() {
         final m = mode(
           chainSteps: [step(durationSeconds: 1, gracePeriodSeconds: 1)],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.elapse(const Duration(seconds: 5));
@@ -137,7 +136,7 @@ void main() {
 
     test('distress chain replaces main chain', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.replaceWithDistressChain(
@@ -152,14 +151,14 @@ void main() {
     });
 
     test('pause() is no-op when not running', () {
-      final engine = SessionEngine(mode(), random: const FixedRandom());
+      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
       // Idle state — should not throw.
       check(engine.pause).returnsNormally();
     });
 
     test('resume() is no-op when not paused', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         // Not paused — should not throw.
@@ -171,13 +170,13 @@ void main() {
     test('pause() records PauseReason.incomingCall', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
         engine.pause(reason: PauseReason.incomingCall);
         final paused = events.where(
-          (e) => e.event == ChainEvent.pausedRequested,
+          (e) => e.event == ChainEvent.sessionPaused,
         );
         check(paused).isNotEmpty();
         check(
@@ -190,7 +189,7 @@ void main() {
     test('no events emitted after endSession()', () {
       fakeAsync((async) {
         int count = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -204,7 +203,7 @@ void main() {
 
     test('disarm() is no-op when paused', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -219,9 +218,9 @@ void main() {
     test('distress chain ignores second replaceWithDistressChain', () {
       fakeAsync((async) {
         int distressCount = 0;
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.events.listen((e) {
-          if (e.event == ChainEvent.replaceWithDistress) {
+          if (e.event == ChainEvent.distressTriggered) {
             distressCount++;
           }
         });

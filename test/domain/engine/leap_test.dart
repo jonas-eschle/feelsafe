@@ -2,7 +2,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -10,7 +9,7 @@ void main() {
   group('leap() — simulation only', () {
     test('leap() throws on real session', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.leap).throws<StateError>();
@@ -29,7 +28,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           random: const FixedRandom(),
@@ -52,7 +51,7 @@ void main() {
     });
 
     test('leap() is no-op when not running', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         random: const FixedRandom(),
@@ -63,7 +62,7 @@ void main() {
 
     test('leap() is no-op when paused', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           random: const FixedRandom(),
@@ -89,7 +88,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           random: const FixedRandom(),

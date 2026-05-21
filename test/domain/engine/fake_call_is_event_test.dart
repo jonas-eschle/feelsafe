@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -17,7 +16,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -43,7 +42,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -60,7 +59,7 @@ void main() {
 
     test('answerFakeCall() does NOT end the session', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(
             chainSteps: [
               step(type: ChainStepType.fakeCall, durationSeconds: 5),
@@ -84,7 +83,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
 
         // Advance to step 1 first.
@@ -108,7 +107,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -124,7 +123,7 @@ void main() {
     test('answerFakeCall() emits no sessionPaused event', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(
             chainSteps: [
               step(type: ChainStepType.fakeCall, durationSeconds: 5),
@@ -139,7 +138,7 @@ void main() {
         engine.answerFakeCall();
 
         final paused = events.where(
-          (e) => e.event == ChainEvent.pausedRequested,
+          (e) => e.event == ChainEvent.sessionPaused,
         );
         check(paused).isEmpty();
 
@@ -149,7 +148,7 @@ void main() {
 
     test('answerFakeCall() is safe to call multiple times', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(chainSteps: [step(type: ChainStepType.fakeCall)]),
           random: const FixedRandom(),
         );
@@ -177,7 +176,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -199,7 +198,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 

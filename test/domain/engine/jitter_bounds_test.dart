@@ -5,7 +5,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -38,7 +37,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -63,7 +62,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -85,7 +84,7 @@ void main() {
               step(type: ChainStepType.callEmergency),
             ],
           );
-          final engine = SessionEngine(m, random: const FixedRandom(0.0));
+          final engine = buildEngine(sessionMode: m, random: const FixedRandom(0.0));
           engine.start();
           async.flushMicrotasks();
 
@@ -110,7 +109,7 @@ void main() {
               step(type: ChainStepType.callEmergency),
             ],
           );
-          final engine = SessionEngine(m, random: const FixedRandom(1.0));
+          final engine = buildEngine(sessionMode: m, random: const FixedRandom(1.0));
           engine.start();
           async.flushMicrotasks();
 
@@ -145,7 +144,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom(0.0));
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom(0.0));
         engine.start();
         async.flushMicrotasks();
 
@@ -161,9 +160,12 @@ void main() {
       fakeAsync((async) {
         final events = <ChainEvent>[];
         // With FixedRandom(0.0): wait = 10 * 0.8 = 8s (fires at 8s).
+        // Use disguisedReminder so the wait→duration transition emits
+        // ChainEvent.reminderFired (spec 01 §Events Emitted).
         final m = mode(
           chainSteps: [
             step(
+              type: ChainStepType.disguisedReminder,
               waitSeconds: 10,
               durationSeconds: 1,
               gracePeriodSeconds: 0,
@@ -171,18 +173,21 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom(0.0));
+        final engine = buildEngine(
+          sessionMode: m,
+          random: const FixedRandom(0.0),
+        );
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
 
-        // At 7s: stepFired not yet (wait = 8s with factor 0.8).
+        // At 7s: reminderFired not yet (wait = 8s with factor 0.8).
         async.elapse(const Duration(seconds: 7));
-        check(events.where((e) => e == ChainEvent.stepFired)).isEmpty();
+        check(events.where((e) => e == ChainEvent.reminderFired)).isEmpty();
 
-        // At 8s: stepFired.
+        // At 8s: reminderFired.
         async.elapse(const Duration(seconds: 1));
-        check(events.where((e) => e == ChainEvent.stepFired)).isNotEmpty();
+        check(events.where((e) => e == ChainEvent.reminderFired)).isNotEmpty();
 
         engine.endSession();
       });

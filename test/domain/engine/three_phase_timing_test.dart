@@ -3,7 +3,6 @@ import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -14,11 +13,19 @@ void main() {
         final events = <ChainEvent>[];
         final m = mode(
           chainSteps: [
-            step(waitSeconds: 5, gracePeriodSeconds: 3),
+            // disguisedReminder emits ChainEvent.reminderFired when the
+            // wait phase ends and the duration phase begins (spec 01
+            // §Events Emitted). Other step types do not emit a
+            // per-phase-transition event.
+            step(
+              type: ChainStepType.disguisedReminder,
+              waitSeconds: 5,
+              gracePeriodSeconds: 3,
+            ),
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen((e) => events.add(e.event));
         engine.start();
 
@@ -30,9 +37,10 @@ void main() {
         async.elapse(const Duration(seconds: 4));
         check(engine.currentStepIndex).equals(0);
 
-        // After wait (5s): stepFired
+        // After wait (5s): reminderFired (disguised-reminder enters
+        // duration phase).
         async.elapse(const Duration(seconds: 2));
-        check(events).contains(ChainEvent.stepFired);
+        check(events).contains(ChainEvent.reminderFired);
 
         // After duration (10s) + grace (3s): advance to step 1
         async.elapse(const Duration(seconds: 14));
@@ -47,20 +55,24 @@ void main() {
         final events = <ChainEvent>[];
         final m = mode(
           chainSteps: [
+            // disguisedReminder is the only step type whose
+            // duration-phase entry is observable as a ChainEvent.
+            // With waitSeconds=0 the wait phase is skipped and the
+            // engine fires reminderFired immediately.
             step(
-              type: ChainStepType.smsContact,
+              type: ChainStepType.disguisedReminder,
               durationSeconds: 5,
               gracePeriodSeconds: 2,
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen((e) => events.add(e.event));
         engine.start();
         async.flushMicrotasks();
 
-        // stepFired should have occurred immediately (wait = 0).
-        check(events).contains(ChainEvent.stepFired);
+        // reminderFired should have occurred immediately (wait = 0).
+        check(events).contains(ChainEvent.reminderFired);
         engine.endSession();
       });
     });
@@ -79,7 +91,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
 
         // First execution: wait(100s) + duration(2s) + grace(2s) = 104s total.
@@ -109,7 +121,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
 
         // Attempt 1: wait(30) + duration(5) + grace(3) = 38s.
@@ -134,7 +146,7 @@ void main() {
             step(type: ChainStepType.callEmergency, durationSeconds: 1),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -154,7 +166,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -173,7 +185,7 @@ void main() {
     test('disarm during wait phase resets to step 0', () {
       fakeAsync((async) {
         final m = mode(chainSteps: [step(waitSeconds: 30, durationSeconds: 5)]);
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -204,7 +216,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -235,18 +247,18 @@ void main() {
               ),
             ],
           );
-          final engine = SessionEngine(m, random: const FixedRandom());
+          final engine = buildEngine(sessionMode: m, random: const FixedRandom());
           engine.events.listen(events.add);
           engine.start();
           async.flushMicrotasks();
 
           // Before wait: only stepStarted.
-          check(events.where((e) => e.event == ChainEvent.stepFired)).isEmpty();
+          check(events.where((e) => e.event == ChainEvent.reminderFired)).isEmpty();
 
           // After wait (10s): stepFired.
           async.elapse(const Duration(seconds: 11));
           check(
-            events.where((e) => e.event == ChainEvent.stepFired),
+            events.where((e) => e.event == ChainEvent.reminderFired),
           ).isNotEmpty();
 
           engine.endSession();
@@ -266,7 +278,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -285,7 +297,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         async.elapse(const Duration(seconds: 2));
@@ -303,9 +315,9 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.events.listen((e) {
-          if (e.event == ChainEvent.stepMissed) {
+          if (e.event == ChainEvent.graceExpired) {
             missCount++;
           }
         });
@@ -341,7 +353,7 @@ void main() {
             ),
           ],
         );
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 
@@ -358,7 +370,7 @@ void main() {
     test('miss count resets on disarm', () {
       fakeAsync((async) {
         final m = mode(chainSteps: [step(durationSeconds: 1, retryCount: 2)]);
-        final engine = SessionEngine(m, random: const FixedRandom());
+        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
 

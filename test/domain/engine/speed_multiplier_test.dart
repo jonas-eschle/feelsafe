@@ -2,20 +2,19 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
 void main() {
   group('Speed multiplier', () {
     test('default speedMultiplier is 1.0', () {
-      final engine = SessionEngine(mode(), random: const FixedRandom());
+      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
       check(engine.speedMultiplier).isCloseTo(1.0, 1e-9);
     });
 
     test('real session rejects speedMultiplier != 1.0', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           speedMultiplier: 2.0,
           random: const FixedRandom(),
@@ -24,7 +23,7 @@ void main() {
     });
 
     test('simulation allows speedMultiplier 10.0', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         speedMultiplier: 10.0,
@@ -35,7 +34,7 @@ void main() {
 
     test('speedMultiplier NaN throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: double.nan,
@@ -46,7 +45,7 @@ void main() {
 
     test('speedMultiplier infinity throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: double.infinity,
@@ -57,7 +56,7 @@ void main() {
 
     test('speedMultiplier negative throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: -1.0,
@@ -68,7 +67,7 @@ void main() {
 
     test('speedMultiplier zero throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 0.0,
@@ -79,7 +78,7 @@ void main() {
 
     test('speedMultiplier below 0.01 throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 0.001,
@@ -90,7 +89,7 @@ void main() {
 
     test('speedMultiplier above 1000.0 throws ArgumentError', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 1001.0,
@@ -101,7 +100,7 @@ void main() {
 
     test('speedMultiplier at boundary 0.01 is valid', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 0.01,
@@ -112,7 +111,7 @@ void main() {
 
     test('speedMultiplier at boundary 1000.0 is valid', () {
       check(
-        () => SessionEngine(
+        () => buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 1000.0,
@@ -130,7 +129,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           speedMultiplier: 10.0,
@@ -153,7 +152,7 @@ void main() {
 
     test('setSpeedMultiplier() throws on real session', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(() => engine.setSpeedMultiplier(2.0)).throws<StateError>();
@@ -163,7 +162,7 @@ void main() {
 
     test('setSpeedMultiplier() changes multiplier mid-session', () {
       fakeAsync((async) {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           random: const FixedRandom(),
@@ -179,7 +178,7 @@ void main() {
     test(
       'effectiveSpeedMultiplier equals speedMultiplier when not clamped',
       () {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 200.0,

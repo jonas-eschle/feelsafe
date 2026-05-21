@@ -27,12 +27,15 @@ enum EnginePhase {
 ///
 /// Use exhaustive [switch] expressions over this type — the compiler enforces
 /// all cases are handled. See spec 01 §Sealed EngineState.
-sealed class EngineState {}
+sealed class EngineState {
+  /// Const default constructor for subclasses that have no fields.
+  const EngineState();
+}
 
 /// The engine has not been started yet.
 final class EngineIdle extends EngineState {
   /// Creates the idle state.
-  EngineIdle();
+  const EngineIdle();
 }
 
 /// The engine is actively running a step.

@@ -2,7 +2,6 @@ import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'engine_test_helpers.dart';
 
@@ -11,7 +10,7 @@ void main() {
     test(
       'setBackgroundClamp(true) engages 60x cap on effectiveSpeedMultiplier',
       () {
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           mode(),
           isSimulation: true,
           speedMultiplier: 200.0,
@@ -27,7 +26,7 @@ void main() {
     );
 
     test('setBackgroundClamp(false) releases the cap', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         speedMultiplier: 200.0,
@@ -42,7 +41,7 @@ void main() {
     });
 
     test('speedMultiplier below 60 is unaffected by background clamp', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         speedMultiplier: 30.0,
@@ -54,7 +53,7 @@ void main() {
     });
 
     test('storedSpeedMultiplier is untouched by setBackgroundClamp', () {
-      final engine = SessionEngine(
+      final engine = buildEngine(sessionMode: 
         mode(),
         isSimulation: true,
         speedMultiplier: 500.0,
@@ -68,7 +67,7 @@ void main() {
 
     test('real session setBackgroundClamp is no-op (no-throw)', () {
       fakeAsync((async) {
-        final engine = SessionEngine(mode(), random: const FixedRandom());
+        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
         engine.start();
         async.flushMicrotasks();
         check(() => engine.setBackgroundClamp(true)).returnsNormally();
@@ -88,7 +87,7 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = SessionEngine(
+        final engine = buildEngine(sessionMode: 
           m,
           isSimulation: true,
           speedMultiplier: 200.0,
