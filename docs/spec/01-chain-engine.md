@@ -476,6 +476,15 @@ bool get isEnded;                      // True if endSession() called
 bool get isHolding;                    // True if user is currently holding (holdButton only)
 bool get isSimulation;                 // True if simulation mode enabled
 bool get isPaused;                     // True if pause() called, not yet resumed
+double get speedMultiplier;            // Stored multiplier; clamped to [0.01, 1000.0]
+                                       // foreground, untouched by setBackgroundClamp.
+double get effectiveSpeedMultiplier;   // What the timer math actually uses (G-013):
+                                       // returns min(speedMultiplier, 60.0) when
+                                       // setBackgroundClamp(true) is engaged;
+                                       // returns speedMultiplier otherwise. Tests
+                                       // assert on this getter, not speedMultiplier,
+                                       // when verifying background-cap behavior.
+bool get isBackgroundClamped;          // True iff setBackgroundClamp(true) is engaged.
 Stream<ChainEventData> get events;     // Event stream
 ```
 
@@ -725,6 +734,19 @@ enum ChainEvent {
                          // 04 §DeceptiveOldPinDialog) was shown.
                          // metadata['attemptCount'] = post-increment
                          // wrong-PIN counter value.
+                         // **Caller:** `SessionController`
+                         // increments its in-memory wrong-PIN
+                         // counter, then calls
+                         // `engine.notifyWrongPin(attemptCount)`,
+                         // then calls `showDialog(...)` to render
+                         // the dialog. The engine's
+                         // `notifyWrongPin(int)` method emits this
+                         // event on the engine stream so that
+                         // `SessionLogRecorder` (subscribed to the
+                         // engine stream) captures it in the
+                         // unified timeline. Tests assert via
+                         // `SessionController` interaction, not
+                         // direct engine calls.
   sessionEnded,          // Session ended (any reason).
 }
 

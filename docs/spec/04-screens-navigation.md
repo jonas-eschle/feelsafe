@@ -926,7 +926,7 @@ When stealth mode is enabled in settings, the session screen transforms:
 - Timer shows as music playback time (corner, if configured)
 
 **Timer Display Options (configurable per user):**
-1. **Normal:** Full timer at top of the session screen, monospace font sized at the screen's heading scale (~24pt at default text scale).
+1. **Normal:** Full elapsed-time timer in the top bar of the session screen, formatted `H:MM:SS` for sessions ≥ 1 h and `M:SS` otherwise, in a monospace font sized at the screen's heading scale (~24pt at default text scale). Always 100% opacity (no fade behaviour). Updates every 200 ms. Widget: `SessionElapsedClock(displayMode: TimerDisplay.normal)`; widget test asserts position via `find.byKey(const Key('session-elapsed-clock'))` and value via `find.text(expectedClockString)`.
 2. **Small (corner) — stealth mode (G-018):** Digital clock rendered in the **top-right** corner of the session screen as `M:SS` (no seconds shown for sessions > 99 min — falls back to `H:MM`), in a **12pt monospace** font matched to the system's media-player time indicator. After **10 seconds of no user interaction** the corner clock fades to **50% opacity** via a 400 ms opacity animation; any tap or swipe restores it to 100% opacity instantly. No app branding, no border, no background — the clock floats above the stealth background. Mimics a media-player playback time indicator so a casual observer reads it as such.
 3. **None:** No timer visible — session screen renders only the stealth background (or whatever `sessionScreenStealth` produces).
 
@@ -2583,7 +2583,7 @@ Modal dialog shown on every wrong-PIN entry when `AppSettings.deceptivePinDialog
 └──────────────────────────────────────────┘
 ```
 
-**Construction:** Stateless `AlertDialog` shown via `showDialog(barrierDismissible: false)`. Title `"Old PIN entered"`, content `"Are you sure you want to proceed?"`, two `TextButton`s. No counter, no biometric, no PIN-keypad — it is a dead-end UI. Both buttons close the dialog without distinguishing user intent.
+**Construction:** Stateless `AlertDialog` rendered via `showDialog<void>(context: ctx, barrierDismissible: false, builder: (_) => const DeceptiveOldPinDialog())` — **not** a pushed `GoRouter` route. Widget tests assert via `find.byType(DeceptiveOldPinDialog)` after pumping the calling screen and triggering the wrong-PIN entry. Title `"Old PIN entered"`, content `"Are you sure you want to proceed?"`, two `TextButton`s. No counter, no biometric, no PIN-keypad — it is a dead-end UI. Both buttons close the dialog without distinguishing user intent.
 
 **Side effect on show:** the calling site (PinEntryScreen, SessionScreen's session-end prompt, distress-cancel prompt) has already incremented the wrong-PIN counter and emitted `ChainEvent.deceptiveOldPinShown` (spec 01 §Events Emitted) before the dialog is built. The dialog itself is pure UI.
 

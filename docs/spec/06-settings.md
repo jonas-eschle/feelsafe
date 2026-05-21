@@ -326,9 +326,26 @@ Global alarm behavior (affects all loudAlarm steps).
 #### Session Log Trash (Extra 11)
 - Accessible from the trash icon in the `/past-events` app bar, not a settings row.
 - Soft-deleted logs are kept in the repository with a tombstone recorded in `SharedPreferences` (`session_log_tombstones`).
-- Tombstones older than `AppSettings.trashRetentionDays` (default 7 days) are hard-deleted on Past Events screen open and on `HistoryController` build.
+- Tombstones older than `AppSettings.trashRetentionDays` (default 7 days, configurable 1–90 days in `/settings/history-retention`) are hard-deleted on Past Events screen open and on `HistoryController` build.
 - Per-entry actions in the Trash screen: Restore (clears the tombstone) and Delete Permanently (hard-delete + tombstone cleanup).
 - "Clear All" on the Past Events screen bypasses Trash and wipes the repository plus every tombstone.
+
+#### History & Retention Screen (`/settings/history-retention`)
+
+A standalone settings screen surfacing the two retention values from `AppSettings`. Route name: `history_retention`; screen class: `HistoryRetentionScreen`. Accessible via **Settings → Data → "History & retention"** (table at the top of this spec, line 29).
+
+**Layout:**
+
+| Control | Backing field | Range | Default | Sub-label |
+|---|---|---|---|---|
+| `sessionLogRetentionDays` slider + numeric chip | `AppSettings.sessionLogRetentionDays` | 1–365 days | 180 | "Logs older than this move into the trash" |
+| `trashRetentionDays` slider + numeric chip | `AppSettings.trashRetentionDays` | 1–90 days | 7 | "Trashed logs are hard-deleted after this window" |
+
+Both sliders use the `TimingSlider` widget (spec 04 §Shared Widgets) configured with day-scaled snap stops (1, 3, 7, 14, 30, 60, 90, 180, 365). The numeric chip below each slider accepts direct integer input; values outside the range are clamped on submit. Each control has an ℹ info button that opens a tooltip explaining the trash-vs-hard-delete distinction.
+
+**Save behaviour:** auto-save on slider release / chip submit (single field write to the JSON-backed `AppSettings` singleton). Brief snackbar: "Retention updated" with optional "Undo".
+
+**Tests:** widget test asserts ranges by attempting to set 0 / 400 days and verifying clamp; integration test seeds a mode, advances clock past `sessionLogRetentionDays`, asserts the log moves to trash; advances past `trashRetentionDays`, asserts hard-delete.
 
 #### About → /settings/about
 - Label: "About Guardian Angela"
