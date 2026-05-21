@@ -442,8 +442,9 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 | **messageTemplate** | "Automated safety alert from Guardian Angela.\n{name} may need help.\nLast known location: {location}\nTime: {time}" | string | Fully customizable message with placeholders |
 | **includeLocation** | true | bool | Attach Google Maps URL with GPS coordinates |
 | **autoRecordAudio** | false | bool | Automatically start audio recording when step fires |
-| **autoRecordVideo** | false | bool | Automatically start video recording (future feature) |
 | **recordDurationSeconds** | 30 | int | Max duration for auto-recording (5–120) |
+
+(`autoRecordVideo` is not a field — video capture is out of scope per spec 11 REJ-3.)
 
 **UI Notes:**
 - Message template editor: expandable text area with placeholder buttons ("Add {name}", "Add {location}", "Add {time}", "Add {description}") that insert at cursor
@@ -475,7 +476,6 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 | **flashLight** | true | bool | Strobe camera flashlight |
 | **flashScreen** | false | bool | Strobe screen (photosensitive warning) |
 | **flashSpeedMs** | 500 | int | 100–2000 | Flash cycle length in ms |
-| **maxVolume** | true | bool | (legacy) force system media volume to max |
 | **gradualVolume** | false | bool | Ramp volume from silence to `volume` |
 | **blackScreenMode** | false | bool | Render under black overlay (stealth alarm) |
 
@@ -516,7 +516,7 @@ The ramp duration lives globally on `AppSettings.alarmGradualVolumeDurationSecon
 | **pressCount** | 5 | int | 2–10 (repeatPress only) | Number of rapid presses needed — default 5 (B1) |
 | **longPressDurationSeconds** | 2.0 | float | 1.0–10.0 (longPress only) | Sustained hold duration required |
 | **targetStepIndex** | -1 | int | Negative index: -1 = escalate immediately; 0+ = jump to specific step |
-| **blackScreenMode** | false | bool | Future: black screen during button detection |
+| **blackScreenMode** | false | bool | When true, the hardware-button step renders an all-black overlay so an attacker watching the screen sees no UI feedback while the button is being detected. The Dart layer still records the press; the layer above the overlay handles event emission. |
 
 **UI Notes:**
 - Button type, press pattern: radio buttons or dropdowns
@@ -813,7 +813,7 @@ The following legal documents MUST be completed:
 1. **Privacy Policy**
    - Clearly state what data is collected (session logs, GPS, contacts, emergency contact names)
    - Explain local storage and platform backups
-   - Explain optional analytics (if enabled in future)
+   - Explain optional analytics: Sentry crash reporting is **opt-in** via `AppSettings.sentryEnabled` (default `false`); no data leaves the device unless the user enables it. EU-hosted Sentry endpoint per D-TELEMETRY-1.
    - Data retention: "Session logs are retained until manually deleted by user"
    - No third-party sharing except emergency contacts (when escalation fires)
 
@@ -893,19 +893,6 @@ Display below import/export buttons:
 
 ---
 
-## Advanced Settings (Future)
-
-Placeholder section for planned advanced features:
-
-- **Sim card detection:** Alert if SIM card changed (stolen phone detection)
-- **Geofencing:** Trigger escalation if user leaves designated safe zones
-- **Panic word:** Trigger escalation by saying specific phrase (voice detection)
-- **Timezone management:** For frequent travelers
-- **Integration with wearables:** Receive check-ins on smartwatch
-- **Cloud sync (opt-in):** Optionally sync encrypted backups to cloud
-
----
-
 ## Persistence & Data Model
 
 All settings stored in encrypted local storage (Drift database for relational tables, JSON-backed singletons for blobs):
@@ -935,28 +922,26 @@ All settings stored in encrypted local storage (Drift database for relational ta
 
 ---
 
-## Future Considerations
+## Out-of-scope items
 
-### Planned Features (Not in Current Spec)
-- Cloud sync with E2E encryption
-- Wearable integration (smartwatch check-ins)
-- Voice command check-ins
-- Panic word detection
-- Integration with emergency dispatch systems
-- Advanced analytics dashboard (opt-in)
+Several Settings additions were considered and rejected; the canonical list lives in spec 11 §Rejected enhancements. The most relevant:
 
-### Accessibility & Localization
-- All labels translated via ARB files
-- High contrast mode toggle
-- Font size override
-- Screen reader optimizations
-- Voice control support
+- Cloud sync with E2E encryption → REJ-2 (cloud upload backend out of v3 scope).
+- Wearable integration (smartwatch check-ins) → not currently rejected by a numbered REJ, but explicitly out of v3 GA scope; reconsider only after v3 GA.
+- Voice command / panic-word detection → false-positive rate and on-device ML cost; reconsider only after v3 GA.
+- Integration with emergency dispatch systems (Noonlight) → REJ-4.
+- Advanced analytics dashboard beyond Sentry crash reporting → REJ-2 (cloud upload) plus separate product decision.
 
-### Performance & Security
-- Settings screen lazy-loads event defaults (only loaded when tab accessed)
-- PIN entry validated with rate limiting
-- Brute force protection via wrong PIN threshold
-- Security audit logging (optional, for transparency)
+### Accessibility & Localization (in scope for v3 GA)
+- All labels translated via ARB files (14 locales).
+- High contrast mode follows the system high-contrast preference.
+- Font scaling: UI remains usable under system-level text scaling.
+- Screen reader: Semantics labels on every non-text interactive element; TalkBack / VoiceOver tested.
+
+### Performance & Security (in scope for v3 GA)
+- Settings screen lazy-loads event defaults (only loaded when the relevant section is opened).
+- PIN entry rate-limited via `AppSettings.wrongPinThreshold` (default 5; range 2–10).
+- Encryption at rest is mandatory (sqlite3mc for Drift, AES-256 envelope for JSON singletons).
 
 ---
 

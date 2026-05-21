@@ -489,7 +489,7 @@ Wakelock is only active during specific check-in phases, not for the entire sess
 
 ## RecordingService
 
-Records audio to the app's documents directory for inclusion in session logs (future enhancement).
+Records audio to the app's documents directory. Recordings are referenced from the active `SessionLog` (the log's event entries carry the file path) and stored locally only — by design they are NOT attached to outbound messages (see spec 11 REJ-2).
 
 ```dart
 class RecordingService {

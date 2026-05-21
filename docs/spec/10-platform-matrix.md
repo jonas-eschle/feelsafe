@@ -229,7 +229,7 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 | **14 Languages** | YES | YES | — | en, de, fr, es, ru, zh_CN, zh_TW, hi, fa, uk, pl, el, ar, he (ARB-based) |
 | **RTL Language Support** | YES | YES | — | fa, ar, he supported with `EdgeInsetsDirectional`, mirrored icons |
 | **Locale-Aware Emergency Numbers** | YES | YES | — | 80+ country codes mapping; auto-detect from system locale |
-| **Currency Symbols** | YES (future) | YES (future) | — | Placeholder for premium features |
+| **Locale number / date / time formatting** | YES | YES | — | `intl` package handles locale-aware formatting for the elapsed-time clock and session-log timestamps; currency-symbol formatting is not applicable (the app has no monetary fields). |
 
 ---
 
@@ -314,24 +314,13 @@ MediaPlayer             — Audio session management
 
 ---
 
-## Future Platform Support
+## Non-target platforms
 
-### Web (Not Planned)
-- Would require refactoring for web-specific APIs
-- No SMS/call APIs available
-- Consider if commercial demand warrants
-- Estimated effort: 8 weeks
+v3 GA targets Android (API 26+) and iOS (16.0+) only. The following platforms are explicitly **non-targets**; no code, build configuration, or feature parity is maintained for them in v3.
 
-### Desktop (macOS/Windows) (Not Planned)
-- Currently out of scope
-- Would require platform-specific service implementations
-- Consider if user base demands
-- Estimated effort: 10 weeks
-
-### Android Wear / watchOS (Future)
-- Could provide quick check-in or emergency button on smartwatch
-- Requires separate app distribution
-- Lower priority; evaluate user feedback first
+- **Web.** No SMS / phone-call APIs in browsers; offline-first invariant ill-fits browser sandbox; not a v3 target.
+- **macOS / Windows / Linux desktop.** No platform support for the safety-channel features (SMS, phone calls, hardware-button panic, foreground service); not a v3 target.
+- **Android Wear / watchOS.** Smartwatch companion check-ins are not part of v3 GA. Reconsider only after v3 GA based on user feedback.
 
 ---
 

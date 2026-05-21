@@ -1329,12 +1329,12 @@ end-to-end timer-driven flows. These scenarios close that gap.
 | Real call over fakeCall (29, 30) | No | **INT-008** |
 | Simulation leap to next event (D2) | Partial | **INT-009** |
 | Disarm cancels queued SMS (A5) | Partial (orchestrator cleanDisarm no-op) | **INT-010** |
-| Distress via wrongPinThreshold (A3) | Settings round-trip only | (future) |
-| Crash recovery dialog (Extra 13) | No | (future, requires the persisted recovery-marker row in Drift) |
-| Smart retention (B8) | No | (future) |
-| Soft-delete log (Extra 11) | No | (future) |
-| Onboarding full flow | No | (future, widget-level) |
-| Language switch instant rebuild (43) | No | (future, widget-level) |
+| Distress via wrongPinThreshold (A3) | Settings round-trip only | **INT-011** (in Phase 9 cohort) |
+| Session-Interrupted prompt (Extra 13, informational) | No | **INT-012** (Phase 9 — seed `active_session_marker.json`, assert prompt + Acknowledge path) |
+| Smart retention (B8) | No | **INT-013** (Phase 9 — clock-advance test) |
+| Soft-delete log (Extra 11) | No | **INT-014** (Phase 9 — restore + hard-purge transitions) |
+| Onboarding full flow | No | **WID-001** (Phase 6 widget cohort) |
+| Language switch instant rebuild (43) | No | **WID-002** (Phase 6 widget cohort) |
 
 ---
 
