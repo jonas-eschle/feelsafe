@@ -1,0 +1,120 @@
+name: guardianangela
+description: "Guardian Angela - Personal safety app with dead man's switch"
+publish_to: 'none'
+
+version: 0.3.0+1
+
+environment:
+  sdk: ^3.11.4
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State / navigation / storage / crypto
+  flutter_riverpod: ^3.3.0
+  go_router: ^17.2.0
+  drift: ^2.33.0
+  sqlite3: ^3.3.0
+  flutter_secure_storage: ^10.2.0
+  shared_preferences: ^2.5.0
+  path_provider: ^2.1.0
+  path: ^1.9.0
+  crypt: ^4.3.0
+  argon2: ^1.0.1
+  crypto: ^3.0.0
+
+  # Services — audio
+  just_audio: ^0.10.0
+  audio_service: ^0.18.0
+  flutter_tts: ^4.2.0
+  record: ^6.2.0
+
+  # Services — location / sensors
+  geolocator: ^14.0.0
+  battery_plus: ^7.0.0
+
+  # Services — notifications / UI
+  flutter_local_notifications: ^21.0.0
+  vibration: ^3.1.0
+  wakelock_plus: ^1.6.0
+  torch_light: ^1.1.0
+
+  # Services — comms / sharing
+  permission_handler: ^12.0.0
+  url_launcher: ^6.3.0
+  share_plus: ^13.1.0
+  local_auth: ^3.0.0
+  flutter_contacts: ^2.0.0
+
+  # Services — background / native
+  flutter_background_service: ^5.1.0
+  home_widget: ^0.6.0
+  image_picker: ^1.2.0
+
+  # Utils
+  uuid: ^4.5.0
+  clock: ^1.1.0
+  meta: ^1.17.0
+  intl: ^0.20.0
+  package_info_plus: ^10.1.0
+  device_info_plus: ^13.1.0
+
+  # Telemetry (opt-out default, EU host — per D2)
+  sentry_flutter: ^9.20.0
+
+  # Icons
+  cupertino_icons: ^1.0.8
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+  # Lints / analysis
+  flutter_lints: ^6.0.0
+
+  # Database codegen
+  drift_dev: ^2.33.0
+  build_runner: ^2.15.0
+
+  # Testing utilities
+  mocktail: ^1.0.5
+  fake_async: ^1.3.3
+  checks: ^0.3.1
+  test: ^1.25.0
+  alchemist: ^0.14.0
+
+  # E2E testing
+  patrol: ^4.6.0
+
+  # Build tooling
+  flutter_launcher_icons: ^0.14.4
+  import_sorter: ^4.6.0
+
+flutter:
+  uses-material-design: true
+  generate: true
+
+  assets:
+    - assets/audio/
+    - assets/icon/
+    - assets/voice/
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/app_icon.png"
+  adaptive_icon_background: "#131118"
+  adaptive_icon_foreground: "assets/icon/app_icon_foreground.png"
+  min_sdk_android: 21
+
+import_sorter:
+  comments: false
+  emojis: false
+
+hooks:
+  user_defines:
+    sqlite3:
+      source: sqlite3mc

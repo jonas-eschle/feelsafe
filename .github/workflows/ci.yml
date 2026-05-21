@@ -1,0 +1,505 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+env:
+  FLUTTER_VERSION: "3.41.6"
+
+jobs:
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 1. Format check
+  # ─────────────────────────────────────────────────────────────────────────────
+  format:
+    name: Dart format
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Check formatting
+        # Lines: 1-7
+        # Exclude OLD/ — it is an inert archive, not linted or formatted.
+        run: dart format --output=none --set-exit-if-changed lib/ test/ integration_test/ android/ ios/ 2>/dev/null || dart format --output=none --set-exit-if-changed lib/ test/
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 2. Import sorter check
+  # ─────────────────────────────────────────────────────────────────────────────
+  import-sorter:
+    name: Import sorter
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Check import order
+        # Lines: 8-14
+        run: dart run import_sorter:main --no-comments --exit-if-changed
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 3. build_runner codegen — must be clean (no stale .g.dart)
+  # ─────────────────────────────────────────────────────────────────────────────
+  build-runner:
+    name: build_runner codegen
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Run build_runner
+        # Lines: 15-22
+        run: dart run build_runner build --delete-conflicting-outputs
+      - name: Assert no stale generated files
+        run: |
+          if ! git diff --exit-code --name-only -- '**/*.g.dart' '**/*.freezed.dart'; then
+            echo "ERROR: build_runner produced uncommitted generated files"
+            git diff --name-only
+            exit 1
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 4. Static analysis
+  # ─────────────────────────────────────────────────────────────────────────────
+  analyze:
+    name: Flutter analyze
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Analyze
+        # Lines: 23-29
+        run: flutter analyze --fatal-infos
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 5. Tests + coverage gate
+  # NOTE: Coverage gate is temporarily 0% until Phase 1 lands.
+  # The gate ratchets per phase:
+  #   Phase 0  →  0%  (skeleton only)
+  #   Phase 1  → 30%  (domain models)
+  #   Phase 2  → 50%  (engine)
+  #   Phase 3  → 55%
+  #   Phase 4  → 65%
+  #   Phase 5  → 75%
+  #   Phase 6  → 85%
+  #   Phase 7  → 90%
+  #   Phase 8  → 92%
+  #   Phase 9  → 99%  (final gate per D6)
+  # ─────────────────────────────────────────────────────────────────────────────
+  test:
+    name: Flutter test + coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Run tests with coverage
+        # Lines: 30-39
+        run: flutter test --coverage --concurrency=6
+      - name: Install lcov
+        run: sudo apt-get install -y lcov
+      - name: Coverage gate (Phase 0 = 0%; ratchets to 99% by Phase 9)
+        # Lines: 40-50 — TEMPORARY: Phase 0 floor is 0%.
+        # Update COVERAGE_FLOOR when each phase lands:
+        # Phase 1→30, Phase 2→50, Phase 3→55, Phase 4→65,
+        # Phase 5→75, Phase 6→85, Phase 7→90, Phase 8→92, Phase 9→99
+        run: |
+          COVERAGE_FLOOR=0
+          if [ -f coverage/lcov.info ]; then
+            LINES_TOTAL=$(lcov --summary coverage/lcov.info 2>&1 | grep -E 'lines\.\.\.' | grep -oP '\d+\.\d+(?=%)' | head -1)
+            echo "Line coverage: ${LINES_TOTAL}%  (floor: ${COVERAGE_FLOOR}%)"
+            if [ "$(echo "$LINES_TOTAL < $COVERAGE_FLOOR" | bc -l)" = "1" ]; then
+              echo "FAIL: coverage ${LINES_TOTAL}% is below floor ${COVERAGE_FLOOR}%"
+              exit 1
+            fi
+          else
+            echo "No lcov.info found — coverage check skipped (no .dart files yet)"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 6. Discontinued dependency audit
+  # ─────────────────────────────────────────────────────────────────────────────
+  dep-audit:
+    name: Dependency audit (no discontinued)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Audit for discontinued packages
+        # Lines: 51-70
+        run: |
+          flutter pub outdated --json > /tmp/pub_outdated.json 2>&1 || true
+          python3 - <<'PYEOF'
+          import json, sys
+          with open('/tmp/pub_outdated.json') as f:
+              data = json.load(f)
+          packages = data.get('packages', [])
+          discontinued = []
+          for pkg in packages:
+              current = pkg.get('current') or {}
+              if current.get('isDiscontinued', False):
+                  discontinued.append(pkg.get('package', '?'))
+          if discontinued:
+              print(f"ERROR: Discontinued direct deps found: {discontinued}")
+              sys.exit(1)
+          else:
+              print(f"OK: {len(packages)} packages checked, 0 discontinued.")
+          PYEOF
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 7. L10n key parity (every app_en.arb key in every other locale)
+  # ─────────────────────────────────────────────────────────────────────────────
+  l10n-parity:
+    name: L10n key parity
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check ARB key parity
+        # Lines: 71-100
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, sys, glob
+          arb_dir = 'lib/l10n/l10n'
+          en_path = os.path.join(arb_dir, 'app_en.arb')
+          if not os.path.exists(en_path):
+              print("WARNING: app_en.arb not found yet — skipping parity check (Phase 0 pre-ARB)")
+              sys.exit(0)
+          with open(en_path) as f:
+              en_data = json.load(f)
+          en_keys = {k for k in en_data if not k.startswith('@')}
+          failures = []
+          for path in sorted(glob.glob(os.path.join(arb_dir, 'app_*.arb'))):
+              if path == en_path:
+                  continue
+              with open(path) as f:
+                  lang_data = json.load(f)
+              lang_keys = {k for k in lang_data if not k.startswith('@')}
+              missing = en_keys - lang_keys
+              if missing:
+                  failures.append(f"{os.path.basename(path)}: missing {sorted(missing)}")
+          if failures:
+              print("FAIL: L10n key parity violations:")
+              for f in failures:
+                  print(f"  {f}")
+              sys.exit(1)
+          else:
+              print(f"OK: All locales have {len(en_keys)} keys from app_en.arb")
+          PYEOF
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 8. Legacy-identifier grep gate (hard fail)
+  # ─────────────────────────────────────────────────────────────────────────────
+  legacy-id-grep:
+    name: Legacy identifier grep
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject legacy identifiers in lib/ and test/
+        # Lines: 101-130
+        # Forbidden tokens per v3-plan.md §8:
+        #   class DistressChain, repeatCount (in code), leapToNextEvent,
+        #   LoudAlarmSound.{beep,whistle,scream,whoop},
+        #   SmsRecipient, flashSpeed\b, maxVolume\b,
+        #   Hive\b|@HiveType|@HiveField, PauseReason.bootRestart,
+        #   EndReason.appTermination
+        run: |
+          FAILED=0
+          check() {
+            local label="$1"; shift
+            local results
+            results=$(grep -rn "$@" lib/ test/ integration_test/ 2>/dev/null || true)
+            if [ -n "$results" ]; then
+              echo "FAIL [$label]:"
+              echo "$results"
+              FAILED=1
+            else
+              echo "OK [$label]"
+            fi
+          }
+          check "class DistressChain"       -E "class DistressChain\b"
+          check "repeatCount"               -E "\brepeatCount\b"
+          check "leapToNextEvent"           -E "\bleapToNextEvent\b"
+          check "LoudAlarmSound.beep|whistle|scream|whoop" \
+                                            -E "LoudAlarmSound\.(beep|whistle|scream|whoop)\b"
+          check "SmsRecipient"              -E "\bSmsRecipient\b"
+          check "flashSpeed (bare)"         -E "\bflashSpeed\b(?!Ms)"
+          check "maxVolume"                 -E "\bmaxVolume\b"
+          check "Hive/@HiveType/@HiveField" -E "\bHive\b|@HiveType|@HiveField"
+          check "PauseReason.bootRestart"   -E "PauseReason\.bootRestart\b"
+          check "EndReason.appTermination"  -E "EndReason\.appTermination\b"
+          if [ $FAILED -ne 0 ]; then exit 1; fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 9. OLD/-import gate (no lib/ or test/ file may import from OLD/)
+  # ─────────────────────────────────────────────────────────────────────────────
+  old-import-gate:
+    name: No OLD/ imports
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Reject any import referencing OLD/
+        # Lines: 131-140
+        run: |
+          if grep -rn "import.*['\"].*OLD/\|OLD/lib/" lib/ test/ integration_test/ 2>/dev/null; then
+            echo "FAIL: Found import(s) referencing OLD/ — forbidden per D4"
+            exit 1
+          fi
+          echo "OK: No OLD/ imports found"
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 10. NO-STUBS CI gate (S-1 through S-12, ALL hard-fail per D13)
+  # ─────────────────────────────────────────────────────────────────────────────
+  no-stubs:
+    name: NO-STUBS gate (S-1..S-12)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: S-1 No UnimplementedError in lib/
+        # Lines: 141-150
+        run: |
+          if grep -rn "throw UnimplementedError\|throw 'TODO\|assert(false.*TODO" lib/ 2>/dev/null; then
+            echo "FAIL S-1: UnimplementedError or throw TODO in lib/"
+            exit 1
+          fi
+          echo "OK S-1"
+      - name: S-2 No empty public method bodies (check for no-op overrides)
+        # Lines: 151-163
+        run: |
+          # Detect @override methods with empty bodies {}
+          if grep -rn -A2 "@override" lib/ 2>/dev/null | grep -E "^\s*\{\s*\}$"; then
+            echo "FAIL S-2: Empty override body detected in lib/"
+            exit 1
+          fi
+          echo "OK S-2"
+      - name: S-3 No TODO/FIXME/XXX/HACK/stub/placeholder comment markers
+        # Lines: 164-174
+        run: |
+          if grep -rEn "//\s*(TODO|FIXME|XXX|HACK|stub|placeholder|implement later|coming soon)" lib/ 2>/dev/null; then
+            echo "FAIL S-3: Comment markers found in lib/"
+            exit 1
+          fi
+          echo "OK S-3"
+      - name: S-4 No Container() or Placeholder() in lib/features/
+        # Lines: 175-184
+        run: |
+          if grep -rn "Container()\|Placeholder()" lib/features/ 2>/dev/null; then
+            echo "FAIL S-4: Bare Container() or Placeholder() in lib/features/"
+            exit 1
+          fi
+          echo "OK S-4"
+      - name: "S-5 kDebugMode/kReleaseMode must have justification comment"
+        # Lines: 185-198
+        run: |
+          FAILED=0
+          while IFS= read -r line; do
+            # Each match must be preceded by a justification comment on previous line
+            file=$(echo "$line" | cut -d: -f1)
+            lineno=$(echo "$line" | cut -d: -f2)
+            prevline=$(sed -n "$((lineno-1))p" "$file" 2>/dev/null || true)
+            if ! echo "$prevline" | grep -qE "//\s*(spec:|justif|debug-only|release-only)"; then
+              echo "FAIL S-5: $line — missing justification comment"
+              FAILED=1
+            fi
+          done < <(grep -rn "kDebugMode\|kReleaseMode" lib/ 2>/dev/null || true)
+          [ $FAILED -eq 0 ] && echo "OK S-5"
+          [ $FAILED -ne 0 ] && exit 1
+      - name: S-6 No Simulation/Fake services outside service_providers.dart
+        # Lines: 199-210
+        run: |
+          if grep -rn "Simulation.*Service(\|Fake.*Repository(" lib/ 2>/dev/null \
+             | grep -v "lib/services/service_providers.dart" \
+             | grep -v "lib/services/.*simulation_.*service.dart" \
+             | grep -v "// spec:"; then
+            echo "FAIL S-6: Simulation/Fake service instantiated outside service_providers.dart"
+            exit 1
+          fi
+          echo "OK S-6"
+      - name: "S-7 Wiring-map coverage test exists (Phase 5+ check)"
+        # Lines: 211-220
+        run: |
+          if [ ! -f test/wiring/wiring_map_coverage_test.dart ]; then
+            echo "FAIL S-7: test/wiring/wiring_map_coverage_test.dart missing"
+            exit 1
+          fi
+          echo "OK S-7"
+      - name: "S-8 Disabled controls must have spec ref comment"
+        # Lines: 221-235
+        run: |
+          FAILED=0
+          while IFS= read -r line; do
+            file=$(echo "$line" | cut -d: -f1)
+            lineno=$(echo "$line" | cut -d: -f2)
+            # Allow disabled controls only if same-line or previous-line has spec: comment
+            sameline=$(echo "$line" | grep -E "//\s*spec:" || true)
+            prevline=$(sed -n "$((lineno-1))p" "$file" 2>/dev/null || true)
+            if [ -z "$sameline" ] && ! echo "$prevline" | grep -qE "//\s*spec:"; then
+              echo "FAIL S-8: $line — disabled control missing spec: comment"
+              FAILED=1
+            fi
+          done < <(grep -rn "enabled:\s*false\|onPressed:\s*null" lib/features/ 2>/dev/null || true)
+          [ $FAILED -eq 0 ] && echo "OK S-8"
+          [ $FAILED -ne 0 ] && exit 1
+      - name: "S-9 No @skip, skip:, or trivial assertions in tests"
+        # Lines: 236-250
+        run: |
+          FAILED=0
+          if grep -rn "@Skip\|\.skip\b" test/ integration_test/ 2>/dev/null; then
+            echo "FAIL S-9: @Skip or .skip found in tests"
+            FAILED=1
+          fi
+          if grep -rn "expect(true, true)\|expect(\[\], \[\])" test/ integration_test/ 2>/dev/null; then
+            echo "FAIL S-9: Trivial expect assertion (expect(true, true) etc.) found"
+            FAILED=1
+          fi
+          [ $FAILED -eq 0 ] && echo "OK S-9"
+          [ $FAILED -ne 0 ] && exit 1
+      - name: S-10 No doc stubs (/// TODO or mere name restatement)
+        # Lines: 251-262
+        run: |
+          if grep -rn "///.*TODO\|///.*FIXME\|///.*placeholder" lib/ 2>/dev/null; then
+            echo "FAIL S-10: Doc comment stubs found in lib/"
+            exit 1
+          fi
+          echo "OK S-10"
+      - name: S-11 ARB parity and no placeholder values
+        # Lines: 263-290
+        run: |
+          python3 - <<'PYEOF'
+          import json, os, sys, glob
+          arb_dir = 'lib/l10n/l10n'
+          en_path = os.path.join(arb_dir, 'app_en.arb')
+          if not os.path.exists(en_path):
+              print("OK S-11: No app_en.arb yet (Phase 0)")
+              sys.exit(0)
+          with open(en_path) as f:
+              en_data = json.load(f)
+          en_keys = {k for k in en_data if not k.startswith('@')}
+          failed = False
+          for path in sorted(glob.glob(os.path.join(arb_dir, 'app_*.arb'))):
+              with open(path) as f:
+                  data = json.load(f)
+              for k, v in data.items():
+                  if k.startswith('@'):
+                      continue
+                  if isinstance(v, str) and v.lower() in ('todo', 'placeholder', '???', ''):
+                      print(f"FAIL S-11: {os.path.basename(path)}[{k}] = '{v}'")
+                      failed = True
+          if not failed:
+              print(f"OK S-11: {len(en_keys)} keys, no placeholder values")
+          sys.exit(1 if failed else 0)
+          PYEOF
+      - name: S-12 Native channel handlers match Dart invokeMethod calls
+        # Lines: 291-320
+        # Phase 0: lib/ has no MethodChannel calls yet — this will be a real
+        # check once Phase 5+ lands. For now it verifies the check infrastructure
+        # is present and exits 0 if no calls found.
+        run: |
+          python3 - <<'PYEOF'
+          import os, re, glob, sys
+          dart_calls = set()
+          for path in glob.glob('lib/**/*.dart', recursive=True):
+              with open(path) as f:
+                  content = f.read()
+              for m in re.finditer(r"invokeMethod\(['\"]([^'\"]+)['\"]", content):
+                  dart_calls.add((path, m.group(1)))
+          if not dart_calls:
+              print("OK S-12: No MethodChannel.invokeMethod calls in lib/ yet (Phase 0)")
+              sys.exit(0)
+          # Phase 5+: verify each call has a native handler
+          kt_files = glob.glob('android/app/src/main/kotlin/**/*.kt', recursive=True)
+          swift_files = glob.glob('ios/Runner/*.swift')
+          native_content = ''
+          for p in kt_files + swift_files:
+              with open(p) as f:
+                  native_content += f.read()
+          failed = False
+          for (dart_file, method) in sorted(dart_calls):
+              if method not in native_content:
+                  print(f"FAIL S-12: '{method}' called in {dart_file} but no native handler found")
+                  failed = True
+          if not failed:
+              print(f"OK S-12: {len(dart_calls)} method channel call(s) verified")
+          sys.exit(1 if failed else 0)
+          PYEOF
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 11. UnimplementedError count (warn-only — prints count so it cannot drift up)
+  # ─────────────────────────────────────────────────────────────────────────────
+  unimplemented-count:
+    name: UnimplementedError count (warn-only)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Count UnimplementedError in lib/ (warn only)
+        # Lines: 321-330
+        run: |
+          COUNT=$(grep -rn "UnimplementedError" lib/ 2>/dev/null | wc -l || echo 0)
+          echo "UnimplementedError occurrences in lib/: $COUNT"
+          if [ "$COUNT" -gt 0 ]; then
+            echo "WARNING: ${COUNT} UnimplementedError(s) found — must be 0 before Phase 11"
+          fi
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # 12. End-to-end (Patrol) — runs only on version tags
+  # ─────────────────────────────────────────────────────────────────────────────
+  e2e:
+    name: Patrol e2e (on version tags)
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs:
+      - format
+      - import-sorter
+      - build-runner
+      - analyze
+      - test
+      - dep-audit
+      - l10n-parity
+      - legacy-id-grep
+      - old-import-gate
+      - no-stubs
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - name: Run Patrol e2e tests
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+        # Lines: 331-340
+        run: |
+          flutter test integration_test/ --concurrency=1

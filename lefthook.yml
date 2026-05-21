@@ -1,0 +1,14 @@
+pre-commit:
+  commands:
+    format:
+      # Exclude OLD/ — inert archive, not formatted in v3 tree
+      run: dart format lib/ test/ integration_test/ 2>/dev/null; dart format lib/ test/
+    import-sorter:
+      run: dart run import_sorter:main --no-comments
+
+pre-push:
+  commands:
+    analyze:
+      run: flutter analyze --fatal-infos
+    test:
+      run: flutter test --concurrency=6

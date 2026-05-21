@@ -53,3 +53,13 @@ app.*.map.json
 # Dart code generation
 *.g.dart
 *.freezed.dart
+
+# v3 additions
+/OLD/build/
+/OLD/.dart_tool/
+/OLD/.flutter-plugins-dependencies
+/OLD/android/build/
+/OLD/android/.gradle/
+/OLD/android/.kotlin/
+/coverage/
+/.sentry-native/

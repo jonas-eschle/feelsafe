@@ -1,0 +1,899 @@
+{
+  "@@locale": "de",
+  "appTitle": "Guardian Angela",
+  "commonSave": "Speichern",
+  "commonCancel": "Abbrechen",
+  "commonDelete": "Löschen",
+  "commonEdit": "Bearbeiten",
+  "commonAdd": "Hinzufügen",
+  "commonClose": "Schließen",
+  "commonConfirm": "Bestätigen",
+  "commonBack": "Zurück",
+  "commonDone": "Fertig",
+  "commonRetry": "Wiederholen",
+  "commonYes": "Ja",
+  "commonNo": "Nein",
+  "commonEnabled": "Aktiviert",
+  "commonDisabled": "Deaktiviert",
+  "commonNone": "Keine",
+  "commonSeconds": "Sekunden",
+  "commonMinutes": "Minuten",
+  "cancel": "Abbrechen",
+  "homeTitle": "Guardian Angela",
+  "homeStartSession": "Sitzung starten",
+  "homeSimulate": "Simulieren",
+  "homeActiveSession": "Aktive Sitzung",
+  "homeResumeSession": "Fortsetzen",
+  "homeNoModes": "Noch keine Modi. Tippe auf „Modi“, um einen anzulegen.",
+  "homeNoContacts": "Noch keine Notfallkontakte. Tippe auf „Kontakte“, um einen anzulegen.",
+  "homeMenuSettings": "Einstellungen",
+  "homeMenuContacts": "Kontakte",
+  "homeMenuModes": "Modi",
+  "homeMenuHistory": "Vergangene Sitzungen",
+  "homeSelectMode": "Modus wählen",
+  "onboardingWelcomeTitle": "Willkommen bei Guardian Angela",
+  "onboardingWelcomeBody": "Eine Begleiterin, die dich auf dem Heimweg sicher hält. Guardian Angela wacht über dich beim Gehen, Laufen oder Reisen und kann deine Vertrauenspersonen alarmieren, wenn du Hilfe brauchst.",
+  "onboardingProfileTitle": "Profil & erster Kontakt",
+  "onboardingProfileBody": "Erzähl uns etwas über dich, damit Guardian Angela im Notfall hilfreiche Informationen weitergeben kann. Füge dann eine Vertrauensperson hinzu.",
+  "onboardingPermissionsTitle": "Berechtigungen",
+  "onboardingPermissionsBody": "Guardian Angela benötigt einige Berechtigungen, um dich schützen zu können. Erteile sie jetzt oder später in den Einstellungen.",
+  "onboardingNext": "Weiter",
+  "onboardingSkip": "Überspringen",
+  "onboardingFinish": "Fertig",
+  "sessionTitle": "Sitzung",
+  "sessionDisarm": "Ich bin sicher",
+  "sessionPause": "Pause",
+  "sessionResume": "Fortsetzen",
+  "sessionHoldPrompt": "Halten, um sicher zu bleiben",
+  "sessionHoldSemantic": "Halte gedrückt. Loslassen startet eine Kulanzzeit.",
+  "sessionStepLabel": "Schritt {index} von {total}",
+  "sessionMissCount": "Verpasst: {count}",
+  "sessionRemaining": "Noch {seconds} s",
+  "sessionPausedBadge": "Pausiert",
+  "sessionPhaseEnded": "Sitzung beendet",
+  "sessionSimulationBanner": "Simulation",
+  "sessionCompletedTitle": "Sitzung abgeschlossen",
+  "sessionCompletedBody": "Du bist sicher angekommen. Guardian Angela beendet die Überwachung.",
+  "sessionCompletedReturnHome": "Zurück zur Startseite",
+  "simulationSummaryTitle": "Simulations-Zusammenfassung",
+  "simulationSummaryEmpty": "In dieser Simulation wurden keine Schritte ausgelöst.",
+  "simulationSummaryReturn": "Zurück zur Startseite",
+  "fakeCallTitle": "Eingehender Anruf",
+  "fakeCallAnswer": "Annehmen",
+  "fakeCallDecline": "Ablehnen",
+  "fakeCallHangUp": "Auflegen",
+  "contactsTitle": "Notfallkontakte",
+  "contactsEmpty": "Noch keine Kontakte. Füge einen hinzu, um Notfallnachrichten zu empfangen.",
+  "contactsAdd": "Kontakt hinzufügen",
+  "contactFormTitleCreate": "Neuer Kontakt",
+  "contactFormTitleEdit": "Kontakt bearbeiten",
+  "contactFieldName": "Name",
+  "contactFieldPhone": "Telefonnummer",
+  "contactFieldRelationship": "Beziehung (optional)",
+  "contactFieldLanguage": "SMS-Sprache (optional)",
+  "contactChannelsHeader": "Nachrichtenkanäle",
+  "contactChannelSms": "SMS",
+  "contactChannelWhatsapp": "WhatsApp",
+  "contactChannelTelegram": "Telegram",
+  "contactChannelPhone": "Anruf",
+  "contactDeleteConfirm": "Kontakt löschen?",
+  "contactDeleteBody": "{name} wird aus deiner Notfallliste entfernt.",
+  "contactRequiredError": "Name und Telefonnummer sind erforderlich.",
+  "modesTitle": "Modi",
+  "modesEmpty": "Noch keine Modi. Tippe auf „Hinzufügen“, um einen Modus zu erstellen.",
+  "modesAdd": "Modus hinzufügen",
+  "modesNewPickerTitle": "Ausgangspunkt",
+  "modesNewPickerBlank": "Leerer Modus",
+  "modesNewPickerBlankSubtitle": "Mit einer leeren Kette beginnen",
+  "modesNewPickerFromTemplate": "Aus {name}",
+  "modesNewPickerFromTemplateSubtitle": "Kette und Auslöser dieses Modus kopieren",
+  "modesNewPickerCopyName": "Kopie von {name}",
+  "modesNewPickerBuiltinBadge": "Eingebaut",
+  "modeEditorTitleCreate": "Neuer Modus",
+  "modeEditorTitleEdit": "Modus bearbeiten",
+  "modeFieldName": "Name",
+  "modeFieldDistressMode": "Notfallmodus",
+  "modeFieldDistressModeDefault": "Standard verwenden",
+  "modeChainHeader": "Kette",
+  "modeChainAddStep": "Schritt hinzufügen",
+  "modeChainEmpty": "Noch keine Schritte. Tippe auf „Schritt hinzufügen“.",
+  "modeTrackingHeader": "GPS-Aufzeichnung",
+  "modeTrackingEnabled": "GPS während der Sitzung aufzeichnen",
+  "modeTrackingIntervalLabel": "Aufzeichnungsintervall",
+  "modeTrackingBufferSizeLabel": "Puffergröße",
+  "modeTrackingBufferSizeValue": "{count} Punkte",
+  "modeTrackingBatteryNote": "Häufige GPS-Aufzeichnung erhöht den Batterieverbrauch.",
+  "stepTypeHoldButton": "Halte-Taste",
+  "stepTypeDisguisedReminder": "Getarnte Erinnerung",
+  "stepTypeCountdownWarning": "Countdown-Warnung",
+  "stepTypeFakeCall": "Fake-Anruf",
+  "stepTypeSmsContact": "SMS an Kontakt",
+  "stepTypePhoneCallContact": "Kontakt anrufen",
+  "stepTypeLoudAlarm": "Lauter Alarm",
+  "stepTypeCallEmergency": "Notruf wählen",
+  "stepTypeHardwareButton": "Hardware-Taste",
+  "stepFieldDuration": "Dauer (Sekunden)",
+  "stepFieldGrace": "Kulanzzeit (Sekunden)",
+  "stepFieldWait": "Wartezeit (Sekunden)",
+  "stepFieldRetryCount": "Anzahl Wiederholungen",
+  "stepFieldRandomize": "Zeit-Streuung",
+  "stepFieldRandomizeToggle": "Zufällige Zeit (±20%)",
+  "stepFieldWaitTooltip": "Wie lange gewartet wird, bevor dieser Schritt startet.",
+  "stepFieldDurationTooltip": "Wie lange der Schritt aktiv ist, bevor das Kulanz-Fenster beginnt.",
+  "stepFieldGraceTooltip": "Zeit nach der aktiven Phase, um Sicherheit zu bestätigen, bevor der nächste Schritt ausgelöst wird.",
+  "stepFieldRetryCountTooltip": "Wie oft dieser Schritt wiederholt wird, bevor eskaliert wird.",
+  "stepFieldReminderIntervalTooltip": "Wie oft die getarnte Erinnerung erscheint, während auf eine Bestätigung gewartet wird.",
+  "stepFieldReminderGraceTooltip": "Wie viel Zeit nach Erscheinen der Erinnerung zur Bestätigung bleibt.",
+  "stepPreview": "In Simulation testen",
+  "stepPreviewFired": "Vorschau ausgeführt: {description}",
+  "stepPreviewTitle": "Schritt-Vorschau",
+  "stepPreviewMissingParams": "Schritt- oder Modus-Verweis fehlt.",
+  "stepPreviewModeNotFound": "Modus nicht gefunden.",
+  "stepPreviewStepNotFound": "Schritt in diesem Modus nicht gefunden.",
+  "stepPreviewError": "Vorschau fehlgeschlagen: {error}",
+  "stepPreviewReplay": "Erneut",
+  "stepPreviewHoldButtonHint": "Halte die Taste gedrückt, um die echte Reaktion zu spüren.",
+  "stepPreviewHoldButtonLabel": "Halten",
+  "stepPreviewHoldButtonSemantic": "Halten zur Vorschau",
+  "stepPreviewHoldButtonReleased": "Losgelassen. Die Sitzung würde nun in das Toleranzfenster wechseln.",
+  "stepPreviewFakeCallHint": "Der Fake-Anruf-Bildschirm erscheint. Wische zum Annehmen oder halte den roten Knopf, um Notfall zu simulieren.",
+  "stepConfigFakeCallCaller": "Name des Anrufers",
+  "stepConfigFakeCallDecline": "Ablehnen zählt als Entwarnung",
+  "stepConfigLoudAlarmFlash": "Bildschirm blinken lassen",
+  "stepConfigLoudAlarmVolume": "Maximale Lautstärke",
+  "stepConfigCountdownVibrate": "Vibrieren",
+  "stepConfigCountdownTone": "Ton abspielen",
+  "stepConfigSmsSelection": "Empfänger",
+  "stepConfigSmsAllContacts": "Alle Kontakte",
+  "stepConfigSmsSpecific": "Bestimmte Kontakte",
+  "stepConfigSmsIncludeLocation": "Standort mitsenden",
+  "stepConfigSmsIncludeMedical": "Medizinische Infos mitsenden",
+  "stepConfigSmsAutoRecordAudio": "Audio automatisch aufzeichnen",
+  "stepConfigSmsAutoRecordVideo": "Video automatisch aufzeichnen",
+  "stepConfigSmsRecordDuration": "Aufzeichnungsdauer",
+  "stepConfigHoldReleaseSensitivity": "Loslass-Empfindlichkeit (s)",
+  "stepConfigReminderInterval": "Erinnerungsintervall (Sekunden)",
+  "stepConfigReminderTemplate": "Vorlage",
+  "stepConfigHardwarePattern": "Muster",
+  "stepConfigHardwarePressCount": "Anzahl Tastendrücke",
+  "stepConfigHardwarePressWindow": "Drückfenster (ms)",
+  "stepConfigHardwareLongDuration": "Dauer langes Drücken (s)",
+  "stepConfigHardwareButton": "Taste",
+  "stepConfigHardwareButtonVolumeUp": "Lauter",
+  "stepConfigHardwareButtonVolumeDown": "Leiser",
+  "stepConfigHardwareButtonPower": "Power",
+  "stepConfigHardwarePatternRepeat": "Mehrfaches Drücken",
+  "stepConfigHardwarePatternLong": "Langes Drücken",
+  "stepConfigEmergencyNumber": "Notrufnummer überschreiben",
+  "stepConfigEmergencyConfirm": "Vor Anruf bestätigen",
+  "stepConfigPhonePreSms": "SMS vor Anruf senden",
+  "distressModesTitle": "Notfallmodi",
+  "distressModeInUseTitle": "Notfallmodus wird verwendet",
+  "distressModeInUseBody": "Dieser Notfallmodus ist noch mit folgenden Modi verknüpft: {modes}. Weisen Sie diesen Modi einen anderen Notfallmodus zu, bevor Sie ihn löschen.",
+  "distressModesEmpty": "Noch keine Notfallmodi.",
+  "distressModesAdd": "Notfallmodus hinzufügen",
+  "distressModeEditorTitleCreate": "Neuer Notfallmodus",
+  "distressModeEditorTitleEdit": "Notfallmodus bearbeiten",
+  "distressModeName": "Name des Notfallmodus",
+  "distressCountdown": "Notfallmodus wird ausgelöst ...",
+  "distressCountdownStealth": "Bitte warten ...",
+  "templatesTitle": "Erinnerungs-Vorlagen",
+  "templatesEmpty": "Noch keine Vorlagen.",
+  "templatesAdd": "Vorlage hinzufügen",
+  "templateEditorTitleCreate": "Neue Vorlage",
+  "templateEditorTitleEdit": "Vorlage bearbeiten",
+  "templateFieldName": "Editor-Name",
+  "templateFieldTitle": "Titel der Erinnerung",
+  "templateFieldBody": "Text der Erinnerung",
+  "templateFieldConfirmationType": "Bestätigungsart",
+  "templateFieldKeyword": "Stichwort",
+  "templateFieldButtonLabel": "Button-Beschriftung",
+  "templateFieldDisplayStyle": "Anzeige-Stil",
+  "templateConfirmTapButton": "Button tippen",
+  "templateConfirmTapWord": "Wort tippen",
+  "templateConfirmSwipe": "Wischen",
+  "templateConfirmDismiss": "Schließen",
+  "templateDisplayFullscreen": "Vollbild",
+  "templateDisplaySubtle": "Unauffällig",
+  "profileTitle": "Profil",
+  "profileFieldName": "Name",
+  "profileFieldAge": "Alter",
+  "profileFieldPhoneNumber": "Telefonnummer",
+  "profileFieldPhysicalDescription": "Körperbeschreibung",
+  "profileFieldBloodType": "Blutgruppe",
+  "profileFieldAllergies": "Allergien",
+  "profileFieldMedications": "Medikamente",
+  "profileFieldConditions": "Vorerkrankungen",
+  "profileFieldInstructions": "Notfall-Hinweise",
+  "profileAddItem": "Eintrag hinzufügen",
+  "settingsTitle": "Einstellungen",
+  "settingsSectionSecurity": "Sicherheit",
+  "settingsSectionStealth": "Tarnmodus",
+  "settingsSectionDefaults": "Standardwerte",
+  "settingsSectionHistory": "Verlauf",
+  "settingsSectionBackup": "Sicherung",
+  "settingsSectionAbout": "Über",
+  "settingsSectionFeedback": "Feedback",
+  "settingsSectionContacts": "Kontakte",
+  "settingsSectionModes": "Modi",
+  "settingsSectionProfile": "Profil",
+  "settingsSectionDistressModes": "Notfallmodi",
+  "settingsSectionReminderTemplates": "Erinnerungs-Vorlagen",
+  "settingsSectionBatteryAlert": "Akku-Warnung",
+  "settingsSectionEventDefaults": "Schritt-Standardwerte",
+  "settingsSectionGpsLogging": "GPS-Aufzeichnung",
+  "settingsSectionNotifications": "Benachrichtigungen",
+  "settingsSectionHistoryRetention": "Verlauf-Aufbewahrung",
+  "settingsSectionAppearance": "Darstellung",
+  "settingsThemeMode": "Design",
+  "settingsThemeLight": "Hell",
+  "settingsThemeDark": "Dunkel",
+  "settingsThemeSystem": "System",
+  "settingsLanguage": "Sprache",
+  "settingsEmergencyNumber": "Notrufnummer",
+  "settingsAlarmDnd": "Alarm überschreibt „Nicht stören“",
+  "settingsLanguagePicker": "Sprache",
+  "settingsEmergencyNumberLabel": "Notrufnummer",
+  "settingsEmergencyNumberHint": "z. B. 112",
+  "settingsEmergencyNumberSave": "Speichern",
+  "settingsRedoOnboarding": "Einrichtung wiederholen",
+  "settingsRedoOnboardingConfirm": "Einrichtung neu starten?",
+  "settingsRedoOnboardingBody": "Ihre aktuelle Konfiguration bleibt erhalten.",
+  "settingsRedoOnboardingProceed": "Neu starten",
+  "settingsAlarmGradualVolume": "Alarm schrittweise lauter",
+  "settingsAlarmGradualVolumeDuration": "Anstiegsdauer: {seconds} s",
+  "securityTitle": "Sicherheit",
+  "securityAppPin": "App-PIN",
+  "securitySessionEndPin": "Sitzungsende-PIN",
+  "securityDuressPin": "Notfall-PIN",
+  "securityPinTimeout": "PIN-Timeout (Sekunden)",
+  "securityDisablePin": "Deaktivieren",
+  "securitySetPin": "PIN festlegen",
+  "securityChangePin": "PIN ändern",
+  "pinSetupTitle": "PIN festlegen",
+  "pinSetupEnter": "Neue PIN eingeben",
+  "pinSetupConfirm": "PIN bestätigen",
+  "pinSetupMismatch": "PINs stimmen nicht überein. Versuche es erneut.",
+  "pinEntryTitle": "PIN eingeben",
+  "pinEntrySubtitle": "Gib deine PIN ein, um fortzufahren.",
+  "stealthTitle": "Tarnmodus",
+  "stealthEnable": "Tarnmodus aktivieren",
+  "stealthFakeName": "Getarnter App-Name",
+  "stealthFakeIcon": "Getarntes Symbol",
+  "stealthNotificationDisguise": "Benachrichtigungen tarnen",
+  "stealthTimerDisplay": "Timer im Tarnmodus anzeigen",
+  "stealthSessionScreen": "Branding im Sitzungsbildschirm entfernen",
+  "stealthPickerTitle": "App-Symbol",
+  "stealthPickerIntro": "Wähle, wie das Symbol im Launcher aussieht.",
+  "stealthPresetMusic": "Musik",
+  "stealthPresetCalendar": "Kalender",
+  "stealthPresetFitness": "Fitness",
+  "stealthPresetWeather": "Wetter",
+  "stealthPresetNews": "Nachrichten",
+  "stealthPresetPhotos": "Fotos",
+  "stealthPresetNotes": "Notizen",
+  "stealthPresetClock": "Uhr",
+  "distressConfirmationTitle": "Bist du in Gefahr?",
+  "distressConfirmationCancel": "Abbrechen",
+  "distressConfirmationCountdown": "Notfallmodus startet in {seconds} s",
+  "imSafeSliderLabel": "Wischen, um „Ich bin sicher“ zu bestätigen",
+  "batteryAlertTitle": "Akku-Warnung",
+  "batteryAlertEnable": "Akku-Warnung aktivieren",
+  "batteryAlertThreshold": "Schwelle: {percent}%",
+  "eventDefaultsTitle": "Schritt-Standardwerte",
+  "eventDefaultsBody": "Diese Standardwerte gelten für jeden Schritt, der sie nicht überschreibt.",
+  "gpsLoggingTitle": "GPS-Aufzeichnung",
+  "gpsLoggingEnable": "GPS-Aufzeichnung aktivieren",
+  "gpsLoggingInterval": "Abtastintervall (Sekunden)",
+  "gpsLoggingAccuracy": "Genauigkeit",
+  "gpsAccuracyLow": "Niedrig",
+  "gpsAccuracyMedium": "Mittel",
+  "gpsAccuracyHigh": "Hoch",
+  "gpsLoggingIncludeSms": "Standort an SMS anhängen",
+  "gpsLoggingHistoryDays": "Verlauf-Aufbewahrung (Tage)",
+  "notificationSettingsTitle": "Benachrichtigungen",
+  "notificationSettingsBody": "Guardian Angela nutzt Benachrichtigungen zur Tarnung und zur Steuerung von Erinnerungen.",
+  "historyRetentionTitle": "Verlauf-Aufbewahrung",
+  "historyRetentionBody": "Wie lange Guardian Angela Protokolle vergangener Sitzungen aufbewahrt.",
+  "historyRetentionDays": "Aufbewahrung: {days} Tage",
+  "backupTitle": "Sicherung",
+  "backupExport": "Daten exportieren",
+  "backupImport": "Daten importieren",
+  "backupNotReady": "Sicherung ist noch nicht verfügbar. Demnächst.",
+  "backupPinOptional": "Optionale PIN (verschlüsselt das Paket)",
+  "backupImportOk": "Sicherung erfolgreich importiert.",
+  "historyTitle": "Vergangene Sitzungen",
+  "historyEmpty": "Noch keine vergangenen Sitzungen.",
+  "historyDetailTitle": "Sitzungs-Details",
+  "evidenceExportTitle": "Beweise exportieren",
+  "evidenceExportAsText": "Als Text kopieren",
+  "evidenceExportAsJson": "Als JSON kopieren",
+  "evidenceCopied": "In die Zwischenablage kopiert.",
+  "aboutTitle": "Über",
+  "aboutVersion": "Version",
+  "aboutCredits": "Mit Sorgfalt entwickelt für Menschen auf dem Heimweg.",
+  "feedbackTitle": "Feedback",
+  "feedbackBody": "Wir freuen uns, von dir zu hören.",
+  "feedbackFieldMessage": "Nachricht",
+  "feedbackSend": "E-Mail öffnen",
+  "pickerNoneLabel": "— keine —",
+  "moreSettingsHeader": "Weitere Einstellungen",
+  "moreSettingsHeaderCustomized": "Weitere Einstellungen ({count} angepasst)",
+  "stepConfigLogGpsLabel": "GPS-Erfassung",
+  "stepConfigLogGpsDefault": "Standard",
+  "stepConfigLogGpsOn": "Ein",
+  "stepConfigLogGpsOff": "Aus",
+  "stepConfigLogGpsDefaultOn": "Standard (Ein)",
+  "stepConfigLogGpsDefaultOff": "Standard (Aus)",
+  "modeFieldIcon": "Symbol",
+  "modeIconPickerTitle": "Symbol wählen",
+  "modeIconClear": "Kein Symbol",
+  "modeDistressHeader": "Notfall-Auslöser",
+  "modeDistressEmpty": "Keine Notfall-Auslöser konfiguriert.",
+  "modeDistressAdd": "Notfall-Auslöser hinzufügen",
+  "modeDistressTypeHardware": "Hardware-Taste",
+  "modeDistressButtonType": "Taste",
+  "modeDistressButtonVolumeUp": "Lauter",
+  "modeDistressButtonVolumeDown": "Leiser",
+  "modeDistressButtonPower": "Power-Taste",
+  "modeDistressPattern": "Muster",
+  "modeDistressPatternRepeat": "Mehrfaches Drücken",
+  "modeDistressPatternLong": "Langes Drücken",
+  "modeDistressPressCount": "Anzahl Drücke",
+  "modeDistressPressWindow": "Zeitfenster (ms)",
+  "modeDistressLongDuration": "Haltedauer (Sekunden)",
+  "modeDistressSummaryRepeat": "{count} Mal / {windowMs} ms",
+  "modeDistressSummaryLong": "{seconds}s halten",
+  "modeOverridesHeader": "Modus-Überschreibungen",
+  "modeOverridesUseDefault": "App-Standard verwenden",
+  "modeOverridesGpsLabel": "GPS-Aufzeichnung",
+  "modeOverridesStealthLabel": "Tarnung",
+  "modeOverridesEventDefaultsLabel": "Ereignis-Standards",
+  "modeOverridesLocalTemplatesLabel": "Lokale Erinnerungs-Vorlagen",
+  "modeOverridesGpsEnabled": "GPS-Aufzeichnung aktiv",
+  "modeOverridesGpsIntervalLabel": "Abtastintervall (Sekunden)",
+  "modeOverridesGpsIncludeInSms": "Standort an SMS anhängen",
+  "modeOverridesStealthEnabled": "Tarnung aktiv",
+  "modeOverridesStealthFakeName": "Falscher App-Name",
+  "modeOverridesEventDefaultsHint": "Eigene Ereignis-Standards aktiv für diesen Modus.",
+  "modeOverridesLocalTemplatesCount": "{count} modus-lokale Vorlagen",
+  "modeUnsavedTitle": "Änderungen verwerfen?",
+  "modeUnsavedBody": "Du hast nicht gespeicherte Änderungen. Verwerfen und Editor verlassen?",
+  "modeUnsavedDiscard": "Verwerfen",
+  "modeUnsavedKeep": "Weiter bearbeiten",
+  "stepDuplicate": "Schritt duplizieren",
+  "stepTimingHeader": "Timing",
+  "stepTimingSummary": "Warten {wait}s / Dauer {duration}s / Karenz {grace}s",
+  "stepCategoryAll": "Alle",
+  "stepPickerMore": "Weitere Optionen...",
+  "stepCategoryAction": "Aktion",
+  "stepCategoryReminder": "Erinnerung",
+  "stepCategoryDisarm": "Check-in",
+  "angelaDialogTitle": "Alte PIN eingegeben",
+  "@angelaDialogTitle": {
+    "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
+  },
+  "angelaDialogBody": "Es scheint, dass Sie eine alte PIN verwendet haben. Möchten Sie wirklich fortfahren?",
+  "@angelaDialogBody": {
+    "description": "Deceptive Angela dialog body."
+  },
+  "angelaDialogCancel": "Abbrechen",
+  "@angelaDialogCancel": {
+    "description": "Deceptive Angela dialog cancel button."
+  },
+  "angelaDialogConfirm": "Weiter",
+  "@angelaDialogConfirm": {
+    "description": "Deceptive Angela dialog confirm button."
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Generic confirm/OK action."
+  },
+  "profileAngelaWarningTitle": "Hinweis zum Namen „Angela“",
+  "@profileAngelaWarningTitle": {
+    "description": "Title shown when the user tries to save a profile name containing 'Angela'."
+  },
+  "profileAngelaWarningBody": "Guardian Angela verwendet „Angela“ als Sicherheits-Stichwort. Wenn Sie es als Ihren eigenen Namen verwenden, kann dies zu Verwechslungen führen. Trotzdem speichern?",
+  "@profileAngelaWarningBody": {
+    "description": "Body of the Angela-name warning dialog."
+  },
+  "pinSubmit": "Bestätigen",
+  "@pinSubmit": {
+    "description": "Submit button used by the launch-gate PIN entry."
+  },
+  "homeStartConfirmTitle": "Sitzung starten?",
+  "@homeStartConfirmTitle": {
+    "description": "Title for the start-session confirmation dialog."
+  },
+  "homeStartConfirmBody": "Stellen Sie sicher, dass Ihre Kontakte und Ihre PIN konfiguriert sind. Die Sitzung läuft im Vordergrund und Ihr ausgewählter Modus leitet die Check-ins.",
+  "homePermissionsMissingTitle": "Einige Berechtigungen fehlen",
+  "homePermissionsMissingBody": "Die folgenden Berechtigungen wurden nicht erteilt. Ohne sie schlagen die entsprechenden Kettenschritte stillschweigend fehl:",
+  "homePermissionsContinueAnyway": "Trotzdem starten",
+  "homePermissionsNotification": "Benachrichtigungen",
+  "homePermissionsLocation": "Standort",
+  "homePermissionsCallPhone": "Telefonanrufe",
+  "homePermissionsSendSms": "SMS senden",
+  "@homeStartConfirmBody": {
+    "description": "Body for the start-session confirmation dialog."
+  },
+  "homeContactsBannerNone": "Keine Notfallkontakte konfiguriert.",
+  "@homeContactsBannerNone": {
+    "description": "Banner shown when zero contacts are configured."
+  },
+  "sessionCheckIn": "Ich bin eingecheckt",
+  "@sessionCheckIn": {
+    "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
+  },
+  "sessionDisarmTriggerTitle": "Entwarnungs-Auslöser aktiviert",
+  "@sessionDisarmTriggerTitle": {
+    "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)."
+  },
+  "sessionDisarmTriggerBody": "Ein Entwarnungs-Auslöser wurde aktiviert. Sitzung beenden?",
+  "@sessionDisarmTriggerBody": {
+    "description": "Body of the disarm-trigger confirmation dialog."
+  },
+  "sessionDisarmTriggerConfirm": "Sitzung beenden",
+  "@sessionDisarmTriggerConfirm": {
+    "description": "Confirm button on the disarm-trigger dialog."
+  },
+  "sessionDisarmTriggerCancel": "Weiter",
+  "@sessionDisarmTriggerCancel": {
+    "description": "Cancel button on the disarm-trigger dialog."
+  },
+  "wrongPinAngelaTitle": "Alte PIN von Angela",
+  "@wrongPinAngelaTitle": {
+    "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations."
+  },
+  "wrongPinAngelaBody": "Möchten Sie wirklich mit dieser alten PIN fortfahren?",
+  "@wrongPinAngelaBody": {
+    "description": "Body of the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaConfirm": "OK",
+  "@wrongPinAngelaConfirm": {
+    "description": "Primary button on the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaCancel": "Abbrechen",
+  "@wrongPinAngelaCancel": {
+    "description": "Secondary button on the deceptive wrong-PIN dialog."
+  },
+  "sessionStepCountdownTitle": "Warnung",
+  "@sessionStepCountdownTitle": {
+    "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires."
+  },
+  "sessionStepCountdownBody": "Die nächste Eskalation startet, wenn der Countdown endet. Wischen Sie unten „Ich bin sicher“, um zu entwarnen.",
+  "@sessionStepCountdownBody": {
+    "description": "Subtitle on the countdown-warning step UI."
+  },
+  "sessionStepDisguisedDefaultTitle": "Erinnerung",
+  "@sessionStepDisguisedDefaultTitle": {
+    "description": "Fallback title shown on a disguisedReminder step when no template title is resolved."
+  },
+  "sessionStepDisguisedDefaultBody": "Tippen Sie auf „Ich bin eingecheckt“, um zu bestätigen, dass Sie sicher sind.",
+  "@sessionStepDisguisedDefaultBody": {
+    "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
+  },
+  "sessionStepSmsStatus": "Nachricht wird an Kontakte gesendet …",
+  "@sessionStepSmsStatus": {
+    "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
+  },
+  "sessionStepSmsDelivered": "Zugestellt",
+  "@sessionStepSmsDelivered": {
+    "description": "Per-message status label shown when the messaging service reports the message was delivered."
+  },
+  "sessionStepSmsSent": "Gesendet",
+  "@sessionStepSmsSent": {
+    "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)."
+  },
+  "sessionStepSmsQueued": "In Warteschlange",
+  "@sessionStepSmsQueued": {
+    "description": "Per-message status label shown while a message is queued for delivery."
+  },
+  "sessionStepSmsFailed": "Fehlgeschlagen",
+  "@sessionStepSmsFailed": {
+    "description": "Per-message status label shown when the messaging service reports a delivery failure."
+  },
+  "sessionStepPhoneCallStatus": "Notfallkontakt wird angerufen …",
+  "@sessionStepPhoneCallStatus": {
+    "description": "Status text shown during a phoneCallContact step while the contact is being called."
+  },
+  "sessionStepPhoneCallCancel": "Anruf abbrechen",
+  "@sessionStepPhoneCallCancel": {
+    "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)."
+  },
+  "sessionStepLoudAlarmTitle": "Alarm läuft",
+  "@sessionStepLoudAlarmTitle": {
+    "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider."
+  },
+  "sessionStepLoudAlarmBody": "Der Alarm ertönt, um Aufmerksamkeit zu erregen.",
+  "@sessionStepLoudAlarmBody": {
+    "description": "Subtitle shown during a loudAlarm step."
+  },
+  "sessionStepLoudAlarmFlashWarning": "Photosensitivitäts-Warnung: Der Bildschirm blinkt.",
+  "@sessionStepLoudAlarmFlashWarning": {
+    "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true."
+  },
+  "sessionStepCallEmergencyStatus": "Notruf wird gewählt …",
+  "@sessionStepCallEmergencyStatus": {
+    "description": "Status text shown during a callEmergency step before / while the emergency number is dialed."
+  },
+  "sessionStepCallEmergencyNumber": "Nummer: {number}",
+  "@sessionStepCallEmergencyNumber": {
+    "description": "Display of the emergency number being dialed.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "sessionStepHardwareButtonRepeat": "Drücken Sie {button} {count} Mal innerhalb von {windowMs} ms",
+  "@sessionStepHardwareButtonRepeat": {
+    "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.",
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
+  "sessionStepHardwareButtonLong": "Halten Sie {button} für {seconds} Sekunden",
+  "@sessionStepHardwareButtonLong": {
+    "description": "Instruction text shown during a hardwareButton step with long-press pattern.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "sessionStepHardwareButtonVolumeUp": "Lauter",
+  "@sessionStepHardwareButtonVolumeUp": {
+    "description": "Lowercase noun for the volume-up hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonVolumeDown": "Leiser",
+  "@sessionStepHardwareButtonVolumeDown": {
+    "description": "Lowercase noun for the volume-down hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonPower": "Power",
+  "@sessionStepHardwareButtonPower": {
+    "description": "Lowercase noun for the power hardware button used in step instructions."
+  },
+  "fakeCallSlideToAnswer": "zum Annehmen wischen",
+  "@fakeCallSlideToAnswer": {
+    "description": "Hint text inside the iOS-style slide-to-answer track."
+  },
+  "fakeCallUnknownCaller": "Unbekannt",
+  "@fakeCallUnknownCaller": {
+    "description": "Fallback caller name when the configured callerName is empty."
+  },
+  "fakeCallIncomingWhatsapp": "WhatsApp-Sprachanruf",
+  "@fakeCallIncomingWhatsapp": {
+    "description": "Incoming-call header for the WhatsApp call style."
+  },
+  "fakeCallIncomingTelegram": "Telegram-Sprachanruf",
+  "@fakeCallIncomingTelegram": {
+    "description": "Incoming-call header for the Telegram call style."
+  },
+  "fakeCallIncomingSignal": "Signal-Sprachanruf",
+  "@fakeCallIncomingSignal": {
+    "description": "Incoming-call header for the Signal call style."
+  },
+  "fakeCallBrandWhatsapp": "WHATSAPP",
+  "@fakeCallBrandWhatsapp": {
+    "description": "Top-of-screen brand badge in the WhatsApp fake-call style."
+  },
+  "fakeCallBrandTelegram": "TELEGRAM",
+  "@fakeCallBrandTelegram": {
+    "description": "Top-of-screen brand badge in the Telegram fake-call style."
+  },
+  "fakeCallBrandSignal": "SIGNAL",
+  "@fakeCallBrandSignal": {
+    "description": "Top-of-screen brand badge in the Signal fake-call style."
+  },
+  "contactLanguageDefault": "Standard (App-Sprache verwenden)",
+  "@contactLanguageDefault": {
+    "description": "Default option in the per-contact language dropdown."
+  },
+  "stepTypePickerLabel": "Schritttyp",
+  "@stepTypePickerLabel": {
+    "description": "Label for the step-type dropdown in the mode editor."
+  },
+  "securityAppPinBiometric": "Biometrie für App-PIN verwenden",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric prompt before App PIN keypad."
+  },
+  "securitySessionEndPinBiometric": "Biometrie für Sitzungsende-PIN verwenden",
+  "@securitySessionEndPinBiometric": {
+    "description": "Toggle: enable biometric prompt before session-end PIN."
+  },
+  "securityDistressCancelBiometric": "Biometrie zum Abbrechen des Notfalls verwenden",
+  "@securityDistressCancelBiometric": {
+    "description": "Toggle: biometric path for distress-trigger cancel."
+  },
+  "securityDuressTest": "Notfall-PIN testen",
+  "@securityDuressTest": {
+    "description": "Row that opens a keypad to verify the duress PIN was entered correctly."
+  },
+  "securityDuressTestSubtitle": "Überprüfen Sie, ob Ihre Notfall-PIN funktioniert.",
+  "@securityDuressTestSubtitle": {
+    "description": "Subtitle for the duress-test row."
+  },
+  "pinEntryBiometricReason": "Authentifizieren Sie sich, um fortzufahren",
+  "@pinEntryBiometricReason": {
+    "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service."
+  },
+  "stealthTimerDisplayNormal": "Vollständigen Text anzeigen",
+  "@stealthTimerDisplayNormal": {
+    "description": "Stealth timer normal option."
+  },
+  "stealthTimerDisplaySmall": "Nur Zahlen anzeigen",
+  "@stealthTimerDisplaySmall": {
+    "description": "Stealth timer small option."
+  },
+  "stealthTimerDisplayNone": "Timer ausblenden",
+  "@stealthTimerDisplayNone": {
+    "description": "Stealth timer hidden option."
+  },
+  "backupSelectionHeader": "In Export einbeziehen",
+  "@backupSelectionHeader": {
+    "description": "Section header above the per-element backup toggles."
+  },
+  "backupToggleSettings": "Einstellungen",
+  "@backupToggleSettings": {
+    "description": "Always-on toggle showing that settings are always exported."
+  },
+  "backupToggleSettingsSubtitle": "Immer enthalten, damit die Sicherung wiederhergestellt werden kann.",
+  "@backupToggleSettingsSubtitle": {
+    "description": "Explanation under the disabled Settings toggle."
+  },
+  "backupToggleContacts": "Notfallkontakte",
+  "@backupToggleContacts": {
+    "description": "Toggle to include contacts in the export."
+  },
+  "backupToggleModes": "Modi",
+  "@backupToggleModes": {
+    "description": "Toggle to include user-facing modes in the export."
+  },
+  "backupToggleDistressModes": "Notfallmodi",
+  "@backupToggleDistressModes": {
+    "description": "Toggle to include distress-flagged modes in the export."
+  },
+  "backupToggleTemplates": "Erinnerungs-Vorlagen",
+  "@backupToggleTemplates": {
+    "description": "Toggle to include reminder templates in the export."
+  },
+  "backupToggleSessionLogs": "Sitzungsverlauf",
+  "@backupToggleSessionLogs": {
+    "description": "Toggle to include session logs in the export."
+  },
+  "backupToggleRecordings": "Audioaufnahmen",
+  "@backupToggleRecordings": {
+    "description": "Toggle to include audio-evidence recordings in the export."
+  },
+  "historySearchHint": "Nach Modusname suchen",
+  "@historySearchHint": {
+    "description": "Hint text for the history search field."
+  },
+  "historyFilterModeAll": "Alle Modi",
+  "@historyFilterModeAll": {
+    "description": "Mode filter dropdown — all option."
+  },
+  "historyFilterModeLabel": "Modus",
+  "@historyFilterModeLabel": {
+    "description": "Mode filter dropdown label."
+  },
+  "historyDateRangePick": "Datumsbereich",
+  "@historyDateRangePick": {
+    "description": "Button label that opens the date-range picker."
+  },
+  "emergencyConfirmTitle": "{number} wird angerufen",
+  "@emergencyConfirmTitle": {
+    "description": "Title of the emergency-confirm pre-dial screen.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "emergencyConfirmSubtitle": "Halten Sie die Abbrechen-Taste gedrückt, um abzubrechen.",
+  "@emergencyConfirmSubtitle": {
+    "description": "Subtitle of the emergency-confirm pre-dial screen."
+  },
+  "emergencyConfirmCountdown": "Anruf in {seconds} s",
+  "@emergencyConfirmCountdown": {
+    "description": "Countdown line on the pre-dial screen.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "emergencyConfirmCancel": "Abbrechen",
+  "@emergencyConfirmCancel": {
+    "description": "Cancel button on the pre-dial screen."
+  },
+  "stealthCalendarUpcoming": "Bevorstehend",
+  "@stealthCalendarUpcoming": {
+    "description": "Header in the calendar stealth UI."
+  },
+  "stealthCalendarUpcomingEvent": "Besprechung",
+  "@stealthCalendarUpcomingEvent": {
+    "description": "Stealth calendar event title placeholder."
+  },
+  "stealthCalendarUntilEvent": "in {minutes} Min.",
+  "@stealthCalendarUntilEvent": {
+    "description": "Stealth calendar countdown.",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "stealthCalendarToday": "Heute",
+  "@stealthCalendarToday": {
+    "description": "Today header in the stealth calendar."
+  },
+  "stealthCalendarEvent1": "Kaffee mit Alex",
+  "@stealthCalendarEvent1": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent2": "Standup",
+  "@stealthCalendarEvent2": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent3": "Mittagessen",
+  "@stealthCalendarEvent3": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent4": "Workout",
+  "@stealthCalendarEvent4": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent5": "Abendessen mit Sam",
+  "@stealthCalendarEvent5": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthDisarmGestureHint": "Nach oben wischen zum Beenden",
+  "@stealthDisarmGestureHint": {
+    "description": "Hint shown on stealth screens for the disarm gesture."
+  },
+  "stealthMusicTrackTitle": "Unbenannter Titel",
+  "@stealthMusicTrackTitle": {
+    "description": "Default track title on the stealth music screen."
+  },
+  "stealthMusicArtist": "Unbekannter Künstler",
+  "@stealthMusicArtist": {
+    "description": "Default artist on the stealth music screen."
+  },
+  "stealthMusicAlbum": "Unbekanntes Album",
+  "@stealthMusicAlbum": {
+    "description": "Default album on the stealth music screen."
+  },
+  "stealthMusicNowPlaying": "Wird gerade abgespielt",
+  "@stealthMusicNowPlaying": {
+    "description": "Now-playing label on the stealth music screen."
+  },
+  "stealthMusicSwipeHint": "Wischen zum Entwarnen",
+  "@stealthMusicSwipeHint": {
+    "description": "Disarm-gesture hint on the stealth music screen."
+  },
+  "stealthMusicPrevious": "Zurück",
+  "@stealthMusicPrevious": {
+    "description": "Previous-track button label."
+  },
+  "stealthMusicPause": "Pause",
+  "@stealthMusicPause": {
+    "description": "Pause button label."
+  },
+  "stealthMusicNext": "Weiter",
+  "@stealthMusicNext": {
+    "description": "Next-track button label."
+  },
+  "stealthPodcastShowName": "Podcast",
+  "@stealthPodcastShowName": {
+    "description": "Podcast show name placeholder."
+  },
+  "stealthPodcastEpisodeTitle": "Folge",
+  "@stealthPodcastEpisodeTitle": {
+    "description": "Podcast episode title placeholder."
+  },
+  "stealthPodcastEpisodesHeader": "Folgen",
+  "@stealthPodcastEpisodesHeader": {
+    "description": "Episodes-list header on the stealth podcast screen."
+  },
+  "stealthPodcastSpeedLabel": "1x",
+  "@stealthPodcastSpeedLabel": {
+    "description": "Speed-toggle label on the stealth podcast screen."
+  },
+  "stealthPodcastEpisode1": "Folge 1",
+  "@stealthPodcastEpisode1": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode2": "Folge 2",
+  "@stealthPodcastEpisode2": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode3": "Folge 3",
+  "@stealthPodcastEpisode3": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode4": "Folge 4",
+  "@stealthPodcastEpisode4": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPresetPodcast": "Podcast",
+  "@stealthPresetPodcast": {
+    "description": "Stealth preset name shown in the picker."
+  },
+  "stealthPresetNone": "Keine",
+  "@stealthPresetNone": {
+    "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionSimSpeedLabel": "Geschwindigkeit",
+  "@sessionSimSpeedLabel": {
+    "description": "Label of the simulation speed slider."
+  },
+  "sessionSimSpeedValue": "{value}x",
+  "@sessionSimSpeedValue": {
+    "description": "Simulation speed value display.",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "sessionSimSpeedBackgroundCap": "Im Hintergrund auf 60× begrenzt",
+  "@sessionSimSpeedBackgroundCap": {
+    "description": "Indicator that simulation speed is capped at 60x while app is backgrounded."
+  },
+  "sessionSimAdvancedLabel": "Erweitert",
+  "@sessionSimAdvancedLabel": {
+    "description": "Label of the advanced-controls toggle in simulation."
+  },
+  "sessionSimTriggerPanic": "Notfall auslösen",
+  "@sessionSimTriggerPanic": {
+    "description": "Simulation button — fires the distress chain."
+  },
+  "sessionSimTriggerArrival": "Ankunft auslösen",
+  "@sessionSimTriggerArrival": {
+    "description": "Simulation button — fakes a GPS arrival event."
+  },
+  "sessionSimTriggerBattery": "Niedrigen Akkustand auslösen",
+  "@sessionSimTriggerBattery": {
+    "description": "Simulation button — fakes a low-battery event."
+  },
+  "simulateGpsArrival": "Ankunft simulieren",
+  "@simulateGpsArrival": {
+    "description": "Top-level simulate-arrival action."
+  },
+  "simulateLowBattery": "Niedrigen Akkustand simulieren",
+  "@simulateLowBattery": {
+    "description": "Top-level simulate-low-battery action."
+  },
+  "launchGateTitle": "Guardian Angela entsperren",
+  "@launchGateTitle": {
+    "description": "Title of the Q14 launch-gate screen."
+  },
+  "launchGateSubtitle": "Geben Sie Ihre PIN ein oder verwenden Sie Biometrie.",
+  "@launchGateSubtitle": {
+    "description": "Subtitle of the Q14 launch-gate screen."
+  },
+  "launchGateWrong": "Falsche PIN",
+  "@launchGateWrong": {
+    "description": "Error label on the Q14 launch-gate screen."
+  },
+  "launchGateBiometricReason": "Guardian Angela entsperren",
+  "@launchGateBiometricReason": {
+    "description": "Reason string for biometric prompt."
+  },
+  "launchGateUseBiometric": "Biometrie verwenden",
+  "@launchGateUseBiometric": {
+    "description": "Button to fall back to biometric auth on the launch gate."
+  },
+  "historyTabReal": "Echt",
+  "historyTabSimulated": "Simuliert",
+  "audioRunningLatePhrase": "Hallo, ich verspäte mich. Ich rufe dich gleich zurück.",
+  "smsDefaultTemplate": "{name} braucht möglicherweise Hilfe. Standort: {location}. Zeit: {time}.",
+  "smsDefaultPreCallTemplate": "{name} versucht, dich zu erreichen. Bitte erwarte einen Anruf.",
+  "simLoudAlarm": "[SIM] Lauter Alarm + {tail}",
+  "simLoudAlarmTailFlash": "Blitz",
+  "simLoudAlarmTailVibrate": "Vibration",
+  "simSmsContact": "[SIM] Würde {channel} an {count} Kontakte senden",
+  "simFakeCallRing": "[SIM] Eingehender Anruf von {caller}",
+  "simCountdownWarning": "[SIM] {seconds}s Countdown-Warnung",
+  "simPhoneCall": "[SIM] Würde {name} anrufen",
+  "simNoContactToCall": "[SIM] Kein Kontakt zum Anrufen",
+  "simCallEmergency": "[SIM] Würde {number} wählen",
+  "simHardwareButton": "[SIM] Hardware-Auslöser scharfgeschaltet",
+  "simHoldButton": "[SIM] Warten auf Halten der Taste",
+  "simDisguisedReminder": "[SIM] Würde \"{title}\" anzeigen",
+  "simDisguisedReminderEmpty": "[SIM] Keine Erinnerungsvorlage verfügbar",
+  "simGpsArrivalTrigger": "[SIM] GPS-Ankunfts-Auslöser ausgelöst",
+  "simLowBatteryAlert": "[SIM] Niedriger Akkustand-Alarm ausgelöst"
+}

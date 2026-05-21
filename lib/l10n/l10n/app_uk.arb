@@ -1,0 +1,899 @@
+{
+  "@@locale": "uk",
+  "appTitle": "Guardian Angela",
+  "commonSave": "Зберегти",
+  "commonCancel": "Скасувати",
+  "commonDelete": "Видалити",
+  "commonEdit": "Редагувати",
+  "commonAdd": "Додати",
+  "commonClose": "Закрити",
+  "commonConfirm": "Підтвердити",
+  "commonBack": "Назад",
+  "commonDone": "Готово",
+  "commonRetry": "Повторити",
+  "commonYes": "Так",
+  "commonNo": "Ні",
+  "commonEnabled": "Увімкнено",
+  "commonDisabled": "Вимкнено",
+  "commonNone": "Немає",
+  "commonSeconds": "секунд",
+  "commonMinutes": "хвилин",
+  "cancel": "Скасувати",
+  "homeTitle": "Guardian Angela",
+  "homeStartSession": "Почати сесію",
+  "homeSimulate": "Симуляція",
+  "homeActiveSession": "Активна сесія",
+  "homeResumeSession": "Продовжити",
+  "homeNoModes": "Ще немає режимів. Натисніть «Режими», щоб додати.",
+  "homeNoContacts": "Ще немає екстрених контактів. Натисніть «Контакти», щоб додати.",
+  "homeMenuSettings": "Налаштування",
+  "homeMenuContacts": "Контакти",
+  "homeMenuModes": "Режими",
+  "homeMenuHistory": "Минулі сесії",
+  "homeSelectMode": "Виберіть режим",
+  "onboardingWelcomeTitle": "Ласкаво просимо до Guardian Angela",
+  "onboardingWelcomeBody": "Супутник, який дбає про вашу безпеку на шляху додому. Guardian Angela стежить за вами, поки ви йдете, бігаєте або подорожуєте, і може сповістити ваших обраних контактів, якщо вам потрібна допомога.",
+  "onboardingProfileTitle": "Профіль і перший контакт",
+  "onboardingProfileBody": "Розкажіть трохи про себе, щоб Guardian Angela могла поділитися корисними даними в екстреній ситуації. Потім додайте одну довірену особу.",
+  "onboardingPermissionsTitle": "Дозволи",
+  "onboardingPermissionsBody": "Guardian Angela потребує кількох дозволів для забезпечення вашої безпеки. Надайте їх зараз або пізніше в налаштуваннях.",
+  "onboardingNext": "Далі",
+  "onboardingSkip": "Пропустити",
+  "onboardingFinish": "Завершити",
+  "sessionTitle": "Сесія",
+  "sessionDisarm": "Я в безпеці",
+  "sessionPause": "Пауза",
+  "sessionResume": "Продовжити",
+  "sessionHoldPrompt": "Тримайте, щоб залишатися в безпеці",
+  "sessionHoldSemantic": "Тримайте палець. Відпускання запускає пільговий період.",
+  "sessionStepLabel": "Крок {index} з {total}",
+  "sessionMissCount": "Пропущено: {count}",
+  "sessionRemaining": "Залишилось {seconds} с",
+  "sessionPausedBadge": "Призупинено",
+  "sessionPhaseEnded": "Сесію завершено",
+  "sessionSimulationBanner": "Симуляція",
+  "sessionCompletedTitle": "Сесію завершено",
+  "sessionCompletedBody": "Ви прибули в безпечне місце. Guardian Angela вимикається.",
+  "sessionCompletedReturnHome": "На головну",
+  "simulationSummaryTitle": "Підсумок симуляції",
+  "simulationSummaryEmpty": "Під час цієї симуляції жоден крок не спрацював.",
+  "simulationSummaryReturn": "На головну",
+  "fakeCallTitle": "Вхідний дзвінок",
+  "fakeCallAnswer": "Відповісти",
+  "fakeCallDecline": "Відхилити",
+  "fakeCallHangUp": "Завершити",
+  "contactsTitle": "Екстрені контакти",
+  "contactsEmpty": "Ще немає контактів. Додайте особу, яка отримуватиме ваші повідомлення про допомогу.",
+  "contactsAdd": "Додати контакт",
+  "contactFormTitleCreate": "Новий контакт",
+  "contactFormTitleEdit": "Редагувати контакт",
+  "contactFieldName": "Ім'я",
+  "contactFieldPhone": "Номер телефону",
+  "contactFieldRelationship": "Стосунки (необов'язково)",
+  "contactFieldLanguage": "Мова SMS (необов'язково)",
+  "contactChannelsHeader": "Канали зв'язку",
+  "contactChannelSms": "SMS",
+  "contactChannelWhatsapp": "WhatsApp",
+  "contactChannelTelegram": "Telegram",
+  "contactChannelPhone": "Телефонний дзвінок",
+  "contactDeleteConfirm": "Видалити контакт?",
+  "contactDeleteBody": "{name} буде видалено зі списку екстрених контактів.",
+  "contactRequiredError": "Ім'я та номер телефону є обов'язковими.",
+  "modesTitle": "Режими",
+  "modesEmpty": "Ще немає режимів. Натисніть «Додати», щоб створити режим.",
+  "modesAdd": "Додати режим",
+  "modesNewPickerTitle": "Почати з",
+  "modesNewPickerBlank": "Порожній режим",
+  "modesNewPickerBlankSubtitle": "Почати з порожнього ланцюга",
+  "modesNewPickerFromTemplate": "З «{name}»",
+  "modesNewPickerFromTemplateSubtitle": "Скопіювати ланцюг і тригери цього режиму",
+  "modesNewPickerCopyName": "Копія «{name}»",
+  "modesNewPickerBuiltinBadge": "Вбудований",
+  "modeEditorTitleCreate": "Новий режим",
+  "modeEditorTitleEdit": "Редагувати режим",
+  "modeFieldName": "Назва",
+  "modeFieldDistressMode": "Режим тривоги",
+  "modeFieldDistressModeDefault": "Використати типовий",
+  "modeChainHeader": "Ланцюг",
+  "modeChainAddStep": "Додати крок",
+  "modeChainEmpty": "Ще немає кроків. Натисніть «Додати крок».",
+  "modeTrackingHeader": "Відстеження GPS",
+  "modeTrackingEnabled": "Записувати GPS під час сеансу",
+  "modeTrackingIntervalLabel": "Інтервал вибірки",
+  "modeTrackingBufferSizeLabel": "Розмір буфера",
+  "modeTrackingBufferSizeValue": "{count} точок",
+  "modeTrackingBatteryNote": "Часте відстеження GPS збільшує витрати батареї.",
+  "stepTypeHoldButton": "Кнопка утримання",
+  "stepTypeDisguisedReminder": "Замаскований нагадування",
+  "stepTypeCountdownWarning": "Попередження відліку",
+  "stepTypeFakeCall": "Фальшивий дзвінок",
+  "stepTypeSmsContact": "SMS контакту",
+  "stepTypePhoneCallContact": "Телефонувати контакту",
+  "stepTypeLoudAlarm": "Гучна сирена",
+  "stepTypeCallEmergency": "Виклик екстрених служб",
+  "stepTypeHardwareButton": "Апаратна кнопка",
+  "stepFieldDuration": "Тривалість (секунди)",
+  "stepFieldGrace": "Пільговий період (секунди)",
+  "stepFieldWait": "Очікування (секунди)",
+  "stepFieldRetryCount": "Кількість повторних спроб",
+  "stepFieldRandomize": "Варіація таймінгу",
+  "stepFieldRandomizeToggle": "Випадковий час (±20%)",
+  "stepFieldWaitTooltip": "Скільки чекати перед початком цього кроку.",
+  "stepFieldDurationTooltip": "Скільки крок активний до початку пільгового періоду.",
+  "stepFieldGraceTooltip": "Час після активної фази для підтвердження безпеки перед наступним кроком.",
+  "stepFieldRetryCountTooltip": "Скільки разів повторити цей крок до ескалації.",
+  "stepFieldReminderIntervalTooltip": "Як часто спрацьовує замаскований нагадування в очікуванні підтвердження.",
+  "stepFieldReminderGraceTooltip": "Скільки часу у користувача на підтвердження безпеки після появи нагадування.",
+  "stepPreview": "Попередній перегляд у симуляції",
+  "stepPreviewFired": "Попередній перегляд виконано: {description}",
+  "stepPreviewTitle": "Попередній перегляд кроку",
+  "stepPreviewMissingParams": "Немає посилання на крок або режим.",
+  "stepPreviewModeNotFound": "Режим не знайдено.",
+  "stepPreviewStepNotFound": "Крок не знайдено в цьому режимі.",
+  "stepPreviewError": "Помилка попереднього перегляду: {error}",
+  "stepPreviewReplay": "Повторити",
+  "stepPreviewHoldButtonHint": "Утримуйте кнопку, щоб відчути живий відгук.",
+  "stepPreviewHoldButtonLabel": "Утримати",
+  "stepPreviewHoldButtonSemantic": "Утримуйте для перегляду",
+  "stepPreviewHoldButtonReleased": "Відпущено. Сесія тепер увійде у вікно очікування.",
+  "stepPreviewFakeCallHint": "З'явиться екран фальшивого виклику. Проведіть для відповіді або утримуйте червону кнопку для імітації тривоги.",
+  "stepConfigFakeCallCaller": "Ім'я абонента",
+  "stepConfigFakeCallDecline": "Відхилення = знімання тривоги",
+  "stepConfigLoudAlarmFlash": "Мигання екрана",
+  "stepConfigLoudAlarmVolume": "Максимальна гучність",
+  "stepConfigCountdownVibrate": "Вібрація",
+  "stepConfigCountdownTone": "Відтворити сигнал",
+  "stepConfigSmsSelection": "Одержувачі",
+  "stepConfigSmsAllContacts": "Усі контакти",
+  "stepConfigSmsSpecific": "Вибрані контакти",
+  "stepConfigSmsIncludeLocation": "Додати місцезнаходження",
+  "stepConfigSmsIncludeMedical": "Додати медичну інформацію",
+  "stepConfigSmsAutoRecordAudio": "Авто-запис аудіо",
+  "stepConfigSmsAutoRecordVideo": "Авто-запис відео",
+  "stepConfigSmsRecordDuration": "Тривалість запису",
+  "stepConfigHoldReleaseSensitivity": "Чутливість відпускання (с)",
+  "stepConfigReminderInterval": "Інтервал нагадування (секунди)",
+  "stepConfigReminderTemplate": "Шаблон",
+  "stepConfigHardwarePattern": "Візерунок",
+  "stepConfigHardwarePressCount": "Кількість натискань",
+  "stepConfigHardwarePressWindow": "Інтервал між натисканнями (мс)",
+  "stepConfigHardwareLongDuration": "Тривалість тривалого натискання (с)",
+  "stepConfigHardwareButton": "Кнопка",
+  "stepConfigHardwareButtonVolumeUp": "Гучність +",
+  "stepConfigHardwareButtonVolumeDown": "Гучність -",
+  "stepConfigHardwareButtonPower": "Живлення",
+  "stepConfigHardwarePatternRepeat": "Повторне натискання",
+  "stepConfigHardwarePatternLong": "Тривале натискання",
+  "stepConfigEmergencyNumber": "Перевизначення номера екстреної служби",
+  "stepConfigEmergencyConfirm": "Підтвердити перед дзвінком",
+  "stepConfigPhonePreSms": "Надіслати SMS перед дзвінком",
+  "distressModesTitle": "Режими тривоги",
+  "distressModeInUseTitle": "Режим тривоги використовується",
+  "distressModeInUseBody": "Цей режим тривоги досі прив'язаний до: {modes}. Перш ніж видаляти, переприв'яжіть ці режими до іншого режиму тривоги.",
+  "distressModesEmpty": "Ще немає режимів тривоги.",
+  "distressModesAdd": "Додати режим тривоги",
+  "distressModeEditorTitleCreate": "Новий режим тривоги",
+  "distressModeEditorTitleEdit": "Редагувати режим тривоги",
+  "distressModeName": "Назва режиму тривоги",
+  "distressCountdown": "Запускається режим тривоги...",
+  "distressCountdownStealth": "Зачекайте, будь ласка...",
+  "templatesTitle": "Шаблони нагадувань",
+  "templatesEmpty": "Ще немає шаблонів.",
+  "templatesAdd": "Додати шаблон",
+  "templateEditorTitleCreate": "Новий шаблон",
+  "templateEditorTitleEdit": "Редагувати шаблон",
+  "templateFieldName": "Назва в редакторі",
+  "templateFieldTitle": "Заголовок нагадування",
+  "templateFieldBody": "Текст нагадування",
+  "templateFieldConfirmationType": "Тип підтвердження",
+  "templateFieldKeyword": "Ключове слово",
+  "templateFieldButtonLabel": "Напис на кнопці",
+  "templateFieldDisplayStyle": "Стиль відображення",
+  "templateConfirmTapButton": "Натиснути кнопку",
+  "templateConfirmTapWord": "Натиснути слово",
+  "templateConfirmSwipe": "Провести",
+  "templateConfirmDismiss": "Відхилити",
+  "templateDisplayFullscreen": "На весь екран",
+  "templateDisplaySubtle": "Непомітний",
+  "profileTitle": "Профіль",
+  "profileFieldName": "Ім'я",
+  "profileFieldAge": "Вік",
+  "profileFieldPhoneNumber": "Номер телефону",
+  "profileFieldPhysicalDescription": "Фізичний опис",
+  "profileFieldBloodType": "Група крові",
+  "profileFieldAllergies": "Алергії",
+  "profileFieldMedications": "Ліки",
+  "profileFieldConditions": "Медичні стани",
+  "profileFieldInstructions": "Інструкції для екстрених служб",
+  "profileAddItem": "Додати запис",
+  "settingsTitle": "Налаштування",
+  "settingsSectionSecurity": "Безпека",
+  "settingsSectionStealth": "Прихований режим",
+  "settingsSectionDefaults": "За замовчуванням",
+  "settingsSectionHistory": "Історія",
+  "settingsSectionBackup": "Резервне копіювання",
+  "settingsSectionAbout": "Про застосунок",
+  "settingsSectionFeedback": "Зворотний зв'язок",
+  "settingsSectionContacts": "Контакти",
+  "settingsSectionModes": "Режими",
+  "settingsSectionProfile": "Профіль",
+  "settingsSectionDistressModes": "Режими тривоги",
+  "settingsSectionReminderTemplates": "Шаблони нагадувань",
+  "settingsSectionBatteryAlert": "Сповіщення про батарею",
+  "settingsSectionEventDefaults": "Типові значення кроків",
+  "settingsSectionGpsLogging": "GPS-журнал",
+  "settingsSectionNotifications": "Сповіщення",
+  "settingsSectionHistoryRetention": "Зберігання історії",
+  "settingsSectionAppearance": "Вигляд",
+  "settingsThemeMode": "Тема",
+  "settingsThemeLight": "Світла",
+  "settingsThemeDark": "Темна",
+  "settingsThemeSystem": "Системна",
+  "settingsLanguage": "Мова",
+  "settingsEmergencyNumber": "Номер екстреної служби",
+  "settingsAlarmDnd": "Сирена обходить «Не турбувати»",
+  "settingsLanguagePicker": "Мова",
+  "settingsEmergencyNumberLabel": "Номер екстреної служби",
+  "settingsEmergencyNumberHint": "напр., 112",
+  "settingsEmergencyNumberSave": "Зберегти",
+  "settingsRedoOnboarding": "Повторити знайомство",
+  "settingsRedoOnboardingConfirm": "Почати знайомство спочатку?",
+  "settingsRedoOnboardingBody": "Ваша поточна конфігурація зберігається.",
+  "settingsRedoOnboardingProceed": "Почати спочатку",
+  "settingsAlarmGradualVolume": "Поступове наростання сирени",
+  "settingsAlarmGradualVolumeDuration": "Тривалість наростання: {seconds} с",
+  "securityTitle": "Безпека",
+  "securityAppPin": "PIN-код застосунку",
+  "securitySessionEndPin": "PIN-код завершення сесії",
+  "securityDuressPin": "PIN-код примусу",
+  "securityPinTimeout": "Тайм-аут PIN (секунди)",
+  "securityDisablePin": "Вимкнути",
+  "securitySetPin": "Встановити PIN",
+  "securityChangePin": "Змінити PIN",
+  "pinSetupTitle": "Встановити PIN",
+  "pinSetupEnter": "Введіть новий PIN",
+  "pinSetupConfirm": "Підтвердьте PIN",
+  "pinSetupMismatch": "PIN-коди не збігаються. Спробуйте ще раз.",
+  "pinEntryTitle": "Введіть PIN",
+  "pinEntrySubtitle": "Введіть свій PIN, щоб продовжити.",
+  "stealthTitle": "Прихований режим",
+  "stealthEnable": "Увімкнути прихований режим",
+  "stealthFakeName": "Фальшива назва застосунку",
+  "stealthFakeIcon": "Фальшива іконка",
+  "stealthNotificationDisguise": "Маскувати сповіщення",
+  "stealthTimerDisplay": "Показувати таймер у прихованому режимі",
+  "stealthSessionScreen": "Прибрати брендинг з екрана сесії",
+  "stealthPickerTitle": "Значок застосунку",
+  "stealthPickerIntro": "Виберіть, який вигляд має значок у лаунчері.",
+  "stealthPresetMusic": "Музика",
+  "stealthPresetCalendar": "Календар",
+  "stealthPresetFitness": "Фітнес",
+  "stealthPresetWeather": "Погода",
+  "stealthPresetNews": "Новини",
+  "stealthPresetPhotos": "Фото",
+  "stealthPresetNotes": "Нотатки",
+  "stealthPresetClock": "Годинник",
+  "distressConfirmationTitle": "Ви в небезпеці?",
+  "distressConfirmationCancel": "Скасувати",
+  "distressConfirmationCountdown": "Режим тривоги спрацює через {seconds} с",
+  "imSafeSliderLabel": "Проведіть, щоб підтвердити «Я в безпеці»",
+  "batteryAlertTitle": "Сповіщення про батарею",
+  "batteryAlertEnable": "Увімкнути сповіщення про батарею",
+  "batteryAlertThreshold": "Поріг: {percent}%",
+  "eventDefaultsTitle": "Типові значення кроків",
+  "eventDefaultsBody": "Ці типові значення застосовуються до будь-якого кроку, який їх не перевизначає.",
+  "gpsLoggingTitle": "GPS-журнал",
+  "gpsLoggingEnable": "Увімкнути GPS-журнал",
+  "gpsLoggingInterval": "Інтервал вибірки (секунди)",
+  "gpsLoggingAccuracy": "Точність",
+  "gpsAccuracyLow": "Низька",
+  "gpsAccuracyMedium": "Середня",
+  "gpsAccuracyHigh": "Висока",
+  "gpsLoggingIncludeSms": "Додати місцезнаходження до SMS",
+  "gpsLoggingHistoryDays": "Зберігання історії (дні)",
+  "notificationSettingsTitle": "Сповіщення",
+  "notificationSettingsBody": "Guardian Angela використовує сповіщення для маскування та нагадувань.",
+  "historyRetentionTitle": "Зберігання історії",
+  "historyRetentionBody": "Як довго Guardian Angela зберігає журнали минулих сесій.",
+  "historyRetentionDays": "Зберігання: {days} днів",
+  "backupTitle": "Резервне копіювання",
+  "backupExport": "Експортувати дані",
+  "backupImport": "Імпортувати дані",
+  "backupNotReady": "Резервне копіювання поки недоступне. Незабаром.",
+  "backupPinOptional": "Необов'язковий PIN (шифрує пакет)",
+  "backupImportOk": "Резервну копію успішно імпортовано.",
+  "historyTitle": "Минулі сесії",
+  "historyEmpty": "Ще немає минулих сесій.",
+  "historyDetailTitle": "Деталі сесії",
+  "evidenceExportTitle": "Експорт доказів",
+  "evidenceExportAsText": "Скопіювати як текст",
+  "evidenceExportAsJson": "Скопіювати як JSON",
+  "evidenceCopied": "Скопійовано до буфера обміну.",
+  "aboutTitle": "Про застосунок",
+  "aboutVersion": "Версія",
+  "aboutCredits": "Створено з турботою про тих, хто повертається додому.",
+  "feedbackTitle": "Зворотний зв'язок",
+  "feedbackBody": "Ми будемо раді почути вашу думку.",
+  "feedbackFieldMessage": "Повідомлення",
+  "feedbackSend": "Відкрити пошту",
+  "pickerNoneLabel": "— немає —",
+  "moreSettingsHeader": "Додаткові налаштування",
+  "moreSettingsHeaderCustomized": "Додаткові налаштування ({count} змінено)",
+  "stepConfigLogGpsLabel": "Запис GPS",
+  "stepConfigLogGpsDefault": "За замовчуванням",
+  "stepConfigLogGpsOn": "Увімкн.",
+  "stepConfigLogGpsOff": "Вимкн.",
+  "stepConfigLogGpsDefaultOn": "За замовчуванням (Увімкн.)",
+  "stepConfigLogGpsDefaultOff": "За замовчуванням (Вимкн.)",
+  "modeFieldIcon": "Значок",
+  "modeIconPickerTitle": "Виберіть значок",
+  "modeIconClear": "Без значка",
+  "modeDistressHeader": "Тригери тривоги",
+  "modeDistressEmpty": "Тригери не налаштовано.",
+  "modeDistressAdd": "Додати тригер",
+  "modeDistressTypeHardware": "Апаратна кнопка",
+  "modeDistressButtonType": "Кнопка",
+  "modeDistressButtonVolumeUp": "Гучність +",
+  "modeDistressButtonVolumeDown": "Гучність −",
+  "modeDistressButtonPower": "Живлення",
+  "modeDistressPattern": "Шаблон",
+  "modeDistressPatternRepeat": "Повторне натискання",
+  "modeDistressPatternLong": "Довге натискання",
+  "modeDistressPressCount": "Кількість натискань",
+  "modeDistressPressWindow": "Вікно (мс)",
+  "modeDistressLongDuration": "Тривалість (секунди)",
+  "modeDistressSummaryRepeat": "{count} натискань / {windowMs} мс",
+  "modeDistressSummaryLong": "Утримуйте {seconds}с",
+  "modeOverridesHeader": "Перевизначення режиму",
+  "modeOverridesUseDefault": "За замовчуванням",
+  "modeOverridesGpsLabel": "Запис GPS",
+  "modeOverridesStealthLabel": "Маскування",
+  "modeOverridesEventDefaultsLabel": "Стандартні значення подій",
+  "modeOverridesLocalTemplatesLabel": "Локальні шаблони нагадувань",
+  "modeOverridesGpsEnabled": "GPS увімкнено",
+  "modeOverridesGpsIntervalLabel": "Інтервал (секунди)",
+  "modeOverridesGpsIncludeInSms": "Додавати координати в SMS",
+  "modeOverridesStealthEnabled": "Маскування увімкнено",
+  "modeOverridesStealthFakeName": "Фальшива назва застосунку",
+  "modeOverridesEventDefaultsHint": "Власні стандарти активні для цього режиму.",
+  "modeOverridesLocalTemplatesCount": "{count} локальних шаблонів",
+  "modeUnsavedTitle": "Скасувати зміни?",
+  "modeUnsavedBody": "Є незбережені зміни. Скасувати та вийти?",
+  "modeUnsavedDiscard": "Скасувати",
+  "modeUnsavedKeep": "Продовжити",
+  "stepDuplicate": "Дублювати крок",
+  "stepTimingHeader": "Тайминг",
+  "stepTimingSummary": "очікування {wait}с / тривалість {duration}с / пільговий {grace}с",
+  "stepCategoryAll": "Усі",
+  "stepPickerMore": "Більше варіантів...",
+  "stepCategoryAction": "Дія",
+  "stepCategoryReminder": "Нагадування",
+  "stepCategoryDisarm": "Реєстрація",
+  "angelaDialogTitle": "Введено старий PIN-код",
+  "@angelaDialogTitle": {
+    "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
+  },
+  "angelaDialogBody": "Схоже, Ви використали старий PIN-код. Ви впевнені, що бажаєте продовжити?",
+  "@angelaDialogBody": {
+    "description": "Deceptive Angela dialog body."
+  },
+  "angelaDialogCancel": "Скасувати",
+  "@angelaDialogCancel": {
+    "description": "Deceptive Angela dialog cancel button."
+  },
+  "angelaDialogConfirm": "Продовжити",
+  "@angelaDialogConfirm": {
+    "description": "Deceptive Angela dialog confirm button."
+  },
+  "commonOk": "OK",
+  "@commonOk": {
+    "description": "Generic confirm/OK action."
+  },
+  "profileAngelaWarningTitle": "Зверніть увагу на ім'я «Angela»",
+  "@profileAngelaWarningTitle": {
+    "description": "Title shown when the user tries to save a profile name containing 'Angela'."
+  },
+  "profileAngelaWarningBody": "Guardian Angela використовує «Angela» як ключове слово безпеки. Використання його як власного імені може спричинити плутанину. Зберегти попри це?",
+  "@profileAngelaWarningBody": {
+    "description": "Body of the Angela-name warning dialog."
+  },
+  "pinSubmit": "Підтвердити",
+  "@pinSubmit": {
+    "description": "Submit button used by the launch-gate PIN entry."
+  },
+  "homeStartConfirmTitle": "Розпочати сесію?",
+  "@homeStartConfirmTitle": {
+    "description": "Title for the start-session confirmation dialog."
+  },
+  "homeStartConfirmBody": "Переконайтеся, що Ваші контакти та PIN-код налаштовано. Сесія працюватиме у фоновому режимі, і обраний режим керуватиме реєстраціями.",
+  "homePermissionsMissingTitle": "Бракує деяких дозволів",
+  "homePermissionsMissingBody": "Наступні дозволи не було надано. Без них відповідні кроки ланцюжка не виконаються без сповіщення:",
+  "homePermissionsContinueAnyway": "Запустити все одно",
+  "homePermissionsNotification": "Сповіщення",
+  "homePermissionsLocation": "Місцезнаходження",
+  "homePermissionsCallPhone": "Телефонні дзвінки",
+  "homePermissionsSendSms": "Надсилання SMS",
+  "@homeStartConfirmBody": {
+    "description": "Body for the start-session confirmation dialog."
+  },
+  "homeContactsBannerNone": "Не налаштовано жодного екстреного контакту.",
+  "@homeContactsBannerNone": {
+    "description": "Banner shown when zero contacts are configured."
+  },
+  "sessionCheckIn": "Я зареєструвався",
+  "@sessionCheckIn": {
+    "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
+  },
+  "sessionDisarmTriggerTitle": "Спрацював тригер знеактивування",
+  "@sessionDisarmTriggerTitle": {
+    "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)."
+  },
+  "sessionDisarmTriggerBody": "Спрацював тригер знеактивування. Завершити сесію?",
+  "@sessionDisarmTriggerBody": {
+    "description": "Body of the disarm-trigger confirmation dialog."
+  },
+  "sessionDisarmTriggerConfirm": "Завершити сесію",
+  "@sessionDisarmTriggerConfirm": {
+    "description": "Confirm button on the disarm-trigger dialog."
+  },
+  "sessionDisarmTriggerCancel": "Продовжити",
+  "@sessionDisarmTriggerCancel": {
+    "description": "Cancel button on the disarm-trigger dialog."
+  },
+  "wrongPinAngelaTitle": "Старий PIN-код від Angela",
+  "@wrongPinAngelaTitle": {
+    "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations."
+  },
+  "wrongPinAngelaBody": "Ви впевнені, що бажаєте продовжити з цим старим PIN-кодом?",
+  "@wrongPinAngelaBody": {
+    "description": "Body of the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaConfirm": "OK",
+  "@wrongPinAngelaConfirm": {
+    "description": "Primary button on the deceptive wrong-PIN dialog."
+  },
+  "wrongPinAngelaCancel": "Скасувати",
+  "@wrongPinAngelaCancel": {
+    "description": "Secondary button on the deceptive wrong-PIN dialog."
+  },
+  "sessionStepCountdownTitle": "Попередження",
+  "@sessionStepCountdownTitle": {
+    "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires."
+  },
+  "sessionStepCountdownBody": "Наступна ескалація спрацює, коли відлік завершиться. Проведіть «Я в безпеці» нижче, щоб знеактивувати.",
+  "@sessionStepCountdownBody": {
+    "description": "Subtitle on the countdown-warning step UI."
+  },
+  "sessionStepDisguisedDefaultTitle": "Нагадування",
+  "@sessionStepDisguisedDefaultTitle": {
+    "description": "Fallback title shown on a disguisedReminder step when no template title is resolved."
+  },
+  "sessionStepDisguisedDefaultBody": "Натисніть «Я зареєструвався», щоб підтвердити, що Ви в безпеці.",
+  "@sessionStepDisguisedDefaultBody": {
+    "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
+  },
+  "sessionStepSmsStatus": "Надсилання повідомлення контактам…",
+  "@sessionStepSmsStatus": {
+    "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
+  },
+  "sessionStepSmsDelivered": "Доставлено",
+  "@sessionStepSmsDelivered": {
+    "description": "Per-message status label shown when the messaging service reports the message was delivered."
+  },
+  "sessionStepSmsSent": "Надіслано",
+  "@sessionStepSmsSent": {
+    "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)."
+  },
+  "sessionStepSmsQueued": "У черзі",
+  "@sessionStepSmsQueued": {
+    "description": "Per-message status label shown while a message is queued for delivery."
+  },
+  "sessionStepSmsFailed": "Не вдалося",
+  "@sessionStepSmsFailed": {
+    "description": "Per-message status label shown when the messaging service reports a delivery failure."
+  },
+  "sessionStepPhoneCallStatus": "Виклик екстреного контакту…",
+  "@sessionStepPhoneCallStatus": {
+    "description": "Status text shown during a phoneCallContact step while the contact is being called."
+  },
+  "sessionStepPhoneCallCancel": "Скасувати дзвінок",
+  "@sessionStepPhoneCallCancel": {
+    "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)."
+  },
+  "sessionStepLoudAlarmTitle": "Сирена ввімкнено",
+  "@sessionStepLoudAlarmTitle": {
+    "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider."
+  },
+  "sessionStepLoudAlarmBody": "Сирена звучить, щоб привернути увагу.",
+  "@sessionStepLoudAlarmBody": {
+    "description": "Subtitle shown during a loudAlarm step."
+  },
+  "sessionStepLoudAlarmFlashWarning": "Попередження для людей із фоточутливістю: екран блимає.",
+  "@sessionStepLoudAlarmFlashWarning": {
+    "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true."
+  },
+  "sessionStepCallEmergencyStatus": "Виклик екстрених служб…",
+  "@sessionStepCallEmergencyStatus": {
+    "description": "Status text shown during a callEmergency step before / while the emergency number is dialed."
+  },
+  "sessionStepCallEmergencyNumber": "Номер: {number}",
+  "@sessionStepCallEmergencyNumber": {
+    "description": "Display of the emergency number being dialed.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "sessionStepHardwareButtonRepeat": "Натисніть {button} {count} раз(ів) протягом {windowMs} мс",
+  "@sessionStepHardwareButtonRepeat": {
+    "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.",
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
+  "sessionStepHardwareButtonLong": "Утримуйте {button} протягом {seconds} с",
+  "@sessionStepHardwareButtonLong": {
+    "description": "Instruction text shown during a hardwareButton step with long-press pattern.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "sessionStepHardwareButtonVolumeUp": "збільшення гучності",
+  "@sessionStepHardwareButtonVolumeUp": {
+    "description": "Lowercase noun for the volume-up hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonVolumeDown": "зменшення гучності",
+  "@sessionStepHardwareButtonVolumeDown": {
+    "description": "Lowercase noun for the volume-down hardware button used in step instructions."
+  },
+  "sessionStepHardwareButtonPower": "живлення",
+  "@sessionStepHardwareButtonPower": {
+    "description": "Lowercase noun for the power hardware button used in step instructions."
+  },
+  "fakeCallSlideToAnswer": "проведіть, щоб відповісти",
+  "@fakeCallSlideToAnswer": {
+    "description": "Hint text inside the iOS-style slide-to-answer track."
+  },
+  "fakeCallUnknownCaller": "Невідомий",
+  "@fakeCallUnknownCaller": {
+    "description": "Fallback caller name when the configured callerName is empty."
+  },
+  "fakeCallIncomingWhatsapp": "Голосовий виклик WhatsApp",
+  "@fakeCallIncomingWhatsapp": {
+    "description": "Incoming-call header for the WhatsApp call style."
+  },
+  "fakeCallIncomingTelegram": "Голосовий виклик Telegram",
+  "@fakeCallIncomingTelegram": {
+    "description": "Incoming-call header for the Telegram call style."
+  },
+  "fakeCallIncomingSignal": "Голосовий виклик Signal",
+  "@fakeCallIncomingSignal": {
+    "description": "Incoming-call header for the Signal call style."
+  },
+  "fakeCallBrandWhatsapp": "WHATSAPP",
+  "@fakeCallBrandWhatsapp": {
+    "description": "Top-of-screen brand badge in the WhatsApp fake-call style."
+  },
+  "fakeCallBrandTelegram": "TELEGRAM",
+  "@fakeCallBrandTelegram": {
+    "description": "Top-of-screen brand badge in the Telegram fake-call style."
+  },
+  "fakeCallBrandSignal": "SIGNAL",
+  "@fakeCallBrandSignal": {
+    "description": "Top-of-screen brand badge in the Signal fake-call style."
+  },
+  "contactLanguageDefault": "За замовчуванням (мова застосунку)",
+  "@contactLanguageDefault": {
+    "description": "Default option in the per-contact language dropdown."
+  },
+  "stepTypePickerLabel": "Тип кроку",
+  "@stepTypePickerLabel": {
+    "description": "Label for the step-type dropdown in the mode editor."
+  },
+  "securityAppPinBiometric": "Використовувати біометрію для PIN-коду застосунку",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric prompt before App PIN keypad."
+  },
+  "securitySessionEndPinBiometric": "Використовувати біометрію для PIN-коду завершення сесії",
+  "@securitySessionEndPinBiometric": {
+    "description": "Toggle: enable biometric prompt before session-end PIN."
+  },
+  "securityDistressCancelBiometric": "Використовувати біометрію для скасування сигналу тривоги",
+  "@securityDistressCancelBiometric": {
+    "description": "Toggle: biometric path for distress-trigger cancel."
+  },
+  "securityDuressTest": "Перевірити PIN-код примусу",
+  "@securityDuressTest": {
+    "description": "Row that opens a keypad to verify the duress PIN was entered correctly."
+  },
+  "securityDuressTestSubtitle": "Переконайтеся, що PIN-код примусу працює.",
+  "@securityDuressTestSubtitle": {
+    "description": "Subtitle for the duress-test row."
+  },
+  "pinEntryBiometricReason": "Автентифікуйтеся, щоб продовжити",
+  "@pinEntryBiometricReason": {
+    "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service."
+  },
+  "stealthTimerDisplayNormal": "Показати повний текст",
+  "@stealthTimerDisplayNormal": {
+    "description": "Stealth timer normal option."
+  },
+  "stealthTimerDisplaySmall": "Показувати лише цифри",
+  "@stealthTimerDisplaySmall": {
+    "description": "Stealth timer small option."
+  },
+  "stealthTimerDisplayNone": "Сховати таймер",
+  "@stealthTimerDisplayNone": {
+    "description": "Stealth timer hidden option."
+  },
+  "backupSelectionHeader": "Включити в експорт",
+  "@backupSelectionHeader": {
+    "description": "Section header above the per-element backup toggles."
+  },
+  "backupToggleSettings": "Налаштування",
+  "@backupToggleSettings": {
+    "description": "Always-on toggle showing that settings are always exported."
+  },
+  "backupToggleSettingsSubtitle": "Завжди включено, щоб резервну копію можна було відновити.",
+  "@backupToggleSettingsSubtitle": {
+    "description": "Explanation under the disabled Settings toggle."
+  },
+  "backupToggleContacts": "Екстрені контакти",
+  "@backupToggleContacts": {
+    "description": "Toggle to include contacts in the export."
+  },
+  "backupToggleModes": "Режими",
+  "@backupToggleModes": {
+    "description": "Toggle to include user-facing modes in the export."
+  },
+  "backupToggleDistressModes": "Режими тривоги",
+  "@backupToggleDistressModes": {
+    "description": "Toggle to include distress-flagged modes in the export."
+  },
+  "backupToggleTemplates": "Шаблони нагадувань",
+  "@backupToggleTemplates": {
+    "description": "Toggle to include reminder templates in the export."
+  },
+  "backupToggleSessionLogs": "Історія сесій",
+  "@backupToggleSessionLogs": {
+    "description": "Toggle to include session logs in the export."
+  },
+  "backupToggleRecordings": "Аудіозаписи",
+  "@backupToggleRecordings": {
+    "description": "Toggle to include audio-evidence recordings in the export."
+  },
+  "historySearchHint": "Пошук за назвою режиму",
+  "@historySearchHint": {
+    "description": "Hint text for the history search field."
+  },
+  "historyFilterModeAll": "Усі режими",
+  "@historyFilterModeAll": {
+    "description": "Mode filter dropdown — all option."
+  },
+  "historyFilterModeLabel": "Режим",
+  "@historyFilterModeLabel": {
+    "description": "Mode filter dropdown label."
+  },
+  "historyDateRangePick": "Діапазон дат",
+  "@historyDateRangePick": {
+    "description": "Button label that opens the date-range picker."
+  },
+  "emergencyConfirmTitle": "Виклик {number}",
+  "@emergencyConfirmTitle": {
+    "description": "Title of the emergency-confirm pre-dial screen.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "emergencyConfirmSubtitle": "Утримуйте кнопку скасування, щоб перервати.",
+  "@emergencyConfirmSubtitle": {
+    "description": "Subtitle of the emergency-confirm pre-dial screen."
+  },
+  "emergencyConfirmCountdown": "Виклик через {seconds} с",
+  "@emergencyConfirmCountdown": {
+    "description": "Countdown line on the pre-dial screen.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "emergencyConfirmCancel": "Скасувати",
+  "@emergencyConfirmCancel": {
+    "description": "Cancel button on the pre-dial screen."
+  },
+  "stealthCalendarUpcoming": "Найближчі",
+  "@stealthCalendarUpcoming": {
+    "description": "Header in the calendar stealth UI."
+  },
+  "stealthCalendarUpcomingEvent": "Зустріч",
+  "@stealthCalendarUpcomingEvent": {
+    "description": "Stealth calendar event title placeholder."
+  },
+  "stealthCalendarUntilEvent": "через {minutes} хв",
+  "@stealthCalendarUntilEvent": {
+    "description": "Stealth calendar countdown.",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "stealthCalendarToday": "Сьогодні",
+  "@stealthCalendarToday": {
+    "description": "Today header in the stealth calendar."
+  },
+  "stealthCalendarEvent1": "Кава з Олексієм",
+  "@stealthCalendarEvent1": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent2": "Стендап",
+  "@stealthCalendarEvent2": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent3": "Обід",
+  "@stealthCalendarEvent3": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent4": "Тренування",
+  "@stealthCalendarEvent4": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthCalendarEvent5": "Вечеря з Сашком",
+  "@stealthCalendarEvent5": {
+    "description": "Stealth calendar mock event."
+  },
+  "stealthDisarmGestureHint": "Проведіть угору, щоб завершити",
+  "@stealthDisarmGestureHint": {
+    "description": "Hint shown on stealth screens for the disarm gesture."
+  },
+  "stealthMusicTrackTitle": "Без назви",
+  "@stealthMusicTrackTitle": {
+    "description": "Default track title on the stealth music screen."
+  },
+  "stealthMusicArtist": "Невідомий виконавець",
+  "@stealthMusicArtist": {
+    "description": "Default artist on the stealth music screen."
+  },
+  "stealthMusicAlbum": "Невідомий альбом",
+  "@stealthMusicAlbum": {
+    "description": "Default album on the stealth music screen."
+  },
+  "stealthMusicNowPlaying": "Зараз грає",
+  "@stealthMusicNowPlaying": {
+    "description": "Now-playing label on the stealth music screen."
+  },
+  "stealthMusicSwipeHint": "Проведіть, щоб знеактивувати",
+  "@stealthMusicSwipeHint": {
+    "description": "Disarm-gesture hint on the stealth music screen."
+  },
+  "stealthMusicPrevious": "Попередній",
+  "@stealthMusicPrevious": {
+    "description": "Previous-track button label."
+  },
+  "stealthMusicPause": "Пауза",
+  "@stealthMusicPause": {
+    "description": "Pause button label."
+  },
+  "stealthMusicNext": "Наступний",
+  "@stealthMusicNext": {
+    "description": "Next-track button label."
+  },
+  "stealthPodcastShowName": "Подкаст",
+  "@stealthPodcastShowName": {
+    "description": "Podcast show name placeholder."
+  },
+  "stealthPodcastEpisodeTitle": "Епізод",
+  "@stealthPodcastEpisodeTitle": {
+    "description": "Podcast episode title placeholder."
+  },
+  "stealthPodcastEpisodesHeader": "Епізоди",
+  "@stealthPodcastEpisodesHeader": {
+    "description": "Episodes-list header on the stealth podcast screen."
+  },
+  "stealthPodcastSpeedLabel": "1x",
+  "@stealthPodcastSpeedLabel": {
+    "description": "Speed-toggle label on the stealth podcast screen."
+  },
+  "stealthPodcastEpisode1": "Епізод 1",
+  "@stealthPodcastEpisode1": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode2": "Епізод 2",
+  "@stealthPodcastEpisode2": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode3": "Епізод 3",
+  "@stealthPodcastEpisode3": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPodcastEpisode4": "Епізод 4",
+  "@stealthPodcastEpisode4": {
+    "description": "Stealth podcast episode placeholder."
+  },
+  "stealthPresetPodcast": "Подкаст",
+  "@stealthPresetPodcast": {
+    "description": "Stealth preset name shown in the picker."
+  },
+  "stealthPresetNone": "Немає",
+  "@stealthPresetNone": {
+    "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionSimSpeedLabel": "Швидкість",
+  "@sessionSimSpeedLabel": {
+    "description": "Label of the simulation speed slider."
+  },
+  "sessionSimSpeedValue": "{value}x",
+  "@sessionSimSpeedValue": {
+    "description": "Simulation speed value display.",
+    "placeholders": {
+      "value": {}
+    }
+  },
+  "sessionSimSpeedBackgroundCap": "Обмежено до 60× у фоновому режимі",
+  "@sessionSimSpeedBackgroundCap": {
+    "description": "Indicator that simulation speed is capped at 60x while app is backgrounded."
+  },
+  "sessionSimAdvancedLabel": "Розширені",
+  "@sessionSimAdvancedLabel": {
+    "description": "Label of the advanced-controls toggle in simulation."
+  },
+  "sessionSimTriggerPanic": "Викликати паніку",
+  "@sessionSimTriggerPanic": {
+    "description": "Simulation button — fires the distress chain."
+  },
+  "sessionSimTriggerArrival": "Симулювати прибуття",
+  "@sessionSimTriggerArrival": {
+    "description": "Simulation button — fakes a GPS arrival event."
+  },
+  "sessionSimTriggerBattery": "Симулювати низький заряд",
+  "@sessionSimTriggerBattery": {
+    "description": "Simulation button — fakes a low-battery event."
+  },
+  "simulateGpsArrival": "Симулювати прибуття",
+  "@simulateGpsArrival": {
+    "description": "Top-level simulate-arrival action."
+  },
+  "simulateLowBattery": "Симулювати низький заряд",
+  "@simulateLowBattery": {
+    "description": "Top-level simulate-low-battery action."
+  },
+  "launchGateTitle": "Розблокувати Guardian Angela",
+  "@launchGateTitle": {
+    "description": "Title of the Q14 launch-gate screen."
+  },
+  "launchGateSubtitle": "Введіть PIN-код або скористайтеся біометрією.",
+  "@launchGateSubtitle": {
+    "description": "Subtitle of the Q14 launch-gate screen."
+  },
+  "launchGateWrong": "Неправильний PIN-код",
+  "@launchGateWrong": {
+    "description": "Error label on the Q14 launch-gate screen."
+  },
+  "launchGateBiometricReason": "Розблокуйте Guardian Angela",
+  "@launchGateBiometricReason": {
+    "description": "Reason string for biometric prompt."
+  },
+  "launchGateUseBiometric": "Використати біометрію",
+  "@launchGateUseBiometric": {
+    "description": "Button to fall back to biometric auth on the launch gate."
+  },
+  "historyTabReal": "Реальні",
+  "historyTabSimulated": "Симуляція",
+  "audioRunningLatePhrase": "Привіт, я запізнююсь. Скоро передзвоню.",
+  "smsDefaultTemplate": "{name} може потребувати допомоги. Місцезнаходження: {location}. Час: {time}.",
+  "smsDefaultPreCallTemplate": "{name} намагається з вами зв'язатися. Очікуйте дзвінка.",
+  "simLoudAlarm": "[SIM] Гучна тривога + {tail}",
+  "simLoudAlarmTailFlash": "спалах",
+  "simLoudAlarmTailVibrate": "вібрація",
+  "simSmsContact": "[SIM] Надіслав би {channel} {count} контактам",
+  "simFakeCallRing": "[SIM] Вхідний виклик від {caller}",
+  "simCountdownWarning": "[SIM] Попередження зворотного відліку {seconds}с",
+  "simPhoneCall": "[SIM] Зателефонував би {name}",
+  "simNoContactToCall": "[SIM] Немає контакту для дзвінка",
+  "simCallEmergency": "[SIM] Набрав би {number}",
+  "simHardwareButton": "[SIM] Апаратний тригер активовано",
+  "simHoldButton": "[SIM] Очікування утримання кнопки",
+  "simDisguisedReminder": "[SIM] Показав би «{title}»",
+  "simDisguisedReminderEmpty": "[SIM] Шаблон нагадування недоступний",
+  "simGpsArrivalTrigger": "[SIM] Тригер прибуття GPS активовано",
+  "simLowBatteryAlert": "[SIM] Активовано сповіщення про низький заряд"
+}
