@@ -123,7 +123,23 @@ Users can modify settings freely when no session is active.
 
 #### PIN Length — per-PIN, determined at setup
 
-The shared global PIN length has been **removed**. Each PIN's length is now determined at setup time: the user types any number of digits between `kPinMinLength` (4) and `kPinMaxLength` (8) and taps Submit. The PIN entry dialog (`PinEntryDialog`) hashes the input on every keystroke starting at length 4 and auto-submits as soon as the hashed value matches the stored PIN or duress PIN. As a result, the app PIN, session-end PIN, and duress PIN may all have different lengths.
+The shared global PIN length has been **removed**. Each PIN's length is now determined at setup time: the user types any number of digits between `kPinMinLength` (4) and `kPinMaxLength` (8) and taps Submit. The PIN entry dialog (`PinEntryDialog`) hashes the input on every keystroke starting at length 4 and auto-submits as soon as the hashed value matches one of the stored PIN hashes.
+
+**Auto-submit algorithm (F-149, R-27):** for each input length `n ∈ [4..currentInputLength]`, take the first `n` digits and hash them; compare the hash against each configured PIN hash in the **strict priority order below**. Stop at the first match.
+
+```
+Priority order (every keystroke at length ≥ 4):
+1. AppSettings.duressPinHash    (if configured)
+2. AppSettings.appPinHash       (if configured, at App PIN prompts)
+3. AppSettings.sessionEndPinHash (if configured, at Session End PIN
+                                  / disarm / distress-cancel prompts)
+```
+
+**Prefix-collision rule (R-27):** if a user's keystroke sequence simultaneously matches both an App PIN and a Duress PIN (e.g., App PIN = `1234`, Duress PIN = `1234567`), the **Duress PIN match always wins** — the safety-critical path is never blocked by a less-severe match. Concretely, the auto-submit loop checks `duressPinHash` first at every length, so a longer Duress PIN that contains a shorter App PIN as its prefix will fire silently as soon as its full length is entered. Setup-time validation prevents the reverse case (an App PIN that is itself a prefix of a Duress PIN can still resolve correctly because of this priority order).
+
+**Setup-time validation:** when a new PIN is created, the setup flow rejects values that would create an unresolvable collision per the priority rule. Specifically: a new App PIN cannot equal an existing Duress PIN or Session End PIN; a new Duress PIN cannot equal an existing App PIN or Session End PIN; a new Session End PIN cannot equal an existing App PIN or Duress PIN. Prefix overlaps where the longer PIN has higher priority (e.g., Duress longer than App) are allowed because the priority rule resolves them deterministically.
+
+**No persisted per-PIN length fields:** because hashes are length-independent and the auto-submit loop tries every `n ∈ [4..maxInput]`, the system does not need to store each PIN's length anywhere on disk. Tests assert the algorithm directly (e.g., "App PIN = `123456`; entering `12345` does NOT auto-submit; entering `123456` does auto-submit").
 
 `AppSettings.pinLength` no longer exists. Legacy JSON with a `pinLength` key is ignored on load — this is a one-way schema change (no migration required because schema mismatches trigger a reseed per spec).
 
@@ -310,7 +326,7 @@ Global alarm behavior (affects all loudAlarm steps).
 #### Session Log Trash (Extra 11)
 - Accessible from the trash icon in the `/past-events` app bar, not a settings row.
 - Soft-deleted logs are kept in the repository with a tombstone recorded in `SharedPreferences` (`session_log_tombstones`).
-- Tombstones older than `sessionLogRetentionDuration` (7 days) are hard-deleted on Past Events screen open and on `HistoryController` build.
+- Tombstones older than `AppSettings.trashRetentionDays` (default 7 days) are hard-deleted on Past Events screen open and on `HistoryController` build.
 - Per-entry actions in the Trash screen: Restore (clears the tombstone) and Delete Permanently (hard-delete + tombstone cleanup).
 - "Clear All" on the Past Events screen bypasses Trash and wipes the repository plus every tombstone.
 

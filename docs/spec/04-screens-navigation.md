@@ -941,8 +941,11 @@ Stealth mode is orthogonal to PIN configuration. If a PIN is required to disarm 
 
 ### Session-Interrupted Prompt (Extra 13)
 
-If the engine ended unexpectedly (process kill, OOM, force-stop), the
-app surfaces a modal on next launch before the home screen renders.
+If the process died with a session active (force-stop, OOM, OS kill),
+the next cold launch detects the `active_session_marker.json` file
+(written atomically at `engine.start()`, cleared atomically at
+`engine.endSession()`). When the marker exists, the app surfaces an
+informational modal before the home screen renders.
 
 **Layout:**
 ```
@@ -951,28 +954,31 @@ app surfaces a modal on next launch before the home screen renders.
 │   Session interrupted           │
 │                                 │
 │   A session was running when    │
-│   the app stopped. The chain    │
-│   is gone — only the mode and   │
-│   start time are preserved.     │
+│   the app stopped. The session  │
+│   state is gone — nothing was   │
+│   restored. We're showing this  │
+│   so you know.                  │
 │                                 │
-│   ┌───────────────────────┐     │
-│   │ [PinKeypad] (gated)   │     │ (Session End PIN if set; Skip→Discard)
-│   └───────────────────────┘     │
+│   Mode: <name>                  │
+│   Started: <relative time>      │
 │                                 │
-│   [Resume]   [Discard]          │
+│   [ Start same mode ]           │
+│   [ Acknowledge ]               │
 │                                 │
 └─────────────────────────────────┘
 ```
 
-**Data preserved:** `modeId`, session `startedAt` timestamp, last
-completed step index. **NOT preserved:** chain state, miss counts,
-GPS history, in-progress phase timers — session is in-memory only,
-nothing is restored from disk.
+**Data preserved on disk:** ONLY `modeId` and `startedAt` (the
+marker's two fields). **NOT preserved:** chain state, miss counts,
+GPS history, in-progress phase timers, SessionLog for the dead
+session — per lessons-learned §5.2, session state is in-memory
+only. No `SessionLog` entry is created for the killed session.
 
 **Behavior:**
-- PIN gate appears only when `AppSettings.sessionEndPinHash` is set. Wrong PIN follows the standard wrong-PIN escalation. Tapping "Skip" disables the PIN gate and routes to "Discard".
-- **Resume:** starts a fresh `SessionEngine` for `modeId` from step 0. The original session log is closed with `EndReason.appTermination`; a new log is opened.
-- **Discard:** closes the prior session log with `EndReason.appTermination` and routes to home.
+- No PIN gate — the modal is informational and does not perform any safety-relevant action.
+- **Start same mode:** clears the marker, then opens the regular session-start flow for the same `modeId` (brand-new session, step 0, fresh `SessionLog`; this is NOT a resume).
+- **Acknowledge:** clears the marker and routes to home.
+- Either path clears `active_session_marker.json` so the prompt does not fire again.
 
 ---
 
@@ -2234,7 +2240,7 @@ Create or edit a reminder template with live preview.
 **Behavior:**
 
 - **Live Preview:** Scales to 55% width, updates as user types
-- **Icon picker:** Shows icons for Calendar, Duolingo, Delivery, Weather, Email, Chat, Bank, Social Media
+- **Icon picker:** Shows icons for the 8 built-in template categories — Calendar Event, Language Lesson, Delivery Update, Weather Alert, Fitness Reminder, Message Preview, App Update, Battery Warning (canonical list in spec 03 §ReminderTemplate).
 - **Image picker:** Optional, tap to select from gallery
 - **Confirmation type:** Determines how reminder closes (tap, button, swipe)
 - **All fields update preview instantly**

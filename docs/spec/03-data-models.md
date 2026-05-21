@@ -678,6 +678,16 @@ final class AppSettings {
   final int pinTimeoutSeconds;             // default: 15; max: 120
   final int wrongPinThreshold;             // default: 5 — wrong PINs that
                                            // silently fire distress (A3)
+  final bool deceptivePinDialogEnabled;    // default: true (R-42) — when
+                                           // true, every wrong-PIN entry
+                                           // shows the DeceptiveOldPinDialog
+                                           // ("Old PIN entered" modal) to
+                                           // mask the wrong-PIN counter from
+                                           // a casual attacker. When false,
+                                           // the prior plain shake +
+                                           // "Incorrect PIN" feedback is
+                                           // used. Controlled in
+                                           // /settings/security.
 
   // Biometric / launch-auth toggles (Q14)
   final bool appPinBiometricEnabled;       // try biometric first at app PIN

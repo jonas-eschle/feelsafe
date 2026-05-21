@@ -1112,7 +1112,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 | Q10 | `ChainStep.randomize` type | `double` in `[0, 1]` (not enum, not bool). |
 | Q11 | Speed multiplier | Clamp `[0.01, 1000.0]`. Real sessions reject any non-1.0 value. NaN / inf / non-positive throw. |
 | Q12 | `preSendSms` removed | Removed from `PhoneCallContactConfig`. The pre-call location SMS now lives only on `CallEmergencyConfig.sendLocationSmsFirst`. |
-| Q13 | `EndReason` / `PauseReason` | Rich code values match `lib/domain/engine/engine_state.dart` (`disarm`, `chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`, `userQuit`, `appTermination` / `userRequested`, `incomingCall`, `fakeCallAnswered`, `bootRestart`). |
+| Q13 | `EndReason` / `PauseReason` | Rich code values match `lib/domain/engine/engine_state.dart` — `EndReason` ∈ {`disarm`, `chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`, `userQuit`} and `PauseReason` ∈ {`userRequested`, `incomingCall`}. No `appTermination` / `bootRestart` / `fakeCallAnswered` values: per lessons-learned §5.2/5.3 the session is in-memory only (no restore from disk → no `appTermination` / `bootRestart`) and per Pivot 2 the fake call is an event not a pause (no `fakeCallAnswered` pause reason). |
 | Q14 | `jumpToStep` is simulation-only | Throws `StateError` on real sessions. |
 | Q15 | `SessionLog.hadMedicalInfo` | Field added (default `false`); stamped at session start by `SessionLogRecorder`. |
 | Q16 | `WalkSession.simulationSilent` | Field added; `WalkSession.startingReal` / `startingSimulation` named ctors. |

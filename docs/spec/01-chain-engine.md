@@ -640,9 +640,11 @@ When a real incoming phone call is detected during an active session:
 
 **No resume after force-close (Extra-13):**
 If the app process is killed by the OS or the user (force-stop, OOM kill):
-- The session does NOT automatically resume on next launch.
-- On next app launch, a "Session interrupted" prompt is shown, giving the user the option to manually resume or dismiss.
-- **Rationale:** Automatic silent resumption after a process kill could restart escalation at an unexpected moment (e.g., minutes or hours later). The user must consciously decide to continue. The Android foreground service uses `START_STICKY` to survive normal backgrounding; force-close is an explicit user or OS action that breaks this contract.
+- The session is GONE. There is no resume, no engine state recovery, no chain reconstruction. Per lessons-learned §5.2, session state is in-memory only.
+- A tiny `active_session_marker.json` is written atomically at `start()` (containing `{modeId, startedAt}`) and cleared atomically at `endSession()`. The marker is NOT a session snapshot — it carries only the minimal "a session was running" signal.
+- On next app launch, if the marker exists, the app shows an informational "Session-Interrupted" prompt (spec 04 §Extra-13). The user acknowledges; the marker is cleared. Optionally, the user can start a fresh session of the same `modeId` from the prompt (this is a brand-new session, not a resume — engine starts at step 0 with a fresh `SessionLog`).
+- No `SessionLog` entry is written for the killed session — there is no `sessionEnded` event, so the atomic-write contract is preserved.
+- **Rationale:** Lessons-learned §5.2 (memory + design intent): "App-death = session is gone, period." Reconstructing chain state on cold launch opens forensic-leak surfaces and breaks the "session = single contiguous in-memory run" engine invariant. The marker exists only to inform the user; it never feeds the engine.
 - **iOS:** App kill is detected only at next launch (no AlarmManager watchdog). Behaviour is identical — prompt on next launch.
 
 **Pause/resume use cases:**
@@ -777,9 +779,6 @@ enum PauseReason {
   incomingCall,         // Incoming phone call detected; engine pauses
                         // so audio does not bleed into the call.
                         // Auto-resumes when the call ends.
-  bootRestart,          // App relaunched after backgrounding long
-                        // enough that recovery-dialog flow is needed
-                        // (D-ENGINE-22 — no auto-resume).
 }
 
 enum EndReason {
@@ -793,9 +792,16 @@ enum EndReason {
                         // completed.
   userQuit,             // User quit the session (app-level termination
                         // path).
-  appTermination,       // Application termination without an in-progress
-                        // recovery dialog.
 }
+
+// No `PauseReason.bootRestart` and no `EndReason.appTermination` —
+// per `docs/rewrite/lessons-learned.md` §5.2/5.3, session state is
+// in-memory only and not restored from disk. App-death means the
+// session is gone, period. The "Session-Interrupted prompt"
+// (spec 04 §Extra-13) is informational only — it tells the user
+// the previous session was active when the app died; it does NOT
+// reconstruct the session, write a SessionLog for the dead
+// session, or carry any engine state forward.
 ```
 
 State transitions are exhaustive via `switch` expressions on the sealed type.

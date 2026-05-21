@@ -1027,7 +1027,7 @@ This table maps all critical spec requirements to their corresponding test cases
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| ChainStep field: retryCount (not retryCount) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
+| ChainStep field: `retryCount` (renamed from legacy `repeatCount` per R-9; legacy name is a CI grep gate) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
 | SessionMode: chainSteps ordered by order field | TC-74 | session_mode_test.dart | P2 |
 | SessionLog: all events timestamped and categorized | TC-62, TC-63, TC-64, TC-65 | session_log_test.dart | P2 |
 | Drift / JSON encryption always-on (no opt-out) | TC-75 | encryption_test.dart | P1 |

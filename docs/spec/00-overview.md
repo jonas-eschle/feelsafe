@@ -170,7 +170,7 @@ Each step type is on equal footing in the chain. The two *interactive* types let
 - Holding silently confirms the user is safe
 - Releasing starts a configurable grace period (e.g., 5 seconds)
 - If not held again within grace period, the chain advances
-- **Configurable:** sensitivity, hold style (discrete/large/full-screen), vibration feedback, sound feedback
+- **Configurable:** sensitivity, hold style (`largeButton` / `fullScreen` / `fakeLockScreen`), vibration feedback, sound feedback
 
 **Disguised Reminders**
 - Fake notifications styled as real apps: Calendar, Duolingo, food delivery services, etc.
@@ -714,8 +714,8 @@ dart run import_sorter:main --no-comments
    - Walk Mode (hold button, 1-sec grace as a Walk Mode seed override of the default `0s`, escalates to fake call → SMS → phone contact → emergency call)
    - Date Mode (disguised reminders, 30-min intervals, 2-min grace, 2 attempts, escalates to fake call → SMS → phone contact → emergency call)
 
-2. **8 built-in reminder templates:**
-   - Calendar, Duolingo, Delivery, Weather, Fitness, Message, Update, Battery
+2. **8 built-in reminder templates** (canonical names per spec 03 §ReminderTemplate):
+   - Calendar Event, Language Lesson, Delivery Update, Weather Alert, Fitness Reminder, Message Preview, App Update, Battery Warning
 
 3. **1 default distress mode:**
    - Default distress mode: a `SessionMode` with `isDistressMode = true` whose chain is Step 1 — `smsContact` with `contactSelection: firstContact` (location SMS to the first emergency contact) → Step 2 — `callEmergency` (call emergency services with `sendLocationSmsFirst = true`). Its id is stored in `AppDefaults.defaultDistressModeId` and used whenever `SessionMode.distressModeId` is null.

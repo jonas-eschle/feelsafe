@@ -99,7 +99,7 @@ Selection algorithm:
 **Avoiding same template twice (C4):** The session controller tracks the ID of the last shown template and passes an updated `templateIds` exclusion list (or re-ordered pool) when building the next `SessionContext`. The strategy itself is stateless; avoidance logic lives in the controller.
 
 **Built-in Templates:**
-- 8 built-in templates (Calendar, Duolingo, Delivery, Weather, Email, Chat, Bank, Social Media)
+- 8 built-in templates (Calendar Event, Language Lesson, Delivery Update, Weather Alert, Fitness Reminder, Message Preview, App Update, Battery Warning) — canonical list defined in spec 03 §ReminderTemplate and seeded in `lib/data/seed_data.dart`.
 - Can be more sophisticated than user-created ones
 - Built-in templates can be disabled from rotation but not deleted
 - Template rotation avoids same template twice in a row (controller responsibility, see above)
