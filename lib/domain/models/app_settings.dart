@@ -49,18 +49,18 @@ final class AppSettings {
        assert(
          sessionLogRetentionDays >= 1 && sessionLogRetentionDays <= 365,
          'sessionLogRetentionDays must be in [1, 365] '
-             '(spec 06 §History & Retention)',
+         '(spec 06 §History & Retention)',
        ),
        assert(
          trashRetentionDays >= 1 && trashRetentionDays <= 90,
          'trashRetentionDays must be in [1, 90] '
-             '(spec 06 §History & Retention)',
+         '(spec 06 §History & Retention)',
        ),
        assert(
          alarmGradualVolumeDurationSeconds >= 1 &&
              alarmGradualVolumeDurationSeconds <= 60,
          'alarmGradualVolumeDurationSeconds must be in [1, 60] '
-             '(spec 06 §Loud Alarm Gradual Volume)',
+         '(spec 06 §Loud Alarm Gradual Volume)',
        );
 
   /// Deserialises an [AppSettings] from [json].

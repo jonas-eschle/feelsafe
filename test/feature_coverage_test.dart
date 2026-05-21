@@ -326,7 +326,13 @@ const List<_FeatureStatus> _features = [
   // ── Tests (F-128..F-139) ─────────────────────────────────────────
   _FeatureStatus(id: 'F-128', description: 'Engine unit tests', phase: 2),
   _FeatureStatus(id: 'F-129', description: 'Strategy unit tests', phase: 3),
-  _FeatureStatus(id: 'F-130', description: 'Model unit tests', phase: 1),
+  _FeatureStatus(
+    id: 'F-130',
+    description: 'Model unit tests',
+    phase: 1,
+    implemented: true,
+    tested: true,
+  ),
   _FeatureStatus(id: 'F-131', description: 'Widget tests per screen', phase: 6),
   _FeatureStatus(
     id: 'F-132',
@@ -342,6 +348,8 @@ const List<_FeatureStatus> _features = [
     id: 'F-134',
     description: 'Property tests (JSON round-trip)',
     phase: 1,
+    implemented: true,
+    tested: true,
   ),
   _FeatureStatus(
     id: 'F-135',
