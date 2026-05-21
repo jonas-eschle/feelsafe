@@ -294,12 +294,13 @@ final class CountdownWarningConfig extends StepConfig {
 final class FakeCallConfig extends StepConfig {
   /// Creates a fake-call config with the given values.
   ///
-  /// Defaults: [callStyle] = [CallStyle.androidNative],
+  /// Defaults: [callStyle] = [CallStyle.platformNative] (auto-resolves
+  /// at render time per spec 03 §FakeCallConfig "default: platform-native"),
   /// [callerName] = 'Angela', [voiceOutputMode] = [VoiceOutputMode.earpiece],
   /// [ringDurationSeconds] = 30, [declineIsSafe] = true,
   /// [declineWithDistressHoldSeconds] = 5, [blackScreenMode] = false.
   const FakeCallConfig({
-    this.callStyle = CallStyle.androidNative,
+    this.callStyle = CallStyle.platformNative,
     this.callerName = 'Angela',
     this.callerPhotoPath,
     this.voiceRecordingPath,
@@ -313,7 +314,7 @@ final class FakeCallConfig extends StepConfig {
   /// Deserialises from a JSON map produced by [toJson].
   factory FakeCallConfig.fromJson(Map<String, dynamic> json) => FakeCallConfig(
     callStyle: CallStyle.values.byName(
-      (json['callStyle'] as String?) ?? CallStyle.androidNative.name,
+      (json['callStyle'] as String?) ?? CallStyle.platformNative.name,
     ),
     callerName: (json['callerName'] as String?) ?? 'Angela',
     callerPhotoPath: json['callerPhotoPath'] as String?,
@@ -439,8 +440,10 @@ final class SmsContactConfig extends StepConfig {
   /// Defaults: [contactSelection] = [SmsContactSelection.allContacts],
   /// [channel] = [MessageChannel.sms], [includeLocation] = true,
   /// [includeMedicalInfo] = false, [autoRecordAudio] = false,
-  /// [autoRecordVideo] = false, [recordDurationSeconds] = 30,
-  /// [blackScreenMode] = false.
+  /// [recordDurationSeconds] = 30, [blackScreenMode] = false.
+  ///
+  /// Video recording (`autoRecordVideo`) is NOT supported — out of scope
+  /// per spec 11 REJ-3.
   const SmsContactConfig({
     this.contactIds,
     this.contactSelection = SmsContactSelection.allContacts,
@@ -448,7 +451,6 @@ final class SmsContactConfig extends StepConfig {
     this.includeLocation = true,
     this.includeMedicalInfo = false,
     this.autoRecordAudio = false,
-    this.autoRecordVideo = false,
     this.recordDurationSeconds = 30,
     this.messageTemplate,
     this.blackScreenMode = false,
@@ -470,7 +472,6 @@ final class SmsContactConfig extends StepConfig {
         includeLocation: (json['includeLocation'] as bool?) ?? true,
         includeMedicalInfo: (json['includeMedicalInfo'] as bool?) ?? false,
         autoRecordAudio: (json['autoRecordAudio'] as bool?) ?? false,
-        autoRecordVideo: (json['autoRecordVideo'] as bool?) ?? false,
         recordDurationSeconds:
             (json['recordDurationSeconds'] as num?)?.toInt() ?? 30,
         messageTemplate: json['messageTemplate'] as String?,
@@ -496,13 +497,14 @@ final class SmsContactConfig extends StepConfig {
   /// Whether to automatically start an audio recording before sending.
   final bool autoRecordAudio;
 
-  /// Whether to automatically start a video recording before sending.
-  final bool autoRecordVideo;
-
-  /// Duration of any automatic recording in seconds.
+  /// Duration of any automatic audio recording in seconds.
   final int recordDurationSeconds;
 
-  /// Message template string. Null = use the seeded default template.
+  /// Message template string. Null = use the seeded default template
+  /// ("Automated safety alert from Guardian Angela…"). A non-null
+  /// user-supplied value overrides it. Pattern matches the
+  /// `contactId? = null = first-sorted` style used elsewhere in
+  /// StepConfig.
   final String? messageTemplate;
 
   @override
@@ -516,7 +518,6 @@ final class SmsContactConfig extends StepConfig {
     bool? includeLocation,
     bool? includeMedicalInfo,
     bool? autoRecordAudio,
-    bool? autoRecordVideo,
     int? recordDurationSeconds,
     String? messageTemplate,
     bool? blackScreenMode,
@@ -527,7 +528,6 @@ final class SmsContactConfig extends StepConfig {
     includeLocation: includeLocation ?? this.includeLocation,
     includeMedicalInfo: includeMedicalInfo ?? this.includeMedicalInfo,
     autoRecordAudio: autoRecordAudio ?? this.autoRecordAudio,
-    autoRecordVideo: autoRecordVideo ?? this.autoRecordVideo,
     recordDurationSeconds: recordDurationSeconds ?? this.recordDurationSeconds,
     messageTemplate: messageTemplate ?? this.messageTemplate,
     blackScreenMode: blackScreenMode ?? this.blackScreenMode,
@@ -541,7 +541,6 @@ final class SmsContactConfig extends StepConfig {
     'includeLocation': includeLocation,
     'includeMedicalInfo': includeMedicalInfo,
     'autoRecordAudio': autoRecordAudio,
-    'autoRecordVideo': autoRecordVideo,
     'recordDurationSeconds': recordDurationSeconds,
     if (messageTemplate != null) 'messageTemplate': messageTemplate,
     'blackScreenMode': blackScreenMode,
@@ -570,7 +569,6 @@ final class SmsContactConfig extends StepConfig {
         includeLocation == other.includeLocation &&
         includeMedicalInfo == other.includeMedicalInfo &&
         autoRecordAudio == other.autoRecordAudio &&
-        autoRecordVideo == other.autoRecordVideo &&
         recordDurationSeconds == other.recordDurationSeconds &&
         messageTemplate == other.messageTemplate &&
         blackScreenMode == other.blackScreenMode;
@@ -584,7 +582,6 @@ final class SmsContactConfig extends StepConfig {
     includeLocation,
     includeMedicalInfo,
     autoRecordAudio,
-    autoRecordVideo,
     recordDurationSeconds,
     messageTemplate,
     blackScreenMode,

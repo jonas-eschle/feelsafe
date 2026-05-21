@@ -377,9 +377,19 @@ class SmsContactConfig extends StepConfig {
   final bool includeLocation;          // default: true
   final bool includeMedicalInfo;       // default: false — per-step toggle (C3)
   final bool autoRecordAudio;          // default: false
-  final bool autoRecordVideo;          // default: false
-  final int recordDurationSeconds;     // default: 30
-  final String messageTemplate;        // default: see seed data
+  final int recordDurationSeconds;     // default: 30 (audio-only — video
+                                       // recording is rejected per spec
+                                       // 11 REJ-3)
+  final String? messageTemplate;       // null = inherit from seed default
+                                       // ("Automated safety alert from
+                                       // Guardian Angela.\n{name} may need
+                                       // help.\nLast known location:
+                                       // {location}\nTime: {time}\nPhysical
+                                       // description: {description}"); a
+                                       // non-null user-supplied value
+                                       // overrides it. Pattern matches
+                                       // `contactId? = null = first-sorted`
+                                       // elsewhere in StepConfig.
   @override final bool blackScreenMode; // default: false
 }
 
@@ -422,6 +432,10 @@ final class PhoneCallContactConfig extends StepConfig {
   final String? contactId;                // null = first-sorted contact
   final List<String> alternativeContactIds; // default: empty
   @override final LogGpsOverride logGps;  // default: useDefault
+  @override final bool blackScreenMode;   // default: false (parity with
+                                          // every other StepConfig; stealth
+                                          // hides the phone-call UI under
+                                          // a black overlay)
 }
 
 // Q12: pre-call SMS configuration was removed from
@@ -466,6 +480,65 @@ enum CountdownStyle { fullScreen, notification, minimal }
 /// `fixed`         — coordinates stored on the trigger itself
 ///                   (`lat`/`lng`); no prompt at session start.
 enum GpsDestinationSource { promptAtStart, fixed }
+
+/// Visual presentation of a `holdButton` step.
+///
+/// `largeButton`     — a single large primary-coloured button in the
+///                     bottom third of the session screen. Default.
+/// `fullScreen`      — the entire screen is the hold target; releasing
+///                     anywhere triggers the grace window.
+/// `fakeLockScreen`  — the hold UI is disguised as a fake OS lock
+///                     screen (per stealth-mode design).
+enum HoldStyle { largeButton, fullScreen, fakeLockScreen }
+
+/// Audio output route for `FakeCallConfig.voiceRecordingPath`.
+///
+/// `earpiece` — voice plays through the device earpiece (default;
+///              mimics holding the phone to the ear).
+/// `speaker`  — voice plays through the speakerphone.
+enum VoiceOutputMode { earpiece, speaker }
+
+/// Why an active session ended. Recorded on `SessionLog.endReason`.
+///
+/// `disarm`             — user-initiated disarm (Session End PIN /
+///                        GPS arrival / timer expiry).
+/// `chainExhausted`     — final chain step completed.
+/// `hardwarePanic`      — hardware-button distress trigger fired and
+///                        its distress chain ran to exhaustion.
+/// `duressPin`          — duress PIN entered at a prompt; distress
+///                        chain completed.
+/// `wrongPinExhausted`  — wrong-PIN threshold reached; distress
+///                        chain completed.
+/// `userQuit`           — user explicitly ended the session via the
+///                        normal "End session" path (not a disarm).
+///
+/// **NO** `appTermination` value — per `docs/rewrite/lessons-learned.md`
+/// §5.2 (no session restore), an OS-killed session leaves no
+/// `SessionLog` and emits no `sessionEnded` event.
+enum EndReason {
+  disarm,
+  chainExhausted,
+  hardwarePanic,
+  duressPin,
+  wrongPinExhausted,
+  userQuit,
+}
+
+/// Why an active session is currently paused. Carried on
+/// `EnginePaused.reason`.
+///
+/// `userRequested` — explicit user-triggered pause via the Pause
+///                   button or notification action.
+/// `incomingCall`  — an OS-level incoming phone call was detected;
+///                   the engine auto-pauses to avoid bleeding audio
+///                   into the call, and auto-resumes when the call
+///                   ends.
+///
+/// **NO** `bootRestart` value — sessions never resume from disk
+/// (lessons-learned §5.2). **NO** `fakeCallAnswered` value — the
+/// fake-call step is an event, not a pause (lessons-learned §5.3 /
+/// Pivot 2).
+enum PauseReason { userRequested, incomingCall }
 
 class CallEmergencyConfig extends StepConfig {
   /// Per-step override. `null` (default) = inherit the app-wide

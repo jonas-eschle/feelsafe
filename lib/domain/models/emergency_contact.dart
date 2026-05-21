@@ -19,7 +19,7 @@ final class EmergencyContact {
     required this.phoneNumber,
     this.relationship,
     required this.sortOrder,
-    required this.channels,
+    this.channels = const <MessageChannel>[MessageChannel.sms],
     this.languageCode,
   }) : assert(id.isNotEmpty, 'EmergencyContact.id must be non-empty'),
        assert(

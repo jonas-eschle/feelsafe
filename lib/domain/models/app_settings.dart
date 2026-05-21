@@ -38,7 +38,30 @@ final class AppSettings {
     this.telemetryOptOut = false,
     this.sentryEnabled = false,
     this.defaults = const AppDefaults(),
-  });
+  }) : assert(
+         pinTimeoutSeconds >= 5 && pinTimeoutSeconds <= 120,
+         'pinTimeoutSeconds must be in [5, 120] (spec 06 §Security)',
+       ),
+       assert(
+         wrongPinThreshold >= 2 && wrongPinThreshold <= 10,
+         'wrongPinThreshold must be in [2, 10] (spec 06 §Duress PIN, G-010)',
+       ),
+       assert(
+         sessionLogRetentionDays >= 1 && sessionLogRetentionDays <= 365,
+         'sessionLogRetentionDays must be in [1, 365] '
+             '(spec 06 §History & Retention)',
+       ),
+       assert(
+         trashRetentionDays >= 1 && trashRetentionDays <= 90,
+         'trashRetentionDays must be in [1, 90] '
+             '(spec 06 §History & Retention)',
+       ),
+       assert(
+         alarmGradualVolumeDurationSeconds >= 1 &&
+             alarmGradualVolumeDurationSeconds <= 60,
+         'alarmGradualVolumeDurationSeconds must be in [1, 60] '
+             '(spec 06 §Loud Alarm Gradual Volume)',
+       );
 
   /// Deserialises an [AppSettings] from [json].
   factory AppSettings.fromJson(Map<String, dynamic> json) => AppSettings(
