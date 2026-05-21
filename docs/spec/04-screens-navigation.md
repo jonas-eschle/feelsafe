@@ -1719,9 +1719,12 @@ Contacts to message:
   selection regardless of UI state.
 
 **Extensibility:** The same widget renders for any channel-scoped
-step. `phoneCallContact` uses it with the "Phone" channel (future
-work; currently uses single-contact pickers). Each step type
-passes its channel filter into the shared widget.
+step that targets multiple contacts (`smsContact`). For v3 GA,
+`phoneCallContact` is single-contact-only by design — it uses a
+dedicated `SinglePhoneContactPicker` widget (primary + alternative
+contact ids in `PhoneCallContactConfig`) rather than this grid.
+Each multi-contact step type passes its channel filter into the
+shared grid widget.
 
 ---
 

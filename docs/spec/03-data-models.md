@@ -562,14 +562,23 @@ sealed class DistressTrigger {
   Map<String, dynamic> toJson();
 }
 
-/// Hardware-button panic: rapid presses of a physical device button.
-/// Only the `repeatPress` pattern is currently shipped; `longPress`
-/// is reserved for future use and stored as `durationSeconds`.
+/// Hardware-button panic: rapid presses OR sustained long-press of a
+/// physical device button. Both patterns ship at v3 GA per D15.
+///
+/// `repeatPress` — `pressCount` rapid presses within the configured
+/// window fire the distress chain. `durationSeconds` is ignored.
+/// `longPress`   — a single sustained hold of `durationSeconds`
+/// seconds fires the distress chain. `pressCount` is ignored.
+///
+/// Validation at save time rejects mode configurations where the
+/// pattern-irrelevant field is set to a non-default value (clarity
+/// over flexibility — see G-005).
 final class HardwareButtonDistressTrigger extends DistressTrigger {
   final ButtonType buttonType;       // volumeUp | volumeDown
   final PressPattern pattern;        // repeatPress | longPress
   final int pressCount;              // default: 5 (B1) — repeatPress only
   final double? durationSeconds;     // longPress only; null otherwise
+                                     // (default 2.0 when longPress)
 }
 
 sealed class DisarmTrigger {
@@ -1354,7 +1363,7 @@ if (keyString == null) {
 
 - **Android Auto Backup:** Drift database (sqlite3mc) and JSON envelopes are already encrypted; Android adds transport encryption
 - **iOS iCloud:** Drift database (sqlite3mc) and JSON envelopes are already encrypted; iCloud adds transport encryption
-- **Manual export:** Optional encryption of JSON export (not implemented yet, future enhancement)
+- **Manual export:** JSON export is **always encrypted at rest** by virtue of the underlying Drift / JSON envelopes; the exported `.json` file itself is plaintext by default. When the user enables "Encrypt this export" in `/settings/backup`, the export is wrapped in an AES-256-GCM envelope with a key derived from a user-supplied passphrase via PBKDF2 (100k iterations, SHA-256). Import detects the envelope by magic header and prompts for the passphrase.
 
 ### Data at Rest
 

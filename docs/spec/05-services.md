@@ -1040,7 +1040,7 @@ Export is triggered via `share_plus` package, which shows the OS share sheet (Ai
 
 Parses and validates the JSON:
 
-- **Schema version check:** Rejects future versions not yet supported
+- **Schema version check:** Rejects exports whose `_schemaVersion` is greater than the running app's `AppConstants.currentSchemaVersion` (forward-incompatible payload)
 - **Format validation:** Rejects malformed JSON
 - **Type checking:** Validates all nested objects
 
