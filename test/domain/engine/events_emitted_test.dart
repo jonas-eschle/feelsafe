@@ -130,18 +130,22 @@ void main() {
         // triggers a retry (repeatMissed) because missCount (1) ≤
         // retryCount (1).
         async.elapse(const Duration(seconds: 2));
-        final retryMisses =
-            events.where((e) => e.event == ChainEvent.repeatMissed).toList();
+        final retryMisses = events
+            .where((e) => e.event == ChainEvent.repeatMissed)
+            .toList();
         check(retryMisses).isNotEmpty();
         check(retryMisses.first.metadata['missCount']).equals(1);
-        check(retryMisses.first.stepType).equals(ChainStepType.disguisedReminder);
+        check(
+          retryMisses.first.stepType,
+        ).equals(ChainStepType.disguisedReminder);
 
         // Elapse through one more duration+grace; second grace expiry
         // does NOT emit repeatMissed (missCount > retryCount → advance).
         // Still must have exactly one repeatMissed in total.
         async.elapse(const Duration(seconds: 2));
-        final allRetry =
-            events.where((e) => e.event == ChainEvent.repeatMissed).toList();
+        final allRetry = events
+            .where((e) => e.event == ChainEvent.repeatMissed)
+            .toList();
         check(allRetry.length).equals(1);
 
         engine.endSession();
@@ -167,9 +171,12 @@ void main() {
         async.elapse(const Duration(seconds: 5)); // enough to retry once
 
         // graceExpired must fire; repeatMissed must NOT.
-        check(events.where((e) => e.event == ChainEvent.graceExpired))
-            .isNotEmpty();
-        check(events.where((e) => e.event == ChainEvent.repeatMissed)).isEmpty();
+        check(
+          events.where((e) => e.event == ChainEvent.graceExpired),
+        ).isNotEmpty();
+        check(
+          events.where((e) => e.event == ChainEvent.repeatMissed),
+        ).isEmpty();
 
         engine.endSession();
       });

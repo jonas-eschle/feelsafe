@@ -84,7 +84,10 @@ void main() {
               step(type: ChainStepType.callEmergency),
             ],
           );
-          final engine = buildEngine(sessionMode: m, random: const FixedRandom(0.0));
+          final engine = buildEngine(
+            sessionMode: m,
+            random: const FixedRandom(0.0),
+          );
           engine.start();
           async.flushMicrotasks();
 
@@ -109,7 +112,10 @@ void main() {
               step(type: ChainStepType.callEmergency),
             ],
           );
-          final engine = buildEngine(sessionMode: m, random: const FixedRandom(1.0));
+          final engine = buildEngine(
+            sessionMode: m,
+            random: const FixedRandom(1.0),
+          );
           engine.start();
           async.flushMicrotasks();
 
@@ -144,7 +150,10 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = buildEngine(sessionMode: m, random: const FixedRandom(0.0));
+        final engine = buildEngine(
+          sessionMode: m,
+          random: const FixedRandom(0.0),
+        );
         engine.start();
         async.flushMicrotasks();
 

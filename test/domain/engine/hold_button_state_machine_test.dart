@@ -11,7 +11,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
-
 import 'engine_test_helpers.dart';
 
 void main() {
@@ -136,10 +135,7 @@ void main() {
             // gracePeriodSeconds defaults to 5s — long enough that
             // sensitivity (1s) + duration (2s) leaves the engine in
             // grace phase when holdStart() is called below.
-            step(
-              type: ChainStepType.holdButton,
-              durationSeconds: 2,
-            ),
+            step(type: ChainStepType.holdButton, durationSeconds: 2),
             step(type: ChainStepType.callEmergency),
           ],
         );

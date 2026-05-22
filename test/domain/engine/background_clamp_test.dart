@@ -10,8 +10,8 @@ void main() {
     test(
       'setBackgroundClamp(true) engages 60x cap on effectiveSpeedMultiplier',
       () {
-        final engine = buildEngine(sessionMode: 
-          mode(),
+        final engine = buildEngine(
+          sessionMode: mode(),
           isSimulation: true,
           speedMultiplier: 200.0,
           random: const FixedRandom(),
@@ -26,8 +26,8 @@ void main() {
     );
 
     test('setBackgroundClamp(false) releases the cap', () {
-      final engine = buildEngine(sessionMode: 
-        mode(),
+      final engine = buildEngine(
+        sessionMode: mode(),
         isSimulation: true,
         speedMultiplier: 200.0,
         random: const FixedRandom(),
@@ -41,8 +41,8 @@ void main() {
     });
 
     test('speedMultiplier below 60 is unaffected by background clamp', () {
-      final engine = buildEngine(sessionMode: 
-        mode(),
+      final engine = buildEngine(
+        sessionMode: mode(),
         isSimulation: true,
         speedMultiplier: 30.0,
         random: const FixedRandom(),
@@ -53,8 +53,8 @@ void main() {
     });
 
     test('storedSpeedMultiplier is untouched by setBackgroundClamp', () {
-      final engine = buildEngine(sessionMode: 
-        mode(),
+      final engine = buildEngine(
+        sessionMode: mode(),
         isSimulation: true,
         speedMultiplier: 500.0,
         random: const FixedRandom(),
@@ -67,7 +67,10 @@ void main() {
 
     test('real session setBackgroundClamp is no-op (no-throw)', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         check(() => engine.setBackgroundClamp(true)).returnsNormally();
@@ -87,8 +90,8 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = buildEngine(sessionMode: 
-          m,
+        final engine = buildEngine(
+          sessionMode: m,
           isSimulation: true,
           speedMultiplier: 200.0,
           random: const FixedRandom(),

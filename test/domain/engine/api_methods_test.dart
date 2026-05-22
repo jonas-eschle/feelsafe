@@ -13,7 +13,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
-
 import 'engine_test_helpers.dart';
 
 void main() {
@@ -107,8 +106,7 @@ void main() {
       });
     });
 
-    test('resetOnEarlyCheckIn=false is a deliberate no-op (D4 rationale)',
-        () {
+    test('resetOnEarlyCheckIn=false is a deliberate no-op (D4 rationale)', () {
       fakeAsync((async) {
         final events = <ChainEvent>[];
         final m = mode(
@@ -197,7 +195,10 @@ void main() {
 
     test('no-op when engine is not running', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         // Not started yet.
         check(engine.advanceFromHardwarePanic).returnsNormally();
         check(engine.currentStepIndex).equals(-1);
@@ -227,55 +228,60 @@ void main() {
     });
   });
 
-  group('notifyStepExecutionFailed (spec 01 §Non-Blocking Event Execution)',
-      () {
-    test('emits stepExecutionFailed with metadata; chain keeps running', () {
-      fakeAsync((async) {
-        final events = <ChainEventData>[];
-        final m = mode(
-          chainSteps: [
-            step(durationSeconds: 5),
-            step(type: ChainStepType.callEmergency),
-          ],
-        );
-        final engine = buildEngine(sessionMode: m, random: const FixedRandom());
-        engine.events.listen(events.add);
-        engine.start();
-        async.flushMicrotasks();
+  group(
+    'notifyStepExecutionFailed (spec 01 §Non-Blocking Event Execution)',
+    () {
+      test('emits stepExecutionFailed with metadata; chain keeps running', () {
+        fakeAsync((async) {
+          final events = <ChainEventData>[];
+          final m = mode(
+            chainSteps: [
+              step(durationSeconds: 5),
+              step(type: ChainStepType.callEmergency),
+            ],
+          );
+          final engine = buildEngine(
+            sessionMode: m,
+            random: const FixedRandom(),
+          );
+          engine.events.listen(events.add);
+          engine.start();
+          async.flushMicrotasks();
 
-        engine.notifyStepExecutionFailed(0, StateError('SMS gateway 503'));
+          engine.notifyStepExecutionFailed(0, StateError('SMS gateway 503'));
 
-        final failed = events.where(
-          (e) => e.event == ChainEvent.stepExecutionFailed,
-        );
-        check(failed).isNotEmpty();
-        check(failed.first.metadata['stepIndex']).equals(0);
-        check(
-          failed.first.metadata['error'].toString(),
-        ).contains('SMS gateway 503');
+          final failed = events.where(
+            (e) => e.event == ChainEvent.stepExecutionFailed,
+          );
+          check(failed).isNotEmpty();
+          check(failed.first.metadata['stepIndex']).equals(0);
+          check(
+            failed.first.metadata['error'].toString(),
+          ).contains('SMS gateway 503');
 
-        // Chain itself must keep running — no transition to ended.
-        check(engine.isEnded).isFalse();
+          // Chain itself must keep running — no transition to ended.
+          check(engine.isEnded).isFalse();
 
-        engine.endSession();
+          engine.endSession();
+        });
       });
-    });
 
-    test('no-op after endSession()', () {
-      fakeAsync((async) {
-        int count = 0;
-        final engine = buildEngine(
-          sessionMode: mode(),
-          random: const FixedRandom(),
-        );
-        engine.start();
-        async.flushMicrotasks();
-        engine.endSession();
-        engine.events.listen((_) => count++);
-        engine.notifyStepExecutionFailed(0, 'boom');
-        async.flushMicrotasks();
-        check(count).equals(0);
+      test('no-op after endSession()', () {
+        fakeAsync((async) {
+          int count = 0;
+          final engine = buildEngine(
+            sessionMode: mode(),
+            random: const FixedRandom(),
+          );
+          engine.start();
+          async.flushMicrotasks();
+          engine.endSession();
+          engine.events.listen((_) => count++);
+          engine.notifyStepExecutionFailed(0, 'boom');
+          async.flushMicrotasks();
+          check(count).equals(0);
+        });
       });
-    });
-  });
+    },
+  );
 }

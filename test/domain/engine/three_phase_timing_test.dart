@@ -247,13 +247,18 @@ void main() {
               ),
             ],
           );
-          final engine = buildEngine(sessionMode: m, random: const FixedRandom());
+          final engine = buildEngine(
+            sessionMode: m,
+            random: const FixedRandom(),
+          );
           engine.events.listen(events.add);
           engine.start();
           async.flushMicrotasks();
 
           // Before wait: only stepStarted.
-          check(events.where((e) => e.event == ChainEvent.reminderFired)).isEmpty();
+          check(
+            events.where((e) => e.event == ChainEvent.reminderFired),
+          ).isEmpty();
 
           // After wait (10s): stepFired.
           async.elapse(const Duration(seconds: 11));

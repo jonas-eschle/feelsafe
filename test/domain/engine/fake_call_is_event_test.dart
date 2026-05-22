@@ -59,8 +59,8 @@ void main() {
 
     test('answerFakeCall() does NOT end the session', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: 
-          mode(
+        final engine = buildEngine(
+          sessionMode: mode(
             chainSteps: [
               step(type: ChainStepType.fakeCall, durationSeconds: 5),
             ],
@@ -123,8 +123,8 @@ void main() {
     test('answerFakeCall() emits no sessionPaused event', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: 
-          mode(
+        final engine = buildEngine(
+          sessionMode: mode(
             chainSteps: [
               step(type: ChainStepType.fakeCall, durationSeconds: 5),
             ],
@@ -137,9 +137,7 @@ void main() {
 
         engine.answerFakeCall();
 
-        final paused = events.where(
-          (e) => e.event == ChainEvent.sessionPaused,
-        );
+        final paused = events.where((e) => e.event == ChainEvent.sessionPaused);
         check(paused).isEmpty();
 
         engine.endSession();
@@ -148,8 +146,8 @@ void main() {
 
     test('answerFakeCall() is safe to call multiple times', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: 
-          mode(chainSteps: [step(type: ChainStepType.fakeCall)]),
+        final engine = buildEngine(
+          sessionMode: mode(chainSteps: [step(type: ChainStepType.fakeCall)]),
           random: const FixedRandom(),
         );
         engine.start();

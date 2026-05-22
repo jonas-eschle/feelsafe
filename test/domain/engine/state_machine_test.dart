@@ -11,7 +11,10 @@ import 'engine_test_helpers.dart';
 void main() {
   group('State machine transitions', () {
     test('starts in EngineIdle', () {
-      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+      final engine = buildEngine(
+        sessionMode: mode(),
+        random: const FixedRandom(),
+      );
       check(engine.isEnded).isFalse();
       check(engine.isPaused).isFalse();
       check(engine.currentStepIndex).equals(-1);
@@ -20,7 +23,10 @@ void main() {
 
     test('start() transitions to EngineRunning', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         check(engine.currentStepIndex).equals(0);
@@ -32,7 +38,10 @@ void main() {
 
     test('start() throws on second call', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         check(engine.start).throws<StateError>();
@@ -42,7 +51,10 @@ void main() {
 
     test('endSession() transitions to EngineEnded', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -52,7 +64,10 @@ void main() {
 
     test('endSession() is idempotent', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -63,7 +78,10 @@ void main() {
 
     test('pause() transitions to EnginePaused', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -74,7 +92,10 @@ void main() {
 
     test('resume() transitions back to EngineRunning', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -136,7 +157,10 @@ void main() {
 
     test('distress chain replaces main chain', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.replaceWithDistressChain(
@@ -151,14 +175,20 @@ void main() {
     });
 
     test('pause() is no-op when not running', () {
-      final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+      final engine = buildEngine(
+        sessionMode: mode(),
+        random: const FixedRandom(),
+      );
       // Idle state — should not throw.
       check(engine.pause).returnsNormally();
     });
 
     test('resume() is no-op when not paused', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         // Not paused — should not throw.
@@ -170,14 +200,15 @@ void main() {
     test('pause() records PauseReason.incomingCall', () {
       fakeAsync((async) {
         final events = <ChainEventData>[];
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen(events.add);
         engine.start();
         async.flushMicrotasks();
         engine.pause(reason: PauseReason.incomingCall);
-        final paused = events.where(
-          (e) => e.event == ChainEvent.sessionPaused,
-        );
+        final paused = events.where((e) => e.event == ChainEvent.sessionPaused);
         check(paused).isNotEmpty();
         check(
           paused.first.metadata['reason'],
@@ -189,7 +220,10 @@ void main() {
     test('no events emitted after endSession()', () {
       fakeAsync((async) {
         int count = 0;
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.endSession();
@@ -203,7 +237,10 @@ void main() {
 
     test('disarm() is no-op when paused', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         engine.pause();
@@ -218,7 +255,10 @@ void main() {
     test('distress chain ignores second replaceWithDistressChain', () {
       fakeAsync((async) {
         int distressCount = 0;
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.events.listen((e) {
           if (e.event == ChainEvent.distressTriggered) {
             distressCount++;

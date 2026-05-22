@@ -82,11 +82,7 @@ final class SessionEngine {
        _random = random ?? Random(),
        _injectedClock = clock {
     if (chainSteps.isEmpty) {
-      throw ArgumentError.value(
-        chainSteps,
-        'chainSteps',
-        'must not be empty.',
-      );
+      throw ArgumentError.value(chainSteps, 'chainSteps', 'must not be empty.');
     }
     _validateSpeedMultiplier(speedMultiplier, isSimulation);
     _speedMultiplier = speedMultiplier;

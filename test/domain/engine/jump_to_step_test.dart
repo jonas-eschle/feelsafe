@@ -9,7 +9,10 @@ void main() {
   group('jumpToStep() — simulation only', () {
     test('jumpToStep() throws on real session', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: mode(), random: const FixedRandom());
+        final engine = buildEngine(
+          sessionMode: mode(),
+          random: const FixedRandom(),
+        );
         engine.start();
         async.flushMicrotasks();
         check(() => engine.jumpToStep(0)).throws<StateError>();
@@ -18,8 +21,8 @@ void main() {
     });
 
     test('jumpToStep() throws when not running', () {
-      final engine = buildEngine(sessionMode: 
-        mode(),
+      final engine = buildEngine(
+        sessionMode: mode(),
         isSimulation: true,
         random: const FixedRandom(),
       );
@@ -28,8 +31,8 @@ void main() {
 
     test('jumpToStep() throws for out-of-range index', () {
       fakeAsync((async) {
-        final engine = buildEngine(sessionMode: 
-          mode(),
+        final engine = buildEngine(
+          sessionMode: mode(),
           isSimulation: true,
           random: const FixedRandom(),
         );
@@ -50,8 +53,8 @@ void main() {
             step(type: ChainStepType.callEmergency, durationSeconds: 100),
           ],
         );
-        final engine = buildEngine(sessionMode: 
-          m,
+        final engine = buildEngine(
+          sessionMode: m,
           isSimulation: true,
           random: const FixedRandom(),
         );
@@ -75,8 +78,8 @@ void main() {
             step(type: ChainStepType.callEmergency),
           ],
         );
-        final engine = buildEngine(sessionMode: 
-          m,
+        final engine = buildEngine(
+          sessionMode: m,
           isSimulation: true,
           random: const FixedRandom(),
         );
@@ -104,8 +107,8 @@ void main() {
             step(type: ChainStepType.smsContact, durationSeconds: 100),
           ],
         );
-        final engine = buildEngine(sessionMode: 
-          m,
+        final engine = buildEngine(
+          sessionMode: m,
           isSimulation: true,
           random: const FixedRandom(),
         );
