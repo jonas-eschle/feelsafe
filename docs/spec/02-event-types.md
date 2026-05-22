@@ -540,42 +540,59 @@ abstract class EventStrategy {
 EventServices bundles all dependencies:
 
 ```dart
-class EventServices {
-  final AudioService audio;
-  final VibrationService vibration;
-  final MessagingService messaging;
-  final PhoneService phone;
-  final LocationService location;
-  final RecordingService recording;
-  final FlashService flash;
-  final ContactService contacts;
+final class EventServices {
+  // 9 service protocol fields
+  final AudioServiceProtocol audio;
+  final VibrationServiceProtocol vibration;
+  final MessagingServiceProtocol messaging;
+  final PhoneServiceProtocol phone;
+  final LocationServiceProtocol location;
+  final RecordingServiceProtocol recording;
+  final FlashServiceProtocol flash;
+  final ScreenFlashServiceProtocol screenFlash;
+  final ContactServiceProtocol contacts;
+  // 5 session-scoped fields
+  final bool isSimulation;
   final String? userName;
   final String? userDescription;
-  final VoidCallback? isCancelled;
-  final Function(bool)? onScreenFlash;
+  final String? userMedicalInfo;
+  final String? emergencyNumberDefault;
+  // Pure-Dart cancellation poll (not Flutter's VoidCallback)
+  final bool Function()? isCancelled;
 }
 ```
+
+Protocols live at `lib/services/protocols/<service>_protocol.dart`;
+concrete implementations are supplied by Phase 5.
+
+**Layer 2 (Simulation Safety Guards / spec 01 §Sim Defense):** Every
+`executeReal` MUST short-circuit when `services.isSimulation == true`,
+logging a `sim_blocked` line via `dart:developer.log` and returning
+without effect. This is in addition to Layer 3+4 service-level no-ops.
+The `isSimulation` field on `EventServices` is the Layer 2 check point;
+strategies read it directly so the guard cannot be bypassed by a
+misconfigured service stack.
 
 ### Strategy Implementations
 
 | Strategy | Real Action | Simulation |
 |---|---|---|
 | **HoldButton** | No-op (UI-driven) | Silent (no toast) |
-| **DisguisedReminder** | No-op (UI-driven) | Actual overlay shown — identical to real mode; `[SIM]` suffix on notification |
+| **DisguisedReminder** | No-op (UI-driven) | Identical UI; `[SIM]` suffix on notification |
 | **HardwareButton** | No-op (platform detection) | Toast: "Button press detected!" |
-| **CountdownWarning** | Vibration.warningPattern() | Actual countdown UI + vibration fires normally |
-| **FakeCall** | Call screen shown (even in sim) | Call screen + ringtone fire normally |
+| **CountdownWarning** | Vibration.warningPattern() + optional audio | Actual countdown UI + vibration fires normally |
+| **FakeCall** | No-op (UI-driven, Pivot 2 / R-1) | Call screen + ringtone fire normally |
 | **SmsContact** | `messaging.sendMessage()` per contact via the single configured `channel` (Extra-15) | BLOCKED → logged as `sim_blocked`; toast shown |
-| **PhoneCallContact** | Phone.call() + optional pre-SMS | BLOCKED → logged as `sim_blocked`; toast shown |
-| **LoudAlarm** | Audio.playAlarm() + vibration + optional flash | MUTED; notification shown ("Alarm would sound") |
-| **CallEmergency** | Phone.callEmergency() + optional SMS | BLOCKED → logged as `sim_blocked`; toast shown |
+| **PhoneCallContact** | Phone.call() | BLOCKED → logged as `sim_blocked`; toast shown |
+| **LoudAlarm** | Audio.playAlarmWithConfig() + vibration + optional flash | MUTED; notification shown ("Alarm would have sounded at full volume") |
+| **CallEmergency** | Phone.callEmergency() + optional pre-call SMS | BLOCKED → logged as `sim_blocked`; toast shown |
 
 **Simulation behavior summary — principle: identical UI for all local-only actions:**
 - **Fires normally with identical UI (local-only):** Fake call screen + ringtone, actual countdown warning UI + vibration, actual disguised reminder overlay + notification (`[SIM]` suffix), foreground notification (SIMULATION prefix), location/GPS tracking
 - **Blocked (logged as `sim_blocked`):** SMS, WhatsApp, Telegram, phone calls to contacts, emergency calls, audio recording
 - **Muted:** Loud alarm (silent with notification indicator showing "Alarm would have sounded at full volume")
 
-**Defense-in-depth:** Real actions NEVER fire during simulation. Guards at engine flag, strategy, service parameter, and subclass level — structurally impossible to reach real SMS/call code.
+**Defense-in-depth:** Real actions NEVER fire during simulation. Guards at engine flag (L1), strategy `isSimulation` check (L2), service parameter (L3), and separate subclasses for real vs. simulated execution (L4) — structurally impossible to reach real SMS/call code.
 
 ---
 

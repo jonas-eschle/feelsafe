@@ -494,25 +494,49 @@ Each service has:
 lib/
 ├── features/                    # Presentation + Domain
 │   ├── session/                # Session management
-│   │   ├── session_engine.dart # Pure Dart state machine (no Flutter)
 │   │   ├── session_controller.dart # Riverpod controller
-│   │   ├── session_screen.dart  # UI
-│   │   └── event_strategies/   # Strategy pattern for event types
+│   │   └── session_screen.dart  # UI
 │   ├── home/                   # Home screen
 │   ├── onboarding/             # First-launch flow
 │   ├── settings/               # Configuration UI
 │   └── ...
 ├── domain/
-│   └── models/                 # Plain Dart classes (Drift data classes + JSON-backed value types)
+│   ├── engine/                 # Pure-Dart state machine (no Flutter)
+│   │   └── session_engine.dart
+│   ├── orchestration/          # Strategy pattern for event types (pure Dart)
+│   │   ├── event_strategy.dart        # Abstract interface
+│   │   ├── event_services.dart        # Services + session-data bundle
+│   │   ├── event_strategy_registry.dart # Sealed-exhaustive type→strategy map
+│   │   └── strategies/                # 9 strategy implementations
+│   │       ├── hold_button_strategy.dart
+│   │       ├── disguised_reminder_strategy.dart
+│   │       ├── hardware_button_strategy.dart
+│   │       ├── countdown_warning_strategy.dart
+│   │       ├── fake_call_strategy.dart
+│   │       ├── sms_contact_strategy.dart
+│   │       ├── phone_call_contact_strategy.dart
+│   │       ├── loud_alarm_strategy.dart
+│   │       └── call_emergency_strategy.dart
+│   ├── configs/                # Typed per-step configs
+│   ├── enums/                  # Domain enums
+│   ├── models/                 # Plain Dart classes
+│   └── triggers/               # Distress / disarm trigger hierarchy
 ├── data/                        # Drift database + repositories
 │   ├── db/                     # Drift database, DAOs, table definitions
 │   ├── repositories/           # Drift-backed repositories + JSON singleton/list repositories
 │   └── seed_data.dart          # Built-in modes and defaults
 ├── services/                    # Platform API wrappers
-│   ├── audio_service.dart
-│   ├── location_service.dart
-│   ├── sms_service.dart
-│   └── service_providers.dart  # Riverpod exports
+│   ├── protocols/              # Abstract interfaces for strategies (Phase 3)
+│   │   ├── audio_service_protocol.dart
+│   │   ├── vibration_service_protocol.dart
+│   │   ├── messaging_service_protocol.dart
+│   │   ├── phone_service_protocol.dart
+│   │   ├── location_service_protocol.dart
+│   │   ├── recording_service_protocol.dart
+│   │   ├── flash_service_protocol.dart
+│   │   ├── screen_flash_service_protocol.dart
+│   │   └── contact_service_protocol.dart
+│   └── service_providers.dart  # Riverpod exports (Phase 5 supplies impls)
 ├── router/                      # Navigation
 │   └── app_router.dart
 ├── core/                        # Shared utilities

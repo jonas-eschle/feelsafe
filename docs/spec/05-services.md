@@ -1273,7 +1273,14 @@ Channel names are innocuous (not "Safety Alerts" or "Panic"):
 
 ## Service Providers
 
-All services are instantiated as Riverpod providers in `lib/services/service_providers.dart`:
+All services are instantiated as Riverpod providers in
+`lib/services/service_providers.dart`. Abstract protocol interfaces
+live at `lib/services/protocols/<service>_protocol.dart` (Phase 3);
+concrete implementations at `lib/services/<service>.dart` (Phase 5);
+simulation stubs at `lib/services/sim/<service>.dart` (Phase 5).
+
+No `Real*Service` constructor may be called outside
+`lib/services/service_providers.dart` (CI grep enforces).
 
 ```dart
 final audioServiceProvider = Provider((_) => AudioService());
@@ -1284,6 +1291,7 @@ final locationServiceProvider = Provider((_) => LocationService());
 final messagingServiceProvider = Provider((_) => MessagingService());
 final phoneServiceProvider = Provider((_) => PhoneService());
 final recordingServiceProvider = Provider((_) => RecordingService());
+final screenFlashServiceProvider = Provider((_) => ScreenFlashService());
 final vibrationServiceProvider = Provider((_) => VibrationService());
 final wakelockServiceProvider = Provider((_) => WakelockService());
 ```
