@@ -23,6 +23,11 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 /// - Camera flash + screen flash: suppressed in sim — bystander-attracting,
 ///   not local-only (spec 02 line 927 "Always muted … vibration still fires").
 ///
+/// **Note on [LoudAlarmConfig.logGps]:** This field is a per-step GPS-logging
+/// override and is consumed by the orchestration layer (SessionLogRecorder /
+/// LocationService — Phase 5), not by this strategy. The strategy does not
+/// read it.
+///
 /// See spec 02 §8 loudAlarm.
 final class LoudAlarmStrategy implements EventStrategy {
   /// Creates a [LoudAlarmStrategy].

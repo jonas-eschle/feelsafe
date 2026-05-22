@@ -2,6 +2,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/log_gps_override.dart';
 import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/strategies/loud_alarm_strategy.dart';
@@ -812,6 +813,56 @@ void main() {
       );
       expect(log, equals(['vibration', 'audio']));
     });
+  });
+
+  // ─── 11. logGps is NOT read by the strategy ───────────────────────────────
+  //
+  // `LoudAlarmConfig.logGps` is a per-step GPS-logging override consumed by
+  // the orchestration layer (SessionLogRecorder / LocationService — Phase 5).
+  // The strategy itself does not read it, so changing the value MUST NOT
+  // alter strategy behavior. This regression-guards a future bug where
+  // someone wires `logGps` into the strategy and forgets to gate it.
+  group('executeReal — logGps does not affect strategy behavior', () {
+    for (final logGps in LogGpsOverride.values) {
+      test('logGps=${logGps.name}: same calls as logGps=useDefault', () async {
+        // Reference run with the default.
+        final vibrationRef = FakeVibrationService();
+        final audioRef = FakeAudioService();
+        final flashRef = FakeFlashService();
+        final screenFlashRef = FakeScreenFlashService();
+        await const LoudAlarmStrategy().executeReal(
+          _step(),
+          buildServices(
+            vibration: vibrationRef,
+            audio: audioRef,
+            flash: flashRef,
+            screenFlash: screenFlashRef,
+          ),
+        );
+
+        // Run under test with the parameterized logGps value.
+        final vibrationCmp = FakeVibrationService();
+        final audioCmp = FakeAudioService();
+        final flashCmp = FakeFlashService();
+        final screenFlashCmp = FakeScreenFlashService();
+        await const LoudAlarmStrategy().executeReal(
+          _step(config: LoudAlarmConfig(logGps: logGps)),
+          buildServices(
+            vibration: vibrationCmp,
+            audio: audioCmp,
+            flash: flashCmp,
+            screenFlash: screenFlashCmp,
+          ),
+        );
+
+        // The full set of recorded calls must be identical: the strategy
+        // does not consume logGps.
+        expect(vibrationCmp.calls, equals(vibrationRef.calls));
+        expect(audioCmp.calls, equals(audioRef.calls));
+        expect(flashCmp.calls, equals(flashRef.calls));
+        expect(screenFlashCmp.calls, equals(screenFlashRef.calls));
+      });
+    }
   });
 }
 

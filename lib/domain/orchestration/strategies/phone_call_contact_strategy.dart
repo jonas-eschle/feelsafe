@@ -20,6 +20,11 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 /// Simulation: blocked. Logs `sim_blocked` and returns.
 /// Simulation description: `'Would call [contact name]'`.
 ///
+/// **Note on [PhoneCallContactConfig.logGps]:** This field is a per-step
+/// GPS-logging override and is consumed by the orchestration layer
+/// (SessionLogRecorder / LocationService — Phase 5), not by this strategy.
+/// The strategy does not read it.
+///
 /// See spec 02 §7 phoneCallContact.
 final class PhoneCallContactStrategy implements EventStrategy {
   /// Creates a [PhoneCallContactStrategy].
