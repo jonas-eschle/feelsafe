@@ -627,4 +627,84 @@ void main() {
       expect(strategy, isA<FakeCallStrategy>());
     });
   });
+
+  // ─── 14. declineWithDistressHoldSeconds boundary values ──────────────────
+  //
+  // Spec ref: docs/spec/02-event-types.md §5 fakeCall.
+  // This field controls how long the user must hold the Decline button to
+  // trigger the distress chain. It is a UI-only concern; FakeCallStrategy
+  // is a no-op regardless of its value (Pivot 2 / R-1).
+  group('executeReal — declineWithDistressHoldSeconds boundary values', () {
+    test(
+      'declineWithDistressHoldSeconds=0 — all 7 service fakes are empty',
+      () async {
+        final audio = FakeAudioService();
+        final vibration = FakeVibrationService();
+        final messaging = FakeMessagingService();
+        final phone = FakePhoneService();
+        final recording = FakeRecordingService();
+        final flash = FakeFlashService();
+        final screenFlash = FakeScreenFlashService();
+        final services = buildServices(
+          audio: audio,
+          vibration: vibration,
+          messaging: messaging,
+          phone: phone,
+          recording: recording,
+          flash: flash,
+          screenFlash: screenFlash,
+        );
+        final s = _step(
+          config: const FakeCallConfig(declineWithDistressHoldSeconds: 0),
+        );
+        await const FakeCallStrategy().executeReal(s, services);
+        _assertAllServicesEmpty(
+          audio: audio,
+          vibration: vibration,
+          messaging: messaging,
+          phone: phone,
+          recording: recording,
+          flash: flash,
+          screenFlash: screenFlash,
+          reason: 'declineWithDistressHoldSeconds=0',
+        );
+      },
+    );
+
+    test(
+      'declineWithDistressHoldSeconds=10 — all 7 service fakes are empty',
+      () async {
+        final audio = FakeAudioService();
+        final vibration = FakeVibrationService();
+        final messaging = FakeMessagingService();
+        final phone = FakePhoneService();
+        final recording = FakeRecordingService();
+        final flash = FakeFlashService();
+        final screenFlash = FakeScreenFlashService();
+        final services = buildServices(
+          audio: audio,
+          vibration: vibration,
+          messaging: messaging,
+          phone: phone,
+          recording: recording,
+          flash: flash,
+          screenFlash: screenFlash,
+        );
+        final s = _step(
+          config: const FakeCallConfig(declineWithDistressHoldSeconds: 10),
+        );
+        await const FakeCallStrategy().executeReal(s, services);
+        _assertAllServicesEmpty(
+          audio: audio,
+          vibration: vibration,
+          messaging: messaging,
+          phone: phone,
+          recording: recording,
+          flash: flash,
+          screenFlash: screenFlash,
+          reason: 'declineWithDistressHoldSeconds=10',
+        );
+      },
+    );
+  });
 }

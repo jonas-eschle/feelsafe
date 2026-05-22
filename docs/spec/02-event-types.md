@@ -351,7 +351,7 @@ Validation also blocks saving a mode where a step's `channel` is not present on 
 **Timing Defaults:** waitSeconds=0, durationSeconds=15, gracePeriodSeconds=5, retryCount=0
 
 **Real Mode:** `SmsContactStrategy.executeReal()` — filters contacts to those with the configured `channel`, sends via that single channel. LocationService provides GPS URL. Optional audio recording.
-**Simulation:** Toast: "Would send to N contacts via [channel]"
+**Simulation:** Toast: "Would send to N contact(s) via [channel]" — singular `contact` when N == 1; plural `contacts` otherwise. If 0 contacts target the configured channel, the strategy emits `"No contacts targeted for [channel]"` instead.
 
 ---
 
@@ -440,7 +440,7 @@ The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppS
 **Timing Defaults:** waitSeconds=0, durationSeconds=30, gracePeriodSeconds=5, retryCount=0
 
 **Real Mode:** AudioService.playAlarm() + VibrationService.alarmPattern() + optional camera/screen flash.
-**Simulation:** Toast: "Would play loud alarm"
+**Simulation:** Muted; `[SIM]` notification shown: "Alarm would have sounded at full volume". Vibration still fires.
 
 ---
 
@@ -459,7 +459,7 @@ The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppS
 
 **Cancel confirmation swipe (Extra 56):** The "cancel emergency call" action during the confirmation countdown requires a swipe-to-confirm slider (`SwipeSlider` in `lib/core/widgets/swipe_slider.dart`). Users must drag the knob 70% of the track width before `onConfirm` fires, preventing a stray tap from aborting a real emergency call. Releasing below the threshold animates the knob back to the start. The dialog still exposes a `[Keep calling]` button for the common case of a fat-fingered open.
 
-**Pre-Call SMS to Emergency Number:** Configurable (sendLocationSmsFirst, default true). Note: "SMS to emergency services may not work in your country"
+**Pre-Call Location SMS to SMS-channel Contacts:** Configurable (`sendLocationSmsFirst`, default true). When enabled, sends the location SMS to every contact whose `channels` contains `MessageChannel.sms`, prior to placing the emergency call. Note: SMS deliverability to emergency services varies by country and is OUT OF SCOPE; this toggle alerts trusted contacts only.
 
 **NOT Necessarily Terminal:** Can have steps after it. "I'm okay" disarm available (standard swipe slider).
 
@@ -584,13 +584,13 @@ misconfigured service stack.
 | **FakeCall** | No-op (UI-driven, Pivot 2 / R-1) | Call screen + ringtone fire normally |
 | **SmsContact** | `messaging.sendMessage()` per contact via the single configured `channel` (Extra-15) | BLOCKED → logged as `sim_blocked`; toast shown |
 | **PhoneCallContact** | Phone.call() | BLOCKED → logged as `sim_blocked`; toast shown |
-| **LoudAlarm** | Audio.playAlarmWithConfig() + vibration + optional flash | MUTED; notification shown ("Alarm would have sounded at full volume") |
+| **LoudAlarm** | Audio.playAlarmWithConfig() + vibration + optional flash | Vibration + audio fire (audio service mutes internally); flash + screenFlash suppressed. `[SIM]` notification: "Alarm would have sounded at full volume" |
 | **CallEmergency** | Phone.callEmergency() + optional pre-call SMS | BLOCKED → logged as `sim_blocked`; toast shown |
 
 **Simulation behavior summary — principle: identical UI for all local-only actions:**
 - **Fires normally with identical UI (local-only):** Fake call screen + ringtone, actual countdown warning UI + vibration, actual disguised reminder overlay + notification (`[SIM]` suffix), foreground notification (SIMULATION prefix), location/GPS tracking
 - **Blocked (logged as `sim_blocked`):** SMS, WhatsApp, Telegram, phone calls to contacts, emergency calls, audio recording
-- **Muted:** Loud alarm (silent with notification indicator showing "Alarm would have sounded at full volume")
+- **Partially muted:** Loud alarm — vibration + audio fire (audio service mutes internally via `isSimulation` flag); flash + screenFlash suppressed. `[SIM]` notification: "Alarm would have sounded at full volume".
 
 **Defense-in-depth:** Real actions NEVER fire during simulation. Guards at engine flag (L1), strategy `isSimulation` check (L2), service parameter (L3), and separate subclasses for real vs. simulated execution (L4) — structurally impossible to reach real SMS/call code.
 

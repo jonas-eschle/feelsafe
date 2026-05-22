@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
@@ -10,13 +8,18 @@ const _kCountdownWarningSoundAsset = 'assets/audio/countdown_warning.ogg';
 
 /// Strategy for [ChainStepType.countdownWarning] steps.
 ///
-/// Real mode: fires [VibrationServiceProtocol.warningPattern] and optionally
-/// [AudioServiceProtocol.playSound] based on [CountdownWarningConfig].
+/// Fires [VibrationServiceProtocol.warningPattern] (with [isSimulation]
+/// forwarded) and optionally [AudioServiceProtocol.playSound] based on
+/// [CountdownWarningConfig].
 ///
-/// Simulation: the actual countdown UI and vibration fire normally
-/// (local-only action per spec 02 §Simulation behavior summary). No `[SIM]`
-/// card substitution. This strategy returns `null` from
-/// [simulationDescription].
+/// **No Layer 2 sim short-circuit.** Per spec 02 §4 (lines 207-208) and
+/// §Simulation Behavior Summary (lines 573-576): countdown is a local-only
+/// action — vibration and audio fire identically in simulation. The services
+/// receive the [EventServices.isSimulation] flag via their own parameters so
+/// hardware-level muting (Layer 3/4) is respected without blocking the call.
+///
+/// [simulationDescription] returns `null` — no `[SIM]` toast substitution is
+/// needed because the countdown UI fires normally.
 ///
 /// See spec 02 §4 countdownWarning.
 final class CountdownWarningStrategy implements EventStrategy {
@@ -25,23 +28,20 @@ final class CountdownWarningStrategy implements EventStrategy {
 
   /// Fires vibration and optional audio for the countdown warning.
   ///
-  /// Short-circuits when [services.isSimulation] is `true` (Layer 2
-  /// defense). Note: the actual countdown UI and vibration fire normally
-  /// even in simulation — this guard only prevents the service call path
-  /// from being exercised unexpectedly if the layer-1 engine guard fails.
+  /// Both calls forward [EventServices.isSimulation] so lower-level service
+  /// layers can apply hardware muting if appropriate. No sim short-circuit at
+  /// this layer — countdown is local-only per spec 02 §Simulation behavior
+  /// summary.
   @override
   Future<void> executeReal(ChainStep step, EventServices services) async {
-    if (services.isSimulation) {
-      log('countdownWarning blocked in simulation', name: 'sim_blocked');
-      return;
-    }
-
     final config = step.config is CountdownWarningConfig
         ? step.config! as CountdownWarningConfig
         : const CountdownWarningConfig();
 
     if (config.vibrate) {
-      await services.vibration.warningPattern();
+      await services.vibration.warningPattern(
+        isSimulation: services.isSimulation,
+      );
     }
 
     if (config.sound) {

@@ -4,11 +4,13 @@
 ///
 /// Strategy behaviour:
 /// - [executeReal] in real mode fires [VibrationServiceProtocol.warningPattern]
-///   when [CountdownWarningConfig.vibrate] is true, and
-///   [AudioServiceProtocol.playSound] when [CountdownWarningConfig.sound] is
-///   true. Vibration fires before audio.
-/// - [executeReal] with [EventServices.isSimulation] true logs `sim_blocked`
-///   and returns immediately — no services called (Layer 2 guard).
+///   (with `isSimulation` forwarded) when [CountdownWarningConfig.vibrate] is
+///   true, and [AudioServiceProtocol.playSound] when
+///   [CountdownWarningConfig.sound] is true. Vibration fires before audio.
+/// - [executeReal] with [EventServices.isSimulation] true still fires
+///   vibration and audio — countdown is local-only per spec 02 §Simulation
+///   Behavior Summary (lines 573-576). The `isSimulation` flag is forwarded to
+///   each service so Layer 3/4 can apply hardware muting if required.
 /// - [simulationDescription] always returns null (UI fires identically in
 ///   simulation; no toast substitution needed per spec line 208).
 library;
@@ -326,24 +328,51 @@ void main() {
     });
   });
 
-  // ─── 5. Sim guard — isSimulation=true, default config ───────────────────
+  // ─── 5. Sim — isSimulation=true, default config (vibrate=true, sound=false)
+  //
+  // Per spec 02 §Simulation Behavior Summary (lines 573-576): countdown is
+  // a local-only action — vibration fires identically in simulation.
+  // The Layer 2 sim short-circuit has been REMOVED; isSimulation is forwarded
+  // to each service instead (Layer 3/4 muting applies there).
   group(
-    'executeReal — Layer 2 sim guard (isSimulation=true, default config)',
+    'executeReal — isSimulation=true, default config (vibrate=true, sound=false)',
     () {
-      test('vibration.calls is empty', () async {
-        final vibration = FakeVibrationService();
-        final services = buildServices(
-          vibration: vibration,
-          isSimulation: true,
-        );
-        await const CountdownWarningStrategy().executeReal(
-          _step(config: const CountdownWarningConfig()),
-          services,
-        );
-        check(vibration.calls).isEmpty();
-      });
+      test(
+        'vibration.calls has one warningPattern entry (fires in sim)',
+        () async {
+          final vibration = FakeVibrationService();
+          final services = buildServices(
+            vibration: vibration,
+            isSimulation: true,
+          );
+          await const CountdownWarningStrategy().executeReal(
+            _step(config: const CountdownWarningConfig()),
+            services,
+          );
+          check(vibration.calls).length.equals(1);
+          check(
+            vibration.calls.first['method'] as String,
+          ).equals('warningPattern');
+        },
+      );
 
-      test('audio.calls is empty', () async {
+      test(
+        'vibration call forwards isSimulation=true to the service',
+        () async {
+          final vibration = FakeVibrationService();
+          final services = buildServices(
+            vibration: vibration,
+            isSimulation: true,
+          );
+          await const CountdownWarningStrategy().executeReal(
+            _step(config: const CountdownWarningConfig()),
+            services,
+          );
+          check(vibration.calls.first['isSimulation'] as bool).isTrue();
+        },
+      );
+
+      test('audio.calls is empty (sound=false default)', () async {
         final audio = FakeAudioService();
         final services = buildServices(audio: audio, isSimulation: true);
         await const CountdownWarningStrategy().executeReal(
@@ -353,63 +382,82 @@ void main() {
         check(audio.calls).isEmpty();
       });
 
-      test('all 7 call-recording fakes are empty', () async {
-        final audio = FakeAudioService();
-        final vibration = FakeVibrationService();
-        final messaging = FakeMessagingService();
-        final phone = FakePhoneService();
-        final recording = FakeRecordingService();
-        final flash = FakeFlashService();
-        final screenFlash = FakeScreenFlashService();
-        final services = buildServices(
-          isSimulation: true,
-          audio: audio,
-          vibration: vibration,
-          messaging: messaging,
-          phone: phone,
-          recording: recording,
-          flash: flash,
-          screenFlash: screenFlash,
-        );
-        await const CountdownWarningStrategy().executeReal(
-          _step(config: const CountdownWarningConfig()),
-          services,
-        );
-        check(audio.calls).isEmpty();
-        check(vibration.calls).isEmpty();
-        check(messaging.calls).isEmpty();
-        check(phone.calls).isEmpty();
-        check(recording.calls).isEmpty();
-        check(flash.calls).isEmpty();
-        check(screenFlash.calls).isEmpty();
-      });
+      test(
+        'messaging, phone, recording, flash, screenFlash are empty',
+        () async {
+          final messaging = FakeMessagingService();
+          final phone = FakePhoneService();
+          final recording = FakeRecordingService();
+          final flash = FakeFlashService();
+          final screenFlash = FakeScreenFlashService();
+          final services = buildServices(
+            isSimulation: true,
+            messaging: messaging,
+            phone: phone,
+            recording: recording,
+            flash: flash,
+            screenFlash: screenFlash,
+          );
+          await const CountdownWarningStrategy().executeReal(
+            _step(config: const CountdownWarningConfig()),
+            services,
+          );
+          check(messaging.calls).isEmpty();
+          check(phone.calls).isEmpty();
+          check(recording.calls).isEmpty();
+          check(flash.calls).isEmpty();
+          check(screenFlash.calls).isEmpty();
+        },
+      );
     },
   );
 
-  // ─── 6. Sim guard — isSimulation=true, vibrate=true, sound=true ─────────
-  group('executeReal — Layer 2 sim guard (isSimulation=true, '
-      'vibrate=true, sound=true)', () {
-    test('vibration.calls is empty despite vibrate=true', () async {
+  // ─── 6. Sim — isSimulation=true, vibrate=true, sound=true ───────────────
+  group('executeReal — isSimulation=true, vibrate=true, sound=true', () {
+    test(
+      'vibration.calls has one warningPattern entry despite isSimulation=true',
+      () async {
+        final vibration = FakeVibrationService();
+        final services = buildServices(
+          vibration: vibration,
+          isSimulation: true,
+        );
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig(sound: true)),
+          services,
+        );
+        check(vibration.calls).length.equals(1);
+        check(
+          vibration.calls.first['method'] as String,
+        ).equals('warningPattern');
+      },
+    );
+
+    test('vibration call forwards isSimulation=true', () async {
       final vibration = FakeVibrationService();
       final services = buildServices(vibration: vibration, isSimulation: true);
       await const CountdownWarningStrategy().executeReal(
         _step(config: const CountdownWarningConfig(sound: true)),
         services,
       );
-      check(vibration.calls).isEmpty();
+      check(vibration.calls.first['isSimulation'] as bool).isTrue();
     });
 
-    test('audio.calls is empty despite sound=true', () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio, isSimulation: true);
-      await const CountdownWarningStrategy().executeReal(
-        _step(config: const CountdownWarningConfig(sound: true)),
-        services,
-      );
-      check(audio.calls).isEmpty();
-    });
+    test(
+      'audio.calls has one playSound entry when sound=true, isSimulation=true',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio, isSimulation: true);
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig(sound: true)),
+          services,
+        );
+        check(audio.calls).length.equals(1);
+        check(audio.calls.first['method'] as String).equals('playSound');
+      },
+    );
 
-    test('both vibration and audio empty when isSimulation=true', () async {
+    test('both vibration and audio fire when isSimulation=true', () async {
       final audio = FakeAudioService();
       final vibration = FakeVibrationService();
       final services = buildServices(
@@ -421,9 +469,96 @@ void main() {
         _step(config: const CountdownWarningConfig(sound: true)),
         services,
       );
-      check(audio.calls).isEmpty();
-      check(vibration.calls).isEmpty();
+      check(vibration.calls).length.equals(1);
+      check(audio.calls).length.equals(1);
     });
+  });
+
+  // ─── spec compliance: vibration fires in sim mode ─────────────────────────
+  group('spec compliance: vibration fires in sim mode', () {
+    test('vibrate=true, isSimulation=true → warningPattern called', () async {
+      final vibration = FakeVibrationService();
+      final services = buildServices(vibration: vibration, isSimulation: true);
+      await const CountdownWarningStrategy().executeReal(
+        _step(config: const CountdownWarningConfig()),
+        services,
+      );
+      check(vibration.calls).length.equals(1);
+    });
+
+    test(
+      'vibrate=true in sim: isSimulation=true forwarded to warningPattern',
+      () async {
+        final vibration = FakeVibrationService();
+        final services = buildServices(
+          vibration: vibration,
+          isSimulation: true,
+        );
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig()),
+          services,
+        );
+        check(vibration.calls.first['isSimulation'] as bool).isTrue();
+      },
+    );
+
+    test(
+      'vibrate=false in sim: vibration still empty (config respected)',
+      () async {
+        final vibration = FakeVibrationService();
+        final services = buildServices(
+          vibration: vibration,
+          isSimulation: true,
+        );
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig(vibrate: false)),
+          services,
+        );
+        check(vibration.calls).isEmpty();
+      },
+    );
+  });
+
+  // ─── spec compliance: audio fires in sim mode if config.sound ────────────
+  group('spec compliance: audio fires in sim mode if config.sound', () {
+    test('sound=true, isSimulation=true → playSound called', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(audio: audio, isSimulation: true);
+      await const CountdownWarningStrategy().executeReal(
+        _step(config: const CountdownWarningConfig(sound: true)),
+        services,
+      );
+      check(audio.calls).length.equals(1);
+      check(audio.calls.first['method'] as String).equals('playSound');
+    });
+
+    test(
+      'sound=true, isSimulation=true → playSound receives countdown asset',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio, isSimulation: true);
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig(sound: true)),
+          services,
+        );
+        check(
+          audio.calls.first['assetPath'] as String,
+        ).equals('assets/audio/countdown_warning.ogg');
+      },
+    );
+
+    test(
+      'sound=false, isSimulation=true → audio still empty (config respected)',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio, isSimulation: true);
+        await const CountdownWarningStrategy().executeReal(
+          _step(config: const CountdownWarningConfig()),
+          services,
+        );
+        check(audio.calls).isEmpty();
+      },
+    );
   });
 
   // ─── 7. simulationDescription — default config returns null ─────────────
@@ -574,7 +709,7 @@ void main() {
     );
 
     test(
-      'null config + isSimulation=true short-circuits (no vibration)',
+      'null config + isSimulation=true still fires vibration (local-only)',
       () async {
         final vibration = FakeVibrationService();
         final services = buildServices(
@@ -582,7 +717,10 @@ void main() {
           isSimulation: true,
         );
         await const CountdownWarningStrategy().executeReal(_step(), services);
-        check(vibration.calls).isEmpty();
+        // Null config → defaults: vibrate=true, sound=false.
+        // Sim does not short-circuit; vibration fires with isSimulation=true.
+        check(vibration.calls).length.equals(1);
+        check(vibration.calls.first['isSimulation'] as bool).isTrue();
       },
     );
   });

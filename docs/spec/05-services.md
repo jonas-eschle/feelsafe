@@ -487,6 +487,27 @@ Wakelock is only active during specific check-in phases, not for the entire sess
 
 ---
 
+## ContactService
+
+Read-only accessor over the persisted emergency-contact list. Used by
+event strategies to resolve `SmsContactConfig.contactSelection`,
+`SmsContactConfig.contactIds`, `PhoneCallContactConfig.contactId`, and
+`PhoneCallContactConfig.alternativeContactIds`.
+
+```dart
+class ContactService {
+  List<EmergencyContact> get all;
+  EmergencyContact? byId(String id);
+}
+```
+
+The protocol lives at `lib/services/protocols/contact_service_protocol.dart`
+(Phase 3); Phase 5's concrete implementation wraps `ContactsRepository`
+and pre-warms the in-memory cache at session start so strategies never
+hit the DB during executeReal.
+
+---
+
 ## RecordingService
 
 Records audio to the app's documents directory. Recordings are referenced from the active `SessionLog` (the log's event entries carry the file path) and stored locally only — by design they are NOT attached to outbound messages (see spec 11 REJ-2).

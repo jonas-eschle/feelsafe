@@ -31,27 +31,46 @@ ChainStep _step({LoudAlarmConfig? config}) => ChainStep(
 );
 
 void main() {
-  // ─── 1. Sim guard — isSimulation=true ─────────────────────────────────────
-  group('executeReal — Layer 2 sim guard, isSimulation=true', () {
-    test('vibration.calls is empty when isSimulation=true', () async {
-      final vibration = FakeVibrationService();
-      final services = buildServices(vibration: vibration, isSimulation: true);
-      await const LoudAlarmStrategy().executeReal(
-        _step(config: const LoudAlarmConfig()),
-        services,
-      );
-      expect(vibration.calls, isEmpty);
-    });
+  // ─── 1. Sim behavior — isSimulation=true (partial-fire per spec 02 line 927)
+  //
+  // Spec 02 line 927: "Always muted in simulation. Vibration still fires."
+  // Spec 02 line 422: vibration overrides silent mode (local hardware).
+  // Spec 02 line 941 / line 587: audio service mutes internally when
+  //   isSimulation=true — strategy still calls it (Layer 3/4 muting).
+  // Flash + screenFlash: bystander-attracting, suppressed in sim.
+  group('executeReal — sim behavior, isSimulation=true', () {
+    test(
+      'vibration fires in sim: alarmPattern called with isSimulation=true',
+      () async {
+        final vibration = FakeVibrationService();
+        final services = buildServices(
+          vibration: vibration,
+          isSimulation: true,
+        );
+        await const LoudAlarmStrategy().executeReal(
+          _step(config: const LoudAlarmConfig()),
+          services,
+        );
+        expect(vibration.calls, hasLength(1));
+        expect(vibration.calls.first['method'], equals('alarmPattern'));
+        expect(vibration.calls.first['isSimulation'], isTrue);
+      },
+    );
 
-    test('audio.calls is empty when isSimulation=true', () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio, isSimulation: true);
-      await const LoudAlarmStrategy().executeReal(
-        _step(config: const LoudAlarmConfig()),
-        services,
-      );
-      expect(audio.calls, isEmpty);
-    });
+    test(
+      'audio fires in sim: playAlarmWithConfig called with isSimulation=true',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio, isSimulation: true);
+        await const LoudAlarmStrategy().executeReal(
+          _step(config: const LoudAlarmConfig()),
+          services,
+        );
+        expect(audio.calls, hasLength(1));
+        expect(audio.calls.first['method'], equals('playAlarmWithConfig'));
+        expect(audio.calls.first['isSimulation'], isTrue);
+      },
+    );
 
     test('flash.calls is empty when isSimulation=true', () async {
       final flash = FakeFlashService();
@@ -79,34 +98,73 @@ void main() {
       },
     );
 
-    test('all service calls empty when isSimulation=true', () async {
-      final audio = FakeAudioService();
-      final vibration = FakeVibrationService();
+    test('messaging, phone, recording empty when isSimulation=true', () async {
       final messaging = FakeMessagingService();
       final phone = FakePhoneService();
       final recording = FakeRecordingService();
-      final flash = FakeFlashService();
-      final screenFlash = FakeScreenFlashService();
       final services = buildServices(
         isSimulation: true,
-        audio: audio,
-        vibration: vibration,
         messaging: messaging,
         phone: phone,
         recording: recording,
-        flash: flash,
-        screenFlash: screenFlash,
       );
       await const LoudAlarmStrategy().executeReal(
         _step(config: const LoudAlarmConfig()),
         services,
       );
-      expect(audio.calls, isEmpty);
-      expect(vibration.calls, isEmpty);
       expect(messaging.calls, isEmpty);
       expect(phone.calls, isEmpty);
       expect(recording.calls, isEmpty);
+    });
+  });
+
+  // ─── spec compliance: sim partial-fire ────────────────────────────────────
+  group('spec compliance: sim partial-fire', () {
+    test('vibration fires in sim with isSimulation=true forwarded', () async {
+      final vibration = FakeVibrationService();
+      final services = buildServices(vibration: vibration, isSimulation: true);
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        services,
+      );
+      expect(vibration.calls, hasLength(1));
+      expect(vibration.calls.first['isSimulation'], isTrue);
+    });
+
+    test('audio fires in sim with isSimulation=true forwarded', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(audio: audio, isSimulation: true);
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        services,
+      );
+      expect(audio.calls, hasLength(1));
+      expect(audio.calls.first['isSimulation'], isTrue);
+    });
+
+    test('flashLight=true (default) is suppressed in sim', () async {
+      // Default config has flashLight=true; using defaults to avoid the
+      // avoid_redundant_argument_values lint while still targeting the
+      // flashLight=true branch.
+      final flash = FakeFlashService();
+      final services = buildServices(flash: flash, isSimulation: true);
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        services,
+      );
       expect(flash.calls, isEmpty);
+    });
+
+    test('flashScreen=true is suppressed in sim', () async {
+      final screenFlash = FakeScreenFlashService();
+      final services = buildServices(
+        screenFlash: screenFlash,
+        isSimulation: true,
+      );
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig(flashScreen: true)),
+        services,
+      );
       expect(screenFlash.calls, isEmpty);
     });
   });

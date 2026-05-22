@@ -771,6 +771,25 @@ void main() {
         check(result).equals('Would send to 1 contact via sms');
       },
     );
+
+    test(
+      'N=2 contacts → "Would send to 2 contacts via sms" (plural branch)',
+      () {
+        // N=2 is the smallest plural value; explicitly covers the plural
+        // branch adjacent to the N=1 singular branch per spec 02 line 354.
+        final services = buildServices(
+          contacts: [
+            _contact(),
+            _contact(id: 'c2', name: 'C2', sortOrder: 1),
+          ],
+        );
+        final result = const SmsContactStrategy().simulationDescription(
+          _step(config: const SmsContactConfig()),
+          services,
+        );
+        check(result).equals('Would send to 2 contacts via sms');
+      },
+    );
   });
 
   // ─── Group 11: const + null safety ───────────────────────────────────────
