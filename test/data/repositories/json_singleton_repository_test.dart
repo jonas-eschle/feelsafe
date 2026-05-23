@@ -148,6 +148,47 @@ void main() {
       // Assert
       check(await r.load()).isNotNull().deepEquals({'a': 'b'});
     });
+
+    test('load fails when the on-disk envelope was written with a '
+        'different key', () async {
+      // Arrange — write with key A.
+      final writer = repo(
+        keyOverride:
+            'a0a1a2a3a4a5a6a7a8a9aaabacadaeaf'
+            'b0b1b2b3b4b5b6b7b8b9babbbcbdbebf',
+      );
+      await writer.save({'plain': 'text'});
+      // Act — read with key B (same 32-byte length, different bytes).
+      final reader = repo(
+        keyOverride:
+            'c0c1c2c3c4c5c6c7c8c9cacbcccdcecf'
+            'd0d1d2d3d4d5d6d7d8d9dadbdcdddedf',
+      );
+      // Assert — pointycastle raises InvalidCipherTextException ⊂ Exception
+      // when the GCM tag check fails. We accept any Object throw so the
+      // test is independent of which exact subclass pointycastle uses,
+      // but verify the load did NOT silently return plaintext or null.
+      await check(reader.load()).throws<Object>();
+    });
+
+    test('load fails when the ciphertext bytes are tampered with', () async {
+      // Arrange — save a value then corrupt one byte of the ciphertext.
+      final r = repo();
+      await r.save({'kept': 'safe'});
+      final file = File(p.join(tempDir.path, 'thing.json'));
+      final envelope =
+          jsonDecode(await file.readAsString()) as Map<String, dynamic>;
+      final ctBytes = base64Decode(envelope['ct'] as String);
+      // Flip a single bit in the middle of the ciphertext (avoids the
+      // 16-byte GCM tag suffix on the off-chance the flip lands there;
+      // either way GCM detects the mismatch).
+      ctBytes[ctBytes.length ~/ 2] ^= 0x01;
+      envelope['ct'] = base64Encode(ctBytes);
+      await file.writeAsString(jsonEncode(envelope));
+      // Act + Assert — GCM tag mismatch surfaces as a throw, never as
+      // a silently-corrupted decryption.
+      await check(r.load()).throws<Object>();
+    });
   });
 }
 

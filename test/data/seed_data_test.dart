@@ -31,6 +31,7 @@ void main() {
 
     test('holdButton step has 10s duration / 1s grace per spec', () {
       final hold = walk.chainSteps[0];
+      check(hold.waitSeconds).equals(0);
       check(hold.durationSeconds).equals(10);
       check(hold.gracePeriodSeconds).equals(1);
       check(hold.retryCount).equals(0);
@@ -38,15 +39,34 @@ void main() {
 
     test('fakeCall step has 30s duration / 5s grace per spec', () {
       final fc = walk.chainSteps[1];
+      check(fc.waitSeconds).equals(0);
       check(fc.durationSeconds).equals(30);
       check(fc.gracePeriodSeconds).equals(5);
       check(fc.retryCount).equals(0);
     });
 
+    test('smsContact step has 15s duration / 5s grace per spec', () {
+      final sms = walk.chainSteps[2];
+      check(sms.waitSeconds).equals(0);
+      check(sms.durationSeconds).equals(15);
+      check(sms.gracePeriodSeconds).equals(5);
+      check(sms.retryCount).equals(0);
+    });
+
+    test('phoneCallContact step has 60s duration / 5s grace per spec', () {
+      final phone = walk.chainSteps[3];
+      check(phone.waitSeconds).equals(0);
+      check(phone.durationSeconds).equals(60);
+      check(phone.gracePeriodSeconds).equals(5);
+      check(phone.retryCount).equals(0);
+    });
+
     test('callEmergency step has 5s duration / 0s grace per spec', () {
       final ce = walk.chainSteps[4];
+      check(ce.waitSeconds).equals(0);
       check(ce.durationSeconds).equals(5);
       check(ce.gracePeriodSeconds).equals(0);
+      check(ce.retryCount).equals(0);
     });
 
     test('is not a distress mode', () {
@@ -83,10 +103,36 @@ void main() {
       },
     );
 
+    test('fakeCall step has 30s duration / 5s grace per spec', () {
+      final fc = date.chainSteps[1];
+      check(fc.waitSeconds).equals(0);
+      check(fc.durationSeconds).equals(30);
+      check(fc.gracePeriodSeconds).equals(5);
+      check(fc.retryCount).equals(0);
+    });
+
+    test('smsContact step has 15s duration / 5s grace per spec', () {
+      final sms = date.chainSteps[2];
+      check(sms.waitSeconds).equals(0);
+      check(sms.durationSeconds).equals(15);
+      check(sms.gracePeriodSeconds).equals(5);
+      check(sms.retryCount).equals(0);
+    });
+
+    test('phoneCallContact step has 60s duration / 5s grace per spec', () {
+      final phone = date.chainSteps[3];
+      check(phone.waitSeconds).equals(0);
+      check(phone.durationSeconds).equals(60);
+      check(phone.gracePeriodSeconds).equals(5);
+      check(phone.retryCount).equals(0);
+    });
+
     test('callEmergency step has 10s duration per spec', () {
       final ce = date.chainSteps[4];
+      check(ce.waitSeconds).equals(0);
       check(ce.durationSeconds).equals(10);
       check(ce.gracePeriodSeconds).equals(0);
+      check(ce.retryCount).equals(0);
     });
   });
 
@@ -115,6 +161,13 @@ void main() {
       check(sc.contactSelection).equals(SmsContactSelection.firstContact);
     });
 
+    test('step 0 SMS includes location per spec', () {
+      // Spec 03 §Default Distress Mode (line 1312):
+      // "includeLocation=true" is mandated.
+      final config = distress.chainSteps[0].config! as SmsContactConfig;
+      check(config.includeLocation).isTrue();
+    });
+
     test('step 1 waits 10s before calling emergency (ITEM 6)', () {
       final ce = distress.chainSteps[1];
       check(ce.waitSeconds).equals(10);
@@ -126,6 +179,13 @@ void main() {
       check(config).isA<CallEmergencyConfig>();
       final cc = config! as CallEmergencyConfig;
       check(cc.showConfirmation).isFalse();
+    });
+
+    test('step 1 has sendLocationSmsFirst=true per spec', () {
+      // Spec 03 §Default Distress Mode (line 1320):
+      // "sendLocationSmsFirst=true" is mandated.
+      final config = distress.chainSteps[1].config! as CallEmergencyConfig;
+      check(config.sendLocationSmsFirst).isTrue();
     });
   });
 
@@ -179,6 +239,65 @@ void main() {
       final w = templates.firstWhere((t) => t.name == 'Weather Alert');
       check(w.confirmationType).equals(ConfirmationType.dismiss);
     });
+
+    test('all 8 templates have exact spec-table title/body strings', () {
+      // Spec 03 §Eight Built-in Reminder Templates table (line 1334).
+      // The verifier flagged that prior tests checked only structural
+      // fields; this test asserts every wording cell so any copy edit
+      // breaks the suite (also catches future ARB drift).
+      final expected = <String, ({String title, String body})>{
+        'Calendar Event': (
+          title: 'You have an appointment',
+          body: 'Meeting with Alex at 3 PM',
+        ),
+        'Duolingo Lesson': (
+          title: 'Time for your lesson!',
+          body: 'Keep your 50-day streak going',
+        ),
+        'Delivery Update': (
+          title: 'Your package arrived',
+          body: 'Check the front porch',
+        ),
+        'Weather Alert': (title: 'Rainy tomorrow', body: 'Bring an umbrella'),
+        'Fitness Reminder': (
+          title: 'Time to exercise',
+          body: 'Your workout is due',
+        ),
+        'Message Preview': (
+          title: 'New message from Sarah',
+          body: '"Hey, what\'s up?"',
+        ),
+        'App Update': (title: 'Updates available', body: 'Tap to install'),
+        'Battery Warning': (title: 'Battery low', body: 'Plug in soon'),
+      };
+      for (final entry in expected.entries) {
+        final t = templates.firstWhere((t) => t.name == entry.key);
+        check(t.title, because: '${entry.key} title').equals(entry.value.title);
+        check(t.body, because: '${entry.key} body').equals(entry.value.body);
+      }
+    });
+
+    test('tapButton templates ship with a non-empty buttonLabel', () {
+      // Spec 03 §Eight Built-in Reminder Templates row table is silent
+      // on label text, but `tapButton` semantically requires one. The
+      // seed picks plausible defaults — if a future refactor drops the
+      // label, the corresponding template becomes unusable in the
+      // disguised reminder UI.
+      final tapButtonTemplates = templates.where(
+        (t) => t.confirmationType == ConfirmationType.tapButton,
+      );
+      check(tapButtonTemplates).isNotEmpty();
+      for (final t in tapButtonTemplates) {
+        check(
+          t.buttonLabel,
+          because: '${t.name} (tapButton) needs a buttonLabel',
+        ).isNotNull();
+        check(
+          t.buttonLabel!.isNotEmpty,
+          because: '${t.name} buttonLabel is empty',
+        ).isTrue();
+      }
+    });
   });
 
   group('SeedData.defaultAppSettings', () {
@@ -226,6 +345,16 @@ void main() {
     test('chain contains a single smsContact step', () {
       check(config.chain.length).equals(1);
       check(config.chain.single.type).equals(ChainStepType.smsContact);
+    });
+
+    test('default chain step opts in to includeLocation per spec', () {
+      // Spec 03 §BatteryAlertConfig (line ~1204):
+      // "Seed default: [smsContact] with includeLocation: true to all
+      //  contacts."
+      final step = config.chain.single;
+      check(step.config).isA<SmsContactConfig>();
+      final sc = step.config! as SmsContactConfig;
+      check(sc.includeLocation).isTrue();
     });
   });
 }
