@@ -251,7 +251,7 @@ class ReminderTemplate {
 
 **Built-in templates (8 defaults):**
 1. Calendar Event
-2. Language Lesson (Duolingo style)
+2. Duolingo Lesson
 3. Delivery Update
 4. Weather Alert
 5. Fitness Reminder
