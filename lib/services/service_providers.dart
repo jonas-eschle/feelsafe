@@ -26,6 +26,7 @@ import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
+import 'package:guardianangela/services/hardware_button_service.dart';
 import 'package:guardianangela/services/location_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
@@ -33,6 +34,7 @@ import 'package:guardianangela/services/protocols/battery_monitor_service_protoc
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
+import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
@@ -216,3 +218,15 @@ final notificationServiceProvider = Provider<NotificationServiceProtocol>((
 ) {
   return RealNotificationService();
 });
+
+/// [HardwareButtonServiceProtocol] — Android volume-key EventChannel +
+/// iOS audio_service headphone-remote handler.
+///
+/// Native handler lands in Phase 7
+/// (Android: HardwareButtonChannel.kt; iOS: audio_service handler).
+/// Tests override with [SimulationHardwareButtonService] from
+/// `lib/services/sim/hardware_button_service_sim.dart`.
+final hardwareButtonServiceProvider =
+    Provider<HardwareButtonServiceProtocol>((ref) {
+      return RealHardwareButtonService();
+    });
