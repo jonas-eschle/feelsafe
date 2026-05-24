@@ -18,7 +18,14 @@ import 'package:guardianangela/services/protocols/vibration_service_protocol.dar
 /// (CI grep enforces).
 class RealVibrationService implements VibrationServiceProtocol {
   /// Creates a [RealVibrationService].
-  RealVibrationService();
+  ///
+  /// [overrideHasVibrator] — when non-null, replaces the [Vibration.hasVibrator]
+  /// call with the given value. Use `true` in tests to bypass the platform guard
+  /// so the vibration MethodChannel mock receives pattern/duration arguments.
+  RealVibrationService({bool? overrideHasVibrator})
+    : _overrideHasVibrator = overrideHasVibrator;
+
+  final bool? _overrideHasVibrator;
 
   @override
   Future<void> warningPattern({bool isSimulation = false}) async {
@@ -84,5 +91,6 @@ class RealVibrationService implements VibrationServiceProtocol {
     await Vibration.cancel();
   }
 
-  Future<bool> _hasVibrator() => Vibration.hasVibrator();
+  Future<bool> _hasVibrator() async =>
+      _overrideHasVibrator ?? await Vibration.hasVibrator();
 }
