@@ -78,7 +78,7 @@ If `assetPath` is null, uses the call style's default ringtone. Custom ringtones
 
 **`playAlarm()`**
 
-Plays the default alarm sound (siren) at maximum volume, looping indefinitely until stopped. On Android, uses the `STREAM_ALARM` audio stream to bypass silent and vibrate modes. A configurable toggle (default true) enables Do Not Disturb override, allowing the alarm to sound even during DND.
+Plays the default alarm sound (siren) at maximum volume, looping indefinitely until stopped. On Android, uses the `STREAM_ALARM` audio stream to bypass silent and vibrate modes. A configurable toggle (default false per Q19) enables Do Not Disturb override, allowing the alarm to sound even during DND.
 
 **`playAlarmWithConfig(soundChoice, customSoundPath, volume)`**
 
