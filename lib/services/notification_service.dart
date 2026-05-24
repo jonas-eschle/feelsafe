@@ -29,6 +29,13 @@ const String _kUpdatesChannelName = 'Updates';
 /// ID used for the foreground-service persistent notification.
 const int kForegroundNotificationId = 1;
 
+/// Android notification channel ID for SMS retry exhaustion alerts.
+///
+/// High importance so the user sees delivery failures even in DND mode.
+/// Defined as a public constant for test assertions and channel registration
+/// verification (spec 05 §Extra-35 / F9).
+const String kSmsRetryChannelId = 'ga_sms_retry';
+
 /// SharedPreferences key for notification actions received while the app was
 /// killed (Android background isolate). Populated by [_onBackgroundResponse]
 /// and drained on next foreground startup by [RealNotificationService.init].
@@ -163,7 +170,10 @@ class RealNotificationService implements NotificationServiceProtocol {
     final items = List<String>.from(_pendingReplay);
     _pendingReplay.clear();
     for (final actionId in items) {
-      log('Replaying background action: $actionId', name: 'NotificationService');
+      log(
+        'Replaying background action: $actionId',
+        name: 'NotificationService',
+      );
       _actionTapsController.add(actionId);
     }
   }
@@ -248,7 +258,7 @@ class RealNotificationService implements NotificationServiceProtocol {
       'showSmsRetryExhaustedNotification contact=$contactName',
       name: 'NotificationService',
     );
-    const channelId = 'ga_sms_retry';
+    const channelId = kSmsRetryChannelId;
     const channelName = 'SMS Retry';
 
     final actionId = kActionRetrySmsPrefix + actionPayload;
@@ -291,6 +301,43 @@ class RealNotificationService implements NotificationServiceProtocol {
     );
     await _plugin.show(
       id: kForegroundNotificationId,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
+  }
+
+  @override
+  Future<void> showAlarmEscalation({
+    required int id,
+    required String title,
+    required String body,
+    String sound = 'critical_alert.wav',
+  }) async {
+    log(
+      'showAlarmEscalation id=$id title="$title"',
+      name: 'NotificationService',
+    );
+    final details = NotificationDetails(
+      android: const AndroidNotificationDetails(
+        _kAlarmChannelId,
+        _kAlarmChannelName,
+        importance: Importance.max,
+        priority: Priority.max,
+        fullScreenIntent: true,
+        category: AndroidNotificationCategory.alarm,
+        visibility: NotificationVisibility.public,
+      ),
+      iOS: DarwinNotificationDetails(
+        // InterruptionLevel.critical bypasses Focus/DND and requires the
+        // com.apple.developer.usernotifications.critical-alerts entitlement
+        // provisioned in ios/Runner/Runner.entitlements (spec 05:880-886).
+        interruptionLevel: InterruptionLevel.critical,
+        sound: sound,
+      ),
+    );
+    await _plugin.show(
+      id: id,
       title: title,
       body: body,
       notificationDetails: details,
@@ -352,7 +399,18 @@ class RealNotificationService implements NotificationServiceProtocol {
         _kUpdatesChannelName,
       ),
     );
-    log('Android channels created', name: 'NotificationService');
+    // ga_sms_retry: High importance so the user sees SMS delivery failures
+    // without it being confused with session reminders (spec 05:296).
+    await androidPlugin.createNotificationChannel(
+      const AndroidNotificationChannel(
+        kSmsRetryChannelId,
+        'SMS Retry',
+        description:
+            'Notifications when an SMS message failed to deliver after retries.',
+        importance: Importance.high,
+      ),
+    );
+    log('Android channels created (5 channels)', name: 'NotificationService');
   }
 }
 

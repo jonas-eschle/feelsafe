@@ -348,4 +348,76 @@ void main() {
       check(SimulationEncryptionService()).isA<EncryptionServiceProtocol>();
     });
   });
+
+  // =========================================================================
+  // F23: Encrypted DB key isolation
+  // =========================================================================
+
+  group('F23: Encrypted DB key isolation', () {
+    test(
+      'F23: different storage instances produce different keys',
+      () async {
+        // Encryption-at-rest contract: two separate storage instances must
+        // produce distinct keys so that data encrypted by one key cannot be
+        // read by another.
+        final storage1 = _InMemoryStorage();
+        final storage2 = _InMemoryStorage();
+        final key1 = await RealEncryptionService(
+          secureStorage: storage1,
+        ).getOrCreateKeyAsBase64();
+        final key2 = await RealEncryptionService(
+          secureStorage: storage2,
+        ).getOrCreateKeyAsBase64();
+        check(key1).not((c) => c.equals(key2));
+      },
+    );
+
+    test(
+      'F23: key persists across service instances (wrong-key scenario: '
+      'correct storage returns same key)',
+      () async {
+        // If the correct storage is always used, the same key is returned.
+        // A wrong key would require a different storage — verified above.
+        final storage = _InMemoryStorage();
+        final k1 = await RealEncryptionService(
+          secureStorage: storage,
+        ).getOrCreateKeyAsBase64();
+        final k2 = await RealEncryptionService(
+          secureStorage: storage,
+        ).getOrCreateKeyAsBase64();
+        check(k1).equals(k2);
+      },
+    );
+
+    test(
+      'F23: openEncryptedDatabase with correct key opens successfully',
+      () async {
+        final storage = _InMemoryStorage();
+        final svc = RealEncryptionService(secureStorage: storage);
+        final tempDir = await Directory.systemTemp.createTemp('enc_f23_');
+        final dbPath = '${tempDir.path}/f23.db';
+
+        try {
+          final conn = await svc.openEncryptedDatabase(dbPath);
+          check(conn).isA<DatabaseConnection>();
+          await conn.executor.close();
+        } finally {
+          await tempDir.delete(recursive: true);
+        }
+      },
+    );
+
+    test(
+      'F23: key has 256-bit entropy (32 bytes of CSPRNG output)',
+      () async {
+        final storage = _InMemoryStorage();
+        final svc = RealEncryptionService(secureStorage: storage);
+        final key = await svc.generateKey();
+        // 256-bit key = 32 bytes minimum for AES-256 (sqlite3mc default).
+        check(key.length).equals(32);
+        // Verify it is not all-zeros (degenerate key).
+        check(key.any((b) => b != 0)).isTrue();
+      },
+    );
+  });
 }

@@ -247,6 +247,28 @@ void main() {
       final all = await db.sessionLogsDao.getAll();
       check(all.first.hadMedicalInfo).isFalse();
     });
+
+    // -----------------------------------------------------------------------
+    // F19: finalise() twice throws StateError
+    // -----------------------------------------------------------------------
+
+    test('F19: finalise() twice throws StateError on second call', () async {
+      final recorder = SessionLogRecorder(context: _context(), repo: repo);
+      await recorder.finalise(EndReason.disarm);
+      await check(recorder.finalise(EndReason.disarm)).throws<StateError>();
+    });
+
+    test('F19: StateError message mentions "finalise"', () async {
+      final recorder = SessionLogRecorder(context: _context(), repo: repo);
+      await recorder.finalise(EndReason.disarm);
+      try {
+        await recorder.finalise(EndReason.disarm);
+        fail('Expected StateError');
+      } catch (e) {
+        check(e).isA<StateError>();
+        check(e.toString()).contains('finalise');
+      }
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -336,6 +358,17 @@ void main() {
         repo: repo,
       );
       check(recorder.finalisedLog).isNull();
+    });
+
+    // F19: sim variant also throws on double-finalise.
+    test('F19: SimulationSessionLogRecorder finalise() twice throws StateError',
+        () async {
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
+      await recorder.finalise(EndReason.disarm);
+      await check(recorder.finalise(EndReason.disarm)).throws<StateError>();
     });
   });
 }

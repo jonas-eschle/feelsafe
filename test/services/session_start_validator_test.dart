@@ -167,22 +167,25 @@ void main() {
       ).contains('Telegram not confirmed installed');
     });
 
-    test('WhatsApp channel step warns when explicitly marked NOT installed', () {
-      final v = _makeValidator(installedApps: {'WhatsApp': false});
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
-          ),
-        ],
-      );
-      final result = v.validate(mode);
-      check(
-        result.warnings.map((w) => w.title),
-      ).contains('WhatsApp not confirmed installed');
-    });
+    test(
+      'WhatsApp channel step warns when explicitly marked NOT installed',
+      () {
+        final v = _makeValidator(installedApps: {'WhatsApp': false});
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        );
+        final result = v.validate(mode);
+        check(
+          result.warnings.map((w) => w.title),
+        ).contains('WhatsApp not confirmed installed');
+      },
+    );
 
     test('WhatsApp channel step does NOT warn when installed=true', () {
       final v = _makeValidator(installedApps: {'WhatsApp': true});
@@ -372,77 +375,86 @@ void main() {
   });
 
   group('RealSessionStartValidator — prewarm()', () {
-    test('prewarm populates WhatsApp installed=true when canLaunchUrl returns true', () async {
-      final v = RealSessionStartValidator(
-        canLaunchUrl: (uri) async => uri.scheme == 'whatsapp',
-        cachedPermissions: {for (final p in AppPermission.values) p: true},
-        cachedBatteryOptimizationExempt: true,
-        batteryOptChecker: () async => true,
-      );
-      await v.prewarm();
+    test(
+      'prewarm populates WhatsApp installed=true when canLaunchUrl returns true',
+      () async {
+        final v = RealSessionStartValidator(
+          canLaunchUrl: (uri) async => uri.scheme == 'whatsapp',
+          cachedPermissions: {for (final p in AppPermission.values) p: true},
+          cachedBatteryOptimizationExempt: true,
+          batteryOptChecker: () async => true,
+        );
+        await v.prewarm();
 
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
-          ),
-        ],
-      );
-      final result = v.validate(mode);
-      check(
-        result.warnings.map((w) => w.title),
-      ).not((c) => c.contains('WhatsApp not confirmed installed'));
-    });
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        );
+        final result = v.validate(mode);
+        check(
+          result.warnings.map((w) => w.title),
+        ).not((c) => c.contains('WhatsApp not confirmed installed'));
+      },
+    );
 
-    test('prewarm populates Telegram installed=true when canLaunchUrl returns true', () async {
-      final v = RealSessionStartValidator(
-        canLaunchUrl: (uri) async => uri.scheme == 'tg',
-        cachedPermissions: {for (final p in AppPermission.values) p: true},
-        cachedBatteryOptimizationExempt: true,
-        batteryOptChecker: () async => true,
-      );
-      await v.prewarm();
+    test(
+      'prewarm populates Telegram installed=true when canLaunchUrl returns true',
+      () async {
+        final v = RealSessionStartValidator(
+          canLaunchUrl: (uri) async => uri.scheme == 'tg',
+          cachedPermissions: {for (final p in AppPermission.values) p: true},
+          cachedBatteryOptimizationExempt: true,
+          batteryOptChecker: () async => true,
+        );
+        await v.prewarm();
 
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(channel: MessageChannel.telegram),
-          ),
-        ],
-      );
-      final result = v.validate(mode);
-      check(
-        result.warnings.map((w) => w.title),
-      ).not((c) => c.contains('Telegram not confirmed installed'));
-    });
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(channel: MessageChannel.telegram),
+            ),
+          ],
+        );
+        final result = v.validate(mode);
+        check(
+          result.warnings.map((w) => w.title),
+        ).not((c) => c.contains('Telegram not confirmed installed'));
+      },
+    );
 
-    test('prewarm marks WhatsApp NOT installed when canLaunchUrl returns false', () async {
-      final v = RealSessionStartValidator(
-        canLaunchUrl: (_) async => false,
-        cachedPermissions: {for (final p in AppPermission.values) p: true},
-        cachedBatteryOptimizationExempt: true,
-        batteryOptChecker: () async => true,
-      );
-      await v.prewarm();
+    test(
+      'prewarm marks WhatsApp NOT installed when canLaunchUrl returns false',
+      () async {
+        final v = RealSessionStartValidator(
+          canLaunchUrl: (_) async => false,
+          cachedPermissions: {for (final p in AppPermission.values) p: true},
+          cachedBatteryOptimizationExempt: true,
+          batteryOptChecker: () async => true,
+        );
+        await v.prewarm();
 
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
-          ),
-        ],
-      );
-      final result = v.validate(mode);
-      check(
-        result.warnings.map((w) => w.title),
-      ).contains('WhatsApp not confirmed installed');
-    });
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        );
+        final result = v.validate(mode);
+        check(
+          result.warnings.map((w) => w.title),
+        ).contains('WhatsApp not confirmed installed');
+      },
+    );
 
     test('before prewarm is called, validate uses unknown (warn) default', () {
       final v = RealSessionStartValidator(
@@ -468,21 +480,24 @@ void main() {
       ).contains('WhatsApp not confirmed installed');
     });
 
-    test('prewarm runs canLaunchUrl checks for both WhatsApp and Telegram', () async {
-      final checked = <String>[];
-      final v = RealSessionStartValidator(
-        canLaunchUrl: (uri) async {
-          checked.add(uri.scheme);
-          return false;
-        },
-        cachedPermissions: {for (final p in AppPermission.values) p: true},
-        cachedBatteryOptimizationExempt: true,
-        batteryOptChecker: () async => true,
-      );
-      await v.prewarm();
-      check(checked).contains('whatsapp');
-      check(checked).contains('tg');
-    });
+    test(
+      'prewarm runs canLaunchUrl checks for both WhatsApp and Telegram',
+      () async {
+        final checked = <String>[];
+        final v = RealSessionStartValidator(
+          canLaunchUrl: (uri) async {
+            checked.add(uri.scheme);
+            return false;
+          },
+          cachedPermissions: {for (final p in AppPermission.values) p: true},
+          cachedBatteryOptimizationExempt: true,
+          batteryOptChecker: () async => true,
+        );
+        await v.prewarm();
+        check(checked).contains('whatsapp');
+        check(checked).contains('tg');
+      },
+    );
   });
 
   group('SimulationSessionStartValidator', () {

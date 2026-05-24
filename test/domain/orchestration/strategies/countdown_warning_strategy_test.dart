@@ -63,11 +63,24 @@ final class _OrderAudioService implements AudioServiceProtocol {
   final FakeAudioService _delegate;
 
   @override
+  Future<void> playRingtone(String? assetPath) async {
+    _log.add('audio');
+    await _delegate.playRingtone(assetPath);
+  }
+
+  @override
+  Future<void> playAlarm() async {
+    _log.add('audio');
+    await _delegate.playAlarm();
+  }
+
+  @override
   Future<void> playAlarmWithConfig({
     String soundChoice = 'siren',
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
+    int rampSeconds = kDefaultAlarmRampSeconds,
   }) async {
     _log.add('audio');
     await _delegate.playAlarmWithConfig(
@@ -75,6 +88,7 @@ final class _OrderAudioService implements AudioServiceProtocol {
       customSoundPath: customSoundPath,
       volume: volume,
       isSimulation: isSimulation,
+      rampSeconds: rampSeconds,
     );
   }
 
@@ -106,9 +120,27 @@ final class _OrderVibrationService implements VibrationServiceProtocol {
   }
 
   @override
+  Future<void> confirmPulse() async {
+    _log.add('vibration');
+    await _delegate.confirmPulse();
+  }
+
+  @override
   Future<void> alarmPattern({bool isSimulation = false}) async {
     _log.add('vibration');
     await _delegate.alarmPattern(isSimulation: isSimulation);
+  }
+
+  @override
+  Future<void> fakeCallPattern() async {
+    _log.add('vibration');
+    await _delegate.fakeCallPattern();
+  }
+
+  @override
+  Future<void> reminderPattern() async {
+    _log.add('vibration');
+    await _delegate.reminderPattern();
   }
 
   @override

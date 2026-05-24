@@ -338,6 +338,103 @@ void main() {
     });
 
     // =========================================================================
+    // F14: iOS repeat-press via injectPress + long-press not available on iOS
+    // =========================================================================
+
+    group('F14: iOS C1 repeat-press via injectPress', () {
+      test('5 repeat presses within window fires panic (iOS equivalent)', () async {
+        // On iOS the headphone remote fires the same counter logic.
+        // The simulation drives this identically via injectPress.
+        s.start(pressCount: 5, pressWindowMs: 500);
+        final events = <HardwarePanicEvent>[];
+        final sub = s.panicEvents.listen(events.add);
+        addTearDown(sub.cancel);
+
+        final ts = _times(5, gapMs: 80); // 80ms apart, all within 500ms
+        for (final t in ts) {
+          s.injectPress(timestamp: t);
+        }
+        await Future<void>.delayed(Duration.zero);
+        check(events).length.equals(1);
+        check(events.first.pattern).equals(HardwareTriggerPattern.repeatPress);
+      });
+
+      test(
+        'iOS headphone remote pattern: 3 presses within 300ms window fires',
+        () async {
+          s.start(pressCount: 3, pressWindowMs: 300);
+          final events = <HardwarePanicEvent>[];
+          final sub = s.panicEvents.listen(events.add);
+          addTearDown(sub.cancel);
+
+          final ts = _times(3, gapMs: 80);
+          for (final t in ts) {
+            s.injectPress(timestamp: t);
+          }
+          await Future<void>.delayed(Duration.zero);
+          check(events).length.equals(1);
+        },
+      );
+
+      test(
+        'iOS: repeat presses outside window are discarded',
+        () async {
+          s.start(pressCount: 3, pressWindowMs: 200);
+          final events = <HardwarePanicEvent>[];
+          final sub = s.panicEvents.listen(events.add);
+          addTearDown(sub.cancel);
+
+          final base = DateTime.utc(2026, 5, 12);
+          s.injectPress(timestamp: base);
+          s.injectPress(
+            timestamp: base.add(const Duration(milliseconds: 100)),
+          );
+          // Third press at 400ms — first press (0ms) is outside 200ms window.
+          s.injectPress(
+            timestamp: base.add(const Duration(milliseconds: 400)),
+          );
+          await Future<void>.delayed(Duration.zero);
+          check(events).isEmpty();
+        },
+      );
+    });
+
+    group('F14: long-press not supported on iOS', () {
+      // The spec states (05:690): "Long-press detection requires ACTION_DOWN/UP
+      // timestamps from the native layer, which are not available via the
+      // audio_service media button callbacks. Long-press is **not supported on
+      // iOS**." The simulation still exercises the logic for Android tests,
+      // but the production iOS path only registers repeat-press.
+      //
+      // Verify: when pattern=longPress is configured in the simulation,
+      // the spec contract is documented and the simulation behaves consistently.
+      test(
+        'long-press fires in simulation regardless of platform',
+        () async {
+          // This tests the simulation (which does not do platform detection).
+          // On iOS production this code path is unreachable (spec 05:690).
+          s.start(
+            pattern: HardwareTriggerPattern.longPress,
+            longPressDurationSeconds: 1.0,
+          );
+          final events = <HardwarePanicEvent>[];
+          final sub = s.panicEvents.listen(events.add);
+          addTearDown(sub.cancel);
+
+          final base = DateTime.utc(2026, 5, 12);
+          s.injectPress(timestamp: base);
+          s.injectPress(
+            timestamp: base.add(const Duration(seconds: 2)),
+            isDown: false,
+          );
+          await Future<void>.delayed(Duration.zero);
+          check(events).length.equals(1);
+          check(events.first.pattern).equals(HardwareTriggerPattern.longPress);
+        },
+      );
+    });
+
+    // =========================================================================
     // Simulation swap (Riverpod)
     // =========================================================================
   });

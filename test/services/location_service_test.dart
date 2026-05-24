@@ -263,14 +263,28 @@ void main() {
     });
 
     group('getLastLocationWithFallback', () {
-      test('returns null when empty', () {
-        check(_sim().getLastLocationWithFallback()).isNull();
+      test('returns null when empty', () async {
+        check(await _sim().getLastLocationWithFallback()).isNull();
       });
 
-      test('returns last point', () {
+      test('returns fresh result by default', () async {
         final pt = _point(lat: 20.0);
         final s = _sim(points: [pt]);
-        check(s.getLastLocationWithFallback()).equals(pt);
+        final result = await s.getLastLocationWithFallback();
+        check(result).isNotNull();
+        check(result!.point).equals(pt);
+        check(result.isFresh).isTrue();
+      });
+
+      test('returns stale result when simulatedFreshFix=false', () async {
+        final pt = _point(lat: 20.0);
+        final s = _sim(points: [pt]);
+        s.simulatedFreshFix = false;
+        final result = await s.getLastLocationWithFallback();
+        check(result).isNotNull();
+        check(result!.point).equals(pt);
+        check(result.isFresh).isFalse();
+        check(result.staleNote).isNotNull();
       });
     });
 
@@ -338,6 +352,96 @@ void main() {
         s.clearHistory();
         check(s.getLastLocationUrl()).isNull();
       });
+    });
+  });
+
+  // =========================================================================
+  // F4: bounded history (1001 points drops oldest) + stale-note path
+  // =========================================================================
+
+  group('SimulationLocationService — bounded history (F4)', () {
+    test('history bounded at 1000: 1001st inject discards oldest', () {
+      final s = _sim();
+      // Inject 1000 points starting at lat=0.0.
+      for (var i = 0; i < 1000; i++) {
+        s.injectPoint(_point(lat: i.toDouble()));
+      }
+      check(s.history).length.equals(1000);
+      check(s.history.first.latitude).equals(0.0);
+
+      // Inject the 1001st point.
+      s.injectPoint(_point(lat: 1000.0));
+      // Oldest (lat=0.0) must have been discarded.
+      check(s.history).length.equals(1000);
+      check(s.history.first.latitude).equals(1.0);
+      check(s.history.last.latitude).equals(1000.0);
+    });
+
+    test('history bounded at 1000: 1002nd inject discards 2 oldest', () {
+      final s = _sim();
+      for (var i = 0; i < 1002; i++) {
+        s.injectPoint(_point(lat: i.toDouble()));
+      }
+      check(s.history).length.equals(1000);
+      check(s.history.first.latitude).equals(2.0);
+    });
+  });
+
+  group('SimulationLocationService — requestPermission denial path (F4)', () {
+    test('denial path: simulatedPermissionGranted=false returns false', () async {
+      final s = _sim();
+      s.simulatedPermissionGranted = false;
+      check(await s.requestPermission()).isFalse();
+    });
+
+    test('default: requestPermission returns true', () async {
+      final s = _sim();
+      check(await s.requestPermission()).isTrue();
+    });
+
+    test('requestPermission sets permissionRequested=true on denial', () async {
+      final s = _sim();
+      s.simulatedPermissionGranted = false;
+      await s.requestPermission();
+      check(s.permissionRequested).isTrue();
+    });
+  });
+
+  group('SimulationLocationService — getLastLocationWithFallback stale (F4)',
+      () {
+    test('stale-note path: staleNote is non-null and contains timestamp', () async {
+      final ts = DateTime.utc(2026, 4, 10, 8, 30);
+      final pt = _point(lat: 30.0, ts: ts);
+      final s = _sim(points: [pt]);
+      s.simulatedFreshFix = false;
+      final result = await s.getLastLocationWithFallback();
+      check(result).isNotNull();
+      check(result!.isFresh).isFalse();
+      check(result.staleNote).isNotNull();
+      check(result.staleNote!).contains('2026-04-10');
+    });
+
+    test('stale-note point is the last known point', () async {
+      final pt = _point(lat: 42.0);
+      final s = _sim(points: [pt]);
+      s.simulatedFreshFix = false;
+      final result = await s.getLastLocationWithFallback();
+      check(result!.point).equals(pt);
+    });
+
+    test('fresh path: staleNote is null when simulatedFreshFix=true', () async {
+      final pt = _point(lat: 15.0);
+      final s = _sim(points: [pt]);
+      final result = await s.getLastLocationWithFallback();
+      check(result).isNotNull();
+      check(result!.isFresh).isTrue();
+      check(result.staleNote).isNull();
+    });
+
+    test('null when empty, regardless of simulatedFreshFix', () async {
+      final s = _sim();
+      s.simulatedFreshFix = false;
+      check(await s.getLastLocationWithFallback()).isNull();
     });
   });
 

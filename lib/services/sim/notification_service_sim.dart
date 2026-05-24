@@ -13,12 +13,14 @@ final class NotificationCall {
     this.contactName,
     this.actionPayload,
     this.stealth,
+    this.sound,
   });
 
   /// Method name.
   final String method;
 
-  /// Notification ID (for [showDisguisedReminder] / [cancel]).
+  /// Notification ID (for [showDisguisedReminder] / [cancel] /
+  /// [showAlarmEscalation]).
   final int? id;
 
   /// Notification title.
@@ -35,6 +37,9 @@ final class NotificationCall {
 
   /// Stealth flag (for [showForegroundServiceNotification]).
   final bool? stealth;
+
+  /// Sound filename (for [showAlarmEscalation] on iOS).
+  final String? sound;
 
   @override
   String toString() => 'NotificationCall(method: $method, id: $id)';
@@ -112,6 +117,24 @@ class SimulationNotificationService implements NotificationServiceProtocol {
         title: title,
         body: body,
         stealth: stealth,
+      ),
+    );
+  }
+
+  @override
+  Future<void> showAlarmEscalation({
+    required int id,
+    required String title,
+    required String body,
+    String sound = 'critical_alert.wav',
+  }) async {
+    calls.add(
+      NotificationCall(
+        method: 'showAlarmEscalation',
+        id: id,
+        title: title,
+        body: body,
+        sound: sound,
       ),
     );
   }

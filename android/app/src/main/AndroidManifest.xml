@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for full-screen intent notifications (disguised reminders,
+         alarm escalation) to surface on the lock screen (spec 05:848-853).
+         Android 14+ will prompt the user the first time the channel is used. -->
+    <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
     <application
         android:label="guardianangela"
         android:name="${applicationName}"

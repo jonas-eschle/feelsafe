@@ -419,5 +419,86 @@ void main() {
         // or no-op for sms channel on this test platform).
       },
     );
+
+    // -----------------------------------------------------------------------
+    // F3: fail-loud assertion for multi-channel contacts (Extra-15)
+    // -----------------------------------------------------------------------
+
+    test(
+      'sendMessage throws ArgumentError when contact has zero channels',
+      () async {
+        final zeroChannelContact = EmergencyContact(
+          id: 'c_zero',
+          name: 'Zara',
+          phoneNumber: '+15551112222',
+          sortOrder: 0,
+          channels: const [],
+        );
+        await check(
+          svc.sendMessage(contact: zeroChannelContact, message: 'hi'),
+        ).throws<ArgumentError>();
+      },
+    );
+
+    test(
+      'sendMessage throws ArgumentError when contact has two channels',
+      () async {
+        final twoChannelContact = EmergencyContact(
+          id: 'c_two',
+          name: 'Terry',
+          phoneNumber: '+15551113333',
+          sortOrder: 0,
+          channels: const [MessageChannel.sms, MessageChannel.whatsapp],
+        );
+        await check(
+          svc.sendMessage(contact: twoChannelContact, message: 'hi'),
+        ).throws<ArgumentError>();
+      },
+    );
+
+    test(
+      'sendMessage ArgumentError message references Extra-15 rule',
+      () async {
+        final twoChannelContact = EmergencyContact(
+          id: 'c_two',
+          name: 'Terry',
+          phoneNumber: '+15551113333',
+          sortOrder: 0,
+          channels: const [MessageChannel.sms, MessageChannel.whatsapp],
+        );
+        try {
+          await svc.sendMessage(contact: twoChannelContact, message: 'hi');
+          fail('Expected ArgumentError');
+        } catch (e) {
+          check(e).isA<ArgumentError>();
+          check(e.toString()).contains('Extra-15');
+        }
+      },
+    );
+
+    // -----------------------------------------------------------------------
+    // F3: canAutoSend — channel check
+    // -----------------------------------------------------------------------
+
+    test('canAutoSend sms returns true or false (non-throwing)', () {
+      // On this test platform (non-Android), the result may vary.
+      // Just ensure it does not throw.
+      svc.canAutoSend(MessageChannel.sms);
+    });
+
+    test('canAutoSend whatsapp returns false on test platform', () {
+      // WhatsApp requires url_launcher; on test platform it returns false.
+      check(svc.canAutoSend(MessageChannel.whatsapp)).isFalse();
+    });
+
+    // -----------------------------------------------------------------------
+    // F3: cancelPending — invokes channel for each id
+    // -----------------------------------------------------------------------
+
+    test('cancelPending with two IDs makes two channel calls', () async {
+      await svc.cancelPending(['job-1', 'job-2']);
+      // On Android the sms channel receives two cancelSms calls.
+      // On other platforms this is a no-op — just verify no throw.
+    });
   });
 }

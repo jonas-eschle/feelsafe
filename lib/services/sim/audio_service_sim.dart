@@ -8,14 +8,15 @@ final class AudioCall {
     this.soundChoice,
     this.customSoundPath,
     this.volume,
+    this.rampSeconds,
     this.assetPath,
     this.filePath,
     this.useSpeaker,
     this.isSimulation = false,
   });
 
-  /// Method name: one of `'playAlarmWithConfig'`, `'playSound'`, `'stop'`,
-  /// `'playVoiceRecording'`.
+  /// Method name: one of `'playRingtone'`, `'playAlarm'`,
+  /// `'playAlarmWithConfig'`, `'playSound'`, `'stop'`, `'playVoiceRecording'`.
   final String method;
 
   /// [soundChoice] from [playAlarmWithConfig], or `null`.
@@ -27,7 +28,10 @@ final class AudioCall {
   /// [volume] from [playAlarmWithConfig], or `null`.
   final double? volume;
 
-  /// [assetPath] from [playSound], or `null`.
+  /// [rampSeconds] from [playAlarmWithConfig], or `null`.
+  final int? rampSeconds;
+
+  /// [assetPath] from [playSound] or [playRingtone], or `null`.
   final String? assetPath;
 
   /// [filePath] from [playVoiceRecording], or `null`.
@@ -65,11 +69,22 @@ class SimulationAudioService implements AudioServiceProtocol {
   void reset() => calls.clear();
 
   @override
+  Future<void> playRingtone(String? assetPath) async {
+    calls.add(AudioCall(method: 'playRingtone', assetPath: assetPath));
+  }
+
+  @override
+  Future<void> playAlarm() async {
+    calls.add(const AudioCall(method: 'playAlarm'));
+  }
+
+  @override
   Future<void> playAlarmWithConfig({
     String soundChoice = 'siren',
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
+    int rampSeconds = kDefaultAlarmRampSeconds,
   }) async {
     calls.add(
       AudioCall(
@@ -77,6 +92,7 @@ class SimulationAudioService implements AudioServiceProtocol {
         soundChoice: soundChoice,
         customSoundPath: customSoundPath,
         volume: volume,
+        rampSeconds: rampSeconds,
         isSimulation: isSimulation,
       ),
     );

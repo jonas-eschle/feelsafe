@@ -844,7 +844,7 @@ Every disguised reminder uses the maximum-urgency notification
 tier so it still surfaces when the device is locked. On Android
 this means:
 
-- `Importance.max` channel (`ga_reminders`)
+- `Importance.max` channel (`reminders`)
 - `Priority.max`
 - `fullScreenIntent: true` — kicks the OS into showing the
   reminder as a full-screen intent while the screen is locked,

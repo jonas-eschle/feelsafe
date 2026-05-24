@@ -24,8 +24,9 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -312,8 +313,9 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
         resolvedContainer = ownedContainer;
       }
       try {
-        final backupService =
-            await resolvedContainer.read(backupServiceProvider.future);
+        final backupService = await resolvedContainer.read(
+          backupServiceProvider.future,
+        );
         await backupService.importFromJson(jsonString);
       } finally {
         ownedContainer?.dispose();
@@ -348,8 +350,7 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
               : _ChoicePanel(
                   reason: widget.reason,
                   onStartFresh: _statusMessage == null ? _startFresh : null,
-                  onRestoreFromBackup:
-                      _isRestoring ? null : _restoreFromBackup,
+                  onRestoreFromBackup: _isRestoring ? null : _restoreFromBackup,
                   isRestoring: _isRestoring,
                   statusMessage: _statusMessage,
                 ),

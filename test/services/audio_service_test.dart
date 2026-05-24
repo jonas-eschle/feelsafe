@@ -337,6 +337,79 @@ void main() {
         ).deepEquals(['playAlarmWithConfig', 'playVoiceRecording', 'stop']);
       });
     });
+
+    group('playRingtone', () {
+      test('records call with assetPath', () async {
+        final s = _sim();
+        await s.playRingtone('assets/audio/ringtone.mp3');
+        check(s.calls).length.equals(1);
+        check(s.calls.first.method).equals('playRingtone');
+        check(s.calls.first.assetPath).equals('assets/audio/ringtone.mp3');
+      });
+
+      test('records call with null assetPath', () async {
+        final s = _sim();
+        await s.playRingtone(null);
+        check(s.calls.first.method).equals('playRingtone');
+        check(s.calls.first.assetPath).isNull();
+      });
+    });
+
+    group('playAlarm', () {
+      test('records call', () async {
+        final s = _sim();
+        await s.playAlarm();
+        check(s.calls).length.equals(1);
+        check(s.calls.first.method).equals('playAlarm');
+      });
+
+      test('playAlarm then playAlarmWithConfig accumulates', () async {
+        final s = _sim();
+        await s.playAlarm();
+        await s.playAlarmWithConfig();
+        check(s.calls).length.equals(2);
+        check(s.calls[0].method).equals('playAlarm');
+        check(s.calls[1].method).equals('playAlarmWithConfig');
+      });
+    });
+
+    group('rampSeconds', () {
+      test('default rampSeconds is kDefaultAlarmRampSeconds', () async {
+        final s = _sim();
+        await s.playAlarmWithConfig();
+        check(s.calls.first.rampSeconds).equals(kDefaultAlarmRampSeconds);
+      });
+
+      test('kDefaultAlarmRampSeconds is 5', () {
+        check(kDefaultAlarmRampSeconds).equals(5);
+      });
+
+      test('custom rampSeconds is recorded', () async {
+        final s = _sim();
+        await s.playAlarmWithConfig(rampSeconds: 10);
+        check(s.calls.first.rampSeconds).equals(10);
+      });
+
+      test('rampSeconds=0 disables ramp (recorded correctly)', () async {
+        final s = _sim();
+        await s.playAlarmWithConfig(rampSeconds: 0);
+        check(s.calls.first.rampSeconds).equals(0);
+      });
+
+      test('rampSeconds=1 min ramp (recorded correctly)', () async {
+        final s = _sim();
+        await s.playAlarmWithConfig(rampSeconds: 1);
+        check(s.calls.first.rampSeconds).equals(1);
+      });
+
+      test('rampSeconds preserved in sequence of calls', () async {
+        final s = _sim();
+        await s.playAlarmWithConfig(rampSeconds: 3);
+        await s.playAlarmWithConfig(rampSeconds: 7);
+        check(s.calls[0].rampSeconds).equals(3);
+        check(s.calls[1].rampSeconds).equals(7);
+      });
+    });
   });
 
   // -----------------------------------------------------------------------
@@ -351,6 +424,16 @@ void main() {
     test('toString contains method name', () {
       const call = AudioCall(method: 'playSound');
       check(call.toString()).contains('playSound');
+    });
+
+    test('rampSeconds is null by default', () {
+      const call = AudioCall(method: 'test');
+      check(call.rampSeconds).isNull();
+    });
+
+    test('rampSeconds is preserved when set', () {
+      const call = AudioCall(method: 'playAlarmWithConfig', rampSeconds: 8);
+      check(call.rampSeconds).equals(8);
     });
   });
 }

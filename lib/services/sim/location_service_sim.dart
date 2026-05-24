@@ -1,5 +1,6 @@
 import 'package:guardianangela/domain/models/location_point.dart';
-import 'package:guardianangela/services/protocols/location_service_protocol.dart';
+import 'package:guardianangela/services/protocols/location_service_protocol.dart'
+    show LocationFallbackResult, LocationServiceProtocol;
 
 /// Simulation [LocationServiceProtocol] for tests.
 ///
@@ -36,6 +37,10 @@ class SimulationLocationService implements LocationServiceProtocol {
   /// Defaults to `true`. Tests can set this to `false` to simulate denial.
   bool simulatedPermissionGranted = true;
 
+  /// When `true` (default), [getLastLocationWithFallback] returns a fresh
+  /// result. Set to `false` to simulate a stale-cache fallback path.
+  bool simulatedFreshFix = true;
+
   // ---------------------------------------------------------------------------
   // LocationServiceProtocol implementation
   // ---------------------------------------------------------------------------
@@ -56,19 +61,17 @@ class SimulationLocationService implements LocationServiceProtocol {
     return 'Last known location at $ts$accuracyPart: $url';
   }
 
-  // ---------------------------------------------------------------------------
-  // Controller-facing methods (mirror RealLocationService)
-  // ---------------------------------------------------------------------------
-
   /// Simulates requesting location permission.
   ///
   /// Returns [simulatedPermissionGranted]. Marks [permissionRequested].
+  @override
   Future<bool> requestPermission() async {
     _permissionRequested = true;
     return simulatedPermissionGranted;
   }
 
   /// Marks [isTracking] as `true`.
+  @override
   Future<void> startTracking({
     Duration interval = const Duration(seconds: 30),
   }) async {
@@ -76,28 +79,48 @@ class SimulationLocationService implements LocationServiceProtocol {
   }
 
   /// Marks [isTracking] as `false`.
+  @override
   void stopTracking() {
     _tracking = false;
   }
 
   /// Returns the last [LocationPoint] in [history], or `null`.
+  @override
   LocationPoint? getLastLocationPoint() =>
       _history.isEmpty ? null : _history.last;
 
-  /// Returns the last [LocationPoint] in [history], or `null`.
+  /// Returns the last [LocationPoint] wrapped in a [LocationFallbackResult].
   ///
-  /// The "fallback" behaviour is identical to [getLastLocationPoint] for
-  /// the simulation — there is no distinction between current and stale.
-  LocationPoint? getLastLocationWithFallback() => getLastLocationPoint();
+  /// For simulation there is no distinction between current and stale; returns
+  /// a fresh result when [simulatedFreshFix] is `true` (default), or a stale
+  /// result when `false`. Returns `null` if [history] is empty.
+  @override
+  Future<LocationFallbackResult?> getLastLocationWithFallback() async {
+    final pt = getLastLocationPoint();
+    if (pt == null) return null;
+    if (simulatedFreshFix) {
+      return LocationFallbackResult(point: pt);
+    }
+    final note = 'Last known location at ${pt.timestamp.toIso8601String()}';
+    return LocationFallbackResult(point: pt, staleNote: note);
+  }
 
   /// All tracked points (unmodifiable view).
+  @override
   List<LocationPoint> get history => List.unmodifiable(_history);
 
   /// Clears [history].
+  @override
   void clearHistory() => _history.clear();
 
   /// Injects a point into [history] as if it came from a GPS fix.
+  ///
+  /// Enforces the 1000-point bound (spec 05:433): when the limit is reached
+  /// the oldest point is discarded.
   void injectPoint(LocationPoint point) {
+    if (_history.length >= 1000) {
+      _history.removeAt(0);
+    }
     _history.add(point);
   }
 }

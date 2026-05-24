@@ -94,6 +94,12 @@ class SessionLogRecorder implements SessionLogRecorderProtocol {
 
   final List<SessionLogEvent> _events = [];
 
+  /// Whether [finalise] has already been called on this recorder.
+  ///
+  /// Visible to subclasses so the sim variant can enforce the same guard.
+  // ignore: library_private_types_in_public_api
+  bool finalised = false;
+
   // -------------------------------------------------------------------------
   // SessionLogRecorderProtocol implementation
   // -------------------------------------------------------------------------
@@ -118,6 +124,13 @@ class SessionLogRecorder implements SessionLogRecorderProtocol {
 
   @override
   Future<void> finalise(EndReason reason) async {
+    if (finalised) {
+      throw StateError(
+        'SessionLogRecorder.finalise() called twice on session $_id. '
+        'A recorder must not be reused across sessions.',
+      );
+    }
+    finalised = true;
     final endedAt = DateTime.now().toUtc();
     final hadMedical = _computeHadMedicalInfo();
     final sessionLog = SessionLog(
@@ -208,6 +221,15 @@ class SimulationSessionLogRecorder extends SessionLogRecorder {
 
   @override
   Future<void> finalise(EndReason reason) async {
+    // The double-finalise guard in the parent applies here; since we override
+    // the whole body we replicate the check using the parent's `finalised` field.
+    if (finalised) {
+      throw StateError(
+        'SimulationSessionLogRecorder.finalise() called twice on session '
+        '$sessionId. A recorder must not be reused across sessions.',
+      );
+    }
+    finalised = true;
     final endedAt = DateTime.now().toUtc();
     finalisedLog = SessionLog(
       id: sessionId,

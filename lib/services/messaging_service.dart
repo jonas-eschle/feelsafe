@@ -135,6 +135,18 @@ class RealMessagingService implements MessagingServiceProtocol {
       return null;
     }
 
+    // Extra-15: each step passes a single-channel contact copy.
+    // Fail loud on programmer error (multiple channels indicate a caller bug).
+    if (contact.channels.length != 1) {
+      throw ArgumentError.value(
+        contact.channels.length,
+        'contact.channels.length',
+        'sendMessage expects exactly one channel per contact '
+            '(Extra-15 Single-Channel Dispatch). '
+            'Got ${contact.channels.length} channels for "${contact.name}".',
+      );
+    }
+
     // Dispatch to the single channel this contact is configured with.
     for (final channel in contact.channels) {
       final workId = await _dispatch(

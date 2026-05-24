@@ -200,6 +200,39 @@ void main() {
           check(s.events.length).equals(countAfterStop);
         });
       });
+
+      // -----------------------------------------------------------------------
+      // F5: no torch call after stopFlash returns (race-condition fix)
+      // -----------------------------------------------------------------------
+
+      test(
+        'F5: no new events emitted after stopFlash resolves (Completer fix)',
+        () async {
+          final s = _sim(tickMs: 5);
+          await s.startSosFlash();
+          // Let the loop tick a few times.
+          await Future<void>.delayed(const Duration(milliseconds: 40));
+          // stopFlash awaits the loop completion via Completer.
+          await s.stopFlash();
+          final countAtStop = s.events.length;
+          // After stopFlash has returned, no further events can be emitted.
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          check(s.events.length).equals(countAtStop);
+        },
+      );
+
+      test(
+        'F5: continuous flash — no new events after stopFlash returns',
+        () async {
+          final s = _sim(tickMs: 5);
+          await s.startContinuousFlash();
+          await Future<void>.delayed(const Duration(milliseconds: 40));
+          await s.stopFlash();
+          final countAtStop = s.events.length;
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          check(s.events.length).equals(countAtStop);
+        },
+      );
     });
   });
 }

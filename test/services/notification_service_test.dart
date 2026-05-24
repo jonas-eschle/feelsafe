@@ -13,6 +13,52 @@ import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/notification_service_sim.dart';
 
 // ---------------------------------------------------------------------------
+// Additional fakes
+// ---------------------------------------------------------------------------
+
+/// Captures NotificationDetails passed to plugin.show for F16 tests.
+class _CapturingPlugin extends Mock
+    implements FlutterLocalNotificationsPlugin {
+  /// All (id, title, body, details) tuples captured by [show].
+  final List<(int, String?, String?, NotificationDetails?)> shown = [];
+
+  @override
+  Future<void> show({
+    required int id,
+    String? title,
+    String? body,
+    NotificationDetails? notificationDetails,
+    String? payload,
+  }) async {
+    shown.add((id, title, body, notificationDetails));
+  }
+
+  @override
+  Future<bool?> initialize({
+    required InitializationSettings settings,
+    void Function(NotificationResponse)? onDidReceiveNotificationResponse,
+    void Function(NotificationResponse)?
+    onDidReceiveBackgroundNotificationResponse,
+  }) async => true;
+
+  @override
+  T? resolvePlatformSpecificImplementation<
+    T extends FlutterLocalNotificationsPlatform
+  >() => null;
+}
+
+/// Creates a [RealNotificationService] backed by [_CapturingPlugin].
+Future<(RealNotificationService, _CapturingPlugin)>
+_makeCapturingService() async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  final plugin = _CapturingPlugin();
+  final svc = RealNotificationService(plugin: plugin, prefsFactory: () async => prefs);
+  await svc.init();
+  return (svc, plugin);
+}
+
+// ---------------------------------------------------------------------------
 // Mocks
 // ---------------------------------------------------------------------------
 
@@ -24,8 +70,7 @@ class _FakeInitializationSettings extends Fake
     implements InitializationSettings {}
 
 /// Fake [NotificationResponse] for mocktail fallback registration.
-class _FakeNotificationResponse extends Fake
-    implements NotificationResponse {}
+class _FakeNotificationResponse extends Fake implements NotificationResponse {}
 
 // ---------------------------------------------------------------------------
 // Test helpers for Fix D (background-response replay)
@@ -54,16 +99,19 @@ Future<RealNotificationService> _makeReplayService({
   when(
     () => plugin.initialize(
       settings: any(named: 'settings'),
-      onDidReceiveNotificationResponse:
-          any(named: 'onDidReceiveNotificationResponse'),
-      onDidReceiveBackgroundNotificationResponse:
-          any(named: 'onDidReceiveBackgroundNotificationResponse'),
+      onDidReceiveNotificationResponse: any(
+        named: 'onDidReceiveNotificationResponse',
+      ),
+      onDidReceiveBackgroundNotificationResponse: any(
+        named: 'onDidReceiveBackgroundNotificationResponse',
+      ),
     ),
   ).thenAnswer((_) async => true);
   when(
-    () => plugin.resolvePlatformSpecificImplementation<
-      AndroidFlutterLocalNotificationsPlugin
-    >(),
+    () => plugin
+        .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >(),
   ).thenReturn(null);
 
   return RealNotificationService(
@@ -256,6 +304,161 @@ void main() {
         check(s.calls).isEmpty();
       });
     });
+
+    // -----------------------------------------------------------------------
+    // F7: showAlarmEscalation (Extra-35 flags)
+    // -----------------------------------------------------------------------
+
+    group('showAlarmEscalation (F7)', () {
+      test('records method with id, title, body', () async {
+        await s.showAlarmEscalation(id: 101, title: 'ALERT', body: 'Help!');
+        check(s.calls).length.equals(1);
+        final call = s.calls.first;
+        check(call.method).equals('showAlarmEscalation');
+        check(call.id).equals(101);
+        check(call.title).equals('ALERT');
+        check(call.body).equals('Help!');
+      });
+
+      test('records default sound critical_alert.wav', () async {
+        await s.showAlarmEscalation(id: 1, title: 'T', body: 'B');
+        check(s.calls.first.sound).equals('critical_alert.wav');
+      });
+
+      test('records custom sound when provided', () async {
+        await s.showAlarmEscalation(
+          id: 2,
+          title: 'T',
+          body: 'B',
+          sound: 'siren.wav',
+        );
+        check(s.calls.first.sound).equals('siren.wav');
+      });
+
+      test('different ids accumulate separately', () async {
+        await s.showAlarmEscalation(id: 10, title: 'First', body: 'f');
+        await s.showAlarmEscalation(id: 11, title: 'Second', body: 's');
+        check(s.calls).length.equals(2);
+        check(s.calls[0].id).equals(10);
+        check(s.calls[1].id).equals(11);
+      });
+
+      test('reset clears showAlarmEscalation calls', () async {
+        await s.showAlarmEscalation(id: 99, title: 'T', body: 'B');
+        s.reset();
+        check(s.calls).isEmpty();
+      });
+
+      test('protocol contract: showAlarmEscalation is part of protocol', () {
+        check(s).isA<NotificationServiceProtocol>();
+      });
+    });
+  });
+
+  // =========================================================================
+  // F16: showDisguisedReminder has correct Extra-35 flags
+  // =========================================================================
+
+  group('RealNotificationService — showDisguisedReminder flags (F16)', () {
+    tearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test(
+      'F16: showDisguisedReminder calls plugin.show with correct id/title/body',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(
+          id: 55,
+          title: 'Check-in',
+          body: 'Time to check in.',
+        );
+        check(plugin.shown).length.equals(1);
+        final (capturedId, capturedTitle, capturedBody, _) = plugin.shown.first;
+        check(capturedId).equals(55);
+        check(capturedTitle).equals('Check-in');
+        check(capturedBody).equals('Time to check in.');
+      },
+    );
+
+    test(
+      'F16: showDisguisedReminder provides Android details with fullScreenIntent',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(
+          id: 56,
+          title: 'T',
+          body: 'B',
+        );
+        final (_, _, _, details) = plugin.shown.first;
+        check(details).isNotNull();
+        check(details!.android).isNotNull();
+        check(details.android!.fullScreenIntent).isTrue();
+      },
+    );
+
+    test(
+      'F16: showDisguisedReminder Android importance is Importance.max',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(id: 57, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.android!.importance).equals(Importance.max);
+      },
+    );
+
+    test(
+      'F16: showDisguisedReminder Android category is alarm',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(id: 58, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.android!.category).equals(
+          AndroidNotificationCategory.alarm,
+        );
+      },
+    );
+
+    test(
+      'F16: showDisguisedReminder Android visibility is public',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(id: 59, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.android!.visibility).equals(
+          NotificationVisibility.public,
+        );
+      },
+    );
+
+    test(
+      'F16: showDisguisedReminder iOS interruptionLevel is timeSensitive',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(id: 60, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.iOS).isNotNull();
+        check(details.iOS!.interruptionLevel).equals(
+          InterruptionLevel.timeSensitive,
+        );
+      },
+    );
+  });
+
+  // =========================================================================
+  // F9: ga_sms_retry channel constant (defined in notification_service.dart)
+  // =========================================================================
+
+  group('Notification channel IDs (F9)', () {
+    test('kSmsRetryChannelId is defined as ga_sms_retry', () {
+      check(kSmsRetryChannelId).equals('ga_sms_retry');
+    });
+
+    test('kSmsRetryChannelId is distinct from other channel IDs', () {
+      check(kSmsRetryChannelId).not((c) => c.equals('session_service'));
+      check(kSmsRetryChannelId).not((c) => c.equals('reminders'));
+      check(kSmsRetryChannelId).not((c) => c.equals('distress'));
+    });
   });
 
   // =========================================================================
@@ -350,32 +553,38 @@ void main() {
       SharedPreferences.setMockInitialValues({});
     });
 
-    test('init with no pending actions: first subscriber receives nothing', () async {
-      final svc = await _makeReplayService();
-      await svc.init();
+    test(
+      'init with no pending actions: first subscriber receives nothing',
+      () async {
+        final svc = await _makeReplayService();
+        await svc.init();
 
-      final received = <String>[];
-      final sub = svc.actionTaps.listen(received.add);
-      // Give the stream time to flush.
-      await Future<void>.delayed(Duration.zero);
-      await sub.cancel();
+        final received = <String>[];
+        final sub = svc.actionTaps.listen(received.add);
+        // Give the stream time to flush.
+        await Future<void>.delayed(Duration.zero);
+        await sub.cancel();
 
-      check(received).isEmpty();
-    });
+        check(received).isEmpty();
+      },
+    );
 
-    test('init with pending action: first subscriber receives the action', () async {
-      final svc = await _makeReplayService(
-        pendingActions: ['background:im_safe'],
-      );
-      await svc.init();
+    test(
+      'init with pending action: first subscriber receives the action',
+      () async {
+        final svc = await _makeReplayService(
+          pendingActions: ['background:im_safe'],
+        );
+        await svc.init();
 
-      final received = <String>[];
-      final sub = svc.actionTaps.listen(received.add);
-      await Future<void>.delayed(Duration.zero);
-      await sub.cancel();
+        final received = <String>[];
+        final sub = svc.actionTaps.listen(received.add);
+        await Future<void>.delayed(Duration.zero);
+        await sub.cancel();
 
-      check(received).deepEquals(['background:im_safe']);
-    });
+        check(received).deepEquals(['background:im_safe']);
+      },
+    );
 
     test('ordering of pending actions is preserved', () async {
       final svc = await _makeReplayService(
@@ -401,16 +610,19 @@ void main() {
       when(
         () => plugin.initialize(
           settings: any(named: 'settings'),
-          onDidReceiveNotificationResponse:
-              any(named: 'onDidReceiveNotificationResponse'),
-          onDidReceiveBackgroundNotificationResponse:
-              any(named: 'onDidReceiveBackgroundNotificationResponse'),
+          onDidReceiveNotificationResponse: any(
+            named: 'onDidReceiveNotificationResponse',
+          ),
+          onDidReceiveBackgroundNotificationResponse: any(
+            named: 'onDidReceiveBackgroundNotificationResponse',
+          ),
         ),
       ).thenAnswer((_) async => true);
       when(
-        () => plugin.resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >(),
+        () => plugin
+            .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin
+            >(),
       ).thenReturn(null);
 
       final svc = RealNotificationService(
@@ -429,26 +641,29 @@ void main() {
       check(remaining).isNull();
     });
 
-    test('second subscriber does not re-receive already-flushed actions', () async {
-      final svc = await _makeReplayService(
-        pendingActions: ['background:resume'],
-      );
-      await svc.init();
+    test(
+      'second subscriber does not re-receive already-flushed actions',
+      () async {
+        final svc = await _makeReplayService(
+          pendingActions: ['background:resume'],
+        );
+        await svc.init();
 
-      final first = <String>[];
-      final second = <String>[];
+        final first = <String>[];
+        final second = <String>[];
 
-      final sub1 = svc.actionTaps.listen(first.add);
-      await Future<void>.delayed(Duration.zero);
-      await sub1.cancel();
+        final sub1 = svc.actionTaps.listen(first.add);
+        await Future<void>.delayed(Duration.zero);
+        await sub1.cancel();
 
-      final sub2 = svc.actionTaps.listen(second.add);
-      await Future<void>.delayed(Duration.zero);
-      await sub2.cancel();
+        final sub2 = svc.actionTaps.listen(second.add);
+        await Future<void>.delayed(Duration.zero);
+        await sub2.cancel();
 
-      // First subscriber got the replayed action; second got nothing.
-      check(first).deepEquals(['background:resume']);
-      check(second).isEmpty();
-    });
+        // First subscriber got the replayed action; second got nothing.
+        check(first).deepEquals(['background:resume']);
+        check(second).isEmpty();
+      },
+    );
   });
 }

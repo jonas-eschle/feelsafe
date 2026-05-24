@@ -17,11 +17,14 @@ import 'dart:async';
 import 'dart:developer';
 
 import 'package:flutter/services.dart';
+
 import 'package:flutter_background_service/flutter_background_service.dart';
-import 'package:guardianangela/services/notification_service.dart'
-    show kForegroundNotificationId;
+
 import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
+
+import 'package:guardianangela/services/notification_service.dart'
+    show kForegroundNotificationId;
 
 /// Notification action identifier for the "I'm Safe" button.
 const String kActionImSafe = 'background:im_safe';
@@ -59,7 +62,10 @@ void _onBackgroundStart(ServiceInstance service) {
 
   // Listen for a stop request from the main isolate.
   service.on('stop').listen((_) {
-    log('Background service stopping on request', name: 'BackgroundSessionService');
+    log(
+      'Background service stopping on request',
+      name: 'BackgroundSessionService',
+    );
     service.stopSelf();
   });
 }
@@ -133,10 +139,7 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
           onForeground: _onBackgroundStart,
           onBackground: (_) async {
             // iOS background fetch: keep-alive only; no long work permitted.
-            log(
-              'iOS background fetch tick',
-              name: 'BackgroundSessionService',
-            );
+            log('iOS background fetch tick', name: 'BackgroundSessionService');
             return true;
           },
         ),
@@ -250,9 +253,23 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
         _imSafeController.add(null);
       case kActionPause:
         log('onPause action tap', name: 'BackgroundSessionService');
+        // Update notification text to reflect the paused state immediately
+        // (spec 05:823-832). The engine-timer pause is owned by SessionController
+        // (Phase 6); we only own the notification here.
+        _notification.showForegroundServiceNotification(
+          title: 'Session paused',
+          body: 'Tap Resume to continue.',
+        );
         _pauseController.add(null);
       case kActionResume:
         log('onResume action tap', name: 'BackgroundSessionService');
+        // Revert notification to generic active-session text. Phase 6
+        // SessionController will call updateNotification with session-specific
+        // text once it handles the resume.
+        _notification.showForegroundServiceNotification(
+          title: 'Guardian Angela active',
+          body: 'Your session is running.',
+        );
         _resumeController.add(null);
     }
   }

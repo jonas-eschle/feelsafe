@@ -104,6 +104,77 @@ void main() {
       check(sdk.initCallCount).equals(0);
     });
 
+    // -----------------------------------------------------------------------
+    // F10: EU data-residency enforcement
+    // -----------------------------------------------------------------------
+
+    test(
+      'F10: US DSN (ingest.sentry.io) throws StateError',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        await expectLater(
+          svc.initialize(
+            enabled: true,
+            dsn: 'https://key@o123.ingest.sentry.io/456',
+          ),
+          throwsA(isA<StateError>()),
+        );
+      },
+    );
+
+    test(
+      'F10: EU DSN (ingest.de.sentry.io) is accepted',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        await svc.initialize(
+          enabled: true,
+          dsn: 'https://key@o123.ingest.de.sentry.io/456',
+        );
+        check(sdk.initCallCount).equals(1);
+      },
+    );
+
+    test(
+      'F10: StateError message mentions EU host requirement',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        try {
+          await svc.initialize(
+            enabled: true,
+            dsn: 'https://key@o123.ingest.sentry.io/456',
+          );
+          fail('Expected StateError');
+        } catch (e) {
+          check(e).isA<StateError>();
+          check(e.toString()).contains('.ingest.de.sentry.io');
+        }
+      },
+    );
+
+    test(
+      'F10: disabled path does not validate DSN (no throw)',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        // Even a non-EU DSN is fine when disabled — SDK never initializes.
+        await svc.initialize(enabled: false);
+        check(sdk.initCallCount).equals(0);
+      },
+    );
+
+    test(
+      'F10: empty DSN when enabled skips sdk.init without EU check',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        await svc.initialize(enabled: true, dsn: '');
+        check(sdk.initCallCount).equals(0);
+      },
+    );
+
     // ---- idempotency ----
 
     test('double-init with same args is a no-op', () async {

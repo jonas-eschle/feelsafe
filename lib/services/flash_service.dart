@@ -25,6 +25,13 @@ class RealFlashService implements FlashServiceProtocol {
 
   bool _isFlashing = false;
 
+  /// Completer completed when the active loop exits after [stopFlash].
+  ///
+  /// Using a [Completer] prevents the race condition where [stopFlash]'s
+  /// old `Future.delayed(250ms)` could return before the loop had finished
+  /// its last torch-off call (spec 05:613-614).
+  Completer<void>? _loopDone;
+
   /// Whether the flash is currently active.
   bool get isFlashing => _isFlashing;
 
@@ -46,6 +53,7 @@ class RealFlashService implements FlashServiceProtocol {
       name: 'FlashService',
     );
     _isFlashing = true;
+    _loopDone = Completer<void>();
     // Run the loop in a detached async task; startSosFlash returns
     // immediately after setting the flag.
     unawaited(_sosLoop());
@@ -61,6 +69,7 @@ class RealFlashService implements FlashServiceProtocol {
       name: 'FlashService',
     );
     _isFlashing = true;
+    _loopDone = Completer<void>();
     unawaited(_continuousLoop());
   }
 
@@ -69,9 +78,15 @@ class RealFlashService implements FlashServiceProtocol {
     if (!_isFlashing) return;
     log('stopFlash — stopping flash loop', name: 'FlashService');
     _isFlashing = false;
-    // Give the loop one tick to exit and disable the torch.
-    await Future<void>.delayed(const Duration(milliseconds: 250));
-    await _setTorch(torchOn: false);
+    // Wait for the loop to signal completion via the Completer instead of
+    // relying on a fixed delay. This prevents the race condition described in
+    // spec 05:613-614 where the torch could be turned on after stopFlash
+    // returned.
+    final done = _loopDone;
+    _loopDone = null;
+    if (done != null) {
+      await done.future;
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -80,44 +95,54 @@ class RealFlashService implements FlashServiceProtocol {
 
   /// SOS: ··· −−− ···  (repeats until [_isFlashing] is false).
   Future<void> _sosLoop() async {
-    while (_isFlashing) {
-      // S — three dots
-      for (var i = 0; i < 3 && _isFlashing; i++) {
-        await _setTorch(torchOn: true);
-        await _sleep(_dot);
-        await _setTorch(torchOn: false);
-        final gap = (i < 2) ? _interSymbol : _interLetter;
-        await _sleep(gap);
+    try {
+      while (_isFlashing) {
+        // S — three dots
+        for (var i = 0; i < 3 && _isFlashing; i++) {
+          await _setTorch(torchOn: true);
+          await _sleep(_dot);
+          await _setTorch(torchOn: false);
+          final gap = (i < 2) ? _interSymbol : _interLetter;
+          await _sleep(gap);
+        }
+        // O — three dashes
+        for (var i = 0; i < 3 && _isFlashing; i++) {
+          await _setTorch(torchOn: true);
+          await _sleep(_dash);
+          await _setTorch(torchOn: false);
+          final gap = (i < 2) ? _interSymbol : _interLetter;
+          await _sleep(gap);
+        }
+        // S — three dots
+        for (var i = 0; i < 3 && _isFlashing; i++) {
+          await _setTorch(torchOn: true);
+          await _sleep(_dot);
+          await _setTorch(torchOn: false);
+          final gap = (i < 2) ? _interSymbol : _cycleGap;
+          await _sleep(gap);
+        }
       }
-      // O — three dashes
-      for (var i = 0; i < 3 && _isFlashing; i++) {
-        await _setTorch(torchOn: true);
-        await _sleep(_dash);
-        await _setTorch(torchOn: false);
-        final gap = (i < 2) ? _interSymbol : _interLetter;
-        await _sleep(gap);
-      }
-      // S — three dots
-      for (var i = 0; i < 3 && _isFlashing; i++) {
-        await _setTorch(torchOn: true);
-        await _sleep(_dot);
-        await _setTorch(torchOn: false);
-        final gap = (i < 2) ? _interSymbol : _cycleGap;
-        await _sleep(gap);
-      }
+      await _setTorch(torchOn: false);
+    } finally {
+      // Signal stopFlash that the loop has exited and the torch is off.
+      _loopDone?.complete();
     }
-    await _setTorch(torchOn: false);
   }
 
   /// Fast strobe (200 ms on / 200 ms off) until [_isFlashing] is false.
   Future<void> _continuousLoop() async {
-    while (_isFlashing) {
-      await _setTorch(torchOn: true);
-      await _sleep(200);
+    try {
+      while (_isFlashing) {
+        await _setTorch(torchOn: true);
+        await _sleep(200);
+        await _setTorch(torchOn: false);
+        await _sleep(200);
+      }
       await _setTorch(torchOn: false);
-      await _sleep(200);
+    } finally {
+      // Signal stopFlash that the loop has exited and the torch is off.
+      _loopDone?.complete();
     }
-    await _setTorch(torchOn: false);
   }
 
   Future<void> _sleep(int ms) =>

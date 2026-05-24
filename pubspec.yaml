@@ -67,6 +67,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   pointycastle: ^3.9.1
   file_picker: any
+  audio_session: ^0.2.3
 
 dev_dependencies:
   flutter_test:

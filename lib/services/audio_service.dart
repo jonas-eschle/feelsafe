@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:audio_session/audio_session.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:path_provider/path_provider.dart';
@@ -128,9 +130,48 @@ class RealAudioService implements AudioServiceProtocol {
   AudioPlayer _player;
   final FlutterTts _tts;
 
+  /// Active volume-ramp timer. Cancelled by [stop].
+  Timer? _rampTimer;
+
   // ---------------------------------------------------------------------------
   // AudioServiceProtocol implementation
   // ---------------------------------------------------------------------------
+
+  @override
+  Future<void> playRingtone(String? assetPath) async {
+    log(
+      'playRingtone — ${assetPath ?? "(default)"}',
+      name: 'AudioService',
+    );
+
+    // Configure audio session for speech/call-style ducking (spec 05:163-165).
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.speech());
+    } catch (e) {
+      log('AudioSession configure error (degrading): $e', name: 'AudioService');
+    }
+
+    await _ensurePlayer();
+    await _player.setVolume(1.0);
+
+    if (assetPath != null) {
+      if (assetPath.startsWith('assets/')) {
+        await _player.setAsset(assetPath);
+      } else {
+        await _player.setFilePath(assetPath);
+      }
+    } else {
+      // Default ringtone asset — generic ringing sound bundled with the app.
+      await _player.setAsset('assets/audio/ringtone_default.ogg');
+    }
+
+    await _player.setLoopMode(LoopMode.all);
+    await _player.play();
+  }
+
+  @override
+  Future<void> playAlarm() => playAlarmWithConfig();
 
   @override
   Future<void> playAlarmWithConfig({
@@ -138,6 +179,7 @@ class RealAudioService implements AudioServiceProtocol {
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
+    int rampSeconds = kDefaultAlarmRampSeconds,
   }) async {
     if (isSimulation) {
       log(
@@ -156,13 +198,25 @@ class RealAudioService implements AudioServiceProtocol {
     }
 
     final clampedVolume = volume.clamp(0.0, 1.0);
+    final clampedRamp = rampSeconds.clamp(0, 60);
     log(
-      'playAlarmWithConfig — soundChoice=$soundChoice volume=$clampedVolume',
+      'playAlarmWithConfig — soundChoice=$soundChoice '
+      'volume=$clampedVolume rampSeconds=$clampedRamp',
       name: 'AudioService',
     );
 
+    // Configure audio session for ducking (spec 05:166-167).
+    try {
+      final session = await AudioSession.instance;
+      await session.configure(const AudioSessionConfiguration.music());
+    } catch (e) {
+      log(
+        'AudioSession configure error (degrading): $e',
+        name: 'AudioService',
+      );
+    }
+
     await _ensurePlayer();
-    await _player.setVolume(clampedVolume);
 
     if (soundChoice == 'custom' && customSoundPath != null) {
       await _player.setFilePath(customSoundPath);
@@ -172,7 +226,17 @@ class RealAudioService implements AudioServiceProtocol {
     }
 
     await _player.setLoopMode(LoopMode.all);
-    await _player.play();
+
+    if (clampedRamp > 0) {
+      // Gradual volume ramp: start at 0, increase linearly over rampSeconds
+      // using 100ms ticks (spec 05:91-94, Q33).
+      await _player.setVolume(0.0);
+      await _player.play();
+      _startVolumeRamp(clampedVolume, clampedRamp);
+    } else {
+      await _player.setVolume(clampedVolume);
+      await _player.play();
+    }
   }
 
   @override
@@ -187,6 +251,8 @@ class RealAudioService implements AudioServiceProtocol {
   @override
   Future<void> stop() async {
     log('stop', name: 'AudioService');
+    _rampTimer?.cancel();
+    _rampTimer = null;
     await _player.stop();
     await _player.dispose();
     // Create a fresh player for subsequent calls.
@@ -291,6 +357,34 @@ class RealAudioService implements AudioServiceProtocol {
   // ---------------------------------------------------------------------------
   // Private helpers
   // ---------------------------------------------------------------------------
+
+  /// Starts a linear volume ramp from the current player volume to
+  /// [targetVolume] over [rampSeconds] seconds using 100 ms ticks.
+  ///
+  /// Per spec 05:91-94 (Q33). Cancels any prior ramp.
+  void _startVolumeRamp(double targetVolume, int rampSeconds) {
+    _rampTimer?.cancel();
+    final steps = rampSeconds * 10; // ticks at 100ms
+    if (steps <= 0) {
+      _player.setVolume(targetVolume);
+      return;
+    }
+    final increment = targetVolume / steps;
+    var tick = 0;
+    _rampTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
+      tick++;
+      final next = (increment * tick).clamp(0.0, targetVolume);
+      _player.setVolume(next);
+      log(
+        'volume ramp tick $tick/$steps → ${next.toStringAsFixed(2)}',
+        name: 'AudioService',
+      );
+      if (tick >= steps) {
+        timer.cancel();
+        _rampTimer = null;
+      }
+    });
+  }
 
   /// Resets the player if it has been disposed so it is safe to use.
   Future<void> _ensurePlayer() async {

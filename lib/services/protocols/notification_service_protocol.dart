@@ -61,6 +61,27 @@ abstract interface class NotificationServiceProtocol {
     bool stealth = false,
   });
 
+  /// Shows an escalation notification that bypasses Do Not Disturb.
+  ///
+  /// Used by alarm, fake-call, and emergency escalation steps when the user
+  /// needs to be alerted regardless of device DND/silent mode.
+  ///
+  /// On iOS: uses `DarwinNotificationDetails(criticalAlert: true, sound: sound)`
+  /// which requires the `com.apple.developer.usernotifications.critical-alerts`
+  /// entitlement provisioned in `Runner/Runner.entitlements` (spec 05:880-886).
+  ///
+  /// On Android: uses the `alarm` channel with `Importance.max`,
+  /// `fullScreenIntent: true`, and `AndroidNotificationCategory.alarm`.
+  ///
+  /// [sound] on iOS is the filename of a bundled `.wav` sound resource.
+  /// Ignored on Android (the channel provides the sound).
+  Future<void> showAlarmEscalation({
+    required int id,
+    required String title,
+    required String body,
+    String sound = 'critical_alert.wav',
+  });
+
   /// Cancels the notification with the given [id].
   ///
   /// No-op if no notification with that ID exists.

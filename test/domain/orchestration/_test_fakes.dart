@@ -2,6 +2,7 @@
 
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/models/location_point.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
@@ -23,17 +24,29 @@ final class FakeAudioService implements AudioServiceProtocol {
   final List<Map<String, Object?>> calls = [];
 
   @override
+  Future<void> playRingtone(String? assetPath) async {
+    calls.add({'method': 'playRingtone', 'assetPath': assetPath});
+  }
+
+  @override
+  Future<void> playAlarm() async {
+    calls.add({'method': 'playAlarm'});
+  }
+
+  @override
   Future<void> playAlarmWithConfig({
     String soundChoice = 'siren',
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
+    int rampSeconds = kDefaultAlarmRampSeconds,
   }) async {
     calls.add({
       'method': 'playAlarmWithConfig',
       'soundChoice': soundChoice,
       'customSoundPath': customSoundPath,
       'volume': volume,
+      'rampSeconds': rampSeconds,
       'isSimulation': isSimulation,
     });
   }
@@ -60,8 +73,23 @@ final class FakeVibrationService implements VibrationServiceProtocol {
   }
 
   @override
+  Future<void> confirmPulse() async {
+    calls.add({'method': 'confirmPulse'});
+  }
+
+  @override
   Future<void> alarmPattern({bool isSimulation = false}) async {
     calls.add({'method': 'alarmPattern', 'isSimulation': isSimulation});
+  }
+
+  @override
+  Future<void> fakeCallPattern() async {
+    calls.add({'method': 'fakeCallPattern'});
+  }
+
+  @override
+  Future<void> reminderPattern() async {
+    calls.add({'method': 'reminderPattern'});
   }
 
   @override
@@ -166,6 +194,30 @@ final class FakeLocationService implements LocationServiceProtocol {
 
   @override
   String? getLastLocationDescription() => lastLocationDescription;
+
+  @override
+  Future<bool> requestPermission() async => true;
+
+  @override
+  Future<void> startTracking({
+    Duration interval = const Duration(seconds: 30),
+  }) async {}
+
+  @override
+  void stopTracking() {}
+
+  @override
+  LocationPoint? getLastLocationPoint() => null;
+
+  @override
+  Future<LocationFallbackResult?> getLastLocationWithFallback() async =>
+      null;
+
+  @override
+  List<LocationPoint> get history => const [];
+
+  @override
+  void clearHistory() {}
 }
 
 /// Fake [RecordingServiceProtocol] that records every call.

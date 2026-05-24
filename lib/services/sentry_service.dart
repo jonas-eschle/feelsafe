@@ -129,7 +129,18 @@ class RealSentryService implements SentryServiceProtocol {
       return;
     }
 
-    log('Initializing Sentry (EU host)', name: 'SentryService');
+    // D2 / D-TELEMETRY-1: EU data-residency requirement.
+    // The DSN ingest host MUST end with .ingest.de.sentry.io to ensure that
+    // event data stays in the EU region (spec 06:816).
+    final host = Uri.parse(dsn).host;
+    if (!host.endsWith('.ingest.de.sentry.io')) {
+      throw StateError(
+        'Sentry DSN must point to an EU host (.ingest.de.sentry.io) '
+        'per D2 / D-TELEMETRY-1; got "$host"',
+      );
+    }
+
+    log('Initializing Sentry (EU host: $host)', name: 'SentryService');
     await _sdk.init((options) {
       options.dsn = dsn;
       options.tracesSampleRate = tracesSampleRate;

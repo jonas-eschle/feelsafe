@@ -12,7 +12,8 @@ class SimulationVibrationService implements VibrationServiceProtocol {
 
   /// Ordered record of every method invocation.
   ///
-  /// Values: `'warningPattern'`, `'alarmPattern'`, `'cancel'`.
+  /// Values: `'warningPattern'`, `'confirmPulse'`, `'alarmPattern'`,
+  /// `'fakeCallPattern'`, `'reminderPattern'`, `'cancel'`.
   final List<String> calls = [];
 
   /// Whether [cancel] has been called at least once since construction (or
@@ -28,8 +29,23 @@ class SimulationVibrationService implements VibrationServiceProtocol {
   }
 
   @override
+  Future<void> confirmPulse() async {
+    calls.add('confirmPulse');
+  }
+
+  @override
   Future<void> alarmPattern({bool isSimulation = false}) async {
     calls.add('alarmPattern');
+  }
+
+  @override
+  Future<void> fakeCallPattern() async {
+    calls.add('fakeCallPattern');
+  }
+
+  @override
+  Future<void> reminderPattern() async {
+    calls.add('reminderPattern');
   }
 
   @override

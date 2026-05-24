@@ -7,7 +7,8 @@ import 'dart:developer';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:guardianangela/domain/models/location_point.dart';
-import 'package:guardianangela/services/protocols/location_service_protocol.dart';
+import 'package:guardianangela/services/protocols/location_service_protocol.dart'
+    show LocationFallbackResult, LocationServiceProtocol;
 
 /// Maximum number of [LocationPoint] entries kept in [history].
 ///
@@ -32,7 +33,7 @@ class RealLocationService implements LocationServiceProtocol {
   StreamSubscription<Position>? _sub;
 
   // ---------------------------------------------------------------------------
-  // LocationServiceProtocol — strategy-facing methods
+  // LocationServiceProtocol implementation
   // ---------------------------------------------------------------------------
 
   @override
@@ -51,14 +52,11 @@ class RealLocationService implements LocationServiceProtocol {
     return 'Last known location at $ts$accuracyPart: $url';
   }
 
-  // ---------------------------------------------------------------------------
-  // Controller-facing public methods (beyond the protocol)
-  // ---------------------------------------------------------------------------
-
   /// Checks and requests location permission.
   ///
   /// Returns `true` if permission is granted or was already granted. Returns
   /// `false` on denial or when location services are disabled. Never throws.
+  @override
   Future<bool> requestPermission() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -90,6 +88,7 @@ class RealLocationService implements LocationServiceProtocol {
   ///
   /// Uses [LocationAccuracy.high] and a 10-metre distance filter.
   /// Captures an initial fix immediately on start.
+  @override
   Future<void> startTracking({
     Duration interval = const Duration(seconds: 30),
   }) async {
@@ -134,6 +133,7 @@ class RealLocationService implements LocationServiceProtocol {
   }
 
   /// Cancels the location stream subscription.
+  @override
   void stopTracking() {
     _sub?.cancel();
     _sub = null;
@@ -141,21 +141,61 @@ class RealLocationService implements LocationServiceProtocol {
   }
 
   /// Returns the last known [LocationPoint], or `null` if unavailable.
+  @override
   LocationPoint? getLastLocationPoint() =>
       _history.isEmpty ? null : _history.last;
 
-  /// Returns the last known [LocationPoint] (current or stale).
+  /// Returns the last known location wrapped in a [LocationFallbackResult].
   ///
-  /// Alias for [getLastLocationPoint] — the "fallback" semantics are
-  /// expressed in the message template by callers, not at this layer.
-  LocationPoint? getLastLocationWithFallback() => getLastLocationPoint();
+  /// Tries `Geolocator.getCurrentPosition` with a 5-second timeout. On
+  /// success, returns a fresh result (`staleNote == null`). On timeout or any
+  /// error, falls back to the last cached point and attaches a
+  /// "Last known location at {ISO-8601}" note per spec 05:417-419.
+  ///
+  /// Returns `null` only when no cached point exists.
+  @override
+  Future<LocationFallbackResult?> getLastLocationWithFallback() async {
+    try {
+      final pos = await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          timeLimit: Duration(seconds: 5),
+        ),
+      );
+      final pt = LocationPoint(
+        latitude: pos.latitude,
+        longitude: pos.longitude,
+        timestamp: pos.timestamp.toUtc(),
+        accuracy: pos.accuracy > 0 ? pos.accuracy : null,
+      );
+      _appendPosition(pos);
+      log(
+        'getLastLocationWithFallback — fresh fix obtained',
+        name: 'LocationService',
+      );
+      return LocationFallbackResult(point: pt);
+    } catch (e) {
+      log(
+        'getLastLocationWithFallback — fresh fix failed ($e), '
+        'falling back to cache',
+        name: 'LocationService',
+      );
+      final cached = getLastLocationPoint();
+      if (cached == null) return null;
+      final note =
+          'Last known location at ${cached.timestamp.toIso8601String()}';
+      return LocationFallbackResult(point: cached, staleNote: note);
+    }
+  }
 
   /// Unmodifiable list of all tracked positions during this session.
   ///
   /// Bounded at [_kMaxHistorySize] points; oldest are discarded.
+  @override
   List<LocationPoint> get history => List.unmodifiable(_history);
 
   /// Wipes all logged positions.
+  @override
   void clearHistory() {
     _history.clear();
     log('clearHistory', name: 'LocationService');

@@ -882,11 +882,23 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
   final List<Map<String, Object?>> calls = [];
 
   @override
+  Future<void> playRingtone(String? assetPath) async {
+    calls.add({'method': 'playRingtone', 'assetPath': assetPath});
+  }
+
+  @override
+  Future<void> playAlarm() async {
+    _log.add('audio');
+    calls.add({'method': 'playAlarm'});
+  }
+
+  @override
   Future<void> playAlarmWithConfig({
     String soundChoice = 'siren',
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
+    int rampSeconds = kDefaultAlarmRampSeconds,
   }) async {
     _log.add('audio');
     calls.add({
@@ -894,6 +906,7 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
       'soundChoice': soundChoice,
       'customSoundPath': customSoundPath,
       'volume': volume,
+      'rampSeconds': rampSeconds,
       'isSimulation': isSimulation,
     });
   }
@@ -920,14 +933,29 @@ final class _OrderLoggingVibrationService implements VibrationServiceProtocol {
   final List<Map<String, Object?>> calls = [];
 
   @override
+  Future<void> warningPattern({bool isSimulation = false}) async {
+    calls.add({'method': 'warningPattern', 'isSimulation': isSimulation});
+  }
+
+  @override
+  Future<void> confirmPulse() async {
+    calls.add({'method': 'confirmPulse'});
+  }
+
+  @override
   Future<void> alarmPattern({bool isSimulation = false}) async {
     _log.add('vibration');
     calls.add({'method': 'alarmPattern', 'isSimulation': isSimulation});
   }
 
   @override
-  Future<void> warningPattern({bool isSimulation = false}) async {
-    calls.add({'method': 'warningPattern', 'isSimulation': isSimulation});
+  Future<void> fakeCallPattern() async {
+    calls.add({'method': 'fakeCallPattern'});
+  }
+
+  @override
+  Future<void> reminderPattern() async {
+    calls.add({'method': 'reminderPattern'});
   }
 
   @override

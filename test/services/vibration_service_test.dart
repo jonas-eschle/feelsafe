@@ -163,5 +163,89 @@ void main() {
         check(s.calls.every((c) => c == 'warningPattern')).isTrue();
       });
     });
+
+    // -------------------------------------------------------------------------
+    // F2: confirmPulse, fakeCallPattern, reminderPattern
+    // -------------------------------------------------------------------------
+
+    group('confirmPulse', () {
+      test('records call tag', () async {
+        final s = _sim();
+        await s.confirmPulse();
+        check(s.calls).deepEquals(['confirmPulse']);
+      });
+
+      test('accumulates with warningPattern', () async {
+        final s = _sim();
+        await s.warningPattern();
+        await s.confirmPulse();
+        check(s.calls).deepEquals(['warningPattern', 'confirmPulse']);
+      });
+
+      test('multiple calls accumulate', () async {
+        final s = _sim();
+        await s.confirmPulse();
+        await s.confirmPulse();
+        check(s.calls).deepEquals(['confirmPulse', 'confirmPulse']);
+      });
+    });
+
+    group('fakeCallPattern', () {
+      test('records call tag', () async {
+        final s = _sim();
+        await s.fakeCallPattern();
+        check(s.calls).deepEquals(['fakeCallPattern']);
+      });
+
+      test('accumulates in sequence', () async {
+        final s = _sim();
+        await s.confirmPulse();
+        await s.fakeCallPattern();
+        await s.cancel();
+        check(s.calls).deepEquals([
+          'confirmPulse',
+          'fakeCallPattern',
+          'cancel',
+        ]);
+      });
+    });
+
+    group('reminderPattern', () {
+      test('records call tag', () async {
+        final s = _sim();
+        await s.reminderPattern();
+        check(s.calls).deepEquals(['reminderPattern']);
+      });
+
+      test('accumulates with alarmPattern', () async {
+        final s = _sim();
+        await s.reminderPattern();
+        await s.alarmPattern();
+        check(s.calls).deepEquals(['reminderPattern', 'alarmPattern']);
+      });
+    });
+
+    group('reset clears new patterns', () {
+      test('reset after confirmPulse clears it', () async {
+        final s = _sim();
+        await s.confirmPulse();
+        s.reset();
+        check(s.calls).isEmpty();
+      });
+
+      test('reset after fakeCallPattern clears it', () async {
+        final s = _sim();
+        await s.fakeCallPattern();
+        s.reset();
+        check(s.calls).isEmpty();
+      });
+
+      test('reset after reminderPattern clears it', () async {
+        final s = _sim();
+        await s.reminderPattern();
+        s.reset();
+        check(s.calls).isEmpty();
+      });
+    });
   });
 }

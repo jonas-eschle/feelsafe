@@ -35,6 +35,13 @@ class RealVibrationService implements VibrationServiceProtocol {
   }
 
   @override
+  Future<void> confirmPulse() async {
+    log('confirmPulse — single 100ms pulse', name: 'VibrationService');
+    if (!await _hasVibrator()) return;
+    await Vibration.vibrate(duration: 100);
+  }
+
+  @override
   Future<void> alarmPattern({bool isSimulation = false}) async {
     log(
       isSimulation
@@ -46,6 +53,29 @@ class RealVibrationService implements VibrationServiceProtocol {
     // Pattern: [delay, on, off, on, off, on, off, on] — 4 pulses.
     if (!await _hasVibrator()) return;
     await Vibration.vibrate(pattern: [0, 500, 200, 500, 200, 500, 200, 500]);
+  }
+
+  @override
+  Future<void> fakeCallPattern() async {
+    log(
+      'fakeCallPattern — realistic incoming call vibration',
+      name: 'VibrationService',
+    );
+    // Realistic phone-call pattern: 1000ms on, 500ms off (repeating).
+    // Two cycles match the typical device incoming-call feel.
+    if (!await _hasVibrator()) return;
+    await Vibration.vibrate(pattern: [0, 1000, 500, 1000, 500]);
+  }
+
+  @override
+  Future<void> reminderPattern() async {
+    log(
+      'reminderPattern — single short notification pulse',
+      name: 'VibrationService',
+    );
+    // Single 200ms pulse imitating a typical notification vibration.
+    if (!await _hasVibrator()) return;
+    await Vibration.vibrate(duration: 200);
   }
 
   @override

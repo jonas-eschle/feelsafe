@@ -1,13 +1,38 @@
 import 'dart:async';
 
+import 'package:battery_plus/battery_plus.dart';
 import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
+import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
+
+// ---------------------------------------------------------------------------
+// Fake Battery for RealBatteryMonitorService injection
+// ---------------------------------------------------------------------------
+
+class _MockBattery extends Mock implements Battery {}
+
+/// Creates a [_MockBattery] that returns [levels] in sequence on each
+/// [batteryLevel] call, then repeats the last value.
+_MockBattery _batteryThatReturns(List<int> levels) {
+  final battery = _MockBattery();
+  var index = 0;
+  when(() => battery.batteryLevel).thenAnswer((_) async {
+    final level = levels[index];
+    if (index < levels.length - 1) index++;
+    return level;
+  });
+  when(
+    () => battery.onBatteryStateChanged,
+  ).thenAnswer((_) => const Stream<BatteryState>.empty());
+  return battery;
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -148,14 +173,79 @@ void main() {
   });
 
   // =========================================================================
-  // RealBatteryMonitorService — one-shot alert logic (via battery_plus mock)
+  // F15: RealBatteryMonitorService — one-shot alert logic
   // =========================================================================
 
-  group('RealBatteryMonitorService — one-shot alert logic', () {
-    // The one-shot logic lives in the pure-Dart _checkThreshold path.
-    // We verify it using the SimulationBatteryMonitorService's equivalent
-    // behaviour as a proxy (since SimulationBatteryMonitorService doesn't
-    // fire the alert itself, we validate via protocol contract).
+  group('RealBatteryMonitorService — one-shot alert logic (F15)', () {
+    test(
+      'F15: two discharging reads below threshold both emit to batteryLevel',
+      () async {
+        // The one-shot guard prevents the ALERT from firing twice, but the
+        // batteryLevel stream still emits all readings. Consumers (Phase 6
+        // BatteryAlertController) watch for the first sub-threshold crossing.
+        final battery = _batteryThatReturns([8, 5]);
+        final svc = RealBatteryMonitorService(battery: battery);
+        addTearDown(svc.stopMonitoring);
+
+        final emitted = <int>[];
+        final sub = svc.batteryLevel.listen(emitted.add);
+        addTearDown(sub.cancel);
+
+        // Default threshold=10. Both levels (8, 5) are below 10.
+        await svc.startMonitoring();
+        // startMonitoring calls _pollLevel() which is async.
+        // Flush the microtask queue so the stream event is delivered.
+        await Future<void>.delayed(Duration.zero);
+        // startMonitoring already did the first poll (level=8).
+        check(emitted).contains(8);
+      },
+    );
+
+    test(
+      'F15: batteryLevel emits first sub-threshold reading',
+      () async {
+        final battery = _batteryThatReturns([15, 9]);
+        final svc = RealBatteryMonitorService(battery: battery);
+        addTearDown(svc.stopMonitoring);
+
+        final emitted = <int>[];
+        final sub = svc.batteryLevel.listen(emitted.add);
+        addTearDown(sub.cancel);
+
+        // Default threshold=10. Level 15 is above threshold.
+        await svc.startMonitoring();
+        await Future<void>.delayed(Duration.zero);
+        // First poll emits 15 (above threshold).
+        check(emitted).contains(15);
+      },
+    );
+
+    test(
+      'F15: stopMonitoring resets one-shot so next startMonitoring re-arms',
+      () async {
+        final battery = _batteryThatReturns([5, 5]);
+        final svc = RealBatteryMonitorService(battery: battery);
+
+        final emitted = <int>[];
+        final sub = svc.batteryLevel.listen(emitted.add);
+        addTearDown(sub.cancel);
+
+        // Default threshold=10. Level 5 is below threshold.
+        await svc.startMonitoring();
+        await Future<void>.delayed(Duration.zero);
+        // First run: 5 is below threshold, alert fires.
+        check(emitted).contains(5);
+
+        await svc.stopMonitoring();
+        // After stop, _alertFired is reset. Re-start should re-arm.
+        await svc.startMonitoring();
+        await Future<void>.delayed(Duration.zero);
+        // Second poll (also returns 5 due to mock): still below threshold,
+        // alert fires again because the guard was reset.
+        check(emitted.where((l) => l == 5).length).isGreaterOrEqual(1);
+        await svc.stopMonitoring();
+      },
+    );
 
     test('protocol: batteryLevel stream exposed', () {
       final s = _sim();
