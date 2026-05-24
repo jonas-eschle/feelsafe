@@ -69,11 +69,18 @@ class RealNotificationService implements NotificationServiceProtocol {
   /// [prefsFactory] — optional factory for [SharedPreferences] used in
   /// [_replayPendingActions]. Defaults to [SharedPreferences.getInstance].
   /// Tests inject a factory that returns a pre-seeded instance.
+  ///
+  /// [forceAndroidChannels] — when `true`, [_createAndroidChannels] is called
+  /// unconditionally regardless of [Platform.isAndroid]. Use only in tests
+  /// that inject a mock [AndroidFlutterLocalNotificationsPlugin] via
+  /// [resolvePlatformSpecificImplementation].
   RealNotificationService({
     FlutterLocalNotificationsPlugin? plugin,
     Future<SharedPreferences> Function()? prefsFactory,
+    bool forceAndroidChannels = false,
   }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
-       _prefsFactory = prefsFactory ?? SharedPreferences.getInstance {
+       _prefsFactory = prefsFactory ?? SharedPreferences.getInstance,
+       _forceAndroidChannels = forceAndroidChannels {
     _actionTapsController = StreamController<String>.broadcast(
       onListen: _flushPending,
     );
@@ -81,6 +88,7 @@ class RealNotificationService implements NotificationServiceProtocol {
 
   final FlutterLocalNotificationsPlugin _plugin;
   final Future<SharedPreferences> Function() _prefsFactory;
+  final bool _forceAndroidChannels;
   late final StreamController<String> _actionTapsController;
   bool _initialised = false;
 
@@ -119,7 +127,7 @@ class RealNotificationService implements NotificationServiceProtocol {
       onDidReceiveBackgroundNotificationResponse: _onBackgroundResponse,
     );
 
-    if (Platform.isAndroid) {
+    if (Platform.isAndroid || _forceAndroidChannels) {
       await _createAndroidChannels();
     }
 

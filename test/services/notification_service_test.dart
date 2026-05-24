@@ -17,8 +17,7 @@ import 'package:guardianangela/services/sim/notification_service_sim.dart';
 // ---------------------------------------------------------------------------
 
 /// Captures NotificationDetails passed to plugin.show for F16 tests.
-class _CapturingPlugin extends Mock
-    implements FlutterLocalNotificationsPlugin {
+class _CapturingPlugin extends Mock implements FlutterLocalNotificationsPlugin {
   /// All (id, title, body, details) tuples captured by [show].
   final List<(int, String?, String?, NotificationDetails?)> shown = [];
 
@@ -47,13 +46,68 @@ class _CapturingPlugin extends Mock
   >() => null;
 }
 
+/// Captures [AndroidNotificationChannel] arguments passed to
+/// [createNotificationChannel] during [RealNotificationService.init].
+///
+/// Used by G9 to assert the ga_sms_retry channel is created with
+/// [Importance.high] without requiring a real Android device.
+class _CapturingAndroidPlugin extends Mock
+    implements AndroidFlutterLocalNotificationsPlugin {
+  final List<AndroidNotificationChannel> channels = [];
+
+  @override
+  Future<void> createNotificationChannel(
+    AndroidNotificationChannel channel,
+  ) async {
+    channels.add(channel);
+  }
+}
+
+/// [_CapturingPlugin] variant that returns [_CapturingAndroidPlugin] from
+/// [resolvePlatformSpecificImplementation] so G9 can assert channel creation.
+class _CapturingPluginWithAndroid extends _CapturingPlugin {
+  final _CapturingAndroidPlugin androidPlugin = _CapturingAndroidPlugin();
+
+  @override
+  T? resolvePlatformSpecificImplementation<
+    T extends FlutterLocalNotificationsPlatform
+  >() {
+    if (T == AndroidFlutterLocalNotificationsPlugin) {
+      return androidPlugin as T?;
+    }
+    return null;
+  }
+}
+
 /// Creates a [RealNotificationService] backed by [_CapturingPlugin].
 Future<(RealNotificationService, _CapturingPlugin)>
 _makeCapturingService() async {
   SharedPreferences.setMockInitialValues({});
   final prefs = await SharedPreferences.getInstance();
   final plugin = _CapturingPlugin();
-  final svc = RealNotificationService(plugin: plugin, prefsFactory: () async => prefs);
+  final svc = RealNotificationService(
+    plugin: plugin,
+    prefsFactory: () async => prefs,
+  );
+  await svc.init();
+  return (svc, plugin);
+}
+
+/// Creates a [RealNotificationService] backed by [_CapturingPluginWithAndroid]
+/// so Android channel creation can be asserted in tests.
+///
+/// Passes [forceAndroidChannels: true] so [_createAndroidChannels] runs even
+/// on non-Android test hosts.
+Future<(RealNotificationService, _CapturingPluginWithAndroid)>
+_makeCapturingServiceWithAndroid() async {
+  SharedPreferences.setMockInitialValues({});
+  final prefs = await SharedPreferences.getInstance();
+  final plugin = _CapturingPluginWithAndroid();
+  final svc = RealNotificationService(
+    plugin: plugin,
+    prefsFactory: () async => prefs,
+    forceAndroidChannels: true,
+  );
   await svc.init();
   return (svc, plugin);
 }
@@ -385,11 +439,7 @@ void main() {
       'F16: showDisguisedReminder provides Android details with fullScreenIntent',
       () async {
         final (svc, plugin) = await _makeCapturingService();
-        await svc.showDisguisedReminder(
-          id: 56,
-          title: 'T',
-          body: 'B',
-        );
+        await svc.showDisguisedReminder(id: 56, title: 'T', body: 'B');
         final (_, _, _, details) = plugin.shown.first;
         check(details).isNotNull();
         check(details!.android).isNotNull();
@@ -407,29 +457,21 @@ void main() {
       },
     );
 
-    test(
-      'F16: showDisguisedReminder Android category is alarm',
-      () async {
-        final (svc, plugin) = await _makeCapturingService();
-        await svc.showDisguisedReminder(id: 58, title: 'T', body: 'B');
-        final (_, _, _, details) = plugin.shown.first;
-        check(details!.android!.category).equals(
-          AndroidNotificationCategory.alarm,
-        );
-      },
-    );
+    test('F16: showDisguisedReminder Android category is alarm', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showDisguisedReminder(id: 58, title: 'T', body: 'B');
+      final (_, _, _, details) = plugin.shown.first;
+      check(
+        details!.android!.category,
+      ).equals(AndroidNotificationCategory.alarm);
+    });
 
-    test(
-      'F16: showDisguisedReminder Android visibility is public',
-      () async {
-        final (svc, plugin) = await _makeCapturingService();
-        await svc.showDisguisedReminder(id: 59, title: 'T', body: 'B');
-        final (_, _, _, details) = plugin.shown.first;
-        check(details!.android!.visibility).equals(
-          NotificationVisibility.public,
-        );
-      },
-    );
+    test('F16: showDisguisedReminder Android visibility is public', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showDisguisedReminder(id: 59, title: 'T', body: 'B');
+      final (_, _, _, details) = plugin.shown.first;
+      check(details!.android!.visibility).equals(NotificationVisibility.public);
+    });
 
     test(
       'F16: showDisguisedReminder iOS interruptionLevel is timeSensitive',
@@ -438,8 +480,44 @@ void main() {
         await svc.showDisguisedReminder(id: 60, title: 'T', body: 'B');
         final (_, _, _, details) = plugin.shown.first;
         check(details!.iOS).isNotNull();
-        check(details.iOS!.interruptionLevel).equals(
-          InterruptionLevel.timeSensitive,
+        check(
+          details.iOS!.interruptionLevel,
+        ).equals(InterruptionLevel.timeSensitive);
+      },
+    );
+  });
+
+  // =========================================================================
+  // G10: showAlarmEscalation iOS interruptionLevel is critical (not timeSensitive)
+  // =========================================================================
+
+  group('G10: RealNotificationService — showAlarmEscalation iOS flags', () {
+    tearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test(
+      'showAlarmEscalation iOS interruptionLevel is critical (bypasses DND)',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showAlarmEscalation(id: 51, title: 'Alarm', body: 'Active.');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details).isNotNull();
+        check(details!.iOS).isNotNull();
+        check(
+          details.iOS!.interruptionLevel,
+        ).equals(InterruptionLevel.critical);
+      },
+    );
+
+    test(
+      'showAlarmEscalation iOS interruptionLevel is NOT timeSensitive',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showAlarmEscalation(id: 52, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.iOS!.interruptionLevel).not(
+          (c) => c.equals(InterruptionLevel.timeSensitive),
         );
       },
     );
@@ -459,6 +537,41 @@ void main() {
       check(kSmsRetryChannelId).not((c) => c.equals('reminders'));
       check(kSmsRetryChannelId).not((c) => c.equals('distress'));
     });
+  });
+
+  // =========================================================================
+  // G9: init() creates ga_sms_retry Android channel with Importance.high
+  // =========================================================================
+
+  group('G9: RealNotificationService.init — Android channel creation', () {
+    tearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test(
+      'init creates ga_sms_retry channel with Importance.high via Android plugin',
+      () async {
+        final (_, plugin) = await _makeCapturingServiceWithAndroid();
+        final retryChannel = plugin.androidPlugin.channels.firstWhere(
+          (ch) => ch.id == kSmsRetryChannelId,
+          orElse: () => throw StateError(
+            'ga_sms_retry channel not created during init()',
+          ),
+        );
+        check(retryChannel.importance).equals(Importance.high);
+      },
+    );
+
+    test(
+      'init creates exactly one ga_sms_retry channel',
+      () async {
+        final (_, plugin) = await _makeCapturingServiceWithAndroid();
+        final retryChannels = plugin.androidPlugin.channels
+            .where((ch) => ch.id == kSmsRetryChannelId)
+            .toList();
+        check(retryChannels).length.equals(1);
+      },
+    );
   });
 
   // =========================================================================
