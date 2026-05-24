@@ -23,6 +23,7 @@ export 'package:guardianangela/domain/models/chain_step.dart';
 export 'package:guardianangela/domain/models/emergency_contact.dart';
 export 'package:guardianangela/domain/models/event_defaults.dart';
 export 'package:guardianangela/domain/models/gps_logging_config.dart';
+export 'package:guardianangela/domain/models/location_point.dart';
 export 'package:guardianangela/domain/models/mode_overrides.dart';
 export 'package:guardianangela/domain/models/reminder_template.dart';
 export 'package:guardianangela/domain/models/session_log.dart';

@@ -25,10 +25,12 @@ import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
+import 'package:guardianangela/services/location_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
+import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -174,4 +176,15 @@ final contactServiceProvider = Provider<ContactServiceProtocol>((ref) {
 /// `lib/services/sim/audio_service_sim.dart`.
 final audioServiceProvider = Provider<AudioServiceProtocol>((ref) {
   return RealAudioService();
+});
+
+// ---- Streaming / sensor services ----
+
+/// [LocationServiceProtocol] backed by `package:geolocator`.
+///
+/// Tracks GPS position during sessions and provides location URLs for
+/// message templates. Tests override with [SimulationLocationService]
+/// from `lib/services/sim/location_service_sim.dart`.
+final locationServiceProvider = Provider<LocationServiceProtocol>((ref) {
+  return RealLocationService();
 });
