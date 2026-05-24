@@ -4,6 +4,8 @@
 // com.guardianangela.app/sms and url_launcher.
 // SimulationMessagingService tests are pure-Dart.
 
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
@@ -480,10 +482,10 @@ void main() {
     // F3: canAutoSend — channel check
     // -----------------------------------------------------------------------
 
-    test('canAutoSend sms returns true or false (non-throwing)', () {
-      // On this test platform (non-Android), the result may vary.
-      // Just ensure it does not throw.
-      svc.canAutoSend(MessageChannel.sms);
+    // G8: canAutoSend sms — result matches Platform.isAndroid exactly.
+    test('canAutoSend sms matches Platform.isAndroid', () {
+      // On Android: true. On test host (non-Android): false.
+      check(svc.canAutoSend(MessageChannel.sms)).equals(Platform.isAndroid);
     });
 
     test('canAutoSend whatsapp returns false on test platform', () {
@@ -495,10 +497,21 @@ void main() {
     // F3: cancelPending — invokes channel for each id
     // -----------------------------------------------------------------------
 
-    test('cancelPending with two IDs makes two channel calls', () async {
+    // G7: cancelPending makes exactly one cancelWork call per ID on Android.
+    test('cancelPending with two IDs makes one cancelWork call on Android', () async {
       await svc.cancelPending(['job-1', 'job-2']);
-      // On Android the sms channel receives two cancelSms calls.
-      // On other platforms this is a no-op — just verify no throw.
+      final cancelCalls = smsMock.calls
+          .where((c) => c.method == 'cancelWork')
+          .toList();
+      if (Platform.isAndroid) {
+        // On Android: a single cancelWork call with both IDs in workIds list.
+        check(cancelCalls).length.equals(1);
+        final workIds = (cancelCalls.first.arguments as Map)['workIds'];
+        check(workIds as List).deepEquals(['job-1', 'job-2']);
+      } else {
+        // Non-Android: no channel call — cancelPending is a no-op.
+        check(cancelCalls).isEmpty();
+      }
     });
   });
 }
