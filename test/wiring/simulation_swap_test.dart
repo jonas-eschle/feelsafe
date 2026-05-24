@@ -2,20 +2,26 @@
 //
 // Verifies that every Real*Service registered in service_providers.dart
 // has a simulation override path: when a ProviderContainer is built with
-// encryptionServiceProvider overridden with SimulationEncryptionService,
-// reading the protocol-typed providers returns the simulation impl (or a
-// service backed by the simulation encryption key — never the real
-// FlutterSecureStorage).
+// the relevant provider overridden with a Simulation* impl, reading the
+// protocol-typed provider returns the simulation impl.
 //
 // Phase 5A coverage: EncryptionService + all three JSON repos.
-// Stages 5B/5C extend this test as more Real*Service constructors land.
+// Stage 5B.1 adds: vibration, wakelock, flash, screenFlash, recording,
+//   contact, audio.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/encryption_service_sim.dart';
+import 'package:guardianangela/services/sim/flash_service_sim.dart';
+import 'package:guardianangela/services/sim/recording_service_sim.dart';
+import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
+import 'package:guardianangela/services/sim/vibration_service_sim.dart';
+import 'package:guardianangela/services/sim/wakelock_service_sim.dart';
 
 void main() {
   group('Simulation swap — EncryptionService', () {
@@ -99,6 +105,194 @@ void main() {
 
       final service = c.read(encryptionServiceProvider);
       check(service.runtimeType.toString()).equals('RealEncryptionService');
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Stage 5B.1 — 7 leaf service simulation swaps
+  // -----------------------------------------------------------------------
+
+  group('Simulation swap — VibrationService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          vibrationServiceProvider.overrideWithValue(
+            SimulationVibrationService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationVibrationService', () {
+      final s = container.read(vibrationServiceProvider);
+      check(s).isA<SimulationVibrationService>();
+    });
+
+    test('overridden container is NOT RealVibrationService', () {
+      final s = container.read(vibrationServiceProvider);
+      check(
+        s.runtimeType.toString(),
+      ).not((c) => c.equals('RealVibrationService'));
+    });
+  });
+
+  group('Simulation swap — WakelockService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          wakelockServiceProvider.overrideWithValue(
+            SimulationWakelockService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationWakelockService', () {
+      final s = container.read(wakelockServiceProvider);
+      check(s).isA<SimulationWakelockService>();
+    });
+
+    test('simulation wakelock starts disabled', () {
+      final s = container.read(wakelockServiceProvider) as SimulationWakelockService;
+      check(s.isEnabled).isFalse();
+    });
+  });
+
+  group('Simulation swap — FlashService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          flashServiceProvider.overrideWithValue(SimulationFlashService()),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationFlashService', () {
+      final s = container.read(flashServiceProvider);
+      check(s).isA<SimulationFlashService>();
+    });
+
+    test('simulation flash starts not flashing', () {
+      final s =
+          container.read(flashServiceProvider) as SimulationFlashService;
+      check(s.isFlashing).isFalse();
+    });
+  });
+
+  group('Simulation swap — ScreenFlashService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          screenFlashServiceProvider.overrideWithValue(
+            SimulationScreenFlashService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() {
+      (container.read(screenFlashServiceProvider)
+              as SimulationScreenFlashService)
+          .dispose();
+      container.dispose();
+    });
+
+    test('overridden container returns SimulationScreenFlashService', () {
+      final s = container.read(screenFlashServiceProvider);
+      check(s).isA<SimulationScreenFlashService>();
+    });
+  });
+
+  group('Simulation swap — RecordingService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          recordingServiceProvider.overrideWithValue(
+            SimulationRecordingService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationRecordingService', () {
+      final s = container.read(recordingServiceProvider);
+      check(s).isA<SimulationRecordingService>();
+    });
+
+    test('simulation recording starts with empty calls', () {
+      final s =
+          container.read(recordingServiceProvider) as SimulationRecordingService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — ContactService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          contactServiceProvider.overrideWithValue(
+            SimulationContactService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationContactService', () {
+      final s = container.read(contactServiceProvider);
+      check(s).isA<SimulationContactService>();
+    });
+
+    test('simulation contact service starts with empty list', () {
+      final s =
+          container.read(contactServiceProvider) as SimulationContactService;
+      check(s.all).isEmpty();
+    });
+  });
+
+  group('Simulation swap — AudioService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          audioServiceProvider.overrideWithValue(SimulationAudioService()),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationAudioService', () {
+      final s = container.read(audioServiceProvider);
+      check(s).isA<SimulationAudioService>();
+    });
+
+    test('simulation audio starts with empty calls', () {
+      final s =
+          container.read(audioServiceProvider) as SimulationAudioService;
+      check(s.calls).isEmpty();
     });
   });
 }
