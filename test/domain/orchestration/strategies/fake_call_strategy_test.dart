@@ -47,8 +47,9 @@ void main() {
         _step(config: const FakeCallConfig()),
         services,
       );
-      final ringtoneCalls =
-          audio.calls.where((c) => c['method'] == 'playRingtone').toList();
+      final ringtoneCalls = audio.calls
+          .where((c) => c['method'] == 'playRingtone')
+          .toList();
       expect(ringtoneCalls, hasLength(1));
     });
 
@@ -59,10 +60,9 @@ void main() {
         _step(config: const FakeCallConfig()),
         services,
       );
-      final vibCalls =
-          vibration.calls
-              .where((c) => c['method'] == 'fakeCallPattern')
-              .toList();
+      final vibCalls = vibration.calls
+          .where((c) => c['method'] == 'fakeCallPattern')
+          .toList();
       expect(vibCalls, hasLength(1));
     });
 
@@ -73,10 +73,9 @@ void main() {
         _step(config: const FakeCallConfig()),
         services,
       );
-      final escalationCalls =
-          notification.calls
-              .where((c) => c['method'] == 'showAlarmEscalation')
-              .toList();
+      final escalationCalls = notification.calls
+          .where((c) => c['method'] == 'showAlarmEscalation')
+          .toList();
       expect(escalationCalls, hasLength(1));
     });
 
@@ -95,43 +94,45 @@ void main() {
   });
 
   // ─── 2. executeReal: non-audio/non-vibration services stay empty ─────────────
-  group('executeReal — messaging, phone, flash, recording, screenFlash untouched',
-      () {
-    test('messaging.calls is empty', () async {
-      final messaging = FakeMessagingService();
-      final services = buildServices(messaging: messaging);
-      await const FakeCallStrategy().executeReal(_step(), services);
-      expect(messaging.calls, isEmpty);
-    });
+  group(
+    'executeReal — messaging, phone, flash, recording, screenFlash untouched',
+    () {
+      test('messaging.calls is empty', () async {
+        final messaging = FakeMessagingService();
+        final services = buildServices(messaging: messaging);
+        await const FakeCallStrategy().executeReal(_step(), services);
+        expect(messaging.calls, isEmpty);
+      });
 
-    test('phone.calls is empty', () async {
-      final phone = FakePhoneService();
-      final services = buildServices(phone: phone);
-      await const FakeCallStrategy().executeReal(_step(), services);
-      expect(phone.calls, isEmpty);
-    });
+      test('phone.calls is empty', () async {
+        final phone = FakePhoneService();
+        final services = buildServices(phone: phone);
+        await const FakeCallStrategy().executeReal(_step(), services);
+        expect(phone.calls, isEmpty);
+      });
 
-    test('flash.calls is empty', () async {
-      final flash = FakeFlashService();
-      final services = buildServices(flash: flash);
-      await const FakeCallStrategy().executeReal(_step(), services);
-      expect(flash.calls, isEmpty);
-    });
+      test('flash.calls is empty', () async {
+        final flash = FakeFlashService();
+        final services = buildServices(flash: flash);
+        await const FakeCallStrategy().executeReal(_step(), services);
+        expect(flash.calls, isEmpty);
+      });
 
-    test('recording.calls is empty', () async {
-      final recording = FakeRecordingService();
-      final services = buildServices(recording: recording);
-      await const FakeCallStrategy().executeReal(_step(), services);
-      expect(recording.calls, isEmpty);
-    });
+      test('recording.calls is empty', () async {
+        final recording = FakeRecordingService();
+        final services = buildServices(recording: recording);
+        await const FakeCallStrategy().executeReal(_step(), services);
+        expect(recording.calls, isEmpty);
+      });
 
-    test('screenFlash.calls is empty', () async {
-      final screenFlash = FakeScreenFlashService();
-      final services = buildServices(screenFlash: screenFlash);
-      await const FakeCallStrategy().executeReal(_step(), services);
-      expect(screenFlash.calls, isEmpty);
-    });
-  });
+      test('screenFlash.calls is empty', () async {
+        final screenFlash = FakeScreenFlashService();
+        final services = buildServices(screenFlash: screenFlash);
+        await const FakeCallStrategy().executeReal(_step(), services);
+        expect(screenFlash.calls, isEmpty);
+      });
+    },
+  );
 
   // ─── 3. executeReal fires in both real and simulation mode ───────────────────
   group('executeReal — fires in simulation mode (local-only actions)', () {
@@ -142,10 +143,7 @@ void main() {
         _step(config: const FakeCallConfig()),
         services,
       );
-      expect(
-        audio.calls.any((c) => c['method'] == 'playRingtone'),
-        isTrue,
-      );
+      expect(audio.calls.any((c) => c['method'] == 'playRingtone'), isTrue);
     });
 
     test('fakeCallPattern fires when isSimulation=true', () async {
@@ -180,38 +178,41 @@ void main() {
 
   // ─── 4. voiceRecordingPath is forwarded to playRingtone ─────────────────────
   group('executeReal — voiceRecordingPath forwarded to playRingtone', () {
-    test('playRingtone receives voiceRecordingPath=null when config has none',
-        () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio);
-      await const FakeCallStrategy().executeReal(
-        _step(config: const FakeCallConfig()),
-        services,
-      );
-      final call = audio.calls.firstWhere(
-        (c) => c['method'] == 'playRingtone',
-      );
-      expect(call['assetPath'], isNull);
-    });
+    test(
+      'playRingtone receives voiceRecordingPath=null when config has none',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio);
+        await const FakeCallStrategy().executeReal(
+          _step(config: const FakeCallConfig()),
+          services,
+        );
+        final call = audio.calls.firstWhere(
+          (c) => c['method'] == 'playRingtone',
+        );
+        expect(call['assetPath'], isNull);
+      },
+    );
 
     test(
-        'playRingtone receives voiceRecordingPath when config provides a path',
-        () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio);
-      await const FakeCallStrategy().executeReal(
-        _step(
-          config: const FakeCallConfig(
-            voiceRecordingPath: '/storage/voice.aac',
+      'playRingtone receives voiceRecordingPath when config provides a path',
+      () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio);
+        await const FakeCallStrategy().executeReal(
+          _step(
+            config: const FakeCallConfig(
+              voiceRecordingPath: '/storage/voice.aac',
+            ),
           ),
-        ),
-        services,
-      );
-      final call = audio.calls.firstWhere(
-        (c) => c['method'] == 'playRingtone',
-      );
-      expect(call['assetPath'], equals('/storage/voice.aac'));
-    });
+          services,
+        );
+        final call = audio.calls.firstWhere(
+          (c) => c['method'] == 'playRingtone',
+        );
+        expect(call['assetPath'], equals('/storage/voice.aac'));
+      },
+    );
   });
 
   // ─── 5. CallStyle enum variants — strategy fires all three services ──────────
@@ -280,22 +281,22 @@ void main() {
 
   // ─── 7. null config — graceful handling ──────────────────────────────────────
   group('null step.config — strategy uses defaults', () {
-    test('executeReal completes without throwing when config is null', () async {
-      final services = buildServices();
-      await expectLater(
-        const FakeCallStrategy().executeReal(_step(), services),
-        completes,
-      );
-    });
+    test(
+      'executeReal completes without throwing when config is null',
+      () async {
+        final services = buildServices();
+        await expectLater(
+          const FakeCallStrategy().executeReal(_step(), services),
+          completes,
+        );
+      },
+    );
 
     test('ringtone fires with null assetPath when config is null', () async {
       final audio = FakeAudioService();
       final services = buildServices(audio: audio);
       await const FakeCallStrategy().executeReal(_step(), services);
-      expect(
-        audio.calls.any((c) => c['method'] == 'playRingtone'),
-        isTrue,
-      );
+      expect(audio.calls.any((c) => c['method'] == 'playRingtone'), isTrue);
     });
   });
 

@@ -227,8 +227,7 @@ class RealAudioService implements AudioServiceProtocol {
           avAudioSessionMode: AVAudioSessionMode.defaultMode,
           avAudioSessionRouteSharingPolicy:
               AVAudioSessionRouteSharingPolicy.defaultPolicy,
-          avAudioSessionSetActiveOptions:
-              AVAudioSessionSetActiveOptions.none,
+          avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
         ),
       );
     } catch (e) {

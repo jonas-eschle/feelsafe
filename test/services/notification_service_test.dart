@@ -516,9 +516,9 @@ void main() {
         final (svc, plugin) = await _makeCapturingService();
         await svc.showAlarmEscalation(id: 52, title: 'T', body: 'B');
         final (_, _, _, details) = plugin.shown.first;
-        check(details!.iOS!.interruptionLevel).not(
-          (c) => c.equals(InterruptionLevel.timeSensitive),
-        );
+        check(
+          details!.iOS!.interruptionLevel,
+        ).not((c) => c.equals(InterruptionLevel.timeSensitive));
       },
     );
   });
@@ -562,16 +562,13 @@ void main() {
       },
     );
 
-    test(
-      'init creates exactly one ga_sms_retry channel',
-      () async {
-        final (_, plugin) = await _makeCapturingServiceWithAndroid();
-        final retryChannels = plugin.androidPlugin.channels
-            .where((ch) => ch.id == kSmsRetryChannelId)
-            .toList();
-        check(retryChannels).length.equals(1);
-      },
-    );
+    test('init creates exactly one ga_sms_retry channel', () async {
+      final (_, plugin) = await _makeCapturingServiceWithAndroid();
+      final retryChannels = plugin.androidPlugin.channels
+          .where((ch) => ch.id == kSmsRetryChannelId)
+          .toList();
+      check(retryChannels).length.equals(1);
+    });
   });
 
   // =========================================================================

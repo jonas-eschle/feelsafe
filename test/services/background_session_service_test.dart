@@ -169,10 +169,7 @@ void main() {
     test(
       'F17: updateNotification stealth=false calls showForegroundServiceNotification',
       () async {
-        await svc.updateNotification(
-          title: 'Active',
-          body: 'Running',
-        );
+        await svc.updateNotification(title: 'Active', body: 'Running');
         final fgCalls = notif.calls.where(
           (c) => c.method == 'showForegroundServiceNotification',
         );
@@ -283,20 +280,17 @@ void main() {
     // F6: pause/resume tap sets correct notification text
     // -----------------------------------------------------------------------
 
-    test(
-      'F6: kActionPause tap → showForegroundServiceNotification with '
-      '"Session paused" title',
-      () async {
-        notif.injectActionTap(kActionPause);
-        await Future<void>.delayed(Duration.zero);
-        final pauseNotifs = notif.calls.where(
-          (c) =>
-              c.method == 'showForegroundServiceNotification' &&
-              c.title == 'Session paused',
-        );
-        check(pauseNotifs).isNotEmpty();
-      },
-    );
+    test('F6: kActionPause tap → showForegroundServiceNotification with '
+        '"Session paused" title', () async {
+      notif.injectActionTap(kActionPause);
+      await Future<void>.delayed(Duration.zero);
+      final pauseNotifs = notif.calls.where(
+        (c) =>
+            c.method == 'showForegroundServiceNotification' &&
+            c.title == 'Session paused',
+      );
+      check(pauseNotifs).isNotEmpty();
+    });
 
     test(
       'F6: kActionPause tap → notification body is "Tap Resume to continue."',
@@ -312,20 +306,17 @@ void main() {
       },
     );
 
-    test(
-      'F6: kActionResume tap → showForegroundServiceNotification with '
-      '"Guardian Angela active" title',
-      () async {
-        notif.injectActionTap(kActionResume);
-        await Future<void>.delayed(Duration.zero);
-        final resumeNotifs = notif.calls.where(
-          (c) =>
-              c.method == 'showForegroundServiceNotification' &&
-              c.title == 'Guardian Angela active',
-        );
-        check(resumeNotifs).isNotEmpty();
-      },
-    );
+    test('F6: kActionResume tap → showForegroundServiceNotification with '
+        '"Guardian Angela active" title', () async {
+      notif.injectActionTap(kActionResume);
+      await Future<void>.delayed(Duration.zero);
+      final resumeNotifs = notif.calls.where(
+        (c) =>
+            c.method == 'showForegroundServiceNotification' &&
+            c.title == 'Guardian Angela active',
+      );
+      check(resumeNotifs).isNotEmpty();
+    });
 
     test(
       'F6: kActionResume tap → notification body is "Your session is running."',
@@ -341,28 +332,22 @@ void main() {
       },
     );
 
-    test(
-      'F6: pause tap also emits onPause stream event',
-      () async {
-        final received = <void>[];
-        final sub = svc.onPause.listen((_) => received.add(null));
-        notif.injectActionTap(kActionPause);
-        await Future<void>.delayed(Duration.zero);
-        await sub.cancel();
-        check(received).length.equals(1);
-      },
-    );
+    test('F6: pause tap also emits onPause stream event', () async {
+      final received = <void>[];
+      final sub = svc.onPause.listen((_) => received.add(null));
+      notif.injectActionTap(kActionPause);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+      check(received).length.equals(1);
+    });
 
-    test(
-      'F6: resume tap also emits onResume stream event',
-      () async {
-        final received = <void>[];
-        final sub = svc.onResume.listen((_) => received.add(null));
-        notif.injectActionTap(kActionResume);
-        await Future<void>.delayed(Duration.zero);
-        await sub.cancel();
-        check(received).length.equals(1);
-      },
-    );
+    test('F6: resume tap also emits onResume stream event', () async {
+      final received = <void>[];
+      final sub = svc.onResume.listen((_) => received.add(null));
+      notif.injectActionTap(kActionResume);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+      check(received).length.equals(1);
+    });
   });
 }

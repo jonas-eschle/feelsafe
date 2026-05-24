@@ -388,11 +388,14 @@ void main() {
   });
 
   group('SimulationLocationService — requestPermission denial path (F4)', () {
-    test('denial path: simulatedPermissionGranted=false returns false', () async {
-      final s = _sim();
-      s.simulatedPermissionGranted = false;
-      check(await s.requestPermission()).isFalse();
-    });
+    test(
+      'denial path: simulatedPermissionGranted=false returns false',
+      () async {
+        final s = _sim();
+        s.simulatedPermissionGranted = false;
+        check(await s.requestPermission()).isFalse();
+      },
+    );
 
     test('default: requestPermission returns true', () async {
       final s = _sim();
@@ -407,43 +410,51 @@ void main() {
     });
   });
 
-  group('SimulationLocationService — getLastLocationWithFallback stale (F4)',
-      () {
-    test('stale-note path: staleNote is non-null and contains timestamp', () async {
-      final ts = DateTime.utc(2026, 4, 10, 8, 30);
-      final pt = _point(lat: 30.0, ts: ts);
-      final s = _sim(points: [pt]);
-      s.simulatedFreshFix = false;
-      final result = await s.getLastLocationWithFallback();
-      check(result).isNotNull();
-      check(result!.isFresh).isFalse();
-      check(result.staleNote).isNotNull();
-      check(result.staleNote!).contains('2026-04-10');
-    });
+  group(
+    'SimulationLocationService — getLastLocationWithFallback stale (F4)',
+    () {
+      test(
+        'stale-note path: staleNote is non-null and contains timestamp',
+        () async {
+          final ts = DateTime.utc(2026, 4, 10, 8, 30);
+          final pt = _point(lat: 30.0, ts: ts);
+          final s = _sim(points: [pt]);
+          s.simulatedFreshFix = false;
+          final result = await s.getLastLocationWithFallback();
+          check(result).isNotNull();
+          check(result!.isFresh).isFalse();
+          check(result.staleNote).isNotNull();
+          check(result.staleNote!).contains('2026-04-10');
+        },
+      );
 
-    test('stale-note point is the last known point', () async {
-      final pt = _point(lat: 42.0);
-      final s = _sim(points: [pt]);
-      s.simulatedFreshFix = false;
-      final result = await s.getLastLocationWithFallback();
-      check(result!.point).equals(pt);
-    });
+      test('stale-note point is the last known point', () async {
+        final pt = _point(lat: 42.0);
+        final s = _sim(points: [pt]);
+        s.simulatedFreshFix = false;
+        final result = await s.getLastLocationWithFallback();
+        check(result!.point).equals(pt);
+      });
 
-    test('fresh path: staleNote is null when simulatedFreshFix=true', () async {
-      final pt = _point(lat: 15.0);
-      final s = _sim(points: [pt]);
-      final result = await s.getLastLocationWithFallback();
-      check(result).isNotNull();
-      check(result!.isFresh).isTrue();
-      check(result.staleNote).isNull();
-    });
+      test(
+        'fresh path: staleNote is null when simulatedFreshFix=true',
+        () async {
+          final pt = _point(lat: 15.0);
+          final s = _sim(points: [pt]);
+          final result = await s.getLastLocationWithFallback();
+          check(result).isNotNull();
+          check(result!.isFresh).isTrue();
+          check(result.staleNote).isNull();
+        },
+      );
 
-    test('null when empty, regardless of simulatedFreshFix', () async {
-      final s = _sim();
-      s.simulatedFreshFix = false;
-      check(await s.getLastLocationWithFallback()).isNull();
-    });
-  });
+      test('null when empty, regardless of simulatedFreshFix', () async {
+        final s = _sim();
+        s.simulatedFreshFix = false;
+        check(await s.getLastLocationWithFallback()).isNull();
+      });
+    },
+  );
 
   // =========================================================================
   // Simulation swap (Riverpod)

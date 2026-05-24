@@ -1,7 +1,8 @@
 // ignore_for_file: avoid_relative_lib_imports
 
-import 'package:checks/checks.dart';
 import 'package:flutter/services.dart';
+
+import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -20,18 +21,12 @@ class _VibrationChannelMock {
 
   void register() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-          const MethodChannel('vibration'),
-          _handle,
-        );
+        .setMockMethodCallHandler(const MethodChannel('vibration'), _handle);
   }
 
   void unregister() {
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(
-          const MethodChannel('vibration'),
-          null,
-        );
+        .setMockMethodCallHandler(const MethodChannel('vibration'), null);
   }
 
   Future<dynamic> _handle(MethodCall call) async {
@@ -301,17 +296,19 @@ void main() {
       vibMock.unregister();
     });
 
-    test('warningPattern sends [0,200,100,200,100,200] to vibration channel',
-        () async {
-      final svc = RealVibrationService(overrideHasVibrator: true);
-      await svc.warningPattern();
-      final vibrateCall = vibMock.calls.firstWhere(
-        (c) => c.method == 'vibrate',
-      );
-      check(
-        (vibrateCall.arguments as Map)['pattern'] as List,
-      ).deepEquals([0, 200, 100, 200, 100, 200]);
-    });
+    test(
+      'warningPattern sends [0,200,100,200,100,200] to vibration channel',
+      () async {
+        final svc = RealVibrationService(overrideHasVibrator: true);
+        await svc.warningPattern();
+        final vibrateCall = vibMock.calls.firstWhere(
+          (c) => c.method == 'vibrate',
+        );
+        check(
+          (vibrateCall.arguments as Map)['pattern'] as List,
+        ).deepEquals([0, 200, 100, 200, 100, 200]);
+      },
+    );
 
     test('confirmPulse sends duration=100 to vibration channel', () async {
       final svc = RealVibrationService(overrideHasVibrator: true);
@@ -322,8 +319,7 @@ void main() {
       check((vibrateCall.arguments as Map)['duration']).equals(100);
     });
 
-    test(
-        'alarmPattern sends [0,500,200,500,200,500,200,500] to vibration '
+    test('alarmPattern sends [0,500,200,500,200,500,200,500] to vibration '
         'channel', () async {
       final svc = RealVibrationService(overrideHasVibrator: true);
       await svc.alarmPattern();
@@ -335,17 +331,19 @@ void main() {
       ).deepEquals([0, 500, 200, 500, 200, 500, 200, 500]);
     });
 
-    test('fakeCallPattern sends [0,1000,500,1000,500] to vibration channel',
-        () async {
-      final svc = RealVibrationService(overrideHasVibrator: true);
-      await svc.fakeCallPattern();
-      final vibrateCall = vibMock.calls.firstWhere(
-        (c) => c.method == 'vibrate',
-      );
-      check(
-        (vibrateCall.arguments as Map)['pattern'] as List,
-      ).deepEquals([0, 1000, 500, 1000, 500]);
-    });
+    test(
+      'fakeCallPattern sends [0,1000,500,1000,500] to vibration channel',
+      () async {
+        final svc = RealVibrationService(overrideHasVibrator: true);
+        await svc.fakeCallPattern();
+        final vibrateCall = vibMock.calls.firstWhere(
+          (c) => c.method == 'vibrate',
+        );
+        check(
+          (vibrateCall.arguments as Map)['pattern'] as List,
+        ).deepEquals([0, 1000, 500, 1000, 500]);
+      },
+    );
 
     test('reminderPattern sends duration=200 to vibration channel', () async {
       final svc = RealVibrationService(overrideHasVibrator: true);

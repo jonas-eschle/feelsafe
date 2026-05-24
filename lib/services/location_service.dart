@@ -7,6 +7,7 @@ import 'dart:developer';
 import 'package:geolocator/geolocator.dart';
 
 import 'package:guardianangela/domain/models/location_point.dart';
+
 import 'package:guardianangela/services/protocols/location_service_protocol.dart'
     show LocationFallbackResult, LocationServiceProtocol;
 

@@ -470,70 +470,63 @@ void main() {
     ///
     /// The [AudioPlayer] is injected via the existing seam on
     /// [RealAudioService] so no real audio session is needed.
-    test(
-      'volume reaches ≈1.0 after rampSeconds=5 (50 ticks × 100ms)',
-      () {
-        // Use fakeAsync so Timer.periodic advances deterministically.
-        fakeAsync((async) {
-          final mockPlayer = _MockAudioPlayer();
-          final capturedVolumes = <double>[];
+    test('volume reaches ≈1.0 after rampSeconds=5 (50 ticks × 100ms)', () {
+      // Use fakeAsync so Timer.periodic advances deterministically.
+      fakeAsync((async) {
+        final mockPlayer = _MockAudioPlayer();
+        final capturedVolumes = <double>[];
 
-          // Stub all AudioPlayer methods invoked by playAlarmWithConfig.
-          when(() => mockPlayer.processingState).thenReturn(
-            ProcessingState.idle,
-          );
-          when(
-            () => mockPlayer.setAsset(any()),
-          ).thenAnswer((_) async => null);
-          when(
-            () => mockPlayer.setLoopMode(any()),
-          ).thenAnswer((_) => Future<void>.value());
-          when(() => mockPlayer.setVolume(any())).thenAnswer((inv) async {
-            capturedVolumes.add(inv.positionalArguments[0] as double);
-          });
-          when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
-
-          // Inject _MockFlutterTts to avoid FlutterTts platform-channel
-          // initialization before WidgetsFlutterBinding is ready.
-          final svc = RealAudioService(
-            player: mockPlayer,
-            tts: _MockFlutterTts(),
-          );
-
-          // Kick off the alarm (intentionally not awaited — the ramp runs via
-          // Timer.periodic which fakeAsync controls).
-          unawaited(svc.playAlarmWithConfig());
-
-          // Advance time by 100ms increments (50 ticks = 5 seconds).
-          for (var i = 0; i < 50; i++) {
-            async.elapse(const Duration(milliseconds: 100));
-          }
-
-          // Must have captured at least 50 volume calls (one per tick) plus
-          // the initial setVolume(0.0) before play.
-          check(capturedVolumes.length).isGreaterOrEqual(50);
-
-          // Final volume captured should be ≈1.0 (last tick sets full volume).
-          final lastVolume = capturedVolumes.last;
-          check(lastVolume).isCloseTo(1.0, 0.05);
-
-          // First ramp tick should be well below 1.0 (ramp has not completed).
-          // The initial setVolume(0.0) is first, followed by ramp ticks.
-          final firstRampVolume =
-              capturedVolumes.firstWhere((v) => v > 0.0, orElse: () => 0.0);
-          check(firstRampVolume).isLessThan(0.1);
+        // Stub all AudioPlayer methods invoked by playAlarmWithConfig.
+        when(() => mockPlayer.processingState).thenReturn(ProcessingState.idle);
+        when(() => mockPlayer.setAsset(any())).thenAnswer((_) async => null);
+        when(
+          () => mockPlayer.setLoopMode(any()),
+        ).thenAnswer((_) => Future<void>.value());
+        when(() => mockPlayer.setVolume(any())).thenAnswer((inv) async {
+          capturedVolumes.add(inv.positionalArguments[0] as double);
         });
-      },
-    );
+        when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
+
+        // Inject _MockFlutterTts to avoid FlutterTts platform-channel
+        // initialization before WidgetsFlutterBinding is ready.
+        final svc = RealAudioService(
+          player: mockPlayer,
+          tts: _MockFlutterTts(),
+        );
+
+        // Kick off the alarm (intentionally not awaited — the ramp runs via
+        // Timer.periodic which fakeAsync controls).
+        unawaited(svc.playAlarmWithConfig());
+
+        // Advance time by 100ms increments (50 ticks = 5 seconds).
+        for (var i = 0; i < 50; i++) {
+          async.elapse(const Duration(milliseconds: 100));
+        }
+
+        // Must have captured at least 50 volume calls (one per tick) plus
+        // the initial setVolume(0.0) before play.
+        check(capturedVolumes.length).isGreaterOrEqual(50);
+
+        // Final volume captured should be ≈1.0 (last tick sets full volume).
+        final lastVolume = capturedVolumes.last;
+        check(lastVolume).isCloseTo(1.0, 0.05);
+
+        // First ramp tick should be well below 1.0 (ramp has not completed).
+        // The initial setVolume(0.0) is first, followed by ramp ticks.
+        final firstRampVolume = capturedVolumes.firstWhere(
+          (v) => v > 0.0,
+          orElse: () => 0.0,
+        );
+        check(firstRampVolume).isLessThan(0.1);
+      });
+    });
 
     test('volume is monotonically increasing across ramp ticks', () {
       fakeAsync((async) {
         final mockPlayer = _MockAudioPlayer();
         final capturedVolumes = <double>[];
 
-        when(() => mockPlayer.processingState).thenReturn(
-          ProcessingState.idle,
-        );
+        when(() => mockPlayer.processingState).thenReturn(ProcessingState.idle);
         when(() => mockPlayer.setAsset(any())).thenAnswer((_) async => null);
         when(
           () => mockPlayer.setLoopMode(any()),

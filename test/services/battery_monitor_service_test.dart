@@ -201,24 +201,21 @@ void main() {
       },
     );
 
-    test(
-      'F15: batteryLevel emits first sub-threshold reading',
-      () async {
-        final battery = _batteryThatReturns([15, 9]);
-        final svc = RealBatteryMonitorService(battery: battery);
-        addTearDown(svc.stopMonitoring);
+    test('F15: batteryLevel emits first sub-threshold reading', () async {
+      final battery = _batteryThatReturns([15, 9]);
+      final svc = RealBatteryMonitorService(battery: battery);
+      addTearDown(svc.stopMonitoring);
 
-        final emitted = <int>[];
-        final sub = svc.batteryLevel.listen(emitted.add);
-        addTearDown(sub.cancel);
+      final emitted = <int>[];
+      final sub = svc.batteryLevel.listen(emitted.add);
+      addTearDown(sub.cancel);
 
-        // Default threshold=10. Level 15 is above threshold.
-        await svc.startMonitoring();
-        await Future<void>.delayed(Duration.zero);
-        // First poll emits 15 (above threshold).
-        check(emitted).contains(15);
-      },
-    );
+      // Default threshold=10. Level 15 is above threshold.
+      await svc.startMonitoring();
+      await Future<void>.delayed(Duration.zero);
+      // First poll emits 15 (above threshold).
+      check(emitted).contains(15);
+    });
 
     test(
       'F15: stopMonitoring resets one-shot so next startMonitoring re-arms',

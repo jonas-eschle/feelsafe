@@ -583,26 +583,23 @@ void main() {
       },
     );
 
-    test(
-      'G13: runBootstrap passes JsonRecoveryApp to runner when '
-      'appSettingsRepositoryProvider throws',
-      () async {
-        Widget? captured;
-        final container = ProviderContainer(
-          overrides: [
-            databaseProvider.overrideWith((_) => _openDb()),
-            appSettingsRepositoryProvider.overrideWithValue(
-              _ThrowingSettingsRepo(),
-            ),
-          ],
-        );
-        addTearDown(container.dispose);
+    test('G13: runBootstrap passes JsonRecoveryApp to runner when '
+        'appSettingsRepositoryProvider throws', () async {
+      Widget? captured;
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) => _openDb()),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _ThrowingSettingsRepo(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
 
-        await runBootstrap(container, runner: (w) => captured = w);
+      await runBootstrap(container, runner: (w) => captured = w);
 
-        expect(captured, isA<JsonRecoveryApp>());
-        expect((captured! as JsonRecoveryApp).reason, contains('corrupt'));
-      },
-    );
+      expect(captured, isA<JsonRecoveryApp>());
+      expect((captured! as JsonRecoveryApp).reason, contains('corrupt'));
+    });
   });
 }

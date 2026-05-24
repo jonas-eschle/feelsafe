@@ -498,20 +498,23 @@ void main() {
     // -----------------------------------------------------------------------
 
     // G7: cancelPending makes exactly one cancelWork call per ID on Android.
-    test('cancelPending with two IDs makes one cancelWork call on Android', () async {
-      await svc.cancelPending(['job-1', 'job-2']);
-      final cancelCalls = smsMock.calls
-          .where((c) => c.method == 'cancelWork')
-          .toList();
-      if (Platform.isAndroid) {
-        // On Android: a single cancelWork call with both IDs in workIds list.
-        check(cancelCalls).length.equals(1);
-        final workIds = (cancelCalls.first.arguments as Map)['workIds'];
-        check(workIds as List).deepEquals(['job-1', 'job-2']);
-      } else {
-        // Non-Android: no channel call — cancelPending is a no-op.
-        check(cancelCalls).isEmpty();
-      }
-    });
+    test(
+      'cancelPending with two IDs makes one cancelWork call on Android',
+      () async {
+        await svc.cancelPending(['job-1', 'job-2']);
+        final cancelCalls = smsMock.calls
+            .where((c) => c.method == 'cancelWork')
+            .toList();
+        if (Platform.isAndroid) {
+          // On Android: a single cancelWork call with both IDs in workIds list.
+          check(cancelCalls).length.equals(1);
+          final workIds = (cancelCalls.first.arguments as Map)['workIds'];
+          check(workIds as List).deepEquals(['job-1', 'job-2']);
+        } else {
+          // Non-Android: no channel call — cancelPending is a no-op.
+          check(cancelCalls).isEmpty();
+        }
+      },
+    );
   });
 }

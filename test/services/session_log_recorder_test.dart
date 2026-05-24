@@ -361,14 +361,16 @@ void main() {
     });
 
     // F19: sim variant also throws on double-finalise.
-    test('F19: SimulationSessionLogRecorder finalise() twice throws StateError',
-        () async {
-      final recorder = SimulationSessionLogRecorder(
-        context: _context(),
-        repo: repo,
-      );
-      await recorder.finalise(EndReason.disarm);
-      await check(recorder.finalise(EndReason.disarm)).throws<StateError>();
-    });
+    test(
+      'F19: SimulationSessionLogRecorder finalise() twice throws StateError',
+      () async {
+        final recorder = SimulationSessionLogRecorder(
+          context: _context(),
+          repo: repo,
+        );
+        await recorder.finalise(EndReason.disarm);
+        await check(recorder.finalise(EndReason.disarm)).throws<StateError>();
+      },
+    );
   });
 }
