@@ -52,8 +52,7 @@ class SimulationPermissionAuditService
 
   /// Pushes [event] onto the [revocations] stream to simulate a mid-session
   /// OS revocation.
-  void emitRevocation(PermissionRevocation event) =>
-      _revocations.add(event);
+  void emitRevocation(PermissionRevocation event) => _revocations.add(event);
 
   /// Resets [auditedModes]. Does NOT close [_revocations].
   void reset() => auditedModes.clear();

@@ -60,10 +60,9 @@ class RealSystemUiService implements SystemUiServiceProtocol {
 
     log('setStealthIconEnabled($enabled)', name: 'SystemUiService');
     try {
-      await _kStealthIconChannel.invokeMethod<void>(
-        'setStealthIconEnabled',
-        {'enabled': enabled},
-      );
+      await _kStealthIconChannel.invokeMethod<void>('setStealthIconEnabled', {
+        'enabled': enabled,
+      });
     } catch (e) {
       log('setStealthIconEnabled error: $e', name: 'SystemUiService');
     }
@@ -81,10 +80,9 @@ class RealSystemUiService implements SystemUiServiceProtocol {
 
     log('toggleLockTaskMode($enabled)', name: 'SystemUiService');
     try {
-      await _kSystemUiChannel.invokeMethod<void>(
-        'toggleLockTaskMode',
-        {'enabled': enabled},
-      );
+      await _kSystemUiChannel.invokeMethod<void>('toggleLockTaskMode', {
+        'enabled': enabled,
+      });
     } catch (e) {
       log('toggleLockTaskMode error: $e', name: 'SystemUiService');
     }

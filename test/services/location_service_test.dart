@@ -32,9 +32,8 @@ LocationPoint _point({
   );
 }
 
-SimulationLocationService _sim({
-  Iterable<LocationPoint>? points,
-}) => SimulationLocationService(initialPoints: points);
+SimulationLocationService _sim({Iterable<LocationPoint>? points}) =>
+    SimulationLocationService(initialPoints: points);
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -70,8 +69,9 @@ void main() {
     group('toMapsUrl', () {
       test('returns correct google maps url', () {
         final p = _point(lat: 51.5074, lon: -0.1278);
-        check(p.toMapsUrl())
-            .equals('https://maps.google.com/?q=51.5074,-0.1278');
+        check(
+          p.toMapsUrl(),
+        ).equals('https://maps.google.com/?q=51.5074,-0.1278');
       });
 
       test('handles negative latitude', () {
@@ -109,13 +109,19 @@ void main() {
 
       test('fromJson throws when latitude missing', () {
         check(
-          () => LocationPoint.fromJson({'longitude': 2.0, 'timestamp': '2026-01-01T00:00:00.000Z'}),
+          () => LocationPoint.fromJson({
+            'longitude': 2.0,
+            'timestamp': '2026-01-01T00:00:00.000Z',
+          }),
         ).throws<ArgumentError>();
       });
 
       test('fromJson throws when longitude missing', () {
         check(
-          () => LocationPoint.fromJson({'latitude': 48.0, 'timestamp': '2026-01-01T00:00:00.000Z'}),
+          () => LocationPoint.fromJson({
+            'latitude': 48.0,
+            'timestamp': '2026-01-01T00:00:00.000Z',
+          }),
         ).throws<ArgumentError>();
       });
 
@@ -231,9 +237,9 @@ void main() {
 
       test('returns maps url for last point', () {
         final s = _sim(points: [_point(lat: 51.5, lon: -0.1)]);
-        check(s.getLastLocationUrl()).equals(
-          'https://maps.google.com/?q=51.5,-0.1',
-        );
+        check(
+          s.getLastLocationUrl(),
+        ).equals('https://maps.google.com/?q=51.5,-0.1');
       });
 
       test('returns url for LAST point when multiple exist', () {
@@ -275,8 +281,9 @@ void main() {
 
       test('contains maps url', () {
         final s = _sim(points: [_point(lat: 48.0, lon: 2.0)]);
-        check(s.getLastLocationDescription()!)
-            .contains('https://maps.google.com/?q=48.0,2.0');
+        check(
+          s.getLastLocationDescription()!,
+        ).contains('https://maps.google.com/?q=48.0,2.0');
       });
 
       test('contains timestamp', () {
@@ -292,9 +299,9 @@ void main() {
 
       test('omits accuracy when null', () {
         final s = _sim(points: [_point()]);
-        check(s.getLastLocationDescription()!).not(
-          (c) => c.contains('accuracy'),
-        );
+        check(
+          s.getLastLocationDescription()!,
+        ).not((c) => c.contains('accuracy'));
       });
     });
 

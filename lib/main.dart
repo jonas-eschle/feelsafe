@@ -20,9 +20,11 @@
 // screens. The bootstrap pipeline and JsonRecoveryApp are final.
 
 import 'dart:async' show unawaited;
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -53,8 +55,7 @@ Future<void> main() async {
   // call throws a FormatException or StateError; catch and run recovery.
   final AppSettings settings;
   try {
-    settings =
-        await container.read(appSettingsRepositoryProvider).load();
+    settings = await container.read(appSettingsRepositoryProvider).load();
     log(
       'AppSettings loaded (sentryEnabled=${settings.sentryEnabled})',
       name: 'main',
@@ -109,8 +110,7 @@ Future<void> main() async {
   // Step 6 — Bootstrap TTS voice assets (unawaited — runs in the background;
   // a missing clip is tolerated by the fake-call step, which silently skips
   // voice playback and still rings). Failures are captured to Sentry.
-  final audioService =
-      container.read(audioServiceProvider) as RealAudioService;
+  final audioService = container.read(audioServiceProvider) as RealAudioService;
   unawaited(
     audioService.bootstrapVoiceAssets(
       onFailure: (String locale, Object e, StackTrace st) {
@@ -148,9 +148,7 @@ class GuardianAngelaApp extends StatelessWidget {
       title: 'Guardian Angela',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF131118),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
         useMaterial3: true,
       ),
       home: const _AppShell(),
@@ -204,8 +202,9 @@ class _AppShell extends StatelessWidget {
 /// Offers two actions:
 /// - **Start fresh** — deletes the `json_store` directory and all its
 ///   encrypted JSON files, then re-seeds defaults on the next launch.
-/// - **Restore from backup** — available in a future phase; button is visible
-///   but disabled until the file-picker integration lands (Phase 9).
+/// - **Restore from backup** — opens the OS file picker, validates the
+///   selected JSON via [BackupServiceProtocol.importFromJson], and
+///   instructs the user to relaunch on success.
 ///
 /// Neither action re-starts the bootstrap pipeline; both finish with an
 /// instruction to relaunch the app so it can boot into a healthy state.
@@ -224,9 +223,7 @@ class JsonRecoveryApp extends StatelessWidget {
       title: 'Guardian Angela — Recovery',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF131118),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
         useMaterial3: true,
       ),
       home: _RecoveryScreen(reason: reason),
@@ -246,6 +243,7 @@ class _RecoveryScreen extends StatefulWidget {
 
 class _RecoveryScreenState extends State<_RecoveryScreen> {
   bool _actionTaken = false;
+  bool _isRestoring = false;
   String? _statusMessage;
 
   Future<void> _startFresh() async {
@@ -271,6 +269,73 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
     }
   }
 
+  Future<void> _restoreFromBackup() async {
+    setState(() => _isRestoring = true);
+
+    // Step 1 — let the user pick a JSON file.
+    final FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['json'],
+      withData: true,
+    );
+
+    if (result == null || result.files.isEmpty) {
+      if (!mounted) return;
+      setState(() {
+        _isRestoring = false;
+        _statusMessage = 'No file selected.';
+      });
+      return;
+    }
+
+    // Step 2 — decode and import.
+    try {
+      final bytes = result.files.first.bytes;
+      if (bytes == null || bytes.isEmpty) {
+        throw const FormatException('Selected file is empty or unreadable.');
+      }
+      final jsonString = utf8.decode(bytes);
+
+      // Prefer the Riverpod container from the nearest ProviderScope (present
+      // in tests via UncontrolledProviderScope and in production if the
+      // recovery widget is wrapped). Fall back to a fresh ProviderContainer
+      // when no scope is found (normal production path — the encrypted DB may
+      // still fail to open if the key is corrupt; the catch below surfaces
+      // that error so the user can try "Start fresh" instead).
+      if (!mounted) return;
+      ProviderContainer? ownedContainer;
+      ProviderContainer resolvedContainer;
+      try {
+        resolvedContainer = ProviderScope.containerOf(context);
+      } catch (_) {
+        ownedContainer = ProviderContainer();
+        resolvedContainer = ownedContainer;
+      }
+      try {
+        final backupService =
+            await resolvedContainer.read(backupServiceProvider.future);
+        await backupService.importFromJson(jsonString);
+      } finally {
+        ownedContainer?.dispose();
+      }
+
+      if (!mounted) return;
+      setState(() {
+        _isRestoring = false;
+        _actionTaken = true;
+        _statusMessage = 'Backup restored. Please relaunch the app.';
+      });
+    } catch (e) {
+      log('Restore from backup failed: $e', name: 'JsonRecoveryApp');
+      if (!mounted) return;
+      setState(() {
+        _isRestoring = false;
+        // Do NOT set _actionTaken so the user can retry.
+        _statusMessage = 'Restore failed: $e';
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -283,6 +348,9 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
               : _ChoicePanel(
                   reason: widget.reason,
                   onStartFresh: _statusMessage == null ? _startFresh : null,
+                  onRestoreFromBackup:
+                      _isRestoring ? null : _restoreFromBackup,
+                  isRestoring: _isRestoring,
                   statusMessage: _statusMessage,
                 ),
         ),
@@ -316,11 +384,22 @@ class _ChoicePanel extends StatelessWidget {
   const _ChoicePanel({
     required this.reason,
     required this.onStartFresh,
+    required this.onRestoreFromBackup,
+    required this.isRestoring,
     this.statusMessage,
   });
 
   final String reason;
   final VoidCallback? onStartFresh;
+
+  /// Callback invoked when the user taps "Restore from backup".
+  ///
+  /// Set to `null` while a restore is in progress to prevent double-taps.
+  final VoidCallback? onRestoreFromBackup;
+
+  /// Whether a restore is currently in progress (shows a progress indicator
+  /// inside the button label).
+  final bool isRestoring;
   final String? statusMessage;
 
   @override
@@ -350,28 +429,39 @@ class _ChoicePanel extends StatelessWidget {
           label: const Text('Start fresh'),
         ),
         const SizedBox(height: 8),
-        // Restore from backup: present but disabled until Phase 9 file-picker
-        // integration lands. Spec 10:206 requires the button to be visible.
-        // spec:05 §BackupService §Import states: "stages a backup file for
-        // next launch". The file-picker wiring is Phase 9 scope.
-        Semantics(
-          label:
-              'Restore from backup — available in a future update',
-          child: OutlinedButton.icon(
-            onPressed: null,
-            icon: const Icon(Icons.upload_file),
-            label: const Text('Restore from backup'),
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Restore from backup will be available in a future update.',
-          style: textTheme.bodySmall,
+        FilledButton.icon(
+          onPressed: onRestoreFromBackup,
+          icon: const Icon(Icons.upload_file),
+          label: isRestoring
+              ? const _RestoreProgress()
+              : const Text('Restore from backup'),
         ),
         if (statusMessage != null) ...<Widget>[
           const SizedBox(height: 24),
           Text(statusMessage!, style: textTheme.bodyMedium),
         ],
+      ],
+    );
+  }
+}
+
+/// Small inline progress indicator shown inside the restore button while
+/// a file is being picked and imported.
+class _RestoreProgress extends StatelessWidget {
+  const _RestoreProgress();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(
+          width: 16,
+          height: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
+        SizedBox(width: 8),
+        Text('Restoring…'),
       ],
     );
   }

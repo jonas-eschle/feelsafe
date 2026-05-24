@@ -137,15 +137,17 @@ void main() {
 
       test('returned path ends with .m4a', () async {
         final s = _sim();
-        final path =
-            await s.recordForDuration(duration: const Duration(seconds: 5));
+        final path = await s.recordForDuration(
+          duration: const Duration(seconds: 5),
+        );
         check(path!).endsWith('.m4a');
       });
 
       test('adds path to createdPaths', () async {
         final s = _sim();
-        final path =
-            await s.recordForDuration(duration: const Duration(seconds: 5));
+        final path = await s.recordForDuration(
+          duration: const Duration(seconds: 5),
+        );
         check(s.createdPaths).contains(path!);
       });
 
@@ -216,22 +218,28 @@ void main() {
         ).throws<ArgumentError>();
       });
 
-      test('valid 60-second duration succeeds when isSimulation=false', () async {
-        final s = _sim();
-        await s.startVoiceRecordingWithCap(
-          maxDuration: const Duration(seconds: 60),
-        );
-        check(s.calls).length.equals(1);
-      });
+      test(
+        'valid 60-second duration succeeds when isSimulation=false',
+        () async {
+          final s = _sim();
+          await s.startVoiceRecordingWithCap(
+            maxDuration: const Duration(seconds: 60),
+          );
+          check(s.calls).length.equals(1);
+        },
+      );
 
-      test('valid 120-second duration with isSimulation=true returns null', () async {
-        final s = _sim();
-        final result = await s.startVoiceRecordingWithCap(
-          maxDuration: const Duration(seconds: 120),
-          isSimulation: true,
-        );
-        check(result).isNull();
-      });
+      test(
+        'valid 120-second duration with isSimulation=true returns null',
+        () async {
+          final s = _sim();
+          final result = await s.startVoiceRecordingWithCap(
+            maxDuration: const Duration(seconds: 120),
+            isSimulation: true,
+          );
+          check(result).isNull();
+        },
+      );
     });
 
     group('reset', () {

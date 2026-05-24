@@ -41,7 +41,10 @@ class RealFlashService implements FlashServiceProtocol {
   @override
   Future<void> startSosFlash() async {
     if (_isFlashing) await stopFlash();
-    log('startSosFlash — beginning SOS morse-code strobe', name: 'FlashService');
+    log(
+      'startSosFlash — beginning SOS morse-code strobe',
+      name: 'FlashService',
+    );
     _isFlashing = true;
     // Run the loop in a detached async task; startSosFlash returns
     // immediately after setting the flag.

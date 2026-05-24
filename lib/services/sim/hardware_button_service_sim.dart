@@ -9,8 +9,7 @@ import 'package:guardianangela/services/protocols/hardware_button_service_protoc
 ///
 /// Exposes [injectPress] to drive the pure-Dart repeat-press and long-press
 /// detection logic without any platform channels. Never calls native code.
-class SimulationHardwareButtonService
-    implements HardwareButtonServiceProtocol {
+class SimulationHardwareButtonService implements HardwareButtonServiceProtocol {
   /// Creates a [SimulationHardwareButtonService].
   SimulationHardwareButtonService();
 
@@ -138,7 +137,11 @@ class SimulationHardwareButtonService
   void _emit(HardwareTriggerPattern pattern, DateTime t) {
     if (_panicController.isClosed) return;
     _panicController.add(
-      HardwarePanicEvent(buttonType: _buttonType, pattern: pattern, timestamp: t),
+      HardwarePanicEvent(
+        buttonType: _buttonType,
+        pattern: pattern,
+        timestamp: t,
+      ),
     );
   }
 }

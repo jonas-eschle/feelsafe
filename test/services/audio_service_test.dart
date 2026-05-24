@@ -21,9 +21,7 @@ void main() {
   // -----------------------------------------------------------------------
   group('resolveBuiltInVoicePath', () {
     test('en returns english asset', () {
-      check(
-        resolveBuiltInVoicePath('en'),
-      ).equals('assets/voice/angela_en.m4a');
+      check(resolveBuiltInVoicePath('en')).equals('assets/voice/angela_en.m4a');
     });
 
     test('en_US resolves via prefix to english', () {
@@ -33,9 +31,7 @@ void main() {
     });
 
     test('de returns german asset', () {
-      check(
-        resolveBuiltInVoicePath('de'),
-      ).equals('assets/voice/angela_de.m4a');
+      check(resolveBuiltInVoicePath('de')).equals('assets/voice/angela_de.m4a');
     });
 
     test('de_DE resolves via prefix to german', () {
@@ -45,27 +41,19 @@ void main() {
     });
 
     test('fr returns french asset', () {
-      check(
-        resolveBuiltInVoicePath('fr'),
-      ).equals('assets/voice/angela_fr.m4a');
+      check(resolveBuiltInVoicePath('fr')).equals('assets/voice/angela_fr.m4a');
     });
 
     test('es returns spanish asset', () {
-      check(
-        resolveBuiltInVoicePath('es'),
-      ).equals('assets/voice/angela_es.m4a');
+      check(resolveBuiltInVoicePath('es')).equals('assets/voice/angela_es.m4a');
     });
 
     test('ru returns russian asset', () {
-      check(
-        resolveBuiltInVoicePath('ru'),
-      ).equals('assets/voice/angela_ru.m4a');
+      check(resolveBuiltInVoicePath('ru')).equals('assets/voice/angela_ru.m4a');
     });
 
     test('zh returns simplified chinese asset', () {
-      check(
-        resolveBuiltInVoicePath('zh'),
-      ).equals('assets/voice/angela_zh.m4a');
+      check(resolveBuiltInVoicePath('zh')).equals('assets/voice/angela_zh.m4a');
     });
 
     test('zh_TW returns traditional chinese asset (full-tag match)', () {
@@ -81,45 +69,31 @@ void main() {
     });
 
     test('hi returns hindi asset', () {
-      check(
-        resolveBuiltInVoicePath('hi'),
-      ).equals('assets/voice/angela_hi.m4a');
+      check(resolveBuiltInVoicePath('hi')).equals('assets/voice/angela_hi.m4a');
     });
 
     test('fa returns farsi asset', () {
-      check(
-        resolveBuiltInVoicePath('fa'),
-      ).equals('assets/voice/angela_fa.m4a');
+      check(resolveBuiltInVoicePath('fa')).equals('assets/voice/angela_fa.m4a');
     });
 
     test('uk returns ukrainian asset', () {
-      check(
-        resolveBuiltInVoicePath('uk'),
-      ).equals('assets/voice/angela_uk.m4a');
+      check(resolveBuiltInVoicePath('uk')).equals('assets/voice/angela_uk.m4a');
     });
 
     test('pl returns polish asset', () {
-      check(
-        resolveBuiltInVoicePath('pl'),
-      ).equals('assets/voice/angela_pl.m4a');
+      check(resolveBuiltInVoicePath('pl')).equals('assets/voice/angela_pl.m4a');
     });
 
     test('el returns greek asset', () {
-      check(
-        resolveBuiltInVoicePath('el'),
-      ).equals('assets/voice/angela_el.m4a');
+      check(resolveBuiltInVoicePath('el')).equals('assets/voice/angela_el.m4a');
     });
 
     test('ar returns arabic asset', () {
-      check(
-        resolveBuiltInVoicePath('ar'),
-      ).equals('assets/voice/angela_ar.m4a');
+      check(resolveBuiltInVoicePath('ar')).equals('assets/voice/angela_ar.m4a');
     });
 
     test('he returns hebrew asset', () {
-      check(
-        resolveBuiltInVoicePath('he'),
-      ).equals('assets/voice/angela_he.m4a');
+      check(resolveBuiltInVoicePath('he')).equals('assets/voice/angela_he.m4a');
     });
 
     test('unknown locale falls back to english asset', () {
@@ -134,8 +108,20 @@ void main() {
 
     test('all 14 built-in locales resolve to unique paths', () {
       final locales = [
-        'en', 'de', 'es', 'fr', 'ru', 'zh', 'zh_TW',
-        'hi', 'fa', 'uk', 'pl', 'el', 'ar', 'he',
+        'en',
+        'de',
+        'es',
+        'fr',
+        'ru',
+        'zh',
+        'zh_TW',
+        'hi',
+        'fa',
+        'uk',
+        'pl',
+        'el',
+        'ar',
+        'he',
       ];
       final paths = locales.map(resolveBuiltInVoicePath).toSet();
       check(paths).length.equals(14);
@@ -143,13 +129,23 @@ void main() {
 
     test('all resolved paths start with assets/voice/angela_', () {
       final locales = [
-        'en', 'de', 'es', 'fr', 'ru', 'zh', 'zh_TW',
-        'hi', 'fa', 'uk', 'pl', 'el', 'ar', 'he',
+        'en',
+        'de',
+        'es',
+        'fr',
+        'ru',
+        'zh',
+        'zh_TW',
+        'hi',
+        'fa',
+        'uk',
+        'pl',
+        'el',
+        'ar',
+        'he',
       ];
       for (final loc in locales) {
-        check(
-          resolveBuiltInVoicePath(loc),
-        ).startsWith('assets/voice/angela_');
+        check(resolveBuiltInVoicePath(loc)).startsWith('assets/voice/angela_');
       }
     });
 
@@ -336,11 +332,9 @@ void main() {
         await s.playAlarmWithConfig();
         await s.playVoiceRecording(null);
         await s.stop();
-        check(s.calls.map((c) => c.method).toList()).deepEquals([
-          'playAlarmWithConfig',
-          'playVoiceRecording',
-          'stop',
-        ]);
+        check(
+          s.calls.map((c) => c.method).toList(),
+        ).deepEquals(['playAlarmWithConfig', 'playVoiceRecording', 'stop']);
       });
     });
   });

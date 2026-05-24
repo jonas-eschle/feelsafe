@@ -28,8 +28,8 @@ import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/audio_service.dart';
-import 'package:guardianangela/services/backup_service.dart';
 import 'package:guardianangela/services/background_session_service.dart';
+import 'package:guardianangela/services/backup_service.dart';
 import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
@@ -149,11 +149,12 @@ final batteryAlertConfigRepositoryProvider =
 ///
 /// The provider is a [FutureProvider] because [databaseProvider] is now
 /// async (Stage 5C).
-final sessionLogRepositoryProvider =
-    FutureProvider<SessionLogRepository>((ref) async {
-      final db = await ref.watch(databaseProvider.future);
-      return SessionLogRepository(db.sessionLogsDao);
-    });
+final sessionLogRepositoryProvider = FutureProvider<SessionLogRepository>((
+  ref,
+) async {
+  final db = await ref.watch(databaseProvider.future);
+  return SessionLogRepository(db.sessionLogsDao);
+});
 
 // ---- Output / sensor services ----
 
@@ -205,12 +206,13 @@ final recordingServiceProvider = Provider<RecordingServiceProtocol>((ref) {
 ///
 /// Tests override with [SimulationContactService] from
 /// `lib/services/sim/contact_service_sim.dart`.
-final contactServiceProvider =
-    FutureProvider<ContactServiceProtocol>((ref) async {
-      final db = await ref.watch(databaseProvider.future);
-      final repo = ContactsRepository(db.contactsDao);
-      return RealContactService(repository: repo);
-    });
+final contactServiceProvider = FutureProvider<ContactServiceProtocol>((
+  ref,
+) async {
+  final db = await ref.watch(databaseProvider.future);
+  final repo = ContactsRepository(db.contactsDao);
+  return RealContactService(repository: repo);
+});
 
 /// [AudioServiceProtocol] backed by `package:just_audio`.
 ///
@@ -383,12 +385,13 @@ final sentryServiceProvider = Provider<SentryServiceProtocol>((ref) {
 ///
 /// Tests override with [SimulationSessionLogRecorder] from
 /// `lib/services/session_log_recorder.dart`.
-final sessionLogRecorderProvider =
-    FutureProvider<SessionLogRecorderFactory>((ref) async {
-      final repo = await ref.watch(sessionLogRepositoryProvider.future);
-      return (SessionContext context) =>
-          SessionLogRecorder(context: context, repo: repo);
-    });
+final sessionLogRecorderProvider = FutureProvider<SessionLogRecorderFactory>((
+  ref,
+) async {
+  final repo = await ref.watch(sessionLogRepositoryProvider.future);
+  return (SessionContext context) =>
+      SessionLogRecorder(context: context, repo: repo);
+});
 
 // ---------------------------------------------------------------------------
 // PermissionAuditService — Stage 5C
@@ -405,10 +408,11 @@ final sessionLogRecorderProvider =
 ///
 /// Tests override with [SimulationPermissionAuditService] from
 /// `lib/services/sim/permission_audit_service_sim.dart`.
-final permissionAuditServiceProvider =
-    Provider<PermissionAuditServiceProtocol>((ref) {
-      return RealPermissionAuditService();
-    });
+final permissionAuditServiceProvider = Provider<PermissionAuditServiceProtocol>(
+  (ref) {
+    return RealPermissionAuditService();
+  },
+);
 
 // ---------------------------------------------------------------------------
 // SessionStartValidator — Stage 5C
@@ -423,10 +427,11 @@ final permissionAuditServiceProvider =
 ///
 /// Tests override with [SimulationSessionStartValidator] from
 /// `lib/services/sim/session_start_validator_sim.dart`.
-final sessionStartValidatorProvider =
-    Provider<SessionStartValidatorProtocol>((ref) {
-      return RealSessionStartValidator();
-    });
+final sessionStartValidatorProvider = Provider<SessionStartValidatorProtocol>((
+  ref,
+) {
+  return RealSessionStartValidator();
+});
 
 // ---------------------------------------------------------------------------
 // BackupService — Stage 5C

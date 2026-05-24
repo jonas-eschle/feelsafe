@@ -4,8 +4,9 @@
 // RealPhoneService uses url_launcher which talks to the platform. Tests mock
 // the url_launcher MethodChannel so no actual phone app is opened.
 
-import 'package:checks/checks.dart';
 import 'package:flutter/services.dart';
+
+import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/services/_phone_number_utils.dart';
@@ -175,11 +176,14 @@ void main() {
       check(svc.calls.first.phoneNumber).equals('+18001234567');
     });
 
-    test('callEmergency() with isSimulation=true returns false, no record', () async {
-      final result = await svc.callEmergency('112', isSimulation: true);
-      check(result).isFalse();
-      check(svc.calls).isEmpty();
-    });
+    test(
+      'callEmergency() with isSimulation=true returns false, no record',
+      () async {
+        final result = await svc.callEmergency('112', isSimulation: true);
+        check(result).isFalse();
+        check(svc.calls).isEmpty();
+      },
+    );
 
     test('callEmergency() throws ArgumentError on empty number', () async {
       await expectLater(svc.callEmergency(''), throwsA(isA<ArgumentError>()));
@@ -221,10 +225,14 @@ void main() {
       final before = DateTime.now();
       await svc.call('+15551234567');
       final after = DateTime.now();
-      check(svc.calls.first.timestamp.isAfter(before) ||
-            svc.calls.first.timestamp.isAtSameMomentAs(before)).isTrue();
-      check(svc.calls.first.timestamp.isBefore(after) ||
-            svc.calls.first.timestamp.isAtSameMomentAs(after)).isTrue();
+      check(
+        svc.calls.first.timestamp.isAfter(before) ||
+            svc.calls.first.timestamp.isAtSameMomentAs(before),
+      ).isTrue();
+      check(
+        svc.calls.first.timestamp.isBefore(after) ||
+            svc.calls.first.timestamp.isAtSameMomentAs(after),
+      ).isTrue();
     });
   });
 
@@ -244,12 +252,14 @@ void main() {
 
     tearDown(() => mock.unregister());
 
-    test('call() with isSimulation=true returns false without launching URL',
-        () async {
-      final result = await svc.call('+15551234567', isSimulation: true);
-      check(result).isFalse();
-      check(mock.calls).isEmpty();
-    });
+    test(
+      'call() with isSimulation=true returns false without launching URL',
+      () async {
+        final result = await svc.call('+15551234567', isSimulation: true);
+        check(result).isFalse();
+        check(mock.calls).isEmpty();
+      },
+    );
 
     test('callEmergency() with isSimulation=true returns false', () async {
       final result = await svc.callEmergency('112', isSimulation: true);

@@ -3,11 +3,7 @@ import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
 /// A recorded capture invocation for [SimulationSentryService].
 final class SentryCapture {
   /// Creates a [SentryCapture].
-  const SentryCapture({
-    required this.error,
-    this.stack,
-    this.context,
-  });
+  const SentryCapture({required this.error, this.stack, this.context});
 
   /// The captured error object.
   final Object error;

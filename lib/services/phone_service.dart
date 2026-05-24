@@ -38,7 +38,10 @@ class RealPhoneService implements PhoneServiceProtocol {
   @override
   Future<bool> call(String phoneNumber, {bool isSimulation = false}) async {
     if (isSimulation) {
-      log('[SIM] call($phoneNumber) — suppressed at Layer 3', name: 'PhoneService');
+      log(
+        '[SIM] call($phoneNumber) — suppressed at Layer 3',
+        name: 'PhoneService',
+      );
       return false;
     }
     return _dial(phoneNumber, isEmergency: false);

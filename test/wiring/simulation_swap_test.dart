@@ -26,23 +26,23 @@ import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
-import 'package:guardianangela/services/sim/backup_service_sim.dart';
 import 'package:guardianangela/services/sim/background_session_service_sim.dart';
+import 'package:guardianangela/services/sim/backup_service_sim.dart';
 import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
 import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/encryption_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
-import 'package:guardianangela/services/sim/permission_audit_service_sim.dart';
-import 'package:guardianangela/services/sim/session_start_validator_sim.dart';
 import 'package:guardianangela/services/sim/hardware_button_service_sim.dart';
 import 'package:guardianangela/services/sim/location_service_sim.dart';
 import 'package:guardianangela/services/sim/messaging_service_sim.dart';
 import 'package:guardianangela/services/sim/notification_service_sim.dart';
+import 'package:guardianangela/services/sim/permission_audit_service_sim.dart';
 import 'package:guardianangela/services/sim/phone_service_sim.dart';
 import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
 import 'package:guardianangela/services/sim/sentry_service_sim.dart';
+import 'package:guardianangela/services/sim/session_start_validator_sim.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 import 'package:guardianangela/services/sim/vibration_service_sim.dart';
 import 'package:guardianangela/services/sim/wakelock_service_sim.dart';
@@ -292,8 +292,9 @@ void main() {
     });
 
     test('simulation contact service starts with empty list', () async {
-      final s = await container.read(contactServiceProvider.future)
-          as SimulationContactService;
+      final s =
+          await container.read(contactServiceProvider.future)
+              as SimulationContactService;
       check(s.all).isEmpty();
     });
   });
@@ -639,23 +640,24 @@ void main() {
       check(factory).isNotNull();
     });
 
-    test('default factory produces SessionLogRecorder (not simulation)', () async {
-      // Build a default container with an in-memory database override.
-      final defaultDb = GuardianAngelaDatabase.memory();
-      final defaultContainer = ProviderContainer(
-        overrides: [
-          databaseProvider.overrideWith((_) async => defaultDb),
-        ],
-      );
-      addTearDown(() async {
-        defaultContainer.dispose();
-        await defaultDb.close();
-      });
-      final factory = await defaultContainer.read(
-        sessionLogRecorderProvider.future,
-      );
-      check(factory).isNotNull();
-    });
+    test(
+      'default factory produces SessionLogRecorder (not simulation)',
+      () async {
+        // Build a default container with an in-memory database override.
+        final defaultDb = GuardianAngelaDatabase.memory();
+        final defaultContainer = ProviderContainer(
+          overrides: [databaseProvider.overrideWith((_) async => defaultDb)],
+        );
+        addTearDown(() async {
+          defaultContainer.dispose();
+          await defaultDb.close();
+        });
+        final factory = await defaultContainer.read(
+          sessionLogRecorderProvider.future,
+        );
+        check(factory).isNotNull();
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -677,17 +679,15 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    test(
-      'overridden container returns SimulationPermissionAuditService',
-      () {
-        final s = container.read(permissionAuditServiceProvider);
-        check(s).isA<SimulationPermissionAuditService>();
-      },
-    );
+    test('overridden container returns SimulationPermissionAuditService', () {
+      final s = container.read(permissionAuditServiceProvider);
+      check(s).isA<SimulationPermissionAuditService>();
+    });
 
     test('simulation audit starts with no audited modes', () {
-      final s = container.read(permissionAuditServiceProvider)
-          as SimulationPermissionAuditService;
+      final s =
+          container.read(permissionAuditServiceProvider)
+              as SimulationPermissionAuditService;
       check(s.auditedModes).isEmpty();
     });
   });
@@ -707,17 +707,15 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    test(
-      'overridden container returns SimulationSessionStartValidator',
-      () {
-        final s = container.read(sessionStartValidatorProvider);
-        check(s).isA<SimulationSessionStartValidator>();
-      },
-    );
+    test('overridden container returns SimulationSessionStartValidator', () {
+      final s = container.read(sessionStartValidatorProvider);
+      check(s).isA<SimulationSessionStartValidator>();
+    });
 
     test('simulation validator starts with no validated modes', () {
-      final s = container.read(sessionStartValidatorProvider)
-          as SimulationSessionStartValidator;
+      final s =
+          container.read(sessionStartValidatorProvider)
+              as SimulationSessionStartValidator;
       check(s.validatedModes).isEmpty();
     });
   });
@@ -743,27 +741,29 @@ void main() {
     });
 
     test('simulation backup starts with empty call records', () async {
-      final s = await container.read(backupServiceProvider.future)
-          as SimulationBackupService;
+      final s =
+          await container.read(backupServiceProvider.future)
+              as SimulationBackupService;
       check(s.exportCalls).isEmpty();
       check(s.importCalls).isEmpty();
     });
   });
 
   group('Simulation swap — databaseProvider (Stage 5C)', () {
-    test('databaseProvider can be overridden with in-memory database', () async {
-      final db = GuardianAngelaDatabase.memory();
-      final container = ProviderContainer(
-        overrides: [
-          databaseProvider.overrideWith((_) async => db),
-        ],
-      );
-      addTearDown(() async {
-        container.dispose();
-        await db.close();
-      });
-      final resolved = await container.read(databaseProvider.future);
-      check(resolved).isA<GuardianAngelaDatabase>();
-    });
+    test(
+      'databaseProvider can be overridden with in-memory database',
+      () async {
+        final db = GuardianAngelaDatabase.memory();
+        final container = ProviderContainer(
+          overrides: [databaseProvider.overrideWith((_) async => db)],
+        );
+        addTearDown(() async {
+          container.dispose();
+          await db.close();
+        });
+        final resolved = await container.read(databaseProvider.future);
+        check(resolved).isA<GuardianAngelaDatabase>();
+      },
+    );
   });
 }

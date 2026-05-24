@@ -1,12 +1,13 @@
-// Phase 7 native dependency: flutter_background_service plugin manages its
-// own native Android foreground service (START_STICKY) and iOS background
-// execution modes. The Dart side manages lifecycle and notification-action
-// routing via NotificationService.
+// flutter_background_service plugin manages its own native Android foreground
+// service (START_STICKY) and iOS background execution modes. The Dart side
+// calls configure() to register the entry-point callbacks with the plugin;
+// the native side (plugin-generated code) handles the rest.
 //
-// NOTE: flutter_background_service iOS support is limited. If the plugin
-// cannot deliver persistent background on iOS, the Phase 6 UI should
-// surface a `BackgroundSessionServiceProtocol.isSupported` getter (to be
-// added at that point) to grey out the option for unsupported configurations.
+// NOTE: flutter_background_service iOS support is limited to foreground
+// keep-alive via BGTaskScheduler. Persistent background on iOS is not
+// guaranteed by this plugin (per plugin README). The app degrades gracefully:
+// the session engine still runs in the main isolate; only the background
+// keep-alive is absent when iOS suspends the app.
 //
 // Action IDs for foreground-service notification buttons (spec 05:805-820).
 // These are read by BackgroundSessionService and BackgroundSessionService
@@ -15,6 +16,8 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/services.dart';
+import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:guardianangela/services/notification_service.dart'
     show kForegroundNotificationId;
 import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
@@ -28,6 +31,38 @@ const String kActionPause = 'background:pause';
 
 /// Notification action identifier for the "Play/Resume" button.
 const String kActionResume = 'background:resume';
+
+// ---------------------------------------------------------------------------
+// Background isolate entry point (top-level — required by the plugin).
+// ---------------------------------------------------------------------------
+
+/// Entry point invoked by [FlutterBackgroundService] when the background
+/// isolate starts (Android foreground service / iOS background fetch).
+///
+/// This function MUST be top-level and annotated with
+/// `@pragma('vm:entry-point')` so the Dart AOT compiler retains it.
+/// The plugin calls it via reflection; if it is not retained the background
+/// isolate will fail to start silently.
+///
+/// The function sets the service as a foreground service (Android) and then
+/// listens for the `'stop'` method emitted by the main isolate when a
+/// session ends.  All session logic still runs in the main isolate; this
+/// handler only keeps the process alive and responds to the stop signal.
+@pragma('vm:entry-point')
+void _onBackgroundStart(ServiceInstance service) {
+  log('Background service started', name: 'BackgroundSessionService');
+
+  // Promote to foreground on Android so the OS does not kill the process.
+  if (service is AndroidServiceInstance) {
+    service.setAsForegroundService();
+  }
+
+  // Listen for a stop request from the main isolate.
+  service.on('stop').listen((_) {
+    log('Background service stopping on request', name: 'BackgroundSessionService');
+    service.stopSelf();
+  });
+}
 
 /// Production [BackgroundSessionServiceProtocol].
 ///
@@ -54,8 +89,9 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
   ///
   /// [notification] is used both to manage the foreground-service
   /// notification and to receive action taps.
-  RealBackgroundSessionService({required NotificationServiceProtocol notification})
-    : _notification = notification {
+  RealBackgroundSessionService({
+    required NotificationServiceProtocol notification,
+  }) : _notification = notification {
     _subscribeActionTaps();
   }
 
@@ -76,11 +112,66 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
 
   @override
   Future<void> configure() async {
-    // Phase 7: flutter_background_service.initialize() would be called here
-    // to register the background isolate entry point and notification
-    // channels. Until Phase 7 lands, channel setup is delegated to
-    // NotificationService.init() which is already called at app startup.
-    log('BackgroundSessionService configured', name: 'BackgroundSessionService');
+    // Register the background isolate entry point with the plugin.
+    //
+    // autoStart: false — the session controller starts the service explicitly
+    //   via startService() when a session begins. We never want the service
+    //   running in the background without an active session.
+    //
+    // isForegroundMode: true — Android START_STICKY foreground service.
+    //   The OS will restart the process if it is killed. The persistent
+    //   notification is managed separately via NotificationService.
+    //
+    // iOS degradation: IosConfiguration is supplied so configure() succeeds
+    //   on iOS. Persistent background delivery is not guaranteed by this
+    //   plugin on iOS (BGTaskScheduler window is short); the session engine
+    //   runs in the main isolate and degrades gracefully when iOS suspends.
+    try {
+      await FlutterBackgroundService().configure(
+        iosConfiguration: IosConfiguration(
+          autoStart: false,
+          onForeground: _onBackgroundStart,
+          onBackground: (_) async {
+            // iOS background fetch: keep-alive only; no long work permitted.
+            log(
+              'iOS background fetch tick',
+              name: 'BackgroundSessionService',
+            );
+            return true;
+          },
+        ),
+        androidConfiguration: AndroidConfiguration(
+          onStart: _onBackgroundStart,
+          isForegroundMode: true,
+          autoStart: false,
+          foregroundServiceNotificationId: kForegroundNotificationId,
+          notificationChannelId: 'session_service',
+          initialNotificationTitle: 'Guardian Angela',
+          initialNotificationContent: 'Session starting…',
+        ),
+      );
+      log(
+        'BackgroundSessionService configured',
+        name: 'BackgroundSessionService',
+      );
+    } on MissingPluginException catch (e) {
+      // Plugin channel not registered (unit tests / unsupported platform).
+      // Log and continue — the notification-based foreground path via
+      // NotificationService is always available as a fallback.
+      log(
+        'BackgroundSessionService configure skipped (MissingPlugin): $e',
+        name: 'BackgroundSessionService',
+      );
+    } catch (e) {
+      // flutter_background_service throws a plain string (not an Exception)
+      // when the platform is unsupported. Catch all remaining errors so the
+      // app can still run in environments where the plugin is unavailable
+      // (e.g. unit tests on Linux).
+      log(
+        'BackgroundSessionService configure skipped: $e',
+        name: 'BackgroundSessionService',
+      );
+    }
   }
 
   @override

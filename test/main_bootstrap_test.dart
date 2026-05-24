@@ -5,6 +5,7 @@
 // 2. GuardianAngelaApp renders the Phase 5 placeholder shell.
 // 3. Startup purge test: verifies SessionLogRepository.purgeExpiredLogs fires
 //    with the correct cutoff against an in-memory database.
+// 4. Restore-from-backup flow: file-picker cancelled / success / error paths.
 //
 // The full main() pipeline (DB open → settings load → Sentry init → purge →
 // notification init → TTS bootstrap → runApp) cannot be unit-tested directly
@@ -15,16 +16,24 @@
 //   c) The bootstrap ordering contract (steps must be exercised in order —
 //      verified by checking that the correct state is achieved after each
 //      step in a simulated sequence).
+//   d) The restore-from-backup flow via a fake FilePicker + BackupService.
 
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/main.dart';
+import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
+import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/sim/backup_service_sim.dart';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -33,6 +42,51 @@ import 'package:guardianangela/main.dart';
 /// Creates an in-memory database without seeding (clean slate).
 GuardianAngelaDatabase _openDb() =>
     GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+
+/// Fake [FilePicker] that returns a canned result without calling platform
+/// channels. Extends [FilePicker] (required by PlatformInterface.verifyToken).
+class _FakeFilePicker extends FilePicker {
+  _FakeFilePicker({this.result});
+
+  /// The result to return from [pickFiles]. `null` simulates cancellation.
+  final FilePickerResult? result;
+
+  @override
+  Future<FilePickerResult?> pickFiles({
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    void Function(FilePickerStatus)? onFileLoading,
+    bool allowCompression = true,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+  }) async => result;
+}
+
+/// [BackupServiceProtocol] that always throws on [importFromJson].
+class _ThrowingBackupService implements BackupServiceProtocol {
+  @override
+  Future<String> exportToJson({
+    bool includeSessionLogs = true,
+    bool includeMedia = true,
+  }) async => '{}';
+
+  @override
+  Future<void> importFromJson(String json) async =>
+      throw const FormatException('Backup is missing a valid _schemaVersion.');
+}
+
+/// Wraps a [JsonRecoveryApp] inside an [UncontrolledProviderScope] that
+/// overrides [backupServiceProvider] with the given [BackupServiceProtocol].
+Widget _recoveryWithBackup(BackupServiceProtocol backup) {
+  final container = ProviderContainer(
+    overrides: [backupServiceProvider.overrideWith((_) async => backup)],
+  );
+  return UncontrolledProviderScope(
+    container: container,
+    child: const JsonRecoveryApp(reason: 'TestError'),
+  );
+}
 
 /// A [SessionLog] that is NOT critical (will be purged when past cutoff).
 SessionLog _normalLog({
@@ -110,29 +164,20 @@ void main() {
       expect(find.text('Start fresh'), findsOneWidget);
     });
 
-    testWidgets('has "Restore from backup" button (disabled)', (
+    testWidgets('has "Restore from backup" button (enabled)', (
       WidgetTester tester,
     ) async {
       await tester.pumpWidget(const JsonRecoveryApp(reason: 'error'));
       await tester.pumpAndSettle();
 
-      // Button is present but disabled (onPressed: null).
+      // Button is present and enabled (real callback wired).
       final button = find.ancestor(
         of: find.text('Restore from backup'),
-        matching: find.byType(OutlinedButton),
+        matching: find.byType(FilledButton),
       );
       expect(button, findsOneWidget);
-      final outlinedButton = tester.widget<OutlinedButton>(button);
-      expect(outlinedButton.onPressed, isNull);
-    });
-
-    testWidgets('shows future-availability note for backup restore', (
-      WidgetTester tester,
-    ) async {
-      await tester.pumpWidget(const JsonRecoveryApp(reason: 'error'));
-      await tester.pumpAndSettle();
-
-      expect(find.textContaining('future update'), findsOneWidget);
+      final filledButton = tester.widget<FilledButton>(button);
+      expect(filledButton.onPressed, isNotNull);
     });
 
     testWidgets('uses Material theme with correct seed color', (
@@ -144,6 +189,83 @@ void main() {
       final materialApp = tester.widget<MaterialApp>(find.byType(MaterialApp));
       // useMaterial3 should be true (set in JsonRecoveryApp.build).
       expect(materialApp.theme?.useMaterial3, isTrue);
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  group('Restore-from-backup flow', () {
+    tearDown(() {
+      // Reset to a no-op fake so real platform channels are never called by
+      // any later test that might inadvertently leave a bad state.
+      FilePicker.platform = _FakeFilePicker();
+    });
+
+    testWidgets('cancelled pick shows "No file selected."', (
+      WidgetTester tester,
+    ) async {
+      FilePicker.platform = _FakeFilePicker();
+
+      await tester.pumpWidget(_recoveryWithBackup(SimulationBackupService()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Restore from backup'));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('No file selected.'), findsOneWidget);
+    });
+
+    testWidgets('successful import shows success message and _actionTaken', (
+      WidgetTester tester,
+    ) async {
+      const validJson =
+          '{"version":"1.0","_schemaVersion":1,"timestamp":"",'
+          '"contacts":[],"modes":[],"settings":{},'
+          '"templates":[],"eventDefaults":{},"profile":{}}';
+      final bytes = Uint8List.fromList(validJson.codeUnits);
+      FilePicker.platform = _FakeFilePicker(
+        result: FilePickerResult([
+          PlatformFile(name: 'backup.json', size: bytes.length, bytes: bytes),
+        ]),
+      );
+
+      final sim = SimulationBackupService();
+      await tester.pumpWidget(_recoveryWithBackup(sim));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Restore from backup'));
+      await tester.pumpAndSettle();
+
+      // Success: shows the done-message view (no longer showing choice panel).
+      expect(find.text('Recovery complete'), findsOneWidget);
+      expect(find.textContaining('Backup restored'), findsOneWidget);
+      // BackupService.importFromJson was called with the JSON content.
+      check(sim.importCalls).length.equals(1);
+      check(sim.importCalls.first).contains('"_schemaVersion":1');
+    });
+
+    testWidgets('import failure shows error and allows retry', (
+      WidgetTester tester,
+    ) async {
+      const validJson = '{"not":"a valid backup"}';
+      final bytes = Uint8List.fromList(validJson.codeUnits);
+      FilePicker.platform = _FakeFilePicker(
+        result: FilePickerResult([
+          PlatformFile(name: 'broken.json', size: bytes.length, bytes: bytes),
+        ]),
+      );
+
+      // SimulationBackupService that throws on import.
+      final sim = _ThrowingBackupService();
+      await tester.pumpWidget(_recoveryWithBackup(sim));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Restore from backup'));
+      await tester.pumpAndSettle();
+
+      // Error is surfaced.
+      expect(find.textContaining('Restore failed:'), findsOneWidget);
+      // Button is still present so user can retry (not _actionTaken).
+      expect(find.text('Restore from backup'), findsOneWidget);
     });
   });
 

@@ -9,6 +9,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter/services.dart';
+
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:guardianangela/domain/enums/message_channel.dart';
@@ -21,8 +22,7 @@ import 'package:guardianangela/services/protocols/notification_service_protocol.
 // Channel constant
 // ---------------------------------------------------------------------------
 
-const MethodChannel _smsChannel =
-    MethodChannel('com.guardianangela.app/sms');
+const MethodChannel _smsChannel = MethodChannel('com.guardianangela.app/sms');
 
 // ---------------------------------------------------------------------------
 // SmsRetryExhaustedEvent
@@ -165,15 +165,9 @@ class RealMessagingService implements MessagingServiceProtocol {
   Future<void> cancelPending(List<MessageWorkId> workIds) async {
     if (!Platform.isAndroid) return;
     if (workIds.isEmpty) return;
-    log(
-      'cancelPending: ${workIds.length} jobs',
-      name: 'MessagingService',
-    );
+    log('cancelPending: ${workIds.length} jobs', name: 'MessagingService');
     try {
-      await _smsChannel.invokeMethod<void>(
-        'cancelWork',
-        {'workIds': workIds},
-      );
+      await _smsChannel.invokeMethod<void>('cancelWork', {'workIds': workIds});
     } catch (e) {
       log('cancelPending error: $e', name: 'MessagingService');
     }
@@ -192,9 +186,7 @@ class RealMessagingService implements MessagingServiceProtocol {
   ///
   /// Internally calls [sendMessage] with a single-SMS-channel contact copy
   /// so the retry follows the standard enqueue path with exponential backoff.
-  Future<MessageWorkId?> retryExhaustedSms(
-    SmsRetryExhaustedEvent event,
-  ) async {
+  Future<MessageWorkId?> retryExhaustedSms(SmsRetryExhaustedEvent event) async {
     log(
       'retryExhaustedSms workId=${event.workId} contact=${event.contactName}',
       name: 'MessagingService',
@@ -236,10 +228,7 @@ class RealMessagingService implements MessagingServiceProtocol {
         message: args['message'] as String,
         error: args['error'] as String?,
       );
-      log(
-        'smsRetryExhausted workId=${event.workId}',
-        name: 'MessagingService',
-      );
+      log('smsRetryExhausted workId=${event.workId}', name: 'MessagingService');
       _exhaustedCache[event.workId] = event;
       _exhaustedController.add(event);
 
@@ -257,17 +246,11 @@ class RealMessagingService implements MessagingServiceProtocol {
     final payload = actionId.substring(kActionRetrySmsPrefix.length);
     final event = _exhaustedCache[payload];
     if (event == null) {
-      log(
-        'Retry tap for unknown payload: $payload',
-        name: 'MessagingService',
-      );
+      log('Retry tap for unknown payload: $payload', name: 'MessagingService');
       return;
     }
     retryExhaustedSms(event).then(
-      (workId) => log(
-        'Retry re-enqueued as $workId',
-        name: 'MessagingService',
-      ),
+      (workId) => log('Retry re-enqueued as $workId', name: 'MessagingService'),
     );
   }
 
@@ -301,14 +284,11 @@ class RealMessagingService implements MessagingServiceProtocol {
     if (Platform.isAndroid) {
       log('SMS Android enqueue → $number', name: 'MessagingService');
       try {
-        final workId = await _smsChannel.invokeMethod<String>(
-          'enqueueSms',
-          {
-            'phoneNumber': number,
-            'message': message,
-            'contactName': contact.name,
-          },
-        );
+        final workId = await _smsChannel.invokeMethod<String>('enqueueSms', {
+          'phoneNumber': number,
+          'message': message,
+          'contactName': contact.name,
+        });
         return workId;
       } catch (e) {
         log('enqueueSms error: $e', name: 'MessagingService');

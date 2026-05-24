@@ -13,7 +13,6 @@ import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
-
 import '../helpers/test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -25,9 +24,7 @@ GuardianAngelaDatabase _openDb() => GuardianAngelaDatabase.memory();
 SessionLogRepository _repo(GuardianAngelaDatabase db) =>
     SessionLogRepository(db.sessionLogsDao);
 
-UserProfile _profileWithMedical() => const UserProfile(
-  bloodType: 'O+',
-);
+UserProfile _profileWithMedical() => const UserProfile(bloodType: 'O+');
 
 UserProfile _profileNoMedical() => const UserProfile();
 
@@ -43,13 +40,8 @@ ChainEventData _event(
   timestamp: timestamp ?? DateTime.now().toUtc(),
 );
 
-SessionContext _context({
-  SessionMode? mode,
-  UserProfile? profile,
-}) => SessionContext(
-  mode: mode ?? makeMode(),
-  profile: profile,
-);
+SessionContext _context({SessionMode? mode, UserProfile? profile}) =>
+    SessionContext(mode: mode ?? makeMode(), profile: profile);
 
 // ---------------------------------------------------------------------------
 // SessionLogRecorder tests
@@ -123,8 +115,9 @@ void main() {
       recorder.onEvent(
         _event(ChainEvent.stepStarted, stepType: ChainStepType.smsContact),
       );
-      check(recorder.accumulatedEvents.first.stepType)
-          .equals(ChainStepType.smsContact.name);
+      check(
+        recorder.accumulatedEvents.first.stepType,
+      ).equals(ChainStepType.smsContact.name);
     });
 
     test('onEvent records null stepType when absent', () async {
@@ -154,7 +147,9 @@ void main() {
     // ---- finalise — persistence ----
 
     test('finalise writes SessionLog to repository', () async {
-      final ctx = _context(mode: makeMode(id: 'mode-1', name: 'Walk'));
+      final ctx = _context(
+        mode: makeMode(id: 'mode-1', name: 'Walk'),
+      );
       final recorder = SessionLogRecorder(context: ctx, repo: repo);
       recorder.onEvent(_event(ChainEvent.sessionStarted));
       await recorder.finalise(EndReason.disarm);
@@ -205,39 +200,36 @@ void main() {
       check(all.first.hadMedicalInfo).isFalse();
     });
 
-    test('hadMedicalInfo is false when no step has includeMedicalInfo=true',
-        () async {
+    test(
+      'hadMedicalInfo is false when no step has includeMedicalInfo=true',
+      () async {
+        final mode = makeMode(steps: [step(type: ChainStepType.smsContact)]);
+        final ctx = _context(mode: mode, profile: _profileWithMedical());
+        final recorder = SessionLogRecorder(context: ctx, repo: repo);
+        await recorder.finalise(EndReason.disarm);
+
+        final all = await db.sessionLogsDao.getAll();
+        check(all.first.hadMedicalInfo).isFalse();
+      },
+    );
+
+    test('hadMedicalInfo is true when profile has medical info AND step has '
+        'includeMedicalInfo=true', () async {
       final mode = makeMode(
-        steps: [step(type: ChainStepType.smsContact)],
+        steps: [
+          step(
+            type: ChainStepType.smsContact,
+            config: const SmsContactConfig(includeMedicalInfo: true),
+          ),
+        ],
       );
       final ctx = _context(mode: mode, profile: _profileWithMedical());
       final recorder = SessionLogRecorder(context: ctx, repo: repo);
       await recorder.finalise(EndReason.disarm);
 
       final all = await db.sessionLogsDao.getAll();
-      check(all.first.hadMedicalInfo).isFalse();
+      check(all.first.hadMedicalInfo).isTrue();
     });
-
-    test(
-      'hadMedicalInfo is true when profile has medical info AND step has '
-      'includeMedicalInfo=true',
-      () async {
-        final mode = makeMode(
-          steps: [
-            step(
-              type: ChainStepType.smsContact,
-              config: const SmsContactConfig(includeMedicalInfo: true),
-            ),
-          ],
-        );
-        final ctx = _context(mode: mode, profile: _profileWithMedical());
-        final recorder = SessionLogRecorder(context: ctx, repo: repo);
-        await recorder.finalise(EndReason.disarm);
-
-        final all = await db.sessionLogsDao.getAll();
-        check(all.first.hadMedicalInfo).isTrue();
-      },
-    );
 
     test('hadMedicalInfo is false when profile is null', () async {
       final mode = makeMode(
@@ -273,16 +265,20 @@ void main() {
     tearDown(() => db.close());
 
     test('onEvent accumulates events (same as real recorder)', () {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       recorder.onEvent(_event(ChainEvent.sessionStarted));
       recorder.onEvent(_event(ChainEvent.stepStarted, stepIndex: 0));
       check(recorder.accumulatedEvents).length.equals(2);
     });
 
     test('finalise does NOT write to repository', () async {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       recorder.onEvent(_event(ChainEvent.sessionStarted));
       await recorder.finalise(EndReason.disarm);
 
@@ -291,24 +287,30 @@ void main() {
     });
 
     test('finalise sets finalisedLog with isSimulation=true', () async {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       await recorder.finalise(EndReason.disarm);
       check(recorder.finalisedLog).isNotNull();
       check(recorder.finalisedLog!.isSimulation).isTrue();
     });
 
     test('finalisedLog contains accumulated events', () async {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       recorder.onEvent(_event(ChainEvent.sessionStarted));
       await recorder.finalise(EndReason.disarm);
       check(recorder.finalisedLog!.events).length.equals(1);
     });
 
     test('finalisedLog has correct endReason', () async {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       await recorder.finalise(EndReason.chainExhausted);
       check(recorder.finalisedLog!.endReason).equals(EndReason.chainExhausted);
     });
@@ -329,8 +331,10 @@ void main() {
     });
 
     test('finalisedLog is null before finalise', () {
-      final recorder =
-          SimulationSessionLogRecorder(context: _context(), repo: repo);
+      final recorder = SimulationSessionLogRecorder(
+        context: _context(),
+        repo: repo,
+      );
       check(recorder.finalisedLog).isNull();
     });
   });

@@ -51,7 +51,11 @@ class SimulationPhoneService implements PhoneServiceProtocol {
       return false;
     }
     calls.add(
-      PhoneCall(phoneNumber: number, isEmergency: false, timestamp: DateTime.now()),
+      PhoneCall(
+        phoneNumber: number,
+        isEmergency: false,
+        timestamp: DateTime.now(),
+      ),
     );
     return true;
   }
@@ -66,7 +70,11 @@ class SimulationPhoneService implements PhoneServiceProtocol {
       return false;
     }
     calls.add(
-      PhoneCall(phoneNumber: number, isEmergency: true, timestamp: DateTime.now()),
+      PhoneCall(
+        phoneNumber: number,
+        isEmergency: true,
+        timestamp: DateTime.now(),
+      ),
     );
     return true;
   }

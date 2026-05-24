@@ -53,10 +53,10 @@ class RealScreenFlashService implements ScreenFlashServiceProtocol {
       'fast' => 500,
       'slow' => 1000,
       _ => throw ArgumentError.value(
-          speed,
-          'speed',
-          'Must be "fast" or "slow"',
-        ),
+        speed,
+        'speed',
+        'Must be "fast" or "slow"',
+      ),
     };
 
     log(

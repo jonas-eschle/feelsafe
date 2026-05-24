@@ -129,8 +129,7 @@ class SimulationNotificationService implements NotificationServiceProtocol {
   // ---------------------------------------------------------------------------
 
   /// Injects an action tap ID into the [actionTaps] stream.
-  void injectActionTap(String actionId) =>
-      _actionTapsController.add(actionId);
+  void injectActionTap(String actionId) => _actionTapsController.add(actionId);
 
   /// Clears [calls].
   void reset() => calls.clear();

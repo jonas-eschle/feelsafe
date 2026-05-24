@@ -1,7 +1,10 @@
-// Tests for SessionStartValidator (Stage 5C).
+// Tests for SessionStartValidator (Stage 5C + 5C-fix).
 //
 // Uses constructor-injected state (cached permissions, contact count,
 // emergency number) so no real permission_handler calls are made.
+//
+// Prewarm tests inject a canLaunchUrl fake via the constructor parameter
+// so no real URL-scheme checks are attempted.
 
 import 'package:checks/checks.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -38,23 +41,23 @@ ChainStep _step(
   config: config,
 );
 
-SessionMode _modeWith({
-  List<ChainStep> steps = const [],
-}) => SessionMode(
+SessionMode _modeWith({List<ChainStep> steps = const []}) => SessionMode(
   id: 'test_mode',
   name: 'Test Mode',
-  chainSteps: steps.isEmpty
-      ? [_step('s1', ChainStepType.holdButton)]
-      : steps,
+  chainSteps: steps.isEmpty ? [_step('s1', ChainStepType.holdButton)] : steps,
 );
 
 /// Creates a [RealSessionStartValidator] with all permissions granted
 /// and the given overrides.
+///
+/// [installedApps] pre-seeds the third-party app cache so [prewarm] need
+/// not be called in basic tests. An absent entry means "unknown" (warn).
 RealSessionStartValidator _makeValidator({
   int contactCount = 1,
   String emergencyNumber = '112',
   Map<AppPermission, bool> permOverrides = const {},
   bool batteryExempt = true,
+  Map<String, bool>? installedApps,
 }) {
   final perms = {
     for (final p in AppPermission.values) p: true,
@@ -66,9 +69,9 @@ RealSessionStartValidator _makeValidator({
     cachedPermissions: perms,
     cachedBatteryOptimizationExempt: batteryExempt,
     batteryOptChecker: () async => batteryExempt,
-    permissionChecker: (p) async => perms.values.first
-        ? PermissionStatus.granted
-        : PermissionStatus.denied,
+    permissionChecker: (p) async =>
+        perms.values.first ? PermissionStatus.granted : PermissionStatus.denied,
+    installedApps: installedApps,
   );
 }
 
@@ -92,20 +95,20 @@ void main() {
       );
       final result = v.validate(_modeWith());
       check(result.isValid).isFalse();
-      check(result.errors.map((e) => e.title)).contains('Notifications disabled');
+      check(
+        result.errors.map((e) => e.title),
+      ).contains('Notifications disabled');
     });
 
     // Check 2: emergency contacts warning
     test('smsContact step with 0 contacts is a warning (not blocking)', () {
       final v = _makeValidator(contactCount: 0);
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.smsContact)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.smsContact)]);
       final result = v.validate(mode);
       check(result.isValid).isTrue(); // not blocking
-      check(result.warnings.map((w) => w.title)).contains(
-        'No emergency contacts',
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('No emergency contacts');
     });
 
     test('phoneCallContact step with 0 contacts is a warning', () {
@@ -114,24 +117,23 @@ void main() {
         steps: [_step('s1', ChainStepType.phoneCallContact)],
       );
       final result = v.validate(mode);
-      check(result.warnings.map((w) => w.title)).contains(
-        'No emergency contacts',
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('No emergency contacts');
     });
 
     test('smsContact step with contacts is not warned', () {
       final v = _makeValidator(contactCount: 2);
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.smsContact)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.smsContact)]);
       final result = v.validate(mode);
-      check(result.warnings.map((w) => w.title)).not(
-        (c) => c.contains('No emergency contacts'),
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('No emergency contacts'));
     });
 
     // Check 3: third-party app warning (WhatsApp/Telegram)
-    test('WhatsApp channel step emits warning about app installation', () {
+    test('WhatsApp channel step warns when prewarm not run (unknown)', () {
+      // No installedApps injected → all entries absent → conservative warn.
       final v = _makeValidator();
       final mode = _modeWith(
         steps: [
@@ -143,12 +145,12 @@ void main() {
         ],
       );
       final result = v.validate(mode);
-      check(result.warnings.map((w) => w.title)).contains(
-        'WhatsApp not confirmed installed',
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('WhatsApp not confirmed installed');
     });
 
-    test('Telegram channel step emits warning', () {
+    test('Telegram channel step warns when prewarm not run (unknown)', () {
       final v = _makeValidator();
       final mode = _modeWith(
         steps: [
@@ -160,17 +162,66 @@ void main() {
         ],
       );
       final result = v.validate(mode);
-      check(result.warnings.map((w) => w.title)).contains(
-        'Telegram not confirmed installed',
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('Telegram not confirmed installed');
+    });
+
+    test('WhatsApp channel step warns when explicitly marked NOT installed', () {
+      final v = _makeValidator(installedApps: {'WhatsApp': false});
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          ),
+        ],
       );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('WhatsApp not confirmed installed');
+    });
+
+    test('WhatsApp channel step does NOT warn when installed=true', () {
+      final v = _makeValidator(installedApps: {'WhatsApp': true});
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('WhatsApp not confirmed installed'));
+    });
+
+    test('Telegram channel step does NOT warn when installed=true', () {
+      final v = _makeValidator(installedApps: {'Telegram': true});
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.telegram),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('Telegram not confirmed installed'));
     });
 
     // Check 4: emergency number required for callEmergency
     test('callEmergency with empty emergency number is a blocking error', () {
       final v = _makeValidator(emergencyNumber: '');
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.callEmergency)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.callEmergency)]);
       final result = v.validate(mode);
       check(result.isValid).isFalse();
       check(result.errors.map((e) => e.title)).contains('No emergency number');
@@ -178,20 +229,16 @@ void main() {
 
     test('callEmergency with non-empty number is valid', () {
       final v = _makeValidator(emergencyNumber: '911');
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.callEmergency)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.callEmergency)]);
       final result = v.validate(mode);
-      check(result.errors.map((e) => e.title)).not(
-        (c) => c.contains('No emergency number'),
-      );
+      check(
+        result.errors.map((e) => e.title),
+      ).not((c) => c.contains('No emergency number'));
     });
 
     // Check 5: location permission
     test('smsContact includeLocation=true with no location perm is error', () {
-      final v = _makeValidator(
-        permOverrides: {AppPermission.location: false},
-      );
+      final v = _makeValidator(permOverrides: {AppPermission.location: false});
       final mode = _modeWith(
         steps: [
           _step(
@@ -203,15 +250,13 @@ void main() {
       );
       final result = v.validate(mode);
       check(result.isValid).isFalse();
-      check(result.errors.map((e) => e.title)).contains(
-        'Location permission required',
-      );
+      check(
+        result.errors.map((e) => e.title),
+      ).contains('Location permission required');
     });
 
     test('smsContact includeLocation=false does not require location perm', () {
-      final v = _makeValidator(
-        permOverrides: {AppPermission.location: false},
-      );
+      final v = _makeValidator(permOverrides: {AppPermission.location: false});
       final mode = _modeWith(
         steps: [
           _step(
@@ -222,30 +267,32 @@ void main() {
         ],
       );
       final result = v.validate(mode);
-      check(result.errors.map((e) => e.title)).not(
-        (c) => c.contains('Location permission required'),
-      );
+      check(
+        result.errors.map((e) => e.title),
+      ).not((c) => c.contains('Location permission required'));
     });
 
     // Check 6: SMS permission
-    test('smsContact (SMS channel) missing sms permission is a blocking error',
-        () {
-      final v = _makeValidator(permOverrides: {AppPermission.sms: false});
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(),
-          ),
-        ],
-      );
-      final result = v.validate(mode);
-      check(result.isValid).isFalse();
-      check(result.errors.map((e) => e.title)).contains(
-        'SMS permission required',
-      );
-    });
+    test(
+      'smsContact (SMS channel) missing sms permission is a blocking error',
+      () {
+        final v = _makeValidator(permOverrides: {AppPermission.sms: false});
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(),
+            ),
+          ],
+        );
+        final result = v.validate(mode);
+        check(result.isValid).isFalse();
+        check(
+          result.errors.map((e) => e.title),
+        ).contains('SMS permission required');
+      },
+    );
 
     test('phoneCallContact missing phone permission is a blocking error', () {
       final v = _makeValidator(permOverrides: {AppPermission.phone: false});
@@ -254,9 +301,9 @@ void main() {
       );
       final result = v.validate(mode);
       check(result.isValid).isFalse();
-      check(result.errors.map((e) => e.title)).contains(
-        'Phone permission required',
-      );
+      check(
+        result.errors.map((e) => e.title),
+      ).contains('Phone permission required');
     });
 
     // Check 7: microphone
@@ -275,9 +322,9 @@ void main() {
       );
       final result = v.validate(mode);
       check(result.isValid).isFalse();
-      check(result.errors.map((e) => e.title)).contains(
-        'Microphone permission required',
-      );
+      check(
+        result.errors.map((e) => e.title),
+      ).contains('Microphone permission required');
     });
 
     // Check 8: battery optimization (warning only)
@@ -285,17 +332,17 @@ void main() {
       final v = _makeValidator(batteryExempt: false);
       final result = v.validate(_modeWith());
       check(result.isValid).isTrue();
-      check(result.warnings.map((w) => w.title)).contains(
-        'Battery optimization active',
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('Battery optimization active');
     });
 
     test('battery optimization exempt has no battery warning', () {
       final v = _makeValidator();
       final result = v.validate(_modeWith());
-      check(result.warnings.map((w) => w.title)).not(
-        (c) => c.contains('Battery optimization active'),
-      );
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('Battery optimization active'));
     });
 
     // ValidationResult contract
@@ -321,6 +368,120 @@ void main() {
       check(result.isValid).isTrue();
       check(result.errors).isEmpty();
       check(result.warnings).isEmpty();
+    });
+  });
+
+  group('RealSessionStartValidator — prewarm()', () {
+    test('prewarm populates WhatsApp installed=true when canLaunchUrl returns true', () async {
+      final v = RealSessionStartValidator(
+        canLaunchUrl: (uri) async => uri.scheme == 'whatsapp',
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        cachedBatteryOptimizationExempt: true,
+        batteryOptChecker: () async => true,
+      );
+      await v.prewarm();
+
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('WhatsApp not confirmed installed'));
+    });
+
+    test('prewarm populates Telegram installed=true when canLaunchUrl returns true', () async {
+      final v = RealSessionStartValidator(
+        canLaunchUrl: (uri) async => uri.scheme == 'tg',
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        cachedBatteryOptimizationExempt: true,
+        batteryOptChecker: () async => true,
+      );
+      await v.prewarm();
+
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.telegram),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).not((c) => c.contains('Telegram not confirmed installed'));
+    });
+
+    test('prewarm marks WhatsApp NOT installed when canLaunchUrl returns false', () async {
+      final v = RealSessionStartValidator(
+        canLaunchUrl: (_) async => false,
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        cachedBatteryOptimizationExempt: true,
+        batteryOptChecker: () async => true,
+      );
+      await v.prewarm();
+
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('WhatsApp not confirmed installed');
+    });
+
+    test('before prewarm is called, validate uses unknown (warn) default', () {
+      final v = RealSessionStartValidator(
+        canLaunchUrl: (_) async => true, // Would return true if called
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        cachedBatteryOptimizationExempt: true,
+        batteryOptChecker: () async => true,
+      );
+      // prewarm NOT called
+      final mode = _modeWith(
+        steps: [
+          _step(
+            's1',
+            ChainStepType.smsContact,
+            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+          ),
+        ],
+      );
+      final result = v.validate(mode);
+      // Conservative: warns because map is empty (unknown).
+      check(
+        result.warnings.map((w) => w.title),
+      ).contains('WhatsApp not confirmed installed');
+    });
+
+    test('prewarm runs canLaunchUrl checks for both WhatsApp and Telegram', () async {
+      final checked = <String>[];
+      final v = RealSessionStartValidator(
+        canLaunchUrl: (uri) async {
+          checked.add(uri.scheme);
+          return false;
+        },
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        cachedBatteryOptimizationExempt: true,
+        batteryOptChecker: () async => true,
+      );
+      await v.prewarm();
+      check(checked).contains('whatsapp');
+      check(checked).contains('tg');
     });
   });
 

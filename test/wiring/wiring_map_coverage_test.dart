@@ -181,9 +181,7 @@ void main() {
       // (permissionAudit, sessionStartValidator, backup) plus the
       // pending-5c database provider.
       final pendingCount = _parseWiringMap()
-          .where(
-            (r) => r.status == 'pending-5b' || r.status == 'pending-5c',
-          )
+          .where((r) => r.status == 'pending-5b' || r.status == 'pending-5c')
           .length;
       check(pendingCount).equals(0);
     });

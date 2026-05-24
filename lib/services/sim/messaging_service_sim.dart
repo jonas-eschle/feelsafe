@@ -3,9 +3,10 @@ import 'dart:developer';
 
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
+
 import 'package:guardianangela/services/messaging_service.dart'
     show SmsRetryExhaustedEvent;
-import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// A single recorded send invocation for [SimulationMessagingService].
 final class MessageSendCall {
@@ -81,11 +82,7 @@ class SimulationMessagingService implements MessagingServiceProtocol {
         name: 'MessagingService',
       );
       calls.add(
-        MessageSendCall(
-          contact: contact,
-          message: message,
-          isSimulation: true,
-        ),
+        MessageSendCall(contact: contact, message: message, isSimulation: true),
       );
       return null;
     }
@@ -130,9 +127,7 @@ class SimulationMessagingService implements MessagingServiceProtocol {
       _exhaustedController.stream;
 
   /// Records a simulated retry attempt (no real re-enqueue).
-  Future<MessageWorkId?> retryExhaustedSms(
-    SmsRetryExhaustedEvent event,
-  ) async {
+  Future<MessageWorkId?> retryExhaustedSms(SmsRetryExhaustedEvent event) async {
     log(
       '[SIM] retryExhaustedSms workId=${event.workId}',
       name: 'MessagingService',

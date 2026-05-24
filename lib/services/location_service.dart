@@ -74,10 +74,7 @@ class RealLocationService implements LocationServiceProtocol {
 
       if (permission == LocationPermission.denied ||
           permission == LocationPermission.deniedForever) {
-        log(
-          'Location permission denied: $permission',
-          name: 'LocationService',
-        );
+        log('Location permission denied: $permission', name: 'LocationService');
         return false;
       }
 
@@ -97,7 +94,10 @@ class RealLocationService implements LocationServiceProtocol {
     Duration interval = const Duration(seconds: 30),
   }) async {
     if (_sub != null) {
-      log('startTracking called while already tracking', name: 'LocationService');
+      log(
+        'startTracking called while already tracking',
+        name: 'LocationService',
+      );
       return;
     }
 

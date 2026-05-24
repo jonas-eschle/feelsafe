@@ -255,11 +255,13 @@ void main() {
       check(a.runtimeType).not((c) => c.equals(b.runtimeType));
     });
 
-    test('factory constructor SystemUiCall.stealthIcon creates StealthIconCall',
-        () {
-      const call = SystemUiCall.stealthIcon(enabled: true);
-      check(call).isA<StealthIconCall>();
-    });
+    test(
+      'factory constructor SystemUiCall.stealthIcon creates StealthIconCall',
+      () {
+        const call = SystemUiCall.stealthIcon(enabled: true);
+        check(call).isA<StealthIconCall>();
+      },
+    );
 
     test('factory constructor SystemUiCall.lockTask creates LockTaskCall', () {
       const call = SystemUiCall.lockTask(enabled: false);

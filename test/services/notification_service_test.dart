@@ -1,12 +1,76 @@
 import 'dart:async';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mocktail/mocktail.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:test/test.dart';
 
+import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/notification_service_sim.dart';
+
+// ---------------------------------------------------------------------------
+// Mocks
+// ---------------------------------------------------------------------------
+
+class _MockFlutterLocalNotificationsPlugin extends Mock
+    implements FlutterLocalNotificationsPlugin {}
+
+/// Fake [InitializationSettings] for mocktail fallback registration.
+class _FakeInitializationSettings extends Fake
+    implements InitializationSettings {}
+
+/// Fake [NotificationResponse] for mocktail fallback registration.
+class _FakeNotificationResponse extends Fake
+    implements NotificationResponse {}
+
+// ---------------------------------------------------------------------------
+// Test helpers for Fix D (background-response replay)
+// ---------------------------------------------------------------------------
+
+/// Creates a minimal [RealNotificationService] with a mocked plugin and a
+/// custom [prefsFactory] so init() doesn't hit real platform channels.
+///
+/// [pendingActions] pre-seeds the SharedPreferences list that simulates
+/// actions received while the app was killed.
+Future<RealNotificationService> _makeReplayService({
+  List<String> pendingActions = const [],
+}) async {
+  // Set up shared_preferences in-memory for test.
+  SharedPreferences.setMockInitialValues(
+    pendingActions.isEmpty
+        ? {}
+        : {'pending_notification_actions': pendingActions},
+  );
+
+  final prefs = await SharedPreferences.getInstance();
+
+  // Stub plugin so initialize() and resolvePlatformSpecificImplementation
+  // don't throw MissingPluginException.
+  final plugin = _MockFlutterLocalNotificationsPlugin();
+  when(
+    () => plugin.initialize(
+      settings: any(named: 'settings'),
+      onDidReceiveNotificationResponse:
+          any(named: 'onDidReceiveNotificationResponse'),
+      onDidReceiveBackgroundNotificationResponse:
+          any(named: 'onDidReceiveBackgroundNotificationResponse'),
+    ),
+  ).thenAnswer((_) async => true);
+  when(
+    () => plugin.resolvePlatformSpecificImplementation<
+      AndroidFlutterLocalNotificationsPlugin
+    >(),
+  ).thenReturn(null);
+
+  return RealNotificationService(
+    plugin: plugin,
+    prefsFactory: () async => prefs,
+  );
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -19,6 +83,14 @@ SimulationNotificationService _sim() => SimulationNotificationService();
 // ---------------------------------------------------------------------------
 
 void main() {
+  // Register mocktail fallback values for types used with `any(named: ...)`.
+  // This is required once per test isolate for each type that mocktail
+  // intercepts via matchers.
+  setUpAll(() {
+    registerFallbackValue(_FakeInitializationSettings());
+    registerFallbackValue(_FakeNotificationResponse());
+  });
+
   // =========================================================================
   // SimulationNotificationService
   // =========================================================================
@@ -173,9 +245,7 @@ void main() {
 
       test('action tap prefix matches kActionRetrySmsPrefix', () {
         const payload = 'my_payload';
-        check(
-          '$kActionRetrySmsPrefix$payload',
-        ).startsWith('ga_retry_sms_');
+        check('$kActionRetrySmsPrefix$payload').startsWith('ga_retry_sms_');
       });
     });
 
@@ -241,9 +311,7 @@ void main() {
     setUp(() {
       sim = _sim();
       container = ProviderContainer(
-        overrides: [
-          notificationServiceProvider.overrideWithValue(sim),
-        ],
+        overrides: [notificationServiceProvider.overrideWithValue(sim)],
       );
     });
 
@@ -269,6 +337,118 @@ void main() {
           container.read(notificationServiceProvider)
               as SimulationNotificationService;
       check(s.calls).isEmpty();
+    });
+  });
+
+  // =========================================================================
+  // Fix D — Background notification response replay
+  // =========================================================================
+
+  group('RealNotificationService — background action replay', () {
+    tearDown(() {
+      // Clear mock values between tests.
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test('init with no pending actions: first subscriber receives nothing', () async {
+      final svc = await _makeReplayService();
+      await svc.init();
+
+      final received = <String>[];
+      final sub = svc.actionTaps.listen(received.add);
+      // Give the stream time to flush.
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      check(received).isEmpty();
+    });
+
+    test('init with pending action: first subscriber receives the action', () async {
+      final svc = await _makeReplayService(
+        pendingActions: ['background:im_safe'],
+      );
+      await svc.init();
+
+      final received = <String>[];
+      final sub = svc.actionTaps.listen(received.add);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      check(received).deepEquals(['background:im_safe']);
+    });
+
+    test('ordering of pending actions is preserved', () async {
+      final svc = await _makeReplayService(
+        pendingActions: ['action_a', 'action_b', 'action_c'],
+      );
+      await svc.init();
+
+      final received = <String>[];
+      final sub = svc.actionTaps.listen(received.add);
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      check(received).deepEquals(['action_a', 'action_b', 'action_c']);
+    });
+
+    test('pending list is cleared from SharedPreferences after init', () async {
+      SharedPreferences.setMockInitialValues({
+        'pending_notification_actions': ['background:pause'],
+      });
+      final prefs = await SharedPreferences.getInstance();
+
+      final plugin = _MockFlutterLocalNotificationsPlugin();
+      when(
+        () => plugin.initialize(
+          settings: any(named: 'settings'),
+          onDidReceiveNotificationResponse:
+              any(named: 'onDidReceiveNotificationResponse'),
+          onDidReceiveBackgroundNotificationResponse:
+              any(named: 'onDidReceiveBackgroundNotificationResponse'),
+        ),
+      ).thenAnswer((_) async => true);
+      when(
+        () => plugin.resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin
+        >(),
+      ).thenReturn(null);
+
+      final svc = RealNotificationService(
+        plugin: plugin,
+        prefsFactory: () async => prefs,
+      );
+      await svc.init();
+
+      // Subscribe to trigger flush.
+      final sub = svc.actionTaps.listen((_) {});
+      await Future<void>.delayed(Duration.zero);
+      await sub.cancel();
+
+      // The key should have been removed.
+      final remaining = prefs.getStringList('pending_notification_actions');
+      check(remaining).isNull();
+    });
+
+    test('second subscriber does not re-receive already-flushed actions', () async {
+      final svc = await _makeReplayService(
+        pendingActions: ['background:resume'],
+      );
+      await svc.init();
+
+      final first = <String>[];
+      final second = <String>[];
+
+      final sub1 = svc.actionTaps.listen(first.add);
+      await Future<void>.delayed(Duration.zero);
+      await sub1.cancel();
+
+      final sub2 = svc.actionTaps.listen(second.add);
+      await Future<void>.delayed(Duration.zero);
+      await sub2.cancel();
+
+      // First subscriber got the replayed action; second got nothing.
+      check(first).deepEquals(['background:resume']);
+      check(second).isEmpty();
     });
   });
 }

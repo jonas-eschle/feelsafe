@@ -10,10 +10,11 @@ class SimulationBackupService implements BackupServiceProtocol {
   /// [fixedExport] is the JSON string returned by [exportToJson].
   /// Defaults to a minimal valid export envelope if not provided.
   SimulationBackupService({String? fixedExport})
-    : _fixedExport = fixedExport ??
+    : _fixedExport =
+          fixedExport ??
           '{"version":"1.0","_schemaVersion":1,"timestamp":"",'
-          '"contacts":[],"modes":[],"settings":{},'
-          '"templates":[],"eventDefaults":{},"profile":{}}';
+              '"contacts":[],"modes":[],"settings":{},'
+              '"templates":[],"eventDefaults":{},"profile":{}}';
 
   final String _fixedExport;
 
@@ -32,9 +33,10 @@ class SimulationBackupService implements BackupServiceProtocol {
     bool includeSessionLogs = true,
     bool includeMedia = true,
   }) async {
-    exportCalls.add(
-      (includeSessionLogs: includeSessionLogs, includeMedia: includeMedia),
-    );
+    exportCalls.add((
+      includeSessionLogs: includeSessionLogs,
+      includeMedia: includeMedia,
+    ));
     return _fixedExport;
   }
 

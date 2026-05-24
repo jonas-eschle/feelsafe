@@ -45,9 +45,7 @@ class RealVibrationService implements VibrationServiceProtocol {
     // Four sustained pulses: 500ms on, 200ms gap (repeats 4 times).
     // Pattern: [delay, on, off, on, off, on, off, on] — 4 pulses.
     if (!await _hasVibrator()) return;
-    await Vibration.vibrate(
-      pattern: [0, 500, 200, 500, 200, 500, 200, 500],
-    );
+    await Vibration.vibrate(pattern: [0, 500, 200, 500, 200, 500, 200, 500]);
   }
 
   @override

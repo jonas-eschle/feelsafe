@@ -163,14 +163,16 @@ void main() {
       check(s.batteryLevel).isA<Stream<int>>();
     });
 
-    test('protocol: startMonitoring + stopMonitoring both return Future<void>',
-        () async {
-      final s = _sim();
-      addTearDown(s.dispose);
-      await s.startMonitoring();
-      await s.stopMonitoring();
-      check(true).isTrue(); // no exception = contract fulfilled
-    });
+    test(
+      'protocol: startMonitoring + stopMonitoring both return Future<void>',
+      () async {
+        final s = _sim();
+        addTearDown(s.dispose);
+        await s.startMonitoring();
+        await s.stopMonitoring();
+        check(true).isTrue(); // no exception = contract fulfilled
+      },
+    );
   });
 
   // =========================================================================
@@ -209,9 +211,7 @@ void main() {
     setUp(() {
       sim = _sim();
       container = ProviderContainer(
-        overrides: [
-          batteryMonitorServiceProvider.overrideWithValue(sim),
-        ],
+        overrides: [batteryMonitorServiceProvider.overrideWithValue(sim)],
       );
     });
 

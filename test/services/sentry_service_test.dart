@@ -38,10 +38,7 @@ class _FakeSentrySdk implements SentrySdk {
   }
 
   @override
-  Future<void> captureException(
-    Object error, {
-    StackTrace? stackTrace,
-  }) async {
+  Future<void> captureException(Object error, {StackTrace? stackTrace}) async {
     captureCallCount++;
     lastError = error;
     lastStack = stackTrace;
@@ -86,9 +83,7 @@ void main() {
         dsn: 'https://key@o123.ingest.de.sentry.io/456',
       );
       check(sdk.initCallCount).equals(1);
-      check(sdk.lastDsn).equals(
-        'https://key@o123.ingest.de.sentry.io/456',
-      );
+      check(sdk.lastDsn).equals('https://key@o123.ingest.de.sentry.io/456');
     });
 
     test('initialize(enabled:true) passes tracesSampleRate', () async {
@@ -123,16 +118,8 @@ void main() {
       final sdk = _FakeSentrySdk();
       final svc = _real(sdk);
       const dsn = 'https://key@o123.ingest.de.sentry.io/456';
-      await svc.initialize(
-        enabled: true,
-        dsn: dsn,
-        tracesSampleRate: 0.1,
-      );
-      await svc.initialize(
-        enabled: true,
-        dsn: dsn,
-        tracesSampleRate: 0.1,
-      );
+      await svc.initialize(enabled: true, dsn: dsn, tracesSampleRate: 0.1);
+      await svc.initialize(enabled: true, dsn: dsn, tracesSampleRate: 0.1);
       check(sdk.initCallCount).equals(1);
     });
 
@@ -157,7 +144,10 @@ void main() {
       final svc = _real(sdk);
       await svc.initialize(enabled: false);
       await expectLater(
-        svc.initialize(enabled: true, dsn: 'https://x@o1.ingest.de.sentry.io/1'),
+        svc.initialize(
+          enabled: true,
+          dsn: 'https://x@o1.ingest.de.sentry.io/1',
+        ),
         throwsA(isA<StateError>()),
       );
     });
@@ -244,15 +234,18 @@ void main() {
       check(sdk.captureCallCount).equals(0);
     });
 
-    test('close resets initialized state — can re-initialize after close', () async {
-      final sdk = _FakeSentrySdk();
-      final svc = _real(sdk);
-      await svc.initialize(enabled: false);
-      await svc.close();
-      // After close, state is reset — re-initializing should not throw.
-      await svc.initialize(enabled: false);
-      check(sdk.initCallCount).equals(0);
-    });
+    test(
+      'close resets initialized state — can re-initialize after close',
+      () async {
+        final sdk = _FakeSentrySdk();
+        final svc = _real(sdk);
+        await svc.initialize(enabled: false);
+        await svc.close();
+        // After close, state is reset — re-initializing should not throw.
+        await svc.initialize(enabled: false);
+        check(sdk.initCallCount).equals(0);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -269,10 +262,13 @@ void main() {
       check(svc.isInitialized).isTrue();
     });
 
-    test('initialize(enabled:false) does not mark service as initialized', () async {
-      await svc.initialize(enabled: false);
-      check(svc.isInitialized).isFalse();
-    });
+    test(
+      'initialize(enabled:false) does not mark service as initialized',
+      () async {
+        await svc.initialize(enabled: false);
+        check(svc.isInitialized).isFalse();
+      },
+    );
 
     test('captureException before initialize records nothing', () async {
       await svc.captureException(Exception('e'), null);

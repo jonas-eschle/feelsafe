@@ -64,8 +64,7 @@ void main() {
         await s.startSosFlash();
         await Future<void>.delayed(const Duration(milliseconds: 80));
         await s.stopFlash();
-        final onOff =
-            s.events.map((e) => e.torchOn).toList();
+        final onOff = s.events.map((e) => e.torchOn).toList();
         // Must have at least one true then false pair.
         check(onOff.isNotEmpty).isTrue();
         check(onOff.first).isTrue();

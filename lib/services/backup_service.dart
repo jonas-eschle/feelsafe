@@ -3,7 +3,6 @@ import 'dart:developer';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
-import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart'; // accepted for interface consistency
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
@@ -14,6 +13,8 @@ import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
+
+import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart'; // accepted for interface consistency
 
 /// Current schema version emitted in [exportToJson].
 ///
@@ -106,10 +107,7 @@ class RealBackupService implements BackupServiceProtocol {
     }
 
     final result = jsonEncode(payload);
-    log(
-      'exportToJson: ${result.length} chars',
-      name: 'BackupService',
-    );
+    log('exportToJson: ${result.length} chars', name: 'BackupService');
     return result;
   }
 
@@ -185,8 +183,9 @@ class RealBackupService implements BackupServiceProtocol {
       if (templatesRaw is List) {
         for (final item in templatesRaw) {
           if (item is Map<String, dynamic>) {
-            await _db.reminderTemplatesDao
-                .upsert(ReminderTemplate.fromJson(item));
+            await _db.reminderTemplatesDao.upsert(
+              ReminderTemplate.fromJson(item),
+            );
           }
         }
       }

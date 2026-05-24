@@ -50,9 +50,7 @@ void main() {
       test('returns unmodifiable view', () {
         final s = _sim([_contact(id: 'c0')]);
         final list = s.all;
-        check(
-          () => (list as dynamic).add(_contact(id: 'x')),
-        ).throws<Error>();
+        check(() => (list as dynamic).add(_contact(id: 'x'))).throws<Error>();
       });
 
       test('sorted by sortOrder ascending', () {
@@ -102,10 +100,7 @@ void main() {
       });
 
       test('returns null for non-existent id among multiple contacts', () {
-        final contacts = [
-          _contact(id: 'c1'),
-          _contact(id: 'c2', sortOrder: 1),
-        ];
+        final contacts = [_contact(id: 'c1'), _contact(id: 'c2', sortOrder: 1)];
         check(_sim(contacts).byId('c99')).isNull();
       });
 
@@ -138,10 +133,9 @@ void main() {
         check(found.phoneNumber).equals('+49123456789');
         check(found.relationship).equals('Brother');
         check(found.sortOrder).equals(3);
-        check(found.channels).deepEquals([
-          MessageChannel.sms,
-          MessageChannel.whatsapp,
-        ]);
+        check(
+          found.channels,
+        ).deepEquals([MessageChannel.sms, MessageChannel.whatsapp]);
         check(found.languageCode).equals('de');
       });
     });
@@ -160,10 +154,7 @@ void main() {
 
     group('contacts with identical sortOrder', () {
       test('all returns both contacts', () {
-        final contacts = [
-          _contact(id: 'c1'),
-          _contact(id: 'c2'),
-        ];
+        final contacts = [_contact(id: 'c1'), _contact(id: 'c2')];
         check(_sim(contacts).all).length.equals(2);
       });
     });

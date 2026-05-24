@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:permission_handler/permission_handler.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/app_permission.dart';
@@ -14,12 +15,14 @@ import 'package:guardianangela/services/protocols/session_start_validator_protoc
 ///
 /// [validate] is synchronous (spec 05:1186 / protocol contract). To avoid
 /// async I/O inside `validate`, the controller must call
-/// [updateCachedState] with fresh permission statuses, contact count, and
-/// emergency number before calling [validate]. The session controller's
-/// startup flow:
+/// [updateCachedState] (to refresh permissions) and [prewarm] (to check
+/// third-party app installation) before calling [validate].
+///
+/// The session controller's startup flow:
 /// 1. `await auditForMode(mode)` — determines which permissions are needed.
 /// 2. `await validator.updateCachedState(...)` — refreshes cached state.
-/// 3. `validator.validate(mode)` — synchronous.
+/// 3. `await validator.prewarm()` — queries installed third-party apps.
+/// 4. `validator.validate(mode)` — synchronous.
 ///
 /// **Single constructor location rule:** no `RealSessionStartValidator()`
 /// call may appear outside `lib/services/service_providers.dart`
@@ -28,8 +31,14 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
   /// Creates a [RealSessionStartValidator].
   ///
   /// All cached-state parameters default to a conservative "not granted /
-  /// zero contacts" posture. Call [updateCachedState] to refresh before
-  /// each [validate] call.
+  /// zero contacts" posture. Call [updateCachedState] and [prewarm] to
+  /// refresh before each [validate] call.
+  ///
+  /// [canLaunchUrl] defaults to [url_launcher.canLaunchUrl]. Tests pass a
+  /// fake to avoid real URL-scheme lookups.
+  ///
+  /// [installedApps] is an optional pre-warmed map (keyed by app name) for
+  /// tests that need to bypass [prewarm].
   RealSessionStartValidator({
     int cachedContactCount = 0,
     String cachedEmergencyNumber = '',
@@ -37,13 +46,16 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
     bool cachedBatteryOptimizationExempt = false,
     Future<bool> Function()? batteryOptChecker,
     Future<PermissionStatus> Function(Permission)? permissionChecker,
+    Future<bool> Function(Uri)? canLaunchUrl,
+    Map<String, bool>? installedApps,
   }) : _contactCount = cachedContactCount,
        _emergencyNumber = cachedEmergencyNumber,
-       _permissions =
-           cachedPermissions ?? const <AppPermission, bool>{},
+       _permissions = cachedPermissions ?? const <AppPermission, bool>{},
        _batteryOptExempt = cachedBatteryOptimizationExempt,
        _batteryOptChecker = batteryOptChecker ?? _defaultBatteryOptChecker,
-       _permissionChecker = permissionChecker ?? _defaultPermissionChecker;
+       _permissionChecker = permissionChecker ?? _defaultPermissionChecker,
+       _canLaunchUrl = canLaunchUrl ?? url_launcher.canLaunchUrl,
+       _installedApps = Map<String, bool>.from(installedApps ?? const {});
 
   int _contactCount;
   String _emergencyNumber;
@@ -51,19 +63,48 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
   bool _batteryOptExempt;
   final Future<bool> Function() _batteryOptChecker;
   final Future<PermissionStatus> Function(Permission) _permissionChecker;
+  final Future<bool> Function(Uri) _canLaunchUrl;
+
+  /// Cached result of [prewarm] — maps app name to installed status.
+  ///
+  /// An absent key means the app was never checked (unknown → warn).
+  /// Populated by [prewarm]; tests may inject a pre-filled map via the
+  /// [installedApps] constructor parameter.
+  final Map<String, bool> _installedApps;
 
   static Future<bool> _defaultBatteryOptChecker() async {
     final status = await Permission.ignoreBatteryOptimizations.status;
     return status.isGranted;
   }
 
-  static Future<PermissionStatus> _defaultPermissionChecker(
-    Permission p,
-  ) => p.status;
+  static Future<PermissionStatus> _defaultPermissionChecker(Permission p) =>
+      p.status;
 
   // ---------------------------------------------------------------------------
   // State refresh (called by the session controller before validate)
   // ---------------------------------------------------------------------------
+
+  /// Queries [canLaunchUrl] for each third-party messaging app and caches
+  /// the result in [_installedApps].
+  ///
+  /// Must be called once before [validate] to enable real installation
+  /// checks. If not called the map is empty (unknown) and [validate] falls
+  /// back to always-warn, which is the conservative default.
+  ///
+  /// On Android, the `<queries>` entries in `AndroidManifest.xml` are
+  /// required for this to return accurate results on API 30+.
+  Future<void> prewarm() async {
+    final results = await Future.wait([
+      _canLaunchUrl(Uri.parse('whatsapp://send?phone=+10000000000')),
+      _canLaunchUrl(Uri.parse('tg://msg?to=+10000000000')),
+    ]);
+    _installedApps['WhatsApp'] = results[0];
+    _installedApps['Telegram'] = results[1];
+    log(
+      'prewarm: WhatsApp=${results[0]} Telegram=${results[1]}',
+      name: 'SessionStartValidator',
+    );
+  }
 
   /// Refreshes cached permission statuses, contact count, and emergency number.
   ///
@@ -135,7 +176,9 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
       );
     }
 
-    // ---- Check 3: Required third-party apps (warning) ----
+    // ---- Check 3: Required third-party apps (warning if not installed) ----
+    // Uses the cache populated by prewarm(). An absent key (prewarm not yet
+    // called) is treated as "unknown" and warns conservatively.
     for (final step in mode.chainSteps) {
       if (step.type != ChainStepType.smsContact) continue;
       final config = step.config as SmsContactConfig?;
@@ -146,17 +189,19 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
         _ => null,
       };
       if (appName != null) {
-        // Phase 7 native: check installed via platform channel.
-        // Until Phase 7, emit a warning (conservative).
-        warnings.add(
-          ValidationIssue(
-            title: '$appName not confirmed installed',
-            description:
-                'This mode sends messages via $appName. Ensure $appName is '
-                'installed and configured on this device.',
-            actionLabel: 'Edit Mode',
-          ),
-        );
+        final installed = _installedApps[appName];
+        if (installed != true) {
+          // Warn when not installed OR when prewarm hasn't run (installed == null).
+          warnings.add(
+            ValidationIssue(
+              title: '$appName not confirmed installed',
+              description:
+                  'This mode sends messages via $appName. Ensure $appName is '
+                  'installed and configured on this device.',
+              actionLabel: 'Edit Mode',
+            ),
+          );
+        }
         break;
       }
     }

@@ -148,19 +148,22 @@ void main() {
 
     test('startService() stealth=true passed to notification', () async {
       await svc.startService(title: 'Music', body: 'Playing', stealth: true);
-      final call = notif.calls.where(
-        (c) => c.method == 'showForegroundServiceNotification',
-      ).first;
+      final call = notif.calls
+          .where((c) => c.method == 'showForegroundServiceNotification')
+          .first;
       check(call.stealth).equals(true);
     });
 
-    test('updateNotification() calls showForegroundServiceNotification', () async {
-      await svc.updateNotification(title: 'Updated', body: 'Step 2');
-      final call = notif.calls.where(
-        (c) => c.method == 'showForegroundServiceNotification',
-      ).first;
-      check(call.title).equals('Updated');
-    });
+    test(
+      'updateNotification() calls showForegroundServiceNotification',
+      () async {
+        await svc.updateNotification(title: 'Updated', body: 'Step 2');
+        final call = notif.calls
+            .where((c) => c.method == 'showForegroundServiceNotification')
+            .first;
+        check(call.title).equals('Updated');
+      },
+    );
 
     test('stopService() calls notification.cancel', () async {
       await svc.stopService();
@@ -233,14 +236,16 @@ void main() {
       check(cancel).isNotEmpty();
     });
 
-    test('multiple startService calls each trigger notification update',
-        () async {
-      await svc.startService(title: 'T1', body: 'B1');
-      await svc.startService(title: 'T2', body: 'B2');
-      final fgCalls = notif.calls.where(
-        (c) => c.method == 'showForegroundServiceNotification',
-      );
-      check(fgCalls).length.equals(2);
-    });
+    test(
+      'multiple startService calls each trigger notification update',
+      () async {
+        await svc.startService(title: 'T1', body: 'B1');
+        await svc.startService(title: 'T2', body: 'B2');
+        final fgCalls = notif.calls.where(
+          (c) => c.method == 'showForegroundServiceNotification',
+        );
+        check(fgCalls).length.equals(2);
+      },
+    );
   });
 }

@@ -42,11 +42,14 @@ final class LocationPoint {
   ///
   /// Throws [ArgumentError] if a required field is missing or malformed.
   factory LocationPoint.fromJson(Map<String, dynamic> json) {
-    final lat = (json['latitude'] as num?)?.toDouble() ??
+    final lat =
+        (json['latitude'] as num?)?.toDouble() ??
         (throw ArgumentError('latitude required in LocationPoint JSON'));
-    final lon = (json['longitude'] as num?)?.toDouble() ??
+    final lon =
+        (json['longitude'] as num?)?.toDouble() ??
         (throw ArgumentError('longitude required in LocationPoint JSON'));
-    final ts = json['timestamp'] as String? ??
+    final ts =
+        json['timestamp'] as String? ??
         (throw ArgumentError('timestamp required in LocationPoint JSON'));
     return LocationPoint(
       latitude: lat,
@@ -66,8 +69,7 @@ final class LocationPoint {
           accuracy == other.accuracy);
 
   @override
-  int get hashCode =>
-      Object.hash(latitude, longitude, timestamp, accuracy);
+  int get hashCode => Object.hash(latitude, longitude, timestamp, accuracy);
 
   @override
   String toString() =>

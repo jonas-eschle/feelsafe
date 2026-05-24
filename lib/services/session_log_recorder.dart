@@ -144,8 +144,7 @@ class SessionLogRecorder implements SessionLogRecorderProtocol {
   // -------------------------------------------------------------------------
 
   /// Returns a snapshot of the accumulated events (unmodifiable).
-  List<SessionLogEvent> get accumulatedEvents =>
-      List.unmodifiable(_events);
+  List<SessionLogEvent> get accumulatedEvents => List.unmodifiable(_events);
 
   /// Returns the session UUID.
   String get sessionId => _id;
@@ -178,10 +177,10 @@ class SessionLogRecorder implements SessionLogRecorderProtocol {
 
   /// Returns a concise human-readable description for [event].
   String _describeEvent(ChainEventData event) {
-    final stepLabel =
-        event.stepIndex != null ? 'step ${event.stepIndex}' : '';
-    final typeLabel =
-        event.stepType != null ? ' (${event.stepType!.name})' : '';
+    final stepLabel = event.stepIndex != null ? 'step ${event.stepIndex}' : '';
+    final typeLabel = event.stepType != null
+        ? ' (${event.stepType!.name})'
+        : '';
     return '${event.event.name}$typeLabel $stepLabel'.trim();
   }
 }
@@ -200,10 +199,7 @@ class SessionLogRecorder implements SessionLogRecorderProtocol {
 /// requiring a database.
 class SimulationSessionLogRecorder extends SessionLogRecorder {
   /// Creates a [SimulationSessionLogRecorder].
-  SimulationSessionLogRecorder({
-    required super.context,
-    required super.repo,
-  });
+  SimulationSessionLogRecorder({required super.context, required super.repo});
 
   /// The [SessionLog] assembled by the last [finalise] call.
   ///

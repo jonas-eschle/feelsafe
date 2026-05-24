@@ -15,24 +15,32 @@ import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 /// will replace these hardcoded strings with the translated ARB values).
 const Map<String, String> _builtInVoicePrompts = {
   'en': "Hey, it's Angela, just checking in. Can you call me back?",
-  'de': 'Hey, hier ist Angela, ich wollte nur kurz nachfragen. Kannst du '
+  'de':
+      'Hey, hier ist Angela, ich wollte nur kurz nachfragen. Kannst du '
       'mich zurückrufen?',
   'es': 'Hola, soy Angela, solo quería saber cómo estás. ¿Me puedes llamar?',
-  'fr': 'Salut, c\'est Angela, je voulais juste prendre des nouvelles. '
+  'fr':
+      'Salut, c\'est Angela, je voulais juste prendre des nouvelles. '
       'Tu peux me rappeler?',
-  'ru': 'Привет, это Анжела, просто хочу узнать, как ты. '
+  'ru':
+      'Привет, это Анжела, просто хочу узнать, как ты. '
       'Ты можешь перезвонить мне?',
   'zh': '嘿，我是Angela，只是想确认一下你是否安好。你能给我回电吗？',
   'zh_TW': '嘿，我是Angela，只是想確認你是否安好。你能給我回電嗎？',
-  'hi': 'हाय, मैं Angela हूँ, बस यह जानना चाहती थी कि तुम ठीक हो। '
+  'hi':
+      'हाय, मैं Angela हूँ, बस यह जानना चाहती थी कि तुम ठीक हो। '
       'क्या तुम मुझे वापस कॉल कर सकते हो?',
-  'fa': 'سلام، من آنجلا هستم، فقط می‌خواستم حالت را بپرسم. '
+  'fa':
+      'سلام، من آنجلا هستم، فقط می‌خواستم حالت را بپرسم. '
       'می‌توانی به من زنگ بزنی؟',
-  'uk': 'Привіт, це Анджела, просто хотіла дізнатися, як ти. '
+  'uk':
+      'Привіт, це Анджела, просто хотіла дізнатися, як ти. '
       'Ти можеш мені передзвонити?',
-  'pl': 'Hej, to Angela, chciałam tylko sprawdzić, czy wszystko w porządku. '
+  'pl':
+      'Hej, to Angela, chciałam tylko sprawdzić, czy wszystko w porządku. '
       'Czy możesz do mnie oddzwonić?',
-  'el': 'Γεια, είμαι η Angela, ήθελα απλώς να δω πώς είσαι. '
+  'el':
+      'Γεια, είμαι η Angela, ήθελα απλώς να δω πώς είσαι. '
       'Μπορείς να με πάρεις τηλέφωνο;',
   'ar': 'مرحباً، أنا أنجيلا، أردت فقط الاطمئنان عليك. هل يمكنك الاتصال بي؟',
   'he': 'היי, זאת אנג\'לה, רציתי לבדוק שהכל בסדר. האם אתה יכול להתקשר אלי?',
@@ -261,8 +269,8 @@ class RealAudioService implements AudioServiceProtocol {
         continue;
       }
 
-      final prompt = _builtInVoicePrompts[locale] ??
-          _builtInVoicePrompts['en']!;
+      final prompt =
+          _builtInVoicePrompts[locale] ?? _builtInVoicePrompts['en']!;
       try {
         await _tts.setLanguage(_localeToTtsTag(locale));
         await _tts.synthesizeToFile(prompt, outPath);

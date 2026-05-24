@@ -1,4 +1,5 @@
 // ignore_for_file: avoid_relative_lib_imports
+
 import 'package:checks/checks.dart';
 import 'package:test/test.dart';
 
@@ -136,9 +137,12 @@ void main() {
         await s.alarmPattern();
         await s.warningPattern();
         await s.cancel();
-        check(
-          s.calls,
-        ).deepEquals(['warningPattern', 'alarmPattern', 'warningPattern', 'cancel']);
+        check(s.calls).deepEquals([
+          'warningPattern',
+          'alarmPattern',
+          'warningPattern',
+          'cancel',
+        ]);
       });
 
       test('isSimulation flag does not change recorded tag', () async {

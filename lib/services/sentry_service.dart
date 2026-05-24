@@ -13,7 +13,9 @@ import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
 /// uses [_RealSentrySdk].
 abstract interface class SentrySdk {
   /// Initializes the Sentry SDK.
-  Future<void> init(SentryFlutterOptions Function(SentryFlutterOptions) configureFn);
+  Future<void> init(
+    SentryFlutterOptions Function(SentryFlutterOptions) configureFn,
+  );
 
   /// Captures an exception.
   Future<void> captureException(Object error, {StackTrace? stackTrace});
@@ -29,16 +31,12 @@ class _RealSentrySdk implements SentrySdk {
   @override
   Future<void> init(
     SentryFlutterOptions Function(SentryFlutterOptions) configureFn,
-  ) =>
-      SentryFlutter.init((options) {
-        configureFn(options);
-      });
+  ) => SentryFlutter.init((options) {
+    configureFn(options);
+  });
 
   @override
-  Future<void> captureException(
-    Object error, {
-    StackTrace? stackTrace,
-  }) =>
+  Future<void> captureException(Object error, {StackTrace? stackTrace}) =>
       Sentry.captureException(error, stackTrace: stackTrace);
 
   @override

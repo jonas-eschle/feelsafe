@@ -49,11 +49,7 @@ SessionMode _modeWith({
 }) => SessionMode(
   id: 'test_mode',
   name: 'Test Mode',
-  chainSteps: steps.isEmpty
-      ? [
-          _step('s1', ChainStepType.holdButton),
-        ]
-      : steps,
+  chainSteps: steps.isEmpty ? [_step('s1', ChainStepType.holdButton)] : steps,
   trackingEnabled: trackingEnabled,
   disarmTriggers: disarmTriggers,
 );
@@ -82,9 +78,7 @@ void main() {
   group('RealPermissionAuditService — auditForMode', () {
     test('holdButton-only mode requires only notification', () async {
       final svc = _makeService();
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.holdButton)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.holdButton)]);
       final result = await svc.auditForMode(mode);
       check(result.allGranted).isTrue();
       check(result.missing).isEmpty();
@@ -100,11 +94,7 @@ void main() {
             config: const SmsContactConfig(),
           ),
           _step('s2', ChainStepType.phoneCallContact),
-          _step(
-            's3',
-            ChainStepType.loudAlarm,
-            config: const LoudAlarmConfig(),
-          ),
+          _step('s3', ChainStepType.loudAlarm, config: const LoudAlarmConfig()),
         ],
         trackingEnabled: true,
       );
@@ -131,23 +121,26 @@ void main() {
       check(result.missing).contains(AppPermission.sms);
     });
 
-    test('WhatsApp/Telegram SMS step does NOT require sms permission', () async {
-      final svc = _makeService(
-        overrides: {Permission.sms: PermissionStatus.denied},
-      );
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(channel: MessageChannel.whatsapp),
-          ),
-        ],
-      );
-      final result = await svc.auditForMode(mode);
-      // Sms permission not in required set → no missing sms entry.
-      check(result.missing).not((c) => c.contains(AppPermission.sms));
-    });
+    test(
+      'WhatsApp/Telegram SMS step does NOT require sms permission',
+      () async {
+        final svc = _makeService(
+          overrides: {Permission.sms: PermissionStatus.denied},
+        );
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        );
+        final result = await svc.auditForMode(mode);
+        // Sms permission not in required set → no missing sms entry.
+        check(result.missing).not((c) => c.contains(AppPermission.sms));
+      },
+    );
 
     test('phoneCallContact step requires phone permission', () async {
       final svc = _makeService(
@@ -164,9 +157,7 @@ void main() {
       final svc = _makeService(
         overrides: {Permission.phone: PermissionStatus.denied},
       );
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.callEmergency)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.callEmergency)]);
       final result = await svc.auditForMode(mode);
       check(result.missing).contains(AppPermission.phone);
     });
@@ -184,9 +175,7 @@ void main() {
       final svc = _makeService(
         overrides: {Permission.location: PermissionStatus.denied},
       );
-      final mode = _modeWith(
-        disarmTriggers: [const GpsArrivalDisarmTrigger()],
-      );
+      final mode = _modeWith(disarmTriggers: [const GpsArrivalDisarmTrigger()]);
       final result = await svc.auditForMode(mode);
       check(result.missing).contains(AppPermission.location);
     });
@@ -202,22 +191,25 @@ void main() {
       check(result.missing).not((c) => c.contains(AppPermission.location));
     });
 
-    test('autoRecordAudio = true on smsContact step requires microphone', () async {
-      final svc = _makeService(
-        overrides: {Permission.microphone: PermissionStatus.denied},
-      );
-      final mode = _modeWith(
-        steps: [
-          _step(
-            's1',
-            ChainStepType.smsContact,
-            config: const SmsContactConfig(autoRecordAudio: true),
-          ),
-        ],
-      );
-      final result = await svc.auditForMode(mode);
-      check(result.missing).contains(AppPermission.microphone);
-    });
+    test(
+      'autoRecordAudio = true on smsContact step requires microphone',
+      () async {
+        final svc = _makeService(
+          overrides: {Permission.microphone: PermissionStatus.denied},
+        );
+        final mode = _modeWith(
+          steps: [
+            _step(
+              's1',
+              ChainStepType.smsContact,
+              config: const SmsContactConfig(autoRecordAudio: true),
+            ),
+          ],
+        );
+        final result = await svc.auditForMode(mode);
+        check(result.missing).contains(AppPermission.microphone);
+      },
+    );
 
     test('loudAlarm flashLight = true requires camera permission', () async {
       final svc = _makeService(
@@ -225,11 +217,7 @@ void main() {
       );
       final mode = _modeWith(
         steps: [
-          _step(
-            's1',
-            ChainStepType.loudAlarm,
-            config: const LoudAlarmConfig(),
-          ),
+          _step('s1', ChainStepType.loudAlarm, config: const LoudAlarmConfig()),
         ],
       );
       final result = await svc.auditForMode(mode);
@@ -257,9 +245,7 @@ void main() {
       final svc = _makeService(
         overrides: {Permission.notification: PermissionStatus.denied},
       );
-      final mode = _modeWith(
-        steps: [_step('s1', ChainStepType.holdButton)],
-      );
+      final mode = _modeWith(steps: [_step('s1', ChainStepType.holdButton)]);
       final result = await svc.auditForMode(mode);
       check(result.missing).contains(AppPermission.notification);
     });
@@ -291,38 +277,40 @@ void main() {
   });
 
   group('RealPermissionAuditService — revocations stream', () {
-    test('revocations stream emits when a granted permission is later denied',
-        () async {
-      final statuses = {
-        for (final p in Permission.values) p: PermissionStatus.granted,
-      };
+    test(
+      'revocations stream emits when a granted permission is later denied',
+      () async {
+        final statuses = {
+          for (final p in Permission.values) p: PermissionStatus.granted,
+        };
 
-      final svc = RealPermissionAuditService(
-        pollInterval: const Duration(milliseconds: 20),
-        permissionChecker: (p) async =>
-            statuses[p] ?? PermissionStatus.denied,
-      );
+        final svc = RealPermissionAuditService(
+          pollInterval: const Duration(milliseconds: 20),
+          permissionChecker: (p) async =>
+              statuses[p] ?? PermissionStatus.denied,
+        );
 
-      // Seed the last-known map by running an audit.
-      final mode = _modeWith(trackingEnabled: true);
-      await svc.auditForMode(mode);
+        // Seed the last-known map by running an audit.
+        final mode = _modeWith(trackingEnabled: true);
+        await svc.auditForMode(mode);
 
-      // Subscribe to revocations.
-      final revocations = <PermissionRevocation>[];
-      final sub = svc.revocations.listen(revocations.add);
+        // Subscribe to revocations.
+        final revocations = <PermissionRevocation>[];
+        final sub = svc.revocations.listen(revocations.add);
 
-      // Revoke location permission after subscription.
-      statuses[Permission.location] = PermissionStatus.denied;
+        // Revoke location permission after subscription.
+        statuses[Permission.location] = PermissionStatus.denied;
 
-      // Wait for at least one poll cycle.
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+        // Wait for at least one poll cycle.
+        await Future<void>.delayed(const Duration(milliseconds: 100));
 
-      await sub.cancel();
-      svc.dispose();
+        await sub.cancel();
+        svc.dispose();
 
-      check(revocations.length).isGreaterOrEqual(1);
-      check(revocations.first.permission).equals(AppPermission.location);
-    });
+        check(revocations.length).isGreaterOrEqual(1);
+        check(revocations.first.permission).equals(AppPermission.location);
+      },
+    );
 
     test('revocations stream emits UTC revokedAt timestamp', () async {
       final statuses = {

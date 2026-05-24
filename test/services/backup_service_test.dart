@@ -43,7 +43,8 @@ GuardianAngelaDatabase _openDb() =>
     GuardianAngelaDatabase.memory(seedCallback: (_) async {});
 
 /// Resolves to [dir] instead of the real app-documents path.
-Future<Directory> Function() _tempResolver(Directory dir) => () async => dir;
+Future<Directory> Function() _tempResolver(Directory dir) =>
+    () async => dir;
 
 /// Builds a [RealBackupService] wired to an in-memory DB and temp-dir repos.
 Future<
@@ -55,7 +56,8 @@ Future<
     SessionLogRepository sessionLogs,
     Directory tmpDir,
   })
-> _make() async {
+>
+_make() async {
   final db = _openDb();
   final tmp = Directory.systemTemp.createTempSync('backup_test_');
   final appSettings = AppSettingsRepository(
@@ -91,14 +93,17 @@ Future<
   );
 }
 
-void _cleanup(({
-  RealBackupService service,
-  GuardianAngelaDatabase db,
-  AppSettingsRepository appSettings,
-  UserProfileRepository userProfile,
-  SessionLogRepository sessionLogs,
-  Directory tmpDir,
-}) env) {
+void _cleanup(
+  ({
+    RealBackupService service,
+    GuardianAngelaDatabase db,
+    AppSettingsRepository appSettings,
+    UserProfileRepository userProfile,
+    SessionLogRepository sessionLogs,
+    Directory tmpDir,
+  })
+  env,
+) {
   env.db.close();
   env.tmpDir.deleteSync(recursive: true);
 }
@@ -124,23 +129,22 @@ EmergencyContact _contact({String id = 'c1', String name = 'Alice'}) =>
     );
 
 /// A minimal valid [SessionMode] for tests (single holdButton step).
-SessionMode _mode({String id = 'mode1', String name = 'Walk'}) =>
-    SessionMode(
-      id: id,
-      name: name,
-      chainSteps: [
-        ChainStep(
-          id: 'step1',
-          type: ChainStepType.holdButton,
-          order: 0,
-          waitSeconds: 60,
-          durationSeconds: 30,
-          gracePeriodSeconds: 10,
-          retryCount: 0,
-          randomize: false,
-        ),
-      ],
-    );
+SessionMode _mode({String id = 'mode1', String name = 'Walk'}) => SessionMode(
+  id: id,
+  name: name,
+  chainSteps: [
+    ChainStep(
+      id: 'step1',
+      type: ChainStepType.holdButton,
+      order: 0,
+      waitSeconds: 60,
+      durationSeconds: 30,
+      gracePeriodSeconds: 10,
+      retryCount: 0,
+      randomize: false,
+    ),
+  ],
+);
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -154,7 +158,8 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       final json = await env.service.exportToJson();
-      final Map<String, dynamic> payload = jsonDecode(json) as Map<String, dynamic>;
+      final Map<String, dynamic> payload =
+          jsonDecode(json) as Map<String, dynamic>;
 
       check(payload).containsKey('version');
       check(payload).containsKey('_schemaVersion');
@@ -171,7 +176,8 @@ void main() {
       final env = await _make();
       addTearDown(() => _cleanup(env));
 
-      final payload = jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
       check(payload['_schemaVersion']).equals(1);
     });
 
@@ -179,7 +185,8 @@ void main() {
       final env = await _make();
       addTearDown(() => _cleanup(env));
 
-      final payload = jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
       final ts = payload['timestamp'] as String;
       check(ts).isNotEmpty();
       check(() => DateTime.parse(ts)).returnsNormally();
@@ -190,7 +197,8 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       await env.db.contactsDao.upsert(_contact());
-      final payload = jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
       final contacts = payload['contacts'] as List<dynamic>;
       check(contacts.length).equals(1);
       check((contacts.first as Map<String, dynamic>)['id']).equals('c1');
@@ -201,9 +209,8 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       await env.sessionLogs.upsert(_log());
-      final payload = jsonDecode(
-        await env.service.exportToJson(),
-      ) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
       check(payload).containsKey('sessionLogs');
       final logs = payload['sessionLogs'] as List<dynamic>;
       check(logs.length).equals(1);
@@ -214,9 +221,9 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       await env.sessionLogs.upsert(_log());
-      final payload = jsonDecode(
-        await env.service.exportToJson(includeSessionLogs: false),
-      ) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson(includeSessionLogs: false))
+              as Map<String, dynamic>;
       check(payload.containsKey('sessionLogs')).isFalse();
     });
 
@@ -227,9 +234,9 @@ void main() {
       await env.userProfile.save(
         const UserProfile(name: 'Angela', photoPath: '/some/photo.jpg'),
       );
-      final payload = jsonDecode(
-        await env.service.exportToJson(includeMedia: false),
-      ) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson(includeMedia: false))
+              as Map<String, dynamic>;
       final profile = payload['profile'] as Map<String, dynamic>;
       check(profile.containsKey('photoPath')).isFalse();
       check(profile['name']).equals('Angela');
@@ -242,9 +249,8 @@ void main() {
       await env.userProfile.save(
         const UserProfile(photoPath: '/some/photo.jpg'),
       );
-      final payload = jsonDecode(
-        await env.service.exportToJson(),
-      ) as Map<String, dynamic>;
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
       final profile = payload['profile'] as Map<String, dynamic>;
       check(profile.containsKey('photoPath')).isTrue();
       check(profile['photoPath']).equals('/some/photo.jpg');
@@ -259,7 +265,9 @@ void main() {
 
       await env.db.contactsDao.upsert(_contact());
       await env.db.contactsDao.upsert(_contact(id: 'c2', name: 'Bob'));
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
 
       // Wipe the contacts and import the backup.
       await env.db.delete(env.db.contacts).go();
@@ -277,7 +285,9 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       await env.db.sessionModesDao.upsert(_mode());
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
 
       await env.db.delete(env.db.sessionModes).go();
       await env.service.importFromJson(exported);
@@ -293,11 +303,15 @@ void main() {
 
       // Export with c1 only.
       await env.db.contactsDao.upsert(_contact());
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
 
       // Add a second contact AFTER the export.
       await env.db.contactsDao.upsert(_contact(id: 'c2', name: 'Carol'));
-      check(await env.db.contactsDao.getAll()).has((l) => l.length, 'length').equals(2);
+      check(
+        await env.db.contactsDao.getAll(),
+      ).has((l) => l.length, 'length').equals(2);
 
       // Import should replace with only c1.
       await env.service.importFromJson(exported);
@@ -325,7 +339,9 @@ void main() {
       final env = await _make();
       addTearDown(() => _cleanup(env));
 
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
       // Should not throw even though key is absent.
       await check(env.service.importFromJson(exported)).completes();
     });
@@ -339,7 +355,9 @@ void main() {
         emergencyCallNumber: '110',
       );
       await env.appSettings.save(customSettings);
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
 
       // Override settings before import.
       await env.appSettings.save(const AppSettings());
@@ -355,7 +373,9 @@ void main() {
       addTearDown(() => _cleanup(env));
 
       await env.userProfile.save(const UserProfile(name: 'Angela', age: 30));
-      final exported = await env.service.exportToJson(includeSessionLogs: false);
+      final exported = await env.service.exportToJson(
+        includeSessionLogs: false,
+      );
 
       await env.userProfile.save(const UserProfile(name: 'Unknown'));
       await env.service.importFromJson(exported);
@@ -390,22 +410,26 @@ void main() {
       final env = await _make();
       addTearDown(() => _cleanup(env));
 
-      final json = jsonEncode(<String, dynamic>{'version': '1.0', 'contacts': <dynamic>[]});
-      await check(
-        env.service.importFromJson(json),
-      ).throws<FormatException>();
+      final json = jsonEncode(<String, dynamic>{
+        'version': '1.0',
+        'contacts': <dynamic>[],
+      });
+      await check(env.service.importFromJson(json)).throws<FormatException>();
     });
 
-    test('_schemaVersion with wrong type (string) throws FormatException',
-        () async {
-      final env = await _make();
-      addTearDown(() => _cleanup(env));
+    test(
+      '_schemaVersion with wrong type (string) throws FormatException',
+      () async {
+        final env = await _make();
+        addTearDown(() => _cleanup(env));
 
-      final json = jsonEncode(<String, dynamic>{'_schemaVersion': '1', 'contacts': <dynamic>[]});
-      await check(
-        env.service.importFromJson(json),
-      ).throws<FormatException>();
-    });
+        final json = jsonEncode(<String, dynamic>{
+          '_schemaVersion': '1',
+          'contacts': <dynamic>[],
+        });
+        await check(env.service.importFromJson(json)).throws<FormatException>();
+      },
+    );
 
     test('_schemaVersion newer than app schema throws StateError', () async {
       final env = await _make();
@@ -419,9 +443,7 @@ void main() {
         'settings': <String, dynamic>{},
         'profile': <String, dynamic>{},
       });
-      await check(
-        env.service.importFromJson(json),
-      ).throws<StateError>();
+      await check(env.service.importFromJson(json)).throws<StateError>();
     });
 
     test('older schema version is accepted (no throw)', () async {
@@ -430,13 +452,11 @@ void main() {
 
       // Export a v1 backup and manually set _schemaVersion to 0
       // (pretend we wrote it with an older schema).
-      final base = jsonDecode(
-        await env.service.exportToJson(includeSessionLogs: false),
-      ) as Map<String, dynamic>;
+      final base =
+          jsonDecode(await env.service.exportToJson(includeSessionLogs: false))
+              as Map<String, dynamic>;
       base['_schemaVersion'] = 0;
-      await check(
-        env.service.importFromJson(jsonEncode(base)),
-      ).completes();
+      await check(env.service.importFromJson(jsonEncode(base))).completes();
     });
 
     test('invalid contact JSON inside list does not crash (skipped)', () async {
@@ -455,27 +475,24 @@ void main() {
       await check(env.service.importFromJson(json)).completes();
     });
 
-    test(
-      'existing data is preserved when import fails (atomicity)',
-      () async {
-        final env = await _make();
-        addTearDown(() => _cleanup(env));
+    test('existing data is preserved when import fails (atomicity)', () async {
+      final env = await _make();
+      addTearDown(() => _cleanup(env));
 
-        // Seed a contact.
-        await env.db.contactsDao.upsert(_contact(id: 'original'));
+      // Seed a contact.
+      await env.db.contactsDao.upsert(_contact(id: 'original'));
 
-        // Attempt to import JSON that is completely invalid.
-        try {
-          await env.service.importFromJson('invalid json');
-        } catch (_) {
-          // Expected.
-        }
+      // Attempt to import JSON that is completely invalid.
+      try {
+        await env.service.importFromJson('invalid json');
+      } catch (_) {
+        // Expected.
+      }
 
-        // Original data must still be intact.
-        final contacts = await env.db.contactsDao.getAll();
-        check(contacts.any((c) => c.id == 'original')).isTrue();
-      },
-    );
+      // Original data must still be intact.
+      final contacts = await env.db.contactsDao.getAll();
+      check(contacts.any((c) => c.id == 'original')).isTrue();
+    });
   });
 
   // --------------------------------------------------------------------------
@@ -562,10 +579,7 @@ void main() {
       const r = ValidationResult(
         errors: [],
         warnings: [
-          ValidationIssue(
-            title: 'Note',
-            description: 'Media files excluded.',
-          ),
+          ValidationIssue(title: 'Note', description: 'Media files excluded.'),
         ],
       );
       check(r.isValid).isTrue();

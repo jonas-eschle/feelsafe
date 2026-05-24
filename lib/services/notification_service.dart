@@ -6,6 +6,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 
@@ -27,6 +28,11 @@ const String _kUpdatesChannelName = 'Updates';
 
 /// ID used for the foreground-service persistent notification.
 const int kForegroundNotificationId = 1;
+
+/// SharedPreferences key for notification actions received while the app was
+/// killed (Android background isolate). Populated by [_onBackgroundResponse]
+/// and drained on next foreground startup by [RealNotificationService.init].
+const String _kPendingActionsKey = 'pending_notification_actions';
 
 /// Production [NotificationServiceProtocol] backed by
 /// `package:flutter_local_notifications`.
@@ -52,16 +58,36 @@ class RealNotificationService implements NotificationServiceProtocol {
   ///
   /// [plugin] — optional [FlutterLocalNotificationsPlugin] for injection;
   /// defaults to the singleton.
+  ///
+  /// [prefsFactory] — optional factory for [SharedPreferences] used in
+  /// [_replayPendingActions]. Defaults to [SharedPreferences.getInstance].
+  /// Tests inject a factory that returns a pre-seeded instance.
   RealNotificationService({
     FlutterLocalNotificationsPlugin? plugin,
-  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin();
+    Future<SharedPreferences> Function()? prefsFactory,
+  }) : _plugin = plugin ?? FlutterLocalNotificationsPlugin(),
+       _prefsFactory = prefsFactory ?? SharedPreferences.getInstance {
+    _actionTapsController = StreamController<String>.broadcast(
+      onListen: _flushPending,
+    );
+  }
 
   final FlutterLocalNotificationsPlugin _plugin;
-  final StreamController<String> _actionTapsController =
-      StreamController<String>.broadcast();
+  final Future<SharedPreferences> Function() _prefsFactory;
+  late final StreamController<String> _actionTapsController;
   bool _initialised = false;
 
+  /// Action IDs received while the app was killed, waiting to be flushed once
+  /// a subscriber connects to [actionTaps].
+  final List<String> _pendingReplay = [];
+
   /// Initialises the plugin and registers all four notification channels.
+  ///
+  /// Reads and clears any [_kPendingActionsKey] entries persisted by
+  /// [_onBackgroundResponse] while the app was killed. These are stored in
+  /// [_pendingReplay] and flushed to the [actionTaps] stream the first time
+  /// a subscriber connects (via the [StreamController.broadcast] `onListen`
+  /// callback).
   ///
   /// Must be called once at app startup before any `show*` method.
   Future<void> init() async {
@@ -90,7 +116,56 @@ class RealNotificationService implements NotificationServiceProtocol {
       await _createAndroidChannels();
     }
 
+    // Drain any actions that arrived while the app was killed. Must happen
+    // AFTER plugin init so the pending list is populated before any listener
+    // calls actionTaps.listen(). The actual emit to the stream happens in
+    // _flushPending() when the first subscriber connects.
+    await _replayPendingActions();
+
     log('NotificationService initialised', name: 'NotificationService');
+  }
+
+  // ---------------------------------------------------------------------------
+  // Background-action replay
+  // ---------------------------------------------------------------------------
+
+  /// Reads the persisted pending-action list from [SharedPreferences] and
+  /// copies it into [_pendingReplay], then clears the persisted key.
+  ///
+  /// The list is emitted to [actionTaps] on first subscriber connect via
+  /// [_flushPending].
+  Future<void> _replayPendingActions() async {
+    try {
+      final prefs = await _prefsFactory();
+      final stored = prefs.getStringList(_kPendingActionsKey);
+      if (stored != null && stored.isNotEmpty) {
+        _pendingReplay.addAll(stored);
+        await prefs.remove(_kPendingActionsKey);
+        log(
+          'Queued ${stored.length} pending background action(s) for replay',
+          name: 'NotificationService',
+        );
+      }
+    } catch (e) {
+      log(
+        'Failed to read pending background actions: $e',
+        name: 'NotificationService',
+      );
+    }
+  }
+
+  /// Called by [_actionTapsController]'s `onListen` when the first subscriber
+  /// attaches to [actionTaps].
+  ///
+  /// Emits all [_pendingReplay] items in order and then clears the buffer.
+  void _flushPending() {
+    if (_pendingReplay.isEmpty) return;
+    final items = List<String>.from(_pendingReplay);
+    _pendingReplay.clear();
+    for (final actionId in items) {
+      log('Replaying background action: $actionId', name: 'NotificationService');
+      _actionTapsController.add(actionId);
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -117,11 +192,7 @@ class RealNotificationService implements NotificationServiceProtocol {
             .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin
             >()
-            ?.requestPermissions(
-              alert: true,
-              badge: true,
-              sound: true,
-            );
+            ?.requestPermissions(alert: true, badge: true, sound: true);
         log(
           'iOS notification permission: $granted',
           name: 'NotificationService',
@@ -160,7 +231,12 @@ class RealNotificationService implements NotificationServiceProtocol {
         interruptionLevel: InterruptionLevel.timeSensitive,
       ),
     );
-    await _plugin.show(id: id, title: title, body: body, notificationDetails: details);
+    await _plugin.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
   }
 
   @override
@@ -182,9 +258,7 @@ class RealNotificationService implements NotificationServiceProtocol {
         channelName,
         importance: Importance.high,
         priority: Priority.high,
-        actions: [
-          AndroidNotificationAction(actionId, 'Retry'),
-        ],
+        actions: [AndroidNotificationAction(actionId, 'Retry')],
       ),
     );
     await _plugin.show(
@@ -288,7 +362,31 @@ class RealNotificationService implements NotificationServiceProtocol {
 
 /// Background notification response handler (top-level, required by
 /// `flutter_local_notifications`).
+///
+/// Called by the OS in a brand-new isolate when the user taps a notification
+/// action while the app is killed (Android). The action ID is persisted via
+/// [SharedPreferences] under [_kPendingActionsKey] so the main isolate can
+/// replay it on the next foreground startup (see [RealNotificationService.init]).
+///
+/// Ordering is preserved: the list is appended to, not replaced.
 @pragma('vm:entry-point')
-void _onBackgroundResponse(NotificationResponse response) {
-  // Background handling is managed at the app layer (Phase 6). Log only.
+Future<void> _onBackgroundResponse(NotificationResponse response) async {
+  final actionId = response.actionId ?? response.payload;
+  if (actionId == null || actionId.isEmpty) return;
+
+  try {
+    final prefs = await SharedPreferences.getInstance();
+    final existing = prefs.getStringList(_kPendingActionsKey) ?? [];
+    existing.add(actionId);
+    await prefs.setStringList(_kPendingActionsKey, existing);
+    log(
+      'Background response persisted: $actionId',
+      name: 'NotificationService',
+    );
+  } catch (e) {
+    log(
+      'Failed to persist background notification action: $e',
+      name: 'NotificationService',
+    );
+  }
 }

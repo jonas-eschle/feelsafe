@@ -172,7 +172,9 @@ void main() {
       test('invalid speed throws ArgumentError', () async {
         final s = _sim();
         addTearDown(s.dispose);
-        await check(s.startScreenFlash(speed: 'medium')).throws<ArgumentError>();
+        await check(
+          s.startScreenFlash(speed: 'medium'),
+        ).throws<ArgumentError>();
       });
 
       test('emits frames to recordedFrames', () async {

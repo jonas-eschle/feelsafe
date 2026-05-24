@@ -156,10 +156,7 @@ class RealRecordingService implements RecordingServiceProtocol {
       return null;
     }
 
-    return recordForDuration(
-      duration: maxDuration,
-      fileName: fileName,
-    );
+    return recordForDuration(duration: maxDuration, fileName: fileName);
   }
 
   /// Disposes the underlying [AudioRecorder].

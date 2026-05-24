@@ -349,9 +349,7 @@ void main() {
     setUp(() {
       sim = _sim();
       container = ProviderContainer(
-        overrides: [
-          hardwareButtonServiceProvider.overrideWithValue(sim),
-        ],
+        overrides: [hardwareButtonServiceProvider.overrideWithValue(sim)],
       );
     });
 

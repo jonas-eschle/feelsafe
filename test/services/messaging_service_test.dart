@@ -4,8 +4,9 @@
 // com.guardianangela.app/sms and url_launcher.
 // SimulationMessagingService tests are pure-Dart.
 
-import 'package:checks/checks.dart';
 import 'package:flutter/services.dart';
+
+import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/message_channel.dart';
@@ -127,16 +128,19 @@ void main() {
     tearDown(() => svc.dispose());
 
     // sendMessage — simulation flag
-    test('sendMessage with isSimulation=true records sim call, returns null', () async {
-      final id = await svc.sendMessage(
-        contact: _contact(),
-        message: 'test',
-        isSimulation: true,
-      );
-      check(id).isNull();
-      check(svc.calls).length.equals(1);
-      check(svc.calls.first.isSimulation).isTrue();
-    });
+    test(
+      'sendMessage with isSimulation=true records sim call, returns null',
+      () async {
+        final id = await svc.sendMessage(
+          contact: _contact(),
+          message: 'test',
+          isSimulation: true,
+        );
+        check(id).isNull();
+        check(svc.calls).length.equals(1);
+        check(svc.calls.first.isSimulation).isTrue();
+      },
+    );
 
     test('sendMessage with isSimulation=false records real call', () async {
       await svc.sendMessage(contact: _contact(), message: 'test');
@@ -173,13 +177,21 @@ void main() {
 
     test('realCalls excludes simulation calls', () async {
       await svc.sendMessage(contact: _contact(), message: 'real');
-      await svc.sendMessage(contact: _contact(), message: 'sim', isSimulation: true);
+      await svc.sendMessage(
+        contact: _contact(),
+        message: 'sim',
+        isSimulation: true,
+      );
       check(svc.realCalls).length.equals(1);
     });
 
     test('simCalls excludes real calls', () async {
       await svc.sendMessage(contact: _contact(), message: 'real');
-      await svc.sendMessage(contact: _contact(), message: 'sim', isSimulation: true);
+      await svc.sendMessage(
+        contact: _contact(),
+        message: 'sim',
+        isSimulation: true,
+      );
       check(svc.simCalls).length.equals(1);
     });
 
@@ -228,10 +240,16 @@ void main() {
 
     // Contact fields preserved
     test('sendMessage preserves contact fields', () async {
-      final c = _contact(name: 'Dave', phone: '+447700900111', channel: MessageChannel.whatsapp);
+      final c = _contact(
+        name: 'Dave',
+        phone: '+447700900111',
+        channel: MessageChannel.whatsapp,
+      );
       await svc.sendMessage(contact: c, message: 'hello');
       check(svc.calls.first.contact.name).equals('Dave');
-      check(svc.calls.first.contact.channels.first).equals(MessageChannel.whatsapp);
+      check(
+        svc.calls.first.contact.channels.first,
+      ).equals(MessageChannel.whatsapp);
     });
   });
 
@@ -259,43 +277,49 @@ void main() {
     });
 
     // Layer 3 simulation guard
-    test('sendMessage with isSimulation=true returns null, no channel call',
-        () async {
-      final id = await svc.sendMessage(
-        contact: _contact(),
-        message: 'test',
-        isSimulation: true,
-      );
-      check(id).isNull();
-      check(smsMock.calls).isEmpty();
-      check(urlMock.calls).isEmpty();
-    });
+    test(
+      'sendMessage with isSimulation=true returns null, no channel call',
+      () async {
+        final id = await svc.sendMessage(
+          contact: _contact(),
+          message: 'test',
+          isSimulation: true,
+        );
+        check(id).isNull();
+        check(smsMock.calls).isEmpty();
+        check(urlMock.calls).isEmpty();
+      },
+    );
 
     // WhatsApp dispatch
-    test('sendMessage WhatsApp channel calls url_launcher with wa.me URL',
-        () async {
-      final c = _contact(channel: MessageChannel.whatsapp);
-      await svc.sendMessage(contact: c, message: 'hello world');
-      final launched = urlMock.calls.where(
-        (c) =>
-          (c.method == 'launchUrl' || c.method == 'launch') &&
-          c.arguments.toString().contains('wa.me'),
-      );
-      check(launched).isNotEmpty();
-    });
+    test(
+      'sendMessage WhatsApp channel calls url_launcher with wa.me URL',
+      () async {
+        final c = _contact(channel: MessageChannel.whatsapp);
+        await svc.sendMessage(contact: c, message: 'hello world');
+        final launched = urlMock.calls.where(
+          (c) =>
+              (c.method == 'launchUrl' || c.method == 'launch') &&
+              c.arguments.toString().contains('wa.me'),
+        );
+        check(launched).isNotEmpty();
+      },
+    );
 
     // Telegram dispatch — tg:// first
-    test('sendMessage Telegram calls url_launcher with tg:// URI first',
-        () async {
-      final c = _contact(channel: MessageChannel.telegram);
-      await svc.sendMessage(contact: c, message: 'help');
-      final tgCalls = urlMock.calls.where(
-        (c) =>
-          (c.method == 'launchUrl' || c.method == 'launch') &&
-          c.arguments.toString().contains('tg://'),
-      );
-      check(tgCalls).isNotEmpty();
-    });
+    test(
+      'sendMessage Telegram calls url_launcher with tg:// URI first',
+      () async {
+        final c = _contact(channel: MessageChannel.telegram);
+        await svc.sendMessage(contact: c, message: 'help');
+        final tgCalls = urlMock.calls.where(
+          (c) =>
+              (c.method == 'launchUrl' || c.method == 'launch') &&
+              c.arguments.toString().contains('tg://'),
+        );
+        check(tgCalls).isNotEmpty();
+      },
+    );
 
     // cancelPending iOS is no-op (platform detection skipped in unit test;
     // we just ensure it doesn't throw on any platform)
@@ -305,25 +329,27 @@ void main() {
     });
 
     // smsRetryExhausted stream
-    test('smsRetryExhausted stream emits on native smsRetryExhausted call',
-        () async {
-      final received = <SmsRetryExhaustedEvent>[];
-      final sub = svc.smsRetryExhausted.listen(received.add);
+    test(
+      'smsRetryExhausted stream emits on native smsRetryExhausted call',
+      () async {
+        final received = <SmsRetryExhaustedEvent>[];
+        final sub = svc.smsRetryExhausted.listen(received.add);
 
-      await smsMock.fireRetryExhausted(
-        workId: 'wk-1',
-        phoneNumber: '+15551234567',
-        contactName: 'Eve',
-        message: 'SOS',
-      );
+        await smsMock.fireRetryExhausted(
+          workId: 'wk-1',
+          phoneNumber: '+15551234567',
+          contactName: 'Eve',
+          message: 'SOS',
+        );
 
-      await Future<void>.delayed(Duration.zero);
-      await sub.cancel();
+        await Future<void>.delayed(Duration.zero);
+        await sub.cancel();
 
-      check(received).length.equals(1);
-      check(received.first.workId).equals('wk-1');
-      check(received.first.contactName).equals('Eve');
-    });
+        check(received).length.equals(1);
+        check(received.first.workId).equals('wk-1');
+        check(received.first.contactName).equals('Eve');
+      },
+    );
 
     test(
       'smsRetryExhausted: notification is shown after exhaustion event',
@@ -377,21 +403,21 @@ void main() {
       },
     );
 
-    test(
-      'action tap with unknown payload does not throw',
-      () async {
-        // No prior exhaustion event cached.
-        notif.injectActionTap('${kActionRetrySmsPrefix}unknown-id');
-        await Future<void>.delayed(Duration.zero);
-        // No crash — test passes if we reach here.
-      },
-    );
+    test('action tap with unknown payload does not throw', () async {
+      // No prior exhaustion event cached.
+      notif.injectActionTap('${kActionRetrySmsPrefix}unknown-id');
+      await Future<void>.delayed(Duration.zero);
+      // No crash — test passes if we reach here.
+    });
 
     // isSimulation guard applies even if sim flag was omitted (default false)
-    test('sendMessage default isSimulation=false dispatches normally', () async {
-      smsMock.nextWorkId = 'work-000';
-      // Just ensure it doesn't throw on non-Android (url_launcher fallback
-      // or no-op for sms channel on this test platform).
-    });
+    test(
+      'sendMessage default isSimulation=false dispatches normally',
+      () async {
+        smsMock.nextWorkId = 'work-000';
+        // Just ensure it doesn't throw on non-Android (url_launcher fallback
+        // or no-op for sms channel on this test platform).
+      },
+    );
   });
 }

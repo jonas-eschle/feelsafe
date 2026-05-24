@@ -98,11 +98,10 @@ class RealPermissionAuditService implements PermissionAuditServiceProtocol {
 
   @override
   Stream<PermissionRevocation> get revocations {
-    _revocationController ??=
-        StreamController<PermissionRevocation>.broadcast(
-          onListen: _startPolling,
-          onCancel: _stopPolling,
-        );
+    _revocationController ??= StreamController<PermissionRevocation>.broadcast(
+      onListen: _startPolling,
+      onCancel: _stopPolling,
+    );
     return _revocationController!.stream;
   }
 
@@ -135,7 +134,7 @@ class RealPermissionAuditService implements PermissionAuditServiceProtocol {
 
         case ChainStepType.phoneCallContact:
           perms.add(AppPermission.phone);
-          // PhoneCallContactConfig has no autoRecordAudio field — no mic check.
+        // PhoneCallContactConfig has no autoRecordAudio field — no mic check.
 
         case ChainStepType.callEmergency:
           perms.add(AppPermission.phone);
