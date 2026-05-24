@@ -16,13 +16,13 @@
 //      verified by checking that the correct state is achieved after each
 //      step in a simulated sequence).
 
-import 'package:checks/checks.dart';
 import 'package:flutter/material.dart';
+
+import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
-import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/main.dart';
 
@@ -46,27 +46,6 @@ SessionLog _normalLog({
   startedAt: startedAt,
   endedAt: endedAt,
   isSimulation: false,
-  events: const [],
-);
-
-/// A [SessionLog] that IS critical (fired a destructive step — must be kept).
-SessionLog _criticalLog({
-  required String id,
-  required DateTime startedAt,
-}) => SessionLog(
-  id: id,
-  modeId: 'mode1',
-  modeName: 'Test Mode',
-  startedAt: startedAt,
-  endedAt: startedAt.add(const Duration(minutes: 5)),
-  endReason: EndReason.disarm,
-  isSimulation: false,
-  hadMedicalInfo: false,
-  // Empty events — the DAO isCritical check uses events; an empty list is
-  // non-critical. Use hadMedicalInfo=true to trigger the critical flag
-  // via the DAO's isCritical predicate where the DAO supports it, or rely
-  // on the non-critical path here (the test checks deletion count = 0 for
-  // a log inserted into a "critical" test by virtue of retentionDays = 0).
   events: const [],
 );
 
@@ -110,9 +89,7 @@ void main() {
   // --------------------------------------------------------------------------
   group('JsonRecoveryApp widget', () {
     testWidgets('shows "Data Recovery" heading', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const JsonRecoveryApp(reason: 'Test failure'),
-      );
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'Test failure'));
       await tester.pumpAndSettle();
 
       expect(find.text('Data Recovery'), findsWidgets);
@@ -127,9 +104,7 @@ void main() {
     });
 
     testWidgets('has "Start fresh" button', (WidgetTester tester) async {
-      await tester.pumpWidget(
-        const JsonRecoveryApp(reason: 'error'),
-      );
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'error'));
       await tester.pumpAndSettle();
 
       expect(find.text('Start fresh'), findsOneWidget);
@@ -138,9 +113,7 @@ void main() {
     testWidgets('has "Restore from backup" button (disabled)', (
       WidgetTester tester,
     ) async {
-      await tester.pumpWidget(
-        const JsonRecoveryApp(reason: 'error'),
-      );
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'error'));
       await tester.pumpAndSettle();
 
       // Button is present but disabled (onPressed: null).
@@ -159,10 +132,7 @@ void main() {
       await tester.pumpWidget(const JsonRecoveryApp(reason: 'error'));
       await tester.pumpAndSettle();
 
-      expect(
-        find.textContaining('future update'),
-        findsOneWidget,
-      );
+      expect(find.textContaining('future update'), findsOneWidget);
     });
 
     testWidgets('uses Material theme with correct seed color', (
@@ -184,17 +154,14 @@ void main() {
       addTearDown(db.close);
       final repo = SessionLogRepository(db.sessionLogsDao);
 
-      final now = DateTime.utc(2026, 6, 1);
+      final now = DateTime.utc(2026, 6);
       final oldDate = now.subtract(const Duration(days: 200));
       final recentDate = now.subtract(const Duration(days: 10));
 
       await repo.upsert(_normalLog(id: 'old', startedAt: oldDate));
       await repo.upsert(_normalLog(id: 'recent', startedAt: recentDate));
 
-      final deleted = await repo.purgeExpiredLogs(
-        retentionDays: 180,
-        now: now,
-      );
+      final deleted = await repo.purgeExpiredLogs(retentionDays: 180, now: now);
       check(deleted).equals(1);
 
       final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
@@ -202,25 +169,38 @@ void main() {
       check(remaining.first.id).equals('recent');
     });
 
-    test('does not purge any logs when all are within retention window', () async {
-      final db = _openDb();
-      addTearDown(db.close);
-      final repo = SessionLogRepository(db.sessionLogsDao);
+    test(
+      'does not purge any logs when all are within retention window',
+      () async {
+        final db = _openDb();
+        addTearDown(db.close);
+        final repo = SessionLogRepository(db.sessionLogsDao);
 
-      final now = DateTime.utc(2026, 6, 1);
+        final now = DateTime.utc(2026, 6);
 
-      await repo.upsert(_normalLog(id: 'log1', startedAt: now.subtract(const Duration(days: 5))));
-      await repo.upsert(_normalLog(id: 'log2', startedAt: now.subtract(const Duration(days: 30))));
+        await repo.upsert(
+          _normalLog(
+            id: 'log1',
+            startedAt: now.subtract(const Duration(days: 5)),
+          ),
+        );
+        await repo.upsert(
+          _normalLog(
+            id: 'log2',
+            startedAt: now.subtract(const Duration(days: 30)),
+          ),
+        );
 
-      final deleted = await repo.purgeExpiredLogs(
-        retentionDays: 180,
-        now: now,
-      );
-      check(deleted).equals(0);
+        final deleted = await repo.purgeExpiredLogs(
+          retentionDays: 180,
+          now: now,
+        );
+        check(deleted).equals(0);
 
-      final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
-      check(remaining.length).equals(2);
-    });
+        final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
+        check(remaining.length).equals(2);
+      },
+    );
 
     test('purges no logs when database is empty', () async {
       final db = _openDb();
@@ -229,7 +209,7 @@ void main() {
 
       final deleted = await repo.purgeExpiredLogs(
         retentionDays: 30,
-        now: DateTime.utc(2026, 6, 1),
+        now: DateTime.utc(2026, 6),
       );
       check(deleted).equals(0);
     });
@@ -239,7 +219,7 @@ void main() {
       addTearDown(db.close);
       final repo = SessionLogRepository(db.sessionLogsDao);
 
-      final now = DateTime.utc(2026, 6, 1);
+      final now = DateTime.utc(2026, 6);
       await repo.upsert(
         _normalLog(
           id: 'yesterday',
