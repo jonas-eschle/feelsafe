@@ -349,5 +349,89 @@ void main() {
       await sub.cancel();
       check(received).length.equals(1);
     });
+
+    // -----------------------------------------------------------------------
+    // NEW-1: Stealth pause shows "Music paused" title + preserves stealth flag
+    // -----------------------------------------------------------------------
+
+    test(
+      'NEW-1: stealth startService then kActionPause → '
+      'showForegroundServiceNotification title == "Music paused" + stealth',
+      () async {
+        await svc.startService(title: 'Music playing', body: '', stealth: true);
+        notif.reset();
+
+        notif.injectActionTap(kActionPause);
+        await Future<void>.delayed(Duration.zero);
+
+        final pauseNotifs = notif.calls.where(
+          (c) => c.method == 'showForegroundServiceNotification',
+        );
+        check(pauseNotifs).isNotEmpty();
+        final latest = pauseNotifs.last;
+        check(latest.title).equals('Music paused');
+        check(latest.stealth).equals(true);
+      },
+    );
+
+    test(
+      'NEW-1: stealth pause notification body is "Tap Resume to continue."',
+      () async {
+        await svc.startService(title: 'Music playing', body: '', stealth: true);
+        notif.reset();
+
+        notif.injectActionTap(kActionPause);
+        await Future<void>.delayed(Duration.zero);
+
+        final pauseNotif = notif.calls
+            .where((c) => c.method == 'showForegroundServiceNotification')
+            .last;
+        check(pauseNotif.body).equals('Tap Resume to continue.');
+      },
+    );
+
+    // -----------------------------------------------------------------------
+    // NEW-2: Resume restores the prior title + body, not a generic fallback
+    // -----------------------------------------------------------------------
+
+    test('NEW-2: non-stealth — kActionPause then kActionResume restores '
+        'original title and body', () async {
+      await svc.startService(title: 'Walk active', body: 'Step 2 of 5');
+      notif.reset();
+
+      notif.injectActionTap(kActionPause);
+      await Future<void>.delayed(Duration.zero);
+      notif.injectActionTap(kActionResume);
+      await Future<void>.delayed(Duration.zero);
+
+      // The last showForegroundServiceNotification is the resume notification.
+      final resumeNotif = notif.calls
+          .where((c) => c.method == 'showForegroundServiceNotification')
+          .last;
+      check(resumeNotif.title).equals('Walk active');
+      check(resumeNotif.body).equals('Step 2 of 5');
+    });
+
+    test('NEW-2: stealth — kActionPause then kActionResume restores '
+        'original title, body, and stealth=true', () async {
+      await svc.startService(
+        title: 'Walk active',
+        body: 'Step 2 of 5',
+        stealth: true,
+      );
+      notif.reset();
+
+      notif.injectActionTap(kActionPause);
+      await Future<void>.delayed(Duration.zero);
+      notif.injectActionTap(kActionResume);
+      await Future<void>.delayed(Duration.zero);
+
+      final resumeNotif = notif.calls
+          .where((c) => c.method == 'showForegroundServiceNotification')
+          .last;
+      check(resumeNotif.title).equals('Walk active');
+      check(resumeNotif.body).equals('Step 2 of 5');
+      check(resumeNotif.stealth).equals(true);
+    });
   });
 }
