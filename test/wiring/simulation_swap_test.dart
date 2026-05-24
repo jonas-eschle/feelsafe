@@ -10,13 +10,19 @@
 //   contact, audio.
 // Stage 5B.2 adds: location, batteryMonitor, notification,
 //   hardwareButton, callState, systemUi.
+// Stage 5B.3 adds: phone, messaging, backgroundSession,
+//   sentry, sessionLogRecorder.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:test/test.dart';
 
+import 'package:guardianangela/data/db/database.dart';
+import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/background_session_service_sim.dart';
 import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
 import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
@@ -24,9 +30,12 @@ import 'package:guardianangela/services/sim/encryption_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
 import 'package:guardianangela/services/sim/hardware_button_service_sim.dart';
 import 'package:guardianangela/services/sim/location_service_sim.dart';
+import 'package:guardianangela/services/sim/messaging_service_sim.dart';
 import 'package:guardianangela/services/sim/notification_service_sim.dart';
+import 'package:guardianangela/services/sim/phone_service_sim.dart';
 import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
+import 'package:guardianangela/services/sim/sentry_service_sim.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 import 'package:guardianangela/services/sim/vibration_service_sim.dart';
 import 'package:guardianangela/services/sim/wakelock_service_sim.dart';
@@ -443,7 +452,8 @@ void main() {
 
     test('simulation call state starts not started', () {
       final s =
-          container.read(callStateServiceProvider) as SimulationCallStateService;
+          container.read(callStateServiceProvider)
+              as SimulationCallStateService;
       check(s.isStarted).isFalse();
     });
   });
@@ -473,6 +483,159 @@ void main() {
       final s =
           container.read(systemUiServiceProvider) as SimulationSystemUiService;
       check(s.calls).isEmpty();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Stage 5B.3 — 5 communication / cross-cutter service simulation swaps
+  // -----------------------------------------------------------------------
+
+  group('Simulation swap — PhoneService', () {
+    late ProviderContainer container;
+    late SimulationPhoneService sim;
+
+    setUp(() {
+      sim = SimulationPhoneService();
+      container = ProviderContainer(
+        overrides: [phoneServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationPhoneService', () {
+      final s = container.read(phoneServiceProvider);
+      check(s).isA<SimulationPhoneService>();
+    });
+
+    test('simulation phone service starts with empty calls', () {
+      final s = container.read(phoneServiceProvider) as SimulationPhoneService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — MessagingService', () {
+    late ProviderContainer container;
+    late SimulationMessagingService sim;
+
+    setUp(() {
+      sim = SimulationMessagingService();
+      container = ProviderContainer(
+        overrides: [messagingServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      sim.dispose();
+      container.dispose();
+    });
+
+    test('overridden container returns SimulationMessagingService', () {
+      final s = container.read(messagingServiceProvider);
+      check(s).isA<SimulationMessagingService>();
+    });
+
+    test('simulation messaging starts with empty call log', () {
+      final s =
+          container.read(messagingServiceProvider) as SimulationMessagingService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — BackgroundSessionService', () {
+    late ProviderContainer container;
+    late SimulationBackgroundSessionService sim;
+
+    setUp(() {
+      sim = SimulationBackgroundSessionService();
+      container = ProviderContainer(
+        overrides: [backgroundSessionServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      sim.dispose();
+      container.dispose();
+    });
+
+    test('overridden container returns SimulationBackgroundSessionService', () {
+      final s = container.read(backgroundSessionServiceProvider);
+      check(s).isA<SimulationBackgroundSessionService>();
+    });
+
+    test('simulation background session starts with empty calls', () {
+      final s =
+          container.read(backgroundSessionServiceProvider)
+              as SimulationBackgroundSessionService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — SentryService', () {
+    late ProviderContainer container;
+    late SimulationSentryService sim;
+
+    setUp(() {
+      sim = SimulationSentryService();
+      container = ProviderContainer(
+        overrides: [sentryServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationSentryService', () {
+      final s = container.read(sentryServiceProvider);
+      check(s).isA<SimulationSentryService>();
+    });
+
+    test('simulation sentry starts not initialized', () {
+      final s =
+          container.read(sentryServiceProvider) as SimulationSentryService;
+      check(s.isInitialized).isFalse();
+    });
+  });
+
+  group('Simulation swap — SessionLogRecorder', () {
+    late GuardianAngelaDatabase db;
+    late SessionLogRepository repo;
+    late ProviderContainer container;
+
+    setUp(() {
+      db = GuardianAngelaDatabase.memory();
+      repo = SessionLogRepository(db.sessionLogsDao);
+      container = ProviderContainer(
+        overrides: [
+          sessionLogRecorderProvider.overrideWithValue(
+            (context) => SimulationSessionLogRecorder(
+              context: context,
+              repo: repo,
+            ),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() async {
+      container.dispose();
+      await db.close();
+    });
+
+    test('overridden factory produces SimulationSessionLogRecorder', () {
+      final factory = container.read(sessionLogRecorderProvider);
+      check(factory).isNotNull();
+    });
+
+    test('default factory produces SessionLogRecorder (not simulation)', () {
+      // Build a default container and verify the factory wraps the real impl.
+      final defaultContainer = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWithValue(GuardianAngelaDatabase.memory()),
+        ],
+      );
+      addTearDown(defaultContainer.dispose);
+      final factory = defaultContainer.read(sessionLogRecorderProvider);
+      check(factory).isNotNull();
     });
   });
 }

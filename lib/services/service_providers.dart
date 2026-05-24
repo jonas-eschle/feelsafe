@@ -6,7 +6,11 @@
 // service_providers.dart` must be empty).
 //
 // Phase 5A foundation. Stage 5B.1 adds 7 leaf service triplets.
-// Stages 5B.2/5B.3/5C add the remaining service providers.
+// Stage 5B.2 adds: location, batteryMonitor, notification, hardwareButton,
+//   callState, systemUi.
+// Stage 5B.3 adds: phone, messaging, backgroundSession, sentry,
+//   sessionLogRecorder.
+// Stage 5C adds the remaining service providers.
 // New Real*Service constructors MUST be added here only.
 //
 // See spec 05 §Service Providers (lines 1295–1330) and
@@ -44,6 +48,16 @@ import 'package:guardianangela/services/protocols/screen_flash_service_protocol.
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
+import 'package:guardianangela/domain/models/session_context.dart';
+import 'package:guardianangela/services/background_session_service.dart';
+import 'package:guardianangela/services/messaging_service.dart';
+import 'package:guardianangela/services/phone_service.dart';
+import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
+import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
+import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
+import 'package:guardianangela/services/sentry_service.dart';
+import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/recording_service.dart';
 import 'package:guardianangela/services/screen_flash_service.dart';
 import 'package:guardianangela/services/system_ui_service.dart';
@@ -256,4 +270,100 @@ final callStateServiceProvider = Provider<CallStateServiceProtocol>((ref) {
 /// `lib/services/sim/system_ui_service_sim.dart`.
 final systemUiServiceProvider = Provider<SystemUiServiceProtocol>((ref) {
   return RealSystemUiService();
+});
+
+// ---- Communication / cross-cutter services ----
+
+/// [PhoneServiceProtocol] backed by `package:url_launcher` via `tel:` URIs.
+///
+/// Android: `ACTION_CALL` intent with `CALL_PHONE` permission auto-dials.
+/// iOS: system confirmation dialog always shown (documented OS limitation).
+///
+/// Phone number sanitization strips non-digit characters, preserves leading
+/// `+`. Empty sanitized numbers throw [ArgumentError] (fail-loud).
+///
+/// Tests override with [SimulationPhoneService] from
+/// `lib/services/sim/phone_service_sim.dart`.
+final phoneServiceProvider = Provider<PhoneServiceProtocol>((ref) {
+  return const RealPhoneService();
+});
+
+/// [MessagingServiceProtocol] — SMS (Android native WorkManager, iOS
+/// url_launcher), WhatsApp, Telegram, and phone-call channel dispatch.
+///
+/// Depends on [notificationServiceProvider] to show SMS-retry-exhausted
+/// notifications and to listen for retry-action taps. The phone-call channel
+/// dispatches via [phoneServiceProvider].
+///
+/// Phase 7 native dependency: Android `SmsChannel.kt` + `SmsWorker.kt`
+/// (MethodChannel `com.guardianangela.app/sms`).
+///
+/// Tests override with [SimulationMessagingService] from
+/// `lib/services/sim/messaging_service_sim.dart`.
+final messagingServiceProvider = Provider<MessagingServiceProtocol>((ref) {
+  final notification = ref.read(notificationServiceProvider);
+  final phone = ref.read(phoneServiceProvider);
+  return RealMessagingService(
+    notification: notification,
+    phoneCallDispatcher: phone.call,
+  );
+});
+
+/// [BackgroundSessionServiceProtocol] — manages the Android foreground
+/// service and iOS background execution to keep the app alive during active
+/// sessions. Provides persistent notification with "I'm Safe", "Pause", and
+/// "Resume" action buttons.
+///
+/// Phase 7 native dependency: `flutter_background_service` plugin handles
+/// the Android foreground service promotion and iOS background task.
+/// The Dart side manages notification content and action routing via
+/// [notificationServiceProvider].
+///
+/// Tests override with [SimulationBackgroundSessionService] from
+/// `lib/services/sim/background_session_service_sim.dart`.
+final backgroundSessionServiceProvider =
+    Provider<BackgroundSessionServiceProtocol>((ref) {
+      return RealBackgroundSessionService(
+        notification: ref.read(notificationServiceProvider),
+      );
+    });
+
+/// [SentryServiceProtocol] backed by `package:sentry_flutter`.
+///
+/// Sentry is opt-in by default (decision D2). [RealSentryService.initialize]
+/// must be called at app startup with the user's telemetry consent from
+/// [AppSettings]. When `enabled: false`, the SDK is never initialized and
+/// all [captureException] calls are no-ops.
+///
+/// The DSN MUST point to an EU-region Sentry project (D2 GDPR data
+/// residency). The DSN is supplied at startup from compile-time
+/// `--dart-define=SENTRY_DSN=...` or a remote config; it is NOT hardcoded
+/// in this file.
+///
+/// Tests override with [SimulationSentryService] from
+/// `lib/services/sim/sentry_service_sim.dart`.
+final sentryServiceProvider = Provider<SentryServiceProtocol>((ref) {
+  return RealSentryService();
+});
+
+/// A [SessionLogRecorderFactory] that constructs one [SessionLogRecorder]
+/// per session.
+///
+/// The provider exposes a factory function rather than a singleton because
+/// [SessionLogRecorder] is a short-lived per-session object. The session
+/// controller calls `ref.read(sessionLogRecorderProvider)(context)` at
+/// session start to receive a fresh recorder.
+///
+/// For real sessions the recorder performs a single atomic write to
+/// [SessionLogRepository] on `finalise`. Simulation sessions use
+/// [SimulationSessionLogRecorder] (injected via
+/// `sessionLogRecorderProvider.overrideWithValue(...)`) which assembles the
+/// log but never persists it.
+///
+/// Tests override with [SimulationSessionLogRecorder] from
+/// `lib/services/session_log_recorder.dart`.
+final sessionLogRecorderProvider = Provider<SessionLogRecorderFactory>((ref) {
+  final repo = ref.read(sessionLogRepositoryProvider);
+  return (SessionContext context) =>
+      SessionLogRecorder(context: context, repo: repo);
 });

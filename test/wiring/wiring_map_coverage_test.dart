@@ -155,29 +155,32 @@ void main() {
       check(missing).isEmpty();
     });
 
-    test('wiring map has at least 13 wired-real or wired-sim-only rows', () {
+    test('wiring map has at least 24 wired-real or wired-sim-only rows', () {
       // Phase 5A wires: encryption, keyProvider,
       // appSettings, userProfile, batteryAlertConfig,
       // sessionLog = 6 rows (database is pending-5c).
       // Stage 5B.1 adds 7 more: vibration, wakelock, flash, screenFlash,
       // recording, contact, audio = 13 total.
+      // Stage 5B.2 adds 6 more: location, batteryMonitor, notification,
+      // hardwareButton, callState, systemUi = 19 total.
+      // Stage 5B.3 adds 5 more: phone, messaging, backgroundSession,
+      // sentry, sessionLogRecorder = 24 total.
       final wiredCount = _parseWiringMap()
           .where(
             (r) => r.status == 'wired-real' || r.status == 'wired-sim-only',
           )
           .length;
-      check(wiredCount).isGreaterOrEqual(13);
+      check(wiredCount).isGreaterOrEqual(24);
     });
 
-    test('wiring map has at least 8 pending-5b rows '
-        '(remaining services not yet wired after Stage 5B.1)', () {
-      // Stage 5B.1 promoted 7 pending-5b → wired-real and added 3 new
-      // pending rows (messaging, phone, location).
-      // Remaining pending-5b: 12 - 7 + 3 = 8.
+    test('wiring map has at least 3 pending-5b rows '
+        '(remaining services not yet wired after Stage 5B.3)', () {
+      // Stage 5B.3 promoted 5 more pending-5b → wired-real.
+      // Remaining pending-5b: permissionAudit, sessionStartValidator, backup.
       final pendingCount = _parseWiringMap()
           .where((r) => r.status == 'pending-5b')
           .length;
-      check(pendingCount).isGreaterOrEqual(8);
+      check(pendingCount).isGreaterOrEqual(3);
     });
   });
 }

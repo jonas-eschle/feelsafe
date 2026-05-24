@@ -1,4 +1,5 @@
 import 'package:guardianangela/data/db/dao/session_logs_dao.dart';
+import 'package:guardianangela/domain/models/session_log.dart';
 
 /// Policy-layer wrapper around [SessionLogsDao].
 ///
@@ -13,6 +14,12 @@ class SessionLogRepository {
   const SessionLogRepository(this._dao);
 
   final SessionLogsDao _dao;
+
+  /// Inserts or replaces [log] in the Drift `session_logs` table.
+  ///
+  /// Called by [SessionLogRecorder.finalise] to perform the single
+  /// atomic write at session end.
+  Future<void> upsert(SessionLog log) => _dao.upsert(log);
 
   /// Deletes every non-critical log whose reference time
   /// (`endedAt` if set, else `startedAt`) is strictly older than
