@@ -22,17 +22,19 @@ import 'package:guardianangela/data/repositories/json_singleton_repository.dart'
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/services/audio_service.dart';
+import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
-import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/location_service.dart';
+import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
+import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
@@ -198,7 +200,19 @@ final locationServiceProvider = Provider<LocationServiceProtocol>((ref) {
 /// the configured threshold. Tests override with
 /// [SimulationBatteryMonitorService] from
 /// `lib/services/sim/battery_monitor_service_sim.dart`.
-final batteryMonitorServiceProvider =
-    Provider<BatteryMonitorServiceProtocol>((ref) {
-      return RealBatteryMonitorService();
-    });
+final batteryMonitorServiceProvider = Provider<BatteryMonitorServiceProtocol>((
+  ref,
+) {
+  return RealBatteryMonitorService();
+});
+
+/// [NotificationServiceProtocol] backed by `package:flutter_local_notifications`.
+///
+/// Must call [RealNotificationService.init] at app startup. Tests override
+/// with [SimulationNotificationService] from
+/// `lib/services/sim/notification_service_sim.dart`.
+final notificationServiceProvider = Provider<NotificationServiceProtocol>((
+  ref,
+) {
+  return RealNotificationService();
+});
