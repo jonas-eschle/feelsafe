@@ -34,9 +34,115 @@ import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/main.dart';
+import 'package:guardianangela/services/audio_service.dart';
+import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
+import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
+
+// ---------------------------------------------------------------------------
+// Q8: Bootstrap ordering — sequence tracker fakes
+// ---------------------------------------------------------------------------
+
+/// An [AppSettingsRepository] that appends `'settingsLoad'` to [calls] and
+/// returns a default [AppSettings].
+class _OrderingSettingsRepo implements AppSettingsRepository {
+  _OrderingSettingsRepo(this.calls);
+
+  final List<String> calls;
+
+  @override
+  Future<AppSettings> load() async {
+    calls.add('settingsLoad');
+    return const AppSettings();
+  }
+
+  @override
+  Future<AppSettings?> loadOrNull() async {
+    calls.add('settingsLoad');
+    return const AppSettings();
+  }
+
+  @override
+  Future<void> save(AppSettings value) async {}
+
+  @override
+  Future<void> delete() async {}
+}
+
+/// A [SentryServiceProtocol] that appends `'sentryInit'` to [calls] on
+/// [initialize].
+class _OrderingSentryService implements SentryServiceProtocol {
+  _OrderingSentryService(this.calls);
+
+  final List<String> calls;
+
+  @override
+  Future<void> initialize({
+    required bool enabled,
+    String? dsn,
+    double tracesSampleRate = 0.0,
+  }) async {
+    calls.add('sentryInit');
+  }
+
+  @override
+  Future<void> captureException(
+    Object error,
+    StackTrace? stack, {
+    Map<String, dynamic>? context,
+  }) async {}
+
+  @override
+  Future<void> close() async {}
+}
+
+/// A [SessionLogRepository] substitute that appends `'purgeLogs'` to [calls]
+/// and returns 0 deleted records.
+///
+/// Constructed with a real in-memory database so the provider chain
+/// is satisfied, but [purgeExpiredLogs] never touches it.
+class _OrderingSessionLogRepo extends SessionLogRepository {
+  _OrderingSessionLogRepo(super.dao, this.calls);
+
+  final List<String> calls;
+
+  @override
+  Future<int> purgeExpiredLogs({
+    required int retentionDays,
+    required DateTime now,
+  }) async {
+    calls.add('purgeLogs');
+    return 0;
+  }
+}
+
+/// A [RealNotificationService] that overrides [init] to append
+/// `'notificationInit'` to [calls] without calling platform channels.
+class _OrderingNotificationService extends RealNotificationService {
+  _OrderingNotificationService(this.calls);
+
+  final List<String> calls;
+
+  @override
+  Future<void> init() async => calls.add('notificationInit');
+}
+
+/// A [RealAudioService] that overrides [bootstrapVoiceAssets] to append
+/// `'ttsBootstrap'` to [calls] without calling TTS or platform channels.
+class _OrderingAudioService extends RealAudioService {
+  _OrderingAudioService(this.calls);
+
+  final List<String> calls;
+
+  @override
+  Future<void> bootstrapVoiceAssets({
+    void Function(String locale, Object error, StackTrace stack)? onFailure,
+  }) async {
+    calls.add('ttsBootstrap');
+  }
+}
 
 // ---------------------------------------------------------------------------
 // G12/G13: Bootstrap ordering helpers
@@ -600,6 +706,61 @@ void main() {
 
       expect(captured, isA<JsonRecoveryApp>());
       expect((captured! as JsonRecoveryApp).reason, contains('corrupt'));
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // Q8: Bootstrap step-order sequence-tracker test
+  // --------------------------------------------------------------------------
+
+  group('Q8: runBootstrap fires steps in the mandated order', () {
+    test('Q8: dbOpen → settingsLoad → sentryInit → purgeLogs → '
+        'notificationInit → ttsBootstrap', () async {
+      final calls = <String>[];
+
+      // Ordering fakes wired to the shared [calls] list.
+      final settingsRepo = _OrderingSettingsRepo(calls);
+      final sentryService = _OrderingSentryService(calls);
+      final notifService = _OrderingNotificationService(calls);
+      final audioService = _OrderingAudioService(calls);
+
+      // Build an in-memory DB and use it to construct the session-log repo
+      // override so that purgeExpiredLogs records 'purgeLogs'.
+      final db = _openDb();
+      final sessionRepo = _OrderingSessionLogRepo(db.sessionLogsDao, calls);
+
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) async {
+            calls.add('dbOpen');
+            return db;
+          }),
+          appSettingsRepositoryProvider.overrideWithValue(settingsRepo),
+          sentryServiceProvider.overrideWithValue(sentryService),
+          sessionLogRepositoryProvider.overrideWith((_) async => sessionRepo),
+          notificationServiceProvider.overrideWithValue(notifService),
+          audioServiceProvider.overrideWithValue(audioService),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await db.close();
+      });
+
+      await runBootstrap(container, runner: (_) {});
+
+      // Allow any microtasks queued by the unawaited ttsBootstrap to
+      // complete before asserting the final sequence.
+      await Future<void>.delayed(Duration.zero);
+
+      check(calls).deepEquals(const <String>[
+        'dbOpen',
+        'settingsLoad',
+        'sentryInit',
+        'purgeLogs',
+        'notificationInit',
+        'ttsBootstrap',
+      ]);
     });
   });
 }
