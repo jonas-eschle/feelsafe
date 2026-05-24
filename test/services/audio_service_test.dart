@@ -1,9 +1,27 @@
+import 'dart:async';
+
 import 'package:checks/checks.dart';
+import 'package:fake_async/fake_async.dart';
+import 'package:flutter_tts/flutter_tts.dart';
+import 'package:just_audio/just_audio.dart';
+import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+
+// ---------------------------------------------------------------------------
+// G6: Mock seams for volume-ramp fakeAsync test
+// ---------------------------------------------------------------------------
+
+/// Mock [AudioPlayer] that records all volume values passed to [setVolume]
+/// so the ramp progression can be asserted.
+class _MockAudioPlayer extends Mock implements AudioPlayer {}
+
+/// Mock [FlutterTts] injected into [RealAudioService] to prevent
+/// platform-channel initialization during unit tests.
+class _MockFlutterTts extends Mock implements FlutterTts {}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -16,6 +34,12 @@ SimulationAudioService _sim() => SimulationAudioService();
 // ---------------------------------------------------------------------------
 
 void main() {
+  // Register mocktail fallback values for types used in any() matchers.
+  // Required by mocktail's null-safe fallback system before any `when` calls.
+  setUpAll(() {
+    registerFallbackValue(LoopMode.all);
+  });
+
   // -----------------------------------------------------------------------
   // resolveBuiltInVoicePath helper
   // -----------------------------------------------------------------------
@@ -434,6 +458,112 @@ void main() {
     test('rampSeconds is preserved when set', () {
       const call = AudioCall(method: 'playAlarmWithConfig', rampSeconds: 8);
       check(call.rampSeconds).equals(8);
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // G6: Q33 volume-ramp fakeAsync test (RealAudioService injection seam)
+  // -----------------------------------------------------------------------
+  group('Q33: RealAudioService volume ramp (fakeAsync)', () {
+    /// Verifies that playAlarmWithConfig with rampSeconds=5 advances the
+    /// player volume from 0 to ≈1.0 over 50 × 100ms ticks (5 seconds).
+    ///
+    /// The [AudioPlayer] is injected via the existing seam on
+    /// [RealAudioService] so no real audio session is needed.
+    test(
+      'volume reaches ≈1.0 after rampSeconds=5 (50 ticks × 100ms)',
+      () {
+        // Use fakeAsync so Timer.periodic advances deterministically.
+        fakeAsync((async) {
+          final mockPlayer = _MockAudioPlayer();
+          final capturedVolumes = <double>[];
+
+          // Stub all AudioPlayer methods invoked by playAlarmWithConfig.
+          when(() => mockPlayer.processingState).thenReturn(
+            ProcessingState.idle,
+          );
+          when(
+            () => mockPlayer.setAsset(any()),
+          ).thenAnswer((_) async => null);
+          when(
+            () => mockPlayer.setLoopMode(any()),
+          ).thenAnswer((_) => Future<void>.value());
+          when(() => mockPlayer.setVolume(any())).thenAnswer((inv) async {
+            capturedVolumes.add(inv.positionalArguments[0] as double);
+          });
+          when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
+
+          // Inject _MockFlutterTts to avoid FlutterTts platform-channel
+          // initialization before WidgetsFlutterBinding is ready.
+          final svc = RealAudioService(
+            player: mockPlayer,
+            tts: _MockFlutterTts(),
+          );
+
+          // Kick off the alarm (intentionally not awaited — the ramp runs via
+          // Timer.periodic which fakeAsync controls).
+          unawaited(svc.playAlarmWithConfig());
+
+          // Advance time by 100ms increments (50 ticks = 5 seconds).
+          for (var i = 0; i < 50; i++) {
+            async.elapse(const Duration(milliseconds: 100));
+          }
+
+          // Must have captured at least 50 volume calls (one per tick) plus
+          // the initial setVolume(0.0) before play.
+          check(capturedVolumes.length).isGreaterOrEqual(50);
+
+          // Final volume captured should be ≈1.0 (last tick sets full volume).
+          final lastVolume = capturedVolumes.last;
+          check(lastVolume).isCloseTo(1.0, 0.05);
+
+          // First ramp tick should be well below 1.0 (ramp has not completed).
+          // The initial setVolume(0.0) is first, followed by ramp ticks.
+          final firstRampVolume =
+              capturedVolumes.firstWhere((v) => v > 0.0, orElse: () => 0.0);
+          check(firstRampVolume).isLessThan(0.1);
+        });
+      },
+    );
+
+    test('volume is monotonically increasing across ramp ticks', () {
+      fakeAsync((async) {
+        final mockPlayer = _MockAudioPlayer();
+        final capturedVolumes = <double>[];
+
+        when(() => mockPlayer.processingState).thenReturn(
+          ProcessingState.idle,
+        );
+        when(() => mockPlayer.setAsset(any())).thenAnswer((_) async => null);
+        when(
+          () => mockPlayer.setLoopMode(any()),
+        ).thenAnswer((_) => Future<void>.value());
+        when(() => mockPlayer.setVolume(any())).thenAnswer((inv) async {
+          capturedVolumes.add(inv.positionalArguments[0] as double);
+        });
+        when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
+
+        // Inject _MockFlutterTts to avoid platform-channel init in tests.
+        final svc = RealAudioService(
+          player: mockPlayer,
+          tts: _MockFlutterTts(),
+        );
+        unawaited(svc.playAlarmWithConfig(rampSeconds: 3));
+
+        // Advance 30 ticks = 3 seconds.
+        for (var i = 0; i < 30; i++) {
+          async.elapse(const Duration(milliseconds: 100));
+        }
+
+        // Extract only the ramp-tick volumes (skip the initial 0.0 set).
+        final rampVolumes = capturedVolumes.where((v) => v > 0.0).toList();
+        check(rampVolumes).isNotEmpty();
+
+        // Each ramp volume must be >= the previous (monotonically increasing).
+        for (var i = 1; i < rampVolumes.length; i++) {
+          check(rampVolumes[i]).isGreaterOrEqual(rampVolumes[i - 1]);
+        }
+      });
     });
   });
 }

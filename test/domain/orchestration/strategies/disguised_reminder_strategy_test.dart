@@ -42,24 +42,29 @@ void main() {
         _step(config: const DisguisedReminderConfig()),
         services,
       );
-      final vibCalls =
-          vibration.calls
-              .where((c) => c['method'] == 'reminderPattern')
-              .toList();
+      final vibCalls = vibration.calls
+          .where((c) => c['method'] == 'reminderPattern')
+          .toList();
       check(vibCalls).length.equals(1);
     });
 
-    test('reminderPattern fires when isSimulation=true (local hardware)', () async {
-      final vibration = FakeVibrationService();
-      final services = buildServices(vibration: vibration, isSimulation: true);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(
-        vibration.calls.any((c) => c['method'] == 'reminderPattern'),
-      ).isTrue();
-    });
+    test(
+      'reminderPattern fires when isSimulation=true (local hardware)',
+      () async {
+        final vibration = FakeVibrationService();
+        final services = buildServices(
+          vibration: vibration,
+          isSimulation: true,
+        );
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(
+          vibration.calls.any((c) => c['method'] == 'reminderPattern'),
+        ).isTrue();
+      },
+    );
   });
 
   // ─── Group 2: executeReal wires showDisguisedReminder ───────────────────────
@@ -71,10 +76,9 @@ void main() {
         _step(config: const DisguisedReminderConfig()),
         services,
       );
-      final notifCalls =
-          notification.calls
-              .where((c) => c['method'] == 'showDisguisedReminder')
-              .toList();
+      final notifCalls = notification.calls
+          .where((c) => c['method'] == 'showDisguisedReminder')
+          .toList();
       check(notifCalls).length.equals(1);
     });
 
@@ -93,96 +97,104 @@ void main() {
       ).isTrue();
     });
 
-    test('notification ID is offset by step.order (id=100 for order=0)', () async {
-      final notification = FakeNotificationService();
-      final services = buildServices(notification: notification);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig(), order: 0),
-        services,
-      );
-      final call = notification.calls.firstWhere(
-        (c) => c['method'] == 'showDisguisedReminder',
-      );
-      check(call['id']).equals(100);
-    });
+    test(
+      'notification ID is offset by step.order (id=100 for order=0)',
+      () async {
+        final notification = FakeNotificationService();
+        final services = buildServices(notification: notification);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        final call = notification.calls.firstWhere(
+          (c) => c['method'] == 'showDisguisedReminder',
+        );
+        check(call['id']).equals(100);
+      },
+    );
 
-    test('notification ID shifts with step.order (id=105 for order=5)', () async {
-      final notification = FakeNotificationService();
-      final services = buildServices(notification: notification);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig(), order: 5),
-        services,
-      );
-      final call = notification.calls.firstWhere(
-        (c) => c['method'] == 'showDisguisedReminder',
-      );
-      check(call['id']).equals(105);
-    });
+    test(
+      'notification ID shifts with step.order (id=105 for order=5)',
+      () async {
+        final notification = FakeNotificationService();
+        final services = buildServices(notification: notification);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig(), order: 5),
+          services,
+        );
+        final call = notification.calls.firstWhere(
+          (c) => c['method'] == 'showDisguisedReminder',
+        );
+        check(call['id']).equals(105);
+      },
+    );
   });
 
   // ─── Group 3: services not involved remain empty ─────────────────────────────
-  group('executeReal — messaging, phone, audio, flash, recording, screenFlash empty',
-      () {
-    test('messaging.calls is empty', () async {
-      final messaging = FakeMessagingService();
-      final services = buildServices(messaging: messaging);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(messaging.calls).isEmpty();
-    });
+  group(
+    'executeReal — messaging, phone, audio, flash, recording, screenFlash empty',
+    () {
+      test('messaging.calls is empty', () async {
+        final messaging = FakeMessagingService();
+        final services = buildServices(messaging: messaging);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(messaging.calls).isEmpty();
+      });
 
-    test('phone.calls is empty', () async {
-      final phone = FakePhoneService();
-      final services = buildServices(phone: phone);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(phone.calls).isEmpty();
-    });
+      test('phone.calls is empty', () async {
+        final phone = FakePhoneService();
+        final services = buildServices(phone: phone);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(phone.calls).isEmpty();
+      });
 
-    test('audio.calls is empty', () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(audio.calls).isEmpty();
-    });
+      test('audio.calls is empty', () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(audio.calls).isEmpty();
+      });
 
-    test('flash.calls is empty', () async {
-      final flash = FakeFlashService();
-      final services = buildServices(flash: flash);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(flash.calls).isEmpty();
-    });
+      test('flash.calls is empty', () async {
+        final flash = FakeFlashService();
+        final services = buildServices(flash: flash);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(flash.calls).isEmpty();
+      });
 
-    test('recording.calls is empty', () async {
-      final recording = FakeRecordingService();
-      final services = buildServices(recording: recording);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(recording.calls).isEmpty();
-    });
+      test('recording.calls is empty', () async {
+        final recording = FakeRecordingService();
+        final services = buildServices(recording: recording);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(recording.calls).isEmpty();
+      });
 
-    test('screenFlash.calls is empty', () async {
-      final screenFlash = FakeScreenFlashService();
-      final services = buildServices(screenFlash: screenFlash);
-      await const DisguisedReminderStrategy().executeReal(
-        _step(config: const DisguisedReminderConfig()),
-        services,
-      );
-      check(screenFlash.calls).isEmpty();
-    });
-  });
+      test('screenFlash.calls is empty', () async {
+        final screenFlash = FakeScreenFlashService();
+        final services = buildServices(screenFlash: screenFlash);
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        check(screenFlash.calls).isEmpty();
+      });
+    },
+  );
 
   // ─── Group 4: simulationDescription returns null ──────────────────────────────
   group('simulationDescription — always returns null', () {
@@ -190,10 +202,7 @@ void main() {
       final step = _step(config: const DisguisedReminderConfig());
       final services = buildServices();
       check(
-        const DisguisedReminderStrategy().simulationDescription(
-          step,
-          services,
-        ),
+        const DisguisedReminderStrategy().simulationDescription(step, services),
       ).isNull();
     });
 
@@ -201,10 +210,7 @@ void main() {
       final step = _step(config: const DisguisedReminderConfig());
       final services = buildServices(isSimulation: true);
       check(
-        const DisguisedReminderStrategy().simulationDescription(
-          step,
-          services,
-        ),
+        const DisguisedReminderStrategy().simulationDescription(step, services),
       ).isNull();
     });
 
@@ -257,7 +263,9 @@ void main() {
         _step(),
         buildServices(vibration: vibration),
       );
-      check(vibration.calls.any((c) => c['method'] == 'reminderPattern')).isTrue();
+      check(
+        vibration.calls.any((c) => c['method'] == 'reminderPattern'),
+      ).isTrue();
     });
 
     test('showDisguisedReminder fires when config is null', () async {
