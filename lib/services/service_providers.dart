@@ -25,8 +25,10 @@ import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
+import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/location_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
@@ -188,3 +190,15 @@ final audioServiceProvider = Provider<AudioServiceProtocol>((ref) {
 final locationServiceProvider = Provider<LocationServiceProtocol>((ref) {
   return RealLocationService();
 });
+
+/// [BatteryMonitorServiceProtocol] backed by `package:battery_plus`.
+///
+/// Polls battery level at 60-second intervals and on state-change events.
+/// Fires a one-shot low-battery alert per session when level drops below
+/// the configured threshold. Tests override with
+/// [SimulationBatteryMonitorService] from
+/// `lib/services/sim/battery_monitor_service_sim.dart`.
+final batteryMonitorServiceProvider =
+    Provider<BatteryMonitorServiceProtocol>((ref) {
+      return RealBatteryMonitorService();
+    });
