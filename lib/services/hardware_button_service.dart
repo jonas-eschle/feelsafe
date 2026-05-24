@@ -7,8 +7,9 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:audio_service/audio_service.dart';
 import 'package:flutter/services.dart' show EventChannel;
+
+import 'package:audio_service/audio_service.dart';
 
 import 'package:guardianangela/domain/enums/hardware_button_type.dart';
 import 'package:guardianangela/domain/enums/hardware_trigger_pattern.dart';
@@ -103,7 +104,9 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     _buttonType = buttonType ?? _kDefaultButtonType;
     _pattern = pattern ?? _kDefaultPattern;
     _pressCount = _clampPressCount(pressCount ?? _kDefaultPressCount);
-    _pressWindowMs = _clampPressWindowMs(pressWindowMs ?? _kDefaultPressWindowMs);
+    _pressWindowMs = _clampPressWindowMs(
+      pressWindowMs ?? _kDefaultPressWindowMs,
+    );
     _longPressDurationSeconds = _clampLongPressDuration(
       longPressDurationSeconds ?? _kDefaultLongPressDurationSeconds,
     );
@@ -147,9 +150,13 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     if (buttonType != null) _buttonType = buttonType;
     if (pattern != null) _pattern = pattern;
     if (pressCount != null) _pressCount = _clampPressCount(pressCount);
-    if (pressWindowMs != null) _pressWindowMs = _clampPressWindowMs(pressWindowMs);
+    if (pressWindowMs != null) {
+      _pressWindowMs = _clampPressWindowMs(pressWindowMs);
+    }
     if (longPressDurationSeconds != null) {
-      _longPressDurationSeconds = _clampLongPressDuration(longPressDurationSeconds);
+      _longPressDurationSeconds = _clampLongPressDuration(
+        longPressDurationSeconds,
+      );
     }
     _pressTimes.clear();
     _pressStartTime = null;
@@ -183,8 +190,7 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     await AudioService.init<_GuardianAudioHandler>(
       builder: () => _iosHandler!,
       config: const AudioServiceConfig(
-        androidNotificationChannelId:
-            'com.guardianangela.app.session_service',
+        androidNotificationChannelId: 'com.guardianangela.app.session_service',
         androidNotificationChannelName: 'Session',
       ),
     );
@@ -201,8 +207,8 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     final action = event['action'] as String?;
     final key = event['key'] as String?;
 
-    final isTargetKey = (_buttonType == HardwareButtonType.volumeUp &&
-            key == 'volume_up') ||
+    final isTargetKey =
+        (_buttonType == HardwareButtonType.volumeUp && key == 'volume_up') ||
         (_buttonType == HardwareButtonType.volumeDown && key == 'volume_down');
     if (!isTargetKey) return;
 

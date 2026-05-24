@@ -8,6 +8,8 @@
 // Phase 5A coverage: EncryptionService + all three JSON repos.
 // Stage 5B.1 adds: vibration, wakelock, flash, screenFlash, recording,
 //   contact, audio.
+// Stage 5B.2 adds: location, batteryMonitor, notification,
+//   hardwareButton, callState, systemUi.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,11 +17,17 @@ import 'package:test/test.dart';
 
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
+import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/encryption_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
+import 'package:guardianangela/services/sim/hardware_button_service_sim.dart';
+import 'package:guardianangela/services/sim/location_service_sim.dart';
+import 'package:guardianangela/services/sim/notification_service_sim.dart';
 import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
+import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 import 'package:guardianangela/services/sim/vibration_service_sim.dart';
 import 'package:guardianangela/services/sim/wakelock_service_sim.dart';
 
@@ -161,7 +169,8 @@ void main() {
     });
 
     test('simulation wakelock starts disabled', () {
-      final s = container.read(wakelockServiceProvider) as SimulationWakelockService;
+      final s =
+          container.read(wakelockServiceProvider) as SimulationWakelockService;
       check(s.isEnabled).isFalse();
     });
   });
@@ -185,8 +194,7 @@ void main() {
     });
 
     test('simulation flash starts not flashing', () {
-      final s =
-          container.read(flashServiceProvider) as SimulationFlashService;
+      final s = container.read(flashServiceProvider) as SimulationFlashService;
       check(s.isFlashing).isFalse();
     });
   });
@@ -239,7 +247,8 @@ void main() {
 
     test('simulation recording starts with empty calls', () {
       final s =
-          container.read(recordingServiceProvider) as SimulationRecordingService;
+          container.read(recordingServiceProvider)
+              as SimulationRecordingService;
       check(s.calls).isEmpty();
     });
   });
@@ -250,9 +259,7 @@ void main() {
     setUp(() {
       container = ProviderContainer(
         overrides: [
-          contactServiceProvider.overrideWithValue(
-            SimulationContactService(),
-          ),
+          contactServiceProvider.overrideWithValue(SimulationContactService()),
         ],
       );
     });
@@ -290,8 +297,181 @@ void main() {
     });
 
     test('simulation audio starts with empty calls', () {
+      final s = container.read(audioServiceProvider) as SimulationAudioService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  // -----------------------------------------------------------------------
+  // Stage 5B.2 — 6 streaming/sensor service simulation swaps
+  // -----------------------------------------------------------------------
+
+  group('Simulation swap — LocationService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          locationServiceProvider.overrideWithValue(
+            SimulationLocationService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationLocationService', () {
+      final s = container.read(locationServiceProvider);
+      check(s).isA<SimulationLocationService>();
+    });
+
+    test('simulation location starts not tracking', () {
       final s =
-          container.read(audioServiceProvider) as SimulationAudioService;
+          container.read(locationServiceProvider) as SimulationLocationService;
+      check(s.isTracking).isFalse();
+    });
+  });
+
+  group('Simulation swap — BatteryMonitorService', () {
+    late ProviderContainer container;
+    late SimulationBatteryMonitorService sim;
+
+    setUp(() {
+      sim = SimulationBatteryMonitorService();
+      container = ProviderContainer(
+        overrides: [batteryMonitorServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+      sim.dispose();
+    });
+
+    test('overridden container returns SimulationBatteryMonitorService', () {
+      final s = container.read(batteryMonitorServiceProvider);
+      check(s).isA<SimulationBatteryMonitorService>();
+    });
+
+    test('simulation battery monitor starts not monitoring', () {
+      final s =
+          container.read(batteryMonitorServiceProvider)
+              as SimulationBatteryMonitorService;
+      check(s.isMonitoring).isFalse();
+    });
+  });
+
+  group('Simulation swap — NotificationService', () {
+    late ProviderContainer container;
+    late SimulationNotificationService sim;
+
+    setUp(() {
+      sim = SimulationNotificationService();
+      container = ProviderContainer(
+        overrides: [notificationServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      sim.dispose();
+      container.dispose();
+    });
+
+    test('overridden container returns SimulationNotificationService', () {
+      final s = container.read(notificationServiceProvider);
+      check(s).isA<SimulationNotificationService>();
+    });
+
+    test('simulation notification starts with empty calls', () {
+      final s =
+          container.read(notificationServiceProvider)
+              as SimulationNotificationService;
+      check(s.calls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — HardwareButtonService', () {
+    late ProviderContainer container;
+    late SimulationHardwareButtonService sim;
+
+    setUp(() {
+      sim = SimulationHardwareButtonService();
+      container = ProviderContainer(
+        overrides: [hardwareButtonServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+      sim.dispose();
+    });
+
+    test('overridden container returns SimulationHardwareButtonService', () {
+      final s = container.read(hardwareButtonServiceProvider);
+      check(s).isA<SimulationHardwareButtonService>();
+    });
+
+    test('simulation hardware button starts not listening', () {
+      final s =
+          container.read(hardwareButtonServiceProvider)
+              as SimulationHardwareButtonService;
+      check(s.isListening).isFalse();
+    });
+  });
+
+  group('Simulation swap — CallStateService', () {
+    late ProviderContainer container;
+    late SimulationCallStateService sim;
+
+    setUp(() {
+      sim = SimulationCallStateService();
+      container = ProviderContainer(
+        overrides: [callStateServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+      sim.dispose();
+    });
+
+    test('overridden container returns SimulationCallStateService', () {
+      final s = container.read(callStateServiceProvider);
+      check(s).isA<SimulationCallStateService>();
+    });
+
+    test('simulation call state starts not started', () {
+      final s =
+          container.read(callStateServiceProvider) as SimulationCallStateService;
+      check(s.isStarted).isFalse();
+    });
+  });
+
+  group('Simulation swap — SystemUiService', () {
+    late ProviderContainer container;
+    late SimulationSystemUiService sim;
+
+    setUp(() {
+      sim = SimulationSystemUiService();
+      container = ProviderContainer(
+        overrides: [systemUiServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() {
+      container.dispose();
+      sim.reset();
+    });
+
+    test('overridden container returns SimulationSystemUiService', () {
+      final s = container.read(systemUiServiceProvider);
+      check(s).isA<SimulationSystemUiService>();
+    });
+
+    test('simulation system UI starts with empty call log', () {
+      final s =
+          container.read(systemUiServiceProvider) as SimulationSystemUiService;
       check(s.calls).isEmpty();
     });
   });

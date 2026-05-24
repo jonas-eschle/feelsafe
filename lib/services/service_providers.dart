@@ -23,6 +23,7 @@ import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/battery_monitor_service.dart';
+import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
@@ -31,6 +32,7 @@ import 'package:guardianangela/services/location_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
+import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
@@ -39,10 +41,12 @@ import 'package:guardianangela/services/protocols/location_service_protocol.dart
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
+import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
 import 'package:guardianangela/services/recording_service.dart';
 import 'package:guardianangela/services/screen_flash_service.dart';
+import 'package:guardianangela/services/system_ui_service.dart';
 import 'package:guardianangela/services/vibration_service.dart';
 import 'package:guardianangela/services/wakelock_service.dart';
 
@@ -226,7 +230,30 @@ final notificationServiceProvider = Provider<NotificationServiceProtocol>((
 /// (Android: HardwareButtonChannel.kt; iOS: audio_service handler).
 /// Tests override with [SimulationHardwareButtonService] from
 /// `lib/services/sim/hardware_button_service_sim.dart`.
-final hardwareButtonServiceProvider =
-    Provider<HardwareButtonServiceProtocol>((ref) {
-      return RealHardwareButtonService();
-    });
+final hardwareButtonServiceProvider = Provider<HardwareButtonServiceProtocol>((
+  ref,
+) {
+  return RealHardwareButtonService();
+});
+
+/// [CallStateServiceProtocol] — Android PhoneStateListener + iOS
+/// CXCallObserver via platform channels.
+///
+/// Native handler lands in Phase 7
+/// (Android: CallStateChannel.kt; iOS: CallStatePlugin.swift).
+/// Tests override with [SimulationCallStateService] from
+/// `lib/services/sim/call_state_service_sim.dart`.
+final callStateServiceProvider = Provider<CallStateServiceProtocol>((ref) {
+  return RealCallStateService();
+});
+
+/// [SystemUiServiceProtocol] — Android MethodChannels for stealth-icon
+/// toggling and lock-task pinning; iOS no-op.
+///
+/// Native handler lands in Phase 7
+/// (Android: SystemUiChannel.kt + StealthIconChannel.kt; iOS: no-op stubs).
+/// Tests override with [SimulationSystemUiService] from
+/// `lib/services/sim/system_ui_service_sim.dart`.
+final systemUiServiceProvider = Provider<SystemUiServiceProtocol>((ref) {
+  return RealSystemUiService();
+});
