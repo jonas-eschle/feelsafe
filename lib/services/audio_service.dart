@@ -139,10 +139,7 @@ class RealAudioService implements AudioServiceProtocol {
 
   @override
   Future<void> playRingtone(String? assetPath) async {
-    log(
-      'playRingtone — ${assetPath ?? "(default)"}',
-      name: 'AudioService',
-    );
+    log('playRingtone — ${assetPath ?? "(default)"}', name: 'AudioService');
 
     // Configure audio session for speech/call-style ducking (spec 05:163-165).
     try {
@@ -171,7 +168,8 @@ class RealAudioService implements AudioServiceProtocol {
   }
 
   @override
-  Future<void> playAlarm() => playAlarmWithConfig();
+  Future<void> playAlarm({bool alarmDndOverride = true}) =>
+      playAlarmWithConfig(alarmDndOverride: alarmDndOverride);
 
   @override
   Future<void> playAlarmWithConfig({
@@ -180,6 +178,7 @@ class RealAudioService implements AudioServiceProtocol {
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   }) async {
     if (isSimulation) {
       log(
@@ -201,19 +200,39 @@ class RealAudioService implements AudioServiceProtocol {
     final clampedRamp = rampSeconds.clamp(0, 60);
     log(
       'playAlarmWithConfig — soundChoice=$soundChoice '
-      'volume=$clampedVolume rampSeconds=$clampedRamp',
+      'volume=$clampedVolume rampSeconds=$clampedRamp '
+      'alarmDndOverride=$alarmDndOverride',
       name: 'AudioService',
     );
 
-    // Configure audio session for ducking (spec 05:166-167).
+    // Configure audio session for STREAM_ALARM routing (spec 05:79-82).
+    // On Android, AndroidAudioUsage.alarm routes through STREAM_ALARM, which
+    // bypasses silent and vibrate modes. ContentType.sonification matches the
+    // Android alarm content category. alarmDndOverride is applied here; the
+    // controller (Phase 6) passes the setting value at session start.
     try {
       final session = await AudioSession.instance;
-      await session.configure(const AudioSessionConfiguration.music());
-    } catch (e) {
-      log(
-        'AudioSession configure error (degrading): $e',
-        name: 'AudioService',
+      await session.configure(
+        const AudioSessionConfiguration(
+          androidAudioAttributes: AndroidAudioAttributes(
+            contentType: AndroidAudioContentType.sonification,
+            usage: AndroidAudioUsage.alarm,
+          ),
+          androidAudioFocusGainType:
+              AndroidAudioFocusGainType.gainTransientMayDuck,
+          androidWillPauseWhenDucked: false,
+          avAudioSessionCategory: AVAudioSessionCategory.playback,
+          avAudioSessionCategoryOptions:
+              AVAudioSessionCategoryOptions.mixWithOthers,
+          avAudioSessionMode: AVAudioSessionMode.defaultMode,
+          avAudioSessionRouteSharingPolicy:
+              AVAudioSessionRouteSharingPolicy.defaultPolicy,
+          avAudioSessionSetActiveOptions:
+              AVAudioSessionSetActiveOptions.none,
+        ),
       );
+    } catch (e) {
+      log('AudioSession configure error (degrading): $e', name: 'AudioService');
     }
 
     await _ensurePlayer();

@@ -1,6 +1,15 @@
+import 'dart:developer';
+
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+
+/// Unique notification ID for the fake-call alarm escalation.
+///
+/// Must not collide with [kForegroundNotificationId] (1) or the
+/// disguised-reminder base (100+).
+const int _kFakeCallNotificationId = 50;
 
 /// Strategy for [ChainStepType.fakeCall] steps.
 ///
@@ -11,28 +20,50 @@ import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 /// pausing on every fake call would create gaps that an attacker could
 /// exploit by repeatedly declining/answering to delay the chain.
 ///
-/// Real mode: no service action from this strategy — the [SessionScreen]
-/// pushes [FakeCallScreen] in response to the engine's `stepFired` event
-/// (Phase 6 wiring). The ringtone is played by [AudioService] from the
-/// [FakeCallScreen] widget. This strategy's job is to be present in the
-/// registry; actual UI work is done by the session controller (Phase 5).
+/// Real mode: fires [AudioServiceProtocol.playRingtone] to start the
+/// ringtone, [VibrationServiceProtocol.fakeCallPattern] for the incoming-call
+/// vibration, and [NotificationServiceProtocol.showAlarmEscalation] so the
+/// fake call surfaces when the device is locked (spec 05:880-886). The
+/// [SessionScreen] also pushes [FakeCallScreen] in response to the engine's
+/// `stepFired` event (Phase 6 wiring).
 ///
-/// Simulation: the call screen and ringtone fire normally (local-only action
-/// per spec 02 §Simulation behavior summary). No `[SIM]` card substitution;
-/// this strategy returns `null` from [simulationDescription].
+/// Simulation: all three actions (ringtone, vibration, escalation
+/// notification) fire normally — local-only actions safe in sim per spec 02
+/// §Simulation behavior summary. This strategy returns `null` from
+/// [simulationDescription].
 ///
-/// See spec 02 §5 fakeCall and §Answer / Hang-up Semantics (Pivot 2).
+/// See spec 02 §5 fakeCall and §Answer / Hang-up Semantics (Pivot 2 / R-1).
 final class FakeCallStrategy implements EventStrategy {
   /// Creates a [FakeCallStrategy].
   const FakeCallStrategy();
 
-  /// No-op — fake call is entirely UI-driven (Pivot 2 / R-1).
-  ///
-  /// The simulation guard is omitted because there are no real actions
-  /// to block; the fake-call UI fires identically in both modes.
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) =>
-      Future<void>.value();
+  Future<void> executeReal(ChainStep step, EventServices services) async {
+    final config = step.config is FakeCallConfig
+        ? step.config! as FakeCallConfig
+        : const FakeCallConfig();
+
+    log(
+      'FakeCallStrategy: caller="${config.callerName}" '
+      'isSimulation=${services.isSimulation}',
+      name: 'FakeCallStrategy',
+    );
+
+    // Vibration: realistic incoming-call pattern. Fires in sim (local only).
+    await services.vibration.fakeCallPattern();
+
+    // Ringtone: loop until FakeCallScreen answers/declines or the step ends.
+    await services.audio.playRingtone(config.voiceRecordingPath);
+
+    // Alarm escalation notification: ensures the fake call surfaces on the
+    // lock screen (spec 05:880-886). Uses the alarm channel with criticalAlert
+    // on iOS.
+    await services.notification.showAlarmEscalation(
+      id: _kFakeCallNotificationId,
+      title: 'Incoming call from ${config.callerName}',
+      body: 'Guardian Angela fake call.',
+    );
+  }
 
   /// Returns `null` — the call screen and ringtone fire normally in
   /// simulation; no `[SIM]` card is needed.

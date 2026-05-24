@@ -112,6 +112,11 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
 
   StreamSubscription<String>? _actionTapsSub;
 
+  // Cached state for pause/resume notification text (G2, G3).
+  String _lastTitle = 'Guardian Angela active';
+  String _lastBody = 'Your session is running.';
+  bool _stealthMode = false;
+
   // -------------------------------------------------------------------------
   // BackgroundSessionServiceProtocol implementation
   // -------------------------------------------------------------------------
@@ -187,6 +192,9 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
       'startService title="$title" stealth=$stealth',
       name: 'BackgroundSessionService',
     );
+    _lastTitle = title;
+    _lastBody = body;
+    _stealthMode = stealth;
     await _notification.showForegroundServiceNotification(
       title: title,
       body: body,
@@ -204,6 +212,9 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
       'updateNotification title="$title" stealth=$stealth',
       name: 'BackgroundSessionService',
     );
+    _lastTitle = title;
+    _lastBody = body;
+    _stealthMode = stealth;
     await _notification.showForegroundServiceNotification(
       title: title,
       body: body,
@@ -256,19 +267,23 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
         // Update notification text to reflect the paused state immediately
         // (spec 05:823-832). The engine-timer pause is owned by SessionController
         // (Phase 6); we only own the notification here.
+        // G2: stealth mode shows "Music paused"; normal mode shows "Session
+        // paused" (spec 05:825).
         _notification.showForegroundServiceNotification(
-          title: 'Session paused',
+          title: _stealthMode ? 'Music paused' : 'Session paused',
           body: 'Tap Resume to continue.',
+          stealth: _stealthMode,
         );
         _pauseController.add(null);
       case kActionResume:
         log('onResume action tap', name: 'BackgroundSessionService');
-        // Revert notification to generic active-session text. Phase 6
-        // SessionController will call updateNotification with session-specific
-        // text once it handles the resume.
+        // G3: restore the prior notification text, not a generic fallback.
+        // Phase 6 SessionController will call updateNotification once it
+        // handles the resume (spec 05:830-832).
         _notification.showForegroundServiceNotification(
-          title: 'Guardian Angela active',
-          body: 'Your session is running.',
+          title: _lastTitle,
+          body: _lastBody,
+          stealth: _stealthMode,
         );
         _resumeController.add(null);
     }

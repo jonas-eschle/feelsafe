@@ -8,6 +8,12 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
+/// Unique notification ID for the call-emergency alarm escalation.
+///
+/// Must not collide with [kForegroundNotificationId] (1), fake-call (50),
+/// loud-alarm (51), or disguised-reminder base (100+).
+const int _kCallEmergencyNotificationId = 52;
+
 /// Strategy for [ChainStepType.callEmergency] steps.
 ///
 /// Optionally sends a location SMS to all SMS-capable emergency contacts
@@ -52,6 +58,14 @@ final class CallEmergencyStrategy implements EventStrategy {
     if (config.sendLocationSmsFirst) {
       await _sendPreCallSms(number, services);
     }
+
+    // Alarm escalation notification: surfaces the emergency on the lock screen
+    // before the call is placed (spec 05:880-886). Critical on iOS.
+    await services.notification.showAlarmEscalation(
+      id: _kCallEmergencyNotificationId,
+      title: 'Emergency call',
+      body: 'Calling $number now.',
+    );
 
     await services.phone.callEmergency(number);
   }

@@ -1,31 +1,67 @@
+import 'dart:developer';
+
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
+/// Unique ID base for disguised-reminder notifications.
+///
+/// Each step's notification ID is derived from [ChainStep.order] offset by
+/// this base so it never collides with the foreground-service notification
+/// (ID 1) or other fixed IDs.
+const int _kReminderNotificationIdBase = 100;
+
 /// Strategy for [ChainStepType.disguisedReminder] steps.
 ///
-/// Real mode: no service action — the reminder overlay is rendered entirely
-/// by [SessionScreen]; the background service notification is posted by
-/// [BackgroundSessionService] (Phase 5 wiring). This strategy fires when the
-/// engine emits a `stepFired` event, but the actual reminder UI is driven by
-/// the engine state rather than a service call.
+/// Real mode: fires [NotificationServiceProtocol.showDisguisedReminder] with
+/// maximum-urgency flags (Extra-35 fullScreenIntent / Importance.max) so the
+/// reminder surfaces when the device is locked. The reminder overlay is also
+/// rendered by [SessionScreen] in response to the engine's `stepFired` event
+/// (Phase 6); the notification is the out-of-app delivery path.
 ///
-/// Simulation: the real reminder overlay fires identically, so no `[SIM]`
-/// toast substitution is needed. Background notifications carry a `[SIM]`
-/// suffix — that is applied by the notification layer (Phase 5).
+/// Vibration: [VibrationServiceProtocol.reminderPattern] fires in both real
+/// and simulation mode (local hardware, safe in sim per spec 02 §Simulation
+/// behavior summary).
 ///
-/// See spec 02 §2 disguisedReminder.
+/// Simulation: both notification and vibration fire normally (local-only
+/// actions). No `[SIM]` card substitution is needed; this strategy returns
+/// `null` from [simulationDescription].
+///
+/// See spec 02 §2 disguisedReminder and spec 05:843-867 for notification flags.
 final class DisguisedReminderStrategy implements EventStrategy {
   /// Creates a [DisguisedReminderStrategy].
   const DisguisedReminderStrategy();
 
-  /// No-op — disguised reminder is UI-only.
-  ///
-  /// The simulation guard is omitted because there are no real actions
-  /// to block; the overlay fires identically in both modes.
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) =>
-      Future<void>.value();
+  Future<void> executeReal(ChainStep step, EventServices services) async {
+    final config = step.config is DisguisedReminderConfig
+        ? step.config! as DisguisedReminderConfig
+        : const DisguisedReminderConfig();
+
+    // Vibration: fires in real and simulation mode (local hardware, safe in
+    // sim per spec 02 §Simulation behavior summary and spec 05:211-213).
+    await services.vibration.reminderPattern();
+
+    // Notification: fires in real and simulation mode so out-of-app delivery
+    // works. The notification layer does not need a [SIM] suffix here — the
+    // overlay drives the primary UX; the notification is supplemental.
+    final notificationId = _kReminderNotificationIdBase + step.order;
+    final title = config.blackScreenMode ? 'Reminder' : 'Guardian Angela';
+    const body = 'Check in now.';
+
+    log(
+      'DisguisedReminderStrategy: firing notification id=$notificationId '
+      'title="$title"',
+      name: 'DisguisedReminderStrategy',
+    );
+
+    await services.notification.showDisguisedReminder(
+      id: notificationId,
+      title: title,
+      body: body,
+    );
+  }
 
   /// Returns `null` — the actual reminder overlay fires identically in
   /// simulation; no `[SIM]` card substitution is needed. The background

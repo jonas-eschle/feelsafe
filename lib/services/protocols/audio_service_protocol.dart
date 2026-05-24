@@ -22,7 +22,11 @@ abstract interface class AudioServiceProtocol {
   ///
   /// Delegates to [playAlarmWithConfig] with `soundChoice: 'siren'` and
   /// `volume: 1.0`. Per spec 05:79-82.
-  Future<void> playAlarm();
+  ///
+  /// [alarmDndOverride] enables Do Not Disturb bypass via STREAM_ALARM routing
+  /// on Android (spec 05:81). Default `true` per spec. Phase-6 controller
+  /// plumbs [AppSettings.alarmDndOverride] here at session start.
+  Future<void> playAlarm({bool alarmDndOverride = true});
 
   /// Plays an alarm sound with the given parameters.
   ///
@@ -33,12 +37,18 @@ abstract interface class AudioServiceProtocol {
   ///
   /// When gradual ramp is enabled in settings, volume ramps linearly from 0
   /// to [volume] over [rampSeconds] seconds using `Timer.periodic(100ms)`.
+  ///
+  /// [alarmDndOverride] mirrors [AppSettings.alarmDndOverride] — when `true`
+  /// the audio session is configured with [AndroidAudioUsage.alarm] to route
+  /// through STREAM_ALARM, bypassing silent/vibrate modes (spec 05:81).
+  /// Default `true`. Phase-6 controller plumbs the setting value here.
   Future<void> playAlarmWithConfig({
     String soundChoice = 'siren',
     String? customSoundPath,
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   });
 
   /// Plays an audio asset at the given path.

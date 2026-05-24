@@ -3,6 +3,7 @@ import 'package:guardianangela/services/protocols/contact_service_protocol.dart'
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
+import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
@@ -31,6 +32,7 @@ final class EventServices {
     required this.flash,
     required this.screenFlash,
     required this.contacts,
+    required this.notification,
     required this.isSimulation,
     this.userName,
     this.userDescription,
@@ -67,6 +69,11 @@ final class EventServices {
 
   /// Emergency contact lookup service.
   final ContactServiceProtocol contacts;
+
+  /// Notification service for alarm-escalation and disguised-reminder
+  /// notifications. Used by [FakeCallStrategy], [LoudAlarmStrategy],
+  /// [CallEmergencyStrategy], and [DisguisedReminderStrategy].
+  final NotificationServiceProtocol notification;
 
   // ─── Session-scoped data ───────────────────────────────────────────────────
 

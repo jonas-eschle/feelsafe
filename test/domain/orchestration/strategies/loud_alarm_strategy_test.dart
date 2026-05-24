@@ -887,9 +887,9 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
   }
 
   @override
-  Future<void> playAlarm() async {
+  Future<void> playAlarm({bool alarmDndOverride = true}) async {
     _log.add('audio');
-    calls.add({'method': 'playAlarm'});
+    calls.add({'method': 'playAlarm', 'alarmDndOverride': alarmDndOverride});
   }
 
   @override
@@ -899,6 +899,7 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   }) async {
     _log.add('audio');
     calls.add({
@@ -908,6 +909,7 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
       'volume': volume,
       'rampSeconds': rampSeconds,
       'isSimulation': isSimulation,
+      'alarmDndOverride': alarmDndOverride,
     });
   }
 

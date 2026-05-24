@@ -1,13 +1,23 @@
+import 'dart:developer';
+
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
+/// Unique notification ID for the loud-alarm escalation notification.
+///
+/// Must not collide with [kForegroundNotificationId] (1),
+/// the fake-call ID (50), or the disguised-reminder base (100+).
+const int _kLoudAlarmNotificationId = 51;
+
 /// Strategy for [ChainStepType.loudAlarm] steps.
 ///
-/// Fires the alarm sound via [AudioServiceProtocol.playAlarmWithConfig],
-/// always fires the alarm vibration pattern, and optionally starts camera
-/// flash and/or screen flash based on [LoudAlarmConfig].
+/// Fires the alarm sound via [AudioServiceProtocol.playAlarm] (STREAM_ALARM
+/// routing, bypasses silent/vibrate), always fires the alarm vibration
+/// pattern, posts an alarm escalation notification so the alarm surfaces on
+/// the lock screen (spec 05:880-886), and optionally starts camera flash
+/// and/or screen flash based on [LoudAlarmConfig].
 ///
 /// **Gradual volume ramp:** The linear volume ramp (spec 02 §8 loudAlarm
 /// §Gradual Volume Increase) is handled at the service level by
@@ -45,11 +55,28 @@ final class LoudAlarmStrategy implements EventStrategy {
 
     // Audio: always fires; service mutes internally when isSimulation=true.
     // Forwarding the flag satisfies the Layer 3 contract (spec 02 line 941).
+    // STREAM_ALARM routing is applied at the service level (G1 AudioService
+    // fix) for spec 05:79-82 bypass of silent/vibrate modes.
+    log(
+      'LoudAlarmStrategy: sound=${config.soundChoice.name} '
+      'volume=${config.volume} isSimulation=${services.isSimulation}',
+      name: 'LoudAlarmStrategy',
+    );
     await services.audio.playAlarmWithConfig(
       soundChoice: config.soundChoice.name,
       volume: config.volume,
       isSimulation: services.isSimulation,
     );
+
+    // Alarm escalation notification: surfaces the alarm on the lock screen
+    // (spec 05:880-886). Fires in real mode only (bystander-attracting).
+    if (!services.isSimulation) {
+      await services.notification.showAlarmEscalation(
+        id: _kLoudAlarmNotificationId,
+        title: 'Alarm',
+        body: 'Guardian Angela alarm is active.',
+      );
+    }
 
     // Bystander-attracting effects: suppressed in simulation.
     // Spec 02 line 927: "Always muted in simulation. Vibration still fires."

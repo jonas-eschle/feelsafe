@@ -15,6 +15,7 @@ abstract interface class VibrationServiceProtocol {
   ///
   /// Used on button release or overlay dismiss to confirm the user action.
   /// Per spec 05:200.
+  // Wired by Phase 6 confirm-action UI per ~/.claude/plans/rippling-weaving-puffin.md §Phase 6
   Future<void> confirmPulse();
 
   /// Plays the sustained alarm vibration pattern.

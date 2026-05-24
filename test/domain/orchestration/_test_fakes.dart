@@ -1,13 +1,16 @@
 // ignore_for_file: one_member_abstracts
 
+import 'dart:async';
+
 import 'package:guardianangela/domain/models/emergency_contact.dart';
-import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/models/location_point.dart';
+import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
+import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
@@ -29,8 +32,8 @@ final class FakeAudioService implements AudioServiceProtocol {
   }
 
   @override
-  Future<void> playAlarm() async {
-    calls.add({'method': 'playAlarm'});
+  Future<void> playAlarm({bool alarmDndOverride = true}) async {
+    calls.add({'method': 'playAlarm', 'alarmDndOverride': alarmDndOverride});
   }
 
   @override
@@ -40,6 +43,7 @@ final class FakeAudioService implements AudioServiceProtocol {
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   }) async {
     calls.add({
       'method': 'playAlarmWithConfig',
@@ -48,6 +52,7 @@ final class FakeAudioService implements AudioServiceProtocol {
       'volume': volume,
       'rampSeconds': rampSeconds,
       'isSimulation': isSimulation,
+      'alarmDndOverride': alarmDndOverride,
     });
   }
 
@@ -210,8 +215,7 @@ final class FakeLocationService implements LocationServiceProtocol {
   LocationPoint? getLastLocationPoint() => null;
 
   @override
-  Future<LocationFallbackResult?> getLastLocationWithFallback() async =>
-      null;
+  Future<LocationFallbackResult?> getLastLocationWithFallback() async => null;
 
   @override
   List<LocationPoint> get history => const [];
@@ -273,6 +277,79 @@ final class FakeScreenFlashService implements ScreenFlashServiceProtocol {
   }
 }
 
+/// Fake [NotificationServiceProtocol] that records every call.
+final class FakeNotificationService implements NotificationServiceProtocol {
+  /// All calls recorded in the order they occurred.
+  final List<Map<String, Object?>> calls = [];
+
+  @override
+  Future<void> showDisguisedReminder({
+    required int id,
+    required String title,
+    required String body,
+  }) async {
+    calls.add({
+      'method': 'showDisguisedReminder',
+      'id': id,
+      'title': title,
+      'body': body,
+    });
+  }
+
+  @override
+  Future<void> showSmsRetryExhaustedNotification({
+    required String contactName,
+    required String actionPayload,
+  }) async {
+    calls.add({
+      'method': 'showSmsRetryExhaustedNotification',
+      'contactName': contactName,
+      'actionPayload': actionPayload,
+    });
+  }
+
+  @override
+  Future<void> showForegroundServiceNotification({
+    required String title,
+    required String body,
+    bool stealth = false,
+  }) async {
+    calls.add({
+      'method': 'showForegroundServiceNotification',
+      'title': title,
+      'body': body,
+      'stealth': stealth,
+    });
+  }
+
+  @override
+  Future<void> showAlarmEscalation({
+    required int id,
+    required String title,
+    required String body,
+    String sound = 'critical_alert.wav',
+  }) async {
+    calls.add({
+      'method': 'showAlarmEscalation',
+      'id': id,
+      'title': title,
+      'body': body,
+      'sound': sound,
+    });
+  }
+
+  @override
+  Future<void> cancel(int id) async {
+    calls.add({'method': 'cancel', 'id': id});
+  }
+
+  @override
+  Stream<String> get actionTaps => const Stream.empty();
+
+  @override
+  Future<bool> requestPermission() async => true;
+}
+
 /// Fake [ContactServiceProtocol] backed by a provided contact list.
 final class FakeContactService implements ContactServiceProtocol {
   /// Creates a [FakeContactService] with the given [contacts].
@@ -330,6 +407,7 @@ EventServices buildServices({
   FlashServiceProtocol? flash,
   ScreenFlashServiceProtocol? screenFlash,
   ContactServiceProtocol? contactsService,
+  NotificationServiceProtocol? notification,
   bool Function()? isCancelled,
 }) => EventServices(
   audio: audio ?? FakeAudioService(),
@@ -346,6 +424,7 @@ EventServices buildServices({
   flash: flash ?? FakeFlashService(),
   screenFlash: screenFlash ?? FakeScreenFlashService(),
   contacts: contactsService ?? FakeContactService(contacts),
+  notification: notification ?? FakeNotificationService(),
   isSimulation: isSimulation,
   userName: userName,
   userDescription: userDescription,

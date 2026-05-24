@@ -69,9 +69,9 @@ final class _OrderAudioService implements AudioServiceProtocol {
   }
 
   @override
-  Future<void> playAlarm() async {
+  Future<void> playAlarm({bool alarmDndOverride = true}) async {
     _log.add('audio');
-    await _delegate.playAlarm();
+    await _delegate.playAlarm(alarmDndOverride: alarmDndOverride);
   }
 
   @override
@@ -81,6 +81,7 @@ final class _OrderAudioService implements AudioServiceProtocol {
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   }) async {
     _log.add('audio');
     await _delegate.playAlarmWithConfig(
@@ -89,6 +90,7 @@ final class _OrderAudioService implements AudioServiceProtocol {
       volume: volume,
       isSimulation: isSimulation,
       rampSeconds: rampSeconds,
+      alarmDndOverride: alarmDndOverride,
     );
   }
 

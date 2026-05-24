@@ -74,7 +74,7 @@ class SimulationAudioService implements AudioServiceProtocol {
   }
 
   @override
-  Future<void> playAlarm() async {
+  Future<void> playAlarm({bool alarmDndOverride = true}) async {
     calls.add(const AudioCall(method: 'playAlarm'));
   }
 
@@ -85,6 +85,7 @@ class SimulationAudioService implements AudioServiceProtocol {
     double volume = 1.0,
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
+    bool alarmDndOverride = true,
   }) async {
     calls.add(
       AudioCall(
