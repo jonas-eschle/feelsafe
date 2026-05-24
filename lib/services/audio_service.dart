@@ -1,9 +1,42 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:path_provider/path_provider.dart';
 
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+
+/// Default TTS prompt text for each supported locale (D14).
+///
+/// Keyed by the same locale codes as [_builtInVoicePaths]. Used by
+/// [RealAudioService.bootstrapVoiceAssets] when the ARB key
+/// `fakeCallVoicePromptDefault` is not yet populated (Phase 8 ARB scrum
+/// will replace these hardcoded strings with the translated ARB values).
+const Map<String, String> _builtInVoicePrompts = {
+  'en': "Hey, it's Angela, just checking in. Can you call me back?",
+  'de': 'Hey, hier ist Angela, ich wollte nur kurz nachfragen. Kannst du '
+      'mich zurückrufen?',
+  'es': 'Hola, soy Angela, solo quería saber cómo estás. ¿Me puedes llamar?',
+  'fr': 'Salut, c\'est Angela, je voulais juste prendre des nouvelles. '
+      'Tu peux me rappeler?',
+  'ru': 'Привет, это Анжела, просто хочу узнать, как ты. '
+      'Ты можешь перезвонить мне?',
+  'zh': '嘿，我是Angela，只是想确认一下你是否安好。你能给我回电吗？',
+  'zh_TW': '嘿，我是Angela，只是想確認你是否安好。你能給我回電嗎？',
+  'hi': 'हाय, मैं Angela हूँ, बस यह जानना चाहती थी कि तुम ठीक हो। '
+      'क्या तुम मुझे वापस कॉल कर सकते हो?',
+  'fa': 'سلام، من آنجلا هستم، فقط می‌خواستم حالت را بپرسم. '
+      'می‌توانی به من زنگ بزنی؟',
+  'uk': 'Привіт, це Анджела, просто хотіла дізнатися, як ти. '
+      'Ти можеш мені передзвонити?',
+  'pl': 'Hej, to Angela, chciałam tylko sprawdzić, czy wszystko w porządku. '
+      'Czy możesz do mnie oddzwonić?',
+  'el': 'Γεια, είμαι η Angela, ήθελα απλώς να δω πώς είσαι. '
+      'Μπορείς να με πάρεις τηλέφωνο;',
+  'ar': 'مرحباً، أنا أنجيلا، أردت فقط الاطمئنان عليك. هل يمكنك الاتصال بي؟',
+  'he': 'היי, זאת אנג\'לה, רציתי לבדוק שהכל בסדר. האם אתה יכול להתקשר אלי?',
+};
 
 /// Built-in voice asset paths keyed by ISO 639-1 code (or `zh_TW`).
 ///
@@ -79,9 +112,13 @@ class RealAudioService implements AudioServiceProtocol {
   /// Creates a [RealAudioService].
   ///
   /// [player] may be injected for tests; defaults to a new [AudioPlayer].
-  RealAudioService({AudioPlayer? player}) : _player = player ?? AudioPlayer();
+  /// [tts] may be injected for tests; defaults to a new [FlutterTts].
+  RealAudioService({AudioPlayer? player, FlutterTts? tts})
+    : _player = player ?? AudioPlayer(),
+      _tts = tts ?? FlutterTts();
 
   AudioPlayer _player;
+  final FlutterTts _tts;
 
   // ---------------------------------------------------------------------------
   // AudioServiceProtocol implementation
@@ -184,14 +221,63 @@ class RealAudioService implements AudioServiceProtocol {
       await _player.setFilePath(filePath);
     } else {
       final assetPath = resolveBuiltInVoicePath(Platform.localeName);
-      log(
-        'playVoiceRecording — built-in: $assetPath',
-        name: 'AudioService',
-      );
+      log('playVoiceRecording — built-in: $assetPath', name: 'AudioService');
       await _player.setAsset(assetPath);
     }
 
     await _player.play();
+  }
+
+  // ---------------------------------------------------------------------------
+  // TTS voice-asset bootstrap (D14, spec 05 §AudioService §Voice Recordings)
+  // ---------------------------------------------------------------------------
+
+  /// Synthesizes the Angela check-in line for each of the 14 supported
+  /// locales and writes the result to the app documents directory.
+  ///
+  /// Run once per locale on first launch (subsequent launches skip locales
+  /// that already have a cached file). Runs sequentially to avoid TTS engine
+  /// contention. Failures per locale are logged but never block app start
+  /// (spec 05:149).
+  ///
+  /// The [onFailure] callback receives the locale code and the error; used by
+  /// tests and `main.dart` to route failures to Sentry.
+  Future<void> bootstrapVoiceAssets({
+    void Function(String locale, Object error, StackTrace stack)? onFailure,
+  }) async {
+    final dir = await getApplicationDocumentsDirectory();
+    final voiceDir = Directory('${dir.path}/voice');
+    if (!voiceDir.existsSync()) {
+      voiceDir.createSync(recursive: true);
+    }
+
+    for (final locale in _builtInVoicePaths.keys) {
+      final outPath = '${voiceDir.path}/angela_$locale.m4a';
+      if (File(outPath).existsSync()) {
+        log(
+          'bootstrapVoiceAssets: $locale already cached — skip',
+          name: 'AudioService',
+        );
+        continue;
+      }
+
+      final prompt = _builtInVoicePrompts[locale] ??
+          _builtInVoicePrompts['en']!;
+      try {
+        await _tts.setLanguage(_localeToTtsTag(locale));
+        await _tts.synthesizeToFile(prompt, outPath);
+        log(
+          'bootstrapVoiceAssets: synthesized $locale → $outPath',
+          name: 'AudioService',
+        );
+      } catch (e, st) {
+        log(
+          'bootstrapVoiceAssets: failed for $locale: $e',
+          name: 'AudioService',
+        );
+        onFailure?.call(locale, e, st);
+      }
+    }
   }
 
   // ---------------------------------------------------------------------------
@@ -209,3 +295,11 @@ class RealAudioService implements AudioServiceProtocol {
     }
   }
 }
+
+/// Maps a locale code from [_builtInVoicePaths] to a BCP 47 / IETF tag
+/// understood by [FlutterTts.setLanguage].
+String _localeToTtsTag(String locale) => switch (locale) {
+  'zh_TW' => 'zh-TW',
+  'zh' => 'zh-CN',
+  _ => locale,
+};

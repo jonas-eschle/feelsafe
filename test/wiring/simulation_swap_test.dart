@@ -12,6 +12,9 @@
 //   hardwareButton, callState, systemUi.
 // Stage 5B.3 adds: phone, messaging, backgroundSession,
 //   sentry, sessionLogRecorder.
+// Stage 5C adds: permissionAudit, sessionStartValidator, backup.
+//   Also: databaseProvider / contactServiceProvider / sessionLogRecorderProvider
+//   are now FutureProviders.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -19,15 +22,19 @@ import 'package:test/test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
+import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/backup_service_sim.dart';
 import 'package:guardianangela/services/sim/background_session_service_sim.dart';
 import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
 import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/encryption_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
+import 'package:guardianangela/services/sim/permission_audit_service_sim.dart';
+import 'package:guardianangela/services/sim/session_start_validator_sim.dart';
 import 'package:guardianangela/services/sim/hardware_button_service_sim.dart';
 import 'package:guardianangela/services/sim/location_service_sim.dart';
 import 'package:guardianangela/services/sim/messaging_service_sim.dart';
@@ -268,21 +275,25 @@ void main() {
     setUp(() {
       container = ProviderContainer(
         overrides: [
-          contactServiceProvider.overrideWithValue(SimulationContactService()),
+          // contactServiceProvider is a FutureProvider — override with a
+          // resolved future.
+          contactServiceProvider.overrideWith(
+            (_) async => SimulationContactService(),
+          ),
         ],
       );
     });
 
     tearDown(() => container.dispose());
 
-    test('overridden container returns SimulationContactService', () {
-      final s = container.read(contactServiceProvider);
+    test('overridden container returns SimulationContactService', () async {
+      final s = await container.read(contactServiceProvider.future);
       check(s).isA<SimulationContactService>();
     });
 
-    test('simulation contact service starts with empty list', () {
-      final s =
-          container.read(contactServiceProvider) as SimulationContactService;
+    test('simulation contact service starts with empty list', () async {
+      final s = await container.read(contactServiceProvider.future)
+          as SimulationContactService;
       check(s.all).isEmpty();
     });
   });
@@ -537,7 +548,8 @@ void main() {
 
     test('simulation messaging starts with empty call log', () {
       final s =
-          container.read(messagingServiceProvider) as SimulationMessagingService;
+          container.read(messagingServiceProvider)
+              as SimulationMessagingService;
       check(s.calls).isEmpty();
     });
   });
@@ -606,11 +618,12 @@ void main() {
       repo = SessionLogRepository(db.sessionLogsDao);
       container = ProviderContainer(
         overrides: [
-          sessionLogRecorderProvider.overrideWithValue(
-            (context) => SimulationSessionLogRecorder(
-              context: context,
-              repo: repo,
-            ),
+          // sessionLogRecorderProvider is a FutureProvider — override with
+          // a resolved future.
+          sessionLogRecorderProvider.overrideWith(
+            (_) async =>
+                (SessionContext context) =>
+                    SimulationSessionLogRecorder(context: context, repo: repo),
           ),
         ],
       );
@@ -621,21 +634,136 @@ void main() {
       await db.close();
     });
 
-    test('overridden factory produces SimulationSessionLogRecorder', () {
-      final factory = container.read(sessionLogRecorderProvider);
+    test('overridden factory produces SimulationSessionLogRecorder', () async {
+      final factory = await container.read(sessionLogRecorderProvider.future);
       check(factory).isNotNull();
     });
 
-    test('default factory produces SessionLogRecorder (not simulation)', () {
-      // Build a default container and verify the factory wraps the real impl.
+    test('default factory produces SessionLogRecorder (not simulation)', () async {
+      // Build a default container with an in-memory database override.
+      final defaultDb = GuardianAngelaDatabase.memory();
       final defaultContainer = ProviderContainer(
         overrides: [
-          databaseProvider.overrideWithValue(GuardianAngelaDatabase.memory()),
+          databaseProvider.overrideWith((_) async => defaultDb),
         ],
       );
-      addTearDown(defaultContainer.dispose);
-      final factory = defaultContainer.read(sessionLogRecorderProvider);
+      addTearDown(() async {
+        defaultContainer.dispose();
+        await defaultDb.close();
+      });
+      final factory = await defaultContainer.read(
+        sessionLogRecorderProvider.future,
+      );
       check(factory).isNotNull();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Stage 5C — PermissionAuditService, SessionStartValidator, BackupService
+  // -------------------------------------------------------------------------
+
+  group('Simulation swap — PermissionAuditService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          permissionAuditServiceProvider.overrideWithValue(
+            SimulationPermissionAuditService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test(
+      'overridden container returns SimulationPermissionAuditService',
+      () {
+        final s = container.read(permissionAuditServiceProvider);
+        check(s).isA<SimulationPermissionAuditService>();
+      },
+    );
+
+    test('simulation audit starts with no audited modes', () {
+      final s = container.read(permissionAuditServiceProvider)
+          as SimulationPermissionAuditService;
+      check(s.auditedModes).isEmpty();
+    });
+  });
+
+  group('Simulation swap — SessionStartValidator', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          sessionStartValidatorProvider.overrideWithValue(
+            SimulationSessionStartValidator(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test(
+      'overridden container returns SimulationSessionStartValidator',
+      () {
+        final s = container.read(sessionStartValidatorProvider);
+        check(s).isA<SimulationSessionStartValidator>();
+      },
+    );
+
+    test('simulation validator starts with no validated modes', () {
+      final s = container.read(sessionStartValidatorProvider)
+          as SimulationSessionStartValidator;
+      check(s.validatedModes).isEmpty();
+    });
+  });
+
+  group('Simulation swap — BackupService', () {
+    late ProviderContainer container;
+
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          backupServiceProvider.overrideWith(
+            (_) async => SimulationBackupService(),
+          ),
+        ],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationBackupService', () async {
+      final s = await container.read(backupServiceProvider.future);
+      check(s).isA<SimulationBackupService>();
+    });
+
+    test('simulation backup starts with empty call records', () async {
+      final s = await container.read(backupServiceProvider.future)
+          as SimulationBackupService;
+      check(s.exportCalls).isEmpty();
+      check(s.importCalls).isEmpty();
+    });
+  });
+
+  group('Simulation swap — databaseProvider (Stage 5C)', () {
+    test('databaseProvider can be overridden with in-memory database', () async {
+      final db = GuardianAngelaDatabase.memory();
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) async => db),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await db.close();
+      });
+      final resolved = await container.read(databaseProvider.future);
+      check(resolved).isA<GuardianAngelaDatabase>();
     });
   });
 }

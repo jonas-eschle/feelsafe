@@ -60,7 +60,8 @@ Set<String> _parseServiceProviders() {
     fail('lib/services/service_providers.dart does not exist');
   }
   final content = file.readAsStringSync();
-  final pattern = RegExp(r'final\s+(\w+Provider)\s*=\s*Provider');
+  // Match both `Provider` and `FutureProvider` declarations.
+  final pattern = RegExp(r'final\s+(\w+Provider)\s*=\s*(?:Future)?Provider');
   return pattern.allMatches(content).map((m) => m.group(1)!).toSet();
 }
 
@@ -155,7 +156,7 @@ void main() {
       check(missing).isEmpty();
     });
 
-    test('wiring map has at least 24 wired-real or wired-sim-only rows', () {
+    test('wiring map has at least 28 wired-real or wired-sim-only rows', () {
       // Phase 5A wires: encryption, keyProvider,
       // appSettings, userProfile, batteryAlertConfig,
       // sessionLog = 6 rows (database is pending-5c).
@@ -165,22 +166,26 @@ void main() {
       // hardwareButton, callState, systemUi = 19 total.
       // Stage 5B.3 adds 5 more: phone, messaging, backgroundSession,
       // sentry, sessionLogRecorder = 24 total.
+      // Stage 5C adds 4 more: database, permissionAudit,
+      // sessionStartValidator, backup = 28 total.
       final wiredCount = _parseWiringMap()
           .where(
             (r) => r.status == 'wired-real' || r.status == 'wired-sim-only',
           )
           .length;
-      check(wiredCount).isGreaterOrEqual(24);
+      check(wiredCount).isGreaterOrEqual(28);
     });
 
-    test('wiring map has at least 3 pending-5b rows '
-        '(remaining services not yet wired after Stage 5B.3)', () {
-      // Stage 5B.3 promoted 5 more pending-5b → wired-real.
-      // Remaining pending-5b: permissionAudit, sessionStartValidator, backup.
+    test('wiring map has 0 pending-5b rows after Stage 5C', () {
+      // Stage 5C promoted the final 3 pending-5b → wired-real
+      // (permissionAudit, sessionStartValidator, backup) plus the
+      // pending-5c database provider.
       final pendingCount = _parseWiringMap()
-          .where((r) => r.status == 'pending-5b')
+          .where(
+            (r) => r.status == 'pending-5b' || r.status == 'pending-5c',
+          )
           .length;
-      check(pendingCount).isGreaterOrEqual(3);
+      check(pendingCount).equals(0);
     });
   });
 }

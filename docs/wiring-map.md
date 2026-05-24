@@ -21,7 +21,7 @@ Any row missing a provider, or any provider missing a row, is a CI failure.
 |---|---|---|---|---|---|
 | `encryptionServiceProvider` | `EncryptionServiceProtocol` | `RealEncryptionService` | `SimulationEncryptionService` | `wired-real` | spec 05 §EncryptionService |
 | `keyProviderProvider` | `KeyProvider` | derived from `encryptionServiceProvider` | derived from `encryptionServiceProvider` | `wired-real` | spec 05 §EncryptionService |
-| `databaseProvider` | `GuardianAngelaDatabase` | `GuardianAngelaDatabase.open(...)` | `GuardianAngelaDatabase.memory()` | `pending-5c` | spec 03 §Storage Architecture |
+| `databaseProvider` | `GuardianAngelaDatabase` | `GuardianAngelaDatabase.open(...)` | `GuardianAngelaDatabase.memory()` | `wired-real` | spec 03 §Storage Architecture |
 | `appSettingsRepositoryProvider` | `AppSettingsRepository` | `AppSettingsRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §AppSettings |
 | `userProfileRepositoryProvider` | `UserProfileRepository` | `UserProfileRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §UserProfile |
 | `batteryAlertConfigRepositoryProvider` | `BatteryAlertConfigRepository` | `BatteryAlertConfigRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §BatteryAlertConfig |
@@ -44,6 +44,6 @@ Any row missing a provider, or any provider missing a row, is a CI failure.
 | `locationServiceProvider` | `LocationServiceProtocol` | `RealLocationService` | `SimulationLocationService` | `wired-real` | spec 05 §LocationService — [protocol](../lib/services/protocols/location_service_protocol.dart) |
 | `sentryServiceProvider` | `SentryServiceProtocol` | `RealSentryService` | `SimulationSentryService` | `wired-real` | spec 05 §Service Providers, decision D2 — [protocol](../lib/services/protocols/sentry_service_protocol.dart) |
 | `sessionLogRecorderProvider` | `SessionLogRecorderFactory` | `SessionLogRecorder` | `SimulationSessionLogRecorder` | `wired-real` | spec 05 §SessionLogRecorder — [protocol](../lib/services/protocols/session_log_recorder_protocol.dart) |
-| `permissionAuditServiceProvider` | `PermissionAuditServiceProtocol` | `RealPermissionAuditService` | `SimulationPermissionAuditService` | `pending-5b` | spec 05 §Permission Audit Flow — [protocol](../lib/services/protocols/permission_audit_service_protocol.dart) |
-| `sessionStartValidatorProvider` | `SessionStartValidatorProtocol` | `RealSessionStartValidator` | `SimulationSessionStartValidator` | `pending-5b` | spec 05 §SessionStartValidator — [protocol](../lib/services/protocols/session_start_validator_protocol.dart) |
-| `backupServiceProvider` | `BackupServiceProtocol` | `RealBackupService` | `SimulationBackupService` | `pending-5b` | spec 05 §BackupService — [protocol](../lib/services/protocols/backup_service_protocol.dart) |
+| `permissionAuditServiceProvider` | `PermissionAuditServiceProtocol` | `RealPermissionAuditService` | `SimulationPermissionAuditService` | `wired-real` | spec 05 §Permission Audit Flow — [protocol](../lib/services/protocols/permission_audit_service_protocol.dart) |
+| `sessionStartValidatorProvider` | `SessionStartValidatorProtocol` | `RealSessionStartValidator` | `SimulationSessionStartValidator` | `wired-real` | spec 05 §SessionStartValidator — [protocol](../lib/services/protocols/session_start_validator_protocol.dart) |
+| `backupServiceProvider` | `BackupServiceProtocol` | `RealBackupService` | `SimulationBackupService` | `wired-real` | spec 05 §BackupService — [protocol](../lib/services/protocols/backup_service_protocol.dart) |

@@ -1,52 +1,166 @@
-// Guardian Angela — application entry.
+// Guardian Angela — application entry point.
 //
-// Pre-alpha v3. This main.dart is the minimal Phase 0 entry point:
-// it wires day-1 Sentry (per `docs/rewrite/v3-plan.md` §0 D2) around
-// `runApp`, and renders a placeholder splash screen until Phase 6
-// installs the real router + screens.
+// Bootstrap pipeline (Stage 5C.4):
+//   1. Open the encrypted Drift database (awaited — blocks runApp).
+//   2. Load AppSettings from the JSON singleton (awaited).
+//   3. Initialize Sentry per AppSettings.sentryEnabled (awaited).
+//   4. Run startup log purge via SessionLogRepository.purgeExpiredLogs.
+//   5. Initialize NotificationService channels (awaited — must run before
+//      any background service starts).
+//   6. Kick off bootstrapVoiceAssets() on RealAudioService (unawaited —
+//      runs in the background; failures go to Sentry but never block boot).
+//   7. runApp with ProviderScope.
 //
-// Phase 5 will swap the placeholder splash for the real
-// `GuardianAngelaApp` (Riverpod `ProviderScope` + GoRouter + the
-// resolved `AppSettings.sentryEnabled` gate). For Phase 0, the Sentry
-// init runs with NO DSN — the SDK is wired but stays inert until
-// the user opts in via the eventual Settings → Privacy screen
-// (spec 06 §"Optional Sentry telemetry").
+// If step 2 throws (JSON corruption / decryption failure per spec 10:206
+// §JSON Repository Corruption Recovery — Extra 21), the pipeline catches
+// the exception and calls runApp with the minimal JsonRecoveryApp widget
+// instead of the normal GuardianAngelaApp.
+//
+// Phase 6 will replace the placeholder _AppShell with real GoRouter +
+// screens. The bootstrap pipeline and JsonRecoveryApp are final.
+
+import 'dart:async' show unawaited;
+import 'dart:developer';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
 
-import 'package:sentry_flutter/sentry_flutter.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/services/audio_service.dart';
+import 'package:guardianangela/services/notification_service.dart';
+import 'package:guardianangela/services/service_providers.dart';
+
+// ---------------------------------------------------------------------------
+// Entry point
+// ---------------------------------------------------------------------------
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SentryFlutter.init((options) {
-    // Phase 0: SDK wired, but no DSN — no events leave the device.
-    // Phase 5 reads `AppSettings.sentryEnabled` + a real DSN here.
-    options.dsn = '';
-    options.tracesSampleRate = 0;
-    options.sendDefaultPii = false;
-  }, appRunner: () => runApp(const GuardianAngelaApp()));
+
+  // Phase 5C bootstrap uses a ProviderContainer for the pre-runApp steps so
+  // that the Riverpod providers remain testable and the container is available
+  // to pass into ProviderScope.parent.
+  final container = ProviderContainer();
+
+  // Step 1 — Open the encrypted Drift database. Awaited; failure is fatal
+  // (the whole app depends on the database).
+  final db = await container.read(databaseProvider.future);
+  log('Database opened: ${db.runtimeType}', name: 'main');
+
+  // Step 2 — Load AppSettings. If the JSON singleton is corrupt the load()
+  // call throws a FormatException or StateError; catch and run recovery.
+  final AppSettings settings;
+  try {
+    settings =
+        await container.read(appSettingsRepositoryProvider).load();
+    log(
+      'AppSettings loaded (sentryEnabled=${settings.sentryEnabled})',
+      name: 'main',
+    );
+  } catch (e, st) {
+    log(
+      'AppSettings load failed — launching recovery',
+      error: e,
+      stackTrace: st,
+      name: 'main',
+    );
+    runApp(JsonRecoveryApp(reason: e.toString()));
+    return;
+  }
+
+  // Step 3 — Initialize Sentry per user consent (D2: opt-in only).
+  final sentryService = container.read(sentryServiceProvider);
+  await sentryService.initialize(
+    enabled: settings.sentryEnabled,
+    // DSN is supplied at build time via --dart-define=SENTRY_DSN=...
+    // When the define is absent the DSN is empty and Sentry stays inert.
+    dsn: const String.fromEnvironment('SENTRY_DSN'),
+  );
+
+  // Step 4 — Startup log purge (B8: remove non-critical logs older than
+  // AppSettings.sessionLogRetentionDays).
+  try {
+    final repo = await container.read(sessionLogRepositoryProvider.future);
+    final deleted = await repo.purgeExpiredLogs(
+      retentionDays: settings.sessionLogRetentionDays,
+      now: DateTime.now().toUtc(),
+    );
+    if (deleted > 0) {
+      log('Purged $deleted expired session logs', name: 'main');
+    }
+  } catch (e, st) {
+    log(
+      'Session log purge failed (non-fatal)',
+      error: e,
+      stackTrace: st,
+      name: 'main',
+    );
+    await sentryService.captureException(e, st);
+  }
+
+  // Step 5 — Initialize notification channels. Must complete before any
+  // background service starts (spec 05 §Initialization).
+  final notificationService =
+      container.read(notificationServiceProvider) as RealNotificationService;
+  await notificationService.init();
+
+  // Step 6 — Bootstrap TTS voice assets (unawaited — runs in the background;
+  // a missing clip is tolerated by the fake-call step, which silently skips
+  // voice playback and still rings). Failures are captured to Sentry.
+  final audioService =
+      container.read(audioServiceProvider) as RealAudioService;
+  unawaited(
+    audioService.bootstrapVoiceAssets(
+      onFailure: (String locale, Object e, StackTrace st) {
+        sentryService.captureException(e, st).ignore();
+      },
+    ),
+  );
+
+  // Step 7 — runApp. UncontrolledProviderScope exposes the pre-warmed
+  // ProviderContainer (with the open DB and loaded settings) directly to
+  // the widget tree, avoiding a redundant re-initialization on first read.
+  runApp(
+    UncontrolledProviderScope(
+      container: container,
+      child: const GuardianAngelaApp(),
+    ),
+  );
 }
 
-/// Root widget. Phase 0 placeholder — Phase 5/6 replaces this with the
-/// real Riverpod `ProviderScope` + GoRouter shell.
+// ---------------------------------------------------------------------------
+// Root app widget — Phase 5 placeholder; Phase 6 installs GoRouter + screens.
+// ---------------------------------------------------------------------------
+
+/// Root application widget.
+///
+/// Phase 5 placeholder — Phase 6 replaces the [_AppShell] with the real
+/// Riverpod `ProviderScope` + GoRouter shell.
 class GuardianAngelaApp extends StatelessWidget {
+  /// Creates the root application widget.
   const GuardianAngelaApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Guardian Angela',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF131118),
+        ),
         useMaterial3: true,
       ),
-      home: const _Phase0Splash(),
+      home: const _AppShell(),
     );
   }
 }
 
-class _Phase0Splash extends StatelessWidget {
-  const _Phase0Splash();
+/// Placeholder shell shown until Phase 6 installs real screens.
+class _AppShell extends StatelessWidget {
+  const _AppShell();
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +181,7 @@ class _Phase0Splash extends StatelessWidget {
               ),
               const SizedBox(height: 32),
               Text(
-                'Pre-alpha v3 — Phase 0 skeleton.',
+                'Pre-alpha v3 — Phase 5 bootstrap.',
                 style: textTheme.bodySmall,
                 textAlign: TextAlign.center,
               ),
@@ -75,6 +189,190 @@ class _Phase0Splash extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// JSON Repository Corruption Recovery App (spec 10:206 — Extra 21)
+// ---------------------------------------------------------------------------
+
+/// Minimal recovery widget shown when the JSON singleton repositories are
+/// corrupt or unreadable (spec 10:206 §JSON Repository Corruption Recovery
+/// Extra 21).
+///
+/// Offers two actions:
+/// - **Start fresh** — deletes the `json_store` directory and all its
+///   encrypted JSON files, then re-seeds defaults on the next launch.
+/// - **Restore from backup** — available in a future phase; button is visible
+///   but disabled until the file-picker integration lands (Phase 9).
+///
+/// Neither action re-starts the bootstrap pipeline; both finish with an
+/// instruction to relaunch the app so it can boot into a healthy state.
+class JsonRecoveryApp extends StatelessWidget {
+  /// Creates the recovery application.
+  ///
+  /// [reason] is the human-readable error message shown for diagnostics.
+  const JsonRecoveryApp({super.key, required this.reason});
+
+  /// Human-readable description of the corruption or load error.
+  final String reason;
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Guardian Angela — Recovery',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF131118),
+        ),
+        useMaterial3: true,
+      ),
+      home: _RecoveryScreen(reason: reason),
+    );
+  }
+}
+
+/// Recovery screen body.
+class _RecoveryScreen extends StatefulWidget {
+  const _RecoveryScreen({required this.reason});
+
+  final String reason;
+
+  @override
+  State<_RecoveryScreen> createState() => _RecoveryScreenState();
+}
+
+class _RecoveryScreenState extends State<_RecoveryScreen> {
+  bool _actionTaken = false;
+  String? _statusMessage;
+
+  Future<void> _startFresh() async {
+    try {
+      final dir = await getApplicationDocumentsDirectory();
+      final jsonStoreDir = Directory('${dir.path}/json_store');
+      if (jsonStoreDir.existsSync()) {
+        await jsonStoreDir.delete(recursive: true);
+        log('json_store deleted by recovery flow', name: 'JsonRecoveryApp');
+      }
+      if (!mounted) return;
+      setState(() {
+        _actionTaken = true;
+        _statusMessage =
+            'Settings cleared. Please close and relaunch the app to '
+            'restore defaults.';
+      });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _statusMessage = 'Could not clear settings: $e';
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('Data Recovery')),
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: _actionTaken
+              ? _DoneMessage(statusMessage: _statusMessage ?? '')
+              : _ChoicePanel(
+                  reason: widget.reason,
+                  onStartFresh: _statusMessage == null ? _startFresh : null,
+                  statusMessage: _statusMessage,
+                ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Shown after the "Start fresh" action completes.
+class _DoneMessage extends StatelessWidget {
+  const _DoneMessage({required this.statusMessage});
+
+  final String statusMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Recovery complete', style: textTheme.titleLarge),
+        const SizedBox(height: 16),
+        Text(statusMessage, style: textTheme.bodyMedium),
+      ],
+    );
+  }
+}
+
+/// Action choices panel for the recovery screen.
+class _ChoicePanel extends StatelessWidget {
+  const _ChoicePanel({
+    required this.reason,
+    required this.onStartFresh,
+    this.statusMessage,
+  });
+
+  final String reason;
+  final VoidCallback? onStartFresh;
+  final String? statusMessage;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    final colorScheme = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text('Data Recovery', style: textTheme.titleLarge),
+        const SizedBox(height: 12),
+        Text(
+          'Guardian Angela could not read its settings. '
+          'This can happen after an OS update, storage corruption, '
+          'or an unexpected shutdown.',
+          style: textTheme.bodyMedium,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Technical detail: $reason',
+          style: textTheme.bodySmall?.copyWith(color: colorScheme.error),
+        ),
+        const SizedBox(height: 32),
+        FilledButton.icon(
+          onPressed: onStartFresh,
+          icon: const Icon(Icons.refresh),
+          label: const Text('Start fresh'),
+        ),
+        const SizedBox(height: 8),
+        // Restore from backup: present but disabled until Phase 9 file-picker
+        // integration lands. Spec 10:206 requires the button to be visible.
+        // spec:05 §BackupService §Import states: "stages a backup file for
+        // next launch". The file-picker wiring is Phase 9 scope.
+        Semantics(
+          label:
+              'Restore from backup — available in a future update',
+          child: OutlinedButton.icon(
+            onPressed: null,
+            icon: const Icon(Icons.upload_file),
+            label: const Text('Restore from backup'),
+          ),
+        ),
+        const SizedBox(height: 4),
+        Text(
+          'Restore from backup will be available in a future update.',
+          style: textTheme.bodySmall,
+        ),
+        if (statusMessage != null) ...<Widget>[
+          const SizedBox(height: 24),
+          Text(statusMessage!, style: textTheme.bodyMedium),
+        ],
+      ],
     );
   }
 }

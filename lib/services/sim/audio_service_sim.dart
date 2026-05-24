@@ -113,4 +113,13 @@ class SimulationAudioService implements AudioServiceProtocol {
     // Layer-3 guard: no-op when isSimulation is true.
     if (isSimulation) return;
   }
+
+  /// No-op simulation of [RealAudioService.bootstrapVoiceAssets].
+  ///
+  /// Records the call in [calls] so tests can assert the bootstrap fired.
+  Future<void> bootstrapVoiceAssets({
+    void Function(String locale, Object error, StackTrace stack)? onFailure,
+  }) async {
+    calls.add(const AudioCall(method: 'bootstrapVoiceAssets'));
+  }
 }

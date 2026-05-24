@@ -10,7 +10,8 @@
 //   callState, systemUi.
 // Stage 5B.3 adds: phone, messaging, backgroundSession, sentry,
 //   sessionLogRecorder.
-// Stage 5C adds the remaining service providers.
+// Stage 5C adds: permissionAudit, sessionStartValidator, backup.
+//   Also reworks databaseProvider → FutureProvider backed by EncryptionService.
 // New Real*Service constructors MUST be added here only.
 //
 // See spec 05 §Service Providers (lines 1295–1330) and
@@ -25,7 +26,10 @@ import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/json_singleton_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
+import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/services/audio_service.dart';
+import 'package:guardianangela/services/backup_service.dart';
+import 'package:guardianangela/services/background_session_service.dart';
 import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
@@ -33,8 +37,13 @@ import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
 import 'package:guardianangela/services/hardware_button_service.dart';
 import 'package:guardianangela/services/location_service.dart';
+import 'package:guardianangela/services/messaging_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
+import 'package:guardianangela/services/permission_audit_service.dart';
+import 'package:guardianangela/services/phone_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
+import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
@@ -42,24 +51,22 @@ import 'package:guardianangela/services/protocols/encryption_service_protocol.da
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
+import 'package:guardianangela/services/protocols/permission_audit_service_protocol.dart';
+import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
+import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
+import 'package:guardianangela/services/protocols/session_start_validator_protocol.dart';
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
-import 'package:guardianangela/domain/models/session_context.dart';
-import 'package:guardianangela/services/background_session_service.dart';
-import 'package:guardianangela/services/messaging_service.dart';
-import 'package:guardianangela/services/phone_service.dart';
-import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
-import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
-import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
-import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
-import 'package:guardianangela/services/sentry_service.dart';
-import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/recording_service.dart';
 import 'package:guardianangela/services/screen_flash_service.dart';
+import 'package:guardianangela/services/sentry_service.dart';
+import 'package:guardianangela/services/session_log_recorder.dart';
+import 'package:guardianangela/services/session_start_validator.dart';
 import 'package:guardianangela/services/system_ui_service.dart';
 import 'package:guardianangela/services/vibration_service.dart';
 import 'package:guardianangela/services/wakelock_service.dart';
@@ -96,18 +103,19 @@ final keyProviderProvider = Provider<KeyProvider>((ref) {
 // GuardianAngelaDatabase
 // ---------------------------------------------------------------------------
 
-/// The Drift database instance.
+/// The Drift database instance, opened with AES-256 encryption.
 ///
-/// Phase 5A: returns an in-memory database so the provider graph can be
-/// built without running the full app startup sequence. Stage 5C
-/// replaces this with an `AsyncNotifierProvider` that awaits
-/// `EncryptionServiceProtocol.openEncryptedDatabase` and applies
-/// `PRAGMA key` before the first read.
+/// Stage 5C: changed from a synchronous [Provider] to a [FutureProvider]
+/// that awaits `EncryptionServiceProtocol.getOrCreateKeyAsBase64()` and
+/// opens the on-disk database via `GuardianAngelaDatabase.open(encryptionKey)`.
+/// The database path is resolved internally by [GuardianAngelaDatabase.open].
 ///
-/// Tests override this with `GuardianAngelaDatabase.memory()` directly
-/// via `ProviderContainer(overrides: [databaseProvider.overrideWithValue(...)])`.
-final databaseProvider = Provider<GuardianAngelaDatabase>((ref) {
-  return GuardianAngelaDatabase.memory();
+/// Tests override this with
+/// `databaseProvider.overrideWith((_) async => GuardianAngelaDatabase.memory())`.
+final databaseProvider = FutureProvider<GuardianAngelaDatabase>((ref) async {
+  final enc = ref.read(encryptionServiceProvider);
+  final key = await enc.getOrCreateKeyAsBase64();
+  return GuardianAngelaDatabase.open(encryptionKey: key);
 });
 
 // ---------------------------------------------------------------------------
@@ -138,9 +146,14 @@ final batteryAlertConfigRepositoryProvider =
 
 /// [SessionLogRepository] backed by [databaseProvider]'s
 /// [SessionLogsDao].
-final sessionLogRepositoryProvider = Provider<SessionLogRepository>((ref) {
-  return SessionLogRepository(ref.read(databaseProvider).sessionLogsDao);
-});
+///
+/// The provider is a [FutureProvider] because [databaseProvider] is now
+/// async (Stage 5C).
+final sessionLogRepositoryProvider =
+    FutureProvider<SessionLogRepository>((ref) async {
+      final db = await ref.watch(databaseProvider.future);
+      return SessionLogRepository(db.sessionLogsDao);
+    });
 
 // ---- Output / sensor services ----
 
@@ -187,12 +200,17 @@ final recordingServiceProvider = Provider<RecordingServiceProtocol>((ref) {
 /// [ContactServiceProtocol] backed by [ContactsRepository] which wraps
 /// [ContactsDao] from [databaseProvider].
 ///
+/// The provider is a [FutureProvider] because [databaseProvider] is now
+/// async (Stage 5C).
+///
 /// Tests override with [SimulationContactService] from
 /// `lib/services/sim/contact_service_sim.dart`.
-final contactServiceProvider = Provider<ContactServiceProtocol>((ref) {
-  final repo = ContactsRepository(ref.read(databaseProvider).contactsDao);
-  return RealContactService(repository: repo);
-});
+final contactServiceProvider =
+    FutureProvider<ContactServiceProtocol>((ref) async {
+      final db = await ref.watch(databaseProvider.future);
+      final repo = ContactsRepository(db.contactsDao);
+      return RealContactService(repository: repo);
+    });
 
 /// [AudioServiceProtocol] backed by `package:just_audio`.
 ///
@@ -360,10 +378,82 @@ final sentryServiceProvider = Provider<SentryServiceProtocol>((ref) {
 /// `sessionLogRecorderProvider.overrideWithValue(...)`) which assembles the
 /// log but never persists it.
 ///
+/// The provider is a [FutureProvider] because [sessionLogRepositoryProvider]
+/// is now async (Stage 5C).
+///
 /// Tests override with [SimulationSessionLogRecorder] from
 /// `lib/services/session_log_recorder.dart`.
-final sessionLogRecorderProvider = Provider<SessionLogRecorderFactory>((ref) {
-  final repo = ref.read(sessionLogRepositoryProvider);
-  return (SessionContext context) =>
-      SessionLogRecorder(context: context, repo: repo);
+final sessionLogRecorderProvider =
+    FutureProvider<SessionLogRecorderFactory>((ref) async {
+      final repo = await ref.watch(sessionLogRepositoryProvider.future);
+      return (SessionContext context) =>
+          SessionLogRecorder(context: context, repo: repo);
+    });
+
+// ---------------------------------------------------------------------------
+// PermissionAuditService — Stage 5C
+// ---------------------------------------------------------------------------
+
+/// [PermissionAuditServiceProtocol] backed by `package:permission_handler`.
+///
+/// Inspects only the permissions that the mode actually needs (spec 05
+/// §Permission Audit Flow §step 2). The [revocations] stream polls for
+/// mid-session permission changes.
+///
+/// Phase 7 native landing: the Android DeviceStateChannel will push
+/// permission-change events; until then this polls on the Dart side.
+///
+/// Tests override with [SimulationPermissionAuditService] from
+/// `lib/services/sim/permission_audit_service_sim.dart`.
+final permissionAuditServiceProvider =
+    Provider<PermissionAuditServiceProtocol>((ref) {
+      return RealPermissionAuditService();
+    });
+
+// ---------------------------------------------------------------------------
+// SessionStartValidator — Stage 5C
+// ---------------------------------------------------------------------------
+
+/// [SessionStartValidatorProtocol] backed by [RealSessionStartValidator].
+///
+/// Validates session prerequisites synchronously using cached state
+/// (permissions, contact count, emergency number). The session controller
+/// must call [RealSessionStartValidator.updateCachedState] before calling
+/// [validate] to refresh the cache.
+///
+/// Tests override with [SimulationSessionStartValidator] from
+/// `lib/services/sim/session_start_validator_sim.dart`.
+final sessionStartValidatorProvider =
+    Provider<SessionStartValidatorProtocol>((ref) {
+      return RealSessionStartValidator();
+    });
+
+// ---------------------------------------------------------------------------
+// BackupService — Stage 5C
+// ---------------------------------------------------------------------------
+
+/// [BackupServiceProtocol] backed by [RealBackupService].
+///
+/// Exports / imports all app data (contacts, modes, settings, session logs).
+/// Export returns a JSON string; the UI layer calls `share_plus` to share
+/// it. Import writes to the Drift database inside a single transaction.
+///
+/// The provider is a [FutureProvider] because [databaseProvider] and
+/// [sessionLogRepositoryProvider] are now async (Stage 5C).
+///
+/// Tests override with [SimulationBackupService] from
+/// `lib/services/sim/backup_service_sim.dart`.
+final backupServiceProvider = FutureProvider<BackupServiceProtocol>((
+  ref,
+) async {
+  final db = await ref.watch(databaseProvider.future);
+  final sessionLogRepo = await ref.watch(sessionLogRepositoryProvider.future);
+  return RealBackupService(
+    db: db,
+    contacts: ContactsRepository(db.contactsDao),
+    appSettings: ref.read(appSettingsRepositoryProvider),
+    userProfile: ref.read(userProfileRepositoryProvider),
+    batteryAlertConfig: ref.read(batteryAlertConfigRepositoryProvider),
+    sessionLogs: sessionLogRepo,
+  );
 });
