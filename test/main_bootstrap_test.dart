@@ -29,12 +29,37 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
+
+// ---------------------------------------------------------------------------
+// G12/G13: Bootstrap ordering helpers
+// ---------------------------------------------------------------------------
+
+/// Fake [AppSettingsRepository] whose [load] throws a [FormatException].
+///
+/// Used by G13 to simulate JSON corruption triggering the recovery path.
+class _ThrowingSettingsRepo implements AppSettingsRepository {
+  @override
+  Future<AppSettings> load() =>
+      Future.error(const FormatException('settings.json is corrupt'));
+
+  @override
+  Future<AppSettings?> loadOrNull() =>
+      Future.error(const FormatException('corrupt'));
+
+  @override
+  Future<void> save(AppSettings value) async {}
+
+  @override
+  Future<void> delete() async {}
+}
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -385,9 +410,9 @@ void main() {
     test('GuardianAngelaApp and JsonRecoveryApp are separate types', () {
       const app1 = GuardianAngelaApp();
       const app2 = JsonRecoveryApp(reason: 'err');
-      check(app1.runtimeType.toString()).not(
-        (c) => c.equals(app2.runtimeType.toString()),
-      );
+      check(
+        app1.runtimeType.toString(),
+      ).not((c) => c.equals(app2.runtimeType.toString()));
     });
   });
 
@@ -396,37 +421,34 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('F21: settings load error → JsonRecoveryApp rendered', () {
-    testWidgets(
-      'F21: JsonRecoveryApp displays the failure reason',
-      (WidgetTester tester) async {
-        const reason = 'FormatException: settings.json is corrupt';
-        await tester.pumpWidget(const JsonRecoveryApp(reason: reason));
-        await tester.pumpAndSettle();
+    testWidgets('F21: JsonRecoveryApp displays the failure reason', (
+      WidgetTester tester,
+    ) async {
+      const reason = 'FormatException: settings.json is corrupt';
+      await tester.pumpWidget(const JsonRecoveryApp(reason: reason));
+      await tester.pumpAndSettle();
 
-        expect(find.textContaining('FormatException'), findsOneWidget);
-      },
-    );
+      expect(find.textContaining('FormatException'), findsOneWidget);
+    });
 
-    testWidgets(
-      'F21: JsonRecoveryApp is rendered as a MaterialApp',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
-        await tester.pumpAndSettle();
+    testWidgets('F21: JsonRecoveryApp is rendered as a MaterialApp', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
+      await tester.pumpAndSettle();
 
-        expect(find.byType(MaterialApp), findsOneWidget);
-      },
-    );
+      expect(find.byType(MaterialApp), findsOneWidget);
+    });
 
-    testWidgets(
-      'F21: JsonRecoveryApp shows both action buttons',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
-        await tester.pumpAndSettle();
+    testWidgets('F21: JsonRecoveryApp shows both action buttons', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
+      await tester.pumpAndSettle();
 
-        expect(find.text('Start fresh'), findsOneWidget);
-        expect(find.text('Restore from backup'), findsOneWidget);
-      },
-    );
+      expect(find.text('Start fresh'), findsOneWidget);
+      expect(find.text('Restore from backup'), findsOneWidget);
+    });
   });
 
   // --------------------------------------------------------------------------
@@ -443,9 +465,7 @@ void main() {
 
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel(
-              'plugins.flutter.io/path_provider',
-            ),
+            const MethodChannel('plugins.flutter.io/path_provider'),
             (call) async {
               if (call.method == 'getApplicationDocumentsDirectory') {
                 return tmpDir!.path;
@@ -455,9 +475,7 @@ void main() {
           );
       TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
           .setMockMethodCallHandler(
-            const MethodChannel(
-              'plugins.flutter.io/path_provider_macos',
-            ),
+            const MethodChannel('plugins.flutter.io/path_provider_macos'),
             (call) async {
               if (call.method == 'getApplicationDocumentsDirectory') {
                 return tmpDir!.path;
@@ -481,22 +499,23 @@ void main() {
       await tmpDir?.delete(recursive: true);
     });
 
-    testWidgets(
-      'F22: tapping "Start fresh" shows settings-cleared message',
-      (WidgetTester tester) async {
-        await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
-        await tester.pumpAndSettle();
+    testWidgets('F22: tapping "Start fresh" shows settings-cleared message', (
+      WidgetTester tester,
+    ) async {
+      await tester.pumpWidget(const JsonRecoveryApp(reason: 'err'));
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text('Start fresh'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text('Start fresh'));
+      await tester.pumpAndSettle();
 
-        // Either the cleared message or an error message should appear.
-        final cleared = find.textContaining('Settings cleared');
-        final error = find.textContaining('Could not clear settings');
-        expect(cleared.evaluate().isNotEmpty || error.evaluate().isNotEmpty,
-            isTrue);
-      },
-    );
+      // Either the cleared message or an error message should appear.
+      final cleared = find.textContaining('Settings cleared');
+      final error = find.textContaining('Could not clear settings');
+      expect(
+        cleared.evaluate().isNotEmpty || error.evaluate().isNotEmpty,
+        isTrue,
+      );
+    });
 
     testWidgets(
       'F22: action panel is replaced by done-message after "Start fresh"',
@@ -536,5 +555,54 @@ void main() {
       const app = JsonRecoveryApp(reason: 'error detail');
       expect(app.reason, equals('error detail'));
     });
+  });
+
+  // --------------------------------------------------------------------------
+  // G12: runBootstrap — runner is called exactly once
+  // G13: runBootstrap — appSettingsRepositoryProvider throw → JsonRecoveryApp
+  // --------------------------------------------------------------------------
+
+  group('G12/G13: runBootstrap ordering + settings-error recovery', () {
+    test(
+      'G12: runBootstrap calls runner exactly once when settings load fails',
+      () async {
+        final captured = <Widget>[];
+        final container = ProviderContainer(
+          overrides: [
+            databaseProvider.overrideWith((_) => _openDb()),
+            appSettingsRepositoryProvider.overrideWithValue(
+              _ThrowingSettingsRepo(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await runBootstrap(container, runner: captured.add);
+
+        expect(captured, hasLength(1));
+      },
+    );
+
+    test(
+      'G13: runBootstrap passes JsonRecoveryApp to runner when '
+      'appSettingsRepositoryProvider throws',
+      () async {
+        Widget? captured;
+        final container = ProviderContainer(
+          overrides: [
+            databaseProvider.overrideWith((_) => _openDb()),
+            appSettingsRepositoryProvider.overrideWithValue(
+              _ThrowingSettingsRepo(),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        await runBootstrap(container, runner: (w) => captured = w);
+
+        expect(captured, isA<JsonRecoveryApp>());
+        expect((captured! as JsonRecoveryApp).reason, contains('corrupt'));
+      },
+    );
   });
 }

@@ -46,7 +46,28 @@ Future<void> main() async {
   // that the Riverpod providers remain testable and the container is available
   // to pass into ProviderScope.parent.
   final container = ProviderContainer();
+  await runBootstrap(container);
+}
 
+/// Runs the 7-step bootstrap pipeline using [container] and calls [runner]
+/// (defaults to [runApp]) with the resolved root widget.
+///
+/// Extracted from [main] so tests can inject a fake [runner] to observe
+/// which root widget is selected (G12/G13 ordering contract).
+///
+/// **Bootstrap order (fixed, must not be reordered):**
+/// 1. Open the encrypted Drift database.
+/// 2. Load AppSettings (throws → JsonRecoveryApp).
+/// 3. Initialize Sentry.
+/// 4. Startup log purge.
+/// 5. Initialize notification channels.
+/// 6. Bootstrap TTS voice assets (unawaited).
+/// 7. runApp with GuardianAngelaApp.
+@visibleForTesting
+Future<void> runBootstrap(
+  ProviderContainer container, {
+  void Function(Widget) runner = runApp,
+}) async {
   // Step 1 — Open the encrypted Drift database. Awaited; failure is fatal
   // (the whole app depends on the database).
   final db = await container.read(databaseProvider.future);
@@ -68,7 +89,7 @@ Future<void> main() async {
       stackTrace: st,
       name: 'main',
     );
-    runApp(JsonRecoveryApp(reason: e.toString()));
+    runner(JsonRecoveryApp(reason: e.toString()));
     return;
   }
 
@@ -123,7 +144,7 @@ Future<void> main() async {
   // Step 7 — runApp. UncontrolledProviderScope exposes the pre-warmed
   // ProviderContainer (with the open DB and loaded settings) directly to
   // the widget tree, avoiding a redundant re-initialization on first read.
-  runApp(
+  runner(
     UncontrolledProviderScope(
       container: container,
       child: const GuardianAngelaApp(),
