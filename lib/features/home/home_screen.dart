@@ -128,7 +128,49 @@ class _HomeBody extends ConsumerWidget {
     if (!context.mounted) return;
     if (ok) {
       await context.pushNamed<void>(RouteNames.session);
+      return;
     }
+    final errors = ref.read(homeControllerProvider).value?.lastValidationErrors;
+    if (errors != null && errors.isNotEmpty) {
+      await _showStartErrors(context, ref, errors);
+    }
+  }
+
+  Future<void> _showStartErrors(
+    BuildContext context,
+    WidgetRef ref,
+    List<dynamic> errors,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(l10n.sessionStartFailedTitle),
+        content: SizedBox(
+          width: 320,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text(l10n.sessionStartFailedBody),
+              const SizedBox(height: 8),
+              for (final issue in errors)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Text('• ${(issue as dynamic).title}'),
+                ),
+            ],
+          ),
+        ),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.commonOk),
+          ),
+        ],
+      ),
+    );
+    ref.read(homeControllerProvider.notifier).clearValidationErrors();
   }
 }
 

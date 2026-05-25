@@ -3474,31 +3474,31 @@ abstract class AppLocalizations {
   /// **'Started: {time}'**
   String sessionInterruptedStarted(Object time);
 
-  /// Title of the GPS destination sheet.
+  /// Title of the GPS destination prompt sheet.
   ///
   /// In en, this message translates to:
   /// **'Destination'**
   String get sessionGpsDestinationTitle;
 
-  /// Body of the GPS destination sheet.
+  /// Body of the GPS destination prompt sheet.
   ///
   /// In en, this message translates to:
-  /// **'Set the destination for GPS-arrival disarm.'**
+  /// **'Enter the destination coordinates for the GPS arrival disarm trigger.'**
   String get sessionGpsDestinationBody;
 
-  /// Latitude field label.
+  /// Label for the latitude field on the GPS destination sheet.
   ///
   /// In en, this message translates to:
   /// **'Latitude'**
   String get sessionGpsDestinationLat;
 
-  /// Longitude field label.
+  /// Label for the longitude field on the GPS destination sheet.
   ///
   /// In en, this message translates to:
   /// **'Longitude'**
   String get sessionGpsDestinationLng;
 
-  /// Button that fills in the current GPS coordinates.
+  /// Shortcut button on the GPS destination sheet.
   ///
   /// In en, this message translates to:
   /// **'Use current location'**
@@ -3507,13 +3507,13 @@ abstract class AppLocalizations {
   /// Skip button on the GPS destination sheet.
   ///
   /// In en, this message translates to:
-  /// **'Skip'**
+  /// **'Skip for this session'**
   String get sessionGpsDestinationSkip;
 
   /// Confirm button on the GPS destination sheet.
   ///
   /// In en, this message translates to:
-  /// **'Confirm'**
+  /// **'Use destination'**
   String get sessionGpsDestinationConfirm;
 
   /// Section header for chain summary on home.
@@ -4511,6 +4511,408 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select at least one channel.'**
   String get validationChannelsRequired;
+
+  /// Hold-button step prompt before the first press.
+  ///
+  /// In en, this message translates to:
+  /// **'Touch to begin'**
+  String get sessionHoldTouchToBegin;
+
+  /// Hold-button countdown after release.
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown: {seconds}s'**
+  String sessionHoldReleaseCountdown(Object seconds);
+
+  /// Hold-button grace-period countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace: {seconds}s — re-hold to stay safe'**
+  String sessionHoldGraceCountdown(Object seconds);
+
+  /// Prompt after the user released the hold button.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold again to stay safe'**
+  String get sessionHoldAgain;
+
+  /// Label shown when the chain transitions to the next step.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalating…'**
+  String get sessionEscalating;
+
+  /// Snackbar shown after a successful disarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Disarmed — chain reset to step 1.'**
+  String get sessionDisarmedToast;
+
+  /// Countdown to the next disguised-reminder.
+  ///
+  /// In en, this message translates to:
+  /// **'Next check-in in {time}'**
+  String sessionStepNextCheckIn(Object time);
+
+  /// Countdown shown during a step grace phase.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace period: {time}'**
+  String sessionStepGraceCountdown(Object time);
+
+  /// Status text shown while a fake call is ringing.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming call from {caller}'**
+  String sessionStepFakeCallActive(Object caller);
+
+  /// Button that opens the full-screen fake-call UI.
+  ///
+  /// In en, this message translates to:
+  /// **'Open call screen'**
+  String get sessionStepFakeCallOpen;
+
+  /// Simulation-mode placeholder card for the SMS step.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would send SMS to {count} contacts'**
+  String sessionStepSimBlockedSms(Object count);
+
+  /// Simulation-mode placeholder card for the phone-call step.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would call emergency contact'**
+  String get sessionStepSimBlockedPhone;
+
+  /// Simulation-mode placeholder card for the emergency-call step.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Would call emergency services'**
+  String get sessionStepSimBlockedEmergency;
+
+  /// Simulation-mode placeholder card for the loud-alarm step.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Alarm would have sounded at full volume'**
+  String get sessionStepSimBlockedAlarm;
+
+  /// Title of the dialog shown when session start validation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot start session'**
+  String get sessionStartFailedTitle;
+
+  /// Body of the dialog shown when session start validation fails.
+  ///
+  /// In en, this message translates to:
+  /// **'Fix the following issues before starting:'**
+  String get sessionStartFailedBody;
+
+  /// Title of the quick-exit confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick exit'**
+  String get sessionQuickExitTitle;
+
+  /// Body of the quick-exit confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Session data will be preserved and encrypted. Reopen the app any time to recover it.'**
+  String get sessionQuickExitBody;
+
+  /// Confirm button on the quick-exit dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit app'**
+  String get sessionQuickExitConfirm;
+
+  /// Title on the stealth fake-music-player session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get sessionStealthMusicTrack;
+
+  /// Subtitle on the stealth fake-music-player session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Various artists'**
+  String get sessionStealthMusicArtist;
+
+  /// Snackbar shown while a session is being started.
+  ///
+  /// In en, this message translates to:
+  /// **'Starting session…'**
+  String get homeStartingSession;
+
+  /// Restore action shown on the past-events SnackBar (undo soft delete).
+  ///
+  /// In en, this message translates to:
+  /// **'Restore'**
+  String get pastEventsRestore;
+
+  /// Button label that opens the step-type picker on the battery alert chain editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Add step'**
+  String get batteryAlertAddStep;
+
+  /// Error snack shown when the user tries to add an interactive step to a battery-alert chain.
+  ///
+  /// In en, this message translates to:
+  /// **'{type} is not allowed in the battery-alert chain.'**
+  String batteryAlertForbiddenStep(Object type);
+
+  /// Label for the wait-seconds field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait (s)'**
+  String get stepEditorWait;
+
+  /// Label for the duration-seconds field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration (s)'**
+  String get stepEditorDuration;
+
+  /// Label for the grace-period-seconds field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace (s)'**
+  String get stepEditorGrace;
+
+  /// Label for the retry-count field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry count'**
+  String get stepEditorRetryCount;
+
+  /// Label for the randomize toggle of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Randomize timing (±20%)'**
+  String get stepEditorRandomize;
+
+  /// Button label that removes the step.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove step'**
+  String get stepEditorRemove;
+
+  /// Confirmation shown after saving an event default.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get eventDefaultsSavedToast;
+
+  /// Field label for HoldButtonConfig.holdStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold style'**
+  String get eventDefaultsHoldStyle;
+
+  /// Field label for HoldButtonConfig.releaseSensitivity (range 0.3–3.0).
+  ///
+  /// In en, this message translates to:
+  /// **'Release sensitivity'**
+  String get eventDefaultsHoldSensitivity;
+
+  /// Field label for HoldButtonConfig.vibrateOnRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrate on release'**
+  String get eventDefaultsHoldVibrate;
+
+  /// Field label for HoldButtonConfig.soundOnRelease.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound on release'**
+  String get eventDefaultsHoldSound;
+
+  /// Field label for the StepConfig.blackScreenMode flag (per step type).
+  ///
+  /// In en, this message translates to:
+  /// **'Black screen overlay'**
+  String get eventDefaultsBlackScreen;
+
+  /// Field label for DisguisedReminderConfig.randomizeInterval.
+  ///
+  /// In en, this message translates to:
+  /// **'Randomize interval'**
+  String get eventDefaultsReminderRandomInterval;
+
+  /// Field label for DisguisedReminderConfig.randomizeTemplateOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Randomize template order'**
+  String get eventDefaultsReminderRandomTemplate;
+
+  /// Field label for DisguisedReminderConfig.resetOnEarlyCheckIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset on early check-in'**
+  String get eventDefaultsReminderResetOnEarly;
+
+  /// Field label for CountdownWarningConfig.style.
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown style'**
+  String get eventDefaultsCountdownStyle;
+
+  /// Field label for CountdownWarningConfig.vibrate.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrate'**
+  String get eventDefaultsCountdownVibrate;
+
+  /// Field label for CountdownWarningConfig.sound.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get eventDefaultsCountdownSound;
+
+  /// Field label for FakeCallConfig.callStyle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call style'**
+  String get eventDefaultsFakeCallStyle;
+
+  /// Field label for FakeCallConfig.callerName.
+  ///
+  /// In en, this message translates to:
+  /// **'Caller name'**
+  String get eventDefaultsFakeCallCallerName;
+
+  /// Field label for FakeCallConfig.ringDurationSeconds (5–120).
+  ///
+  /// In en, this message translates to:
+  /// **'Ring duration (s)'**
+  String get eventDefaultsFakeCallRingDuration;
+
+  /// Field label for FakeCallConfig.declineIsSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline counts as safe'**
+  String get eventDefaultsFakeCallDeclineIsSafe;
+
+  /// Field label for FakeCallConfig.voiceOutputMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice output'**
+  String get eventDefaultsFakeCallVoiceOutput;
+
+  /// Field label for SmsContactConfig.channel.
+  ///
+  /// In en, this message translates to:
+  /// **'Channel'**
+  String get eventDefaultsSmsChannel;
+
+  /// Field label for SmsContactConfig.includeLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Include location'**
+  String get eventDefaultsSmsIncludeLocation;
+
+  /// Field label for SmsContactConfig.includeMedicalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Include medical info'**
+  String get eventDefaultsSmsIncludeMedical;
+
+  /// Field label for SmsContactConfig.autoRecordAudio.
+  ///
+  /// In en, this message translates to:
+  /// **'Record audio before sending'**
+  String get eventDefaultsSmsAutoRecord;
+
+  /// Field label for SmsContactConfig.recordDurationSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording duration (s)'**
+  String get eventDefaultsSmsRecordDuration;
+
+  /// Field label for LoudAlarmConfig.volume (0.0–1.0).
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get eventDefaultsLoudAlarmVolume;
+
+  /// Field label for LoudAlarmConfig.soundChoice.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound'**
+  String get eventDefaultsLoudAlarmSound;
+
+  /// Field label for LoudAlarmConfig.flashScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash screen'**
+  String get eventDefaultsLoudAlarmFlashScreen;
+
+  /// Field label for LoudAlarmConfig.flashLight.
+  ///
+  /// In en, this message translates to:
+  /// **'Flash camera light'**
+  String get eventDefaultsLoudAlarmFlashLight;
+
+  /// Field label for LoudAlarmConfig.gradualVolume.
+  ///
+  /// In en, this message translates to:
+  /// **'Gradual volume ramp'**
+  String get eventDefaultsLoudAlarmGradual;
+
+  /// Field label for CallEmergencyConfig.emergencyNumber (null = inherit).
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency number (override)'**
+  String get eventDefaultsCallEmergencyNumber;
+
+  /// Field label for CallEmergencyConfig.showConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Show confirmation countdown'**
+  String get eventDefaultsCallEmergencyConfirm;
+
+  /// Field label for CallEmergencyConfig.confirmationDurationSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirmation seconds'**
+  String get eventDefaultsCallEmergencyConfirmDuration;
+
+  /// Field label for CallEmergencyConfig.sendLocationSmsFirst.
+  ///
+  /// In en, this message translates to:
+  /// **'Send location SMS first'**
+  String get eventDefaultsCallEmergencySmsFirst;
+
+  /// Field label for PhoneCallContactConfig.contactId (null = first sorted).
+  ///
+  /// In en, this message translates to:
+  /// **'Primary contact (id)'**
+  String get eventDefaultsPhonePrimaryContact;
+
+  /// Field label for HardwareButtonConfig.buttonType.
+  ///
+  /// In en, this message translates to:
+  /// **'Button'**
+  String get eventDefaultsHardwareButton;
+
+  /// Field label for HardwareButtonConfig.pressPattern.
+  ///
+  /// In en, this message translates to:
+  /// **'Press pattern'**
+  String get eventDefaultsHardwarePattern;
+
+  /// Field label for HardwareButtonConfig.pressCount (repeat-press only).
+  ///
+  /// In en, this message translates to:
+  /// **'Press count'**
+  String get eventDefaultsHardwarePressCount;
+
+  /// Field label for HardwareButtonConfig.longPressDurationSeconds (long-press only).
+  ///
+  /// In en, this message translates to:
+  /// **'Long-press duration (s)'**
+  String get eventDefaultsHardwareLongDuration;
 }
 
 class _AppLocalizationsDelegate

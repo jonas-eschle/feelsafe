@@ -1,6 +1,10 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Lightweight view of a session log for the list screen.
@@ -42,17 +46,29 @@ class PastEventsState {
 }
 
 /// Controller for the past-events list.
+///
+/// Implements the soft-delete-with-undo semantics from spec 04
+/// §Past Events Screen: deleting a log removes it from the repository
+/// but keeps a copy in [_tombstones] until [undoDelete] re-inserts it.
+/// The screen displays a 5-second snackbar with an UNDO action; if the
+/// snackbar is dismissed without undo, [finalizeDelete] removes the
+/// tombstone permanently.
 class PastEventsController extends AsyncNotifier<PastEventsState> {
+  /// In-memory tombstones keyed by log id. Populated by [softDelete] and
+  /// cleared by [undoDelete] or [finalizeDelete].
+  final Map<String, SessionLog> _tombstones = <String, SessionLog>{};
+
   @override
   Future<PastEventsState> build() async {
     final repo = await ref.watch(sessionLogRepositoryProvider.future);
     final raw = await repo.getAll();
     final logs = <PastEventsLog>[];
     for (final l in raw) {
-      final ended = l.endedAt;
-      final duration = ended == null
-          ? 0
-          : ended.difference(l.startedAt).inSeconds;
+      // In-progress marker rows (endedAt == null) are not shown in the
+      // history — they only exist to drive the Session-Interrupted Prompt.
+      if (l.endedAt == null) continue;
+      final ended = l.endedAt!;
+      final duration = ended.difference(l.startedAt).inSeconds;
       logs.add(
         PastEventsLog(
           id: l.id,
@@ -69,19 +85,41 @@ class PastEventsController extends AsyncNotifier<PastEventsState> {
     return PastEventsState(logs: logs);
   }
 
-  /// Soft-deletes [id] from the list (Phase 7 hooks up the tombstone
-  /// store).
+  /// Soft-deletes the log with [id]: keeps a tombstone copy in memory and
+  /// removes the row from the repository so it disappears from the list.
+  ///
+  /// Call [undoDelete] within the snackbar window to restore the row, or
+  /// [finalizeDelete] after the snackbar dismisses to drop the tombstone.
   Future<void> softDelete(String id) async {
     final repo = await ref.read(sessionLogRepositoryProvider.future);
+    final log = await repo.getById(id);
+    if (log == null) return;
+    _tombstones[id] = log;
     await repo.deleteById(id);
     ref.invalidateSelf();
   }
 
-  /// Undoes a soft-delete. Phase 6 just re-invalidates so the list
-  /// refreshes; Phase 7 will restore from the tombstone store.
-  Future<void> undo(String id) async {
+  /// Restores a previously soft-deleted log by re-inserting it.
+  Future<void> undoDelete(String id) async {
+    final log = _tombstones.remove(id);
+    if (log == null) return;
+    final repo = await ref.read(sessionLogRepositoryProvider.future);
+    await repo.upsert(log);
     ref.invalidateSelf();
   }
+
+  /// Removes the tombstone for [id] without restoring it.
+  ///
+  /// Called by the screen when the undo snackbar dismisses without the
+  /// user tapping UNDO. After this call the deletion is irreversible.
+  void finalizeDelete(String id) {
+    _tombstones.remove(id);
+    log('finalised delete: $id', name: 'PastEventsController');
+  }
+
+  /// Returns true if a tombstone exists for [id] (visible to tests).
+  @visibleForTesting
+  bool hasTombstone(String id) => _tombstones.containsKey(id);
 }
 
 /// Provides [PastEventsController].

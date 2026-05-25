@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -10,7 +12,7 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// Past sessions screen (history).
 ///
 /// Tabs split real vs. simulated sessions. Tap to view detail, swipe to
-/// soft-delete. See spec 04 §Past Events Screen.
+/// soft-delete (with UNDO snackbar). See spec 04 §Past Events Screen.
 class PastEventsScreen extends ConsumerWidget {
   /// Creates a [PastEventsScreen].
   const PastEventsScreen({super.key});
@@ -74,18 +76,34 @@ class _LogList extends ConsumerWidget {
             child: const Icon(Icons.delete, color: Colors.white),
           ),
           direction: DismissDirection.endToStart,
-          onDismissed: (_) {
-            ref.read(pastEventsControllerProvider.notifier).softDelete(log.id);
-            ScaffoldMessenger.of(ctx).showSnackBar(
+          onDismissed: (_) async {
+            await ref
+                .read(pastEventsControllerProvider.notifier)
+                .softDelete(log.id);
+            if (!ctx.mounted) return;
+            final messenger = ScaffoldMessenger.of(ctx);
+            final controller = messenger.showSnackBar(
               SnackBar(
                 content: Text(l10n.pastEventsSoftDeleted),
+                duration: const Duration(seconds: 5),
                 action: SnackBarAction(
                   label: l10n.pastEventsUndo,
                   onPressed: () => ref
                       .read(pastEventsControllerProvider.notifier)
-                      .undo(log.id),
+                      .undoDelete(log.id),
                 ),
               ),
+            );
+            // When the snackbar finishes (no UNDO), drop the tombstone so
+            // the deletion is final.
+            unawaited(
+              controller.closed.then((SnackBarClosedReason reason) {
+                if (reason != SnackBarClosedReason.action) {
+                  ref
+                      .read(pastEventsControllerProvider.notifier)
+                      .finalizeDelete(log.id);
+                }
+              }),
             );
           },
           child: ListTile(

@@ -2,17 +2,28 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/widgets/step_chain_editor.dart';
+import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/models/battery_alert_config.dart';
+import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/battery_alert/battery_alert_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Battery alert configuration screen.
 ///
-/// Toggle + threshold slider + step chain editor (Phase 7 will add the
-/// per-step inline editor; Phase 6 shows the chain summary). See spec
-/// 04 §Battery Alert.
+/// Toggle + threshold slider + step-chain editor. Interactive step
+/// types are filtered out of the picker because the alert fires from
+/// an OS battery event, not user interaction (spec 04 §Battery Alert).
 class BatteryAlertScreen extends ConsumerWidget {
   /// Creates a [BatteryAlertScreen].
   const BatteryAlertScreen({super.key});
+
+  /// Step types allowed in a battery-alert chain.
+  static final Set<ChainStepType> _allowed = ChainStepType.values
+      .where(
+        (ChainStepType t) => !BatteryAlertConfig.forbiddenStepTypes.contains(t),
+      )
+      .toSet();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -54,25 +65,49 @@ class BatteryAlertScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-                for (int i = 0; i < state.config.chain.length; i++)
-                  Card(
-                    child: ListTile(
-                      leading: CircleAvatar(child: Text('${i + 1}')),
-                      title: Text(state.config.chain[i].type.name),
-                      subtitle: Text(
-                        l10n.stepTimingSummary(
-                          state.config.chain[i].waitSeconds.toString(),
-                          state.config.chain[i].durationSeconds.toString(),
-                          state.config.chain[i].gracePeriodSeconds.toString(),
-                        ),
-                      ),
-                    ),
-                  ),
+                StepChainEditor(
+                  steps: state.config.chain,
+                  allowedTypes: _allowed,
+                  minSteps: 0,
+                  onChanged: (List<ChainStep> next) =>
+                      _trySetChain(context, notifier, next),
+                ),
               ],
             ],
           );
         },
       ),
     );
+  }
+
+  void _trySetChain(
+    BuildContext context,
+    BatteryAlertController notifier,
+    List<ChainStep> next,
+  ) {
+    // Pre-validate at the call-site to avoid catching an Error (lint).
+    // The controller call still validates as a safety net.
+    final forbidden = next.firstWhereOrNullForbidden();
+    if (forbidden != null) {
+      final l10n = AppLocalizations.of(context);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.batteryAlertForbiddenStep(forbidden.type.name)),
+        ),
+      );
+      return;
+    }
+    notifier.setChain(next);
+  }
+}
+
+extension on List<ChainStep> {
+  ChainStep? firstWhereOrNullForbidden() {
+    for (final step in this) {
+      if (BatteryAlertConfig.forbiddenStepTypes.contains(step.type)) {
+        return step;
+      }
+    }
+    return null;
   }
 }

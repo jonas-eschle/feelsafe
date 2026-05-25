@@ -1844,7 +1844,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get sessionGpsDestinationBody =>
-      'Set the destination for GPS-arrival disarm.';
+      'Enter the destination coordinates for the GPS arrival disarm trigger.';
 
   @override
   String get sessionGpsDestinationLat => 'Latitude';
@@ -1856,10 +1856,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionGpsDestinationUseCurrent => 'Use current location';
 
   @override
-  String get sessionGpsDestinationSkip => 'Skip';
+  String get sessionGpsDestinationSkip => 'Skip for this session';
 
   @override
-  String get sessionGpsDestinationConfirm => 'Confirm';
+  String get sessionGpsDestinationConfirm => 'Use destination';
 
   @override
   String get sessionStartChainSummary => 'Chain summary';
@@ -2378,4 +2378,224 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get validationChannelsRequired => 'Select at least one channel.';
+
+  @override
+  String get sessionHoldTouchToBegin => 'Touch to begin';
+
+  @override
+  String sessionHoldReleaseCountdown(Object seconds) {
+    return 'Countdown: ${seconds}s';
+  }
+
+  @override
+  String sessionHoldGraceCountdown(Object seconds) {
+    return 'Grace: ${seconds}s — re-hold to stay safe';
+  }
+
+  @override
+  String get sessionHoldAgain => 'Hold again to stay safe';
+
+  @override
+  String get sessionEscalating => 'Escalating…';
+
+  @override
+  String get sessionDisarmedToast => 'Disarmed — chain reset to step 1.';
+
+  @override
+  String sessionStepNextCheckIn(Object time) {
+    return 'Next check-in in $time';
+  }
+
+  @override
+  String sessionStepGraceCountdown(Object time) {
+    return 'Grace period: $time';
+  }
+
+  @override
+  String sessionStepFakeCallActive(Object caller) {
+    return 'Incoming call from $caller';
+  }
+
+  @override
+  String get sessionStepFakeCallOpen => 'Open call screen';
+
+  @override
+  String sessionStepSimBlockedSms(Object count) {
+    return '[SIM] Would send SMS to $count contacts';
+  }
+
+  @override
+  String get sessionStepSimBlockedPhone => '[SIM] Would call emergency contact';
+
+  @override
+  String get sessionStepSimBlockedEmergency =>
+      '[SIM] Would call emergency services';
+
+  @override
+  String get sessionStepSimBlockedAlarm =>
+      '[SIM] Alarm would have sounded at full volume';
+
+  @override
+  String get sessionStartFailedTitle => 'Cannot start session';
+
+  @override
+  String get sessionStartFailedBody =>
+      'Fix the following issues before starting:';
+
+  @override
+  String get sessionQuickExitTitle => 'Quick exit';
+
+  @override
+  String get sessionQuickExitBody =>
+      'Session data will be preserved and encrypted. Reopen the app any time to recover it.';
+
+  @override
+  String get sessionQuickExitConfirm => 'Exit app';
+
+  @override
+  String get sessionStealthMusicTrack => 'Now playing';
+
+  @override
+  String get sessionStealthMusicArtist => 'Various artists';
+
+  @override
+  String get homeStartingSession => 'Starting session…';
+
+  @override
+  String get pastEventsRestore => 'Restore';
+
+  @override
+  String get batteryAlertAddStep => 'Add step';
+
+  @override
+  String batteryAlertForbiddenStep(Object type) {
+    return '$type is not allowed in the battery-alert chain.';
+  }
+
+  @override
+  String get stepEditorWait => 'Wait (s)';
+
+  @override
+  String get stepEditorDuration => 'Duration (s)';
+
+  @override
+  String get stepEditorGrace => 'Grace (s)';
+
+  @override
+  String get stepEditorRetryCount => 'Retry count';
+
+  @override
+  String get stepEditorRandomize => 'Randomize timing (±20%)';
+
+  @override
+  String get stepEditorRemove => 'Remove step';
+
+  @override
+  String get eventDefaultsSavedToast => 'Saved';
+
+  @override
+  String get eventDefaultsHoldStyle => 'Hold style';
+
+  @override
+  String get eventDefaultsHoldSensitivity => 'Release sensitivity';
+
+  @override
+  String get eventDefaultsHoldVibrate => 'Vibrate on release';
+
+  @override
+  String get eventDefaultsHoldSound => 'Sound on release';
+
+  @override
+  String get eventDefaultsBlackScreen => 'Black screen overlay';
+
+  @override
+  String get eventDefaultsReminderRandomInterval => 'Randomize interval';
+
+  @override
+  String get eventDefaultsReminderRandomTemplate => 'Randomize template order';
+
+  @override
+  String get eventDefaultsReminderResetOnEarly => 'Reset on early check-in';
+
+  @override
+  String get eventDefaultsCountdownStyle => 'Countdown style';
+
+  @override
+  String get eventDefaultsCountdownVibrate => 'Vibrate';
+
+  @override
+  String get eventDefaultsCountdownSound => 'Sound';
+
+  @override
+  String get eventDefaultsFakeCallStyle => 'Call style';
+
+  @override
+  String get eventDefaultsFakeCallCallerName => 'Caller name';
+
+  @override
+  String get eventDefaultsFakeCallRingDuration => 'Ring duration (s)';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafe => 'Decline counts as safe';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutput => 'Voice output';
+
+  @override
+  String get eventDefaultsSmsChannel => 'Channel';
+
+  @override
+  String get eventDefaultsSmsIncludeLocation => 'Include location';
+
+  @override
+  String get eventDefaultsSmsIncludeMedical => 'Include medical info';
+
+  @override
+  String get eventDefaultsSmsAutoRecord => 'Record audio before sending';
+
+  @override
+  String get eventDefaultsSmsRecordDuration => 'Recording duration (s)';
+
+  @override
+  String get eventDefaultsLoudAlarmVolume => 'Volume';
+
+  @override
+  String get eventDefaultsLoudAlarmSound => 'Sound';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreen => 'Flash screen';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLight => 'Flash camera light';
+
+  @override
+  String get eventDefaultsLoudAlarmGradual => 'Gradual volume ramp';
+
+  @override
+  String get eventDefaultsCallEmergencyNumber => 'Emergency number (override)';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirm => 'Show confirmation countdown';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDuration =>
+      'Confirmation seconds';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirst => 'Send location SMS first';
+
+  @override
+  String get eventDefaultsPhonePrimaryContact => 'Primary contact (id)';
+
+  @override
+  String get eventDefaultsHardwareButton => 'Button';
+
+  @override
+  String get eventDefaultsHardwarePattern => 'Press pattern';
+
+  @override
+  String get eventDefaultsHardwarePressCount => 'Press count';
+
+  @override
+  String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
 }
