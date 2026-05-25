@@ -21,6 +21,15 @@ class SessionLogRepository {
   /// atomic write at session end.
   Future<void> upsert(SessionLog log) => _dao.upsert(log);
 
+  /// Returns every persisted session log.
+  Future<List<SessionLog>> getAll() => _dao.getAll();
+
+  /// Returns the log with [id], or null when no such log exists.
+  Future<SessionLog?> getById(String id) => _dao.getById(id);
+
+  /// Hard-deletes the log with [id]. No-op if missing.
+  Future<void> deleteById(String id) => _dao.deleteById(id);
+
   /// Deletes every non-critical log whose reference time
   /// (`endedAt` if set, else `startedAt`) is strictly older than
   /// `now - Duration(days: retentionDays)`.

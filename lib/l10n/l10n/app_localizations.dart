@@ -1848,16 +1848,16 @@ abstract class AppLocalizations {
   /// **'Please wait...'**
   String get distressCountdownStealth;
 
-  /// Title of the templates list.
+  /// Title of templates screen.
   ///
   /// In en, this message translates to:
   /// **'Reminder templates'**
   String get templatesTitle;
 
-  /// Empty state on templates.
+  /// Empty state for templates list.
   ///
   /// In en, this message translates to:
-  /// **'No templates yet.'**
+  /// **'No templates yet'**
   String get templatesEmpty;
 
   /// Add-template FAB.
@@ -1956,7 +1956,7 @@ abstract class AppLocalizations {
   /// **'Subtle'**
   String get templateDisplaySubtle;
 
-  /// Title of the profile screen.
+  /// Title of profile editor.
   ///
   /// In en, this message translates to:
   /// **'Profile'**
@@ -1986,19 +1986,19 @@ abstract class AppLocalizations {
   /// **'Physical description'**
   String get profileFieldPhysicalDescription;
 
-  /// Profile blood type field.
+  /// Blood type field.
   ///
   /// In en, this message translates to:
   /// **'Blood type'**
   String get profileFieldBloodType;
 
-  /// Profile allergies list.
+  /// Allergies field.
   ///
   /// In en, this message translates to:
   /// **'Allergies'**
   String get profileFieldAllergies;
 
-  /// Profile medications list.
+  /// Medications field.
   ///
   /// In en, this message translates to:
   /// **'Medications'**
@@ -2142,19 +2142,19 @@ abstract class AppLocalizations {
   /// **'Theme'**
   String get settingsThemeMode;
 
-  /// Light theme label.
+  /// Light theme option.
   ///
   /// In en, this message translates to:
   /// **'Light'**
   String get settingsThemeLight;
 
-  /// Dark theme label.
+  /// Dark theme option.
   ///
   /// In en, this message translates to:
   /// **'Dark'**
   String get settingsThemeDark;
 
-  /// System theme label.
+  /// System theme option.
   ///
   /// In en, this message translates to:
   /// **'System'**
@@ -2202,16 +2202,16 @@ abstract class AppLocalizations {
   /// **'Save'**
   String get settingsEmergencyNumberSave;
 
-  /// ListTile to restart the onboarding flow.
+  /// Redo onboarding row label.
   ///
   /// In en, this message translates to:
   /// **'Redo onboarding'**
   String get settingsRedoOnboarding;
 
-  /// Title of the redo-onboarding confirmation dialog.
+  /// Confirmation body before redoing onboarding.
   ///
   /// In en, this message translates to:
-  /// **'Restart onboarding?'**
+  /// **'This will reset your setup. Continue?'**
   String get settingsRedoOnboardingConfirm;
 
   /// Body of the redo-onboarding confirmation dialog.
@@ -2304,13 +2304,13 @@ abstract class AppLocalizations {
   /// **'Disable'**
   String get securityDisablePin;
 
-  /// Set-PIN button.
+  /// Button to set a PIN.
   ///
   /// In en, this message translates to:
   /// **'Set PIN'**
   String get securitySetPin;
 
-  /// Change-PIN button.
+  /// Button to change a PIN.
   ///
   /// In en, this message translates to:
   /// **'Change PIN'**
@@ -2334,10 +2334,10 @@ abstract class AppLocalizations {
   /// **'Confirm PIN'**
   String get pinSetupConfirm;
 
-  /// Error when PINs differ.
+  /// Error when the two PIN entries don't match.
   ///
   /// In en, this message translates to:
-  /// **'PINs do not match. Try again.'**
+  /// **'PINs don\'t match. Try again.'**
   String get pinSetupMismatch;
 
   /// Title of the PIN-entry dialog.
@@ -2394,22 +2394,22 @@ abstract class AppLocalizations {
   /// **'Timer display'**
   String get stealthTimerDisplay;
 
-  /// Stealth timer normal option.
+  /// Stealth timer display option: normal.
   ///
   /// In en, this message translates to:
-  /// **'Show full text'**
+  /// **'Normal'**
   String get stealthTimerDisplayNormal;
 
-  /// Stealth timer small option.
+  /// Stealth timer display option: small corner.
   ///
   /// In en, this message translates to:
-  /// **'Show numbers only'**
+  /// **'Small (corner)'**
   String get stealthTimerDisplaySmall;
 
-  /// Stealth timer hidden option.
+  /// Stealth timer display option: hidden.
   ///
   /// In en, this message translates to:
-  /// **'Hide timer'**
+  /// **'Hidden'**
   String get stealthTimerDisplayNone;
 
   /// Session screen stealth toggle.
@@ -2502,7 +2502,7 @@ abstract class AppLocalizations {
   /// **'Swipe to confirm I\'m safe'**
   String get imSafeSliderLabel;
 
-  /// Title of battery-alert screen.
+  /// Title of battery alert screen.
   ///
   /// In en, this message translates to:
   /// **'Battery alert'**
@@ -2520,10 +2520,10 @@ abstract class AppLocalizations {
   /// **'Threshold: {percent}%'**
   String batteryAlertThreshold(Object percent);
 
-  /// Title of event-defaults screen.
+  /// Title of event defaults screen.
   ///
   /// In en, this message translates to:
-  /// **'Step defaults'**
+  /// **'Event defaults'**
   String get eventDefaultsTitle;
 
   /// Lead text on event-defaults screen.
@@ -2598,10 +2598,10 @@ abstract class AppLocalizations {
   /// **'Guardian Angela uses notifications to disguise and drive reminders.'**
   String get notificationSettingsBody;
 
-  /// Title of history-retention screen.
+  /// Title of history retention screen.
   ///
   /// In en, this message translates to:
-  /// **'History retention'**
+  /// **'History & retention'**
   String get historyRetentionTitle;
 
   /// Lead text on history retention.
@@ -2619,7 +2619,7 @@ abstract class AppLocalizations {
   /// Title of backup screen.
   ///
   /// In en, this message translates to:
-  /// **'Backup'**
+  /// **'Backup & restore'**
   String get backupTitle;
 
   /// Export button.
@@ -2790,11 +2790,11 @@ abstract class AppLocalizations {
   /// **'About'**
   String get aboutTitle;
 
-  /// Version label on about.
+  /// Version line on about.
   ///
   /// In en, this message translates to:
-  /// **'Version'**
-  String get aboutVersion;
+  /// **'Version: {version}'**
+  String aboutVersion(Object version);
 
   /// Credits line on about.
   ///
@@ -2802,10 +2802,10 @@ abstract class AppLocalizations {
   /// **'Built with care for people on their way home.'**
   String get aboutCredits;
 
-  /// Title of feedback screen.
+  /// Title of feedback form.
   ///
   /// In en, this message translates to:
-  /// **'Feedback'**
+  /// **'Send feedback'**
   String get feedbackTitle;
 
   /// Lead line on feedback.
@@ -2820,10 +2820,10 @@ abstract class AppLocalizations {
   /// **'Message'**
   String get feedbackFieldMessage;
 
-  /// Send button on feedback.
+  /// Send button.
   ///
   /// In en, this message translates to:
-  /// **'Open email'**
+  /// **'Send'**
   String get feedbackSend;
 
   /// Placeholder in pickers when nothing is selected.
@@ -3215,6 +3215,1302 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'[SIM] Low-battery alert fired'**
   String get simLowBatteryAlert;
+
+  /// Tagline shown below the Guardian Angela logo.
+  ///
+  /// In en, this message translates to:
+  /// **'Your angel\'s got your back.'**
+  String get homeTagline;
+
+  /// Header of the post-onboarding safety setup checklist on home.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety setup'**
+  String get homeSafetyChecklistTitle;
+
+  /// Tooltip/label for the checklist dismiss button.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss checklist'**
+  String get homeSafetyChecklistDismiss;
+
+  /// Checklist item: add contact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an emergency contact'**
+  String get homeSafetyChecklistContact;
+
+  /// Checklist item: set session-end PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a session-end PIN'**
+  String get homeSafetyChecklistPin;
+
+  /// Checklist item: configure stealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure stealth mode'**
+  String get homeSafetyChecklistStealth;
+
+  /// Checklist item: simulate a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Test a simulation'**
+  String get homeSafetyChecklistSimulation;
+
+  /// Checklist item: customize a mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize a safety mode'**
+  String get homeSafetyChecklistMode;
+
+  /// Checklist item: grant permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant required permissions'**
+  String get homeSafetyChecklistPermissions;
+
+  /// Checklist progress indicator.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} done'**
+  String homeSafetyChecklistProgress(int done, int total);
+
+  /// Greeting on welcome page.
+  ///
+  /// In en, this message translates to:
+  /// **'Hi, I\'m Angela'**
+  String get onboardingWelcomeGreeting;
+
+  /// Welcome body text on onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.'**
+  String get onboardingWelcomeBodyFull;
+
+  /// CTA on the welcome page.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get onboardingGetStarted;
+
+  /// Name input label on profile page.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get onboardingProfileNameLabel;
+
+  /// Phone input label on profile page.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get onboardingProfilePhoneLabel;
+
+  /// Helper text below phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Included in emergency messages.'**
+  String get onboardingProfilePhoneHelper;
+
+  /// Button to copy SIM phone number into profile (Android only).
+  ///
+  /// In en, this message translates to:
+  /// **'Use my SIM number'**
+  String get onboardingProfileUseSimNumber;
+
+  /// SnackBar when SIM number read is unsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on this platform; please enter manually.'**
+  String get onboardingProfileUseSimUnsupported;
+
+  /// Section header for emergency contact on onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contact'**
+  String get onboardingEmergencyContactHeader;
+
+  /// Prompt above emergency contact card.
+  ///
+  /// In en, this message translates to:
+  /// **'Who should we contact if something goes wrong?'**
+  String get onboardingEmergencyContactPrompt;
+
+  /// Empty-state text on onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact added yet'**
+  String get onboardingEmergencyContactNoneAdded;
+
+  /// Button to launch contact form from onboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Add emergency contact'**
+  String get onboardingEmergencyContactAdd;
+
+  /// Intro text on permissions page.
+  ///
+  /// In en, this message translates to:
+  /// **'These permissions keep you safe during sessions.'**
+  String get onboardingPermissionsIntro;
+
+  /// Button that requests all permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant all'**
+  String get onboardingPermissionsGrantAll;
+
+  /// Disabled-state label when every permission is granted.
+  ///
+  /// In en, this message translates to:
+  /// **'All granted'**
+  String get onboardingPermissionsAllGranted;
+
+  /// Per-tile grant button.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant'**
+  String get onboardingPermissionsGrant;
+
+  /// Per-tile open-settings link for permanently denied permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get onboardingPermissionsOpenSettings;
+
+  /// Badge label for required permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'REQUIRED'**
+  String get onboardingPermissionsRequired;
+
+  /// Badge label for optional permissions.
+  ///
+  /// In en, this message translates to:
+  /// **'OPTIONAL'**
+  String get onboardingPermissionsOptional;
+
+  /// Microphone permission label.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone'**
+  String get onboardingPermissionsMicrophone;
+
+  /// Camera permission label.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get onboardingPermissionsCamera;
+
+  /// Notification permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Required for session alerts and reminders.'**
+  String get onboardingPermissionsNotificationDesc;
+
+  /// SMS permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to send emergency text alerts.'**
+  String get onboardingPermissionsSmsDesc;
+
+  /// Phone permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to make emergency and fake calls.'**
+  String get onboardingPermissionsPhoneDesc;
+
+  /// Location permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Included in emergency messages when GPS logging is on.'**
+  String get onboardingPermissionsLocationDesc;
+
+  /// Microphone permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for audio recording during distress.'**
+  String get onboardingPermissionsMicrophoneDesc;
+
+  /// Camera permission description.
+  ///
+  /// In en, this message translates to:
+  /// **'Used for flash SOS signaling.'**
+  String get onboardingPermissionsCameraDesc;
+
+  /// Title of the session-interrupted modal (Extra 13).
+  ///
+  /// In en, this message translates to:
+  /// **'Session interrupted'**
+  String get sessionInterruptedTitle;
+
+  /// Body text of the session-interrupted modal.
+  ///
+  /// In en, this message translates to:
+  /// **'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.'**
+  String get sessionInterruptedBody;
+
+  /// CTA to start a fresh session with the same mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Start same mode'**
+  String get sessionInterruptedStartSameMode;
+
+  /// CTA to dismiss the modal.
+  ///
+  /// In en, this message translates to:
+  /// **'Acknowledge'**
+  String get sessionInterruptedAcknowledge;
+
+  /// Mode line in the interrupted modal.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: {name}'**
+  String sessionInterruptedMode(Object name);
+
+  /// Started-at line in the interrupted modal.
+  ///
+  /// In en, this message translates to:
+  /// **'Started: {time}'**
+  String sessionInterruptedStarted(Object time);
+
+  /// Title of the GPS destination sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get sessionGpsDestinationTitle;
+
+  /// Body of the GPS destination sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the destination for GPS-arrival disarm.'**
+  String get sessionGpsDestinationBody;
+
+  /// Latitude field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get sessionGpsDestinationLat;
+
+  /// Longitude field label.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get sessionGpsDestinationLng;
+
+  /// Button that fills in the current GPS coordinates.
+  ///
+  /// In en, this message translates to:
+  /// **'Use current location'**
+  String get sessionGpsDestinationUseCurrent;
+
+  /// Skip button on the GPS destination sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get sessionGpsDestinationSkip;
+
+  /// Confirm button on the GPS destination sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get sessionGpsDestinationConfirm;
+
+  /// Section header for chain summary on home.
+  ///
+  /// In en, this message translates to:
+  /// **'Chain summary'**
+  String get sessionStartChainSummary;
+
+  /// Title of the end-session confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'End session?'**
+  String get sessionEndConfirmTitle;
+
+  /// Swipe slider label on the end-session dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to confirm you want to end the session'**
+  String get sessionEndConfirmSwipe;
+
+  /// Title of the emergency-call disarm confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure?'**
+  String get sessionEmergencyDisarmTitle;
+
+  /// Body of the emergency-call disarm confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'The emergency call will NOT be made if you disarm now.'**
+  String get sessionEmergencyDisarmBody;
+
+  /// Disarm confirmation: cancel button.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel (keep disarming)'**
+  String get sessionEmergencyDisarmCancel;
+
+  /// Disarm confirmation: go-back button.
+  ///
+  /// In en, this message translates to:
+  /// **'Go back (keep session)'**
+  String get sessionEmergencyDisarmGoBack;
+
+  /// Title shown during the distress confirmation window.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress activated'**
+  String get distressConfirmTitle;
+
+  /// Countdown subtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to cancel — you have {seconds} seconds'**
+  String distressConfirmCountdown(int seconds);
+
+  /// Cancel button on distress confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to cancel'**
+  String get distressConfirmCancel;
+
+  /// Footer text on distress confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'If not cancelled, distress chain will begin immediately.'**
+  String get distressConfirmFooter;
+
+  /// Title shown for the simulation PIN prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter PIN'**
+  String get simulationPinPromptTitle;
+
+  /// Body text on simulation PIN prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Practice entering your Session End PIN'**
+  String get simulationPinPromptBody;
+
+  /// Skip button on simulation PIN prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get simulationPinPromptSkip;
+
+  /// Shake feedback on wrong PIN in simulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get simulationPinIncorrect;
+
+  /// Section header for general settings.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get settingsGeneralHeader;
+
+  /// Section header for app settings.
+  ///
+  /// In en, this message translates to:
+  /// **'App'**
+  String get settingsAppHeader;
+
+  /// Section header for configuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Configuration'**
+  String get settingsConfigurationHeader;
+
+  /// Theme label.
+  ///
+  /// In en, this message translates to:
+  /// **'Theme'**
+  String get settingsThemeLabel;
+
+  /// Language label.
+  ///
+  /// In en, this message translates to:
+  /// **'Language'**
+  String get settingsLanguageLabel;
+
+  /// Prompt shown when an action is blocked during an active session.
+  ///
+  /// In en, this message translates to:
+  /// **'End your session first.'**
+  String get settingsSessionLockedBlocker;
+
+  /// Security section link.
+  ///
+  /// In en, this message translates to:
+  /// **'Security'**
+  String get settingsSecurityRow;
+
+  /// Subtitle for the security row.
+  ///
+  /// In en, this message translates to:
+  /// **'App PIN, Session End PIN, Duress PIN'**
+  String get settingsSecuritySubtitle;
+
+  /// Stealth row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth'**
+  String get settingsStealthRow;
+
+  /// Stealth row subtitle when disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth: OFF'**
+  String get settingsStealthSummaryOff;
+
+  /// Stealth row subtitle when enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth: ON'**
+  String get settingsStealthSummaryOn;
+
+  /// Profile row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get settingsProfileRow;
+
+  /// Modes row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Modes'**
+  String get settingsModesRow;
+
+  /// Distress modes row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress modes'**
+  String get settingsDistressModesRow;
+
+  /// Battery alert row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery alert'**
+  String get settingsBatteryAlertRow;
+
+  /// Event defaults row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults'**
+  String get settingsEventDefaultsRow;
+
+  /// GPS logging row label.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS logging'**
+  String get settingsGpsLoggingRow;
+
+  /// Reminder templates row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder templates'**
+  String get settingsRemindersRow;
+
+  /// Notifications row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get settingsNotificationsRow;
+
+  /// History & retention row label.
+  ///
+  /// In en, this message translates to:
+  /// **'History & retention'**
+  String get settingsHistoryRetentionRow;
+
+  /// About row label.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get settingsAboutRow;
+
+  /// Feedback row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get settingsFeedbackRow;
+
+  /// Backup & restore row label.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup & restore'**
+  String get settingsBackupRow;
+
+  /// Open source licenses row.
+  ///
+  /// In en, this message translates to:
+  /// **'Open source licenses'**
+  String get settingsOssLicenses;
+
+  /// Export settings button.
+  ///
+  /// In en, this message translates to:
+  /// **'Export settings'**
+  String get settingsExport;
+
+  /// Import settings button.
+  ///
+  /// In en, this message translates to:
+  /// **'Import settings'**
+  String get settingsImport;
+
+  /// Backup import confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'This will overwrite all current data. Continue?'**
+  String get settingsImportConfirmBody;
+
+  /// Header for the App PIN section.
+  ///
+  /// In en, this message translates to:
+  /// **'App PIN'**
+  String get securityAppPinTitle;
+
+  /// App PIN explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Locks the app each time you open it.'**
+  String get securityAppPinBody;
+
+  /// Header for session end PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Session End PIN'**
+  String get securitySessionEndPinTitle;
+
+  /// Session end PIN explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to disarm or end a running session.'**
+  String get securitySessionEndPinBody;
+
+  /// Header for duress PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Duress PIN'**
+  String get securityDuressPinTitle;
+
+  /// Duress PIN explanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Entered at any prompt to silently fire the distress chain.'**
+  String get securityDuressPinBody;
+
+  /// Button to remove a PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get securityRemovePin;
+
+  /// Biometric toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow biometric'**
+  String get securityBiometricToggle;
+
+  /// PIN timeout slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN timeout (seconds)'**
+  String get securityPinTimeoutLabel;
+
+  /// Wrong PIN threshold slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Wrong PIN attempts before escalation'**
+  String get securityWrongPinThresholdLabel;
+
+  /// Deceptive dialog toggle label.
+  ///
+  /// In en, this message translates to:
+  /// **'Show deceptive dialog on wrong PIN'**
+  String get securityDeceptiveDialogToggle;
+
+  /// Heading for entering a new PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter new PIN'**
+  String get pinSetupEnterNew;
+
+  /// Heading for confirming a new PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm new PIN'**
+  String get pinSetupConfirmNew;
+
+  /// Validation when PIN is shorter than 4 digits.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN must be at least 4 digits.'**
+  String get pinSetupTooShort;
+
+  /// Validation when PIN collides with another configured PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'This PIN conflicts with another configured PIN.'**
+  String get pinSetupCollision;
+
+  /// Snackbar when the PIN is saved.
+  ///
+  /// In en, this message translates to:
+  /// **'PIN saved'**
+  String get pinSetupSaved;
+
+  /// Master toggle for stealth mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable stealth'**
+  String get stealthEnabledLabel;
+
+  /// Stealth fake-name input label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake app name'**
+  String get stealthFakeNameLabel;
+
+  /// Stealth icon preset selector label.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake icon'**
+  String get stealthFakeIconLabel;
+
+  /// Stealth notification disguise toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification disguise'**
+  String get stealthNotificationDisguiseLabel;
+
+  /// Stealth timer display selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer display'**
+  String get stealthTimerDisplayLabel;
+
+  /// Toggle to remove branding from session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Session screen stealth'**
+  String get stealthSessionScreenLabel;
+
+  /// GPS logging master toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Log GPS during sessions'**
+  String get gpsLoggingEnabled;
+
+  /// GPS interval slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Interval'**
+  String get gpsLoggingIntervalLabel;
+
+  /// GPS accuracy selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Accuracy'**
+  String get gpsLoggingAccuracyLabel;
+
+  /// GPS accuracy high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get gpsLoggingAccuracyHigh;
+
+  /// GPS accuracy balanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get gpsLoggingAccuracyBalanced;
+
+  /// GPS accuracy low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get gpsLoggingAccuracyLow;
+
+  /// GPS coordinate format label.
+  ///
+  /// In en, this message translates to:
+  /// **'Coordinate format'**
+  String get gpsLoggingFormatLabel;
+
+  /// GPS format decimal.
+  ///
+  /// In en, this message translates to:
+  /// **'Decimal'**
+  String get gpsLoggingFormatDecimal;
+
+  /// GPS format DMS.
+  ///
+  /// In en, this message translates to:
+  /// **'DMS'**
+  String get gpsLoggingFormatDms;
+
+  /// GPS format address.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get gpsLoggingFormatAddress;
+
+  /// Toggle to include GPS in SMS.
+  ///
+  /// In en, this message translates to:
+  /// **'Append location to SMS'**
+  String get gpsLoggingIncludeInSms;
+
+  /// GPS history retention slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'History retention (days)'**
+  String get gpsLoggingHistoryRetentionLabel;
+
+  /// Session log retention slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Session log retention (days)'**
+  String get historyRetentionLogsLabel;
+
+  /// Helper text for session log retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs older than this move into the trash.'**
+  String get historyRetentionLogsHelper;
+
+  /// Trash retention slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash retention (days)'**
+  String get historyRetentionTrashLabel;
+
+  /// Helper text for trash retention.
+  ///
+  /// In en, this message translates to:
+  /// **'Trashed logs are permanently deleted after this window.'**
+  String get historyRetentionTrashHelper;
+
+  /// Snackbar shown after a retention slider change.
+  ///
+  /// In en, this message translates to:
+  /// **'Retention updated'**
+  String get historyRetentionUpdated;
+
+  /// Battery alert enable toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable battery alert'**
+  String get batteryAlertEnableLabel;
+
+  /// Battery threshold slider label.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery threshold (%)'**
+  String get batteryAlertThresholdLabel;
+
+  /// Section header for the battery alert chain.
+  ///
+  /// In en, this message translates to:
+  /// **'Alert chain'**
+  String get batteryAlertChainHeader;
+
+  /// Reset chain button.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get batteryAlertResetChain;
+
+  /// Section header for check-in methods.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in methods'**
+  String get eventDefaultsCheckInHeader;
+
+  /// Section header for escalation steps.
+  ///
+  /// In en, this message translates to:
+  /// **'Escalation steps'**
+  String get eventDefaultsEscalationHeader;
+
+  /// Section header for panic triggers.
+  ///
+  /// In en, this message translates to:
+  /// **'Panic trigger'**
+  String get eventDefaultsPanicHeader;
+
+  /// Create template button.
+  ///
+  /// In en, this message translates to:
+  /// **'Create template'**
+  String get templatesCreate;
+
+  /// Bottom sheet entry for cloning a template.
+  ///
+  /// In en, this message translates to:
+  /// **'From template'**
+  String get templatesFromTemplateSheet;
+
+  /// Bottom sheet entry for blank template.
+  ///
+  /// In en, this message translates to:
+  /// **'From scratch'**
+  String get templatesFromScratchSheet;
+
+  /// Title of template editor when editing.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit template'**
+  String get templatesEditTitle;
+
+  /// Title of template editor when creating.
+  ///
+  /// In en, this message translates to:
+  /// **'New template'**
+  String get templatesCreateTitle;
+
+  /// Template name label.
+  ///
+  /// In en, this message translates to:
+  /// **'Name'**
+  String get templatesNameLabel;
+
+  /// Template title label.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get templatesTitleLabel;
+
+  /// Template body label.
+  ///
+  /// In en, this message translates to:
+  /// **'Body'**
+  String get templatesBodyLabel;
+
+  /// Tooltip on disabled delete for built-in templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in templates cannot be deleted'**
+  String get templatesBuiltinNoDelete;
+
+  /// Title of notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notificationsTitle;
+
+  /// Granted status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Granted'**
+  String get notificationsStatusGranted;
+
+  /// Denied status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Denied'**
+  String get notificationsStatusDenied;
+
+  /// Unknown status label.
+  ///
+  /// In en, this message translates to:
+  /// **'Not yet asked'**
+  String get notificationsStatusUnknown;
+
+  /// Request permission button.
+  ///
+  /// In en, this message translates to:
+  /// **'Request permission'**
+  String get notificationsRequest;
+
+  /// Open settings button.
+  ///
+  /// In en, this message translates to:
+  /// **'Open system settings'**
+  String get notificationsOpenSettings;
+
+  /// Profile phone field.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get profileFieldPhone;
+
+  /// Profile description field.
+  ///
+  /// In en, this message translates to:
+  /// **'Physical description'**
+  String get profileFieldDescription;
+
+  /// Medical conditions field.
+  ///
+  /// In en, this message translates to:
+  /// **'Medical conditions'**
+  String get profileFieldMedicalConditions;
+
+  /// Emergency instructions field.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency instructions'**
+  String get profileFieldEmergencyInstructions;
+
+  /// Profile photo label.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get profilePhotoLabel;
+
+  /// Profile save confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile saved'**
+  String get profileSaved;
+
+  /// Author line.
+  ///
+  /// In en, this message translates to:
+  /// **'Author: Jonas Eschle'**
+  String get aboutAuthor;
+
+  /// Contact email.
+  ///
+  /// In en, this message translates to:
+  /// **'guardian.angela.app@gmail.com'**
+  String get aboutEmail;
+
+  /// Privacy policy link.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy'**
+  String get aboutPrivacyPolicy;
+
+  /// Terms of service link.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of service'**
+  String get aboutTermsOfService;
+
+  /// Source code link.
+  ///
+  /// In en, this message translates to:
+  /// **'Source code'**
+  String get aboutSourceCode;
+
+  /// Support link.
+  ///
+  /// In en, this message translates to:
+  /// **'Support / donate'**
+  String get aboutSupport;
+
+  /// Licenses link.
+  ///
+  /// In en, this message translates to:
+  /// **'Open source licenses'**
+  String get aboutLicenses;
+
+  /// Bottom tagline on about screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Made with love for LGBTQ+ safety.'**
+  String get aboutTagline;
+
+  /// Top heading of feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'We\'d love to hear from you'**
+  String get feedbackHeading;
+
+  /// Category label.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get feedbackCategoryLabel;
+
+  /// Bug option.
+  ///
+  /// In en, this message translates to:
+  /// **'Bug report'**
+  String get feedbackCategoryBug;
+
+  /// Feature option.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature request'**
+  String get feedbackCategoryFeature;
+
+  /// Other option.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get feedbackCategoryOther;
+
+  /// Email label.
+  ///
+  /// In en, this message translates to:
+  /// **'Email (optional)'**
+  String get feedbackEmailLabel;
+
+  /// Message label.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get feedbackMessageLabel;
+
+  /// Include log checkbox.
+  ///
+  /// In en, this message translates to:
+  /// **'Include last session log'**
+  String get feedbackIncludeLog;
+
+  /// Snackbar after sending.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your feedback!'**
+  String get feedbackSent;
+
+  /// Validation message.
+  ///
+  /// In en, this message translates to:
+  /// **'Message must be at least 10 characters.'**
+  String get feedbackMessageRequired;
+
+  /// Backup include logs toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include session logs'**
+  String get backupIncludeLogs;
+
+  /// Backup include media toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Include media'**
+  String get backupIncludeMedia;
+
+  /// Backup export button.
+  ///
+  /// In en, this message translates to:
+  /// **'Export'**
+  String get backupExportButton;
+
+  /// Backup import button.
+  ///
+  /// In en, this message translates to:
+  /// **'Import'**
+  String get backupImportButton;
+
+  /// Backup overwrite warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Importing overwrites all current data.'**
+  String get backupOverwriteWarning;
+
+  /// Title of past events screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Past sessions'**
+  String get pastEventsTitle;
+
+  /// Tab label for real sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Real'**
+  String get pastEventsTabReal;
+
+  /// Tab label for simulated sessions.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated'**
+  String get pastEventsTabSimulated;
+
+  /// Empty state.
+  ///
+  /// In en, this message translates to:
+  /// **'No sessions yet'**
+  String get pastEventsEmpty;
+
+  /// Search field placeholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by mode name'**
+  String get pastEventsSearch;
+
+  /// Delete confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete session log?'**
+  String get pastEventsDeleteConfirm;
+
+  /// Delete all action.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get pastEventsDeleteAll;
+
+  /// Trash action.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash'**
+  String get pastEventsTrash;
+
+  /// Undo snackbar action.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get pastEventsUndo;
+
+  /// Snackbar after soft delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Moved to trash'**
+  String get pastEventsSoftDeleted;
+
+  /// Title of past event detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Session log'**
+  String get pastEventsDetailTitle;
+
+  /// Share button in detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get pastEventsDetailShare;
+
+  /// Delete button in detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get pastEventsDetailDelete;
+
+  /// Button to import from device contacts (Extra 27).
+  ///
+  /// In en, this message translates to:
+  /// **'Import from contacts'**
+  String get contactImportFromDevice;
+
+  /// Snackbar when contacts permission is denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied — open Settings to enable.'**
+  String get contactImportPermissionDenied;
+
+  /// Unsaved changes title for contact form.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard unsaved changes?'**
+  String get contactUnsavedDiscardTitle;
+
+  /// Keep editing button.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get contactUnsavedDiscardKeep;
+
+  /// Discard button.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get contactUnsavedDiscardDiscard;
+
+  /// Title of the new mode picker.
+  ///
+  /// In en, this message translates to:
+  /// **'New mode'**
+  String get modesNewModeChoiceTitle;
+
+  /// Duplicate action for modes.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate'**
+  String get modesDuplicate;
+
+  /// Delete confirmation title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete mode?'**
+  String get modesDeleteConfirmTitle;
+
+  /// Delete confirmation body.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will be permanently removed.'**
+  String modesDeleteConfirmBody(Object name);
+
+  /// Badge for default distress mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get modesDistressDefaultBadge;
+
+  /// Set as default action.
+  ///
+  /// In en, this message translates to:
+  /// **'Set as default'**
+  String get modesDistressSetDefault;
+
+  /// Tooltip when delete is disabled for last distress mode.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one distress mode is required.'**
+  String get modesDistressCantDeleteLast;
+
+  /// Title of distress modes list.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress modes'**
+  String get modesDistressTitle;
+
+  /// Toggle in distress mode editor (G-014).
+  ///
+  /// In en, this message translates to:
+  /// **'Allow disarm while active as distress'**
+  String get modesAllowDisarmAsDistress;
+
+  /// Title of quick exit prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick exit'**
+  String get quickExitTitle;
+
+  /// Body of quick exit prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Session data will be preserved and encrypted.'**
+  String get quickExitBody;
+
+  /// Quick exit confirm button.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get quickExitConfirm;
+
+  /// Validation: name required.
+  ///
+  /// In en, this message translates to:
+  /// **'Name is required.'**
+  String get validationNameRequired;
+
+  /// Validation: name too short.
+  ///
+  /// In en, this message translates to:
+  /// **'Name must be at least 2 characters.'**
+  String get validationNameTooShort;
+
+  /// Validation: phone required.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is required.'**
+  String get validationPhoneRequired;
+
+  /// Validation: at least one channel required.
+  ///
+  /// In en, this message translates to:
+  /// **'Select at least one channel.'**
+  String get validationChannelsRequired;
 }
 
 class _AppLocalizationsDelegate

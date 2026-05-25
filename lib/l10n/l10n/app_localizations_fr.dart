@@ -1447,7 +1447,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get aboutTitle => 'À propos';
 
   @override
-  String get aboutVersion => 'Version';
+  String aboutVersion(Object version) {
+    return 'Version';
+  }
 
   @override
   String get aboutCredits =>
@@ -1689,4 +1691,689 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get simLowBatteryAlert => '[SIM] Alerte de batterie faible déclenchée';
+
+  @override
+  String get homeTagline => 'Your angel\'s got your back.';
+
+  @override
+  String get homeSafetyChecklistTitle => 'Safety setup';
+
+  @override
+  String get homeSafetyChecklistDismiss => 'Dismiss checklist';
+
+  @override
+  String get homeSafetyChecklistContact => 'Add an emergency contact';
+
+  @override
+  String get homeSafetyChecklistPin => 'Set a session-end PIN';
+
+  @override
+  String get homeSafetyChecklistStealth => 'Configure stealth mode';
+
+  @override
+  String get homeSafetyChecklistSimulation => 'Test a simulation';
+
+  @override
+  String get homeSafetyChecklistMode => 'Customize a safety mode';
+
+  @override
+  String get homeSafetyChecklistPermissions => 'Grant required permissions';
+
+  @override
+  String homeSafetyChecklistProgress(int done, int total) {
+    return '$done of $total done';
+  }
+
+  @override
+  String get onboardingWelcomeGreeting => 'Hi, I\'m Angela';
+
+  @override
+  String get onboardingWelcomeBodyFull =>
+      'I\'m your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.';
+
+  @override
+  String get onboardingGetStarted => 'Get started';
+
+  @override
+  String get onboardingProfileNameLabel => 'Name';
+
+  @override
+  String get onboardingProfilePhoneLabel => 'Phone number';
+
+  @override
+  String get onboardingProfilePhoneHelper => 'Included in emergency messages.';
+
+  @override
+  String get onboardingProfileUseSimNumber => 'Use my SIM number';
+
+  @override
+  String get onboardingProfileUseSimUnsupported =>
+      'Not available on this platform; please enter manually.';
+
+  @override
+  String get onboardingEmergencyContactHeader => 'Emergency contact';
+
+  @override
+  String get onboardingEmergencyContactPrompt =>
+      'Who should we contact if something goes wrong?';
+
+  @override
+  String get onboardingEmergencyContactNoneAdded => 'No contact added yet';
+
+  @override
+  String get onboardingEmergencyContactAdd => 'Add emergency contact';
+
+  @override
+  String get onboardingPermissionsIntro =>
+      'These permissions keep you safe during sessions.';
+
+  @override
+  String get onboardingPermissionsGrantAll => 'Grant all';
+
+  @override
+  String get onboardingPermissionsAllGranted => 'All granted';
+
+  @override
+  String get onboardingPermissionsGrant => 'Grant';
+
+  @override
+  String get onboardingPermissionsOpenSettings => 'Open settings';
+
+  @override
+  String get onboardingPermissionsRequired => 'REQUIRED';
+
+  @override
+  String get onboardingPermissionsOptional => 'OPTIONAL';
+
+  @override
+  String get onboardingPermissionsMicrophone => 'Microphone';
+
+  @override
+  String get onboardingPermissionsCamera => 'Camera';
+
+  @override
+  String get onboardingPermissionsNotificationDesc =>
+      'Required for session alerts and reminders.';
+
+  @override
+  String get onboardingPermissionsSmsDesc =>
+      'Required to send emergency text alerts.';
+
+  @override
+  String get onboardingPermissionsPhoneDesc =>
+      'Required to make emergency and fake calls.';
+
+  @override
+  String get onboardingPermissionsLocationDesc =>
+      'Included in emergency messages when GPS logging is on.';
+
+  @override
+  String get onboardingPermissionsMicrophoneDesc =>
+      'Used for audio recording during distress.';
+
+  @override
+  String get onboardingPermissionsCameraDesc => 'Used for flash SOS signaling.';
+
+  @override
+  String get sessionInterruptedTitle => 'Session interrupted';
+
+  @override
+  String get sessionInterruptedBody =>
+      'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.';
+
+  @override
+  String get sessionInterruptedStartSameMode => 'Start same mode';
+
+  @override
+  String get sessionInterruptedAcknowledge => 'Acknowledge';
+
+  @override
+  String sessionInterruptedMode(Object name) {
+    return 'Mode: $name';
+  }
+
+  @override
+  String sessionInterruptedStarted(Object time) {
+    return 'Started: $time';
+  }
+
+  @override
+  String get sessionGpsDestinationTitle => 'Destination';
+
+  @override
+  String get sessionGpsDestinationBody =>
+      'Set the destination for GPS-arrival disarm.';
+
+  @override
+  String get sessionGpsDestinationLat => 'Latitude';
+
+  @override
+  String get sessionGpsDestinationLng => 'Longitude';
+
+  @override
+  String get sessionGpsDestinationUseCurrent => 'Use current location';
+
+  @override
+  String get sessionGpsDestinationSkip => 'Skip';
+
+  @override
+  String get sessionGpsDestinationConfirm => 'Confirm';
+
+  @override
+  String get sessionStartChainSummary => 'Chain summary';
+
+  @override
+  String get sessionEndConfirmTitle => 'End session?';
+
+  @override
+  String get sessionEndConfirmSwipe =>
+      'Swipe to confirm you want to end the session';
+
+  @override
+  String get sessionEmergencyDisarmTitle => 'Are you sure?';
+
+  @override
+  String get sessionEmergencyDisarmBody =>
+      'The emergency call will NOT be made if you disarm now.';
+
+  @override
+  String get sessionEmergencyDisarmCancel => 'Cancel (keep disarming)';
+
+  @override
+  String get sessionEmergencyDisarmGoBack => 'Go back (keep session)';
+
+  @override
+  String get distressConfirmTitle => 'Distress activated';
+
+  @override
+  String distressConfirmCountdown(int seconds) {
+    return 'Tap to cancel — you have $seconds seconds';
+  }
+
+  @override
+  String get distressConfirmCancel => 'Tap to cancel';
+
+  @override
+  String get distressConfirmFooter =>
+      'If not cancelled, distress chain will begin immediately.';
+
+  @override
+  String get simulationPinPromptTitle => 'Enter PIN';
+
+  @override
+  String get simulationPinPromptBody =>
+      'Practice entering your Session End PIN';
+
+  @override
+  String get simulationPinPromptSkip => 'Skip';
+
+  @override
+  String get simulationPinIncorrect => 'Incorrect PIN';
+
+  @override
+  String get settingsGeneralHeader => 'General';
+
+  @override
+  String get settingsAppHeader => 'App';
+
+  @override
+  String get settingsConfigurationHeader => 'Configuration';
+
+  @override
+  String get settingsThemeLabel => 'Theme';
+
+  @override
+  String get settingsLanguageLabel => 'Language';
+
+  @override
+  String get settingsSessionLockedBlocker => 'End your session first.';
+
+  @override
+  String get settingsSecurityRow => 'Security';
+
+  @override
+  String get settingsSecuritySubtitle => 'App PIN, Session End PIN, Duress PIN';
+
+  @override
+  String get settingsStealthRow => 'Stealth';
+
+  @override
+  String get settingsStealthSummaryOff => 'Stealth: OFF';
+
+  @override
+  String get settingsStealthSummaryOn => 'Stealth: ON';
+
+  @override
+  String get settingsProfileRow => 'Profile';
+
+  @override
+  String get settingsModesRow => 'Modes';
+
+  @override
+  String get settingsDistressModesRow => 'Distress modes';
+
+  @override
+  String get settingsBatteryAlertRow => 'Battery alert';
+
+  @override
+  String get settingsEventDefaultsRow => 'Event defaults';
+
+  @override
+  String get settingsGpsLoggingRow => 'GPS logging';
+
+  @override
+  String get settingsRemindersRow => 'Reminder templates';
+
+  @override
+  String get settingsNotificationsRow => 'Notifications';
+
+  @override
+  String get settingsHistoryRetentionRow => 'History & retention';
+
+  @override
+  String get settingsAboutRow => 'About';
+
+  @override
+  String get settingsFeedbackRow => 'Send feedback';
+
+  @override
+  String get settingsBackupRow => 'Backup & restore';
+
+  @override
+  String get settingsOssLicenses => 'Open source licenses';
+
+  @override
+  String get settingsExport => 'Export settings';
+
+  @override
+  String get settingsImport => 'Import settings';
+
+  @override
+  String get settingsImportConfirmBody =>
+      'This will overwrite all current data. Continue?';
+
+  @override
+  String get securityAppPinTitle => 'App PIN';
+
+  @override
+  String get securityAppPinBody => 'Locks the app each time you open it.';
+
+  @override
+  String get securitySessionEndPinTitle => 'Session End PIN';
+
+  @override
+  String get securitySessionEndPinBody =>
+      'Required to disarm or end a running session.';
+
+  @override
+  String get securityDuressPinTitle => 'Duress PIN';
+
+  @override
+  String get securityDuressPinBody =>
+      'Entered at any prompt to silently fire the distress chain.';
+
+  @override
+  String get securityRemovePin => 'Remove';
+
+  @override
+  String get securityBiometricToggle => 'Allow biometric';
+
+  @override
+  String get securityPinTimeoutLabel => 'PIN timeout (seconds)';
+
+  @override
+  String get securityWrongPinThresholdLabel =>
+      'Wrong PIN attempts before escalation';
+
+  @override
+  String get securityDeceptiveDialogToggle =>
+      'Show deceptive dialog on wrong PIN';
+
+  @override
+  String get pinSetupEnterNew => 'Enter new PIN';
+
+  @override
+  String get pinSetupConfirmNew => 'Confirm new PIN';
+
+  @override
+  String get pinSetupTooShort => 'PIN must be at least 4 digits.';
+
+  @override
+  String get pinSetupCollision =>
+      'This PIN conflicts with another configured PIN.';
+
+  @override
+  String get pinSetupSaved => 'PIN saved';
+
+  @override
+  String get stealthEnabledLabel => 'Enable stealth';
+
+  @override
+  String get stealthFakeNameLabel => 'Fake app name';
+
+  @override
+  String get stealthFakeIconLabel => 'Fake icon';
+
+  @override
+  String get stealthNotificationDisguiseLabel => 'Notification disguise';
+
+  @override
+  String get stealthTimerDisplayLabel => 'Timer display';
+
+  @override
+  String get stealthSessionScreenLabel => 'Session screen stealth';
+
+  @override
+  String get gpsLoggingEnabled => 'Log GPS during sessions';
+
+  @override
+  String get gpsLoggingIntervalLabel => 'Interval';
+
+  @override
+  String get gpsLoggingAccuracyLabel => 'Accuracy';
+
+  @override
+  String get gpsLoggingAccuracyHigh => 'High';
+
+  @override
+  String get gpsLoggingAccuracyBalanced => 'Balanced';
+
+  @override
+  String get gpsLoggingAccuracyLow => 'Low';
+
+  @override
+  String get gpsLoggingFormatLabel => 'Coordinate format';
+
+  @override
+  String get gpsLoggingFormatDecimal => 'Decimal';
+
+  @override
+  String get gpsLoggingFormatDms => 'DMS';
+
+  @override
+  String get gpsLoggingFormatAddress => 'Address';
+
+  @override
+  String get gpsLoggingIncludeInSms => 'Append location to SMS';
+
+  @override
+  String get gpsLoggingHistoryRetentionLabel => 'History retention (days)';
+
+  @override
+  String get historyRetentionLogsLabel => 'Session log retention (days)';
+
+  @override
+  String get historyRetentionLogsHelper =>
+      'Logs older than this move into the trash.';
+
+  @override
+  String get historyRetentionTrashLabel => 'Trash retention (days)';
+
+  @override
+  String get historyRetentionTrashHelper =>
+      'Trashed logs are permanently deleted after this window.';
+
+  @override
+  String get historyRetentionUpdated => 'Retention updated';
+
+  @override
+  String get batteryAlertEnableLabel => 'Enable battery alert';
+
+  @override
+  String get batteryAlertThresholdLabel => 'Battery threshold (%)';
+
+  @override
+  String get batteryAlertChainHeader => 'Alert chain';
+
+  @override
+  String get batteryAlertResetChain => 'Reset';
+
+  @override
+  String get eventDefaultsCheckInHeader => 'Check-in methods';
+
+  @override
+  String get eventDefaultsEscalationHeader => 'Escalation steps';
+
+  @override
+  String get eventDefaultsPanicHeader => 'Panic trigger';
+
+  @override
+  String get templatesCreate => 'Create template';
+
+  @override
+  String get templatesFromTemplateSheet => 'From template';
+
+  @override
+  String get templatesFromScratchSheet => 'From scratch';
+
+  @override
+  String get templatesEditTitle => 'Edit template';
+
+  @override
+  String get templatesCreateTitle => 'New template';
+
+  @override
+  String get templatesNameLabel => 'Name';
+
+  @override
+  String get templatesTitleLabel => 'Title';
+
+  @override
+  String get templatesBodyLabel => 'Body';
+
+  @override
+  String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
+
+  @override
+  String get notificationsTitle => 'Notifications';
+
+  @override
+  String get notificationsStatusGranted => 'Granted';
+
+  @override
+  String get notificationsStatusDenied => 'Denied';
+
+  @override
+  String get notificationsStatusUnknown => 'Not yet asked';
+
+  @override
+  String get notificationsRequest => 'Request permission';
+
+  @override
+  String get notificationsOpenSettings => 'Open system settings';
+
+  @override
+  String get profileFieldPhone => 'Phone number';
+
+  @override
+  String get profileFieldDescription => 'Physical description';
+
+  @override
+  String get profileFieldMedicalConditions => 'Medical conditions';
+
+  @override
+  String get profileFieldEmergencyInstructions => 'Emergency instructions';
+
+  @override
+  String get profilePhotoLabel => 'Photo';
+
+  @override
+  String get profileSaved => 'Profile saved';
+
+  @override
+  String get aboutAuthor => 'Author: Jonas Eschle';
+
+  @override
+  String get aboutEmail => 'guardian.angela.app@gmail.com';
+
+  @override
+  String get aboutPrivacyPolicy => 'Privacy policy';
+
+  @override
+  String get aboutTermsOfService => 'Terms of service';
+
+  @override
+  String get aboutSourceCode => 'Source code';
+
+  @override
+  String get aboutSupport => 'Support / donate';
+
+  @override
+  String get aboutLicenses => 'Open source licenses';
+
+  @override
+  String get aboutTagline => 'Made with love for LGBTQ+ safety.';
+
+  @override
+  String get feedbackHeading => 'We\'d love to hear from you';
+
+  @override
+  String get feedbackCategoryLabel => 'Category';
+
+  @override
+  String get feedbackCategoryBug => 'Bug report';
+
+  @override
+  String get feedbackCategoryFeature => 'Feature request';
+
+  @override
+  String get feedbackCategoryOther => 'Other';
+
+  @override
+  String get feedbackEmailLabel => 'Email (optional)';
+
+  @override
+  String get feedbackMessageLabel => 'Message';
+
+  @override
+  String get feedbackIncludeLog => 'Include last session log';
+
+  @override
+  String get feedbackSent => 'Thanks for your feedback!';
+
+  @override
+  String get feedbackMessageRequired =>
+      'Message must be at least 10 characters.';
+
+  @override
+  String get backupIncludeLogs => 'Include session logs';
+
+  @override
+  String get backupIncludeMedia => 'Include media';
+
+  @override
+  String get backupExportButton => 'Export';
+
+  @override
+  String get backupImportButton => 'Import';
+
+  @override
+  String get backupOverwriteWarning => 'Importing overwrites all current data.';
+
+  @override
+  String get pastEventsTitle => 'Past sessions';
+
+  @override
+  String get pastEventsTabReal => 'Real';
+
+  @override
+  String get pastEventsTabSimulated => 'Simulated';
+
+  @override
+  String get pastEventsEmpty => 'No sessions yet';
+
+  @override
+  String get pastEventsSearch => 'Search by mode name';
+
+  @override
+  String get pastEventsDeleteConfirm => 'Delete session log?';
+
+  @override
+  String get pastEventsDeleteAll => 'Delete all';
+
+  @override
+  String get pastEventsTrash => 'Trash';
+
+  @override
+  String get pastEventsUndo => 'Undo';
+
+  @override
+  String get pastEventsSoftDeleted => 'Moved to trash';
+
+  @override
+  String get pastEventsDetailTitle => 'Session log';
+
+  @override
+  String get pastEventsDetailShare => 'Share';
+
+  @override
+  String get pastEventsDetailDelete => 'Delete';
+
+  @override
+  String get contactImportFromDevice => 'Import from contacts';
+
+  @override
+  String get contactImportPermissionDenied =>
+      'Permission denied — open Settings to enable.';
+
+  @override
+  String get contactUnsavedDiscardTitle => 'Discard unsaved changes?';
+
+  @override
+  String get contactUnsavedDiscardKeep => 'Keep editing';
+
+  @override
+  String get contactUnsavedDiscardDiscard => 'Discard';
+
+  @override
+  String get modesNewModeChoiceTitle => 'New mode';
+
+  @override
+  String get modesDuplicate => 'Duplicate';
+
+  @override
+  String get modesDeleteConfirmTitle => 'Delete mode?';
+
+  @override
+  String modesDeleteConfirmBody(Object name) {
+    return '$name will be permanently removed.';
+  }
+
+  @override
+  String get modesDistressDefaultBadge => 'Default';
+
+  @override
+  String get modesDistressSetDefault => 'Set as default';
+
+  @override
+  String get modesDistressCantDeleteLast =>
+      'At least one distress mode is required.';
+
+  @override
+  String get modesDistressTitle => 'Distress modes';
+
+  @override
+  String get modesAllowDisarmAsDistress =>
+      'Allow disarm while active as distress';
+
+  @override
+  String get quickExitTitle => 'Quick exit';
+
+  @override
+  String get quickExitBody => 'Session data will be preserved and encrypted.';
+
+  @override
+  String get quickExitConfirm => 'Exit';
+
+  @override
+  String get validationNameRequired => 'Name is required.';
+
+  @override
+  String get validationNameTooShort => 'Name must be at least 2 characters.';
+
+  @override
+  String get validationPhoneRequired => 'Phone number is required.';
+
+  @override
+  String get validationChannelsRequired => 'Select at least one channel.';
 }

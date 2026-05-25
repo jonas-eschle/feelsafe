@@ -27,10 +27,14 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/router/app_router.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -158,60 +162,60 @@ Future<void> runBootstrap(
 
 /// Root application widget.
 ///
-/// Phase 5 placeholder — Phase 6 replaces the [_AppShell] with the real
-/// Riverpod `ProviderScope` + GoRouter shell.
-class GuardianAngelaApp extends StatelessWidget {
+/// Wires `MaterialApp.router` to the GoRouter from
+/// `lib/router/app_router.dart`. Theme follows the user's
+/// `AppSettings.themeMode` preference; locale follows
+/// `AppSettings.languageCode`.
+class GuardianAngelaApp extends ConsumerWidget {
   /// Creates the root application widget.
   const GuardianAngelaApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(goRouterProvider);
+    final settingsAsync = ref.watch(_appSettingsLiveProvider);
+    final scheme = ColorScheme.fromSeed(seedColor: const Color(0xFF131118));
+    final darkScheme = ColorScheme.fromSeed(
+      seedColor: const Color(0xFF131118),
+      brightness: Brightness.dark,
+    );
+    return MaterialApp.router(
       title: 'Guardian Angela',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
-        useMaterial3: true,
+      routerConfig: router,
+      themeMode: settingsAsync.maybeWhen(
+        data: (s) => switch (s.themeMode) {
+          AppThemeMode.light => ThemeMode.light,
+          AppThemeMode.dark => ThemeMode.dark,
+          AppThemeMode.system => ThemeMode.system,
+        },
+        orElse: () => ThemeMode.system,
       ),
-      home: const _AppShell(),
+      theme: ThemeData(colorScheme: scheme, useMaterial3: true),
+      darkTheme: ThemeData(colorScheme: darkScheme, useMaterial3: true),
+      locale: settingsAsync.maybeWhen(
+        data: (s) => Locale(s.languageCode),
+        orElse: () => null,
+      ),
+      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
     );
   }
 }
 
-/// Placeholder shell shown until Phase 6 installs real screens.
-class _AppShell extends StatelessWidget {
-  const _AppShell();
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Scaffold(
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text('Guardian Angela', style: textTheme.headlineMedium),
-              const SizedBox(height: 8),
-              Text(
-                "Your angel's got your back.",
-                style: textTheme.bodyLarge,
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 32),
-              Text(
-                'Pre-alpha v3 — Phase 5 bootstrap.',
-                style: textTheme.bodySmall,
-                textAlign: TextAlign.center,
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
+/// Live [AppSettings] provider that re-loads from disk on demand.
+///
+/// `MaterialApp.router` reads the current theme + locale from here so
+/// that settings changes rebuild the root widget. Settings screens
+/// invalidate this provider after `appSettingsRepositoryProvider.save`.
+final _appSettingsLiveProvider = FutureProvider<AppSettings>((ref) async {
+  return ref.read(appSettingsRepositoryProvider).load();
+});
 
 // ---------------------------------------------------------------------------
 // JSON Repository Corruption Recovery App (spec 10:206 — Extra 21)
