@@ -174,6 +174,21 @@ final class SessionEngine {
   /// Whether the background clamp is currently engaged (G-013).
   bool get isBackgroundClamped => _backgroundClamped;
 
+  /// The current sealed [EngineState] — read-only snapshot for consumers.
+  ///
+  /// Returned instance is the very [EngineState] the engine's internal
+  /// state machine is in right now. UI controllers (e.g.
+  /// `SessionController._onTick`) use this to render precise per-step
+  /// remaining time without subscribing to the [events] stream or
+  /// reconstructing an [EngineRunning] from individual getters.
+  ///
+  /// The engine's invariants are unaffected: this is a getter only, no
+  /// setter, no mutation. Callers must not depend on the [EngineState]
+  /// reference identity changing — the engine reuses [EngineRunning]
+  /// instances via [EngineRunning.copyWith] but may also leave the same
+  /// instance in place when no field changes.
+  EngineState get snapshot => _state;
+
   /// Broadcast stream of [ChainEventData] events.
   ///
   /// Synchronous (no microtask latency). Closed after [endSession].

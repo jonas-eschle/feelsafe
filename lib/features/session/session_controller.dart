@@ -586,18 +586,19 @@ class SessionController extends AsyncNotifier<SessionState> {
   EngineRunning? _readEngineRunningState() {
     final engine = _engine;
     if (engine == null) return null;
-    // The engine doesn't expose state directly, so we derive what we need
-    // from its public getters.
-    if (engine.isEnded || engine.isPaused) return null;
-    final index = engine.currentStepIndex;
-    if (index < 0) return null;
-    return EngineRunning(
-      currentStepIndex: index,
-      remaining: Duration.zero,
-      missCount: 0,
-      isHolding: engine.isHolding,
-      phase: EnginePhase.duration,
-    );
+    // Read the live EngineState via SessionEngine.snapshot so the UI can
+    // surface the precise per-phase remaining time without subscribing
+    // to engine events.
+    return switch (engine.snapshot) {
+      EngineRunning(:final currentStepIndex) when currentStepIndex >= 0 =>
+        engine.snapshot as EngineRunning,
+      // Paused / idle / ended states do not contribute a remaining-time
+      // tick to the UI (the screen freezes the prior value).
+      EngineIdle() ||
+      EnginePaused() ||
+      EngineEnded() ||
+      EngineRunning() => null,
+    };
   }
 
   void _onEngineEvent(ChainEventData event) {
