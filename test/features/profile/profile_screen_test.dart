@@ -71,7 +71,9 @@ class _FakeProfileController extends ProfileController {
     if (emergencyInstructions != null) {
       lastPatchedInstructions = emergencyInstructions;
     }
-    if (physicalDescription != null) lastPatchedDescription = physicalDescription;
+    if (physicalDescription != null) {
+      lastPatchedDescription = physicalDescription;
+    }
 
     final current = state.value;
     if (current == null) return;
@@ -94,8 +96,7 @@ class _FakeProfileController extends ProfileController {
 // Test data factories
 // ---------------------------------------------------------------------------
 
-ProfileState _emptyState() =>
-    const ProfileState(profile: UserProfile());
+ProfileState _emptyState() => const ProfileState(profile: UserProfile());
 
 ProfileState _populatedState() => const ProfileState(
   profile: UserProfile(
@@ -184,7 +185,10 @@ void main() {
         settle: false,
       );
       // Force an error state after initial build completes.
-      controller.state = const AsyncError<ProfileState>('boom', StackTrace.empty);
+      controller.state = const AsyncError<ProfileState>(
+        'boom',
+        StackTrace.empty,
+      );
       await tester.pumpAndSettle();
       expect(find.textContaining('Error'), findsOneWidget);
     });
@@ -378,10 +382,7 @@ void main() {
         const ProfileScreen(),
         overrides: _override(_FakeProfileController(_populatedState())),
       );
-      expect(
-        find.widgetWithText(TextField, 'Tall, red hair'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(TextField, 'Tall, red hair'), findsOneWidget);
     });
   });
 
@@ -597,10 +598,7 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(
-        find.text(l10n.profileFieldEmergencyInstructions),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.profileFieldEmergencyInstructions), findsOneWidget);
     });
 
     testWidgets('populates instructions field from profile', (
@@ -616,10 +614,7 @@ void main() {
         200,
         scrollable: find.byType(Scrollable).first,
       );
-      expect(
-        find.widgetWithText(TextField, 'Call Bob first'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(TextField, 'Call Bob first'), findsOneWidget);
     });
 
     testWidgets(
@@ -668,10 +663,7 @@ void main() {
       // medications, conditions, instructions.
       // skipOffstage: false counts items inside the ListView that have
       // been laid out but are currently scrolled off the viewport.
-      expect(
-        find.byType(TextField, skipOffstage: false),
-        findsNWidgets(9),
-      );
+      expect(find.byType(TextField, skipOffstage: false), findsNWidgets(9));
     });
   });
 
@@ -691,9 +683,7 @@ void main() {
       // Trigger a state update — the field value must remain what the
       // user typed, not be reset from the new state.
       fake.state = const AsyncData(
-        ProfileState(
-          profile: UserProfile(name: 'Overwritten'),
-        ),
+        ProfileState(profile: UserProfile(name: 'Overwritten')),
       );
       await tester.pump();
       // _initialised guard prevents overwriting user-typed text.
@@ -779,10 +769,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text(
-          l10n.profileFieldEmergencyInstructions,
-          skipOffstage: false,
-        ),
+        find.text(l10n.profileFieldEmergencyInstructions, skipOffstage: false),
         findsOneWidget,
       );
     });
