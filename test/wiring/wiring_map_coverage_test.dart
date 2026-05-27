@@ -168,6 +168,7 @@ void main() {
       // sentry, sessionLogRecorder = 24 total.
       // Stage 5C adds 4 more: database, permissionAudit,
       // sessionStartValidator, backup = 28 total.
+      // Phase 6c adds 1 more: quickExit = 29 total.
       final wiredCount = _parseWiringMap()
           .where(
             (r) => r.status == 'wired-real' || r.status == 'wired-sim-only',

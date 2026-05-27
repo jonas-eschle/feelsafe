@@ -55,6 +55,7 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/protocols/permission_audit_service_protocol.dart';
 import 'package:guardianangela/services/protocols/phone_service_protocol.dart';
+import 'package:guardianangela/services/protocols/quick_exit_service_protocol.dart';
 import 'package:guardianangela/services/protocols/recording_service_protocol.dart';
 import 'package:guardianangela/services/protocols/screen_flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
@@ -62,6 +63,7 @@ import 'package:guardianangela/services/protocols/session_start_validator_protoc
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 import 'package:guardianangela/services/protocols/vibration_service_protocol.dart';
 import 'package:guardianangela/services/protocols/wakelock_service_protocol.dart';
+import 'package:guardianangela/services/quick_exit_service.dart';
 import 'package:guardianangela/services/recording_service.dart';
 import 'package:guardianangela/services/screen_flash_service.dart';
 import 'package:guardianangela/services/sentry_service.dart';
@@ -347,6 +349,22 @@ final backgroundSessionServiceProvider =
         notification: ref.read(notificationServiceProvider),
       );
     });
+
+/// [QuickExitServiceProtocol] — terminates the app on demand via the
+/// `com.guardianangela.app/quick_exit` MethodChannel (Phase 7 native
+/// landing).
+///
+/// On Android the native handler invokes `finishAndRemoveTask()` so the
+/// activity also vanishes from the recents stack; on iOS it invokes
+/// `exit(0)`. Until the native handler ships, the Real implementation
+/// falls back to `SystemNavigator.pop(animated: false)` so the gesture
+/// still has a visible effect during development.
+///
+/// Tests override with [SimulationQuickExitService] from
+/// `lib/services/sim/quick_exit_service_sim.dart`.
+final quickExitServiceProvider = Provider<QuickExitServiceProtocol>((ref) {
+  return RealQuickExitService();
+});
 
 /// [SentryServiceProtocol] backed by `package:sentry_flutter`.
 ///

@@ -39,6 +39,7 @@ import 'package:guardianangela/services/sim/messaging_service_sim.dart';
 import 'package:guardianangela/services/sim/notification_service_sim.dart';
 import 'package:guardianangela/services/sim/permission_audit_service_sim.dart';
 import 'package:guardianangela/services/sim/phone_service_sim.dart';
+import 'package:guardianangela/services/sim/quick_exit_service_sim.dart';
 import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
 import 'package:guardianangela/services/sim/sentry_service_sim.dart';
@@ -606,6 +607,32 @@ void main() {
       final s =
           container.read(sentryServiceProvider) as SimulationSentryService;
       check(s.isInitialized).isFalse();
+    });
+  });
+
+  group('Simulation swap — QuickExitService', () {
+    late ProviderContainer container;
+    late SimulationQuickExitService sim;
+
+    setUp(() {
+      sim = SimulationQuickExitService();
+      container = ProviderContainer(
+        overrides: [quickExitServiceProvider.overrideWithValue(sim)],
+      );
+    });
+
+    tearDown(() => container.dispose());
+
+    test('overridden container returns SimulationQuickExitService', () {
+      final s = container.read(quickExitServiceProvider);
+      check(s).isA<SimulationQuickExitService>();
+    });
+
+    test('simulation quick-exit starts with empty calls', () {
+      final s =
+          container.read(quickExitServiceProvider)
+              as SimulationQuickExitService;
+      check(s.calls).isEmpty();
     });
   });
 

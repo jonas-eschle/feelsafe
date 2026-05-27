@@ -10,6 +10,7 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 /// Active session screen.
 ///
@@ -114,10 +115,15 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       ),
     );
     if (ok == true && context.mounted) {
+      // Persist the session log first (controller writes encrypted data
+      // to disk so it survives the process kill). Only then invoke the
+      // platform-side quick-exit hook — Android
+      // `finishAndRemoveTask` / iOS `exit(0)` via the
+      // `com.guardianangela.app/quick_exit` MethodChannel
+      // (spec 04:1020–1027). The Real service handles the
+      // native-channel-missing fallback internally.
       await ref.read(sessionControllerProvider.notifier).triggerQuickExit();
-      // The controller has already persisted the log; the native channel
-      // (Android `finishAndRemoveTask` / iOS `exit(0)`) performs the
-      // actual app exit.
+      await ref.read(quickExitServiceProvider).quickExit();
     }
   }
 }
