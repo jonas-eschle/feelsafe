@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,7 +10,10 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// Past sessions screen (history).
 ///
 /// Tabs split real vs. simulated sessions. Tap to view detail, swipe to
-/// soft-delete (with UNDO snackbar). See spec 04 §Past Events Screen.
+/// soft-delete (with UNDO snackbar). The app-bar Trash action pushes
+/// the [`/past-events/trash`](RouteNames.pastEventsTrash) screen where
+/// the user can restore or permanently delete trashed logs. See
+/// spec 04 §Past Events Screen.
 class PastEventsScreen extends ConsumerWidget {
   /// Creates a [PastEventsScreen].
   const PastEventsScreen({super.key});
@@ -26,6 +27,13 @@ class PastEventsScreen extends ConsumerWidget {
       child: Scaffold(
         appBar: AppBar(
           title: Text(l10n.pastEventsTitle),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.delete_outline),
+              tooltip: l10n.pastEventsTrash,
+              onPressed: () => context.pushNamed(RouteNames.pastEventsTrash),
+            ),
+          ],
           bottom: TabBar(
             tabs: <Widget>[
               Tab(text: l10n.pastEventsTabReal),
@@ -81,8 +89,7 @@ class _LogList extends ConsumerWidget {
                 .read(pastEventsControllerProvider.notifier)
                 .softDelete(log.id);
             if (!ctx.mounted) return;
-            final messenger = ScaffoldMessenger.of(ctx);
-            final controller = messenger.showSnackBar(
+            ScaffoldMessenger.of(ctx).showSnackBar(
               SnackBar(
                 content: Text(l10n.pastEventsSoftDeleted),
                 duration: const Duration(seconds: 5),
@@ -90,20 +97,9 @@ class _LogList extends ConsumerWidget {
                   label: l10n.pastEventsUndo,
                   onPressed: () => ref
                       .read(pastEventsControllerProvider.notifier)
-                      .undoDelete(log.id),
+                      .undoSoftDelete(log.id),
                 ),
               ),
-            );
-            // When the snackbar finishes (no UNDO), drop the tombstone so
-            // the deletion is final.
-            unawaited(
-              controller.closed.then((SnackBarClosedReason reason) {
-                if (reason != SnackBarClosedReason.action) {
-                  ref
-                      .read(pastEventsControllerProvider.notifier)
-                      .finalizeDelete(log.id);
-                }
-              }),
             );
           },
           child: ListTile(

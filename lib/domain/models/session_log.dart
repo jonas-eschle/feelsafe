@@ -22,6 +22,7 @@ final class SessionLog {
     required this.isSimulation,
     this.hadMedicalInfo = false,
     required this.events,
+    this.deletedAt,
   });
 
   /// UUID — primary key.
@@ -54,7 +55,18 @@ final class SessionLog {
   /// Ordered timeline of events that occurred during the session.
   final List<SessionLogEvent> events;
 
+  /// UTC timestamp when the log was soft-deleted (moved to the trash).
+  ///
+  /// Null while the log is "live" (visible in the past-events list).
+  /// Set to a non-null timestamp by the trash flow (spec 04:2455–2459 /
+  /// spec 03:970); the row stays in the table until
+  /// `purgeExpiredLogs` hard-deletes it after the
+  /// `AppSettings.trashRetentionDays` (default 7) window elapses.
+  final DateTime? deletedAt;
+
   /// Returns a copy with the specified fields replaced.
+  ///
+  /// To clear [deletedAt] (restore from trash) pass `clearDeletedAt: true`.
   SessionLog copyWith({
     String? id,
     String? modeId,
@@ -65,6 +77,8 @@ final class SessionLog {
     bool? isSimulation,
     bool? hadMedicalInfo,
     List<SessionLogEvent>? events,
+    DateTime? deletedAt,
+    bool clearDeletedAt = false,
   }) => SessionLog(
     id: id ?? this.id,
     modeId: modeId ?? this.modeId,
@@ -75,6 +89,7 @@ final class SessionLog {
     isSimulation: isSimulation ?? this.isSimulation,
     hadMedicalInfo: hadMedicalInfo ?? this.hadMedicalInfo,
     events: events ?? this.events,
+    deletedAt: clearDeletedAt ? null : (deletedAt ?? this.deletedAt),
   );
 
   /// Serialises this log to a JSON map.
@@ -88,6 +103,7 @@ final class SessionLog {
     'isSimulation': isSimulation,
     'hadMedicalInfo': hadMedicalInfo,
     'events': events.map((e) => e.toJson()).toList(),
+    if (deletedAt != null) 'deletedAt': deletedAt!.toUtc().toIso8601String(),
   };
 
   /// Deserialises a [SessionLog] from [json].
@@ -107,6 +123,9 @@ final class SessionLog {
     events: (json['events'] as List<dynamic>)
         .map((e) => SessionLogEvent.fromJson(e as Map<String, dynamic>))
         .toList(),
+    deletedAt: json['deletedAt'] != null
+        ? DateTime.parse(json['deletedAt'] as String).toUtc()
+        : null,
   );
 
   @override
@@ -132,7 +151,8 @@ final class SessionLog {
         endedAt == other.endedAt &&
         endReason == other.endReason &&
         isSimulation == other.isSimulation &&
-        hadMedicalInfo == other.hadMedicalInfo;
+        hadMedicalInfo == other.hadMedicalInfo &&
+        deletedAt == other.deletedAt;
   }
 
   @override
@@ -145,6 +165,7 @@ final class SessionLog {
     endReason,
     isSimulation,
     hadMedicalInfo,
+    deletedAt,
     Object.hashAll(events),
   );
 }

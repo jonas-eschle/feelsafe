@@ -102,7 +102,11 @@ class RealBackupService implements BackupServiceProtocol {
     };
 
     if (includeSessionLogs) {
-      final logs = await _db.sessionLogsDao.getAllOrderedByStartDesc();
+      // Include trashed rows so backup → restore round-trips with full
+      // fidelity (deletedAt is preserved across the boundary).
+      final logs = await _db.sessionLogsDao.getAllOrderedByStartDesc(
+        includeTrashed: true,
+      );
       payload['sessionLogs'] = logs.map((l) => l.toJson()).toList();
     }
 

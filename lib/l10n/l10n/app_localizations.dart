@@ -4913,6 +4913,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long-press duration (s)'**
   String get eventDefaultsHardwareLongDuration;
+
+  /// Title of the past-events trash screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash'**
+  String get pastEventsTrashTitle;
+
+  /// Empty-state copy for the past-events trash screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash is empty'**
+  String get pastEventsTrashEmpty;
+
+  /// Retention note shown at the top of the trash screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Logs in the trash are permanently deleted after {days} days.'**
+  String pastEventsTrashRetentionNote(int days);
+
+  /// Per-row remaining-restore countdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} day(s) until permanent deletion'**
+  String pastEventsTrashRemainingDays(int days);
+
+  /// Per-row Delete Permanently action / confirm-dialog title on the trash screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete permanently'**
+  String get pastEventsTrashDeletePermanently;
+
+  /// Confirm-dialog body for permanent deletion from the trash screen.
+  ///
+  /// In en, this message translates to:
+  /// **'This action cannot be undone.'**
+  String get pastEventsTrashDeletePermanentlyBody;
 }
 
 class _AppLocalizationsDelegate

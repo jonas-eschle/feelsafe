@@ -21,9 +21,11 @@ void main() {
   });
 
   group('schema regression', () {
-    test('schema version is 1 (Phase 4)', () {
-      // Phase 4 ships v1; bumping triggers nuke-and-reseed.
-      check(db.schemaVersion).equals(1);
+    test('schema version is 2 (Phase 6c)', () {
+      // Phase 4 shipped v1; Phase 6c bumps to v2 (added
+      // session_logs.deleted_at_ms for the trash flow). Bumping
+      // triggers nuke-and-reseed (pre-alpha policy).
+      check(db.schemaVersion).equals(2);
     });
 
     test('contacts table columns match spec 03 §EmergencyContact', () {
@@ -181,6 +183,9 @@ void main() {
           nullable: false,
           isPk: false,
         ),
+        // Phase 6c: soft-delete column for the trash flow
+        // (spec 04:2455–2459 / spec 03:970).
+        'deleted_at_ms': (type: DriftSqlType.int, nullable: true, isPk: false),
       });
     });
 

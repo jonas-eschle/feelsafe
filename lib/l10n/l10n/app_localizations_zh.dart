@@ -2539,6 +2539,29 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
+
+  @override
+  String get pastEventsTrashTitle => 'Trash';
+
+  @override
+  String get pastEventsTrashEmpty => 'Trash is empty';
+
+  @override
+  String pastEventsTrashRetentionNote(int days) {
+    return 'Logs in the trash are permanently deleted after $days days.';
+  }
+
+  @override
+  String pastEventsTrashRemainingDays(int days) {
+    return '$days day(s) until permanent deletion';
+  }
+
+  @override
+  String get pastEventsTrashDeletePermanently => 'Delete permanently';
+
+  @override
+  String get pastEventsTrashDeletePermanentlyBody =>
+      'This action cannot be undone.';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).

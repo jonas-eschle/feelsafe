@@ -74,9 +74,14 @@ class GuardianAngelaDatabase extends _$GuardianAngelaDatabase {
 
   /// Drift schema version. Bumping triggers a nuke-and-reseed via
   /// [MigrationStrategy.onUpgrade] (pre-alpha policy — no real
-  /// migrations). Phase 4 ships v1; never bump within this phase.
+  /// migrations).
+  ///
+  /// History:
+  /// - v1 (Phase 4): initial schema.
+  /// - v2 (Phase 6c): added [SessionLogs.deletedAtMs] for the spec
+  ///   04:2455–2459 trash retention flow.
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

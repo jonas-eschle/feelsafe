@@ -158,6 +158,129 @@ void main() {
       check(deletedCount).equals(1);
     });
   });
+
+  group('SessionLogRepository trash flow (spec 04:2455-2459 / 03:970)', () {
+    test('softDelete + restore round-trip', () async {
+      // Arrange — one live, non-critical log.
+      await db.sessionLogsDao.upsert(
+        _nonCriticalLog(
+          id: 'log-1',
+          startedAt: now.subtract(const Duration(days: 1)),
+          endedAt: now.subtract(const Duration(days: 1)),
+        ),
+      );
+      check(await repo.getAll()).length.equals(1);
+      check(await repo.getTrashed()).isEmpty();
+
+      // Act — soft-delete, then assert it moved to the trash.
+      await repo.softDelete('log-1', now: now);
+      check(await repo.getAll()).isEmpty();
+      final trashed = await repo.getTrashed();
+      check(trashed).length.equals(1);
+      check(trashed.single.deletedAt).isNotNull().equals(now);
+
+      // Act — restore.
+      await repo.restore('log-1');
+      check(await repo.getAll()).length.equals(1);
+      check(await repo.getTrashed()).isEmpty();
+    });
+
+    test(
+      'purgeExpiredLogs also hard-deletes trashed rows past trashRetentionDays',
+      () async {
+        // Arrange — two trashed rows: one 10 days old (past 7-day
+        // window), one 2 days old (inside window).
+        await db.sessionLogsDao.upsert(
+          _nonCriticalLog(
+            id: 'old-trash',
+            startedAt: now.subtract(const Duration(days: 1)),
+            endedAt: now.subtract(const Duration(days: 1)),
+          ),
+        );
+        await db.sessionLogsDao.upsert(
+          _nonCriticalLog(
+            id: 'recent-trash',
+            startedAt: now.subtract(const Duration(days: 1)),
+            endedAt: now.subtract(const Duration(days: 1)),
+          ),
+        );
+        await repo.softDelete(
+          'old-trash',
+          now: now.subtract(const Duration(days: 10)),
+        );
+        await repo.softDelete(
+          'recent-trash',
+          now: now.subtract(const Duration(days: 2)),
+        );
+
+        // Act — wide age-based retention so the live cutoff doesn't
+        // touch anything; trash cutoff = 7 days (default).
+        final deleted = await repo.purgeExpiredLogs(
+          retentionDays: 365,
+          now: now,
+        );
+
+        // Assert — only 'old-trash' was hard-deleted; 'recent-trash'
+        // is still in the trash.
+        check(deleted).equals(1);
+        final remaining = (await db.sessionLogsDao.getAll(
+          includeTrashed: true,
+        )).map((l) => l.id).toSet();
+        check(remaining).deepEquals({'recent-trash'});
+      },
+    );
+
+    test(
+      'purgeExpiredLogs hard-deletes trash regardless of criticality',
+      () async {
+        // Arrange — a critical log moved to the trash 30 days ago.
+        await db.sessionLogsDao.upsert(
+          _criticalLog(
+            id: 'critical-old-trash',
+            startedAt: now.subtract(const Duration(days: 5)),
+            endedAt: now.subtract(const Duration(days: 5)),
+          ),
+        );
+        await repo.softDelete(
+          'critical-old-trash',
+          now: now.subtract(const Duration(days: 30)),
+        );
+
+        // Act — trashRetentionDays default is 7 days.
+        final deleted = await repo.purgeExpiredLogs(
+          retentionDays: 365,
+          now: now,
+        );
+
+        // Assert — critical-ness does NOT save trashed rows once the
+        // retention window has elapsed.
+        check(deleted).equals(1);
+        check(await db.sessionLogsDao.getAll(includeTrashed: true)).isEmpty();
+      },
+    );
+
+    test('getAllOrderedByStartDesc excludes trashed rows', () async {
+      await db.sessionLogsDao.upsert(
+        _nonCriticalLog(
+          id: 'live',
+          startedAt: now.subtract(const Duration(hours: 1)),
+          endedAt: now.subtract(const Duration(hours: 1)),
+        ),
+      );
+      await db.sessionLogsDao.upsert(
+        _nonCriticalLog(
+          id: 'trashed',
+          startedAt: now.subtract(const Duration(hours: 2)),
+          endedAt: now.subtract(const Duration(hours: 2)),
+        ),
+      );
+      await repo.softDelete('trashed', now: now);
+      final live = await repo.getAllOrderedByStartDesc();
+      check(live.map((l) => l.id).toList()).deepEquals(['live']);
+      final all = await repo.getAllOrderedByStartDesc(includeTrashed: true);
+      check(all.map((l) => l.id).toSet()).deepEquals({'live', 'trashed'});
+    });
+  });
 }
 
 /// A non-critical log: one cosmetic `started` event, no destructive step.

@@ -22,6 +22,7 @@ import 'package:guardianangela/features/notifications_settings/notifications_set
 import 'package:guardianangela/features/onboarding/onboarding_screen.dart';
 import 'package:guardianangela/features/past_events/past_events_screen.dart';
 import 'package:guardianangela/features/past_events_detail/past_events_detail_screen.dart';
+import 'package:guardianangela/features/past_events_trash/past_events_trash_screen.dart';
 import 'package:guardianangela/features/pin_setup/pin_setup_screen.dart';
 import 'package:guardianangela/features/profile/profile_screen.dart';
 import 'package:guardianangela/features/reminder_templates/reminder_templates_screen.dart';
@@ -240,6 +241,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/past-events',
         name: RouteNames.pastEvents,
         builder: (_, _) => const PastEventsScreen(),
+      ),
+      GoRoute(
+        path: '/past-events/trash',
+        name: RouteNames.pastEventsTrash,
+        builder: (_, _) => const PastEventsTrashScreen(),
       ),
       GoRoute(
         path: '/past-events/detail',

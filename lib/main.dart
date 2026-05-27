@@ -106,13 +106,16 @@ Future<void> runBootstrap(
     dsn: const String.fromEnvironment('SENTRY_DSN'),
   );
 
-  // Step 4 — Startup log purge (B8: remove non-critical logs older than
-  // AppSettings.sessionLogRetentionDays).
+  // Step 4 — Startup log purge (B8 + trash retention):
+  //   * non-critical logs older than AppSettings.sessionLogRetentionDays
+  //   * trashed logs older than AppSettings.trashRetentionDays
+  //     (spec 03:970, spec 04:2455–2459).
   try {
     final repo = await container.read(sessionLogRepositoryProvider.future);
     final deleted = await repo.purgeExpiredLogs(
       retentionDays: settings.sessionLogRetentionDays,
       now: DateTime.now().toUtc(),
+      trashRetentionDays: settings.trashRetentionDays,
     );
     if (deleted > 0) {
       log('Purged $deleted expired session logs', name: 'main');

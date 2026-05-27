@@ -103,6 +103,9 @@ final class RouteNames {
   /// Past sessions (history) list.
   static const String pastEvents = 'past_events';
 
+  /// Past sessions trash (soft-deleted logs).
+  static const String pastEventsTrash = 'past_events_trash';
+
   /// Past session detail view (`?id=`).
   static const String pastEventDetail = 'past_event_detail';
 

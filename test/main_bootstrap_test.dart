@@ -112,6 +112,7 @@ class _OrderingSessionLogRepo extends SessionLogRepository {
   Future<int> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
+    int trashRetentionDays = 7,
   }) async {
     calls.add('purgeLogs');
     return 0;

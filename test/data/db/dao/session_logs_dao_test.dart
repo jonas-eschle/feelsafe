@@ -210,6 +210,145 @@ void main() {
       check(first.map((l) => l.id).toList()).deepEquals(['b', 'a']);
     });
   });
+
+  // ---------------------------------------------------------------------
+  // Soft-delete / restore / trash purge (spec 04:2455–2459 / spec 03:970)
+  // ---------------------------------------------------------------------
+  group('SessionLogsDao trash flow', () {
+    test(
+      'softDelete marks deletedAtMs and removes the row from getAll()',
+      () async {
+        // Arrange
+        await db.sessionLogsDao.upsert(_log('a', t0));
+        // Act
+        final touched = await db.sessionLogsDao.softDelete(
+          'a',
+          t0.add(const Duration(days: 1)).millisecondsSinceEpoch,
+        );
+        // Assert — row remains in the table but is filtered out by default.
+        check(touched).equals(1);
+        check(await db.sessionLogsDao.getAll()).isEmpty();
+        check(
+          (await db.sessionLogsDao.getAll(includeTrashed: true)).single.id,
+        ).equals('a');
+      },
+    );
+
+    test('softDelete returns 0 when id is unknown', () async {
+      final touched = await db.sessionLogsDao.softDelete(
+        'missing',
+        t0.millisecondsSinceEpoch,
+      );
+      check(touched).equals(0);
+    });
+
+    test('getTrashed returns trashed rows newest-deleted first', () async {
+      // Arrange — three live logs, trash two at distinct times.
+      await db.sessionLogsDao.upsert(_log('a', t0));
+      await db.sessionLogsDao.upsert(
+        _log('b', t0.add(const Duration(hours: 1))),
+      );
+      await db.sessionLogsDao.upsert(
+        _log('c', t0.add(const Duration(hours: 2))),
+      );
+      await db.sessionLogsDao.softDelete(
+        'a',
+        t0.add(const Duration(days: 1)).millisecondsSinceEpoch,
+      );
+      await db.sessionLogsDao.softDelete(
+        'b',
+        t0.add(const Duration(days: 2)).millisecondsSinceEpoch,
+      );
+      // Act
+      final trashed = await db.sessionLogsDao.getTrashed();
+      // Assert — newest-deleted ('b') first.
+      check(trashed.map((l) => l.id).toList()).deepEquals(['b', 'a']);
+      // Live list now only contains 'c'.
+      final live = await db.sessionLogsDao.getAll();
+      check(live.map((l) => l.id).toList()).deepEquals(['c']);
+    });
+
+    test('getAllOrderedByStartDesc excludes trashed rows by default', () async {
+      // Arrange
+      await db.sessionLogsDao.upsert(_log('a', t0));
+      await db.sessionLogsDao.upsert(
+        _log('b', t0.add(const Duration(hours: 1))),
+      );
+      await db.sessionLogsDao.softDelete(
+        'a',
+        t0.add(const Duration(days: 1)).millisecondsSinceEpoch,
+      );
+      // Act
+      final live = await db.sessionLogsDao.getAllOrderedByStartDesc();
+      final all = await db.sessionLogsDao.getAllOrderedByStartDesc(
+        includeTrashed: true,
+      );
+      // Assert
+      check(live.map((l) => l.id).toList()).deepEquals(['b']);
+      check(all.map((l) => l.id).toList()).deepEquals(['b', 'a']);
+    });
+
+    test('restore clears deletedAtMs and re-surfaces the row', () async {
+      // Arrange
+      await db.sessionLogsDao.upsert(_log('a', t0));
+      await db.sessionLogsDao.softDelete(
+        'a',
+        t0.add(const Duration(days: 1)).millisecondsSinceEpoch,
+      );
+      check(await db.sessionLogsDao.getAll()).isEmpty();
+      // Act
+      final touched = await db.sessionLogsDao.restore('a');
+      // Assert
+      check(touched).equals(1);
+      check((await db.sessionLogsDao.getAll()).single.id).equals('a');
+      check((await db.sessionLogsDao.getById('a'))!.deletedAt).isNull();
+    });
+
+    test(
+      'hardDeleteTrashedOlderThan deletes only trashed rows past cutoff',
+      () async {
+        // Arrange — three trashed rows at distinct deletion times.
+        await db.sessionLogsDao.upsert(_log('a', t0));
+        await db.sessionLogsDao.upsert(_log('b', t0));
+        await db.sessionLogsDao.upsert(_log('c', t0));
+        await db.sessionLogsDao.upsert(_log('live', t0));
+        await db.sessionLogsDao.softDelete(
+          'a',
+          t0.subtract(const Duration(days: 30)).millisecondsSinceEpoch,
+        );
+        await db.sessionLogsDao.softDelete(
+          'b',
+          t0.subtract(const Duration(days: 10)).millisecondsSinceEpoch,
+        );
+        await db.sessionLogsDao.softDelete(
+          'c',
+          t0.subtract(const Duration(days: 1)).millisecondsSinceEpoch,
+        );
+        // Act — purge everything trashed before t0 - 7 days.
+        final purged = await db.sessionLogsDao.hardDeleteTrashedOlderThan(
+          t0.subtract(const Duration(days: 7)),
+        );
+        // Assert — 'a' and 'b' purged, 'c' survives, 'live' untouched.
+        check(purged).equals(2);
+        final remainingIds = (await db.sessionLogsDao.getAll(
+          includeTrashed: true,
+        )).map((l) => l.id).toSet();
+        check(remainingIds).deepEquals({'c', 'live'});
+      },
+    );
+
+    test('hardDeleteTrashedOlderThan never touches live rows', () async {
+      // Arrange — live (non-trashed) row way past the cutoff.
+      await db.sessionLogsDao.upsert(
+        _log('old-live', t0.subtract(const Duration(days: 100))),
+      );
+      // Act
+      final purged = await db.sessionLogsDao.hardDeleteTrashedOlderThan(t0);
+      // Assert
+      check(purged).equals(0);
+      check((await db.sessionLogsDao.getAll()).single.id).equals('old-live');
+    });
+  });
 }
 
 SessionLog _log(String id, DateTime startedAt, {bool critical = false}) =>

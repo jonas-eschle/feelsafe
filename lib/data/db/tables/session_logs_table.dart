@@ -36,6 +36,16 @@ class SessionLogs extends Table {
   /// JSON-encoded list of `SessionLogEvent.toJson()` maps.
   TextColumn get eventsJson => text()();
 
+  /// Soft-delete timestamp in UTC milliseconds since epoch; null when the
+  /// row is "live" (visible in the past-events list).
+  ///
+  /// Used by the spec 04:2455–2459 / spec 03:970 trash retention flow:
+  /// the user swipes a log into the trash; the row stays in the table
+  /// with [deletedAtMs] set so it remains restorable for
+  /// `AppSettings.trashRetentionDays` (default 7) before the next
+  /// `purgeExpiredLogs` hard-deletes it.
+  IntColumn get deletedAtMs => integer().nullable()();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

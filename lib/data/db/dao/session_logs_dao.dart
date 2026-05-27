@@ -43,22 +43,53 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
   /// message was actually sent or queued, not blocked or failed).
   static const Set<String> _firedDeliveryStatuses = {'sent', 'queued'};
 
-  /// Returns all logs in insertion order.
-  Future<List<SessionLog>> getAll() async {
-    final rows = await select(sessionLogs).get();
+  /// Returns all live logs (rows with `deletedAtMs IS NULL`) in
+  /// insertion order.
+  ///
+  /// To inspect trashed rows use [getTrashed]; to ignore the
+  /// soft-delete filter (e.g. backup / export) pass `includeTrashed:
+  /// true`.
+  Future<List<SessionLog>> getAll({bool includeTrashed = false}) async {
+    final query = select(sessionLogs);
+    if (!includeTrashed) {
+      query.where((l) => l.deletedAtMs.isNull());
+    }
+    final rows = await query.get();
     return rows.map(_rowToModel).toList();
   }
 
-  /// Returns all logs ordered by [SessionLog.startedAt] descending (most
+  /// Returns live logs ordered by [SessionLog.startedAt] descending (most
   /// recent first).
-  Future<List<SessionLog>> getAllOrderedByStartDesc() async {
-    final rows = await (select(
-      sessionLogs,
-    )..orderBy([(l) => OrderingTerm.desc(l.startedAtMs)])).get();
+  ///
+  /// Excludes trashed rows (`deletedAtMs IS NOT NULL`) by default; pass
+  /// `includeTrashed: true` to bypass the filter.
+  Future<List<SessionLog>> getAllOrderedByStartDesc({
+    bool includeTrashed = false,
+  }) async {
+    final query = select(sessionLogs);
+    if (!includeTrashed) {
+      query.where((l) => l.deletedAtMs.isNull());
+    }
+    query.orderBy([(l) => OrderingTerm.desc(l.startedAtMs)]);
+    final rows = await query.get();
+    return rows.map(_rowToModel).toList();
+  }
+
+  /// Returns trashed logs (`deletedAtMs IS NOT NULL`), most-recently
+  /// trashed first.
+  Future<List<SessionLog>> getTrashed() async {
+    final rows =
+        await (select(sessionLogs)
+              ..where((l) => l.deletedAtMs.isNotNull())
+              ..orderBy([(l) => OrderingTerm.desc(l.deletedAtMs)]))
+            .get();
     return rows.map(_rowToModel).toList();
   }
 
   /// Returns the log with [id], or null if not found.
+  ///
+  /// Returns trashed rows as well — callers wanting only live rows must
+  /// filter on the model's [SessionLog.deletedAt] field.
   Future<SessionLog?> getById(String id) async {
     final row = await (select(
       sessionLogs,
@@ -76,9 +107,57 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
     await (delete(sessionLogs)..where((l) => l.id.equals(id))).go();
   }
 
-  /// Streams all logs (re-emitting on every change), most recent first.
+  /// Soft-deletes the log with [id] by marking [SessionLogs.deletedAtMs]
+  /// with [nowMs].
+  ///
+  /// The row stays in the table so the user can restore it from the
+  /// Trash screen. After `AppSettings.trashRetentionDays` days the
+  /// startup [SessionLogRepository.purgeExpiredLogs] hard-deletes it
+  /// regardless of criticality (spec 03:970, spec 04:2455–2459).
+  ///
+  /// Returns the number of rows updated (0 if no log with [id] exists).
+  Future<int> softDelete(String id, int nowMs) {
+    return (update(sessionLogs)..where((l) => l.id.equals(id))).write(
+      SessionLogsCompanion(deletedAtMs: Value(nowMs)),
+    );
+  }
+
+  /// Restores a previously soft-deleted log by clearing
+  /// [SessionLogs.deletedAtMs].
+  ///
+  /// Returns the number of rows updated (0 if no log with [id] exists).
+  Future<int> restore(String id) {
+    return (update(sessionLogs)..where((l) => l.id.equals(id))).write(
+      const SessionLogsCompanion(deletedAtMs: Value(null)),
+    );
+  }
+
+  /// Hard-deletes trashed rows whose [SessionLogs.deletedAtMs] is older
+  /// than [cutoff].
+  ///
+  /// Used by [SessionLogRepository.purgeExpiredLogs] to enforce the
+  /// 7-day trash retention window from spec 04:2458. Critical-log
+  /// preservation does NOT apply here — once the user has trashed a
+  /// log, the retention timer governs.
+  ///
+  /// Returns the number of rows deleted.
+  Future<int> hardDeleteTrashedOlderThan(DateTime cutoff) async {
+    final cutoffMs = cutoff.toUtc().millisecondsSinceEpoch;
+    return (delete(sessionLogs)..where(
+          (l) =>
+              l.deletedAtMs.isNotNull() &
+              l.deletedAtMs.isSmallerThanValue(cutoffMs),
+        ))
+        .go();
+  }
+
+  /// Streams live logs (re-emitting on every change), most recent first.
+  ///
+  /// Excludes trashed rows from the emitted snapshot.
   Stream<List<SessionLog>> watchAll() =>
-      (select(sessionLogs)..orderBy([(l) => OrderingTerm.desc(l.startedAtMs)]))
+      (select(sessionLogs)
+            ..where((l) => l.deletedAtMs.isNull())
+            ..orderBy([(l) => OrderingTerm.desc(l.startedAtMs)]))
           .watch()
           .map((rows) => rows.map(_rowToModel).toList());
 
@@ -191,6 +270,9 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
       events: eventsRaw
           .map((e) => SessionLogEvent.fromJson(e as Map<String, dynamic>))
           .toList(),
+      deletedAt: row.deletedAtMs == null
+          ? null
+          : DateTime.fromMillisecondsSinceEpoch(row.deletedAtMs!, isUtc: true),
     );
   }
 
@@ -207,5 +289,6 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
         eventsJson: Value(
           jsonEncode(log.events.map((e) => e.toJson()).toList()),
         ),
+        deletedAtMs: Value(log.deletedAt?.toUtc().millisecondsSinceEpoch),
       );
 }

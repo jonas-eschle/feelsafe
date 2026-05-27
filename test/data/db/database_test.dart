@@ -9,14 +9,17 @@ import 'package:guardianangela/data/seed_data.dart';
 
 void main() {
   group('GuardianAngelaDatabase', () {
-    test('schemaVersion is 1 (Phase 4 ships v1)', () {
-      final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
-      try {
-        check(db.schemaVersion).equals(1);
-      } finally {
-        unawaited(db.close());
-      }
-    });
+    test(
+      'schemaVersion is 2 (Phase 6c — added session_logs.deleted_at_ms)',
+      () {
+        final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+        try {
+          check(db.schemaVersion).equals(2);
+        } finally {
+          unawaited(db.close());
+        }
+      },
+    );
 
     test('onCreate invokes the seedCallback exactly once', () async {
       // Arrange — wire a counter into the seed callback. The memory
