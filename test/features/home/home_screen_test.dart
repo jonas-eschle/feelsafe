@@ -1,7 +1,7 @@
 /// Reference widget test for the Phase 6 cohort.
 ///
-/// Demonstrates the standard pattern every `test/features/<feature>/
-/// <feature>_screen_test.dart` follows:
+/// Demonstrates the standard pattern every screen test follows
+/// (`test/features/&lt;feature&gt;/&lt;feature&gt;_screen_test.dart`):
 /// 1. Build a `_FakeHomeController` subclassing the real controller and
 ///    overriding `build()` to return a canned `HomeState`.
 /// 2. In each `testWidgets` body, call `pumpScreen(tester, const
@@ -17,21 +17,19 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
-import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/validation_result.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
-
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -103,7 +101,6 @@ EmergencyContact _contact(String id, String name) => EmergencyContact(
   name: name,
   phoneNumber: '+15550100',
   sortOrder: 0,
-  channels: const <MessageChannel>[MessageChannel.sms],
 );
 
 HomeState _state({
@@ -210,9 +207,7 @@ void main() {
   });
 
   group('HomeScreen — mode chips', () {
-    testWidgets('renders one ChoiceChip per mode', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('renders one ChoiceChip per mode', (WidgetTester tester) async {
       await pumpScreen(
         tester,
         const HomeScreen(),
@@ -220,10 +215,7 @@ void main() {
           homeControllerProvider.overrideWith(
             () => _FakeHomeController(
               _state(
-                modes: <SessionMode>[
-                  _mode('m1', 'Walk'),
-                  _mode('m2', 'Date'),
-                ],
+                modes: <SessionMode>[_mode('m1', 'Walk'), _mode('m2', 'Date')],
               ),
             ),
           ),
@@ -244,10 +236,7 @@ void main() {
           homeControllerProvider.overrideWith(
             () => _FakeHomeController(
               _state(
-                modes: <SessionMode>[
-                  _mode('m1', 'Walk'),
-                  _mode('m2', 'Date'),
-                ],
+                modes: <SessionMode>[_mode('m1', 'Walk'), _mode('m2', 'Date')],
                 selectedModeId: 'm2',
               ),
             ),
@@ -255,17 +244,11 @@ void main() {
         ],
       );
       final dateChip = tester.widget<ChoiceChip>(
-        find.ancestor(
-          of: find.text('Date'),
-          matching: find.byType(ChoiceChip),
-        ),
+        find.ancestor(of: find.text('Date'), matching: find.byType(ChoiceChip)),
       );
       check(dateChip.selected).isTrue();
       final walkChip = tester.widget<ChoiceChip>(
-        find.ancestor(
-          of: find.text('Walk'),
-          matching: find.byType(ChoiceChip),
-        ),
+        find.ancestor(of: find.text('Walk'), matching: find.byType(ChoiceChip)),
       );
       check(walkChip.selected).isFalse();
     });
@@ -275,19 +258,14 @@ void main() {
     ) async {
       final fake = _FakeHomeController(
         _state(
-          modes: <SessionMode>[
-            _mode('m1', 'Walk'),
-            _mode('m2', 'Date'),
-          ],
+          modes: <SessionMode>[_mode('m1', 'Walk'), _mode('m2', 'Date')],
           selectedModeId: 'm1',
         ),
       );
       await pumpScreen(
         tester,
         const HomeScreen(),
-        overrides: <Override>[
-          homeControllerProvider.overrideWith(() => fake),
-        ],
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
       );
       await tester.tap(find.text('Date'));
       await tester.pumpAndSettle();
@@ -423,19 +401,14 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeHomeController(
-        _state(
-          modes: <SessionMode>[_mode('m1', 'Walk')],
-          selectedModeId: 'm1',
-        ),
+        _state(modes: <SessionMode>[_mode('m1', 'Walk')], selectedModeId: 'm1'),
         startSessionResult: false,
       );
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
         tester,
         const HomeScreen(),
-        overrides: <Override>[
-          homeControllerProvider.overrideWith(() => fake),
-        ],
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
       );
       await tester.tap(find.text(l10n.homeStartSession));
       await tester.pumpAndSettle();
@@ -447,19 +420,14 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeHomeController(
-        _state(
-          modes: <SessionMode>[_mode('m1', 'Walk')],
-          selectedModeId: 'm1',
-        ),
+        _state(modes: <SessionMode>[_mode('m1', 'Walk')], selectedModeId: 'm1'),
         startSessionResult: false,
       );
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
         tester,
         const HomeScreen(),
-        overrides: <Override>[
-          homeControllerProvider.overrideWith(() => fake),
-        ],
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
       );
       await tester.tap(find.text(l10n.homeSimulate));
       await tester.pumpAndSettle();
