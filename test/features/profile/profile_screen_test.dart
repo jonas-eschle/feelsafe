@@ -692,6 +692,29 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  group('ProfileScreen — autosave on blur', () {
+    testWidgets('losing focus from the name field calls patch with name', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeProfileController(_emptyState());
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ProfileScreen(),
+        overrides: _override(fake),
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, l10n.profileFieldName),
+        'Blur',
+      );
+      // Programmatically blur by unfocusing the primary focus.
+      FocusManager.instance.primaryFocus?.unfocus();
+      await tester.pumpAndSettle();
+      check(fake.lastPatchedName).equals('Blur');
+    });
+  });
+
+  // -------------------------------------------------------------------------
   group('ProfileScreen — RTL', () {
     testWidgets('renders in Arabic (RTL) without overflow', (
       WidgetTester tester,

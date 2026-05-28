@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -495,6 +493,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get contactRequiredError => 'नाम और फ़ोन नंबर आवश्यक हैं।';
+
+  @override
+  String get contactFormIosSmsWarning =>
+      'On iOS, SMS opens the Messages app. You must tap Send manually.';
 
   @override
   String get modesTitle => 'मोड';
@@ -1047,12 +1049,6 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get profileFieldAge => 'आयु';
-
-  @override
-  String get profileFieldPhoneNumber => 'फ़ोन नंबर';
-
-  @override
-  String get profileFieldPhysicalDescription => 'शारीरिक विवरण';
 
   @override
   String get profileFieldBloodType => 'रक्त समूह';

@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -478,6 +476,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get contactRequiredError => '姓名和电话号码为必填项。';
+
+  @override
+  String get contactFormIosSmsWarning =>
+      'On iOS, SMS opens the Messages app. You must tap Send manually.';
 
   @override
   String get modesTitle => '模式';
@@ -1016,12 +1018,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get profileFieldAge => '年龄';
-
-  @override
-  String get profileFieldPhoneNumber => '电话号码';
-
-  @override
-  String get profileFieldPhysicalDescription => '外貌描述';
 
   @override
   String get profileFieldBloodType => '血型';
@@ -3682,12 +3678,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get profileFieldAge => '年齡';
-
-  @override
-  String get profileFieldPhoneNumber => '電話號碼';
-
-  @override
-  String get profileFieldPhysicalDescription => '外貌描述';
 
   @override
   String get profileFieldBloodType => '血型';

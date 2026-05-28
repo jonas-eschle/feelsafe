@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -498,6 +496,10 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get contactRequiredError =>
       'Το όνομα και ο αριθμός τηλεφώνου είναι υποχρεωτικά.';
+
+  @override
+  String get contactFormIosSmsWarning =>
+      'On iOS, SMS opens the Messages app. You must tap Send manually.';
 
   @override
   String get modesTitle => 'Λειτουργίες';
@@ -1055,12 +1057,6 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get profileFieldAge => 'Ηλικία';
-
-  @override
-  String get profileFieldPhoneNumber => 'Αριθμός τηλεφώνου';
-
-  @override
-  String get profileFieldPhysicalDescription => 'Φυσική περιγραφή';
 
   @override
   String get profileFieldBloodType => 'Ομάδα αίματος';

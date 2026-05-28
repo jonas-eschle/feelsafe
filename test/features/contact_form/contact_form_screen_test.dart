@@ -647,6 +647,64 @@ void main() {
     });
   });
 
+  // ---- Group: Per-contact language dropdown -------------------------------
+
+  group('ContactFormScreen — language dropdown', () {
+    testWidgets('renders the language dropdown with the default option', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      expect(find.text(l10n.contactFieldLanguage), findsOneWidget);
+      expect(find.text(l10n.contactLanguageDefault), findsOneWidget);
+    });
+
+    testWidgets('persists the selected language to the contact', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Lang');
+      await tester.enterText(find.byType(TextField).at(1), '+15550006666');
+      await tester.tap(find.byType(DropdownButtonFormField<String?>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('en').last);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+      final all = await ContactsRepository(db.contactsDao).getAll();
+      check(all).isNotEmpty();
+      check(all.first.languageCode).equals('en');
+    });
+
+    testWidgets('pre-fills the language dropdown from an edited contact', (
+      WidgetTester tester,
+    ) async {
+      await ContactsRepository(db.contactsDao).upsert(
+        EmergencyContact(
+          id: 'c-1',
+          name: 'L',
+          phoneNumber: '+15550001111',
+          sortOrder: 0,
+          languageCode: 'de',
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(contactId: 'c-1'),
+        overrides: baseOverrides,
+      );
+      final dd = tester.widget<DropdownButtonFormField<String?>>(
+        find.byType(DropdownButtonFormField<String?>),
+      );
+      check(dd.initialValue).equals('de');
+    });
+  });
+
   // ---- Group: Accessibility -----------------------------------------------
 
   group('ContactFormScreen — accessibility', () {

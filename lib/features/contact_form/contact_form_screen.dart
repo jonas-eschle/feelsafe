@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +49,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
     MessageChannel.telegram,
     MessageChannel.phoneCall,
   };
+  String? _languageCode;
   bool _dirty = false;
   bool _loading = true;
   EmergencyContact? _editing;
@@ -79,6 +83,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
       _phoneCtl.text = c.phoneNumber;
       _relCtl.text = c.relationship ?? '';
       _channels = c.channels.toSet();
+      _languageCode = c.languageCode;
       _editing = c;
       _dirty = false;
       setState(() => _loading = false);
@@ -132,6 +137,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
       relationship: _relCtl.text.trim().isEmpty ? null : _relCtl.text.trim(),
       sortOrder: _editing?.sortOrder ?? 0,
       channels: _channels.toList(),
+      languageCode: _languageCode,
     );
     await repo.upsert(contact);
     if (!mounted) return;
@@ -237,12 +243,54 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
                             ),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      DropdownButtonFormField<String?>(
+                        initialValue: _languageCode,
+                        decoration: InputDecoration(
+                          labelText: l10n.contactFieldLanguage,
+                        ),
+                        items: <DropdownMenuItem<String?>>[
+                          DropdownMenuItem<String?>(
+                            child: Text(l10n.contactLanguageDefault),
+                          ),
+                          for (final Locale loc
+                              in AppLocalizations.supportedLocales)
+                            DropdownMenuItem<String?>(
+                              value: loc.toLanguageTag(),
+                              child: Text(loc.toLanguageTag()),
+                            ),
+                        ],
+                        onChanged: (String? v) {
+                          setState(() {
+                            _languageCode = v;
+                            _dirty = true;
+                          });
+                        },
+                      ),
+                      if (_showIosSmsWarning)
+                        Padding(
+                          padding: const EdgeInsets.only(top: 16),
+                          child: Text(
+                            l10n.contactFormIosSmsWarning,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
                     ],
                   ),
                 ),
               ),
       ),
     );
+  }
+
+  /// Whether to render the iOS SMS manual-send warning.
+  ///
+  /// Spec 04:1379 says the warning appears when running on iOS and the
+  /// SMS channel is enabled. On web and other non-iOS platforms it is
+  /// suppressed.
+  bool get _showIosSmsWarning {
+    if (kIsWeb) return false;
+    return Platform.isIOS && _channels.contains(MessageChannel.sms);
   }
 
   String _channelLabel(MessageChannel ch, AppLocalizations l10n) {

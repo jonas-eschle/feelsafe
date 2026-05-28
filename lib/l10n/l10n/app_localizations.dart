@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -1007,6 +1006,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Name and phone number are required.'**
   String get contactRequiredError;
+
+  /// Warning shown under the contact form on iOS when SMS is enabled (spec 04:1379).
+  ///
+  /// In en, this message translates to:
+  /// **'On iOS, SMS opens the Messages app. You must tap Send manually.'**
+  String get contactFormIosSmsWarning;
 
   /// Title of the modes list.
   ///
@@ -2039,18 +2044,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Age'**
   String get profileFieldAge;
-
-  /// Profile own phone number field.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone number'**
-  String get profileFieldPhoneNumber;
-
-  /// Free-form physical description (hair, height, etc.).
-  ///
-  /// In en, this message translates to:
-  /// **'Physical description'**
-  String get profileFieldPhysicalDescription;
 
   /// Blood type field.
   ///
