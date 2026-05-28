@@ -27,4 +27,14 @@ class ContactsRepository {
 
   /// Streams all contacts (re-emitting on every change).
   Stream<List<EmergencyContact>> watchAll() => _dao.watchAll();
+
+  /// Replaces every contact in [contacts] in a single transaction.
+  ///
+  /// Used by [ContactsController.reorder] to commit a new ordering
+  /// without N round-trips.
+  Future<void> bulkUpdate(List<EmergencyContact> contacts) =>
+      _dao.bulkUpdate(contacts);
+
+  /// Removes every contact (used by the "Delete all" overflow menu).
+  Future<void> deleteAll() => _dao.deleteAll();
 }

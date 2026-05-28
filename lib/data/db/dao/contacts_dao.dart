@@ -53,6 +53,21 @@ class ContactsDao extends DatabaseAccessor<GuardianAngelaDatabase>
     return query.watch().map((rows) => rows.map(_rowToModel).toList());
   }
 
+  /// Replaces every contact in [items] inside a single transaction.
+  ///
+  /// Useful for batch operations such as reordering.
+  Future<void> bulkUpdate(List<EmergencyContact> items) =>
+      transaction(() async {
+        for (final c in items) {
+          await into(
+            contacts,
+          ).insertOnConflictUpdate(_modelToCompanion(c));
+        }
+      });
+
+  /// Removes every contact row.
+  Future<void> deleteAll() => delete(contacts).go();
+
   static EmergencyContact _rowToModel(ContactRow row) => EmergencyContact(
     id: row.id,
     name: row.name,

@@ -16,10 +16,21 @@ import 'package:guardianangela/services/service_providers.dart';
 /// (Extra 59) and a "Save" CTA in the app bar.
 class ContactFormScreen extends ConsumerStatefulWidget {
   /// Creates a [ContactFormScreen].
-  const ContactFormScreen({super.key, this.contactId});
+  const ContactFormScreen({
+    super.key,
+    this.contactId,
+    this.initialName,
+    this.initialPhone,
+  });
 
   /// Contact id when editing; null for create.
   final String? contactId;
+
+  /// Pre-fill name (used when importing from device contacts).
+  final String? initialName;
+
+  /// Pre-fill phone (used when importing from device contacts).
+  final String? initialPhone;
 
   @override
   ConsumerState<ContactFormScreen> createState() => _ContactFormScreenState();
@@ -50,6 +61,9 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
 
   Future<void> _load() async {
     if (widget.contactId == null) {
+      // Pre-fill from import-name / import-phone query parameters.
+      if (widget.initialName != null) _nameCtl.text = widget.initialName!;
+      if (widget.initialPhone != null) _phoneCtl.text = widget.initialPhone!;
       setState(() => _loading = false);
       return;
     }

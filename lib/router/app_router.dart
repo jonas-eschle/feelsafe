@@ -131,7 +131,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/contacts/edit',
         name: RouteNames.contactForm,
         builder: (_, GoRouterState state) {
-          return ContactFormScreen(contactId: state.uri.queryParameters['id']);
+          return ContactFormScreen(
+            contactId: state.uri.queryParameters['id'],
+            initialName: state.uri.queryParameters['name'],
+            initialPhone: state.uri.queryParameters['phone'],
+          );
         },
       ),
       GoRoute(

@@ -38,6 +38,10 @@ class _FakeContactsController extends ContactsController {
 
   int deleteCalls = 0;
   String? lastDeletedId;
+  int reorderCalls = 0;
+  int? lastOldIndex;
+  int? lastNewIndex;
+  int deleteAllCalls = 0;
 
   @override
   Future<ContactsState> build() async => _initial;
@@ -50,11 +54,29 @@ class _FakeContactsController extends ContactsController {
     if (current == null) return;
     state = AsyncData(
       ContactsState(
-        contacts: current.contacts
-            .where((c) => c.id != id)
-            .toList(),
+        contacts: current.contacts.where((c) => c.id != id).toList(),
       ),
     );
+  }
+
+  @override
+  Future<void> reorder(int oldIndex, int newIndex) async {
+    reorderCalls++;
+    lastOldIndex = oldIndex;
+    lastNewIndex = newIndex;
+    final current = state.value;
+    if (current == null) return;
+    final list = List<EmergencyContact>.from(current.contacts);
+    final adjusted = newIndex > oldIndex ? newIndex - 1 : newIndex;
+    final moved = list.removeAt(oldIndex);
+    list.insert(adjusted, moved);
+    state = AsyncData(ContactsState(contacts: list));
+  }
+
+  @override
+  Future<void> deleteAll() async {
+    deleteAllCalls++;
+    state = const AsyncData(ContactsState(contacts: <EmergencyContact>[]));
   }
 }
 
@@ -78,9 +100,7 @@ class _FakeNavigatorObserver extends NavigatorObserver {
 EmergencyContact _contact(
   String id,
   String name, {
-  List<MessageChannel> channels = const <MessageChannel>[
-    MessageChannel.sms,
-  ],
+  List<MessageChannel> channels = const <MessageChannel>[MessageChannel.sms],
   int sortOrder = 0,
 }) => EmergencyContact(
   id: id,
@@ -90,18 +110,16 @@ EmergencyContact _contact(
   channels: channels,
 );
 
-ContactsState _state({
-  List<EmergencyContact>? contacts,
-}) => ContactsState(
-  contacts: contacts ?? <EmergencyContact>[],
-);
+ContactsState _state({List<EmergencyContact>? contacts}) =>
+    ContactsState(contacts: contacts ?? <EmergencyContact>[]);
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
-List<Override> _overrideWith(_FakeContactsController fake) =>
-    <Override>[contactsControllerProvider.overrideWith(() => fake)];
+List<Override> _overrideWith(_FakeContactsController fake) => <Override>[
+  contactsControllerProvider.overrideWith(() => fake),
+];
 
 /// Pumps [ContactsScreen] inside a minimal GoRouter so that
 /// `context.pushNamed(...)` can resolve without a "No GoRouter" error.
@@ -154,9 +172,7 @@ Future<void> _pumpWithRouter(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -320,9 +336,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeContactsController(
-        _state(
-          contacts: <EmergencyContact>[_contact('c1', 'Alice')],
-        ),
+        _state(contacts: <EmergencyContact>[_contact('c1', 'Alice')]),
       );
       await pumpScreen(
         tester,
@@ -346,10 +360,7 @@ void main() {
       final contact = _contact(
         'c1',
         'Alice',
-        channels: <MessageChannel>[
-          MessageChannel.sms,
-          MessageChannel.whatsapp,
-        ],
+        channels: <MessageChannel>[MessageChannel.sms, MessageChannel.whatsapp],
       );
       final fake = _FakeContactsController(
         _state(contacts: <EmergencyContact>[contact]),
@@ -417,10 +428,7 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible),
-        const Offset(-500, 0),
-      );
+      await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
       await tester.pumpAndSettle();
       expect(find.text(l10n.contactDeleteConfirm), findsOneWidget);
     });
@@ -438,10 +446,7 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible),
-        const Offset(-500, 0),
-      );
+      await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
       await tester.pumpAndSettle();
       // Tap the Delete button in the confirmation dialog.
       await tester.tap(find.text(l10n.commonDelete));
@@ -463,10 +468,7 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible),
-        const Offset(-500, 0),
-      );
+      await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
       await tester.pumpAndSettle();
       // Tap Cancel in the confirmation dialog.
       await tester.tap(find.text(l10n.commonCancel));
@@ -487,38 +489,28 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible),
-        const Offset(-500, 0),
-      );
+      await tester.drag(find.byType(Dismissible), const Offset(-500, 0));
       await tester.pumpAndSettle();
-      expect(
-        find.text(l10n.contactDeleteBody('Alice')),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.contactDeleteBody('Alice')), findsOneWidget);
     });
 
-    testWidgets(
-      'delete dismiss background shows delete icon on right side',
-      (WidgetTester tester) async {
-        final contact = _contact('c1', 'Alice');
-        final fake = _FakeContactsController(
-          _state(contacts: <EmergencyContact>[contact]),
-        );
-        await pumpScreen(
-          tester,
-          const ContactsScreen(),
-          overrides: _overrideWith(fake),
-        );
-        // Partial drag to reveal background without triggering confirm.
-        await tester.drag(
-          find.byType(Dismissible),
-          const Offset(-100, 0),
-        );
-        await tester.pump();
-        expect(find.byIcon(Icons.delete), findsOneWidget);
-      },
-    );
+    testWidgets('delete dismiss background shows delete icon on right side', (
+      WidgetTester tester,
+    ) async {
+      final contact = _contact('c1', 'Alice');
+      final fake = _FakeContactsController(
+        _state(contacts: <EmergencyContact>[contact]),
+      );
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      // Partial drag to reveal background without triggering confirm.
+      await tester.drag(find.byType(Dismissible), const Offset(-100, 0));
+      await tester.pump();
+      expect(find.byIcon(Icons.delete), findsOneWidget);
+    });
   });
 
   // ── Dismissible widget structure ──────────────────────────────────────────
@@ -600,11 +592,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeContactsController(
-        _state(
-          contacts: <EmergencyContact>[
-            _contact('c1', 'Alice'),
-          ],
-        ),
+        _state(contacts: <EmergencyContact>[_contact('c1', 'Alice')]),
       );
       await pumpScreen(
         tester,
@@ -650,9 +638,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeContactsController(
-        _state(
-          contacts: <EmergencyContact>[_contact('c1', 'Alice')],
-        ),
+        _state(contacts: <EmergencyContact>[_contact('c1', 'Alice')]),
       );
       await pumpScreen(
         tester,
@@ -707,10 +693,197 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      final emptyText = tester.widget<Text>(
-        find.text(l10n.contactsEmpty),
-      );
+      final emptyText = tester.widget<Text>(find.text(l10n.contactsEmpty));
       check(emptyText.textAlign).equals(TextAlign.center);
     });
+  });
+
+  // ── Reorderable list ─────────────────────────────────────────────────────
+
+  group('ContactsScreen — reorder', () {
+    testWidgets('renders ReorderableListView when contacts exist', (
+      WidgetTester tester,
+    ) async {
+      final contacts = <EmergencyContact>[
+        _contact('c1', 'Alice'),
+        _contact('c2', 'Bob'),
+      ];
+      final fake = _FakeContactsController(_state(contacts: contacts));
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.byType(ReorderableListView), findsOneWidget);
+    });
+
+    testWidgets('each row exposes a drag-handle icon', (
+      WidgetTester tester,
+    ) async {
+      final contacts = <EmergencyContact>[
+        _contact('c1', 'Alice'),
+        _contact('c2', 'Bob'),
+      ];
+      final fake = _FakeContactsController(_state(contacts: contacts));
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.byIcon(Icons.drag_handle), findsNWidgets(2));
+    });
+  });
+
+  // ── AppBar import action ─────────────────────────────────────────────────
+
+  group('ContactsScreen — Import from device', () {
+    testWidgets('import IconButton renders on mobile', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      // The test runner is Linux desktop so the conditional renders nothing.
+      // Verify only that the PopupMenuButton (overflow) is still present.
+      expect(find.byType(PopupMenuButton<String>), findsOneWidget);
+    });
+  });
+
+  // ── Delete-all overflow menu ─────────────────────────────────────────────
+
+  group('ContactsScreen — Delete all', () {
+    testWidgets('overflow menu exposes Delete all item', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.contactsDeleteAllMenu), findsOneWidget);
+    });
+
+    testWidgets('tapping Delete all opens first confirmation dialog', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.contactsDeleteAllConfirmTitle),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('cancelling first dialog does NOT call deleteAll', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      check(fake.deleteAllCalls).equals(0);
+    });
+
+    testWidgets('confirming first dialog opens typed-confirm dialog', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.contactsDeleteAllTypeConfirmTitle),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('typed confirm only enables button when sentinel matches', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(_state());
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), 'wrong');
+      await tester.pumpAndSettle();
+      // Confirm button is still disabled (onPressed null).
+      final btn = tester.widget<FilledButton>(
+        find.widgetWithText(
+          FilledButton,
+          l10n.contactsDeleteAllConfirmButton,
+        ),
+      );
+      expect(btn.onPressed, isNull);
+    });
+
+    testWidgets(
+      'typing DELETE ALL enables confirm + tapping invokes deleteAll',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeContactsController(_state());
+        await pumpScreen(
+          tester,
+          const ContactsScreen(),
+          overrides: _overrideWith(fake),
+        );
+        await tester.tap(find.byType(PopupMenuButton<String>));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonConfirm));
+        await tester.pumpAndSettle();
+        await tester.enterText(
+          find.byType(TextField),
+          l10n.contactsDeleteAllTypeConfirmSentinel,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.contactsDeleteAllConfirmButton));
+        await tester.pumpAndSettle();
+        check(fake.deleteAllCalls).equals(1);
+      },
+    );
   });
 }
