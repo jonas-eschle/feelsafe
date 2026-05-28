@@ -695,6 +695,11 @@ class SessionController extends AsyncNotifier<SessionState> {
   @visibleForTesting
   SessionLogRecorder? get recorder => _recorder;
 
+  /// Id of the in-flight session log, exposed to UI navigation code so the
+  /// completed / simulation-summary screens can deep-link to the right
+  /// log. Null when no session is active.
+  String? get currentSessionLogId => _recorder?.sessionId;
+
   /// Direct, test-only entry point that loads contacts so we can stub the
   /// contact-count check in widget tests without depending on a database.
   @visibleForTesting

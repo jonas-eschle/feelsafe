@@ -89,9 +89,20 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       ),
     );
     if (shouldEnd == true && context.mounted) {
-      await ref.read(sessionControllerProvider.notifier).endSession();
+      final controller = ref.read(sessionControllerProvider.notifier);
+      final sessionState = ref.read(sessionControllerProvider).value;
+      final recorderId = controller.currentSessionLogId;
+      final isSimulation = sessionState?.isSimulation ?? false;
+      await controller.endSession();
       if (!context.mounted) return;
-      context.goNamed(RouteNames.sessionCompleted);
+      final params = <String, String>{
+        if (isSimulation) 'simulation': 'true',
+      };
+      if (recorderId != null) params['id'] = recorderId;
+      context.goNamed(
+        RouteNames.sessionCompleted,
+        queryParameters: params,
+      );
     }
   }
 

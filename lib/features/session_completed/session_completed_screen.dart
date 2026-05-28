@@ -7,14 +7,30 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Shown after a session completes normally.
 ///
-/// Suppressed entirely in stealth mode (spec 04 §Chain Exhausted —
-/// stealth path silently routes home).
+/// Renders the duration row, the simulation banner (when applicable),
+/// and the two CTAs. Suppressed entirely in stealth mode (spec 04
+/// §Chain Exhausted Screen — stealth path silently routes home).
 class SessionCompletedScreen extends StatelessWidget {
   /// Creates a [SessionCompletedScreen].
-  const SessionCompletedScreen({super.key, this.durationSeconds});
+  ///
+  /// [logId] is the session log id used by the "View Event Log" CTA
+  /// when navigating to the per-session detail screen. When null the
+  /// CTA falls back to the past-events list.
+  const SessionCompletedScreen({
+    super.key,
+    this.durationSeconds,
+    this.logId,
+    this.isSimulation = false,
+  });
 
   /// Total duration of the completed session in seconds.
   final int? durationSeconds;
+
+  /// Session log id passed via the `?id=` route parameter.
+  final String? logId;
+
+  /// Whether the completed session was a simulation.
+  final bool isSimulation;
 
   String _formatDuration(int seconds) {
     if (seconds < 60) return '${seconds}s';
@@ -34,6 +50,35 @@ class SessionCompletedScreen extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
+              if (isSimulation)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(
+                    vertical: 12,
+                    horizontal: 16,
+                  ),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.orange, width: 2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      const Icon(
+                        Icons.play_circle_outline,
+                        color: Colors.orange,
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        l10n.sessionCompletedSimulationBanner,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: Colors.orange,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              const SizedBox(height: 24),
               Icon(
                 Icons.check_circle,
                 size: 96,
@@ -64,11 +109,21 @@ class SessionCompletedScreen extends StatelessWidget {
               ),
               const SizedBox(height: 8),
               OutlinedButton(
-                onPressed: () => context.pushNamed(RouteNames.pastEvents),
+                onPressed: () {
+                  final id = logId;
+                  if (id != null && id.isNotEmpty) {
+                    context.pushNamed(
+                      RouteNames.pastEventDetail,
+                      queryParameters: <String, String>{'id': id},
+                    );
+                  } else {
+                    context.pushNamed(RouteNames.pastEvents);
+                  }
+                },
                 style: OutlinedButton.styleFrom(
                   minimumSize: const Size.fromHeight(48),
                 ),
-                child: Text(l10n.homeMenuHistory),
+                child: Text(l10n.sessionCompletedViewEventLog),
               ),
             ],
           ),

@@ -285,7 +285,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester);
-      expect(find.text(l10n.homeMenuHistory), findsOneWidget);
+      expect(find.text(l10n.sessionCompletedViewEventLog), findsOneWidget);
       expect(find.byType(OutlinedButton), findsOneWidget);
     });
 
@@ -306,8 +306,8 @@ void main() {
       unawaited(router.pushNamed<void>(RouteNames.sessionCompleted));
       await tester.pumpAndSettle();
 
-      expect(find.text(l10n.homeMenuHistory), findsOneWidget);
-      await tester.tap(find.text(l10n.homeMenuHistory));
+      expect(find.text(l10n.sessionCompletedViewEventLog), findsOneWidget);
+      await tester.tap(find.text(l10n.sessionCompletedViewEventLog));
       await tester.pumpAndSettle();
 
       expect(find.text('Past events'), findsOneWidget);
@@ -394,7 +394,7 @@ void main() {
       // Both buttons must be findable by their text labels so
       // screen readers can locate them.
       expect(find.text(l10n.sessionCompletedReturnHome), findsOneWidget);
-      expect(find.text(l10n.homeMenuHistory), findsOneWidget);
+      expect(find.text(l10n.sessionCompletedViewEventLog), findsOneWidget);
     });
 
     testWidgets('check_circle icon has non-null semantics label via Scaffold', (
@@ -412,6 +412,97 @@ void main() {
       // Smoke: default text scale produces no exceptions.
       await _pump(tester, durationSeconds: 90);
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  // ── Simulation indicator banner ────────────────────────────────────────
+
+  group('SessionCompletedScreen — simulation indicator banner', () {
+    testWidgets('banner is hidden when isSimulation = false', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const SessionCompletedScreen());
+      expect(
+        find.text(l10n.sessionCompletedSimulationBanner),
+        findsNothing,
+      );
+    });
+
+    testWidgets('banner is shown when isSimulation = true', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SessionCompletedScreen(isSimulation: true),
+      );
+      expect(
+        find.text(l10n.sessionCompletedSimulationBanner),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('banner contains the play_circle_outline icon', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const SessionCompletedScreen(isSimulation: true),
+      );
+      expect(find.byIcon(Icons.play_circle_outline), findsOneWidget);
+    });
+  });
+
+  // ── View Event Log routing ─────────────────────────────────────────────
+
+  group('SessionCompletedScreen — View Event Log routing', () {
+    testWidgets('with logId navigates to the per-log detail route', (
+      WidgetTester tester,
+    ) async {
+      final router = GoRouter(
+        initialLocation: '/session/completed?id=abc',
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/session/completed',
+            builder: (_, GoRouterState state) => SessionCompletedScreen(
+              logId: state.uri.queryParameters['id'],
+            ),
+          ),
+          GoRoute(
+            path: '/past-events/detail',
+            name: RouteNames.pastEventDetail,
+            builder: (_, GoRouterState state) => Scaffold(
+              body: Text('Detail: ${state.uri.queryParameters['id']}'),
+            ),
+          ),
+        ],
+      );
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp.router(
+            routerConfig: router,
+            localizationsDelegates: const <LocalizationsDelegate<Object>>[
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                seedColor: const Color(0xFF131118),
+              ),
+              useMaterial3: true,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.sessionCompletedViewEventLog));
+      await tester.pumpAndSettle();
+      expect(find.text('Detail: abc'), findsOneWidget);
     });
   });
 }

@@ -111,7 +111,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           final duration = int.tryParse(
             state.uri.queryParameters['duration'] ?? '',
           );
-          return SessionCompletedScreen(durationSeconds: duration);
+          final isSimulation =
+              state.uri.queryParameters['simulation'] == 'true';
+          return SessionCompletedScreen(
+            durationSeconds: duration,
+            logId: state.uri.queryParameters['id'],
+            isSimulation: isSimulation,
+          );
         },
       ),
       GoRoute(
