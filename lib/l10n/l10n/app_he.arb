@@ -71,8 +71,6 @@
   "profileTitle": "פרופיל",
   "profileFieldName": "שם",
   "profileFieldAge": "גיל",
-  "profileFieldPhoneNumber": "מספר טלפון",
-  "profileFieldPhysicalDescription": "תיאור פיזי",
   "profileFieldBloodType": "סוג דם",
   "profileFieldAllergies": "אלרגיות",
   "profileFieldMedications": "תרופות",

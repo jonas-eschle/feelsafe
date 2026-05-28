@@ -71,8 +71,6 @@
   "profileTitle": "Profil",
   "profileFieldName": "Imię",
   "profileFieldAge": "Wiek",
-  "profileFieldPhoneNumber": "Numer telefonu",
-  "profileFieldPhysicalDescription": "Opis fizyczny",
   "profileFieldBloodType": "Grupa krwi",
   "profileFieldAllergies": "Alergie",
   "profileFieldMedications": "Leki",

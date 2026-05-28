@@ -71,8 +71,6 @@
   "profileTitle": "个人资料",
   "profileFieldName": "姓名",
   "profileFieldAge": "年龄",
-  "profileFieldPhoneNumber": "电话号码",
-  "profileFieldPhysicalDescription": "外貌描述",
   "profileFieldBloodType": "血型",
   "profileFieldAllergies": "过敏史",
   "profileFieldMedications": "用药",
