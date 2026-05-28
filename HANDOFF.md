@@ -1,7 +1,7 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-05-28 — **Phase 6 fix-pass C completed; ready for PM re-verify → architect → qa.** All 4 PM P0 defects + the P1 ARB sweep + the P3 nits are addressed. Next step is to re-run the PM verifier on this HEAD; if PASS, dispatch the architect + qa-expert verifiers in parallel.
-**HEAD:** `e77900e` (`phase-6-fix-c6: nits — main.dart present-tense comment + 6 home tests`).
+**Snapshot:** 2026-05-28 — **Phase 6 fix-pass C done + PM re-verifier PASS.** Architect + qa-expert verifiers are the next two stops, then Phase 6 closes. The PM ran twice this round: at `007fa6a` it flagged a single new defect (2 ARB keys present in all 13 non-EN files but absent from EN — parity gate); after `2edca2d` it returned **PASS** with the parity gap closed.
+**HEAD:** `2edca2d` (`phase-6-fix-c7-import-sort: post-commit import_sorter output`).
 **Tests passing:** `3582/3582` (`flutter test --concurrency=6`).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
 **Branch:** `main`. **Not pushed.** **OLD/ is INERT** (restored twice already; fix-pass-C agents did not touch it).
@@ -41,7 +41,7 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 | Phase 4 (Repositories + Drift schema + seed data) | ✅ Done | 1711 | `4969161`–`8cedc2c` |
 | Phase 5 (services + Sentry + wiring map) | ✅ Done — 3-agent cohort PASS | 2447 | `5b0bd02`..`36d30cf` (18 commits) |
 | Phase 6 (screens + routing + R-42 + tests + goldens) | ✅ Implementation + tests + fix-pass-C done | 3538 | `ee73b62`..`cedaecf` (30 commits) |
-| **Phase 6 fix-pass C (PM-FIX_REQUIRED defects)** | ✅ **Implementation done; pending PM re-verify** | **3582** | `5bd1486`..`e77900e` (7 commits) |
+| **Phase 6 fix-pass C (PM-FIX_REQUIRED defects)** | ✅ **PM PASS; pending architect + qa-expert** | **3582** | `5bd1486`..`2edca2d` (10 commits) |
 | Phase 7..11 | Pending |  |  |
 
 ---
@@ -102,6 +102,9 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 - `4525a76` phase-6-fix-c5: ARB orphan sweep — dropped 454 keys with no `l10n.<key>` reference in `lib/` or `test/`. Sweep was JSON-safe (python script preserving authoring order) across all 14 ARB files. EN: 1841 → 1005 entries. `flutter gen-l10n` regenerated the 14 `app_localizations*.dart` files.
 - `9ffa48e` phase-6-fix-c5-import-sort: post-commit import_sorter blank-line additions on the regenerated l10n .dart files. Zero functional change.
 - `e77900e` phase-6-fix-c6: nits — main.dart `:19`/`:163` "Phase 6 will replace..." → present-tense; +6 HomeScreen reference tests (19 → 25 to hit plan target). Validation-error dialog, clearValidationErrors, empty-contacts banner, 8-contact overflow, mode-chip selection follow-through, simulate-button enable.
+- `007fa6a` phase-6-fix-c-handoff: HANDOFF.md update with the new HEAD + out-of-scope findings.
+- `c691798` phase-6-fix-c7: drop two stale profile-field keys from non-EN ARBs — closes the PM re-verifier's single new defect (parity gate: non-EN MUST be a subset of EN). `profileFieldPhoneNumber` and `profileFieldPhysicalDescription` were left in all 13 non-EN files when the c5 sweep matched only against EN. Both are true orphans (no `l10n.<key>` reference in `lib/` or `test/`).
+- `2edca2d` phase-6-fix-c7-import-sort: post-commit import_sorter output (zero functional change).
 
 ### Out-of-scope findings noted during fix-pass C
 
@@ -131,9 +134,32 @@ Verdict: **FIX_REQUIRED**. 12/14 checks PASS. Two FAILs and one INFO-coverage sk
 
 ## Next actions (resume here)
 
-**Phase 6 fix-pass C is done. Re-run PM verifier → architect → qa.**
+**Phase 6 fix-pass C is done + PM re-verifier PASSED at `2edca2d`. Dispatch architect + qa-expert verifiers (parallel — they read but don't write).**
 
-### Step 1 — DONE (kept for reference)
+### Step 1 — Spec-vs-code agent (`voltagent-qa-sec:architect-reviewer`, opus, run in parallel with Step 2)
+
+Use the prompt skeleton in `~/.claude/plans/rippling-weaving-puffin.md §Spec-vs-code agent prompt skeleton`. Phase N = "Phase 6 (screens, routing, R-42 + tests + fix-pass C)". Scope:
+- `docs/spec/04-screens-navigation.md` (24 screens + global UI patterns + DeceptiveOldPinDialog + SwipeSlider Extra 56)
+- `docs/spec/06-settings.md` (PIN priority, R-27, R-42, Session End methods)
+- `docs/spec/02-event-types.md` lines 440-475 (callEmergency confirmation)
+- `lib/features/`, `lib/router/`, `lib/core/widgets/` at HEAD `2edca2d`.
+
+Out-of-scope findings (PinEntryScreen gap, `_confirmClear` no-verify, unwired strategy dispatch) are already documented — architect may flag them again but should mark them as already known.
+
+Verdict must be PASS before Phase 6 closes.
+
+### Step 2 — Spec-vs-tests agent (`voltagent-qa-sec:qa-expert`, opus, run in parallel with Step 1)
+
+Use the prompt skeleton in `~/.claude/plans/rippling-weaving-puffin.md §Spec-vs-tests agent prompt skeleton`. Phase 6 tests:
+- 30 widget tests in `test/features/<feature>/*_test.dart`
+- 6 alchemist golden tests in `test/features/<feature>/*_golden_test.dart`
+- The new fix-pass-C tests in `test/core/widgets/swipe_slider_test.dart`, `test/features/session/widgets/emergency_confirm_overlay_test.dart`, the updated `session_screen_test.dart` (PIN gate + distress-cancel PIN gate), and the extended `home_screen_test.dart`.
+
+Confirm each normative spec requirement has a test that exercises the behaviour (not just imports the symbol). Mark `test/spec_coverage_test.dart` rows.
+
+### Step 3 — Phase 6 close
+
+When both verifiers PASS, mark Phase 6 closed. Phase 7 (native channels) starts.
 
 ### Old Fix-Pass C plan (kept for reference)
 
