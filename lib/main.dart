@@ -16,8 +16,8 @@
 // the exception and calls runApp with the minimal JsonRecoveryApp widget
 // instead of the normal GuardianAngelaApp.
 //
-// Phase 6 will replace the placeholder _AppShell with real GoRouter +
-// screens. The bootstrap pipeline and JsonRecoveryApp are final.
+// The bootstrap pipeline and JsonRecoveryApp are final; the root app uses
+// MaterialApp.router wired through `lib/router/app_router.dart`.
 
 import 'dart:async' show unawaited;
 import 'dart:convert';
@@ -160,7 +160,8 @@ Future<void> runBootstrap(
 }
 
 // ---------------------------------------------------------------------------
-// Root app widget — Phase 5 placeholder; Phase 6 installs GoRouter + screens.
+// Root app widget — wires MaterialApp.router to the GoRouter from
+// lib/router/app_router.dart. Theme + locale follow live AppSettings.
 // ---------------------------------------------------------------------------
 
 /// Root application widget.

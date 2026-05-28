@@ -493,4 +493,177 @@ void main() {
       expect(find.byTooltip(l10n.homeMenuSettings), findsOneWidget);
     });
   });
+
+  group('HomeScreen — validation errors', () {
+    testWidgets(
+      'Start with failing validation surfaces error dialog with each issue '
+      'title',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeHomeController(
+          _state(
+            modes: <SessionMode>[_mode('walk', 'Walk Mode')],
+            selectedModeId: 'walk',
+            errors: <ValidationIssue>[
+              const ValidationIssue(
+                title: 'No contacts configured',
+                description: 'Add at least one emergency contact.',
+              ),
+              const ValidationIssue(
+                title: 'Location permission missing',
+                description: 'Grant location permission for GPS tracking.',
+              ),
+            ],
+          ),
+          startSessionResult: false,
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text(l10n.homeStartSession));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.sessionStartFailedTitle), findsOneWidget);
+        expect(find.textContaining('No contacts configured'), findsOneWidget);
+        expect(
+          find.textContaining('Location permission missing'),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'Dismissing the start-failed dialog calls clearValidationErrors',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeHomeController(
+          _state(
+            modes: <SessionMode>[_mode('walk', 'Walk Mode')],
+            selectedModeId: 'walk',
+            errors: <ValidationIssue>[
+              const ValidationIssue(
+                title: 'No contacts configured',
+                description: 'Add at least one emergency contact.',
+              ),
+            ],
+          ),
+          startSessionResult: false,
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text(l10n.homeStartSession));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonOk));
+        await tester.pumpAndSettle();
+        check(fake.clearErrorsCalls).equals(1);
+      },
+    );
+  });
+
+  group('HomeScreen — empty contacts banner content', () {
+    testWidgets(
+      'no-contacts banner is rendered while contact chips section is empty',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(
+              () => _FakeHomeController(_state()),
+            ),
+          ],
+        );
+        expect(find.text(l10n.homeContactsBannerNone), findsOneWidget);
+      },
+    );
+  });
+
+  group('HomeScreen — contact overflow chip', () {
+    testWidgets(
+      'overflow chip shows the exact remaining count for 8 contacts',
+      (WidgetTester tester) async {
+        final contacts = <EmergencyContact>[
+          for (int i = 1; i <= 8; i++) _contact('c$i', 'Contact $i'),
+        ];
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(
+              () => _FakeHomeController(_state(contacts: contacts)),
+            ),
+          ],
+        );
+        // 8 total contacts → first 5 visible, overflow chip shows "+3".
+        expect(find.textContaining('+3'), findsOneWidget);
+        expect(find.text('Contact 6'), findsNothing);
+      },
+    );
+  });
+
+  group('HomeScreen — start / simulate buttons selection sticky', () {
+    testWidgets(
+      'tapping a different mode chip changes the selection on the screen',
+      (WidgetTester tester) async {
+        final fake = _FakeHomeController(
+          _state(
+            modes: <SessionMode>[
+              _mode('walk', 'Walk Mode'),
+              _mode('date', 'Date Mode'),
+            ],
+            selectedModeId: 'walk',
+          ),
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text('Date Mode'));
+        await tester.pumpAndSettle();
+        check(fake.selectModeCalls).equals(1);
+        check(fake.lastSelectedMode).equals('date');
+      },
+    );
+  });
+
+  group('HomeScreen — simulate button enabled state', () {
+    testWidgets('Simulate button is enabled when a mode is selected', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[_mode('walk', 'Walk Mode')],
+                selectedModeId: 'walk',
+              ),
+            ),
+          ),
+        ],
+      );
+      final simulate = tester.widget<OutlinedButton>(
+        find.ancestor(
+          of: find.text(l10n.homeSimulate),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      check(simulate.onPressed).isNotNull();
+    });
+  });
 }
