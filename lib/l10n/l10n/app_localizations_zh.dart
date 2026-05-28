@@ -184,6 +184,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onboardingSkip => '跳过';
 
   @override
+  String get onboardingUseSimNumber => 'Use my SIM number';
+
+  @override
+  String onboardingUseSimNumberHint(Object number) {
+    return '$number';
+  }
+
+  @override
+  String get onboardingUseSimNumberUnsupported => 'Not available on iOS';
+
+  @override
+  String get onboardingUseSimNumberUnavailable => 'Couldn\'t read number';
+
+  @override
+  String get onboardingUseSimNumberPermissionDenied => 'Permission denied';
+
+  @override
   String get onboardingFinish => '完成';
 
   @override
@@ -2401,6 +2418,19 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get aboutTagline => 'Made with love for LGBTQ+ safety.';
+
+  @override
+  String get aboutTechnicalSection => 'Technical information';
+
+  @override
+  String aboutBundleId(Object id) {
+    return 'Bundle ID: $id';
+  }
+
+  @override
+  String aboutPlatforms(Object list) {
+    return 'Platforms: $list';
+  }
 
   @override
   String get feedbackHeading => 'We\'d love to hear from you';

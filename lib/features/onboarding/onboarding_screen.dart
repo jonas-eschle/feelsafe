@@ -8,6 +8,8 @@ import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
 import 'package:guardianangela/core/widgets/pride_page_indicator.dart';
 import 'package:guardianangela/features/onboarding/onboarding_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/protocols/device_info_service_protocol.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 /// First-launch onboarding flow (3 pages).
 ///
@@ -51,6 +53,25 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     return Scaffold(
+      appBar: _page > 0
+          ? AppBar(
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              actions: <Widget>[
+                TextButton(
+                  onPressed: () {
+                    if (_page < 2) {
+                      _goTo(_page + 1);
+                    } else {
+                      _finish();
+                    }
+                  },
+                  child: Text(l10n.onboardingSkip),
+                ),
+              ],
+            )
+          : null,
+      extendBodyBehindAppBar: true,
       body: SafeArea(
         child: Column(
           children: <Widget>[
@@ -148,6 +169,7 @@ class _ProfileContactPage extends ConsumerStatefulWidget {
 class _ProfileContactPageState extends ConsumerState<_ProfileContactPage> {
   final TextEditingController _nameCtl = TextEditingController();
   final TextEditingController _phoneCtl = TextEditingController();
+  String? _simNumberHint;
 
   @override
   void initState() {
@@ -163,6 +185,32 @@ class _ProfileContactPageState extends ConsumerState<_ProfileContactPage> {
     ref
         .read(onboardingControllerProvider.notifier)
         .updateProfileDraft(name: _nameCtl.text, phone: _phoneCtl.text);
+  }
+
+  Future<void> _useSimNumber() async {
+    final l10n = AppLocalizations.of(context);
+    final service = ref.read(deviceInfoServiceProvider);
+    final result = await service.getSimPhoneNumber();
+    if (!mounted) return;
+    switch (result) {
+      case SimNumberAvailable(:final number):
+        setState(() => _simNumberHint = number);
+        _phoneCtl.text = number;
+      case SimNumberPermissionDenied():
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.onboardingUseSimNumberPermissionDenied),
+          ),
+        );
+      case SimNumberUnsupported():
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.onboardingUseSimNumberUnsupported)),
+        );
+      case SimNumberUnavailable():
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.onboardingUseSimNumberUnavailable)),
+        );
+    }
   }
 
   @override
@@ -191,6 +239,23 @@ class _ProfileContactPageState extends ConsumerState<_ProfileContactPage> {
                 labelText: l10n.onboardingProfileNameLabel,
               ),
             ),
+            const SizedBox(height: 8),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.sim_card_outlined),
+                label: Text(l10n.onboardingUseSimNumber),
+                onPressed: _useSimNumber,
+              ),
+            ),
+            if (_simNumberHint != null)
+              Padding(
+                padding: const EdgeInsets.only(top: 4),
+                child: Text(
+                  l10n.onboardingUseSimNumberHint(_simNumberHint!),
+                  style: textTheme.bodySmall,
+                ),
+              ),
             const SizedBox(height: 12),
             TextField(
               controller: _phoneCtl,

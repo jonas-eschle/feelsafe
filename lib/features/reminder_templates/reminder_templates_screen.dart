@@ -206,9 +206,7 @@ class ReminderTemplatesScreen extends ConsumerWidget {
       ),
     );
     if (ok ?? false) {
-      await ref
-          .read(reminderTemplatesControllerProvider.notifier)
-          .delete(t.id);
+      await ref.read(reminderTemplatesControllerProvider.notifier).delete(t.id);
     }
   }
 }

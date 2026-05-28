@@ -119,9 +119,7 @@ class _PastEventsDetailScreenState
       ),
     );
     if (ok ?? false) {
-      await ref
-          .read(pastEventsControllerProvider.notifier)
-          .softDelete(log.id);
+      await ref.read(pastEventsControllerProvider.notifier).softDelete(log.id);
       if (mounted) Navigator.of(context).pop();
     }
   }

@@ -1,3 +1,6 @@
+import 'dart:io' show Platform;
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import 'package:package_info_plus/package_info_plus.dart';
@@ -20,6 +23,7 @@ class AboutScreen extends StatefulWidget {
 
 class _AboutScreenState extends State<AboutScreen> {
   String _version = '';
+  String _bundleId = '';
 
   @override
   void initState() {
@@ -29,7 +33,43 @@ class _AboutScreenState extends State<AboutScreen> {
 
   Future<void> _loadVersion() async {
     final info = await PackageInfo.fromPlatform();
-    if (mounted) setState(() => _version = info.version);
+    if (mounted) {
+      setState(() {
+        _version = info.version;
+        _bundleId = info.packageName;
+      });
+    }
+  }
+
+  /// Returns "Android, iOS, Linux, Web, macOS, Windows" with the
+  /// currently running platform marked with a star prefix so the user
+  /// sees which target they are on.
+  String _platformList() {
+    const supported = <String>[
+      'Android',
+      'iOS',
+      'Linux',
+      'macOS',
+      'Web',
+      'Windows',
+    ];
+    final String current = kIsWeb
+        ? 'Web'
+        : Platform.isAndroid
+            ? 'Android'
+            : Platform.isIOS
+                ? 'iOS'
+                : Platform.isLinux
+                    ? 'Linux'
+                    : Platform.isMacOS
+                        ? 'macOS'
+                        : Platform.isWindows
+                            ? 'Windows'
+                            : Platform.operatingSystem;
+    final marked = supported
+        .map((p) => p == current ? '$p (current)' : p)
+        .toList();
+    return marked.join(', ');
   }
 
   Future<void> _open(String url) async {
@@ -94,6 +134,24 @@ class _AboutScreenState extends State<AboutScreen> {
                 applicationName: 'Guardian Angela',
                 applicationVersion: _version,
               ),
+            ),
+            const Divider(),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                l10n.aboutTechnicalSection,
+                style: textTheme.titleMedium,
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.tag_outlined),
+              title: Text(
+                l10n.aboutBundleId(_bundleId.isEmpty ? '?' : _bundleId),
+              ),
+            ),
+            ListTile(
+              leading: const Icon(Icons.devices_outlined),
+              title: Text(l10n.aboutPlatforms(_platformList())),
             ),
             const Divider(),
             Padding(

@@ -376,9 +376,17 @@ void main() {
     testWidgets('bottom LGBTQ+ tagline exists in the list', (
       WidgetTester tester,
     ) async {
+      _setPackageInfo();
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const AboutScreen());
-      expect(find.text(l10n.aboutTagline, skipOffstage: false), findsOneWidget);
+      // The technical-info section sits above the tagline; scroll to
+      // ensure ListView builds the trailing rows before asserting.
+      await tester.scrollUntilVisible(
+        find.text(l10n.aboutTagline),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(l10n.aboutTagline), findsOneWidget);
     });
   });
 
@@ -499,6 +507,55 @@ void main() {
       addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await pumpScreen(tester, const AboutScreen());
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Technical info (spec 04 §About Screen)
+  // -------------------------------------------------------------------------
+
+  group('AboutScreen — technical info', () {
+    testWidgets('renders Technical information section header', (
+      WidgetTester tester,
+    ) async {
+      _setPackageInfo();
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const AboutScreen());
+      await tester.scrollUntilVisible(
+        find.text(l10n.aboutTechnicalSection),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(l10n.aboutTechnicalSection), findsOneWidget);
+    });
+
+    testWidgets('Bundle ID tile renders with mocked packageName', (
+      WidgetTester tester,
+    ) async {
+      _setPackageInfo();
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const AboutScreen());
+      final expected = l10n.aboutBundleId('com.guardianangela.app');
+      await tester.scrollUntilVisible(
+        find.text(expected),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text(expected), findsOneWidget);
+    });
+
+    testWidgets('Platforms tile lists supported platforms', (
+      WidgetTester tester,
+    ) async {
+      _setPackageInfo();
+      await pumpScreen(tester, const AboutScreen());
+      await tester.scrollUntilVisible(
+        find.textContaining('Platforms:'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('Platforms:'), findsOneWidget);
+      expect(find.textContaining('Android'), findsOneWidget);
     });
   });
 }

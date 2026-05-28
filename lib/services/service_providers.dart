@@ -47,6 +47,7 @@ import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
+import 'package:guardianangela/services/protocols/device_info_service_protocol.dart';
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
@@ -69,6 +70,7 @@ import 'package:guardianangela/services/screen_flash_service.dart';
 import 'package:guardianangela/services/sentry_service.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/session_start_validator.dart';
+import 'package:guardianangela/services/device_info_service.dart';
 import 'package:guardianangela/services/system_ui_service.dart';
 import 'package:guardianangela/services/vibration_service.dart';
 import 'package:guardianangela/services/wakelock_service.dart';
@@ -292,6 +294,20 @@ final callStateServiceProvider = Provider<CallStateServiceProtocol>((ref) {
 /// `lib/services/sim/system_ui_service_sim.dart`.
 final systemUiServiceProvider = Provider<SystemUiServiceProtocol>((ref) {
   return RealSystemUiService();
+});
+
+/// [DeviceInfoServiceProtocol] — exposes the SIM-card phone number to
+/// the onboarding "Use my SIM number" affordance (spec 04 Extra 28).
+///
+/// Android invokes `getSimPhoneNumber` via
+/// `com.guardianangela.app/device_info` (Phase 7 native handler).
+/// iOS/web/desktop return [SimNumberUnsupported] without touching the
+/// platform channel.
+///
+/// Tests override with [SimulationDeviceInfoService] from
+/// `lib/services/sim/device_info_service_sim.dart`.
+final deviceInfoServiceProvider = Provider<DeviceInfoServiceProtocol>((ref) {
+  return RealDeviceInfoService();
 });
 
 // ---- Communication / cross-cutter services ----

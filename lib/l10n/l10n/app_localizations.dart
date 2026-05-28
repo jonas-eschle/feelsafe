@@ -463,6 +463,36 @@ abstract class AppLocalizations {
   /// **'Skip'**
   String get onboardingSkip;
 
+  /// Button below the Your Name field on onboarding page 2 (spec 04 Extra 28).
+  ///
+  /// In en, this message translates to:
+  /// **'Use my SIM number'**
+  String get onboardingUseSimNumber;
+
+  /// Read-only hint displaying the SIM phone number.
+  ///
+  /// In en, this message translates to:
+  /// **'{number}'**
+  String onboardingUseSimNumberHint(Object number);
+
+  /// Snackbar shown when SIM read is unavailable on iOS.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on iOS'**
+  String get onboardingUseSimNumberUnsupported;
+
+  /// Snackbar shown when the platform cannot read the SIM number.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t read number'**
+  String get onboardingUseSimNumberUnavailable;
+
+  /// Snackbar shown when the user denied the runtime permission.
+  ///
+  /// In en, this message translates to:
+  /// **'Permission denied'**
+  String get onboardingUseSimNumberPermissionDenied;
+
   /// Finish button on last onboarding page.
   ///
   /// In en, this message translates to:
@@ -4630,6 +4660,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Made with love for LGBTQ+ safety.'**
   String get aboutTagline;
+
+  /// Header above the technical-info ListTiles.
+  ///
+  /// In en, this message translates to:
+  /// **'Technical information'**
+  String get aboutTechnicalSection;
+
+  /// Bundle ID tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Bundle ID: {id}'**
+  String aboutBundleId(Object id);
+
+  /// Platform list tile.
+  ///
+  /// In en, this message translates to:
+  /// **'Platforms: {list}'**
+  String aboutPlatforms(Object list);
 
   /// Top heading of feedback form.
   ///

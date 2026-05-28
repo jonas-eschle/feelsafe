@@ -87,8 +87,8 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
       _displayStyle = t.displayStyle;
       _iconCategory =
           t.iconAsset != null && _kIconCategories.contains(t.iconAsset)
-              ? t.iconAsset!
-              : 'calendar';
+          ? t.iconAsset!
+          : 'calendar';
       _existing = t;
       _dirty = false;
       setState(() => _loading = false);
