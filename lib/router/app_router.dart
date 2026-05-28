@@ -117,7 +117,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/session/simulation-summary',
         name: RouteNames.sessionSimulationSummary,
-        builder: (_, _) => const SimulationSummaryScreen(),
+        builder: (_, GoRouterState state) {
+          final id = state.uri.queryParameters['id'];
+          return SimulationSummaryScreen(logId: id);
+        },
       ),
       GoRoute(
         path: '/contacts',

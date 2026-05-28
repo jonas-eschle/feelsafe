@@ -1,22 +1,13 @@
 /// Widget tests for [SimulationSummaryScreen].
 ///
-/// The screen is a static [StatelessWidget] (no controller) that renders
-/// a post-simulation summary stub. Tests verify:
-///  - AppBar title renders correctly.
-///  - Heading icon and text are present.
-///  - Empty-state body text is shown.
-///  - "Back to home" [FilledButton] CTA is present and enabled.
-///  - The CTA navigates to the home route via `context.goNamed`.
-///  - No "Start Real Session" button is present (spec 04 §Simulation Summary).
-///  - Async state: no [CircularProgressIndicator] (screen is static).
-///  - Dark-mode, RTL (Arabic), and accessibility smoke tests.
+/// Covers the empty fallback when logId is null, the controller-driven
+/// PIN gate, timeline rendering, badge counts, the share AppBar action,
+/// and navigation back to home. Uses a fake controller subclass so
+/// tests can inject any [SimulationSummaryState] without touching the
+/// repository, settings repo, or `share_plus`.
 ///
-/// Navigation tests wrap the screen in a minimal [GoRouter] (the same
-/// pattern as `settings_security_screen_test.dart`) so that
-/// `context.goNamed(RouteNames.home)` resolves at test time without
-/// invoking the full app router.
-///
-/// Spec ref: `docs/spec/04-screens-navigation.md §Simulation Summary Screen`.
+/// Spec reference: docs/spec/04-screens-navigation.md §Simulation
+/// Summary Screen (lines 1202–1288).
 library;
 
 import 'package:flutter/material.dart';
@@ -24,76 +15,154 @@ import 'package:flutter/material.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/widgets/pin_keypad.dart';
+import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/models/session_log.dart';
+import 'package:guardianangela/domain/models/session_log_event.dart';
+import 'package:guardianangela/features/simulation_summary/simulation_summary_controller.dart';
 import 'package:guardianangela/features/simulation_summary/simulation_summary_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
-// Navigation observer
+// Test fakes
 // ---------------------------------------------------------------------------
 
-/// Records every named-route go/push event fired through a [GoRouter].
-class _RouteTracker extends NavigatorObserver {
-  final List<String?> pushed = <String?>[];
+/// Subclass of the real controller that emits a canned state and
+/// records calls to [submitPin] / [skipPin] / [loadFor].
+class _FakeSimSummaryController extends SimulationSummaryController {
+  _FakeSimSummaryController(this._initial);
+
+  final SimulationSummaryState _initial;
+
+  int loadForCalls = 0;
+  int submitPinCalls = 0;
+  int skipPinCalls = 0;
+  String? lastSubmittedPin;
 
   @override
-  void didPush(Route<Object?> route, Route<Object?>? previousRoute) {
-    pushed.add(route.settings.name);
+  Future<SimulationSummaryState> build() async => _initial;
+
+  @override
+  void loadFor(String? id) {
+    loadForCalls++;
   }
 
   @override
-  void didReplace({Route<Object?>? newRoute, Route<Object?>? oldRoute}) {
-    pushed.add(newRoute?.settings.name);
+  Future<void> submitPin(String pin) async {
+    submitPinCalls++;
+    lastSubmittedPin = pin;
+    final current = state.value;
+    if (current == null) return;
+    // Match: pin "0000" succeeds, anything else fails.
+    if (pin == '0000') {
+      state = AsyncData(
+        current.copyWith(pinUnlocked: true, pinError: false),
+      );
+    } else {
+      state = AsyncData(current.copyWith(pinError: true));
+    }
+  }
+
+  @override
+  void skipPin() {
+    skipPinCalls++;
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncData(
+      current.copyWith(pinUnlocked: true, pinError: false),
+    );
   }
 }
+
+// ---------------------------------------------------------------------------
+// Test data
+// ---------------------------------------------------------------------------
+
+SessionLog _log({
+  List<SessionLogEvent>? events,
+  Duration duration = const Duration(minutes: 5, seconds: 23),
+}) {
+  final start = DateTime.utc(2026, 1, 1, 12);
+  return SessionLog(
+    id: 'log-1',
+    modeId: 'walk',
+    modeName: 'Walk Mode',
+    startedAt: start,
+    endedAt: start.add(duration),
+    endReason: EndReason.chainExhausted,
+    isSimulation: true,
+    events: events ??
+        <SessionLogEvent>[
+          SessionLogEvent(
+            timestamp: start,
+            eventType: 'started',
+            stepIndex: 0,
+            description: 'Session started',
+          ),
+        ],
+  );
+}
+
+SimulationSummaryState _state({
+  SessionLog? log,
+  bool pinRequired = false,
+  bool pinUnlocked = true,
+  bool pinError = false,
+}) {
+  return SimulationSummaryState(
+    log: log ?? _log(),
+    pinRequired: pinRequired,
+    pinUnlocked: pinUnlocked,
+    pinError: pinError,
+  );
+}
+
+List<Override> _overrideWith(_FakeSimSummaryController fake) => <Override>[
+  simulationSummaryControllerProvider.overrideWith(() => fake),
+];
 
 // ---------------------------------------------------------------------------
 // Pump helpers
 // ---------------------------------------------------------------------------
 
-/// Pumps [SimulationSummaryScreen] using the shared [pumpScreen] harness.
-///
-/// Suitable for all tests that do NOT need to assert on GoRouter
-/// navigation, because [pumpScreen] wraps the screen in a plain
-/// [MaterialApp] (no router).
 Future<void> _pump(
   WidgetTester tester, {
+  String? logId = 'log-1',
+  _FakeSimSummaryController? controller,
   Locale locale = const Locale('en'),
   ThemeMode themeMode = ThemeMode.light,
   bool settle = true,
-}) => pumpScreen(
-  tester,
-  const SimulationSummaryScreen(),
-  locale: locale,
-  themeMode: themeMode,
-  settle: settle,
-);
+}) {
+  final fake = controller ?? _FakeSimSummaryController(_state());
+  return pumpScreen(
+    tester,
+    SimulationSummaryScreen(logId: logId),
+    overrides: _overrideWith(fake),
+    locale: locale,
+    themeMode: themeMode,
+    settle: settle,
+  );
+}
 
-/// Wraps [SimulationSummaryScreen] in a two-route [GoRouter] so that
-/// `context.goNamed(RouteNames.home)` resolves during tests.
-///
-/// Routes defined:
-/// - `/session/simulation-summary` — the screen under test.
-/// - `/` — stub home destination (verifies navigation completed).
 Future<void> _pumpWithRouter(
   WidgetTester tester, {
-  _RouteTracker? tracker,
-  Locale locale = const Locale('en'),
-  ThemeMode themeMode = ThemeMode.light,
+  required _FakeSimSummaryController fake,
+  String logId = 'log-1',
 }) async {
-  final observers = <NavigatorObserver>[?tracker];
   final router = GoRouter(
-    initialLocation: '/session/simulation-summary',
-    observers: observers,
+    initialLocation: '/session/simulation-summary?id=$logId',
     routes: <RouteBase>[
       GoRoute(
         path: '/session/simulation-summary',
         name: RouteNames.sessionSimulationSummary,
-        builder: (_, _) => const SimulationSummaryScreen(),
+        builder: (_, GoRouterState state) =>
+            SimulationSummaryScreen(logId: state.uri.queryParameters['id']),
       ),
       GoRoute(
         path: '/',
@@ -102,12 +171,11 @@ Future<void> _pumpWithRouter(
       ),
     ],
   );
-
   await tester.pumpWidget(
     ProviderScope(
+      overrides: _overrideWith(fake),
       child: MaterialApp.router(
         routerConfig: router,
-        locale: locale,
         localizationsDelegates: const <LocalizationsDelegate<Object>>[
           AppLocalizations.delegate,
           GlobalMaterialLocalizations.delegate,
@@ -115,18 +183,8 @@ Future<void> _pumpWithRouter(
           GlobalCupertinoLocalizations.delegate,
         ],
         supportedLocales: AppLocalizations.supportedLocales,
-        themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
-          useMaterial3: true,
-        ),
-        darkTheme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-            brightness: Brightness.dark,
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
       ),
@@ -140,306 +198,418 @@ Future<void> _pumpWithRouter(
 // ---------------------------------------------------------------------------
 
 void main() {
-  // ── AppBar ─────────────────────────────────────────────────────────────────
+  // ── Empty / fallback ────────────────────────────────────────────────────
 
-  group('SimulationSummaryScreen — AppBar', () {
-    testWidgets('renders the simulation-summary title in the app bar', (
+  group('SimulationSummaryScreen — empty fallback', () {
+    testWidgets('renders empty body when logId is null', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      // The title text appears at least once (AppBar).
-      expect(find.text(l10n.simulationSummaryTitle), findsWidgets);
+      await _pump(tester, logId: null);
+      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
     });
 
-    testWidgets('Scaffold contains exactly one AppBar', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      expect(find.byType(AppBar), findsOneWidget);
-    });
-
-    testWidgets('AppBar title widget is a Text node', (
+    testWidgets('renders empty body when logId is empty', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      final appBar = tester.widget<AppBar>(find.byType(AppBar));
-      expect(appBar.title, isA<Text>());
-      final title = appBar.title! as Text;
-      expect(title.data, l10n.simulationSummaryTitle);
+      await _pump(tester, logId: '');
+      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
+    });
+
+    testWidgets('empty body has return-home button', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, logId: null);
+      expect(find.text(l10n.simulationSummaryReturn), findsOneWidget);
     });
   });
 
-  // ── Heading ────────────────────────────────────────────────────────────────
+  // ── AppBar ──────────────────────────────────────────────────────────────
 
-  group('SimulationSummaryScreen — heading', () {
+  group('SimulationSummaryScreen — AppBar', () {
+    testWidgets('renders title', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester);
+      expect(find.text(l10n.simulationSummaryTitle), findsWidgets);
+    });
+
+    testWidgets('share icon visible when summary is unlocked', (
+      WidgetTester tester,
+    ) async {
+      await _pump(tester);
+      expect(find.byIcon(Icons.share), findsOneWidget);
+    });
+
+    testWidgets('share icon hidden behind PIN prompt', (
+      WidgetTester tester,
+    ) async {
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(pinRequired: true, pinUnlocked: false),
+        ),
+      );
+      expect(find.byIcon(Icons.share), findsNothing);
+    });
+  });
+
+  // ── PIN prompt ──────────────────────────────────────────────────────────
+
+  group('SimulationSummaryScreen — PIN prompt', () {
+    testWidgets('shows PIN keypad when pin is required & not unlocked', (
+      WidgetTester tester,
+    ) async {
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(pinRequired: true, pinUnlocked: false),
+        ),
+      );
+      expect(find.byType(PinKeypad), findsOneWidget);
+    });
+
+    testWidgets('PIN prompt title and body strings are present', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(pinRequired: true, pinUnlocked: false),
+        ),
+      );
+      expect(find.text(l10n.simulationPinPromptTitle), findsOneWidget);
+      expect(find.text(l10n.simulationPinPromptBody), findsOneWidget);
+    });
+
+    testWidgets('correct PIN unlocks summary', (WidgetTester tester) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      // Enter "0000" — the fake controller treats it as the valid PIN.
+      await tester.tap(find.text('0'));
+      await tester.tap(find.text('0'));
+      await tester.tap(find.text('0'));
+      await tester.tap(find.text('0'));
+      await tester.pumpAndSettle();
+      check(fake.submitPinCalls).isGreaterOrEqual(1);
+      // After unlock the timeline header is visible.
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.simulationSummaryTimelineHeader), findsOneWidget);
+    });
+
+    testWidgets('wrong PIN surfaces the incorrect-PIN label', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      await tester.tap(find.text('1'));
+      await tester.tap(find.text('2'));
+      await tester.tap(find.text('3'));
+      await tester.tap(find.text('4'));
+      await tester.pump();
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.simulationPinIncorrect), findsOneWidget);
+    });
+
+    testWidgets('skip button is reachable on the PIN prompt', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.widgetWithText(
+          TextButton,
+          l10n.simulationPinPromptSkip,
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('skipPin() unlocks summary (controller-level)', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      // Drive skipPin directly on the fake — Riverpod's notifier
+      // mutation triggers the UI rebuild.
+      fake.skipPin();
+      await tester.pumpAndSettle();
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.simulationSummaryTimelineHeader), findsOneWidget);
+    });
+  });
+
+  // ── Summary body ────────────────────────────────────────────────────────
+
+  group('SimulationSummaryScreen — summary body', () {
     testWidgets('renders the orange play-circle icon', (
       WidgetTester tester,
     ) async {
       await _pump(tester);
-      final iconFinder = find.byWidgetPredicate(
-        (Widget w) =>
-            w is Icon && w.icon == Icons.play_circle_outline,
-      );
-      expect(iconFinder, findsOneWidget);
-    });
-
-    testWidgets('play-circle icon has orange color', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      final icon = tester.widget<Icon>(
+      final icons = tester.widgetList<Icon>(
         find.byWidgetPredicate(
-          (Widget w) =>
-              w is Icon && w.icon == Icons.play_circle_outline,
+          (Widget w) => w is Icon && w.icon == Icons.play_circle_outline,
         ),
       );
-      check(icon.color).equals(Colors.orange);
+      expect(icons, isNotEmpty);
     });
 
-    testWidgets('heading text (simulationSummaryTitle) appears in body', (
+    testWidgets('renders duration row formatted mm:ss for <1h', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester);
-      // Title appears in both the AppBar and the body heading — ≥2 widgets.
-      expect(
-        find.text(l10n.simulationSummaryTitle),
-        findsAtLeastNWidgets(2),
-      );
+      expect(find.text(l10n.simulationSummaryDuration('05:23')), findsOneWidget);
     });
-  });
 
-  // ── Empty-state body ───────────────────────────────────────────────────────
-
-  group('SimulationSummaryScreen — empty-state body', () {
-    testWidgets('shows the "no steps fired" empty-state message', (
+    testWidgets('renders duration row formatted hh:mm:ss for ≥1h', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
-    });
-
-    testWidgets('empty-state message is wrapped in a Center widget', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      final centerFinder = find.ancestor(
-        of: find.text(l10n.simulationSummaryEmpty),
-        matching: find.byType(Center),
-      );
-      expect(centerFinder, findsOneWidget);
-    });
-  });
-
-  // ── Return-home CTA ────────────────────────────────────────────────────────
-
-  group('SimulationSummaryScreen — Return-home CTA', () {
-    testWidgets('renders exactly one FilledButton', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      expect(find.byType(FilledButton), findsOneWidget);
-    });
-
-    testWidgets('FilledButton carries the "Back to home" label', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      expect(
-        find.descendant(
-          of: find.byType(FilledButton),
-          matching: find.text(l10n.simulationSummaryReturn),
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(log: _log(duration: const Duration(hours: 1, minutes: 5))),
         ),
+      );
+      expect(
+        find.text(l10n.simulationSummaryDuration('01:05:00')),
         findsOneWidget,
       );
     });
 
-    testWidgets('FilledButton onPressed is not null (button is enabled)', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('renders timeline header', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
       await _pump(tester);
-      final btn = tester.widget<FilledButton>(find.byType(FilledButton));
-      check(btn.onPressed).isNotNull();
+      expect(find.text(l10n.simulationSummaryTimelineHeader), findsOneWidget);
     });
 
-    testWidgets('FilledButton has a minimumSize constraint', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      final btn = tester.widget<FilledButton>(find.byType(FilledButton));
-      // Style carries a minimumSize so the button spans full width.
-      expect(btn.style, isNotNull);
+    testWidgets('renders one ListTile per event', (WidgetTester tester) async {
+      final events = <SessionLogEvent>[
+        SessionLogEvent(
+          timestamp: DateTime.utc(2026, 1, 1, 12),
+          eventType: 'started',
+          stepIndex: 0,
+          description: 'Session started',
+        ),
+        SessionLogEvent(
+          timestamp: DateTime.utc(2026, 1, 1, 12, 1),
+          eventType: 'step_fired',
+          stepIndex: 1,
+          description: 'Hold Button fired',
+        ),
+        SessionLogEvent(
+          timestamp: DateTime.utc(2026, 1, 1, 12, 2),
+          eventType: 'missed',
+          stepIndex: 1,
+          description: 'Hold Button missed',
+        ),
+      ];
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(log: _log(events: events)),
+        ),
+      );
+      expect(find.byType(ListTile), findsNWidgets(3));
     });
   });
 
-  // ── Navigation ─────────────────────────────────────────────────────────────
+  // ── Badges ──────────────────────────────────────────────────────────────
+
+  group('SimulationSummaryScreen — badges', () {
+    testWidgets('missed-events badge count is correct', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final events = <SessionLogEvent>[
+        for (int i = 0; i < 3; i++)
+          SessionLogEvent(
+            timestamp: DateTime.utc(2026, 1, 1, 12, i),
+            eventType: 'missed',
+            stepIndex: i,
+            description: 'Missed $i',
+          ),
+      ];
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(log: _log(events: events)),
+        ),
+      );
+      expect(
+        find.text(l10n.simulationSummaryMissedEventsBadge(3)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('steps-fired badge count is correct', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final events = <SessionLogEvent>[
+        for (int i = 0; i < 2; i++)
+          SessionLogEvent(
+            timestamp: DateTime.utc(2026, 1, 1, 12, i),
+            eventType: 'step_fired',
+            stepIndex: i,
+            description: 'Step $i',
+          ),
+      ];
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(log: _log(events: events)),
+        ),
+      );
+      expect(
+        find.text(l10n.simulationSummaryStepsFiredBadge(2)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('distress badge counts step_fired with "distress" tag', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final events = <SessionLogEvent>[
+        SessionLogEvent(
+          timestamp: DateTime.utc(2026, 1, 1, 12),
+          eventType: 'step_fired',
+          stepIndex: 0,
+          description: 'distress triggered',
+        ),
+      ];
+      await _pump(
+        tester,
+        controller: _FakeSimSummaryController(
+          _state(log: _log(events: events)),
+        ),
+      );
+      expect(
+        find.text(l10n.simulationSummaryDistressBadge(1)),
+        findsOneWidget,
+      );
+    });
+  });
+
+  // ── Navigation ──────────────────────────────────────────────────────────
 
   group('SimulationSummaryScreen — navigation', () {
-    testWidgets(
-      '"Back to home" button navigates to the home route',
-      (WidgetTester tester) async {
-        final tracker = _RouteTracker();
-        await _pumpWithRouter(tester, tracker: tracker);
-        final l10n = await loadL10n(const Locale('en'));
-        await tester.tap(find.text(l10n.simulationSummaryReturn));
-        await tester.pumpAndSettle();
-        // After navigation the home stub Scaffold is shown.
-        // At least one navigation event was recorded.
-        check(tracker.pushed).isNotEmpty();
-      },
-    );
-
-    testWidgets(
-      'tapping "Back to home" replaces the simulation-summary screen',
-      (WidgetTester tester) async {
-        await _pumpWithRouter(tester);
-        final l10n = await loadL10n(const Locale('en'));
-        // Confirm we start on the summary screen.
-        expect(find.text(l10n.simulationSummaryReturn), findsOneWidget);
-
-        await tester.tap(find.text(l10n.simulationSummaryReturn));
-        await tester.pumpAndSettle();
-
-        // After going home the CTA is no longer visible.
-        expect(find.text(l10n.simulationSummaryReturn), findsNothing);
-      },
-    );
-  });
-
-  // ── Spec compliance — absent buttons ──────────────────────────────────────
-
-  group('SimulationSummaryScreen — spec compliance', () {
-    testWidgets('has no "Start Real Session" button (spec 04)', (
+    testWidgets('return-home button navigates to /', (
       WidgetTester tester,
     ) async {
-      await _pump(tester);
-      // Spec: "No Start Real Session button." Verify no second FilledButton.
-      expect(find.byType(FilledButton), findsOneWidget);
-    });
-
-    testWidgets('has no OutlinedButton secondary CTA', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      expect(find.byType(OutlinedButton), findsNothing);
-    });
-
-    testWidgets('has no CircularProgressIndicator (static screen)', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      final fake = _FakeSimSummaryController(_state());
+      await _pumpWithRouter(tester, fake: fake);
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.simulationSummaryReturn));
+      await tester.pumpAndSettle();
+      // After navigation summary text is gone.
+      expect(find.text(l10n.simulationSummaryReturn), findsNothing);
     });
   });
 
-  // ── Async states ───────────────────────────────────────────────────────────
+  // ── Async states ────────────────────────────────────────────────────────
 
   group('SimulationSummaryScreen — async states', () {
-    testWidgets('first frame has no loading indicator (StatelessWidget)', (
+    testWidgets('shows CircularProgressIndicator while loading', (
       WidgetTester tester,
     ) async {
-      // Pass settle: false to inspect the very first frame.
-      await _pump(tester, settle: false);
-      expect(find.byType(CircularProgressIndicator), findsNothing);
+      final fake = _FakeSimSummaryController(_state());
+      await pumpScreen(
+        tester,
+        const SimulationSummaryScreen(logId: 'log-1'),
+        overrides: _overrideWith(fake),
+        settle: false,
+      );
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('no exception thrown during pump', (
+    testWidgets('no CircularProgressIndicator after build resolves', (
       WidgetTester tester,
     ) async {
       await _pump(tester);
-      expect(tester.takeException(), isNull);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
 
-  // ── RTL ────────────────────────────────────────────────────────────────────
+  // ── RTL & dark mode ─────────────────────────────────────────────────────
 
   group('SimulationSummaryScreen — RTL', () {
-    testWidgets('renders in Arabic (RTL) without overflow or exception', (
+    testWidgets('renders in Arabic without exception', (
       WidgetTester tester,
     ) async {
-      final l10n = await loadL10n(const Locale('ar'));
       await _pump(tester, locale: const Locale('ar'));
-      // AppBar and CTA present; no exceptions thrown.
-      expect(find.byType(AppBar), findsOneWidget);
-      expect(find.text(l10n.simulationSummaryReturn), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('renders in Hebrew (RTL) without overflow or exception', (
+    testWidgets('renders in Hebrew without exception', (
       WidgetTester tester,
     ) async {
       await _pump(tester, locale: const Locale('he'));
-      expect(find.byType(AppBar), findsOneWidget);
-      expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('renders in Farsi (RTL) without overflow or exception', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester, locale: const Locale('fa'));
-      expect(find.byType(AppBar), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
   });
-
-  // ── Dark mode ──────────────────────────────────────────────────────────────
 
   group('SimulationSummaryScreen — dark mode', () {
-    testWidgets('renders without exception in dark mode', (
+    testWidgets('renders in dark mode without exception', (
       WidgetTester tester,
     ) async {
       await _pump(tester, themeMode: ThemeMode.dark);
       expect(tester.takeException(), isNull);
-    });
-
-    testWidgets('FilledButton present in dark mode', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester, themeMode: ThemeMode.dark);
-      expect(find.text(l10n.simulationSummaryReturn), findsOneWidget);
     });
   });
 
-  // ── Accessibility ──────────────────────────────────────────────────────────
+  // ── Controller-level unit tests ─────────────────────────────────────────
 
-  group('SimulationSummaryScreen — accessibility', () {
-    testWidgets('FilledButton label is readable text for screen readers', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      // Screen readers traverse Text widgets inside buttons.
-      expect(
-        find.descendant(
-          of: find.byType(FilledButton),
-          matching: find.text(l10n.simulationSummaryReturn),
+  group('SimulationSummaryState — derived metrics', () {
+    test('missedCount counts missed events', () {
+      final state = _state(
+        log: _log(
+          events: <SessionLogEvent>[
+            SessionLogEvent(
+              timestamp: DateTime.utc(2026, 1, 1, 12),
+              eventType: 'missed',
+              stepIndex: 0,
+              description: '',
+            ),
+            SessionLogEvent(
+              timestamp: DateTime.utc(2026, 1, 1, 12, 1),
+              eventType: 'missed',
+              stepIndex: 1,
+              description: '',
+            ),
+          ],
         ),
-        findsOneWidget,
       );
+      expect(state.missedCount, 2);
     });
 
-    testWidgets('empty-state text is readable text for screen readers', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester);
-      // Raw Text in the tree — accessible without Semantics wrapper.
-      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
+    test('durationSeconds derives from startedAt/endedAt', () {
+      final state = _state(
+        log: _log(duration: const Duration(minutes: 2, seconds: 30)),
+      );
+      expect(state.durationSeconds, 150);
     });
 
-    testWidgets('renders without layout overflow at default size', (
-      WidgetTester tester,
-    ) async {
-      await _pump(tester);
-      // If any RenderFlex overflows, the test framework records a layout
-      // exception — assert that none occurred.
-      expect(tester.takeException(), isNull);
+    test('durationSeconds returns 0 when log is null', () {
+      const state = SimulationSummaryState(
+        log: null,
+        pinRequired: false,
+        pinUnlocked: true,
+      );
+      expect(state.durationSeconds, 0);
     });
   });
 }
