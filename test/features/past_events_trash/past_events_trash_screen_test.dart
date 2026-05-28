@@ -134,9 +134,7 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('shows error text on AsyncError', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('shows error text on AsyncError', (WidgetTester tester) async {
       // Inject an error state by using a controller that throws.
       final provider = pastEventsTrashControllerProvider.overrideWith(() {
         return _ErrorTrashController();
@@ -190,10 +188,7 @@ void main() {
         const PastEventsTrashScreen(),
         overrides: _overrides(fake),
       );
-      expect(
-        find.text(l10n.pastEventsTrashRetentionNote(7)),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.pastEventsTrashRetentionNote(7)), findsOneWidget);
     });
 
     testWidgets('retention note reflects custom retentionDays value', (
@@ -206,10 +201,7 @@ void main() {
         const PastEventsTrashScreen(),
         overrides: _overrides(fake),
       );
-      expect(
-        find.text(l10n.pastEventsTrashRetentionNote(14)),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.pastEventsTrashRetentionNote(14)), findsOneWidget);
     });
   });
 
@@ -233,9 +225,7 @@ void main() {
     });
 
     testWidgets('row shows mode name as title', (WidgetTester tester) async {
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a', modeName: 'Walk Mode'),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a', modeName: 'Walk Mode')];
       final fake = _FakeTrashController(_state(logs: logs));
       await pumpScreen(
         tester,
@@ -249,9 +239,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final started = DateTime.utc(2026, 5, 27, 10, 5);
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a', startedAt: started),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a', startedAt: started)];
       final fake = _FakeTrashController(_state(logs: logs));
       await pumpScreen(
         tester,
@@ -266,8 +254,14 @@ void main() {
     testWidgets('row subtitle contains remaining-days label', (
       WidgetTester tester,
     ) async {
+      // Use the real wall clock (not the test's pinned _kNow) so the
+      // screen's `DateTime.now()` agrees: deletedAt is "just trashed"
+      // → remaining = 7 (the default retentionDays).
+      final justNow = DateTime.now().toUtc();
       final fake = _FakeTrashController(
-        _state(logs: <PastEventsTrashLog>[_log(id: 'a')]),
+        _state(
+          logs: <PastEventsTrashLog>[_log(id: 'a', deletedAt: justNow)],
+        ),
       );
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
@@ -275,8 +269,6 @@ void main() {
         const PastEventsTrashScreen(),
         overrides: _overrides(fake),
       );
-      // The log was just trashed (deletedAt = now), so remaining = 7
-      // (the default retentionDays).
       expect(
         find.textContaining(l10n.pastEventsTrashRemainingDays(7)),
         findsOneWidget,
@@ -286,9 +278,7 @@ void main() {
     testWidgets('simulation log shows play_circle_outline icon', (
       WidgetTester tester,
     ) async {
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a', isSimulation: true),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a', isSimulation: true)];
       final fake = _FakeTrashController(_state(logs: logs));
       await pumpScreen(
         tester,
@@ -300,9 +290,7 @@ void main() {
 
     testWidgets('real log shows shield icon', (WidgetTester tester) async {
       // isSimulation defaults to false — only real session.
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a'),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a')];
       final fake = _FakeTrashController(_state(logs: logs));
       await pumpScreen(
         tester,
@@ -396,10 +384,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.delete_forever));
       await tester.pumpAndSettle();
       expect(find.byType(AlertDialog), findsOneWidget);
-      expect(
-        find.text(l10n.pastEventsTrashDeletePermanently),
-        findsWidgets,
-      );
+      expect(find.text(l10n.pastEventsTrashDeletePermanently), findsWidgets);
     });
 
     testWidgets('confirmation dialog shows the "cannot be undone" body text', (
@@ -487,9 +472,7 @@ void main() {
         final oldDate = DateTime.now().toUtc().subtract(
           const Duration(days: 10),
         );
-        final logs = <PastEventsTrashLog>[
-          _log(id: 'a', deletedAt: oldDate),
-        ];
+        final logs = <PastEventsTrashLog>[_log(id: 'a', deletedAt: oldDate)];
         final fake = _FakeTrashController(_state(logs: logs));
         final l10n = await loadL10n(const Locale('en'));
         await pumpScreen(
@@ -511,9 +494,7 @@ void main() {
       final threeDaysAgo = DateTime.now().toUtc().subtract(
         const Duration(days: 3),
       );
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a', deletedAt: threeDaysAgo),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a', deletedAt: threeDaysAgo)];
       final fake = _FakeTrashController(_state(logs: logs));
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
@@ -533,9 +514,7 @@ void main() {
     testWidgets('renders in Arabic (RTL) without overflow or exception', (
       WidgetTester tester,
     ) async {
-      final logs = <PastEventsTrashLog>[
-        _log(id: 'a', modeName: 'Walk Mode'),
-      ];
+      final logs = <PastEventsTrashLog>[_log(id: 'a', modeName: 'Walk Mode')];
       final fake = _FakeTrashController(_state(logs: logs));
       await pumpScreen(
         tester,
