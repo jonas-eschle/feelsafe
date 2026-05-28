@@ -40,9 +40,38 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
   int? lastPinTimeout;
   int deceptiveDialogCalls = 0;
   bool? lastDeceptiveDialog;
+  int sessionEndBiometricCalls = 0;
+  bool? lastSessionEndBiometric;
+  int clearPinCalls = 0;
+  PinType? lastClearedType;
 
   @override
   Future<SettingsSecurityState> build() async => _initial;
+
+  @override
+  Future<void> setSessionEndBiometric(bool enabled) async {
+    sessionEndBiometricCalls++;
+    lastSessionEndBiometric = enabled;
+    final cur = state.value;
+    if (cur == null) return;
+    state = AsyncData(_copyWith(cur, sessionEndBiometricEnabled: enabled));
+  }
+
+  @override
+  Future<void> clearPin(PinType type) async {
+    clearPinCalls++;
+    lastClearedType = type;
+    final cur = state.value;
+    if (cur == null) return;
+    state = AsyncData(
+      _copyWith(
+        cur,
+        appPinSet: type != PinType.app && cur.appPinSet,
+        sessionEndPinSet: type != PinType.sessionEnd && cur.sessionEndPinSet,
+        duressPinSet: type != PinType.duress && cur.duressPinSet,
+      ),
+    );
+  }
 
   @override
   Future<void> setWrongPinThreshold(int v) async {
@@ -80,6 +109,7 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     int? pinTimeoutSeconds,
     int? wrongPinThreshold,
     bool? deceptiveDialogEnabled,
+    bool? sessionEndBiometricEnabled,
   }) => SettingsSecurityState(
     appPinSet: appPinSet ?? s.appPinSet,
     sessionEndPinSet: sessionEndPinSet ?? s.sessionEndPinSet,
@@ -87,6 +117,8 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     pinTimeoutSeconds: pinTimeoutSeconds ?? s.pinTimeoutSeconds,
     wrongPinThreshold: wrongPinThreshold ?? s.wrongPinThreshold,
     deceptiveDialogEnabled: deceptiveDialogEnabled ?? s.deceptiveDialogEnabled,
+    sessionEndBiometricEnabled:
+        sessionEndBiometricEnabled ?? s.sessionEndBiometricEnabled,
   );
 }
 
@@ -115,6 +147,7 @@ SettingsSecurityState _secState({
   int pinTimeoutSeconds = 15,
   int wrongPinThreshold = 5,
   bool deceptiveDialogEnabled = false,
+  bool sessionEndBiometricEnabled = false,
 }) => SettingsSecurityState(
   appPinSet: appPinSet,
   sessionEndPinSet: sessionEndPinSet,
@@ -122,6 +155,7 @@ SettingsSecurityState _secState({
   pinTimeoutSeconds: pinTimeoutSeconds,
   wrongPinThreshold: wrongPinThreshold,
   deceptiveDialogEnabled: deceptiveDialogEnabled,
+  sessionEndBiometricEnabled: sessionEndBiometricEnabled,
 );
 
 // ---------------------------------------------------------------------------
@@ -487,6 +521,11 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityWrongPinThresholdLabel),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(l10n.securityWrongPinThresholdLabel), findsOneWidget);
       expect(find.byType(Slider), findsWidgets);
     });
@@ -494,6 +533,12 @@ void main() {
     testWidgets('PIN timeout slider is present', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      // Timeout slider now lives inside the Session End PIN card.
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityPinTimeoutLabel),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(l10n.securityPinTimeoutLabel), findsOneWidget);
     });
   });
@@ -506,41 +551,184 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityDeceptiveDialogToggle),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(l10n.securityDeceptiveDialogToggle), findsOneWidget);
-      expect(find.byType(SwitchListTile), findsOneWidget);
+      // Two SwitchListTiles total: session-end biometric + deceptive.
+      // skipOffstage:false counts laid-out but scrolled-off items.
+      expect(
+        find.byType(SwitchListTile, skipOffstage: false),
+        findsNWidgets(2),
+      );
     });
 
     testWidgets('switch is off when deceptiveDialogEnabled is false', (
       WidgetTester tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityDeceptiveDialogToggle),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final tile = tester.widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(l10n.securityDeceptiveDialogToggle),
+          matching: find.byType(SwitchListTile),
+        ),
+      );
       check(tile.value).isFalse();
     });
 
     testWidgets('switch is on when deceptiveDialogEnabled is true', (
       WidgetTester tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       await _pump(
         tester,
         fake: _FakeSettingsSecurityController(
           _secState(deceptiveDialogEnabled: true),
         ),
       );
-      final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityDeceptiveDialogToggle),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      final tile = tester.widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(l10n.securityDeceptiveDialogToggle),
+          matching: find.byType(SwitchListTile),
+        ),
+      );
       check(tile.value).isTrue();
     });
 
     testWidgets('toggling switch calls setDeceptiveDialog', (
       WidgetTester tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSettingsSecurityController(_secState());
       await _pump(tester, fake: fake);
-      await tester.tap(find.byType(SwitchListTile));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityDeceptiveDialogToggle),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text(l10n.securityDeceptiveDialogToggle));
       await tester.pumpAndSettle();
       check(fake.deceptiveDialogCalls).equals(1);
       check(fake.lastDeceptiveDialog).equals(true);
     });
+  });
+
+  // ── Session-End biometric toggle ───────────────────────────────────────────
+
+  group('SettingsSecurityScreen — session-end biometric toggle', () {
+    testWidgets(
+      'renders inside the Session End PIN card with the right label',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+        expect(find.text(l10n.securitySessionEndPinBiometric), findsOneWidget);
+      },
+    );
+
+    testWidgets('reflects state — off when sessionEndBiometricEnabled false', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      final tile = tester.widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(l10n.securitySessionEndPinBiometric),
+          matching: find.byType(SwitchListTile),
+        ),
+      );
+      check(tile.value).isFalse();
+    });
+
+    testWidgets('toggling the switch calls setSessionEndBiometric(true)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(_secState());
+      await _pump(tester, fake: fake);
+      await tester.tap(find.text(l10n.securitySessionEndPinBiometric));
+      await tester.pumpAndSettle();
+      check(fake.sessionEndBiometricCalls).equals(1);
+      check(fake.lastSessionEndBiometric).equals(true);
+    });
+  });
+
+  // ── Clear / Remove PIN ─────────────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — clear PIN', () {
+    testWidgets('App PIN Remove button shown only when PIN is set', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      // When no PIN set, no Remove button rendered for that card.
+      expect(find.text(l10n.securityRemovePin), findsNothing);
+    });
+
+    testWidgets('tapping Remove + confirming calls clearPin for the App PIN', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(
+        _secState(appPinSet: true),
+      );
+      await _pump(tester, fake: fake);
+      await tester.tap(find.text(l10n.securityRemovePin).first);
+      await tester.pumpAndSettle();
+      // Confirm dialog has a FilledButton with "Remove" label — tap it.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(FilledButton),
+          matching: find.text(l10n.securityRemovePin),
+        ),
+      );
+      await tester.pumpAndSettle();
+      check(fake.clearPinCalls).equals(1);
+      check(fake.lastClearedType).equals(PinType.app);
+    });
+
+    testWidgets('cancelling the confirm dialog leaves the PIN intact', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(
+        _secState(appPinSet: true),
+      );
+      await _pump(tester, fake: fake);
+      await tester.tap(find.text(l10n.securityRemovePin).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      check(fake.clearPinCalls).equals(0);
+    });
+  });
+
+  // ── Info dialog ────────────────────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — info dialog', () {
+    testWidgets(
+      'tapping the info icon opens the App PIN explanatory dialog',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+        // First info icon is the App PIN card.
+        await tester.tap(find.byIcon(Icons.info_outline).first);
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.securityAppPinInfo), findsOneWidget);
+      },
+    );
   });
 
   // ── Three cards rendered ───────────────────────────────────────────────────
@@ -609,6 +797,11 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      await tester.scrollUntilVisible(
+        find.text(l10n.securityDeceptiveDialogToggle),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       // SwitchListTile title is a [Text] widget — readable by TalkBack/VoiceOver.
       expect(
         find.descendant(

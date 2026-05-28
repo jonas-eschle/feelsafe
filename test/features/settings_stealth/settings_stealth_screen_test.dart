@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/features/settings_stealth/settings_stealth_controller.dart';
@@ -50,8 +51,36 @@ class _FakeStealthController extends SettingsStealthController {
   int setTimerDisplayCalls = 0;
   StealthTimerDisplay? lastTimerDisplay;
 
+  int setFakeIconCalls = 0;
+  StealthIconPreset? lastFakeIcon;
+
+  int setLockTaskModeCalls = 0;
+  bool? lastLockTaskMode;
+
   @override
   Future<SettingsStealthState> build() async => _initial;
+
+  @override
+  Future<void> setFakeIcon(StealthIconPreset preset) async {
+    setFakeIconCalls++;
+    lastFakeIcon = preset;
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncData(
+      SettingsStealthState(config: current.config.copyWith(fakeIcon: preset)),
+    );
+  }
+
+  @override
+  Future<void> setLockTaskMode(bool v) async {
+    setLockTaskModeCalls++;
+    lastLockTaskMode = v;
+    final current = state.value;
+    if (current == null) return;
+    state = AsyncData(
+      SettingsStealthState(config: current.config.copyWith(lockTaskMode: v)),
+    );
+  }
 
   @override
   Future<void> setEnabled(bool v) async {
@@ -125,16 +154,20 @@ class _FakeStealthController extends SettingsStealthController {
 SettingsStealthState _stateWith({
   bool enabled = false,
   String fakeName = 'Music',
+  StealthIconPreset fakeIcon = StealthIconPreset.music,
   bool notificationDisguise = true,
   bool sessionScreenStealth = true,
   StealthTimerDisplay timerDisplay = StealthTimerDisplay.normal,
+  bool lockTaskMode = false,
 }) => SettingsStealthState(
   config: StealthConfig(
     enabled: enabled,
     fakeName: fakeName,
+    fakeIcon: fakeIcon,
     notificationDisguise: notificationDisguise,
     sessionScreenStealth: sessionScreenStealth,
     timerDisplay: timerDisplay,
+    lockTaskMode: lockTaskMode,
   ),
 );
 
@@ -768,6 +801,91 @@ void main() {
       expect(find.text(l10n.stealthNotificationDisguiseLabel), findsOneWidget);
       expect(find.text(l10n.stealthSessionScreenLabel), findsOneWidget);
       expect(find.text(l10n.stealthTimerDisplayLabel), findsOneWidget);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Fake-icon picker (spec 04 §Stealth Settings)
+  // -------------------------------------------------------------------------
+  group('SettingsStealthScreen — fake icon picker', () {
+    testWidgets('renders the icon-preset dropdown when stealth is enabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(
+          _FakeStealthController(_stateWith(enabled: true)),
+        ),
+      );
+      expect(find.text(l10n.stealthFakeIconLabel), findsOneWidget);
+      expect(find.byType(DropdownButton<StealthIconPreset>), findsOneWidget);
+    });
+
+    testWidgets('selecting a preset calls setFakeIcon', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeStealthController(_stateWith(enabled: true));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(fake),
+      );
+      await tester.tap(find.byType(DropdownButton<StealthIconPreset>));
+      await tester.pumpAndSettle();
+      // The "Calendar" entry is one of the visible menu items.
+      await tester.tap(find.text('Calendar').last);
+      await tester.pumpAndSettle();
+      check(fake.setFakeIconCalls).equals(1);
+      check(fake.lastFakeIcon).equals(StealthIconPreset.calendar);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Lock-task / pinned-app toggle
+  // -------------------------------------------------------------------------
+  group('SettingsStealthScreen — lock-task toggle', () {
+    testWidgets('renders the lock-task toggle when stealth is enabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(
+          _FakeStealthController(_stateWith(enabled: true)),
+        ),
+      );
+      expect(find.text(l10n.stealthLockTaskLabel), findsOneWidget);
+    });
+
+    testWidgets('lock-task toggle persists the value via setLockTaskMode', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeStealthController(_stateWith(enabled: true));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(fake),
+      );
+      await tester.tap(find.text(l10n.stealthLockTaskLabel));
+      await tester.pumpAndSettle();
+      check(fake.setLockTaskModeCalls).equals(1);
+      check(fake.lastLockTaskMode).equals(true);
+    });
+
+    testWidgets('toggle is hidden when stealth is disabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(_FakeStealthController(_stateWith())),
+      );
+      expect(find.text(l10n.stealthLockTaskLabel), findsNothing);
     });
   });
 }

@@ -2,13 +2,15 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/features/settings_stealth/settings_stealth_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Stealth settings screen.
 ///
-/// Exposes every `StealthConfig` field. See spec 06 §Stealth Mode.
+/// Exposes every `StealthConfig` field including the fake-icon picker
+/// (spec 04 §Stealth Settings) and lock-task / pinned-app toggle.
 class SettingsStealthScreen extends ConsumerWidget {
   /// Creates a [SettingsStealthScreen].
   const SettingsStealthScreen({super.key});
@@ -38,6 +40,22 @@ class SettingsStealthScreen extends ConsumerWidget {
                   subtitle: Text(s.config.fakeName),
                   onTap: () => _editFakeName(context, ref, s.config.fakeName),
                 ),
+                ListTile(
+                  title: Text(l10n.stealthFakeIconLabel),
+                  trailing: DropdownButton<StealthIconPreset>(
+                    value: s.config.fakeIcon,
+                    onChanged: (StealthIconPreset? v) {
+                      if (v != null) notifier.setFakeIcon(v);
+                    },
+                    items: <DropdownMenuItem<StealthIconPreset>>[
+                      for (final preset in StealthIconPreset.values)
+                        DropdownMenuItem<StealthIconPreset>(
+                          value: preset,
+                          child: Text(_presetLabel(preset, l10n)),
+                        ),
+                    ],
+                  ),
+                ),
                 SwitchListTile(
                   title: Text(l10n.stealthNotificationDisguiseLabel),
                   value: s.config.notificationDisguise,
@@ -47,6 +65,12 @@ class SettingsStealthScreen extends ConsumerWidget {
                   title: Text(l10n.stealthSessionScreenLabel),
                   value: s.config.sessionScreenStealth,
                   onChanged: notifier.setSessionScreenStealth,
+                ),
+                SwitchListTile(
+                  title: Text(l10n.stealthLockTaskLabel),
+                  subtitle: Text(l10n.stealthLockTaskSubtitle),
+                  value: s.config.lockTaskMode,
+                  onChanged: notifier.setLockTaskMode,
                 ),
                 ListTile(
                   title: Text(l10n.stealthTimerDisplayLabel),
@@ -78,6 +102,20 @@ class SettingsStealthScreen extends ConsumerWidget {
       ),
     );
   }
+
+  String _presetLabel(StealthIconPreset preset, AppLocalizations l10n) =>
+      switch (preset) {
+        StealthIconPreset.music => l10n.stealthPresetMusic,
+        StealthIconPreset.calendar => l10n.stealthPresetCalendar,
+        StealthIconPreset.fitness => l10n.stealthPresetFitness,
+        StealthIconPreset.weather => l10n.stealthPresetWeather,
+        StealthIconPreset.news => l10n.stealthPresetNews,
+        StealthIconPreset.photos => l10n.stealthPresetPhotos,
+        StealthIconPreset.notes => l10n.stealthPresetNotes,
+        StealthIconPreset.clock => l10n.stealthPresetClock,
+        StealthIconPreset.podcast => l10n.stealthPresetPodcast,
+        StealthIconPreset.none => l10n.stealthPresetNone,
+      };
 
   Future<void> _editFakeName(
     BuildContext context,

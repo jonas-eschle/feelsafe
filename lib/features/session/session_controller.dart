@@ -351,6 +351,13 @@ class SessionController extends AsyncNotifier<SessionState> {
     );
     state = AsyncData(next);
     _distressMode = distressMode;
+    // Engage Android lock-task / pinned-app mode when the user enabled
+    // it in stealth settings. Non-Android platforms no-op (spec 04
+    // §Stealth Settings: lockTaskMode).
+    final stealth = mode.overrides?.stealth ?? settings.defaults.stealth;
+    if (stealth.lockTaskMode && !simulate) {
+      await ref.read(systemUiServiceProvider).toggleLockTaskMode(true);
+    }
     engine.start();
     _tick = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
   }
@@ -507,6 +514,13 @@ class SessionController extends AsyncNotifier<SessionState> {
     engine.endSession(reason: reason);
     await _finaliseLog(reason);
     await _disposeRunOnly();
+    // Release lock-task / pinned-app mode if the previous session
+    // engaged it. The platform service no-ops on non-Android.
+    try {
+      await ref.read(systemUiServiceProvider).toggleLockTaskMode(false);
+    } catch (e) {
+      log('lock-task release failed: $e', name: 'SessionController');
+    }
     final s = state.value ?? const SessionState.initial();
     state = AsyncData(
       s.copyWith(

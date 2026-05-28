@@ -2363,13 +2363,13 @@ abstract class AppLocalizations {
   /// **'Disable'**
   String get securityDisablePin;
 
-  /// Button to set a PIN.
+  /// Set-PIN button.
   ///
   /// In en, this message translates to:
   /// **'Set PIN'**
   String get securitySetPin;
 
-  /// Button to change a PIN.
+  /// Change-PIN button.
   ///
   /// In en, this message translates to:
   /// **'Change PIN'**
@@ -3082,6 +3082,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'None'**
   String get stealthPresetNone;
+
+  /// Lock-task / pinned-app mode toggle label (spec 04 §Stealth Settings).
+  ///
+  /// In en, this message translates to:
+  /// **'Pin app during session'**
+  String get stealthLockTaskLabel;
+
+  /// Helper subtitle below the lock-task toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.'**
+  String get stealthLockTaskSubtitle;
 
   /// Label of the simulation speed slider.
   ///
@@ -4060,6 +4072,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Allow biometric'**
   String get securityBiometricToggle;
+
+  /// Info button label on PIN cards.
+  ///
+  /// In en, this message translates to:
+  /// **'What is this?'**
+  String get securityWhatIsThis;
+
+  /// Explanatory dialog body for the App PIN card.
+  ///
+  /// In en, this message translates to:
+  /// **'Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.'**
+  String get securityAppPinInfo;
+
+  /// Explanatory dialog body for the Session End PIN card.
+  ///
+  /// In en, this message translates to:
+  /// **'Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.'**
+  String get securitySessionEndPinInfo;
+
+  /// Explanatory dialog body for the Duress PIN card.
+  ///
+  /// In en, this message translates to:
+  /// **'If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.'**
+  String get securityDuressPinInfo;
 
   /// PIN timeout slider label.
   ///

@@ -1600,6 +1600,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stealthPresetNone => 'Keine';
 
   @override
+  String get stealthLockTaskLabel => 'Pin app during session';
+
+  @override
+  String get stealthLockTaskSubtitle =>
+      'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
+
+  @override
   String get sessionSimSpeedLabel => 'Geschwindigkeit';
 
   @override
@@ -2150,6 +2157,21 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get securityBiometricToggle => 'Allow biometric';
+
+  @override
+  String get securityWhatIsThis => 'What is this?';
+
+  @override
+  String get securityAppPinInfo =>
+      'Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.';
+
+  @override
+  String get securitySessionEndPinInfo =>
+      'Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.';
+
+  @override
+  String get securityDuressPinInfo =>
+      'If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.';
 
   @override
   String get securityPinTimeoutLabel => 'PIN timeout (seconds)';

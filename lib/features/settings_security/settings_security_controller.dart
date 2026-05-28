@@ -1,7 +1,21 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/services/service_providers.dart';
+
+/// Identifies one of the three PIN types managed in the security
+/// submenu.
+enum PinType {
+  /// App-lock PIN.
+  app,
+
+  /// Session-end PIN.
+  sessionEnd,
+
+  /// Duress PIN.
+  duress,
+}
 
 /// Immutable state for the security submenu.
 @immutable
@@ -14,6 +28,7 @@ class SettingsSecurityState {
     required this.pinTimeoutSeconds,
     required this.wrongPinThreshold,
     required this.deceptiveDialogEnabled,
+    required this.sessionEndBiometricEnabled,
   });
 
   /// Whether an App PIN is configured.
@@ -33,6 +48,9 @@ class SettingsSecurityState {
 
   /// Whether the deceptive "Old PIN entered" dialog is enabled.
   final bool deceptiveDialogEnabled;
+
+  /// Whether biometric is allowed to substitute for the Session End PIN.
+  final bool sessionEndBiometricEnabled;
 }
 
 /// Controller for the security submenu.
@@ -47,7 +65,57 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       pinTimeoutSeconds: settings.pinTimeoutSeconds,
       wrongPinThreshold: settings.wrongPinThreshold,
       deceptiveDialogEnabled: settings.deceptivePinDialogEnabled,
+      sessionEndBiometricEnabled: settings.sessionEndPinBiometricEnabled,
     );
+  }
+
+  /// Clears the stored hash for [type] (UI "Off" action).
+  ///
+  /// `AppSettings.copyWith` uses null-coalescing, so it cannot clear a
+  /// nullable field. We reconstruct the settings via [AppSettings]'s
+  /// constructor with the relevant hash explicitly omitted.
+  Future<void> clearPin(PinType type) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final s = await repo.load();
+    final next = AppSettings(
+      themeMode: s.themeMode,
+      languageCode: s.languageCode,
+      isFirstLaunch: s.isFirstLaunch,
+      selectedModeId: s.selectedModeId,
+      appPinHash: type == PinType.app ? null : s.appPinHash,
+      sessionEndPinHash:
+          type == PinType.sessionEnd ? null : s.sessionEndPinHash,
+      duressPinHash: type == PinType.duress ? null : s.duressPinHash,
+      pinTimeoutSeconds: s.pinTimeoutSeconds,
+      wrongPinThreshold: s.wrongPinThreshold,
+      deceptivePinDialogEnabled: s.deceptivePinDialogEnabled,
+      appPinBiometricEnabled: s.appPinBiometricEnabled,
+      sessionEndPinBiometricEnabled: s.sessionEndPinBiometricEnabled,
+      distressCancelBiometricEnabled: s.distressCancelBiometricEnabled,
+      requireLaunchAuth: s.requireLaunchAuth,
+      launchAuthBiometric: s.launchAuthBiometric,
+      emergencyCallNumber: s.emergencyCallNumber,
+      alarmDndOverride: s.alarmDndOverride,
+      alarmGradualVolume: s.alarmGradualVolume,
+      alarmGradualVolumeDurationSeconds: s.alarmGradualVolumeDurationSeconds,
+      sessionLogRetentionDays: s.sessionLogRetentionDays,
+      trashRetentionDays: s.trashRetentionDays,
+      telemetryOptOut: s.telemetryOptOut,
+      sentryEnabled: s.sentryEnabled,
+      defaults: s.defaults,
+    );
+    await repo.save(next);
+    ref.invalidateSelf();
+  }
+
+  /// Toggles the biometric substitute for the Session End PIN.
+  Future<void> setSessionEndBiometric(bool enabled) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(
+      settings.copyWith(sessionEndPinBiometricEnabled: enabled),
+    );
+    ref.invalidateSelf();
   }
 
   /// Updates [wrongPinThreshold].

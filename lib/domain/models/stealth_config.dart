@@ -15,7 +15,8 @@ final class StealthConfig {
   /// [fakeIcon] = [StealthIconPreset.music],
   /// [notificationDisguise] = true,
   /// [timerDisplay] = [StealthTimerDisplay.normal],
-  /// [sessionScreenStealth] = true.
+  /// [sessionScreenStealth] = true,
+  /// [lockTaskMode] = false.
   const StealthConfig({
     this.enabled = false,
     this.fakeName = 'Music',
@@ -23,6 +24,7 @@ final class StealthConfig {
     this.notificationDisguise = true,
     this.timerDisplay = StealthTimerDisplay.normal,
     this.sessionScreenStealth = true,
+    this.lockTaskMode = false,
   });
 
   /// Deserialises a [StealthConfig] from [json].
@@ -37,6 +39,7 @@ final class StealthConfig {
       (json['timerDisplay'] as String?) ?? StealthTimerDisplay.normal.name,
     ),
     sessionScreenStealth: (json['sessionScreenStealth'] as bool?) ?? true,
+    lockTaskMode: (json['lockTaskMode'] as bool?) ?? false,
   );
 
   /// Whether stealth mode is active.
@@ -57,6 +60,12 @@ final class StealthConfig {
   /// Whether to remove Guardian Angela branding from the session screen.
   final bool sessionScreenStealth;
 
+  /// Pin the running session to the foreground via Android lock-task /
+  /// screen-pinning during a session (spec 04 §Stealth Settings).
+  ///
+  /// On platforms that do not support pinned-app mode this is a no-op.
+  final bool lockTaskMode;
+
   /// Returns a copy with the specified fields replaced.
   StealthConfig copyWith({
     bool? enabled,
@@ -65,6 +74,7 @@ final class StealthConfig {
     bool? notificationDisguise,
     StealthTimerDisplay? timerDisplay,
     bool? sessionScreenStealth,
+    bool? lockTaskMode,
   }) => StealthConfig(
     enabled: enabled ?? this.enabled,
     fakeName: fakeName ?? this.fakeName,
@@ -72,6 +82,7 @@ final class StealthConfig {
     notificationDisguise: notificationDisguise ?? this.notificationDisguise,
     timerDisplay: timerDisplay ?? this.timerDisplay,
     sessionScreenStealth: sessionScreenStealth ?? this.sessionScreenStealth,
+    lockTaskMode: lockTaskMode ?? this.lockTaskMode,
   );
 
   /// Serialises this config to a JSON map.
@@ -82,6 +93,7 @@ final class StealthConfig {
     'notificationDisguise': notificationDisguise,
     'timerDisplay': timerDisplay.name,
     'sessionScreenStealth': sessionScreenStealth,
+    'lockTaskMode': lockTaskMode,
   };
 
   @override
@@ -93,7 +105,8 @@ final class StealthConfig {
           fakeIcon == other.fakeIcon &&
           notificationDisguise == other.notificationDisguise &&
           timerDisplay == other.timerDisplay &&
-          sessionScreenStealth == other.sessionScreenStealth);
+          sessionScreenStealth == other.sessionScreenStealth &&
+          lockTaskMode == other.lockTaskMode);
 
   @override
   int get hashCode => Object.hash(
@@ -103,5 +116,6 @@ final class StealthConfig {
     notificationDisguise,
     timerDisplay,
     sessionScreenStealth,
+    lockTaskMode,
   );
 }

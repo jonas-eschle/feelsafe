@@ -8,7 +8,8 @@ import 'package:guardianangela/features/settings_security/settings_security_cont
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Security submenu. Bundles all three PINs + biometric + wrong-PIN
-/// threshold + deceptive dialog toggle.
+/// threshold + deceptive dialog toggle. Spec 04 §Security Submenu
+/// (lines 1785–1833).
 class SettingsSecurityScreen extends ConsumerWidget {
   /// Creates a [SettingsSecurityScreen].
   const SettingsSecurityScreen({super.key});
@@ -26,33 +27,29 @@ class SettingsSecurityScreen extends ConsumerWidget {
           padding: const EdgeInsets.all(16),
           children: <Widget>[
             _PinCard(
+              type: PinType.app,
               title: l10n.securityAppPinTitle,
               body: l10n.securityAppPinBody,
+              infoBody: l10n.securityAppPinInfo,
               isSet: s.appPinSet,
-              onConfigure: () => context.pushNamed(
-                RouteNames.pinSetup,
-                queryParameters: <String, String>{'type': 'app'},
-              ),
             ),
             const SizedBox(height: 16),
             _PinCard(
+              type: PinType.sessionEnd,
               title: l10n.securitySessionEndPinTitle,
               body: l10n.securitySessionEndPinBody,
+              infoBody: l10n.securitySessionEndPinInfo,
               isSet: s.sessionEndPinSet,
-              onConfigure: () => context.pushNamed(
-                RouteNames.pinSetup,
-                queryParameters: <String, String>{'type': 'sessionEnd'},
-              ),
+              sessionEndBiometricEnabled: s.sessionEndBiometricEnabled,
+              pinTimeoutSeconds: s.pinTimeoutSeconds,
             ),
             const SizedBox(height: 16),
             _PinCard(
+              type: PinType.duress,
               title: l10n.securityDuressPinTitle,
               body: l10n.securityDuressPinBody,
+              infoBody: l10n.securityDuressPinInfo,
               isSet: s.duressPinSet,
-              onConfigure: () => context.pushNamed(
-                RouteNames.pinSetup,
-                queryParameters: <String, String>{'type': 'duress'},
-              ),
             ),
             const SizedBox(height: 24),
             Text(l10n.securityWrongPinThresholdLabel),
@@ -66,19 +63,6 @@ class SettingsSecurityScreen extends ConsumerWidget {
                 ref
                     .read(settingsSecurityControllerProvider.notifier)
                     .setWrongPinThreshold(v.round());
-              },
-            ),
-            Text(l10n.securityPinTimeoutLabel),
-            Slider(
-              value: s.pinTimeoutSeconds.toDouble(),
-              min: 5,
-              max: 120,
-              divisions: 23,
-              label: '${s.pinTimeoutSeconds}s',
-              onChanged: (double v) {
-                ref
-                    .read(settingsSecurityControllerProvider.notifier)
-                    .setPinTimeout(v.round());
               },
             ),
             SwitchListTile(
@@ -97,31 +81,152 @@ class SettingsSecurityScreen extends ConsumerWidget {
   }
 }
 
-class _PinCard extends StatelessWidget {
+/// One of the three PIN cards on the security submenu. Session-end is
+/// the only card that exposes the biometric toggle and the prompt
+/// timeout slider (spec 04:1809–1811).
+class _PinCard extends ConsumerWidget {
   const _PinCard({
+    required this.type,
     required this.title,
     required this.body,
+    required this.infoBody,
     required this.isSet,
-    required this.onConfigure,
+    this.sessionEndBiometricEnabled,
+    this.pinTimeoutSeconds,
   });
 
+  final PinType type;
   final String title;
   final String body;
+  final String infoBody;
   final bool isSet;
-  final VoidCallback onConfigure;
+  final bool? sessionEndBiometricEnabled;
+  final int? pinTimeoutSeconds;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final pinTypeQuery = switch (type) {
+      PinType.app => 'app',
+      PinType.sessionEnd => 'sessionEnd',
+      PinType.duress => 'duress',
+    };
     return Card(
-      child: ListTile(
-        title: Text(title),
-        subtitle: Text(body),
-        trailing: FilledButton(
-          onPressed: onConfigure,
-          child: Text(isSet ? l10n.securityChangePin : l10n.securitySetPin),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            ListTile(
+              title: Row(
+                children: <Widget>[
+                  Expanded(child: Text(title)),
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    tooltip: l10n.securityWhatIsThis,
+                    onPressed: () => _showInfo(context, l10n),
+                  ),
+                ],
+              ),
+              subtitle: Text(body),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: <Widget>[
+                  FilledButton(
+                    onPressed: () => context.pushNamed(
+                      RouteNames.pinSetup,
+                      queryParameters: <String, String>{'type': pinTypeQuery},
+                    ),
+                    child: Text(
+                      isSet ? l10n.securityChangePin : l10n.securitySetPin,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  if (isSet)
+                    TextButton(
+                      onPressed: () => _confirmClear(context, ref, l10n),
+                      child: Text(l10n.securityRemovePin),
+                    ),
+                ],
+              ),
+            ),
+            if (type == PinType.sessionEnd) ...<Widget>[
+              SwitchListTile(
+                title: Text(l10n.securitySessionEndPinBiometric),
+                value: sessionEndBiometricEnabled ?? false,
+                onChanged: (bool v) {
+                  ref
+                      .read(settingsSecurityControllerProvider.notifier)
+                      .setSessionEndBiometric(v);
+                },
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Text(l10n.securityPinTimeoutLabel),
+              ),
+              Slider(
+                value: (pinTimeoutSeconds ?? 15).toDouble(),
+                min: 5,
+                max: 120,
+                divisions: 23,
+                label: '${pinTimeoutSeconds ?? 15}s',
+                onChanged: (double v) {
+                  ref
+                      .read(settingsSecurityControllerProvider.notifier)
+                      .setPinTimeout(v.round());
+                },
+              ),
+            ],
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> _showInfo(BuildContext context, AppLocalizations l10n) async {
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(infoBody),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.commonClose),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmClear(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+  ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(title),
+        content: Text(l10n.securityRemovePin),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.securityRemovePin),
+          ),
+        ],
+      ),
+    );
+    if (ok ?? false) {
+      await ref
+          .read(settingsSecurityControllerProvider.notifier)
+          .clearPin(type);
+    }
   }
 }

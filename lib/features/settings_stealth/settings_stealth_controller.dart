@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -66,6 +67,25 @@ class SettingsStealthController extends AsyncNotifier<SettingsStealthState> {
     final current = state.value;
     if (current == null) return;
     await _saveStealth(current.config.copyWith(timerDisplay: d));
+  }
+
+  /// Update the fake-icon preset.
+  Future<void> setFakeIcon(StealthIconPreset preset) async {
+    final current = state.value;
+    if (current == null) return;
+    await _saveStealth(current.config.copyWith(fakeIcon: preset));
+  }
+
+  /// Toggle lock-task / pinned-app mode.
+  ///
+  /// The actual platform engagement (calling
+  /// `systemUiServiceProvider.toggleLockTaskMode(...)`) is performed by
+  /// the session controller when a session starts; this method only
+  /// persists the user's preference.
+  Future<void> setLockTaskMode(bool v) async {
+    final current = state.value;
+    if (current == null) return;
+    await _saveStealth(current.config.copyWith(lockTaskMode: v));
   }
 }
 
