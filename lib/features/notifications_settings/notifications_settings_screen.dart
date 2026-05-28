@@ -140,8 +140,7 @@ class _ChannelTile extends StatelessWidget {
       NotificationChannelKey.fakeCall => l10n.notificationsChannelFakeCall,
     };
     final subtitle = switch (channel) {
-      NotificationChannelKey.alarm =>
-        l10n.notificationsChannelAlarmDescription,
+      NotificationChannelKey.alarm => l10n.notificationsChannelAlarmDescription,
       NotificationChannelKey.reminder =>
         l10n.notificationsChannelReminderDescription,
       NotificationChannelKey.fakeCall =>

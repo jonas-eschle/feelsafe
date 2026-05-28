@@ -47,8 +47,7 @@ class ContactsController extends AsyncNotifier<ContactsState> {
     list.insert(adjusted, moved);
     // Rewrite sortOrder values so they reflect the new positions.
     final reorderedList = <EmergencyContact>[
-      for (int i = 0; i < list.length; i++)
-        list[i].copyWith(sortOrder: i),
+      for (int i = 0; i < list.length; i++) list[i].copyWith(sortOrder: i),
     ];
     final db = await ref.read(databaseProvider.future);
     final repo = ContactsRepository(db.contactsDao);

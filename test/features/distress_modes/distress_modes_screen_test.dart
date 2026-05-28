@@ -69,9 +69,7 @@ class _FakeDistressModesController extends DistressModesController {
     lastSetDefaultId = id;
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(
-      DistressModesState(modes: current.modes, defaultId: id),
-    );
+    state = AsyncData(DistressModesState(modes: current.modes, defaultId: id));
   }
 
   @override
@@ -122,13 +120,8 @@ SessionMode _mode(String id, String name) => SessionMode(
   chainSteps: <ChainStep>[_step('$id-s0')],
 );
 
-DistressModesState _state({
-  List<SessionMode>? modes,
-  String? defaultId,
-}) => DistressModesState(
-  modes: modes ?? <SessionMode>[],
-  defaultId: defaultId,
-);
+DistressModesState _state({List<SessionMode>? modes, String? defaultId}) =>
+    DistressModesState(modes: modes ?? <SessionMode>[], defaultId: defaultId);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -290,9 +283,7 @@ void main() {
         tester,
         const DistressModesScreen(),
         overrides: <Override>[
-          distressModesControllerProvider.overrideWith(
-            () => errorController,
-          ),
+          distressModesControllerProvider.overrideWith(() => errorController),
         ],
       );
       expect(find.textContaining('Error:'), findsOneWidget);
@@ -357,10 +348,7 @@ void main() {
         const DistressModesScreen(),
         overrides: _overrideWith(fake),
       );
-      expect(
-        find.byIcon(Icons.warning_amber_outlined),
-        findsOneWidget,
-      );
+      expect(find.byIcon(Icons.warning_amber_outlined), findsOneWidget);
     });
 
     testWidgets('subtitle shows the step types joined by →', (
@@ -375,9 +363,9 @@ void main() {
         const DistressModesScreen(),
         overrides: _overrideWith(fake),
       );
-      final expectedSubtitle = mode.chainSteps.map((s) => s.type.name).join(
-        ' → ',
-      );
+      final expectedSubtitle = mode.chainSteps
+          .map((s) => s.type.name)
+          .join(' → ');
       expect(find.text(expectedSubtitle), findsOneWidget);
     });
 
@@ -386,10 +374,7 @@ void main() {
     ) async {
       // This test validates the test-fixture contract: _mode() sets
       // isDistressMode: true.
-      final modes = <SessionMode>[
-        _mode('d1', 'Alpha'),
-        _mode('d2', 'Beta'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Alpha'), _mode('d2', 'Beta')];
       for (final m in modes) {
         check(m.isDistressMode).isTrue();
       }
@@ -410,10 +395,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Alpha'),
-        _mode('d2', 'Beta'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Alpha'), _mode('d2', 'Beta')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -429,10 +411,7 @@ void main() {
     testWidgets('non-default mode does not show star icon', (
       WidgetTester tester,
     ) async {
-      final modes = <SessionMode>[
-        _mode('d1', 'Alpha'),
-        _mode('d2', 'Beta'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Alpha'), _mode('d2', 'Beta')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -447,9 +426,7 @@ void main() {
 
     testWidgets('no star when defaultId is null', (WidgetTester tester) async {
       final modes = <SessionMode>[_mode('d1', 'Alpha')];
-      final fake = _FakeDistressModesController(
-        _state(modes: modes),
-      );
+      final fake = _FakeDistressModesController(_state(modes: modes));
       await pumpScreen(
         tester,
         const DistressModesScreen(),
@@ -466,10 +443,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Default'),
-        _mode('d2', 'Other'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Other')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -498,10 +472,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Default'),
-        _mode('d2', 'Other'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Other')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -530,10 +501,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'First'),
-        _mode('d2', 'Second'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'First'), _mode('d2', 'Second')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -605,10 +573,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Default'),
-        _mode('d2', 'Other'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Other')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -645,10 +610,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Default'),
-        _mode('d2', 'Other'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Other')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -684,10 +646,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final modes = <SessionMode>[
-        _mode('d1', 'Default'),
-        _mode('d2', 'Other'),
-      ];
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Other')];
       final fake = _FakeDistressModesController(
         _state(modes: modes, defaultId: 'd1'),
       );
@@ -931,6 +890,5 @@ void main() {
 /// AsyncError body.
 class _ErrorDistressModesController extends DistressModesController {
   @override
-  Future<DistressModesState> build() async =>
-      throw StateError('load failed');
+  Future<DistressModesState> build() async => throw StateError('load failed');
 }

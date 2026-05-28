@@ -113,9 +113,7 @@ Future<void> _pumpWithRouter(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -377,10 +375,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpWithRouter(tester);
       // Exactly 10 non-whitespace characters.
-      await tester.enterText(
-        find.byType(TextField).last,
-        '1234567890',
-      );
+      await tester.enterText(find.byType(TextField).last, '1234567890');
       await tester.pump();
       await tester.tap(_sendButton());
       await tester.pump();
@@ -412,10 +407,7 @@ void main() {
     ) async {
       await _pumpWithRouter(tester);
       // Email field is the first TextField.
-      await tester.enterText(
-        find.byType(TextField).first,
-        'user@example.com',
-      );
+      await tester.enterText(find.byType(TextField).first, 'user@example.com');
       await tester.pump();
       await tester.enterText(
         find.byType(TextField).last,
@@ -467,10 +459,7 @@ void main() {
   group('FeedbackFormScreen — email field', () {
     testWidgets('email field accepts typed text', (WidgetTester tester) async {
       await pumpScreen(tester, const FeedbackFormScreen());
-      await tester.enterText(
-        find.byType(TextField).first,
-        'test@domain.com',
-      );
+      await tester.enterText(find.byType(TextField).first, 'test@domain.com');
       await tester.pump();
       expect(find.text('test@domain.com'), findsOneWidget);
     });
@@ -558,10 +547,7 @@ void main() {
         await tester.pumpAndSettle();
 
         // Fill email.
-        await tester.enterText(
-          find.byType(TextField).first,
-          'qa@example.com',
-        );
+        await tester.enterText(find.byType(TextField).first, 'qa@example.com');
         await tester.pump();
 
         // Fill message.

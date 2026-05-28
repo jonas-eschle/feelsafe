@@ -784,10 +784,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.contactsDeleteAllMenu));
       await tester.pumpAndSettle();
-      expect(
-        find.text(l10n.contactsDeleteAllConfirmTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.contactsDeleteAllConfirmTitle), findsOneWidget);
     });
 
     testWidgets('cancelling first dialog does NOT call deleteAll', (
@@ -825,10 +822,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.commonConfirm));
       await tester.pumpAndSettle();
-      expect(
-        find.text(l10n.contactsDeleteAllTypeConfirmTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.contactsDeleteAllTypeConfirmTitle), findsOneWidget);
     });
 
     testWidgets('typed confirm only enables button when sentinel matches', (
@@ -851,10 +845,7 @@ void main() {
       await tester.pumpAndSettle();
       // Confirm button is still disabled (onPressed null).
       final btn = tester.widget<FilledButton>(
-        find.widgetWithText(
-          FilledButton,
-          l10n.contactsDeleteAllConfirmButton,
-        ),
+        find.widgetWithText(FilledButton, l10n.contactsDeleteAllConfirmButton),
       );
       expect(btn.onPressed, isNull);
     });

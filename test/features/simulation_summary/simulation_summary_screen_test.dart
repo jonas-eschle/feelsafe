@@ -61,9 +61,7 @@ class _FakeSimSummaryController extends SimulationSummaryController {
     if (current == null) return;
     // Match: pin "0000" succeeds, anything else fails.
     if (pin == '0000') {
-      state = AsyncData(
-        current.copyWith(pinUnlocked: true, pinError: false),
-      );
+      state = AsyncData(current.copyWith(pinUnlocked: true, pinError: false));
     } else {
       state = AsyncData(current.copyWith(pinError: true));
     }
@@ -74,9 +72,7 @@ class _FakeSimSummaryController extends SimulationSummaryController {
     skipPinCalls++;
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(
-      current.copyWith(pinUnlocked: true, pinError: false),
-    );
+    state = AsyncData(current.copyWith(pinUnlocked: true, pinError: false));
   }
 }
 
@@ -97,7 +93,8 @@ SessionLog _log({
     endedAt: start.add(duration),
     endReason: EndReason.chainExhausted,
     isSimulation: true,
-    events: events ??
+    events:
+        events ??
         <SessionLogEvent>[
           SessionLogEvent(
             timestamp: start,
@@ -326,10 +323,7 @@ void main() {
       await _pump(tester, controller: fake);
       final l10n = await loadL10n(const Locale('en'));
       expect(
-        find.widgetWithText(
-          TextButton,
-          l10n.simulationPinPromptSkip,
-        ),
+        find.widgetWithText(TextButton, l10n.simulationPinPromptSkip),
         findsOneWidget,
       );
     });
@@ -370,7 +364,10 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester);
-      expect(find.text(l10n.simulationSummaryDuration('05:23')), findsOneWidget);
+      expect(
+        find.text(l10n.simulationSummaryDuration('05:23')),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders duration row formatted hh:mm:ss for ≥1h', (
@@ -497,10 +494,7 @@ void main() {
           _state(log: _log(events: events)),
         ),
       );
-      expect(
-        find.text(l10n.simulationSummaryDistressBadge(1)),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.simulationSummaryDistressBadge(1)), findsOneWidget);
     });
   });
 

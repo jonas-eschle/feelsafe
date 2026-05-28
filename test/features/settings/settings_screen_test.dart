@@ -94,7 +94,9 @@ void main() {
   // ── AppBar ────────────────────────────────────────────────────────────────
 
   group('SettingsScreen — AppBar', () {
-    testWidgets('renders Settings title in AppBar', (WidgetTester tester) async {
+    testWidgets('renders Settings title in AppBar', (
+      WidgetTester tester,
+    ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
         tester,
@@ -199,75 +201,72 @@ void main() {
       expect(find.text(l10n.settingsThemeSystem), findsOneWidget);
     });
 
-    testWidgets(
-      'System chip is selected when themeMode is system',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(
-              () => _FakeSettingsController(_defaultState()),
-            ),
-          ],
-        );
-        final systemChip = tester.widget<ChoiceChip>(
-          find.ancestor(
-            of: find.text(l10n.settingsThemeSystem),
-            matching: find.byType(ChoiceChip),
+    testWidgets('System chip is selected when themeMode is system', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(
+            () => _FakeSettingsController(_defaultState()),
           ),
-        );
-        check(systemChip.selected).isTrue();
-        final lightChip = tester.widget<ChoiceChip>(
-          find.ancestor(
-            of: find.text(l10n.settingsThemeLight),
-            matching: find.byType(ChoiceChip),
-          ),
-        );
-        check(lightChip.selected).isFalse();
-      },
-    );
+        ],
+      );
+      final systemChip = tester.widget<ChoiceChip>(
+        find.ancestor(
+          of: find.text(l10n.settingsThemeSystem),
+          matching: find.byType(ChoiceChip),
+        ),
+      );
+      check(systemChip.selected).isTrue();
+      final lightChip = tester.widget<ChoiceChip>(
+        find.ancestor(
+          of: find.text(l10n.settingsThemeLight),
+          matching: find.byType(ChoiceChip),
+        ),
+      );
+      check(lightChip.selected).isFalse();
+    });
 
-    testWidgets(
-      'tapping Light chip calls setThemeMode(light)',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeSettingsController(_defaultState());
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(() => fake),
-          ],
-        );
-        await tester.tap(find.text(l10n.settingsThemeLight));
-        await tester.pumpAndSettle();
-        check(fake.setThemeModeCalls).equals(1);
-        check(fake.lastThemeMode).equals(AppThemeMode.light);
-      },
-    );
+    testWidgets('tapping Light chip calls setThemeMode(light)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsController(_defaultState());
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      await tester.tap(find.text(l10n.settingsThemeLight));
+      await tester.pumpAndSettle();
+      check(fake.setThemeModeCalls).equals(1);
+      check(fake.lastThemeMode).equals(AppThemeMode.light);
+    });
 
-    testWidgets(
-      'tapping Dark chip calls setThemeMode(dark)',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeSettingsController(
-          _defaultState(themeMode: AppThemeMode.light),
-        );
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(() => fake),
-          ],
-        );
-        await tester.tap(find.text(l10n.settingsThemeDark));
-        await tester.pumpAndSettle();
-        check(fake.setThemeModeCalls).equals(1);
-        check(fake.lastThemeMode).equals(AppThemeMode.dark);
-      },
-    );
+    testWidgets('tapping Dark chip calls setThemeMode(dark)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsController(
+        _defaultState(themeMode: AppThemeMode.light),
+      );
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      await tester.tap(find.text(l10n.settingsThemeDark));
+      await tester.pumpAndSettle();
+      check(fake.setThemeModeCalls).equals(1);
+      check(fake.lastThemeMode).equals(AppThemeMode.dark);
+    });
   });
 
   // ── General section: Language ─────────────────────────────────────────
@@ -290,49 +289,47 @@ void main() {
       expect(find.text('de'), findsOneWidget);
     });
 
-    testWidgets(
-      'tapping language tile opens bottom sheet with language list',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(
-              () => _FakeSettingsController(_defaultState()),
-            ),
-          ],
-        );
-        // Tap the Language ListTile — not inside a ChoiceChip.
-        final l10n = await loadL10n(const Locale('en'));
-        await tester.tap(find.text(l10n.settingsLanguageLabel));
-        await tester.pumpAndSettle();
-        // Bottom sheet should show at least 'en' and 'de' language codes.
-        expect(find.text('en'), findsWidgets);
-        expect(find.text('de'), findsOneWidget);
-      },
-    );
+    testWidgets('tapping language tile opens bottom sheet with language list', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(
+            () => _FakeSettingsController(_defaultState()),
+          ),
+        ],
+      );
+      // Tap the Language ListTile — not inside a ChoiceChip.
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.settingsLanguageLabel));
+      await tester.pumpAndSettle();
+      // Bottom sheet should show at least 'en' and 'de' language codes.
+      expect(find.text('en'), findsWidgets);
+      expect(find.text('de'), findsOneWidget);
+    });
 
-    testWidgets(
-      'selecting a language from bottom sheet calls setLanguage',
-      (WidgetTester tester) async {
-        final fake = _FakeSettingsController(_defaultState());
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(() => fake),
-          ],
-        );
-        await tester.tap(find.text(l10n.settingsLanguageLabel));
-        await tester.pumpAndSettle();
-        // Tap 'fr' in the bottom sheet list.
-        await tester.tap(find.text('fr'));
-        await tester.pumpAndSettle();
-        check(fake.setLanguageCalls).equals(1);
-        check(fake.lastLanguageCode).equals('fr');
-      },
-    );
+    testWidgets('selecting a language from bottom sheet calls setLanguage', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSettingsController(_defaultState());
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      await tester.tap(find.text(l10n.settingsLanguageLabel));
+      await tester.pumpAndSettle();
+      // Tap 'fr' in the bottom sheet list.
+      await tester.tap(find.text('fr'));
+      await tester.pumpAndSettle();
+      check(fake.setLanguageCalls).equals(1);
+      check(fake.lastLanguageCode).equals('fr');
+    });
   });
 
   // ── Configuration rows ────────────────────────────────────────────────
@@ -403,9 +400,7 @@ void main() {
         const SettingsScreen(),
         overrides: <Override>[
           settingsControllerProvider.overrideWith(
-            () => _FakeSettingsController(
-              _defaultState(stealthEnabled: true),
-            ),
+            () => _FakeSettingsController(_defaultState(stealthEnabled: true)),
           ),
         ],
       );
@@ -524,10 +519,7 @@ void main() {
       final tile = tester.widget<ListTile>(
         find
             .ancestor(
-              of: find.text(
-                l10n.settingsDistressModesRow,
-                skipOffstage: false,
-              ),
+              of: find.text(l10n.settingsDistressModesRow, skipOffstage: false),
               matching: find.byType(ListTile),
             )
             .first,
@@ -643,51 +635,49 @@ void main() {
       expect(find.byType(AlertDialog), findsOneWidget);
     });
 
-    testWidgets(
-      'confirmation dialog shows Confirm and Cancel buttons',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(
-              () => _FakeSettingsController(_defaultState()),
-            ),
-          ],
-        );
-        await tester.scrollUntilVisible(
-          find.text(l10n.settingsRedoOnboarding),
-          200,
-          scrollable: find.byType(Scrollable).first,
-        );
-        await tester.tap(find.text(l10n.settingsRedoOnboarding));
-        await tester.pumpAndSettle();
-        // Verify the AlertDialog contains both action buttons.
-        expect(find.text(l10n.commonConfirm), findsOneWidget);
-        expect(find.text(l10n.commonCancel), findsOneWidget);
-        expect(find.text(l10n.settingsRedoOnboardingConfirm), findsOneWidget);
-      },
-    );
+    testWidgets('confirmation dialog shows Confirm and Cancel buttons', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(
+            () => _FakeSettingsController(_defaultState()),
+          ),
+        ],
+      );
+      await tester.scrollUntilVisible(
+        find.text(l10n.settingsRedoOnboarding),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text(l10n.settingsRedoOnboarding));
+      await tester.pumpAndSettle();
+      // Verify the AlertDialog contains both action buttons.
+      expect(find.text(l10n.commonConfirm), findsOneWidget);
+      expect(find.text(l10n.commonCancel), findsOneWidget);
+      expect(find.text(l10n.settingsRedoOnboardingConfirm), findsOneWidget);
+    });
 
-    testWidgets(
-      'resetOnboarding controller method increments call counter',
-      (WidgetTester tester) async {
-        // This test exercises the controller directly via the provider to
-        // confirm the fake wiring is correct, without triggering the
-        // post-navigation context.goNamed that requires GoRouter.
-        final fake = _FakeSettingsController(_defaultState());
-        await pumpScreen(
-          tester,
-          const SettingsScreen(),
-          overrides: <Override>[
-            settingsControllerProvider.overrideWith(() => fake),
-          ],
-        );
-        await fake.resetOnboarding();
-        check(fake.resetOnboardingCalls).equals(1);
-      },
-    );
+    testWidgets('resetOnboarding controller method increments call counter', (
+      WidgetTester tester,
+    ) async {
+      // This test exercises the controller directly via the provider to
+      // confirm the fake wiring is correct, without triggering the
+      // post-navigation context.goNamed that requires GoRouter.
+      final fake = _FakeSettingsController(_defaultState());
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      await fake.resetOnboarding();
+      check(fake.resetOnboardingCalls).equals(1);
+    });
 
     testWidgets(
       'cancelling Redo Onboarding dialog does not call resetOnboarding',

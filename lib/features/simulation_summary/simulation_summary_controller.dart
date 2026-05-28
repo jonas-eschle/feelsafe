@@ -123,9 +123,7 @@ class SimulationSummaryController
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final hash = sha256.convert(utf8.encode(pin)).toString();
     if (hash == settings.sessionEndPinHash) {
-      state = AsyncData(
-        current.copyWith(pinUnlocked: true, pinError: false),
-      );
+      state = AsyncData(current.copyWith(pinUnlocked: true, pinError: false));
       return;
     }
     state = AsyncData(current.copyWith(pinError: true));
@@ -136,9 +134,7 @@ class SimulationSummaryController
   void skipPin() {
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(
-      current.copyWith(pinUnlocked: true, pinError: false),
-    );
+    state = AsyncData(current.copyWith(pinUnlocked: true, pinError: false));
   }
 
   /// Clears the error flag (called after the shake animation completes).

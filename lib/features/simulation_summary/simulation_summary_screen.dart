@@ -40,9 +40,7 @@ class _SimulationSummaryScreenState
     final id = widget.logId;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      ref
-          .read(simulationSummaryControllerProvider.notifier)
-          .loadFor(id);
+      ref.read(simulationSummaryControllerProvider.notifier).loadFor(id);
     });
   }
 
@@ -134,9 +132,7 @@ class _EmptyScaffold extends StatelessWidget {
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
-              Expanded(
-                child: Center(child: Text(l10n.simulationSummaryEmpty)),
-              ),
+              Expanded(child: Center(child: Text(l10n.simulationSummaryEmpty))),
               FilledButton(
                 onPressed: () => context.goNamed(RouteNames.home),
                 style: FilledButton.styleFrom(
@@ -174,9 +170,10 @@ class _PinPromptState extends ConsumerState<_PinPrompt>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     );
-    _shakeAnim = Tween<double>(begin: 0, end: 8).animate(
-      CurvedAnimation(parent: _shake, curve: Curves.elasticIn),
-    );
+    _shakeAnim = Tween<double>(
+      begin: 0,
+      end: 8,
+    ).animate(CurvedAnimation(parent: _shake, curve: Curves.elasticIn));
   }
 
   @override
@@ -186,9 +183,7 @@ class _PinPromptState extends ConsumerState<_PinPrompt>
       _shake.forward().then((_) {
         _shake.reset();
         if (!mounted) return;
-        ref
-            .read(simulationSummaryControllerProvider.notifier)
-            .clearPinError();
+        ref.read(simulationSummaryControllerProvider.notifier).clearPinError();
         setState(_entry.clear);
       });
     }
@@ -214,9 +209,8 @@ class _PinPromptState extends ConsumerState<_PinPrompt>
     setState(_entry.removeLast);
   }
 
-  void _skip() => ref
-      .read(simulationSummaryControllerProvider.notifier)
-      .skipPin();
+  void _skip() =>
+      ref.read(simulationSummaryControllerProvider.notifier).skipPin();
 
   @override
   Widget build(BuildContext context) {
@@ -229,10 +223,7 @@ class _PinPromptState extends ConsumerState<_PinPrompt>
           children: <Widget>[
             const Icon(Icons.lock, size: 48),
             const SizedBox(height: 16),
-            Text(
-              l10n.simulationPinPromptTitle,
-              style: textTheme.headlineSmall,
-            ),
+            Text(l10n.simulationPinPromptTitle, style: textTheme.headlineSmall),
             const SizedBox(height: 8),
             Text(
               l10n.simulationPinPromptBody,

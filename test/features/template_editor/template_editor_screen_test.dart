@@ -108,9 +108,7 @@ Future<void> _pumpWithRouter(
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
       ),
@@ -175,10 +173,7 @@ void main() {
         const TemplateEditorScreen(),
         overrides: baseOverrides,
       );
-      expect(
-        find.widgetWithText(TextButton, l10n.commonSave),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
     });
   });
 
@@ -246,9 +241,9 @@ void main() {
         overrides: baseOverrides,
       );
       // The body field is the last TextField; it has maxLines: 3.
-      final fields = tester.widgetList<TextField>(
-        find.byType(TextField),
-      ).toList();
+      final fields = tester
+          .widgetList<TextField>(find.byType(TextField))
+          .toList();
       // Spec: name, title, body — three TextField widgets.
       check(fields).length.isGreaterOrEqual(3);
       final bodyField = fields.last;
@@ -412,7 +407,9 @@ void main() {
           .toList();
       check(fields[0].controller!.text).equals('Fitness');
       check(fields[1].controller!.text).equals('Run complete');
-      check(fields[2].controller!.text).equals('Did you finish your run safely?');
+      check(
+        fields[2].controller!.text,
+      ).equals('Did you finish your run safely?');
     });
 
     testWidgets('pre-selects confirmationType from stored template', (
@@ -449,19 +446,18 @@ void main() {
       check(group.groupValue).equals(ReminderDisplayStyle.subtle);
     });
 
-    testWidgets(
-      'shows form (not spinner) after async load in edit mode',
-      (WidgetTester tester) async {
-        await db.reminderTemplatesDao.upsert(_template());
-        await pumpScreen(
-          tester,
-          const TemplateEditorScreen(templateId: 't-1'),
-          overrides: baseOverrides,
-        );
-        expect(find.byType(CircularProgressIndicator), findsNothing);
-        expect(find.byType(TextField), findsWidgets);
-      },
-    );
+    testWidgets('shows form (not spinner) after async load in edit mode', (
+      WidgetTester tester,
+    ) async {
+      await db.reminderTemplatesDao.upsert(_template());
+      await pumpScreen(
+        tester,
+        const TemplateEditorScreen(templateId: 't-1'),
+        overrides: baseOverrides,
+      );
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(TextField), findsWidgets);
+    });
   });
 
   // ---- Group: Validation on save ------------------------------------------
@@ -554,14 +550,8 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpWithRouter(tester, overrides: baseOverrides);
-      await tester.enterText(
-        find.byType(TextField).at(0),
-        'Weather Alert',
-      );
-      await tester.enterText(
-        find.byType(TextField).at(1),
-        'Storm warning',
-      );
+      await tester.enterText(find.byType(TextField).at(0), 'Weather Alert');
+      await tester.enterText(find.byType(TextField).at(1), 'Storm warning');
       await tester.enterText(
         find.byType(TextField).at(2),
         'Are you safe indoors?',
@@ -638,9 +628,7 @@ void main() {
       check(updated!.name).equals('New name');
     });
 
-    testWidgets('save pops the screen on success', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('save pops the screen on success', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpWithRouter(tester, overrides: baseOverrides);
       await tester.enterText(find.byType(TextField).at(0), 'Language');

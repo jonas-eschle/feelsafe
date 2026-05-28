@@ -82,10 +82,7 @@ class _UrlLauncherMock {
 // ---------------------------------------------------------------------------
 
 /// Configures [PackageInfo] mock values and returns the version string.
-String _setPackageInfo({
-  String version = '1.2.3',
-  String buildNumber = '42',
-}) {
+String _setPackageInfo({String version = '1.2.3', String buildNumber = '42'}) {
   PackageInfo.setMockInitialValues(
     appName: 'Guardian Angela',
     packageName: 'com.guardianangela.app',
@@ -229,7 +226,9 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const AboutScreen());
       await _scrollAndTap(tester, find.text(l10n.aboutEmail));
-      check(urlMock!.launchedUrls().any((u) => u.startsWith('mailto:'))).isTrue();
+      check(
+        urlMock!.launchedUrls().any((u) => u.startsWith('mailto:')),
+      ).isTrue();
     });
   });
 
@@ -260,35 +259,29 @@ void main() {
       );
     });
 
-    testWidgets(
-      'tapping privacy policy fires url_launcher with privacy URL',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(tester, const AboutScreen());
-        await _scrollAndTap(
-          tester,
-          find.text(l10n.aboutPrivacyPolicy, skipOffstage: false),
-        );
-        check(
-          urlMock!.launchedUrls().any((u) => u.contains('privacy')),
-        ).isTrue();
-      },
-    );
+    testWidgets('tapping privacy policy fires url_launcher with privacy URL', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const AboutScreen());
+      await _scrollAndTap(
+        tester,
+        find.text(l10n.aboutPrivacyPolicy, skipOffstage: false),
+      );
+      check(urlMock!.launchedUrls().any((u) => u.contains('privacy'))).isTrue();
+    });
 
-    testWidgets(
-      'tapping terms of service fires url_launcher with terms URL',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(tester, const AboutScreen());
-        await _scrollAndTap(
-          tester,
-          find.text(l10n.aboutTermsOfService, skipOffstage: false),
-        );
-        check(
-          urlMock!.launchedUrls().any((u) => u.contains('terms')),
-        ).isTrue();
-      },
-    );
+    testWidgets('tapping terms of service fires url_launcher with terms URL', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const AboutScreen());
+      await _scrollAndTap(
+        tester,
+        find.text(l10n.aboutTermsOfService, skipOffstage: false),
+      );
+      check(urlMock!.launchedUrls().any((u) => u.contains('terms'))).isTrue();
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -336,19 +329,18 @@ void main() {
       );
     });
 
-    testWidgets(
-      'tapping licenses tile opens LicensePage without exception',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(tester, const AboutScreen());
-        await _scrollAndTap(
-          tester,
-          find.text(l10n.aboutLicenses, skipOffstage: false),
-        );
-        // LicensePage is pushed; confirm no exception.
-        expect(tester.takeException(), isNull);
-      },
-    );
+    testWidgets('tapping licenses tile opens LicensePage without exception', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const AboutScreen());
+      await _scrollAndTap(
+        tester,
+        find.text(l10n.aboutLicenses, skipOffstage: false),
+      );
+      // LicensePage is pushed; confirm no exception.
+      expect(tester.takeException(), isNull);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -356,15 +348,10 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('AboutScreen — support link', () {
-    testWidgets('support tile exists in the list', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('support tile exists in the list', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const AboutScreen());
-      expect(
-        find.text(l10n.aboutSupport, skipOffstage: false),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.aboutSupport, skipOffstage: false), findsOneWidget);
     });
 
     testWidgets('tapping support fires url_launcher', (
@@ -391,10 +378,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const AboutScreen());
-      expect(
-        find.text(l10n.aboutTagline, skipOffstage: false),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.aboutTagline, skipOffstage: false), findsOneWidget);
     });
   });
 
@@ -403,9 +387,7 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('AboutScreen — layout structure', () {
-    testWidgets('uses a scrollable ListView body', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('uses a scrollable ListView body', (WidgetTester tester) async {
       await pumpScreen(tester, const AboutScreen());
       expect(find.byType(ListView), findsOneWidget);
     });
@@ -464,11 +446,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('ar'));
       _setPackageInfo(version: '1.0.0');
-      await pumpScreen(
-        tester,
-        const AboutScreen(),
-        locale: const Locale('ar'),
-      );
+      await pumpScreen(tester, const AboutScreen(), locale: const Locale('ar'));
       expect(find.text(l10n.aboutTitle), findsWidgets);
       expect(tester.takeException(), isNull);
     });
@@ -482,20 +460,12 @@ void main() {
     testWidgets('renders without exception in dark mode', (
       WidgetTester tester,
     ) async {
-      await pumpScreen(
-        tester,
-        const AboutScreen(),
-        themeMode: ThemeMode.dark,
-      );
+      await pumpScreen(tester, const AboutScreen(), themeMode: ThemeMode.dark);
       expect(tester.takeException(), isNull);
     });
 
     testWidgets('logo is present in dark mode', (WidgetTester tester) async {
-      await pumpScreen(
-        tester,
-        const AboutScreen(),
-        themeMode: ThemeMode.dark,
-      );
+      await pumpScreen(tester, const AboutScreen(), themeMode: ThemeMode.dark);
       expect(find.byType(GuardianAngelaLogo), findsOneWidget);
     });
   });
@@ -517,9 +487,7 @@ void main() {
       WidgetTester tester,
     ) async {
       tester.platformDispatcher.textScaleFactorTestValue = 1.5;
-      addTearDown(
-        tester.platformDispatcher.clearTextScaleFactorTestValue,
-      );
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await pumpScreen(tester, const AboutScreen());
       expect(tester.takeException(), isNull);
     });
@@ -528,9 +496,7 @@ void main() {
       WidgetTester tester,
     ) async {
       tester.platformDispatcher.textScaleFactorTestValue = 2.0;
-      addTearDown(
-        tester.platformDispatcher.clearTextScaleFactorTestValue,
-      );
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
       await pumpScreen(tester, const AboutScreen());
       expect(tester.takeException(), isNull);
     });

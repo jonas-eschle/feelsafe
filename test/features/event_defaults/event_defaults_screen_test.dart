@@ -99,9 +99,7 @@ Future<_FakeEventDefaultsController> _pumpAndExpand(
   ChainStepType type, {
   EventDefaults? defaults,
 }) async {
-  final fake = _FakeEventDefaultsController(
-    _defaultState(defaults: defaults),
-  );
+  final fake = _FakeEventDefaultsController(_defaultState(defaults: defaults));
   await pumpScreen(
     tester,
     const EventDefaultsScreen(),
@@ -123,17 +121,17 @@ Future<void> _tapSwitch(WidgetTester tester, String title) async {
   final titleFinder = find.text(title);
   await _scrollUntilVisible(tester, titleFinder);
   final switchFinder = find.descendant(
-    of: find.ancestor(
-      of: titleFinder,
-      matching: find.byType(SwitchListTile),
-    ),
+    of: find.ancestor(of: titleFinder, matching: find.byType(SwitchListTile)),
     matching: find.byType(Switch),
   );
   await tester.scrollUntilVisible(
     switchFinder,
     100,
     scrollable: find
-        .descendant(of: find.byType(ListView), matching: find.byType(Scrollable))
+        .descendant(
+          of: find.byType(ListView),
+          matching: find.byType(Scrollable),
+        )
         .first,
   );
   await tester.pumpAndSettle();
@@ -238,26 +236,24 @@ void main() {
       expect(find.text(l10n.eventDefaultsCheckInHeader), findsOneWidget);
     });
 
-    testWidgets(
-      'escalation and panic headers visible after scrolling down',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeEventDefaultsController(_defaultState());
-        await pumpScreen(
-          tester,
-          const EventDefaultsScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        final escalationFinder =
-            find.text(l10n.eventDefaultsEscalationHeader);
-        await _scrollUntilVisible(tester, escalationFinder);
-        expect(escalationFinder, findsOneWidget);
+    testWidgets('escalation and panic headers visible after scrolling down', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeEventDefaultsController(_defaultState());
+      await pumpScreen(
+        tester,
+        const EventDefaultsScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      final escalationFinder = find.text(l10n.eventDefaultsEscalationHeader);
+      await _scrollUntilVisible(tester, escalationFinder);
+      expect(escalationFinder, findsOneWidget);
 
-        final panicFinder = find.text(l10n.eventDefaultsPanicHeader);
-        await _scrollUntilVisible(tester, panicFinder);
-        expect(panicFinder, findsOneWidget);
-      },
-    );
+      final panicFinder = find.text(l10n.eventDefaultsPanicHeader);
+      await _scrollUntilVisible(tester, panicFinder);
+      expect(panicFinder, findsOneWidget);
+    });
 
     testWidgets('at least one Divider visible on initial render', (
       WidgetTester tester,
@@ -296,20 +292,19 @@ void main() {
     });
 
     for (final type in ChainStepType.values) {
-      testWidgets(
-        'tile for ${type.name} scrolls into view and is tappable',
-        (WidgetTester tester) async {
-          final fake = _FakeEventDefaultsController(_defaultState());
-          await pumpScreen(
-            tester,
-            const EventDefaultsScreen(),
-            overrides: <Override>[_override(fake)],
-          );
-          final tileFinder = find.text(_tileName(type));
-          await _scrollUntilVisible(tester, tileFinder);
-          expect(tileFinder, findsOneWidget);
-        },
-      );
+      testWidgets('tile for ${type.name} scrolls into view and is tappable', (
+        WidgetTester tester,
+      ) async {
+        final fake = _FakeEventDefaultsController(_defaultState());
+        await pumpScreen(
+          tester,
+          const EventDefaultsScreen(),
+          overrides: <Override>[_override(fake)],
+        );
+        final tileFinder = find.text(_tileName(type));
+        await _scrollUntilVisible(tester, tileFinder);
+        expect(tileFinder, findsOneWidget);
+      });
     }
   });
 
@@ -390,10 +385,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.countdownWarning);
-      await _assertText(
-        tester,
-        find.text(l10n.eventDefaultsCountdownStyle),
-      );
+      await _assertText(tester, find.text(l10n.eventDefaultsCountdownStyle));
     });
 
     testWidgets('expanding tile shows vibrate and sound switches', (
@@ -401,14 +393,8 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.countdownWarning);
-      await _assertText(
-        tester,
-        find.text(l10n.eventDefaultsCountdownVibrate),
-      );
-      await _assertText(
-        tester,
-        find.text(l10n.eventDefaultsCountdownSound),
-      );
+      await _assertText(tester, find.text(l10n.eventDefaultsCountdownVibrate));
+      await _assertText(tester, find.text(l10n.eventDefaultsCountdownSound));
     });
 
     testWidgets('toggling sound switch saves with updated value', (
@@ -416,10 +402,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       // sound defaults to false — toggling flips to true.
-      final fake = await _pumpAndExpand(
-        tester,
-        ChainStepType.countdownWarning,
-      );
+      final fake = await _pumpAndExpand(tester, ChainStepType.countdownWarning);
       await _tapSwitch(tester, l10n.eventDefaultsCountdownSound);
       check(fake.saveCalls).equals(1);
       check(fake.lastSaved!.countdownWarning.sound).isTrue();
@@ -470,8 +453,9 @@ void main() {
       );
     });
 
-    testWidgets('toggling declineIsSafe switch calls save with flipped value',
-        (WidgetTester tester) async {
+    testWidgets('toggling declineIsSafe switch calls save with flipped value', (
+      WidgetTester tester,
+    ) async {
       final l10n = await loadL10n(const Locale('en'));
       // declineIsSafe defaults to true — toggling flips to false.
       final fake = await _pumpAndExpand(tester, ChainStepType.fakeCall);
@@ -492,36 +476,28 @@ void main() {
       await _assertText(tester, find.text(l10n.eventDefaultsSmsChannel));
     });
 
-    testWidgets(
-      'include-location and include-medical switches are present',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pumpAndExpand(tester, ChainStepType.smsContact);
-        await _assertText(
-          tester,
-          find.text(l10n.eventDefaultsSmsIncludeLocation),
-        );
-        await _assertText(
-          tester,
-          find.text(l10n.eventDefaultsSmsIncludeMedical),
-        );
-      },
-    );
+    testWidgets('include-location and include-medical switches are present', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpAndExpand(tester, ChainStepType.smsContact);
+      await _assertText(
+        tester,
+        find.text(l10n.eventDefaultsSmsIncludeLocation),
+      );
+      await _assertText(tester, find.text(l10n.eventDefaultsSmsIncludeMedical));
+    });
 
-    testWidgets(
-      'recordDuration spinner absent when autoRecordAudio is false',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        // autoRecordAudio defaults to false.
-        await _pumpAndExpand(tester, ChainStepType.smsContact);
-        // Scroll all the way through the form to confirm it's truly absent.
-        await _assertText(
-          tester,
-          find.text(l10n.eventDefaultsBlackScreen),
-        );
-        expect(find.text(l10n.eventDefaultsSmsRecordDuration), findsNothing);
-      },
-    );
+    testWidgets('recordDuration spinner absent when autoRecordAudio is false', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // autoRecordAudio defaults to false.
+      await _pumpAndExpand(tester, ChainStepType.smsContact);
+      // Scroll all the way through the form to confirm it's truly absent.
+      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+      expect(find.text(l10n.eventDefaultsSmsRecordDuration), findsNothing);
+    });
 
     testWidgets('toggling includeLocation switch calls save', (
       WidgetTester tester,
@@ -686,10 +662,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       // sendLocationSmsFirst defaults to true — toggling flips to false.
-      final fake = await _pumpAndExpand(
-        tester,
-        ChainStepType.callEmergency,
-      );
+      final fake = await _pumpAndExpand(tester, ChainStepType.callEmergency);
       await _tapSwitch(tester, l10n.eventDefaultsCallEmergencySmsFirst);
       check(fake.saveCalls).equals(1);
       check(fake.lastSaved!.callEmergency.sendLocationSmsFirst).isFalse();
@@ -728,26 +701,25 @@ void main() {
       },
     );
 
-    testWidgets(
-      'longPress-duration slider shown when pattern is longPress',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        const initial = EventDefaults(
-          hardwareButton: HardwareButtonConfig(
-            pressPattern: PressPattern.longPress,
-          ),
-        );
-        await _pumpAndExpand(
-          tester,
-          ChainStepType.hardwareButton,
-          defaults: initial,
-        );
-        await _assertText(
-          tester,
-          find.textContaining(l10n.eventDefaultsHardwareLongDuration),
-        );
-      },
-    );
+    testWidgets('longPress-duration slider shown when pattern is longPress', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      const initial = EventDefaults(
+        hardwareButton: HardwareButtonConfig(
+          pressPattern: PressPattern.longPress,
+        ),
+      );
+      await _pumpAndExpand(
+        tester,
+        ChainStepType.hardwareButton,
+        defaults: initial,
+      );
+      await _assertText(
+        tester,
+        find.textContaining(l10n.eventDefaultsHardwareLongDuration),
+      );
+    });
 
     testWidgets('blackScreen switch present in hardwareButton form', (
       WidgetTester tester,
@@ -821,8 +793,7 @@ void main() {
       WidgetTester tester,
     ) async {
       await _pumpAndExpand(tester, ChainStepType.holdButton);
-      final elements =
-          tester.elementList(find.byType(SwitchListTile)).toList();
+      final elements = tester.elementList(find.byType(SwitchListTile)).toList();
       check(elements).isNotEmpty();
       for (final element in elements) {
         final box = element.renderObject as RenderBox;

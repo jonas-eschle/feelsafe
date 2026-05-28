@@ -126,8 +126,7 @@ void _mockShareChannel() {
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
       .setMockMethodCallHandler(
         const MethodChannel('dev.fluttercommunity.plus/share'),
-        (MethodCall call) async =>
-            'dev.fluttercommunity.plus/share/dismissed',
+        (MethodCall call) async => 'dev.fluttercommunity.plus/share/dismissed',
       );
 }
 
@@ -277,9 +276,7 @@ void main() {
         const BackupRestoreScreen(),
         overrides: <Override>[_backupOverride(fake)],
       );
-      final text = tester.widget<Text>(
-        find.text(l10n.backupOverwriteWarning),
-      );
+      final text = tester.widget<Text>(find.text(l10n.backupOverwriteWarning));
       check(text.style).isNotNull();
     });
   });
@@ -376,37 +373,37 @@ void main() {
     });
 
     testWidgets(
-        'buttons are disabled while export is in progress (busy=true)', (
-      WidgetTester tester,
-    ) async {
-      // We cannot easily intercept the mid-export frame without async tricks,
-      // so we verify by using a slow completer-backed service.
-      // Instead assert buttons re-enable after settle (regression guard).
-      _mockShareChannel();
-      final l10n = await loadL10n(const Locale('en'));
-      final fake = SimulationBackupService();
-      await pumpScreen(
-        tester,
-        const BackupRestoreScreen(),
-        overrides: <Override>[_backupOverride(fake)],
-      );
-      // Tap export and settle — buttons should be re-enabled.
-      await tester.tap(
-        find.ancestor(
-          of: find.text(l10n.backupExportButton),
-          matching: find.byType(FilledButton),
-        ),
-      );
-      await tester.pumpAndSettle();
-      final exportBtn = tester.widget<FilledButton>(
-        find.ancestor(
-          of: find.text(l10n.backupExportButton),
-          matching: find.byType(FilledButton),
-        ),
-      );
-      // After settle _busy == false → buttons re-enabled.
-      check(exportBtn.onPressed).isNotNull();
-    });
+      'buttons are disabled while export is in progress (busy=true)',
+      (WidgetTester tester) async {
+        // We cannot easily intercept the mid-export frame without async tricks,
+        // so we verify by using a slow completer-backed service.
+        // Instead assert buttons re-enable after settle (regression guard).
+        _mockShareChannel();
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = SimulationBackupService();
+        await pumpScreen(
+          tester,
+          const BackupRestoreScreen(),
+          overrides: <Override>[_backupOverride(fake)],
+        );
+        // Tap export and settle — buttons should be re-enabled.
+        await tester.tap(
+          find.ancestor(
+            of: find.text(l10n.backupExportButton),
+            matching: find.byType(FilledButton),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final exportBtn = tester.widget<FilledButton>(
+          find.ancestor(
+            of: find.text(l10n.backupExportButton),
+            matching: find.byType(FilledButton),
+          ),
+        );
+        // After settle _busy == false → buttons re-enabled.
+        check(exportBtn.onPressed).isNotNull();
+      },
+    );
   });
 
   // ---- Import — confirm dialog ----
@@ -534,10 +531,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.commonConfirm));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Import complete. Restart to apply.'),
-        findsOneWidget,
-      );
+      expect(find.text('Import complete. Restart to apply.'), findsOneWidget);
     });
 
     testWidgets('file picker cancellation aborts import silently', (
@@ -563,10 +557,7 @@ void main() {
       await tester.pumpAndSettle();
       check(fake.importCalls).isEmpty();
       // No snackbar.
-      expect(
-        find.text('Import complete. Restart to apply.'),
-        findsNothing,
-      );
+      expect(find.text('Import complete. Restart to apply.'), findsNothing);
     });
   });
 
@@ -683,10 +674,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.commonCancel));
       await tester.pumpAndSettle();
-      expect(
-        find.text('Import complete. Restart to apply.'),
-        findsNothing,
-      );
+      expect(find.text('Import complete. Restart to apply.'), findsNothing);
     });
   });
 
@@ -737,9 +725,7 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('RTL: both toggles are present', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('RTL: both toggles are present', (WidgetTester tester) async {
       final fake = SimulationBackupService();
       await pumpScreen(
         tester,

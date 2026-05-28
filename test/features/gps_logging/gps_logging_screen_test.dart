@@ -124,9 +124,7 @@ Future<void> _pump(
 }) => pumpScreen(
   tester,
   const GpsLoggingScreen(),
-  overrides: <Override>[
-    gpsLoggingControllerProvider.overrideWith(() => fake),
-  ],
+  overrides: <Override>[gpsLoggingControllerProvider.overrideWith(() => fake)],
   locale: locale,
   themeMode: themeMode,
   settle: settle,
@@ -161,25 +159,19 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('GpsLoggingScreen — async states', () {
-    testWidgets(
-      'shows CircularProgressIndicator on first frame (loading)',
-      (WidgetTester tester) async {
-        await _pump(
-          tester,
-          _FakeGpsLoggingController(_state()),
-          settle: false,
-        );
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      },
-    );
+    testWidgets('shows CircularProgressIndicator on first frame (loading)', (
+      WidgetTester tester,
+    ) async {
+      await _pump(tester, _FakeGpsLoggingController(_state()), settle: false);
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
 
-    testWidgets(
-      'CircularProgressIndicator is gone after settling',
-      (WidgetTester tester) async {
-        await _pump(tester, _FakeGpsLoggingController(_state()));
-        expect(find.byType(CircularProgressIndicator), findsNothing);
-      },
-    );
+    testWidgets('CircularProgressIndicator is gone after settling', (
+      WidgetTester tester,
+    ) async {
+      await _pump(tester, _FakeGpsLoggingController(_state()));
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
 
     testWidgets('shows error text when controller emits an error', (
       WidgetTester tester,
@@ -314,10 +306,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state()),
-      );
+      await _pump(tester, _FakeGpsLoggingController(_state()));
       expect(find.text(l10n.gpsLoggingAccuracyHigh), findsWidgets);
     });
 
@@ -343,31 +332,28 @@ void main() {
       expect(find.text(l10n.gpsLoggingAccuracyLow), findsWidgets);
     });
 
-    testWidgets(
-      'selecting a new accuracy value calls setAccuracy',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeGpsLoggingController(_state());
-        await _pump(tester, fake);
-        // Open the accuracy dropdown.
-        await tester.tap(
-          find
-              .ancestor(
-                of: find.text(l10n.gpsLoggingAccuracyHigh),
-                matching: find.byType(DropdownButton<GpsAccuracy>),
-              )
-              .first,
-        );
-        await tester.pumpAndSettle();
-        // Tap the "Balanced" item in the overlay.
-        await tester.tap(
-          find.text(l10n.gpsLoggingAccuracyBalanced).last,
-        );
-        await tester.pumpAndSettle();
-        check(fake.setAccuracyCalls).equals(1);
-        check(fake.lastAccuracy).equals(GpsAccuracy.medium);
-      },
-    );
+    testWidgets('selecting a new accuracy value calls setAccuracy', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeGpsLoggingController(_state());
+      await _pump(tester, fake);
+      // Open the accuracy dropdown.
+      await tester.tap(
+        find
+            .ancestor(
+              of: find.text(l10n.gpsLoggingAccuracyHigh),
+              matching: find.byType(DropdownButton<GpsAccuracy>),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
+      // Tap the "Balanced" item in the overlay.
+      await tester.tap(find.text(l10n.gpsLoggingAccuracyBalanced).last);
+      await tester.pumpAndSettle();
+      check(fake.setAccuracyCalls).equals(1);
+      check(fake.lastAccuracy).equals(GpsAccuracy.medium);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -385,10 +371,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state()),
-      );
+      await _pump(tester, _FakeGpsLoggingController(_state()));
       expect(find.text(l10n.gpsLoggingFormatDecimal), findsWidgets);
     });
 
@@ -403,42 +386,38 @@ void main() {
       expect(find.text(l10n.gpsLoggingFormatDms), findsWidgets);
     });
 
-    testWidgets(
-      'shows "Address" when format is GpsFormat.openLocationCode',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(
-          tester,
-          _FakeGpsLoggingController(
-            _state(format: GpsFormat.openLocationCode),
-          ),
-        );
-        expect(find.text(l10n.gpsLoggingFormatAddress), findsWidgets);
-      },
-    );
+    testWidgets('shows "Address" when format is GpsFormat.openLocationCode', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(
+        tester,
+        _FakeGpsLoggingController(_state(format: GpsFormat.openLocationCode)),
+      );
+      expect(find.text(l10n.gpsLoggingFormatAddress), findsWidgets);
+    });
 
-    testWidgets(
-      'selecting DMS from decimal calls setFormat(GpsFormat.dms)',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeGpsLoggingController(_state());
-        await _pump(tester, fake);
-        // Open the format dropdown.
-        await tester.tap(
-          find
-              .ancestor(
-                of: find.text(l10n.gpsLoggingFormatDecimal),
-                matching: find.byType(DropdownButton<GpsFormat>),
-              )
-              .first,
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.gpsLoggingFormatDms).last);
-        await tester.pumpAndSettle();
-        check(fake.setFormatCalls).equals(1);
-        check(fake.lastFormat).equals(GpsFormat.dms);
-      },
-    );
+    testWidgets('selecting DMS from decimal calls setFormat(GpsFormat.dms)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeGpsLoggingController(_state());
+      await _pump(tester, fake);
+      // Open the format dropdown.
+      await tester.tap(
+        find
+            .ancestor(
+              of: find.text(l10n.gpsLoggingFormatDecimal),
+              matching: find.byType(DropdownButton<GpsFormat>),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.gpsLoggingFormatDms).last);
+      await tester.pumpAndSettle();
+      check(fake.setFormatCalls).equals(1);
+      check(fake.lastFormat).equals(GpsFormat.dms);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -450,10 +429,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state()),
-      );
+      await _pump(tester, _FakeGpsLoggingController(_state()));
       final tile = tester.widget<SwitchListTile>(
         find.ancestor(
           of: find.text(l10n.gpsLoggingIncludeInSms),
@@ -549,16 +525,15 @@ void main() {
       },
     );
 
-    testWidgets(
-      'DropdownButton items are accessible as text nodes',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(tester, _FakeGpsLoggingController(_state()));
-        // Both selected values appear as text.
-        expect(find.text(l10n.gpsLoggingAccuracyHigh), findsWidgets);
-        expect(find.text(l10n.gpsLoggingFormatDecimal), findsWidgets);
-      },
-    );
+    testWidgets('DropdownButton items are accessible as text nodes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, _FakeGpsLoggingController(_state()));
+      // Both selected values appear as text.
+      expect(find.text(l10n.gpsLoggingAccuracyHigh), findsWidgets);
+      expect(find.text(l10n.gpsLoggingFormatDecimal), findsWidgets);
+    });
 
     testWidgets('screen renders under large font scale without overflow', (
       WidgetTester tester,

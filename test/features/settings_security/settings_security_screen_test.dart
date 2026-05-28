@@ -29,8 +29,7 @@ import '../../helpers/widget_test_helpers.dart';
 // Test fake
 // ---------------------------------------------------------------------------
 
-class _FakeSettingsSecurityController
-    extends SettingsSecurityController {
+class _FakeSettingsSecurityController extends SettingsSecurityController {
   _FakeSettingsSecurityController(this._initial);
 
   final SettingsSecurityState _initial;
@@ -51,9 +50,7 @@ class _FakeSettingsSecurityController
     lastWrongPinThreshold = v;
     final cur = state.value;
     if (cur == null) return;
-    state = AsyncData(
-      _copyWith(cur, wrongPinThreshold: v),
-    );
+    state = AsyncData(_copyWith(cur, wrongPinThreshold: v));
   }
 
   @override
@@ -62,9 +59,7 @@ class _FakeSettingsSecurityController
     lastPinTimeout = seconds;
     final cur = state.value;
     if (cur == null) return;
-    state = AsyncData(
-      _copyWith(cur, pinTimeoutSeconds: seconds),
-    );
+    state = AsyncData(_copyWith(cur, pinTimeoutSeconds: seconds));
   }
 
   @override
@@ -73,9 +68,7 @@ class _FakeSettingsSecurityController
     lastDeceptiveDialog = enabled;
     final cur = state.value;
     if (cur == null) return;
-    state = AsyncData(
-      _copyWith(cur, deceptiveDialogEnabled: enabled),
-    );
+    state = AsyncData(_copyWith(cur, deceptiveDialogEnabled: enabled));
   }
 
   // Helper because [SettingsSecurityState] has no copyWith.
@@ -93,8 +86,7 @@ class _FakeSettingsSecurityController
     duressPinSet: duressPinSet ?? s.duressPinSet,
     pinTimeoutSeconds: pinTimeoutSeconds ?? s.pinTimeoutSeconds,
     wrongPinThreshold: wrongPinThreshold ?? s.wrongPinThreshold,
-    deceptiveDialogEnabled:
-        deceptiveDialogEnabled ?? s.deceptiveDialogEnabled,
+    deceptiveDialogEnabled: deceptiveDialogEnabled ?? s.deceptiveDialogEnabled,
   );
 }
 
@@ -179,8 +171,7 @@ Future<void> _pumpWithRouter(
           GoRoute(
             path: 'pin-setup',
             name: RouteNames.pinSetup,
-            builder: (ctx, st) =>
-                const Scaffold(body: SizedBox.shrink()),
+            builder: (ctx, st) => const Scaffold(body: SizedBox.shrink()),
           ),
         ],
       ),
@@ -204,8 +195,7 @@ Future<void> _pumpWithRouter(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -233,10 +223,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.settingsSecurityRow), findsWidgets);
       expect(find.byType(AppBar), findsOneWidget);
     });
@@ -259,10 +246,7 @@ void main() {
     testWidgets('renders body once AsyncValue resolves', (
       WidgetTester tester,
     ) async {
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
@@ -299,28 +283,19 @@ void main() {
   group('SettingsSecurityScreen — PIN card titles', () {
     testWidgets('renders App PIN title', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securityAppPinTitle), findsOneWidget);
     });
 
     testWidgets('renders Session End PIN title', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securitySessionEndPinTitle), findsOneWidget);
     });
 
     testWidgets('renders Duress PIN title', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
     });
   });
@@ -330,10 +305,7 @@ void main() {
   group('SettingsSecurityScreen — PIN card body text', () {
     testWidgets('renders App PIN help text', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securityAppPinBody), findsOneWidget);
     });
 
@@ -341,19 +313,13 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securitySessionEndPinBody), findsOneWidget);
     });
 
     testWidgets('renders Duress PIN help text', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.text(l10n.securityDuressPinBody), findsOneWidget);
     });
   });
@@ -365,10 +331,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       // Exactly one FilledButton should carry the "Set PIN" label for App PIN.
       final setButtons = find.descendant(
         of: find.byType(Card).first,
@@ -383,9 +346,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(
         tester,
-        fake: _FakeSettingsSecurityController(
-          _secState(appPinSet: true),
-        ),
+        fake: _FakeSettingsSecurityController(_secState(appPinSet: true)),
       );
       final changeButtons = find.descendant(
         of: find.byType(Card).first,
@@ -398,10 +359,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       final cards = tester.widgetList<Card>(find.byType(Card)).toList();
       final sessionEndCard = find.descendant(
         of: find.byWidget(cards[1]),
@@ -432,10 +390,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       final cards = tester.widgetList<Card>(find.byType(Card)).toList();
       final duressCard = find.descendant(
         of: find.byWidget(cards[2]),
@@ -450,9 +405,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(
         tester,
-        fake: _FakeSettingsSecurityController(
-          _secState(duressPinSet: true),
-        ),
+        fake: _FakeSettingsSecurityController(_secState(duressPinSet: true)),
       );
       final cards = tester.widgetList<Card>(find.byType(Card)).toList();
       final duressCard = find.descendant(
@@ -466,60 +419,45 @@ void main() {
   // ── Navigation — configure button pushes correct route ─────────────────────
 
   group('SettingsSecurityScreen — navigation', () {
-    testWidgets(
-      'tapping App PIN button pushes pinSetup route with type=app',
-      (WidgetTester tester) async {
-        final fake = _FakeSettingsSecurityController(_secState());
-        final observer = _FakeNavigatorObserver();
-        await _pumpWithRouter(
-          tester,
-          fake: fake,
-          observer: observer,
-        );
-        final l10n = await loadL10n(const Locale('en'));
-        // Tap the first "Set PIN" button (App PIN card).
-        await tester.tap(find.text(l10n.securitySetPin).first);
-        await tester.pumpAndSettle();
-        // A new route was pushed onto the navigator.
-        check(observer.pushed).isNotEmpty();
-      },
-    );
+    testWidgets('tapping App PIN button pushes pinSetup route with type=app', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSettingsSecurityController(_secState());
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+      final l10n = await loadL10n(const Locale('en'));
+      // Tap the first "Set PIN" button (App PIN card).
+      await tester.tap(find.text(l10n.securitySetPin).first);
+      await tester.pumpAndSettle();
+      // A new route was pushed onto the navigator.
+      check(observer.pushed).isNotEmpty();
+    });
 
-    testWidgets(
-      'tapping Session End PIN button pushes pinSetup route',
-      (WidgetTester tester) async {
-        final fake = _FakeSettingsSecurityController(_secState());
-        final observer = _FakeNavigatorObserver();
-        await _pumpWithRouter(
-          tester,
-          fake: fake,
-          observer: observer,
-        );
-        final l10n = await loadL10n(const Locale('en'));
-        // The second "Set PIN" button belongs to Session End PIN.
-        await tester.tap(find.text(l10n.securitySetPin).at(1));
-        await tester.pumpAndSettle();
-        check(observer.pushed).isNotEmpty();
-      },
-    );
+    testWidgets('tapping Session End PIN button pushes pinSetup route', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSettingsSecurityController(_secState());
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+      final l10n = await loadL10n(const Locale('en'));
+      // The second "Set PIN" button belongs to Session End PIN.
+      await tester.tap(find.text(l10n.securitySetPin).at(1));
+      await tester.pumpAndSettle();
+      check(observer.pushed).isNotEmpty();
+    });
 
-    testWidgets(
-      'tapping Duress PIN button pushes pinSetup route',
-      (WidgetTester tester) async {
-        final fake = _FakeSettingsSecurityController(_secState());
-        final observer = _FakeNavigatorObserver();
-        await _pumpWithRouter(
-          tester,
-          fake: fake,
-          observer: observer,
-        );
-        final l10n = await loadL10n(const Locale('en'));
-        // The third "Set PIN" button belongs to Duress PIN.
-        await tester.tap(find.text(l10n.securitySetPin).at(2));
-        await tester.pumpAndSettle();
-        check(observer.pushed).isNotEmpty();
-      },
-    );
+    testWidgets('tapping Duress PIN button pushes pinSetup route', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSettingsSecurityController(_secState());
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+      final l10n = await loadL10n(const Locale('en'));
+      // The third "Set PIN" button belongs to Duress PIN.
+      await tester.tap(find.text(l10n.securitySetPin).at(2));
+      await tester.pumpAndSettle();
+      check(observer.pushed).isNotEmpty();
+    });
 
     testWidgets(
       'Change PIN button (all PINs set) still navigates to pinSetup',
@@ -532,11 +470,7 @@ void main() {
           ),
         );
         final observer = _FakeNavigatorObserver();
-        await _pumpWithRouter(
-          tester,
-          fake: fake,
-          observer: observer,
-        );
+        await _pumpWithRouter(tester, fake: fake, observer: observer);
         final l10n = await loadL10n(const Locale('en'));
         await tester.tap(find.text(l10n.securityChangePin).first);
         await tester.pumpAndSettle();
@@ -552,29 +486,15 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
-      expect(
-        find.text(l10n.securityWrongPinThresholdLabel),
-        findsOneWidget,
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      expect(find.text(l10n.securityWrongPinThresholdLabel), findsOneWidget);
       expect(find.byType(Slider), findsWidgets);
     });
 
-    testWidgets('PIN timeout slider is present', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('PIN timeout slider is present', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
-      expect(
-        find.text(l10n.securityPinTimeoutLabel),
-        findsOneWidget,
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      expect(find.text(l10n.securityPinTimeoutLabel), findsOneWidget);
     });
   });
 
@@ -585,27 +505,16 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
-      expect(
-        find.text(l10n.securityDeceptiveDialogToggle),
-        findsOneWidget,
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      expect(find.text(l10n.securityDeceptiveDialogToggle), findsOneWidget);
       expect(find.byType(SwitchListTile), findsOneWidget);
     });
 
     testWidgets('switch is off when deceptiveDialogEnabled is false', (
       WidgetTester tester,
     ) async {
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
-      final tile = tester.widget<SwitchListTile>(
-        find.byType(SwitchListTile),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
       check(tile.value).isFalse();
     });
 
@@ -618,9 +527,7 @@ void main() {
           _secState(deceptiveDialogEnabled: true),
         ),
       );
-      final tile = tester.widget<SwitchListTile>(
-        find.byType(SwitchListTile),
-      );
+      final tile = tester.widget<SwitchListTile>(find.byType(SwitchListTile));
       check(tile.value).isTrue();
     });
 
@@ -639,13 +546,8 @@ void main() {
   // ── Three cards rendered ───────────────────────────────────────────────────
 
   group('SettingsSecurityScreen — card layout', () {
-    testWidgets('renders exactly three PIN cards', (
-      WidgetTester tester,
-    ) async {
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+    testWidgets('renders exactly three PIN cards', (WidgetTester tester) async {
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       // Three [Card] widgets — one per PIN type.
       expect(find.byType(Card), findsNWidgets(3));
     });
@@ -653,10 +555,7 @@ void main() {
     testWidgets('three FilledButtons present (one per PIN card)', (
       WidgetTester tester,
     ) async {
-      await _pump(
-        tester,
-        fake: _FakeSettingsSecurityController(_secState()),
-      );
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
       expect(find.byType(FilledButton), findsNWidgets(3));
     });
   });
@@ -695,41 +594,30 @@ void main() {
   // ── Accessibility ──────────────────────────────────────────────────────────
 
   group('SettingsSecurityScreen — accessibility', () {
-    testWidgets(
-      'all three PIN titles are present as text for screen readers',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(
-          tester,
-          fake: _FakeSettingsSecurityController(_secState()),
-        );
-        expect(find.text(l10n.securityAppPinTitle), findsOneWidget);
-        expect(
-          find.text(l10n.securitySessionEndPinTitle),
-          findsOneWidget,
-        );
-        expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
-      },
-    );
+    testWidgets('all three PIN titles are present as text for screen readers', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      expect(find.text(l10n.securityAppPinTitle), findsOneWidget);
+      expect(find.text(l10n.securitySessionEndPinTitle), findsOneWidget);
+      expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
+    });
 
-    testWidgets(
-      'SwitchListTile exposes a title for screen readers',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(
-          tester,
-          fake: _FakeSettingsSecurityController(_secState()),
-        );
-        // SwitchListTile title is a [Text] widget — readable by TalkBack/VoiceOver.
-        expect(
-          find.descendant(
-            of: find.byType(SwitchListTile),
-            matching: find.text(l10n.securityDeceptiveDialogToggle),
-          ),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('SwitchListTile exposes a title for screen readers', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      // SwitchListTile title is a [Text] widget — readable by TalkBack/VoiceOver.
+      expect(
+        find.descendant(
+          of: find.byType(SwitchListTile),
+          matching: find.text(l10n.securityDeceptiveDialogToggle),
+        ),
+        findsOneWidget,
+      );
+    });
   });
 }
 
@@ -739,6 +627,5 @@ void main() {
 
 class _ErrorController extends SettingsSecurityController {
   @override
-  Future<SettingsSecurityState> build() async =>
-      throw StateError('test error');
+  Future<SettingsSecurityState> build() async => throw StateError('test error');
 }

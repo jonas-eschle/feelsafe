@@ -157,11 +157,7 @@ void main() {
           nullable: false,
           isPk: false,
         ),
-        'is_built_in': (
-          type: DriftSqlType.bool,
-          nullable: false,
-          isPk: false,
-        ),
+        'is_built_in': (type: DriftSqlType.bool, nullable: false, isPk: false),
       });
     });
 

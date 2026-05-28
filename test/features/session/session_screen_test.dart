@@ -7,9 +7,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -265,9 +265,7 @@ Future<void> _pumpWithRouter(
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
       ),
@@ -307,10 +305,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(_runningState());
       await _pump(tester, fake);
-      expect(
-        find.byTooltip(l10n.sessionQuickExitTitle),
-        findsOneWidget,
-      );
+      expect(find.byTooltip(l10n.sessionQuickExitTitle), findsOneWidget);
       expect(find.byTooltip(l10n.commonClose), findsOneWidget);
     });
 
@@ -320,10 +315,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(_runningState());
       await _pump(tester, fake);
-      expect(
-        find.byTooltip(l10n.sessionQuickExitTitle),
-        findsOneWidget,
-      );
+      expect(find.byTooltip(l10n.sessionQuickExitTitle), findsOneWidget);
     });
   });
 
@@ -375,18 +367,10 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeSessionController(
-        _runningState(isSimulation: true),
-      );
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
       await _pump(tester, fake);
-      expect(
-        find.textContaining('[SIM]'),
-        findsWidgets,
-      );
-      expect(
-        find.textContaining(l10n.sessionSimulationBanner),
-        findsWidgets,
-      );
+      expect(find.textContaining('[SIM]'), findsWidgets);
+      expect(find.textContaining(l10n.sessionSimulationBanner), findsWidgets);
     });
 
     testWidgets('no [SIM] banner when isSimulation is false', (
@@ -401,9 +385,7 @@ void main() {
   // ── Step: holdButton ──────────────────────────────────────────────────────
   group('SessionScreen — holdButton step', () {
     testWidgets('renders circular hold button', (WidgetTester tester) async {
-      final fake = _FakeSessionController(
-        _runningState(isHolding: true),
-      );
+      final fake = _FakeSessionController(_runningState(isHolding: true));
       await _pump(tester, fake);
       // Hold UI renders a 200x200 circle container — identified by the
       // "HOLD" label.
@@ -415,9 +397,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(
-        _runningState(
-          phase: SessionPhase.holdWait,
-        ),
+        _runningState(phase: SessionPhase.holdWait),
       );
       await _pump(tester, fake);
       expect(find.text(l10n.sessionHoldTouchToBegin), findsOneWidget);
@@ -427,9 +407,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeSessionController(
-        _runningState(isHolding: true),
-      );
+      final fake = _FakeSessionController(_runningState(isHolding: true));
       await _pump(tester, fake);
       expect(find.text(l10n.sessionHoldPrompt), findsWidgets);
     });
@@ -479,10 +457,7 @@ void main() {
       );
       await _pump(tester, fake);
       expect(find.byIcon(Icons.warning_amber), findsWidgets);
-      expect(
-        find.text(l10n.sessionStepCountdownTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepCountdownTitle), findsOneWidget);
     });
 
     testWidgets('renders large countdown number', (WidgetTester tester) async {
@@ -584,10 +559,7 @@ void main() {
       );
       await _pump(tester, fake);
       expect(find.byIcon(Icons.phone_forwarded), findsOneWidget);
-      expect(
-        find.text(l10n.sessionStepPhoneCallStatus),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepPhoneCallStatus), findsOneWidget);
     });
 
     testWidgets('shows [SIM] blocked phone card in simulation', (
@@ -602,10 +574,7 @@ void main() {
         ),
       );
       await _pump(tester, fake);
-      expect(
-        find.text(l10n.sessionStepSimBlockedPhone),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepSimBlockedPhone), findsOneWidget);
     });
   });
 
@@ -623,10 +592,7 @@ void main() {
       );
       await _pump(tester, fake);
       expect(find.byIcon(Icons.volume_up), findsOneWidget);
-      expect(
-        find.text(l10n.sessionStepLoudAlarmTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepLoudAlarmTitle), findsOneWidget);
     });
 
     testWidgets('shows flash warning when LoudAlarmConfig.flashScreen=true', (
@@ -642,10 +608,7 @@ void main() {
         ),
       );
       await _pump(tester, fake);
-      expect(
-        find.text(l10n.sessionStepLoudAlarmFlashWarning),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepLoudAlarmFlashWarning), findsOneWidget);
     });
 
     testWidgets('shows [SIM] blocked alarm card in simulation', (
@@ -660,10 +623,7 @@ void main() {
         ),
       );
       await _pump(tester, fake);
-      expect(
-        find.text(l10n.sessionStepSimBlockedAlarm),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepSimBlockedAlarm), findsOneWidget);
     });
   });
 
@@ -681,10 +641,7 @@ void main() {
       );
       await _pump(tester, fake);
       expect(find.byIcon(Icons.emergency), findsOneWidget);
-      expect(
-        find.text(l10n.sessionStepCallEmergencyStatus),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepCallEmergencyStatus), findsOneWidget);
     });
 
     testWidgets('renders configured emergency number', (
@@ -725,9 +682,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      const config = HardwareButtonConfig(
-        pressCount: 3,
-      );
+      const config = HardwareButtonConfig(pressCount: 3);
       final fake = _FakeSessionController(
         _runningState(
           type: ChainStepType.hardwareButton,
@@ -787,10 +742,7 @@ void main() {
         _runningState(distressConfirmRemaining: 3),
       );
       await _pump(tester, fake);
-      expect(
-        find.text(l10n.distressConfirmCountdown(3)),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.distressConfirmCountdown(3)), findsOneWidget);
     });
 
     testWidgets('tapping cancel button calls cancelDistress', (
@@ -863,9 +815,7 @@ void main() {
       );
       await _pump(tester, fake);
       expect(
-        find.text(
-          l10n.sessionInterruptedStarted(priorAt.toLocal().toString()),
-        ),
+        find.text(l10n.sessionInterruptedStarted(priorAt.toLocal().toString())),
         findsOneWidget,
       );
     });
@@ -899,10 +849,7 @@ void main() {
         _runningState(needsGpsDestinationPrompt: true),
       );
       await _pump(tester, fake);
-      expect(
-        find.text(l10n.sessionGpsDestinationTitle),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionGpsDestinationTitle), findsOneWidget);
     });
 
     testWidgets('skip button calls skipGpsDestination', (
@@ -980,9 +927,7 @@ void main() {
     testWidgets('simulation controls bar visible when isSimulation', (
       WidgetTester tester,
     ) async {
-      final fake = _FakeSessionController(
-        _runningState(isSimulation: true),
-      );
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
       await _pump(tester, fake);
       // The Slider widget is present in the simulation controls bar.
       expect(find.byType(Slider), findsOneWidget);
@@ -999,9 +944,7 @@ void main() {
     testWidgets('Switch in sim bar reflects simulationSilent state', (
       WidgetTester tester,
     ) async {
-      final fake = _FakeSessionController(
-        _runningState(isSimulation: true),
-      );
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
       await _pump(tester, fake);
       final sw = tester.widget<Switch>(find.byType(Switch));
       // Default simulationSilent is true.
@@ -1042,9 +985,7 @@ void main() {
       WidgetTester tester,
     ) async {
       const errMsg = 'Step execution failed: timeout';
-      final fake = _FakeSessionController(
-        _runningState(lastError: errMsg),
-      );
+      final fake = _FakeSessionController(_runningState(lastError: errMsg));
       await _pump(tester, fake);
       expect(find.text(errMsg), findsOneWidget);
     });
@@ -1081,19 +1022,14 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(_runningState());
       await _pump(tester, fake);
-      expect(
-        find.byTooltip(l10n.sessionQuickExitTitle),
-        findsOneWidget,
-      );
+      expect(find.byTooltip(l10n.sessionQuickExitTitle), findsOneWidget);
       expect(find.byTooltip(l10n.commonClose), findsOneWidget);
     });
 
     testWidgets('session elapsed clock is present in header', (
       WidgetTester tester,
     ) async {
-      final fake = _FakeSessionController(
-        _runningState(elapsedSeconds: 65),
-      );
+      final fake = _FakeSessionController(_runningState(elapsedSeconds: 65));
       await _pump(tester, fake);
       // Elapsed 65 s → "01:05"
       expect(find.text('01:05'), findsOneWidget);
@@ -1106,10 +1042,7 @@ void main() {
       final fake = _FakeSessionController(_runningState());
       await _pump(tester, fake);
       // Step 1 of 1.
-      expect(
-        find.text(l10n.sessionStepLabel('1', '1')),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionStepLabel('1', '1')), findsOneWidget);
     });
   });
 }
@@ -1123,6 +1056,5 @@ void main() {
 /// exception inside [build].
 class _ErrController extends SessionController {
   @override
-  Future<SessionState> build() async =>
-      throw StateError('injected test error');
+  Future<SessionState> build() async => throw StateError('injected test error');
 }

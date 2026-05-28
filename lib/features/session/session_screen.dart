@@ -95,14 +95,9 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       final isSimulation = sessionState?.isSimulation ?? false;
       await controller.endSession();
       if (!context.mounted) return;
-      final params = <String, String>{
-        if (isSimulation) 'simulation': 'true',
-      };
+      final params = <String, String>{if (isSimulation) 'simulation': 'true'};
       if (recorderId != null) params['id'] = recorderId;
-      context.goNamed(
-        RouteNames.sessionCompleted,
-        queryParameters: params,
-      );
+      context.goNamed(RouteNames.sessionCompleted, queryParameters: params);
     }
   }
 

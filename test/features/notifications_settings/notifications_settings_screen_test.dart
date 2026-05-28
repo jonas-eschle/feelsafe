@@ -77,7 +77,9 @@ class _FakePermissionHandlerPlatform extends PermissionHandlerPlatform
 // Helpers
 // ---------------------------------------------------------------------------
 
-Future<({_FakePermissionHandlerPlatform perm, SimulationNotificationService notif})>
+Future<
+  ({_FakePermissionHandlerPlatform perm, SimulationNotificationService notif})
+>
 _pump(
   WidgetTester tester, {
   PermissionStatus status = PermissionStatus.granted,
@@ -101,9 +103,7 @@ _pump(
   await pumpScreen(
     tester,
     const NotificationsSettingsScreen(),
-    overrides: <Override>[
-      notificationServiceProvider.overrideWithValue(notif),
-    ],
+    overrides: <Override>[notificationServiceProvider.overrideWithValue(notif)],
     locale: locale,
     themeMode: themeMode,
     settle: settle,
@@ -131,9 +131,7 @@ void main() {
       );
     });
 
-    testWidgets('renders permission status row', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('renders permission status row', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester);
       expect(find.text(l10n.notificationsStatusGranted), findsOneWidget);
@@ -257,8 +255,9 @@ void main() {
       final r = await _pump(tester);
       await tester.tap(find.text(l10n.notificationsChannelAlarm));
       await tester.pumpAndSettle();
-      check(r.notif.openChannelSettingsCalls)
-          .contains(NotificationChannelKey.alarm);
+      check(
+        r.notif.openChannelSettingsCalls,
+      ).contains(NotificationChannelKey.alarm);
     });
 
     testWidgets('tapping Reminder channel invokes openChannelSettings', (
@@ -268,8 +267,9 @@ void main() {
       final r = await _pump(tester);
       await tester.tap(find.text(l10n.notificationsChannelReminder));
       await tester.pumpAndSettle();
-      check(r.notif.openChannelSettingsCalls)
-          .contains(NotificationChannelKey.reminder);
+      check(
+        r.notif.openChannelSettingsCalls,
+      ).contains(NotificationChannelKey.reminder);
     });
 
     testWidgets('tapping FakeCall channel invokes openChannelSettings', (
@@ -279,8 +279,9 @@ void main() {
       final r = await _pump(tester);
       await tester.tap(find.text(l10n.notificationsChannelFakeCall));
       await tester.pumpAndSettle();
-      check(r.notif.openChannelSettingsCalls)
-          .contains(NotificationChannelKey.fakeCall);
+      check(
+        r.notif.openChannelSettingsCalls,
+      ).contains(NotificationChannelKey.fakeCall);
     });
 
     testWidgets('channel descriptions are visible', (
@@ -318,16 +319,15 @@ void main() {
       expect(find.byType(Card), findsNWidgets(3));
     });
 
-    testWidgets(
-      'isChannelEnabled called for each channel at screen open',
-      (WidgetTester tester) async {
-        final r = await _pump(tester);
-        final ch = r.notif.calls
-            .where((c) => c.method == 'isChannelEnabled')
-            .length;
-        check(ch).isGreaterOrEqual(3);
-      },
-    );
+    testWidgets('isChannelEnabled called for each channel at screen open', (
+      WidgetTester tester,
+    ) async {
+      final r = await _pump(tester);
+      final ch = r.notif.calls
+          .where((c) => c.method == 'isChannelEnabled')
+          .length;
+      check(ch).isGreaterOrEqual(3);
+    });
   });
 
   group('NotificationsSettingsScreen — RTL & dark mode', () {

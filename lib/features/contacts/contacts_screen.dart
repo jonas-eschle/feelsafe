@@ -4,16 +4,17 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import 'package:flutter_contacts/flutter_contacts.dart' as fc;
-import 'package:flutter_contacts/models/permissions/permission_status.dart'
-    as fc_perm;
-import 'package:flutter_contacts/models/permissions/permission_type.dart'
-    as fc_perm_type;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/features/contacts/contacts_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+
+import 'package:flutter_contacts/models/permissions/permission_status.dart'
+    as fc_perm;
+import 'package:flutter_contacts/models/permissions/permission_type.dart'
+    as fc_perm_type;
 
 /// Emergency contacts list screen.
 ///
@@ -110,9 +111,7 @@ class ContactsScreen extends ConsumerWidget {
                       false;
                 },
                 onDismissed: (_) {
-                  ref
-                      .read(contactsControllerProvider.notifier)
-                      .delete(c.id);
+                  ref.read(contactsControllerProvider.notifier).delete(c.id);
                 },
                 child: ListTile(
                   leading: CircleAvatar(
@@ -176,9 +175,9 @@ class ContactsScreen extends ConsumerWidget {
       );
     } on Object catch (_) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.contactsImportNotSupported)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.contactsImportNotSupported)));
     }
   }
 
@@ -249,9 +248,7 @@ class _TypeToConfirmDialogState extends State<_TypeToConfirmDialog> {
           child: Text(l10n.commonCancel),
         ),
         FilledButton(
-          onPressed: _match
-              ? () => Navigator.of(context).pop(true)
-              : null,
+          onPressed: _match ? () => Navigator.of(context).pop(true) : null,
           child: Text(l10n.contactsDeleteAllConfirmButton),
         ),
       ],

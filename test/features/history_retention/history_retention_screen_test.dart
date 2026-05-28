@@ -82,8 +82,9 @@ HistoryRetentionState _defaultState({
   trashRetentionDays: trashRetentionDays,
 );
 
-List<Override> _overrides(_FakeHistoryRetentionController fake) =>
-    <Override>[historyRetentionControllerProvider.overrideWith(() => fake)];
+List<Override> _overrides(_FakeHistoryRetentionController fake) => <Override>[
+  historyRetentionControllerProvider.overrideWith(() => fake),
+];
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -100,9 +101,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionTitle), findsWidgets);
       expect(find.byType(AppBar), findsOneWidget);
@@ -112,20 +111,17 @@ void main() {
   // ── Async states ──────────────────────────────────────────────────────────
 
   group('HistoryRetentionScreen — async states', () {
-    testWidgets(
-      'shows CircularProgressIndicator on first frame (loading)',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            _FakeHistoryRetentionController(_defaultState()),
-          ),
-          settle: false,
-        );
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      },
-    );
+    testWidgets('shows CircularProgressIndicator on first frame (loading)', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
+        settle: false,
+      );
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
 
     testWidgets('no spinner once AsyncValue resolves', (
       WidgetTester tester,
@@ -133,16 +129,12 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('shows error text on AsyncError', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('shows error text on AsyncError', (WidgetTester tester) async {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
@@ -164,9 +156,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionLogsLabel), findsOneWidget);
     });
@@ -178,9 +168,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionLogsHelper), findsOneWidget);
     });
@@ -191,30 +179,27 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       // Two sliders total (session log + trash).
       expect(find.byType(Slider), findsNWidgets(2));
     });
 
-    testWidgets(
-      'session log slider value matches state (180 default)',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            // _defaultState defaults to 180; stated explicitly in test name.
-            _FakeHistoryRetentionController(_defaultState()),
-          ),
-        );
-        final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
-        // First slider is session log retention.
-        check(sliders[0].value).equals(180.0);
-      },
-    );
+    testWidgets('session log slider value matches state (180 default)', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(
+          // _defaultState defaults to 180; stated explicitly in test name.
+          _FakeHistoryRetentionController(_defaultState()),
+        ),
+      );
+      final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
+      // First slider is session log retention.
+      check(sliders[0].value).equals(180.0);
+    });
 
     testWidgets(
       'session log slider value reflects custom initial value (30 days)',
@@ -239,9 +224,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
       check(sliders[0].min).equals(1.0);
@@ -265,25 +248,24 @@ void main() {
       },
     );
 
-    testWidgets(
-      'dragging session log slider calls setSessionLogRetention',
-      (WidgetTester tester) async {
-        final fake = _FakeHistoryRetentionController(
-          // Default 180 days; explicit value dropped (matches factory default).
-          _defaultState(),
-        );
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(fake),
-        );
-        // Drag the first Slider (session log) to the leftmost edge.
-        final sliderFinder = find.byType(Slider).first;
-        await tester.drag(sliderFinder, const Offset(-300, 0));
-        await tester.pumpAndSettle();
-        check(fake.setSessionLogRetentionCalls).isGreaterOrEqual(1);
-      },
-    );
+    testWidgets('dragging session log slider calls setSessionLogRetention', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeHistoryRetentionController(
+        // Default 180 days; explicit value dropped (matches factory default).
+        _defaultState(),
+      );
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(fake),
+      );
+      // Drag the first Slider (session log) to the leftmost edge.
+      final sliderFinder = find.byType(Slider).first;
+      await tester.drag(sliderFinder, const Offset(-300, 0));
+      await tester.pumpAndSettle();
+      check(fake.setSessionLogRetentionCalls).isGreaterOrEqual(1);
+    });
   });
 
   // ── Trash retention slider ────────────────────────────────────────────────
@@ -294,9 +276,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionTrashLabel), findsOneWidget);
     });
@@ -308,46 +288,42 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionTrashHelper), findsOneWidget);
     });
 
-    testWidgets(
-      'trash slider value matches state (7 days default)',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            // _defaultState defaults to 7 days; stated explicitly in name.
-            _FakeHistoryRetentionController(_defaultState()),
-          ),
-        );
-        final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
-        // Second slider is trash retention.
-        check(sliders[1].value).equals(7.0);
-      },
-    );
+    testWidgets('trash slider value matches state (7 days default)', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(
+          // _defaultState defaults to 7 days; stated explicitly in name.
+          _FakeHistoryRetentionController(_defaultState()),
+        ),
+      );
+      final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
+      // Second slider is trash retention.
+      check(sliders[1].value).equals(7.0);
+    });
 
-    testWidgets(
-      'trash slider value reflects custom initial value (14 days)',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            _FakeHistoryRetentionController(
-              _defaultState(trashRetentionDays: 14),
-            ),
+    testWidgets('trash slider value reflects custom initial value (14 days)', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(
+          _FakeHistoryRetentionController(
+            _defaultState(trashRetentionDays: 14),
           ),
-        );
-        final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
-        check(sliders[1].value).equals(14.0);
-      },
-    );
+        ),
+      );
+      final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
+      check(sliders[1].value).equals(14.0);
+    });
 
     testWidgets('trash slider min is 1 and max is 90', (
       WidgetTester tester,
@@ -355,51 +331,47 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
       check(sliders[1].min).equals(1.0);
       check(sliders[1].max).equals(90.0);
     });
 
-    testWidgets(
-      'trash slider label shows current day count suffixed with d',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            _FakeHistoryRetentionController(
-              _defaultState(trashRetentionDays: 30),
-            ),
+    testWidgets('trash slider label shows current day count suffixed with d', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(
+          _FakeHistoryRetentionController(
+            _defaultState(trashRetentionDays: 30),
           ),
-        );
-        final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
-        check(sliders[1].label).equals('30d');
-      },
-    );
+        ),
+      );
+      final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
+      check(sliders[1].label).equals('30d');
+    });
 
-    testWidgets(
-      'dragging trash slider calls setTrashRetention',
-      (WidgetTester tester) async {
-        final fake = _FakeHistoryRetentionController(
-          // Default 7 days; explicit value dropped (matches factory default).
-          _defaultState(),
-        );
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(fake),
-        );
-        // Drag the second Slider (trash) to the right.
-        final sliderFinder = find.byType(Slider).last;
-        await tester.drag(sliderFinder, const Offset(300, 0));
-        await tester.pumpAndSettle();
-        check(fake.setTrashRetentionCalls).isGreaterOrEqual(1);
-      },
-    );
+    testWidgets('dragging trash slider calls setTrashRetention', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeHistoryRetentionController(
+        // Default 7 days; explicit value dropped (matches factory default).
+        _defaultState(),
+      );
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(fake),
+      );
+      // Drag the second Slider (trash) to the right.
+      final sliderFinder = find.byType(Slider).last;
+      await tester.drag(sliderFinder, const Offset(300, 0));
+      await tester.pumpAndSettle();
+      check(fake.setTrashRetentionCalls).isGreaterOrEqual(1);
+    });
   });
 
   // ── Both sliders present ──────────────────────────────────────────────────
@@ -411,9 +383,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.byType(Slider), findsNWidgets(2));
     });
@@ -425,9 +395,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       expect(find.text(l10n.historyRetentionLogsLabel), findsOneWidget);
       expect(find.text(l10n.historyRetentionLogsHelper), findsOneWidget);
@@ -435,40 +403,33 @@ void main() {
       expect(find.text(l10n.historyRetentionTrashHelper), findsOneWidget);
     });
 
-    testWidgets(
-      'session log and trash sliders are independent '
-      '(changing one does not call the other method)',
-      (WidgetTester tester) async {
-        final fake = _FakeHistoryRetentionController(_defaultState());
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(fake),
-        );
-        await tester.drag(
-          find.byType(Slider).first,
-          const Offset(-200, 0),
-        );
-        await tester.pumpAndSettle();
-        // Only session log method must have been invoked.
-        check(fake.setSessionLogRetentionCalls).isGreaterOrEqual(1);
-        check(fake.setTrashRetentionCalls).equals(0);
-      },
-    );
+    testWidgets('session log and trash sliders are independent '
+        '(changing one does not call the other method)', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeHistoryRetentionController(_defaultState());
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(fake),
+      );
+      await tester.drag(find.byType(Slider).first, const Offset(-200, 0));
+      await tester.pumpAndSettle();
+      // Only session log method must have been invoked.
+      check(fake.setSessionLogRetentionCalls).isGreaterOrEqual(1);
+      check(fake.setTrashRetentionCalls).equals(0);
+    });
 
-    testWidgets(
-      'body is scrollable (ListView wraps content)',
-      (WidgetTester tester) async {
-        await pumpScreen(
-          tester,
-          const HistoryRetentionScreen(),
-          overrides: _overrides(
-            _FakeHistoryRetentionController(_defaultState()),
-          ),
-        );
-        expect(find.byType(ListView), findsOneWidget);
-      },
-    );
+    testWidgets('body is scrollable (ListView wraps content)', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
+      );
+      expect(find.byType(ListView), findsOneWidget);
+    });
   });
 
   // ── Boundary values ───────────────────────────────────────────────────────
@@ -515,9 +476,7 @@ void main() {
         tester,
         const HistoryRetentionScreen(),
         overrides: _overrides(
-          _FakeHistoryRetentionController(
-            _defaultState(trashRetentionDays: 1),
-          ),
+          _FakeHistoryRetentionController(_defaultState(trashRetentionDays: 1)),
         ),
       );
       final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
@@ -552,9 +511,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
         locale: const Locale('ar'),
       );
       expect(find.byType(AppBar), findsOneWidget);
@@ -567,9 +524,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
         locale: const Locale('he'),
       );
       expect(find.byType(AppBar), findsOneWidget);
@@ -586,9 +541,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
         themeMode: ThemeMode.dark,
       );
       expect(find.byType(CircularProgressIndicator), findsNothing);
@@ -606,9 +559,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       final logsHelperText = tester.widget<Text>(
         find.text(l10n.historyRetentionLogsHelper),
@@ -624,9 +575,7 @@ void main() {
       await pumpScreen(
         tester,
         const HistoryRetentionScreen(),
-        overrides: _overrides(
-          _FakeHistoryRetentionController(_defaultState()),
-        ),
+        overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
       // Session log: 365 - 1 = 364 divisions.
@@ -647,20 +596,13 @@ void main() {
         const HistoryRetentionScreen(),
         overrides: _overrides(fake),
       );
-      await tester.drag(
-        find.byType(Slider).first,
-        const Offset(-300, 0),
-      );
+      await tester.drag(find.byType(Slider).first, const Offset(-300, 0));
       await tester.pumpAndSettle();
       // The controller receives an int (not a double), proving v.round() is
       // used in the onChanged callback.
       if (fake.lastSessionLogRetentionDays != null) {
-        check(
-          fake.lastSessionLogRetentionDays!,
-        ).isGreaterOrEqual(1);
-        check(
-          fake.lastSessionLogRetentionDays!,
-        ).isLessOrEqual(365);
+        check(fake.lastSessionLogRetentionDays!).isGreaterOrEqual(1);
+        check(fake.lastSessionLogRetentionDays!).isLessOrEqual(365);
       }
     });
 
@@ -676,10 +618,7 @@ void main() {
         const HistoryRetentionScreen(),
         overrides: _overrides(fake),
       );
-      await tester.drag(
-        find.byType(Slider).last,
-        const Offset(200, 0),
-      );
+      await tester.drag(find.byType(Slider).last, const Offset(200, 0));
       await tester.pumpAndSettle();
       if (fake.lastTrashRetentionDays != null) {
         check(fake.lastTrashRetentionDays!).isGreaterOrEqual(1);

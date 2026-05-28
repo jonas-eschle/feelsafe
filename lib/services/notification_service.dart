@@ -235,10 +235,7 @@ class RealNotificationService implements NotificationServiceProtocol {
       }
       return true;
     } catch (e) {
-      log(
-        'isChannelEnabled Android error: $e',
-        name: 'NotificationService',
-      );
+      log('isChannelEnabled Android error: $e', name: 'NotificationService');
       return true;
     }
   }
@@ -257,10 +254,7 @@ class RealNotificationService implements NotificationServiceProtocol {
           >();
       await androidImpl?.requestNotificationsPermission();
     } catch (e) {
-      log(
-        'openChannelSettings error: $e',
-        name: 'NotificationService',
-      );
+      log('openChannelSettings error: $e', name: 'NotificationService');
     }
   }
 

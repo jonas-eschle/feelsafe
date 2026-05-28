@@ -72,30 +72,26 @@ class _FakeOnboardingController extends OnboardingController {
 /// - `/onboarding` — the [OnboardingScreen] under test
 /// - `/contacts/new` — stub for the contact form
 GoRouter _router({required List<Override> overrides}) => GoRouter(
-      initialLocation: '/onboarding',
-      routes: <RouteBase>[
-        GoRoute(
-          path: '/',
-          name: 'home',
-          builder: (context, state) =>
-              const Scaffold(body: SizedBox.shrink()),
-        ),
-        GoRoute(
-          path: '/onboarding',
-          name: 'onboarding',
-          builder: (context, state) => ProviderScope(
-            overrides: overrides,
-            child: const OnboardingScreen(),
-          ),
-        ),
-        GoRoute(
-          path: '/contacts/new',
-          name: 'contact_form',
-          builder: (context, state) =>
-              const Scaffold(body: SizedBox.shrink()),
-        ),
-      ],
-    );
+  initialLocation: '/onboarding',
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      name: 'home',
+      builder: (context, state) => const Scaffold(body: SizedBox.shrink()),
+    ),
+    GoRoute(
+      path: '/onboarding',
+      name: 'onboarding',
+      builder: (context, state) =>
+          ProviderScope(overrides: overrides, child: const OnboardingScreen()),
+    ),
+    GoRoute(
+      path: '/contacts/new',
+      name: 'contact_form',
+      builder: (context, state) => const Scaffold(body: SizedBox.shrink()),
+    ),
+  ],
+);
 
 /// Pumps [OnboardingScreen] inside a GoRouter + ProviderScope + MaterialApp
 /// harness with the supplied [overrides] and [locale].
@@ -122,9 +118,7 @@ Future<void> _pumpOnboarding(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -156,9 +150,7 @@ OnboardingState _state({
   contactCount: contactCount,
 );
 
-List<Override> _overrides(
-  _FakeOnboardingController fake,
-) => <Override>[
+List<Override> _overrides(_FakeOnboardingController fake) => <Override>[
   onboardingControllerProvider.overrideWith(() => fake),
 ];
 
@@ -313,8 +305,7 @@ void main() {
       expect(find.text(l10n.onboardingNext), findsNothing);
     });
 
-    testWidgets(
-        'PridePageIndicator updates to currentIndex=2 on last page', (
+    testWidgets('PridePageIndicator updates to currentIndex=2 on last page', (
       WidgetTester tester,
     ) async {
       final fake = _FakeOnboardingController(_state());
@@ -380,9 +371,7 @@ void main() {
     testWidgets('pre-fills name field from draftName in state', (
       WidgetTester tester,
     ) async {
-      final fake = _FakeOnboardingController(
-        _state(draftName: 'Alice'),
-      );
+      final fake = _FakeOnboardingController(_state(draftName: 'Alice'));
       final l10n = await loadL10n(const Locale('en'));
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await goToProfilePage(tester, l10n);
@@ -396,24 +385,19 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await goToProfilePage(tester, l10n);
-      expect(
-        find.text(l10n.onboardingEmergencyContactHeader),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.onboardingEmergencyContactHeader), findsOneWidget);
     });
 
     testWidgets(
-        'shows "No contact added yet" and Add button when contactCount==0',
-        (WidgetTester tester) async {
-      final fake = _FakeOnboardingController(_state());
-      final l10n = await loadL10n(const Locale('en'));
-      await _pumpOnboarding(tester, overrides: _overrides(fake));
-      await goToProfilePage(tester, l10n);
-      expect(
-        find.text(l10n.onboardingEmergencyContactAdd),
-        findsOneWidget,
-      );
-    });
+      'shows "No contact added yet" and Add button when contactCount==0',
+      (WidgetTester tester) async {
+        final fake = _FakeOnboardingController(_state());
+        final l10n = await loadL10n(const Locale('en'));
+        await _pumpOnboarding(tester, overrides: _overrides(fake));
+        await goToProfilePage(tester, l10n);
+        expect(find.text(l10n.onboardingEmergencyContactAdd), findsOneWidget);
+      },
+    );
 
     testWidgets('shows contact card (not Add button) when contactCount > 0', (
       WidgetTester tester,
@@ -423,10 +407,7 @@ void main() {
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await goToProfilePage(tester, l10n);
       // Add button should be hidden when a contact exists.
-      expect(
-        find.text(l10n.onboardingEmergencyContactAdd),
-        findsNothing,
-      );
+      expect(find.text(l10n.onboardingEmergencyContactAdd), findsNothing);
       // A Card wrapping a ListTile should be visible.
       expect(find.byType(Card), findsOneWidget);
     });
@@ -541,10 +522,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await goToPermissionsPage(tester, l10n);
-      expect(
-        find.text(l10n.onboardingPermissionsRequired),
-        findsWidgets,
-      );
+      expect(find.text(l10n.onboardingPermissionsRequired), findsWidgets);
     });
 
     testWidgets('at least one OPTIONAL badge is visible', (
@@ -554,10 +532,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await goToPermissionsPage(tester, l10n);
-      expect(
-        find.text(l10n.onboardingPermissionsOptional),
-        findsWidgets,
-      );
+      expect(find.text(l10n.onboardingPermissionsOptional), findsWidgets);
     });
 
     testWidgets('"Grant all" button calls requestAllPermissions', (
@@ -587,38 +562,38 @@ void main() {
 
   group('OnboardingScreen — First-launch completion', () {
     testWidgets(
-        '"Get started" calls completeOnboarding and navigates to home', (
-      WidgetTester tester,
-    ) async {
-      final fake = _FakeOnboardingController(_state());
-      final l10n = await loadL10n(const Locale('en'));
-      await _pumpOnboarding(tester, overrides: _overrides(fake));
-      // Navigate to last page.
-      await tester.tap(find.text(l10n.onboardingNext));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.onboardingNext));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.onboardingGetStarted));
-      await tester.pumpAndSettle();
-      check(fake.completeOnboardingCalls).equals(1);
-    });
+      '"Get started" calls completeOnboarding and navigates to home',
+      (WidgetTester tester) async {
+        final fake = _FakeOnboardingController(_state());
+        final l10n = await loadL10n(const Locale('en'));
+        await _pumpOnboarding(tester, overrides: _overrides(fake));
+        // Navigate to last page.
+        await tester.tap(find.text(l10n.onboardingNext));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.onboardingNext));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.onboardingGetStarted));
+        await tester.pumpAndSettle();
+        check(fake.completeOnboardingCalls).equals(1);
+      },
+    );
 
     testWidgets(
-        '"Get started" routes away from onboarding (home scaffold visible)', (
-      WidgetTester tester,
-    ) async {
-      final fake = _FakeOnboardingController(_state());
-      final l10n = await loadL10n(const Locale('en'));
-      await _pumpOnboarding(tester, overrides: _overrides(fake));
-      await tester.tap(find.text(l10n.onboardingNext));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.onboardingNext));
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.onboardingGetStarted));
-      await tester.pumpAndSettle();
-      // After navigation the OnboardingScreen should no longer be visible.
-      expect(find.text(l10n.onboardingPermissionsTitle), findsNothing);
-    });
+      '"Get started" routes away from onboarding (home scaffold visible)',
+      (WidgetTester tester) async {
+        final fake = _FakeOnboardingController(_state());
+        final l10n = await loadL10n(const Locale('en'));
+        await _pumpOnboarding(tester, overrides: _overrides(fake));
+        await tester.tap(find.text(l10n.onboardingNext));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.onboardingNext));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.onboardingGetStarted));
+        await tester.pumpAndSettle();
+        // After navigation the OnboardingScreen should no longer be visible.
+        expect(find.text(l10n.onboardingPermissionsTitle), findsNothing);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -670,14 +645,8 @@ void main() {
       final SemanticsHandle handle = tester.ensureSemantics();
       final fake = _FakeOnboardingController(_state());
       await _pumpOnboarding(tester, overrides: _overrides(fake));
-      await expectLater(
-        tester,
-        meetsGuideline(androidTapTargetGuideline),
-      );
-      await expectLater(
-        tester,
-        meetsGuideline(labeledTapTargetGuideline),
-      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
       handle.dispose();
     });
 
@@ -690,10 +659,7 @@ void main() {
       await _pumpOnboarding(tester, overrides: _overrides(fake));
       await tester.tap(find.text(l10n.onboardingNext));
       await tester.pumpAndSettle();
-      await expectLater(
-        tester,
-        meetsGuideline(androidTapTargetGuideline),
-      );
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       handle.dispose();
     });
   });

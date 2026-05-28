@@ -58,8 +58,7 @@ class SessionModes extends Table {
 
   /// Whether this row is a shipped seed mode that the UI must protect
   /// from deletion (spec 04 §Modes Screen).
-  BoolColumn get isBuiltIn =>
-      boolean().withDefault(const Constant(false))();
+  BoolColumn get isBuiltIn => boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column<Object>> get primaryKey => {id};

@@ -14,11 +14,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
@@ -115,9 +114,7 @@ Future<void> _pumpWithRouter(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -138,14 +135,9 @@ Future<void> _pumpWithRouter(
 /// Taps digit buttons on the [PinKeypad] in sequence.
 ///
 /// [digits] is a list of integers 0-9.
-Future<void> _enterDigits(
-  WidgetTester tester,
-  List<int> digits,
-) async {
+Future<void> _enterDigits(WidgetTester tester, List<int> digits) async {
   for (final d in digits) {
-    await tester.tap(
-      find.widgetWithText(InkWell, '$d').last,
-    );
+    await tester.tap(find.widgetWithText(InkWell, '$d').last);
     await tester.pump();
   }
 }
@@ -273,19 +265,18 @@ void main() {
       },
     );
 
-    testWidgets(
-      'shows securityDuressPinTitle in app bar for type=duress',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final repo = _FakeAppSettingsRepository();
-        await pumpScreen(
-          tester,
-          const PinSetupScreen(pinType: 'duress'),
-          overrides: _overrides(repo),
-        );
-        expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
-      },
-    );
+    testWidgets('shows securityDuressPinTitle in app bar for type=duress', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeAppSettingsRepository();
+      await pumpScreen(
+        tester,
+        const PinSetupScreen(pinType: 'duress'),
+        overrides: _overrides(repo),
+      );
+      expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
+    });
 
     testWidgets('Duress title differs from App title', (
       WidgetTester tester,
@@ -394,27 +385,26 @@ void main() {
       expect(find.text(l10n.pinSetupEnterNew), findsNothing);
     });
 
-    testWidgets(
-      'shows mismatch error when confirm digits differ from entry',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final repo = _FakeAppSettingsRepository();
-        await pumpScreen(
-          tester,
-          const PinSetupScreen(pinType: 'app'),
-          overrides: _overrides(repo),
-        );
-        // First pass: 1234
-        await _enterDigits(tester, <int>[1, 2, 3, 4]);
-        await _tapSubmit(tester);
-        await tester.pumpAndSettle();
-        // Confirm pass: 5678 — mismatch
-        await _enterDigits(tester, <int>[5, 6, 7, 8]);
-        await _tapSubmit(tester);
-        await tester.pumpAndSettle();
-        expect(find.text(l10n.pinSetupMismatch), findsOneWidget);
-      },
-    );
+    testWidgets('shows mismatch error when confirm digits differ from entry', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeAppSettingsRepository();
+      await pumpScreen(
+        tester,
+        const PinSetupScreen(pinType: 'app'),
+        overrides: _overrides(repo),
+      );
+      // First pass: 1234
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      // Confirm pass: 5678 — mismatch
+      await _enterDigits(tester, <int>[5, 6, 7, 8]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.pinSetupMismatch), findsOneWidget);
+    });
 
     testWidgets('resets to entry prompt after mismatch', (
       WidgetTester tester,
@@ -436,24 +426,23 @@ void main() {
       expect(find.text(l10n.pinSetupMismatch), findsOneWidget);
     });
 
-    testWidgets(
-      'successful matching confirm calls repo.save once',
-      (WidgetTester tester) async {
-        final repo = _FakeAppSettingsRepository();
-        await _pumpWithRouter(
-          tester,
-          pinType: 'app',
-          overrides: _overrides(repo),
-        );
-        await _enterDigits(tester, <int>[1, 2, 3, 4]);
-        await _tapSubmit(tester);
-        await tester.pumpAndSettle();
-        await _enterDigits(tester, <int>[1, 2, 3, 4]);
-        await _tapSubmit(tester);
-        await tester.pumpAndSettle();
-        check(repo.saveCalls).equals(1);
-      },
-    );
+    testWidgets('successful matching confirm calls repo.save once', (
+      WidgetTester tester,
+    ) async {
+      final repo = _FakeAppSettingsRepository();
+      await _pumpWithRouter(
+        tester,
+        pinType: 'app',
+        overrides: _overrides(repo),
+      );
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      check(repo.saveCalls).equals(1);
+    });
 
     testWidgets('save for type=app writes appPinHash', (
       WidgetTester tester,

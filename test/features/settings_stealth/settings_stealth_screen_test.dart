@@ -108,9 +108,7 @@ class _FakeStealthController extends SettingsStealthController {
     final current = state.value;
     if (current == null) return;
     state = AsyncData(
-      SettingsStealthState(
-        config: current.config.copyWith(timerDisplay: d),
-      ),
+      SettingsStealthState(config: current.config.copyWith(timerDisplay: d)),
     );
   }
 }
@@ -251,9 +249,7 @@ void main() {
       check(sw.value).isFalse();
     });
 
-    testWidgets('toggle is ON when enabled=true', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('toggle is ON when enabled=true', (WidgetTester tester) async {
       await pumpScreen(
         tester,
         const SettingsStealthScreen(),
@@ -323,10 +319,7 @@ void main() {
           const SettingsStealthScreen(),
           overrides: _overrides(_FakeStealthController(_stateWith())),
         );
-        expect(
-          find.text(l10n.stealthNotificationDisguiseLabel),
-          findsNothing,
-        );
+        expect(find.text(l10n.stealthNotificationDisguiseLabel), findsNothing);
       },
     );
 
@@ -500,8 +493,7 @@ void main() {
           ),
         );
         // Switches: index 0 = master enable, index 1 = notifDisguise.
-        final sw =
-            tester.widgetList<Switch>(find.byType(Switch)).elementAt(1);
+        final sw = tester.widgetList<Switch>(find.byType(Switch)).elementAt(1);
         check(sw.value).isTrue();
       },
     );
@@ -518,8 +510,7 @@ void main() {
             ),
           ),
         );
-        final sw =
-            tester.widgetList<Switch>(find.byType(Switch)).elementAt(1);
+        final sw = tester.widgetList<Switch>(find.byType(Switch)).elementAt(1);
         check(sw.value).isFalse();
       },
     );
@@ -621,10 +612,7 @@ void main() {
         const SettingsStealthScreen(),
         overrides: _overrides(
           _FakeStealthController(
-            _stateWith(
-              enabled: true,
-              timerDisplay: StealthTimerDisplay.small,
-            ),
+            _stateWith(enabled: true, timerDisplay: StealthTimerDisplay.small),
           ),
         ),
       );
@@ -647,45 +635,43 @@ void main() {
       expect(find.text(l10n.stealthTimerDisplayNone), findsOneWidget);
     });
 
-    testWidgets(
-      'selecting Small from dropdown calls setTimerDisplay(small)',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        // timerDisplay starts as normal (default).
-        final fake = _FakeStealthController(_stateWith(enabled: true));
-        await pumpScreen(
-          tester,
-          const SettingsStealthScreen(),
-          overrides: _overrides(fake),
-        );
-        await tester.tap(find.byType(DropdownButton<StealthTimerDisplay>));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.stealthTimerDisplaySmall).last);
-        await tester.pumpAndSettle();
-        check(fake.setTimerDisplayCalls).equals(1);
-        check(fake.lastTimerDisplay).equals(StealthTimerDisplay.small);
-      },
-    );
+    testWidgets('selecting Small from dropdown calls setTimerDisplay(small)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // timerDisplay starts as normal (default).
+      final fake = _FakeStealthController(_stateWith(enabled: true));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(fake),
+      );
+      await tester.tap(find.byType(DropdownButton<StealthTimerDisplay>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.stealthTimerDisplaySmall).last);
+      await tester.pumpAndSettle();
+      check(fake.setTimerDisplayCalls).equals(1);
+      check(fake.lastTimerDisplay).equals(StealthTimerDisplay.small);
+    });
 
-    testWidgets(
-      'selecting Hidden from dropdown calls setTimerDisplay(none)',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        // timerDisplay starts as normal (default).
-        final fake = _FakeStealthController(_stateWith(enabled: true));
-        await pumpScreen(
-          tester,
-          const SettingsStealthScreen(),
-          overrides: _overrides(fake),
-        );
-        await tester.tap(find.byType(DropdownButton<StealthTimerDisplay>));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.stealthTimerDisplayNone).last);
-        await tester.pumpAndSettle();
-        check(fake.setTimerDisplayCalls).equals(1);
-        check(fake.lastTimerDisplay).equals(StealthTimerDisplay.none);
-      },
-    );
+    testWidgets('selecting Hidden from dropdown calls setTimerDisplay(none)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // timerDisplay starts as normal (default).
+      final fake = _FakeStealthController(_stateWith(enabled: true));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(fake),
+      );
+      await tester.tap(find.byType(DropdownButton<StealthTimerDisplay>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.stealthTimerDisplayNone).last);
+      await tester.pumpAndSettle();
+      check(fake.setTimerDisplayCalls).equals(1);
+      check(fake.lastTimerDisplay).equals(StealthTimerDisplay.none);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -779,10 +765,7 @@ void main() {
         ),
       );
       expect(find.text(l10n.stealthFakeNameLabel), findsOneWidget);
-      expect(
-        find.text(l10n.stealthNotificationDisguiseLabel),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.stealthNotificationDisguiseLabel), findsOneWidget);
       expect(find.text(l10n.stealthSessionScreenLabel), findsOneWidget);
       expect(find.text(l10n.stealthTimerDisplayLabel), findsOneWidget);
     });

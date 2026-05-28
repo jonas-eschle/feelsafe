@@ -51,9 +51,7 @@ class _FakePastEventsController extends PastEventsController {
     final current = state.value;
     if (current == null) return;
     state = AsyncData(
-      PastEventsState(
-        logs: current.logs.where((l) => l.id != id).toList(),
-      ),
+      PastEventsState(logs: current.logs.where((l) => l.id != id).toList()),
     );
   }
 
@@ -163,9 +161,7 @@ Future<void> _pumpWithRouter(
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -312,24 +308,23 @@ void main() {
   // ── List rendering ────────────────────────────────────────────────────────
 
   group('PastEventsScreen — list rendering', () {
-    testWidgets(
-      'renders one ListTile per real log in Real tab',
-      (WidgetTester tester) async {
-        final logs = <PastEventsLog>[
-          _log(id: 'r1', modeName: 'Walk Mode'),
-          _log(id: 'r2', modeName: 'Date Mode'),
-        ];
-        final fake = _FakePastEventsController(_state(logs: logs));
-        await pumpScreen(
-          tester,
-          const PastEventsScreen(),
-          overrides: _override(fake),
-        );
-        expect(find.byType(ListTile), findsNWidgets(2));
-        expect(find.text('Walk Mode'), findsOneWidget);
-        expect(find.text('Date Mode'), findsOneWidget);
-      },
-    );
+    testWidgets('renders one ListTile per real log in Real tab', (
+      WidgetTester tester,
+    ) async {
+      final logs = <PastEventsLog>[
+        _log(id: 'r1', modeName: 'Walk Mode'),
+        _log(id: 'r2', modeName: 'Date Mode'),
+      ];
+      final fake = _FakePastEventsController(_state(logs: logs));
+      await pumpScreen(
+        tester,
+        const PastEventsScreen(),
+        overrides: _override(fake),
+      );
+      expect(find.byType(ListTile), findsNWidgets(2));
+      expect(find.text('Walk Mode'), findsOneWidget);
+      expect(find.text('Date Mode'), findsOneWidget);
+    });
 
     testWidgets('each row shows the mode name as title', (
       WidgetTester tester,
@@ -410,9 +405,7 @@ void main() {
     ) async {
       // Navigate to Simulated tab.
       final fake = _FakePastEventsController(
-        _state(
-          logs: <PastEventsLog>[_log(isSimulation: true)],
-        ),
+        _state(logs: <PastEventsLog>[_log(isSimulation: true)]),
       );
       await pumpScreen(
         tester,
@@ -488,17 +481,16 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakePastEventsController(
-        _state(logs: <PastEventsLog>[_log(id: 'log-42', modeName: 'Walk')]),
+        _state(
+          logs: <PastEventsLog>[_log(id: 'log-42', modeName: 'Walk')],
+        ),
       );
       await pumpScreen(
         tester,
         const PastEventsScreen(),
         overrides: _override(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible).first,
-        const Offset(-600, 0),
-      );
+      await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
       await tester.pumpAndSettle();
       check(fake.softDeleteCalls).equals(1);
       check(fake.lastSoftDeletedId).equals('log-42');
@@ -509,17 +501,16 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakePastEventsController(
-        _state(logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')]),
+        _state(
+          logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')],
+        ),
       );
       await pumpScreen(
         tester,
         const PastEventsScreen(),
         overrides: _override(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible).first,
-        const Offset(-600, 0),
-      );
+      await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
       await tester.pumpAndSettle();
       expect(find.text(l10n.pastEventsSoftDeleted), findsOneWidget);
     });
@@ -529,17 +520,16 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakePastEventsController(
-        _state(logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')]),
+        _state(
+          logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')],
+        ),
       );
       await pumpScreen(
         tester,
         const PastEventsScreen(),
         overrides: _override(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible).first,
-        const Offset(-600, 0),
-      );
+      await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
       await tester.pumpAndSettle();
       expect(find.text(l10n.pastEventsUndo), findsOneWidget);
     });
@@ -549,17 +539,16 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakePastEventsController(
-        _state(logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')]),
+        _state(
+          logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')],
+        ),
       );
       await pumpScreen(
         tester,
         const PastEventsScreen(),
         overrides: _override(fake),
       );
-      await tester.drag(
-        find.byType(Dismissible).first,
-        const Offset(-600, 0),
-      );
+      await tester.drag(find.byType(Dismissible).first, const Offset(-600, 0));
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.pastEventsUndo));
       await tester.pumpAndSettle();
@@ -571,7 +560,9 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakePastEventsController(
-        _state(logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')]),
+        _state(
+          logs: <PastEventsLog>[_log(id: 'r1', modeName: 'Walk')],
+        ),
       );
       await pumpScreen(
         tester,
@@ -579,10 +570,7 @@ void main() {
         overrides: _override(fake),
       );
       // Partial drag reveals the background.
-      await tester.drag(
-        find.byType(Dismissible).first,
-        const Offset(-120, 0),
-      );
+      await tester.drag(find.byType(Dismissible).first, const Offset(-120, 0));
       await tester.pump();
       expect(find.byIcon(Icons.delete), findsOneWidget);
     });
@@ -629,9 +617,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakePastEventsController(
-        _state(
-          logs: <PastEventsLog>[_log(modeName: 'Walk Mode')],
-        ),
+        _state(logs: <PastEventsLog>[_log(modeName: 'Walk Mode')]),
       );
       await pumpScreen(
         tester,
@@ -677,9 +663,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakePastEventsController(
-        _state(
-          logs: <PastEventsLog>[_log(modeName: 'Walk Mode')],
-        ),
+        _state(logs: <PastEventsLog>[_log(modeName: 'Walk Mode')]),
       );
       await pumpScreen(
         tester,

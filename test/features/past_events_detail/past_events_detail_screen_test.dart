@@ -52,27 +52,23 @@ void _installShareMock() {
   _capturedShareText = null;
   _capturedShareSubject = null;
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(
-    const MethodChannel(_kShareChannel),
-    (MethodCall call) async {
-      if (call.method == 'share') {
-        final args = call.arguments as Map<Object?, Object?>;
-        _capturedShareText = args['text'] as String?;
-        _capturedShareSubject = args['subject'] as String?;
-      }
-      // Return the "unavailable" sentinel so ShareResult decodes cleanly.
-      return 'dev.fluttercommunity.plus/share/unavailable';
-    },
-  );
+      .setMockMethodCallHandler(const MethodChannel(_kShareChannel), (
+        MethodCall call,
+      ) async {
+        if (call.method == 'share') {
+          final args = call.arguments as Map<Object?, Object?>;
+          _capturedShareText = args['text'] as String?;
+          _capturedShareSubject = args['subject'] as String?;
+        }
+        // Return the "unavailable" sentinel so ShareResult decodes cleanly.
+        return 'dev.fluttercommunity.plus/share/unavailable';
+      });
 }
 
 /// Removes the share mock handler, restoring default behaviour.
 void _removeShareMock() {
   TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-      .setMockMethodCallHandler(
-    const MethodChannel(_kShareChannel),
-    null,
-  );
+      .setMockMethodCallHandler(const MethodChannel(_kShareChannel), null);
 }
 
 // ---------------------------------------------------------------------------
@@ -131,7 +127,8 @@ SessionLog _log({
   endedAt: endedAt ?? _base.add(const Duration(minutes: 5, seconds: 23)),
   endReason: endReason,
   isSimulation: isSimulation,
-  events: events ??
+  events:
+      events ??
       <SessionLogEvent>[
         _event(),
         _event(
@@ -442,11 +439,7 @@ void main() {
       final db = _openDb();
       addTearDown(db.close);
       await db.sessionLogsDao.upsert(
-        _log(
-          events: <SessionLogEvent>[
-            _event(description: 'Start'),
-          ],
-        ),
+        _log(events: <SessionLogEvent>[_event(description: 'Start')]),
       );
       await pumpScreen(
         tester,

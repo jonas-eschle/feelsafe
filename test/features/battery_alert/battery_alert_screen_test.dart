@@ -49,9 +49,7 @@ class _FakeBatteryAlertController extends BatteryAlertController {
     setEnabledCalls++;
     lastEnabled = v;
     state = AsyncData(
-      BatteryAlertState(
-        config: _initial.config.copyWith(enabled: v),
-      ),
+      BatteryAlertState(config: _initial.config.copyWith(enabled: v)),
     );
   }
 
@@ -206,7 +204,10 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeBatteryAlertController(
-        _state(enabled: true, chain: <ChainStep>[_step(ChainStepType.smsContact)]),
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
       );
       await pumpScreen(
         tester,
@@ -254,39 +255,37 @@ void main() {
       check(fake.lastEnabled).equals(false);
     });
 
-    testWidgets(
-      'threshold slider and chain editor are hidden when disabled',
-      (WidgetTester tester) async {
-        final fake = _FakeBatteryAlertController(_state());
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        // Slider only appears when enabled.
-        expect(find.byType(Slider), findsNothing);
-        expect(find.byType(StepChainEditor), findsNothing);
-      },
-    );
+    testWidgets('threshold slider and chain editor are hidden when disabled', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeBatteryAlertController(_state());
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      // Slider only appears when enabled.
+      expect(find.byType(Slider), findsNothing);
+      expect(find.byType(StepChainEditor), findsNothing);
+    });
 
-    testWidgets(
-      'threshold slider and chain editor appear when enabled',
-      (WidgetTester tester) async {
-        final fake = _FakeBatteryAlertController(
-          _state(
-            enabled: true,
-            chain: <ChainStep>[_step(ChainStepType.smsContact)],
-          ),
-        );
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        expect(find.byType(Slider), findsOneWidget);
-        expect(find.byType(StepChainEditor), findsOneWidget);
-      },
-    );
+    testWidgets('threshold slider and chain editor appear when enabled', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeBatteryAlertController(
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      expect(find.byType(Slider), findsOneWidget);
+      expect(find.byType(StepChainEditor), findsOneWidget);
+    });
   });
 
   // ─── Threshold slider ─────────────────────────────────────────────────────
@@ -354,7 +353,10 @@ void main() {
     testWidgets('chain header text is rendered', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeBatteryAlertController(
-        _state(enabled: true, chain: <ChainStep>[_step(ChainStepType.smsContact)]),
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
       );
       await pumpScreen(
         tester,
@@ -369,7 +371,10 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeBatteryAlertController(
-        _state(enabled: true, chain: <ChainStep>[_step(ChainStepType.smsContact)]),
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
       );
       await pumpScreen(
         tester,
@@ -384,7 +389,10 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeBatteryAlertController(
-        _state(enabled: true, chain: <ChainStep>[_step(ChainStepType.smsContact)]),
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
       );
       await pumpScreen(
         tester,
@@ -441,28 +449,29 @@ void main() {
       expect(find.text(ChainStepType.phoneCallContact.name), findsOneWidget);
     });
 
-    testWidgets('Remove step button is absent when chain has 1 step (minSteps=0 still canRemove at 1)', (
-      WidgetTester tester,
-    ) async {
-      // minSteps=0 so canRemove is always true for len>=1.
-      // Verify the delete button shows on an expanded card.
-      final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeBatteryAlertController(
-        _state(
-          enabled: true,
-          chain: <ChainStep>[_step(ChainStepType.smsContact)],
-        ),
-      );
-      await pumpScreen(
-        tester,
-        const BatteryAlertScreen(),
-        overrides: <Override>[_override(fake)],
-      );
-      // Expand the card to reveal the remove button.
-      await tester.tap(find.text(ChainStepType.smsContact.name));
-      await tester.pumpAndSettle();
-      expect(find.text(l10n.stepEditorRemove), findsOneWidget);
-    });
+    testWidgets(
+      'Remove step button is absent when chain has 1 step (minSteps=0 still canRemove at 1)',
+      (WidgetTester tester) async {
+        // minSteps=0 so canRemove is always true for len>=1.
+        // Verify the delete button shows on an expanded card.
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeBatteryAlertController(
+          _state(
+            enabled: true,
+            chain: <ChainStep>[_step(ChainStepType.smsContact)],
+          ),
+        );
+        await pumpScreen(
+          tester,
+          const BatteryAlertScreen(),
+          overrides: <Override>[_override(fake)],
+        );
+        // Expand the card to reveal the remove button.
+        await tester.tap(find.text(ChainStepType.smsContact.name));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.stepEditorRemove), findsOneWidget);
+      },
+    );
 
     testWidgets('tapping Remove on a step calls setChain with step removed', (
       WidgetTester tester,
@@ -497,9 +506,7 @@ void main() {
 
     testWidgets('Add step button is rendered', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeBatteryAlertController(
-        _state(enabled: true),
-      );
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
       await pumpScreen(
         tester,
         const BatteryAlertScreen(),
@@ -525,82 +532,69 @@ void main() {
         await tester.tap(find.text(l10n.modeChainAddStep));
         await tester.pumpAndSettle();
         // holdButton is forbidden — must not appear in the picker.
-        expect(
-          find.text(ChainStepType.holdButton.name),
-          findsNothing,
-        );
+        expect(find.text(ChainStepType.holdButton.name), findsNothing);
       },
     );
 
-    testWidgets(
-      'Add step bottom sheet does not offer disguisedReminder',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeBatteryAlertController(_state(enabled: true));
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        await tester.tap(find.text(l10n.modeChainAddStep));
-        await tester.pumpAndSettle();
-        expect(
-          find.text(ChainStepType.disguisedReminder.name),
-          findsNothing,
-        );
-      },
-    );
+    testWidgets('Add step bottom sheet does not offer disguisedReminder', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      await tester.tap(find.text(l10n.modeChainAddStep));
+      await tester.pumpAndSettle();
+      expect(find.text(ChainStepType.disguisedReminder.name), findsNothing);
+    });
 
-    testWidgets(
-      'Add step bottom sheet does not offer hardwareButton',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeBatteryAlertController(_state(enabled: true));
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        await tester.tap(find.text(l10n.modeChainAddStep));
-        await tester.pumpAndSettle();
-        expect(
-          find.text(ChainStepType.hardwareButton.name),
-          findsNothing,
-        );
-      },
-    );
+    testWidgets('Add step bottom sheet does not offer hardwareButton', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      await tester.tap(find.text(l10n.modeChainAddStep));
+      await tester.pumpAndSettle();
+      expect(find.text(ChainStepType.hardwareButton.name), findsNothing);
+    });
 
-    testWidgets(
-      'Add step bottom sheet offers smsContact',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeBatteryAlertController(_state(enabled: true));
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        await tester.tap(find.text(l10n.modeChainAddStep));
-        await tester.pumpAndSettle();
-        expect(find.text(ChainStepType.smsContact.name), findsOneWidget);
-      },
-    );
+    testWidgets('Add step bottom sheet offers smsContact', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      await tester.tap(find.text(l10n.modeChainAddStep));
+      await tester.pumpAndSettle();
+      expect(find.text(ChainStepType.smsContact.name), findsOneWidget);
+    });
 
-    testWidgets(
-      'Add step bottom sheet offers loudAlarm',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeBatteryAlertController(_state(enabled: true));
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        await tester.tap(find.text(l10n.modeChainAddStep));
-        await tester.pumpAndSettle();
-        expect(find.text(ChainStepType.loudAlarm.name), findsOneWidget);
-      },
-    );
+    testWidgets('Add step bottom sheet offers loudAlarm', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      await tester.tap(find.text(l10n.modeChainAddStep));
+      await tester.pumpAndSettle();
+      expect(find.text(ChainStepType.loudAlarm.name), findsOneWidget);
+    });
 
     testWidgets(
       'tapping smsContact in the bottom sheet calls setChain with new step',
@@ -627,40 +621,39 @@ void main() {
   // ─── Forbidden step snackbar ──────────────────────────────────────────────
 
   group('BatteryAlertScreen — forbidden step validation', () {
-    testWidgets(
-      'passing a forbidden step type to onChanged shows a SnackBar',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final forbiddenStep = ChainStep(
-          id: 'forbidden-hold',
-          type: ChainStepType.holdButton,
-          order: 0,
-          waitSeconds: 0,
-          durationSeconds: 10,
-          gracePeriodSeconds: 5,
-          retryCount: 0,
-          randomize: false,
-        );
-        final fake = _FakeBatteryAlertController(_state(enabled: true));
-        await pumpScreen(
-          tester,
-          const BatteryAlertScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        // Drive the StepChainEditor's onChanged with a forbidden step
-        // via the widget directly.
-        final editorFinder = find.byType(StepChainEditor);
-        final editor = tester.widget<StepChainEditor>(editorFinder);
-        editor.onChanged(<ChainStep>[forbiddenStep]);
-        await tester.pumpAndSettle();
-        // SnackBar should appear; setChain must NOT have been called.
-        expect(
-          find.text(l10n.batteryAlertForbiddenStep('holdButton')),
-          findsOneWidget,
-        );
-        check(fake.setChainCalls).equals(0);
-      },
-    );
+    testWidgets('passing a forbidden step type to onChanged shows a SnackBar', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final forbiddenStep = ChainStep(
+        id: 'forbidden-hold',
+        type: ChainStepType.holdButton,
+        order: 0,
+        waitSeconds: 0,
+        durationSeconds: 10,
+        gracePeriodSeconds: 5,
+        retryCount: 0,
+        randomize: false,
+      );
+      final fake = _FakeBatteryAlertController(_state(enabled: true));
+      await pumpScreen(
+        tester,
+        const BatteryAlertScreen(),
+        overrides: <Override>[_override(fake)],
+      );
+      // Drive the StepChainEditor's onChanged with a forbidden step
+      // via the widget directly.
+      final editorFinder = find.byType(StepChainEditor);
+      final editor = tester.widget<StepChainEditor>(editorFinder);
+      editor.onChanged(<ChainStep>[forbiddenStep]);
+      await tester.pumpAndSettle();
+      // SnackBar should appear; setChain must NOT have been called.
+      expect(
+        find.text(l10n.batteryAlertForbiddenStep('holdButton')),
+        findsOneWidget,
+      );
+      check(fake.setChainCalls).equals(0);
+    });
   });
 
   // ─── RTL ─────────────────────────────────────────────────────────────────
@@ -688,7 +681,10 @@ void main() {
       WidgetTester tester,
     ) async {
       final fake = _FakeBatteryAlertController(
-        _state(enabled: true, chain: <ChainStep>[_step(ChainStepType.smsContact)]),
+        _state(
+          enabled: true,
+          chain: <ChainStep>[_step(ChainStepType.smsContact)],
+        ),
       );
       await pumpScreen(
         tester,

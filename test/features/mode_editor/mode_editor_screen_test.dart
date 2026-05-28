@@ -11,9 +11,9 @@
 library;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -43,7 +43,8 @@ Override _dbOverride(GuardianAngelaDatabase db) =>
 /// Creates a minimal [ChainStep] for test fixtures.
 ///
 /// Defaults: type = [ChainStepType.holdButton], order = 0.
-ChainStep _step(String id, {
+ChainStep _step(
+  String id, {
   ChainStepType type = ChainStepType.holdButton,
   int order = 0,
 }) => ChainStep(
@@ -118,9 +119,7 @@ Future<void> _pumpWithRouter(
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
       ),
@@ -428,44 +427,34 @@ void main() {
       await tester.pumpAndSettle();
       // The sheet renders a ListView; the first few types are always visible.
       // Use findsAtLeastNWidgets(1) and allow scrolling for others.
-      expect(
-        find.text(ChainStepType.holdButton.name),
-        findsAtLeastNWidgets(1),
-      );
-      expect(
-        find.text(ChainStepType.fakeCall.name),
-        findsAtLeastNWidgets(1),
-      );
+      expect(find.text(ChainStepType.holdButton.name), findsAtLeastNWidgets(1));
+      expect(find.text(ChainStepType.fakeCall.name), findsAtLeastNWidgets(1));
       // Bottom sheet is present (at least one ListTile).
       expect(find.byType(ListTile), findsAtLeastNWidgets(1));
     });
 
-    testWidgets(
-      'selecting a step type from the sheet appends a new step',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        final mode = await _seedMode(
-          db,
-          _mode(steps: <ChainStep>[_step('s1')]),
-        );
-        await pumpScreen(
-          tester,
-          ModeEditorScreen(modeId: mode.id, isDistress: false),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    testWidgets('selecting a step type from the sheet appends a new step', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode(steps: <ChainStep>[_step('s1')]));
+      await pumpScreen(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
 
-        await tester.tap(find.byIcon(Icons.add));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
 
-        // Use `.last` because the existing step tile also shows fakeCall.name.
-        await tester.tap(find.text(ChainStepType.fakeCall.name).last);
-        await tester.pumpAndSettle();
+      // Use `.last` because the existing step tile also shows fakeCall.name.
+      await tester.tap(find.text(ChainStepType.fakeCall.name).last);
+      await tester.pumpAndSettle();
 
-        expect(find.byIcon(Icons.delete_outline), findsNWidgets(2));
-      },
-    );
+      expect(find.byIcon(Icons.delete_outline), findsNWidgets(2));
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -503,25 +492,21 @@ void main() {
       },
     );
 
-    testWidgets(
-      'delete is a no-op when only one step remains',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        final mode = await _seedMode(
-          db,
-          _mode(steps: <ChainStep>[_step('s1')]),
-        );
-        await pumpScreen(
-          tester,
-          ModeEditorScreen(modeId: mode.id, isDistress: false),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        await tester.tap(find.byIcon(Icons.delete_outline).first);
-        await tester.pumpAndSettle();
-        expect(find.byIcon(Icons.delete_outline), findsOneWidget);
-      },
-    );
+    testWidgets('delete is a no-op when only one step remains', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode(steps: <ChainStep>[_step('s1')]));
+      await pumpScreen(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      await tester.tap(find.byIcon(Icons.delete_outline).first);
+      await tester.pumpAndSettle();
+      expect(find.byIcon(Icons.delete_outline), findsOneWidget);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -568,31 +553,30 @@ void main() {
       },
     );
 
-    testWidgets(
-      '"Keep editing" dismisses dialog without leaving the screen',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final db = _emptyDb();
-        addTearDown(db.close);
-        await pumpScreen(
-          tester,
-          const ModeEditorScreen(isDistress: false),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        final nameFinder = find.byType(TextField).first;
-        await tester.tap(nameFinder);
-        await tester.enterText(nameFinder, 'X');
-        await tester.pump();
+    testWidgets('"Keep editing" dismisses dialog without leaving the screen', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await pumpScreen(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final nameFinder = find.byType(TextField).first;
+      await tester.tap(nameFinder);
+      await tester.enterText(nameFinder, 'X');
+      await tester.pump();
 
-        await tester.binding.handlePopRoute();
-        await tester.pumpAndSettle();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
 
-        await tester.tap(find.text(l10n.modeUnsavedKeep));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.modeUnsavedKeep));
+      await tester.pumpAndSettle();
 
-        expect(find.byType(ModeEditorScreen), findsOneWidget);
-      },
-    );
+      expect(find.byType(ModeEditorScreen), findsOneWidget);
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -600,60 +584,58 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('ModeEditorScreen — save', () {
-    testWidgets(
-      'tapping Save writes the mode to the database',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final db = _emptyDb();
-        addTearDown(db.close);
-        // Use the GoRouter harness so context.pop() does not throw.
-        await _pumpWithRouter(
-          tester,
-          const ModeEditorScreen(isDistress: false),
-          <Override>[_dbOverride(db)],
-        );
-        final nameFinder = find.byType(TextField).first;
-        await tester.tap(nameFinder);
-        await tester.enterText(nameFinder, 'Saved Mode');
-        await tester.pump();
+    testWidgets('tapping Save writes the mode to the database', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // Use the GoRouter harness so context.pop() does not throw.
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        <Override>[_dbOverride(db)],
+      );
+      final nameFinder = find.byType(TextField).first;
+      await tester.tap(nameFinder);
+      await tester.enterText(nameFinder, 'Saved Mode');
+      await tester.pump();
 
-        await tester.tap(find.text(l10n.commonSave));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
 
-        final allModes = await db.sessionModesDao.getAll();
-        final saved = allModes.firstWhere(
-          (SessionMode m) => m.name == 'Saved Mode',
-        );
-        check(saved.name).equals('Saved Mode');
-      },
-    );
+      final allModes = await db.sessionModesDao.getAll();
+      final saved = allModes.firstWhere(
+        (SessionMode m) => m.name == 'Saved Mode',
+      );
+      check(saved.name).equals('Saved Mode');
+    });
 
-    testWidgets(
-      'save with isDistress: true persists isDistressMode = true',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final db = _emptyDb();
-        addTearDown(db.close);
-        await _pumpWithRouter(
-          tester,
-          const ModeEditorScreen(isDistress: true),
-          <Override>[_dbOverride(db)],
-        );
-        final nameFinder = find.byType(TextField).first;
-        await tester.tap(nameFinder);
-        await tester.enterText(nameFinder, 'Panic Mode');
-        await tester.pump();
+    testWidgets('save with isDistress: true persists isDistressMode = true', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(isDistress: true),
+        <Override>[_dbOverride(db)],
+      );
+      final nameFinder = find.byType(TextField).first;
+      await tester.tap(nameFinder);
+      await tester.enterText(nameFinder, 'Panic Mode');
+      await tester.pump();
 
-        await tester.tap(find.text(l10n.commonSave));
-        await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
 
-        final allModes = await db.sessionModesDao.getAll();
-        final saved = allModes.firstWhere(
-          (SessionMode m) => m.name == 'Panic Mode',
-        );
-        check(saved.isDistressMode).isTrue();
-      },
-    );
+      final allModes = await db.sessionModesDao.getAll();
+      final saved = allModes.firstWhere(
+        (SessionMode m) => m.name == 'Panic Mode',
+      );
+      check(saved.isDistressMode).isTrue();
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -661,62 +643,57 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('ModeEditorScreen — distress variant (isDistress: true)', () {
-    testWidgets(
-      'distress create screen shows a title in the AppBar',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final db = _emptyDb();
-        addTearDown(db.close);
-        await pumpScreen(
-          tester,
-          const ModeEditorScreen(isDistress: true),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        // Title is either the regular or the distress-specific string.
-        final hasModeTitle = tester.any(
-          find.text(l10n.modeEditorTitleCreate),
-        );
-        final hasDistressTitle = tester.any(
-          find.text(l10n.distressModeEditorTitleCreate),
-        );
-        check(hasModeTitle || hasDistressTitle).isTrue();
-      },
-    );
+    testWidgets('distress create screen shows a title in the AppBar', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await pumpScreen(
+        tester,
+        const ModeEditorScreen(isDistress: true),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      // Title is either the regular or the distress-specific string.
+      final hasModeTitle = tester.any(find.text(l10n.modeEditorTitleCreate));
+      final hasDistressTitle = tester.any(
+        find.text(l10n.distressModeEditorTitleCreate),
+      );
+      check(hasModeTitle || hasDistressTitle).isTrue();
+    });
 
-    testWidgets(
-      'distress edit screen renders without exception',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        final mode = await _seedMode(
-          db,
-          _mode(id: 'd1', name: 'Panic', isDistress: true),
-        );
-        await pumpScreen(
-          tester,
-          ModeEditorScreen(modeId: mode.id, isDistress: true),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        expect(tester.takeException(), isNull);
-        expect(find.byType(AppBar), findsOneWidget);
-      },
-    );
+    testWidgets('distress edit screen renders without exception', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        _mode(id: 'd1', name: 'Panic', isDistress: true),
+      );
+      await pumpScreen(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: true),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      expect(tester.takeException(), isNull);
+      expect(find.byType(AppBar), findsOneWidget);
+    });
 
-    testWidgets(
-      'blank distress mode pre-fills name with "New distress mode"',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        await pumpScreen(
-          tester,
-          const ModeEditorScreen(isDistress: true),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        // ModeEditorService.blankMode seeds name as "New distress mode"
-        // when isDistress is true.
-        expect(find.text('New distress mode'), findsAtLeastNWidgets(1));
-      },
-    );
+    testWidgets('blank distress mode pre-fills name with "New distress mode"', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await pumpScreen(
+        tester,
+        const ModeEditorScreen(isDistress: true),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      // ModeEditorService.blankMode seeds name as "New distress mode"
+      // when isDistress is true.
+      expect(find.text('New distress mode'), findsAtLeastNWidgets(1));
+    });
   });
 
   // -------------------------------------------------------------------------
@@ -825,58 +802,56 @@ void main() {
   // -------------------------------------------------------------------------
 
   group('ModeEditorScreen — step ordering', () {
-    testWidgets(
-      'add one step to a blank mode produces two numbered badges',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        // Blank mode auto-seeds with 1 step.
-        await pumpScreen(
-          tester,
-          const ModeEditorScreen(isDistress: false),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        await tester.tap(find.byIcon(Icons.add));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(ChainStepType.smsContact.name).last);
-        await tester.pumpAndSettle();
+    testWidgets('add one step to a blank mode produces two numbered badges', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // Blank mode auto-seeds with 1 step.
+      await pumpScreen(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      await tester.tap(find.byIcon(Icons.add));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(ChainStepType.smsContact.name).last);
+      await tester.pumpAndSettle();
 
-        expect(find.text('1'), findsOneWidget);
-        expect(find.text('2'), findsOneWidget);
-      },
-    );
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+    });
 
-    testWidgets(
-      'deleting middle step re-numbers remaining steps from 1',
-      (WidgetTester tester) async {
-        final db = _emptyDb();
-        addTearDown(db.close);
-        final mode = await _seedMode(
-          db,
-          _mode(
-            steps: <ChainStep>[
-              _step('s1'),
-              _step('s2', type: ChainStepType.fakeCall, order: 1),
-              _step('s3', type: ChainStepType.loudAlarm, order: 2),
-            ],
-          ),
-        );
-        await pumpScreen(
-          tester,
-          ModeEditorScreen(modeId: mode.id, isDistress: false),
-          overrides: <Override>[_dbOverride(db)],
-        );
-        expect(find.text('3'), findsOneWidget);
+    testWidgets('deleting middle step re-numbers remaining steps from 1', (
+      WidgetTester tester,
+    ) async {
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        _mode(
+          steps: <ChainStep>[
+            _step('s1'),
+            _step('s2', type: ChainStepType.fakeCall, order: 1),
+            _step('s3', type: ChainStepType.loudAlarm, order: 2),
+          ],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      expect(find.text('3'), findsOneWidget);
 
-        // Delete the second step (index 1).
-        final Finder deleteBtns = find.byIcon(Icons.delete_outline);
-        await tester.tap(deleteBtns.at(1));
-        await tester.pumpAndSettle();
+      // Delete the second step (index 1).
+      final Finder deleteBtns = find.byIcon(Icons.delete_outline);
+      await tester.tap(deleteBtns.at(1));
+      await tester.pumpAndSettle();
 
-        expect(find.text('1'), findsOneWidget);
-        expect(find.text('2'), findsOneWidget);
-        expect(find.text('3'), findsNothing);
-      },
-    );
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('3'), findsNothing);
+    });
   });
 }

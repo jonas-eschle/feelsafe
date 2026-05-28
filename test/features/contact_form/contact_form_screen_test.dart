@@ -62,13 +62,11 @@ Future<void> _pumpWithRouter(
     routes: <RouteBase>[
       GoRoute(
         path: '/',
-        builder: (context, _) =>
-            const Scaffold(body: Text('home')),
+        builder: (context, _) => const Scaffold(body: Text('home')),
         routes: <RouteBase>[
           GoRoute(
             path: 'form',
-            builder: (context, _) =>
-                ContactFormScreen(contactId: contactId),
+            builder: (context, _) => ContactFormScreen(contactId: contactId),
           ),
         ],
       ),
@@ -87,9 +85,7 @@ Future<void> _pumpWithRouter(
         ],
         supportedLocales: AppLocalizations.supportedLocales,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
       ),
@@ -174,10 +170,7 @@ void main() {
         const ContactFormScreen(),
         overrides: baseOverrides,
       );
-      expect(
-        find.widgetWithText(TextButton, l10n.commonSave),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
     });
   });
 
@@ -273,38 +266,31 @@ void main() {
   // ---- Group: Edit mode pre-population ------------------------------------
 
   group('ContactFormScreen — edit mode', () {
-    testWidgets(
-      'pre-fills name, phone and relationship from stored contact',
-      (WidgetTester tester) async {
-        await ContactsRepository(db.contactsDao).upsert(
-          _contact(name: 'Bob', phone: '+4917612345', relationship: 'Friend'),
-        );
-        await pumpScreen(
-          tester,
-          const ContactFormScreen(contactId: 'c-1'),
-          overrides: baseOverrides,
-        );
-        final nameField = tester.widget<TextField>(
-          find.byType(TextField).at(0),
-        );
-        final phoneField = tester.widget<TextField>(
-          find.byType(TextField).at(1),
-        );
-        final relField = tester.widget<TextField>(
-          find.byType(TextField).at(2),
-        );
-        check(nameField.controller!.text).equals('Bob');
-        check(phoneField.controller!.text).equals('+4917612345');
-        check(relField.controller!.text).equals('Friend');
-      },
-    );
+    testWidgets('pre-fills name, phone and relationship from stored contact', (
+      WidgetTester tester,
+    ) async {
+      await ContactsRepository(db.contactsDao).upsert(
+        _contact(name: 'Bob', phone: '+4917612345', relationship: 'Friend'),
+      );
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(contactId: 'c-1'),
+        overrides: baseOverrides,
+      );
+      final nameField = tester.widget<TextField>(find.byType(TextField).at(0));
+      final phoneField = tester.widget<TextField>(find.byType(TextField).at(1));
+      final relField = tester.widget<TextField>(find.byType(TextField).at(2));
+      check(nameField.controller!.text).equals('Bob');
+      check(phoneField.controller!.text).equals('+4917612345');
+      check(relField.controller!.text).equals('Friend');
+    });
 
     testWidgets('reflects partial channels from stored contact', (
       WidgetTester tester,
     ) async {
-      await ContactsRepository(db.contactsDao).upsert(
-        _contact(channels: const <MessageChannel>[MessageChannel.sms]),
-      );
+      await ContactsRepository(
+        db.contactsDao,
+      ).upsert(_contact(channels: const <MessageChannel>[MessageChannel.sms]));
       await pumpScreen(
         tester,
         const ContactFormScreen(contactId: 'c-1'),
@@ -513,21 +499,20 @@ void main() {
       check(all.first.phoneNumber).equals('+15550007777');
     });
 
-    testWidgets(
-      'null relationship stored when relationship field is blank',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pumpWithRouter(tester, overrides: baseOverrides);
-        await tester.enterText(find.byType(TextField).at(0), 'Frank');
-        await tester.enterText(find.byType(TextField).at(1), '+15550005555');
-        // Relationship left empty.
-        await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
-        await tester.pumpAndSettle();
-        final all = await ContactsRepository(db.contactsDao).getAll();
-        check(all).isNotEmpty();
-        check(all.first.relationship).isNull();
-      },
-    );
+    testWidgets('null relationship stored when relationship field is blank', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Frank');
+      await tester.enterText(find.byType(TextField).at(1), '+15550005555');
+      // Relationship left empty.
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+      final all = await ContactsRepository(db.contactsDao).getAll();
+      check(all).isNotEmpty();
+      check(all.first.relationship).isNull();
+    });
   });
 
   // ---- Group: Save in edit mode -------------------------------------------
@@ -537,14 +522,10 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await ContactsRepository(db.contactsDao).upsert(
-        _contact(name: 'Eve', phone: '+15550002222'),
-      );
-      await _pumpWithRouter(
-        tester,
-        contactId: 'c-1',
-        overrides: baseOverrides,
-      );
+      await ContactsRepository(
+        db.contactsDao,
+      ).upsert(_contact(name: 'Eve', phone: '+15550002222'));
+      await _pumpWithRouter(tester, contactId: 'c-1', overrides: baseOverrides);
       await tester.tap(find.byType(TextField).at(0));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField).at(0), 'Eve Updated');
@@ -577,46 +558,44 @@ void main() {
       },
     );
 
-    testWidgets(
-      '"Keep editing" button dismisses dialog and stays on form',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(
-          tester,
-          const ContactFormScreen(),
-          overrides: baseOverrides,
-        );
-        await tester.enterText(find.byType(TextField).at(0), 'Dirty');
-        await tester.pumpAndSettle();
-        final NavigatorState nav = tester.state(find.byType(Navigator));
-        await nav.maybePop();
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.contactUnsavedDiscardKeep));
-        await tester.pumpAndSettle();
-        expect(find.byType(ContactFormScreen), findsOneWidget);
-        expect(find.text(l10n.contactUnsavedDiscardTitle), findsNothing);
-      },
-    );
+    testWidgets('"Keep editing" button dismisses dialog and stays on form', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      await tester.enterText(find.byType(TextField).at(0), 'Dirty');
+      await tester.pumpAndSettle();
+      final NavigatorState nav = tester.state(find.byType(Navigator));
+      await nav.maybePop();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactUnsavedDiscardKeep));
+      await tester.pumpAndSettle();
+      expect(find.byType(ContactFormScreen), findsOneWidget);
+      expect(find.text(l10n.contactUnsavedDiscardTitle), findsNothing);
+    });
 
-    testWidgets(
-      '"Discard" button closes the screen after confirming',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await pumpScreen(
-          tester,
-          const ContactFormScreen(),
-          overrides: baseOverrides,
-        );
-        await tester.enterText(find.byType(TextField).at(0), 'Dirty');
-        await tester.pumpAndSettle();
-        final NavigatorState nav = tester.state(find.byType(Navigator));
-        await nav.maybePop();
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.contactUnsavedDiscardDiscard));
-        await tester.pumpAndSettle();
-        expect(find.byType(ContactFormScreen), findsNothing);
-      },
-    );
+    testWidgets('"Discard" button closes the screen after confirming', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      await tester.enterText(find.byType(TextField).at(0), 'Dirty');
+      await tester.pumpAndSettle();
+      final NavigatorState nav = tester.state(find.byType(Navigator));
+      await nav.maybePop();
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactUnsavedDiscardDiscard));
+      await tester.pumpAndSettle();
+      expect(find.byType(ContactFormScreen), findsNothing);
+    });
 
     testWidgets('clean form pops without showing dirty dialog', (
       WidgetTester tester,

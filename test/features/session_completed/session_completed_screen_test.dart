@@ -423,10 +423,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const SessionCompletedScreen());
-      expect(
-        find.text(l10n.sessionCompletedSimulationBanner),
-        findsNothing,
-      );
+      expect(find.text(l10n.sessionCompletedSimulationBanner), findsNothing);
     });
 
     testWidgets('banner is shown when isSimulation = true', (
@@ -437,10 +434,7 @@ void main() {
         tester,
         const SessionCompletedScreen(isSimulation: true),
       );
-      expect(
-        find.text(l10n.sessionCompletedSimulationBanner),
-        findsOneWidget,
-      );
+      expect(find.text(l10n.sessionCompletedSimulationBanner), findsOneWidget);
     });
 
     testWidgets('banner contains the play_circle_outline icon', (
@@ -465,9 +459,8 @@ void main() {
         routes: <RouteBase>[
           GoRoute(
             path: '/session/completed',
-            builder: (_, GoRouterState state) => SessionCompletedScreen(
-              logId: state.uri.queryParameters['id'],
-            ),
+            builder: (_, GoRouterState state) =>
+                SessionCompletedScreen(logId: state.uri.queryParameters['id']),
           ),
           GoRoute(
             path: '/past-events/detail',
