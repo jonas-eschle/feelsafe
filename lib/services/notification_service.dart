@@ -190,6 +190,80 @@ class RealNotificationService implements NotificationServiceProtocol {
   // NotificationServiceProtocol implementation
   // ---------------------------------------------------------------------------
 
+  /// Maps a high-level [NotificationChannelKey] to the underlying
+  /// Android channel id used in [_createAndroidChannels].
+  ///
+  /// `fakeCall` reuses the `alarm` channel because spec 05 does not
+  /// allocate a separate channel for fake-call screens — the alarm
+  /// channel's max-importance + full-screen-intent flags are exactly
+  /// what the fake-call UI requires.
+  static String _channelIdFor(NotificationChannelKey c) => switch (c) {
+    NotificationChannelKey.alarm => _kAlarmChannelId,
+    NotificationChannelKey.reminder => _kRemindersChannelId,
+    NotificationChannelKey.fakeCall => _kAlarmChannelId,
+  };
+
+  @override
+  Future<bool> isChannelEnabled(NotificationChannelKey channel) async {
+    if (!Platform.isAndroid) {
+      // iOS / desktop expose only the overall app-level toggle. Fall
+      // back to the permission status returned by the OS.
+      try {
+        final iOSImpl = _plugin
+            .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin
+            >();
+        final granted = await iOSImpl?.checkPermissions();
+        return granted?.isEnabled ?? true;
+      } catch (e) {
+        log('isChannelEnabled iOS error: $e', name: 'NotificationService');
+        return true;
+      }
+    }
+    try {
+      final androidImpl = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      final channels = await androidImpl?.getNotificationChannels();
+      if (channels == null) return true;
+      final id = _channelIdFor(channel);
+      for (final ch in channels) {
+        if (ch.id == id) {
+          return ch.importance != Importance.none;
+        }
+      }
+      return true;
+    } catch (e) {
+      log(
+        'isChannelEnabled Android error: $e',
+        name: 'NotificationService',
+      );
+      return true;
+    }
+  }
+
+  @override
+  Future<void> openChannelSettings(NotificationChannelKey channel) async {
+    if (!Platform.isAndroid) {
+      // iOS / desktop only expose the app-level settings panel.
+      // Caller falls back to permission_handler.openAppSettings().
+      return;
+    }
+    try {
+      final androidImpl = _plugin
+          .resolvePlatformSpecificImplementation<
+            AndroidFlutterLocalNotificationsPlugin
+          >();
+      await androidImpl?.requestNotificationsPermission();
+    } catch (e) {
+      log(
+        'openChannelSettings error: $e',
+        name: 'NotificationService',
+      );
+    }
+  }
+
   @override
   Future<bool> requestPermission() async {
     try {

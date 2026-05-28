@@ -348,6 +348,14 @@ final class FakeNotificationService implements NotificationServiceProtocol {
 
   @override
   Future<bool> requestPermission() async => true;
+
+  @override
+  Future<bool> isChannelEnabled(NotificationChannelKey channel) async => true;
+
+  @override
+  Future<void> openChannelSettings(NotificationChannelKey channel) async {
+    calls.add({'method': 'openChannelSettings', 'channel': channel.name});
+  }
 }
 
 /// Fake [ContactServiceProtocol] backed by a provided contact list.

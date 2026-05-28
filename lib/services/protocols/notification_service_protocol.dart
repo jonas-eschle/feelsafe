@@ -1,3 +1,22 @@
+/// Identifies a user-facing notification channel for per-channel
+/// enablement queries.
+///
+/// Maps onto the four Android notification channels created in
+/// [RealNotificationService._createAndroidChannels]:
+/// `alarm`, `reminders`, and the dedicated fake-call escalation
+/// channel. The session-service channel is omitted because it is
+/// required for the foreground service to run.
+enum NotificationChannelKey {
+  /// `alarm` channel — critical escalations that bypass DND.
+  alarm,
+
+  /// `reminders` channel — disguised check-in reminders.
+  reminder,
+
+  /// `fake_call` channel — full-screen incoming-call notifications.
+  fakeCall,
+}
+
 /// Action-ID prefix for SMS-retry notification buttons.
 ///
 /// The `actionTaps` stream emits raw action IDs; controllers match
@@ -98,4 +117,19 @@ abstract interface class NotificationServiceProtocol {
   ///
   /// Returns `true` if permission is granted (or was already granted).
   Future<bool> requestPermission();
+
+  /// Returns whether [channel] is currently enabled at the OS level.
+  ///
+  /// On Android this reflects the per-channel toggle in System Settings;
+  /// on iOS this returns the overall app-level setting because iOS does
+  /// not expose per-channel state via the public API.
+  Future<bool> isChannelEnabled(NotificationChannelKey channel);
+
+  /// Opens the system settings page for [channel].
+  ///
+  /// On Android calls `flutter_local_notifications`'
+  /// `openNotificationSettings` with the channel id. On iOS / desktop
+  /// the OS opens the general app notification settings (no per-channel
+  /// drill-down is available).
+  Future<void> openChannelSettings(NotificationChannelKey channel);
 }

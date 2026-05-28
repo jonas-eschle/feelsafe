@@ -65,6 +65,21 @@ class SimulationNotificationService implements NotificationServiceProtocol {
   /// Defaults to `true`. Tests can set this to `false` to simulate denial.
   bool simulatedPermissionGranted = true;
 
+  /// Canned per-channel enablement values returned by [isChannelEnabled].
+  ///
+  /// Defaults to every channel enabled. Tests mutate this map to
+  /// simulate the user toggling a channel off in System Settings.
+  final Map<NotificationChannelKey, bool> simulatedChannelEnabled =
+      <NotificationChannelKey, bool>{
+        NotificationChannelKey.alarm: true,
+        NotificationChannelKey.reminder: true,
+        NotificationChannelKey.fakeCall: true,
+      };
+
+  /// Channels for which [openChannelSettings] has been invoked.
+  final List<NotificationChannelKey> openChannelSettingsCalls =
+      <NotificationChannelKey>[];
+
   // ---------------------------------------------------------------------------
   // NotificationServiceProtocol implementation
   // ---------------------------------------------------------------------------
@@ -142,6 +157,18 @@ class SimulationNotificationService implements NotificationServiceProtocol {
   @override
   Future<void> cancel(int id) async {
     calls.add(NotificationCall(method: 'cancel', id: id));
+  }
+
+  @override
+  Future<bool> isChannelEnabled(NotificationChannelKey channel) async {
+    calls.add(const NotificationCall(method: 'isChannelEnabled'));
+    return simulatedChannelEnabled[channel] ?? true;
+  }
+
+  @override
+  Future<void> openChannelSettings(NotificationChannelKey channel) async {
+    calls.add(const NotificationCall(method: 'openChannelSettings'));
+    openChannelSettingsCalls.add(channel);
   }
 
   @override
