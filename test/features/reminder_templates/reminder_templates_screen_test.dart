@@ -235,7 +235,11 @@ void main() {
     });
 
     testWidgets('FAB has an add icon', (WidgetTester tester) async {
-      final fake = _FakeReminderTemplatesController(_state());
+      // Use a non-empty list so the empty-state CTA (also +) doesn't
+      // double-count the FAB icon.
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: _seedTemplates()),
+      );
       await pumpScreen(
         tester,
         const ReminderTemplatesScreen(),
@@ -505,8 +509,38 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.text(l10n.commonDelete));
       await tester.pumpAndSettle();
+      // Confirm dialog now appears; tap the Delete FilledButton inside it.
+      await tester.tap(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.text(l10n.commonDelete),
+        ),
+      );
+      await tester.pumpAndSettle();
       check(fake.deleteCalls).equals(1);
       check(fake.lastDeletedId).equals('c1');
+    });
+
+    testWidgets('cancelling the delete dialog leaves the template intact', (
+      WidgetTester tester,
+    ) async {
+      final custom = _template('c1', 'My Custom', isCustom: true);
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: <ReminderTemplate>[custom]),
+      );
+      await pumpScreen(
+        tester,
+        const ReminderTemplatesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>).first);
+      await tester.pumpAndSettle();
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.commonDelete));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      check(fake.deleteCalls).equals(0);
     });
 
     testWidgets('Delete menu item is disabled for built-in templates', (

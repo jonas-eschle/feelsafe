@@ -4391,6 +4391,126 @@ abstract class AppLocalizations {
   /// **'Built-in templates cannot be deleted'**
   String get templatesBuiltinNoDelete;
 
+  /// Bottom-sheet option that opens the built-in template picker.
+  ///
+  /// In en, this message translates to:
+  /// **'From template'**
+  String get templatesAddFromTemplate;
+
+  /// Bottom-sheet option that opens the empty template editor.
+  ///
+  /// In en, this message translates to:
+  /// **'From scratch'**
+  String get templatesAddFromScratch;
+
+  /// Delete-confirmation dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete \"{name}\"?'**
+  String templatesDeleteConfirmTitle(Object name);
+
+  /// Delete-confirmation dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'This template will be removed permanently.'**
+  String get templatesDeleteConfirmBody;
+
+  /// Button under the empty-state illustration.
+  ///
+  /// In en, this message translates to:
+  /// **'Add your first template'**
+  String get templatesEmptyAddFirst;
+
+  /// Title of the built-in-template picker bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick a built-in template'**
+  String get templatesPickFromBuiltinTitle;
+
+  /// Icon picker field label in the template editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get templatesIconLabel;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get templatesIconCalendar;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'App notification'**
+  String get templatesIconAppNotification;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Fitness'**
+  String get templatesIconFitness;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get templatesIconHealth;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get templatesIconFood;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Coffee'**
+  String get templatesIconCoffee;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery'**
+  String get templatesIconBattery;
+
+  /// Built-in icon category.
+  ///
+  /// In en, this message translates to:
+  /// **'Weather'**
+  String get templatesIconWeather;
+
+  /// Section header above the live preview panel.
+  ///
+  /// In en, this message translates to:
+  /// **'Live preview'**
+  String get templatesPreviewHeading;
+
+  /// Dialog title when leaving a dirty editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get templatesDiscardChangesTitle;
+
+  /// Dialog body when leaving a dirty editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved edits will be lost.'**
+  String get templatesDiscardChangesBody;
+
+  /// Stay-on-editor action.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep editing'**
+  String get templatesDiscardKeep;
+
+  /// Discard action.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get templatesDiscardDiscard;
+
   /// Title of notification settings.
   ///
   /// In en, this message translates to:
@@ -4667,6 +4787,42 @@ abstract class AppLocalizations {
   /// **'Delete session log?'**
   String get pastEventsDeleteConfirm;
 
+  /// Share menu — text option.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as text'**
+  String get pastEventsDetailShareText;
+
+  /// Share menu — PDF option.
+  ///
+  /// In en, this message translates to:
+  /// **'Share as PDF'**
+  String get pastEventsDetailSharePdf;
+
+  /// Delete button in detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get pastEventsDetailDelete;
+
+  /// Outcome badge: clean completion.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get pastEventsOutcomeCompleted;
+
+  /// Outcome badge: distress chain fired.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress'**
+  String get pastEventsOutcomeDistress;
+
+  /// Outcome badge: any other end reason.
+  ///
+  /// In en, this message translates to:
+  /// **'Interrupted'**
+  String get pastEventsOutcomeInterrupted;
+
   /// Delete all action.
   ///
   /// In en, this message translates to:
@@ -4702,12 +4858,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Share'**
   String get pastEventsDetailShare;
-
-  /// Delete button in detail screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete'**
-  String get pastEventsDetailDelete;
 
   /// Button to import from device contacts (Extra 27).
   ///

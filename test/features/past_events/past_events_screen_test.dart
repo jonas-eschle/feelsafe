@@ -88,12 +88,14 @@ PastEventsLog _log({
   bool isSimulation = false,
   int durationSeconds = 323,
   DateTime? startedAt,
+  PastEventOutcome outcome = PastEventOutcome.completed,
 }) => PastEventsLog(
   id: id,
   modeName: modeName,
   startedAt: startedAt ?? _base,
   durationSeconds: durationSeconds,
   isSimulation: isSimulation,
+  outcome: outcome,
 );
 
 PastEventsState _state({List<PastEventsLog>? logs}) =>
@@ -709,6 +711,63 @@ void main() {
       );
       expect(find.text('Walk Mode'), findsOneWidget);
       expect(find.text('Date Mode'), findsOneWidget);
+    });
+  });
+
+  // ── Outcome badges ─────────────────────────────────────────────────────────
+
+  group('PastEventsScreen — outcome badges', () {
+    testWidgets('Completed badge renders for clean disarm', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakePastEventsController(
+        _state(logs: <PastEventsLog>[_log(id: 'c1')]),
+      );
+      await pumpScreen(
+        tester,
+        const PastEventsScreen(),
+        overrides: _override(fake),
+      );
+      expect(find.text(l10n.pastEventsOutcomeCompleted), findsOneWidget);
+    });
+
+    testWidgets('Distress badge renders for chain-exhausted log', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakePastEventsController(
+        _state(
+          logs: <PastEventsLog>[
+            _log(id: 'd1', outcome: PastEventOutcome.distress),
+          ],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const PastEventsScreen(),
+        overrides: _override(fake),
+      );
+      expect(find.text(l10n.pastEventsOutcomeDistress), findsOneWidget);
+    });
+
+    testWidgets('Interrupted badge renders for user-quit log', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakePastEventsController(
+        _state(
+          logs: <PastEventsLog>[
+            _log(id: 'i1', outcome: PastEventOutcome.interrupted),
+          ],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const PastEventsScreen(),
+        overrides: _override(fake),
+      );
+      expect(find.text(l10n.pastEventsOutcomeInterrupted), findsOneWidget);
     });
   });
 }

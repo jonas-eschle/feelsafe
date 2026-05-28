@@ -341,7 +341,7 @@ void main() {
         overrides: baseOverrides,
       );
       expect(
-        find.byType(RadioListTile<ReminderDisplayStyle>),
+        find.byType(RadioListTile<ReminderDisplayStyle>, skipOffstage: false),
         findsNWidgets(ReminderDisplayStyle.values.length),
       );
     });
@@ -355,7 +355,7 @@ void main() {
         overrides: baseOverrides,
       );
       final group = tester.widget<RadioGroup<ReminderDisplayStyle>>(
-        find.byType(RadioGroup<ReminderDisplayStyle>),
+        find.byType(RadioGroup<ReminderDisplayStyle>, skipOffstage: false),
       );
       check(group.groupValue).equals(ReminderDisplayStyle.fullScreen);
     });
@@ -372,6 +372,7 @@ void main() {
         (w) =>
             w is RadioListTile<ReminderDisplayStyle> &&
             w.value == ReminderDisplayStyle.subtle,
+        skipOffstage: false,
       );
       await tester.ensureVisible(subtileFinder);
       await tester.pumpAndSettle();
@@ -441,7 +442,7 @@ void main() {
         overrides: baseOverrides,
       );
       final group = tester.widget<RadioGroup<ReminderDisplayStyle>>(
-        find.byType(RadioGroup<ReminderDisplayStyle>),
+        find.byType(RadioGroup<ReminderDisplayStyle>, skipOffstage: false),
       );
       check(group.groupValue).equals(ReminderDisplayStyle.subtle);
     });
@@ -733,12 +734,13 @@ void main() {
         const TemplateEditorScreen(),
         overrides: baseOverrides,
       );
-      // Each ConfirmationType value appears as a label.
+      // Each ConfirmationType value appears as a label (scroll-offstage
+      // items count when skipOffstage:false).
       for (final ct in ConfirmationType.values) {
-        expect(find.text(ct.name), findsOneWidget);
+        expect(find.text(ct.name, skipOffstage: false), findsOneWidget);
       }
       for (final ds in ReminderDisplayStyle.values) {
-        expect(find.text(ds.name), findsOneWidget);
+        expect(find.text(ds.name, skipOffstage: false), findsOneWidget);
       }
     });
   });

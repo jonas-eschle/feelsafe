@@ -114,9 +114,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       final service = await ref.read(backupServiceProvider.future);
       await service.importFromJson(utf8.decode(bytes));
       if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.backupImportSuccess)),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.backupImportSuccess)));
     } on FormatException catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

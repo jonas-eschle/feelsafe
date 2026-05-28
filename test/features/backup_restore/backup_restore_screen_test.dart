@@ -866,35 +866,31 @@ void main() {
       expect(find.text(l10n.backupNeverExportedLabel), findsOneWidget);
     });
 
-    testWidgets(
-      'corrupt-import surfaces a snackbar with the FormatException',
-      (WidgetTester tester) async {
-        FilePicker.platform = _FakeFilePicker(
-          result: FilePickerResult([_jsonPlatformFile()]),
-        );
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _CorruptBackupService();
-        await pumpScreen(
-          tester,
-          const BackupRestoreScreen(),
-          overrides: _backupOverride(fake),
-        );
-        await tester.tap(
-          find.ancestor(
-            of: find.text(l10n.backupImportButton),
-            matching: find.byType(OutlinedButton),
-          ),
-        );
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.commonConfirm));
-        await tester.pumpAndSettle();
-        // SnackBar text uses placeholder; just check the prefix.
-        expect(
-          find.textContaining('missing _schemaVersion'),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('corrupt-import surfaces a snackbar with the FormatException', (
+      WidgetTester tester,
+    ) async {
+      FilePicker.platform = _FakeFilePicker(
+        result: FilePickerResult([_jsonPlatformFile()]),
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _CorruptBackupService();
+      await pumpScreen(
+        tester,
+        const BackupRestoreScreen(),
+        overrides: _backupOverride(fake),
+      );
+      await tester.tap(
+        find.ancestor(
+          of: find.text(l10n.backupImportButton),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+      // SnackBar text uses placeholder; just check the prefix.
+      expect(find.textContaining('missing _schemaVersion'), findsOneWidget);
+    });
 
     testWidgets('shows LinearProgressIndicator while busy', (
       WidgetTester tester,

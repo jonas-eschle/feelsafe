@@ -8,17 +8,7 @@ import 'package:guardianangela/services/service_providers.dart';
 
 /// Snap stops shared by both retention sliders (spec 06 §History &
 /// Retention).
-const List<int> _kRetentionStops = <int>[
-  1,
-  3,
-  7,
-  14,
-  30,
-  60,
-  90,
-  180,
-  365,
-];
+const List<int> _kRetentionStops = <int>[1, 3, 7, 14, 30, 60, 90, 180, 365];
 
 /// Sub-range of stops accepted by the trash slider (max 90).
 const List<int> _kTrashStops = <int>[1, 3, 7, 14, 30, 60, 90];

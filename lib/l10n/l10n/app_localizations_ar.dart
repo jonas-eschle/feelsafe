@@ -2313,6 +2313,69 @@ class AppLocalizationsAr extends AppLocalizations {
   String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
 
   @override
+  String get templatesAddFromTemplate => 'From template';
+
+  @override
+  String get templatesAddFromScratch => 'From scratch';
+
+  @override
+  String templatesDeleteConfirmTitle(Object name) {
+    return 'Delete \"$name\"?';
+  }
+
+  @override
+  String get templatesDeleteConfirmBody =>
+      'This template will be removed permanently.';
+
+  @override
+  String get templatesEmptyAddFirst => 'Add your first template';
+
+  @override
+  String get templatesPickFromBuiltinTitle => 'Pick a built-in template';
+
+  @override
+  String get templatesIconLabel => 'Icon';
+
+  @override
+  String get templatesIconCalendar => 'Calendar';
+
+  @override
+  String get templatesIconAppNotification => 'App notification';
+
+  @override
+  String get templatesIconFitness => 'Fitness';
+
+  @override
+  String get templatesIconHealth => 'Health';
+
+  @override
+  String get templatesIconFood => 'Food';
+
+  @override
+  String get templatesIconCoffee => 'Coffee';
+
+  @override
+  String get templatesIconBattery => 'Battery';
+
+  @override
+  String get templatesIconWeather => 'Weather';
+
+  @override
+  String get templatesPreviewHeading => 'Live preview';
+
+  @override
+  String get templatesDiscardChangesTitle => 'Discard changes?';
+
+  @override
+  String get templatesDiscardChangesBody => 'Unsaved edits will be lost.';
+
+  @override
+  String get templatesDiscardKeep => 'Keep editing';
+
+  @override
+  String get templatesDiscardDiscard => 'Discard';
+
+  @override
   String get notificationsTitle => 'Notifications';
 
   @override
@@ -2457,6 +2520,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pastEventsDeleteConfirm => 'Delete session log?';
 
   @override
+  String get pastEventsDetailShareText => 'Share as text';
+
+  @override
+  String get pastEventsDetailSharePdf => 'Share as PDF';
+
+  @override
+  String get pastEventsDetailDelete => 'Delete';
+
+  @override
+  String get pastEventsOutcomeCompleted => 'Completed';
+
+  @override
+  String get pastEventsOutcomeDistress => 'Distress';
+
+  @override
+  String get pastEventsOutcomeInterrupted => 'Interrupted';
+
+  @override
   String get pastEventsDeleteAll => 'Delete all';
 
   @override
@@ -2473,9 +2554,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get pastEventsDetailShare => 'Share';
-
-  @override
-  String get pastEventsDetailDelete => 'Delete';
 
   @override
   String get contactImportFromDevice => 'Import from contacts';

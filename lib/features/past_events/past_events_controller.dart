@@ -3,7 +3,31 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
+import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/services/service_providers.dart';
+
+/// Outcome badge bucket displayed in the past-events list.
+enum PastEventOutcome {
+  /// Session ended cleanly (disarm or null end reason).
+  completed,
+
+  /// Session escalated to distress (chain exhaustion, duress PIN,
+  /// hardware panic, wrong-PIN exhaustion).
+  distress,
+
+  /// User aborted before completion (explicit quit).
+  interrupted,
+}
+
+/// Maps an [EndReason] to the corresponding [PastEventOutcome] bucket.
+PastEventOutcome outcomeFromEndReason(EndReason? r) => switch (r) {
+  null || EndReason.disarm => PastEventOutcome.completed,
+  EndReason.chainExhausted ||
+  EndReason.duressPin ||
+  EndReason.hardwarePanic ||
+  EndReason.wrongPinExhausted => PastEventOutcome.distress,
+  EndReason.userQuit => PastEventOutcome.interrupted,
+};
 
 /// Lightweight view of a session log for the list screen.
 @immutable
@@ -15,6 +39,7 @@ class PastEventsLog {
     required this.startedAt,
     required this.durationSeconds,
     required this.isSimulation,
+    required this.outcome,
   });
 
   /// Session log id.
@@ -31,6 +56,9 @@ class PastEventsLog {
 
   /// Whether this was a simulation.
   final bool isSimulation;
+
+  /// Outcome bucket derived from [SessionLog.endReason].
+  final PastEventOutcome outcome;
 }
 
 /// Immutable state for the past-events screen.
@@ -76,6 +104,7 @@ class PastEventsController extends AsyncNotifier<PastEventsState> {
           startedAt: l.startedAt,
           durationSeconds: duration,
           isSimulation: l.isSimulation,
+          outcome: outcomeFromEndReason(l.endReason),
         ),
       );
     }

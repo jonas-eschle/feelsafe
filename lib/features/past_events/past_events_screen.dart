@@ -107,7 +107,13 @@ class _LogList extends ConsumerWidget {
               log.isSimulation ? Icons.play_circle_outline : Icons.shield,
             ),
             title: Text(log.modeName),
-            subtitle: Text(_formatTime(log.startedAt)),
+            subtitle: Row(
+              children: <Widget>[
+                Text(_formatTime(log.startedAt)),
+                const SizedBox(width: 8),
+                _OutcomeChip(outcome: log.outcome),
+              ],
+            ),
             trailing: Text(_formatDuration(log.durationSeconds)),
             onTap: () => ctx.pushNamed(
               RouteNames.pastEventDetail,
@@ -130,5 +136,38 @@ class _LogList extends ConsumerWidget {
     final m = seconds ~/ 60;
     final s = seconds % 60;
     return '${m}m ${s}s';
+  }
+}
+
+/// Outcome badge rendered to the right of the start timestamp.
+class _OutcomeChip extends StatelessWidget {
+  const _OutcomeChip({required this.outcome});
+
+  final PastEventOutcome outcome;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final cs = Theme.of(context).colorScheme;
+    final (String label, Color color) = switch (outcome) {
+      PastEventOutcome.completed => (
+        l10n.pastEventsOutcomeCompleted,
+        cs.primaryContainer,
+      ),
+      PastEventOutcome.distress => (
+        l10n.pastEventsOutcomeDistress,
+        cs.errorContainer,
+      ),
+      PastEventOutcome.interrupted => (
+        l10n.pastEventsOutcomeInterrupted,
+        cs.surfaceContainerHigh,
+      ),
+    };
+    return Chip(
+      label: Text(label),
+      backgroundColor: color,
+      visualDensity: VisualDensity.compact,
+      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    );
   }
 }

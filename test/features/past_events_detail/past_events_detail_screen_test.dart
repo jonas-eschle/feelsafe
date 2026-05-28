@@ -467,7 +467,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'log-1'),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText).isNotNull();
       check(_capturedShareText!).contains('Walk Mode');
@@ -484,7 +487,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'log-1'),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareSubject).equals('Guardian Angela session log');
     });
@@ -500,7 +506,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'log-1'),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText ?? '').contains('Start:');
     });
@@ -516,7 +525,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'ev-1', evidenceMode: true),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText).isNotNull();
       check(_capturedShareText!).contains('"id"');
@@ -534,7 +546,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'ev-2', evidenceMode: true),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText ?? '').contains('Date Mode');
     });
@@ -550,7 +565,10 @@ void main() {
         const PastEventsDetailScreen(logId: 'ev-3', evidenceMode: true),
         overrides: <Override>[_dbOverride(db)],
       );
+      final l10n = await loadL10n(const Locale('en'));
       await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText ?? '').contains('"startedAt"');
     });
