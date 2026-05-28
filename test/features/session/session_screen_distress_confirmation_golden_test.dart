@@ -14,8 +14,9 @@
 ///     test/features/session/session_screen_distress_confirmation_golden_test.dart
 library;
 
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -157,35 +158,34 @@ PumpWidget _harness({
   required _FakeSessionController fake,
   required Locale locale,
   required Brightness brightness,
-}) =>
-    (WidgetTester tester, Widget widget) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            sessionControllerProvider.overrideWith(() => fake),
-            quickExitServiceProvider.overrideWith(
-              (_) => SimulationQuickExitService(),
-            ),
-          ],
-          child: MaterialApp(
-            locale: locale,
-            localizationsDelegates: const <LocalizationsDelegate<Object>>[
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            supportedLocales: AppLocalizations.supportedLocales,
-            theme: _theme(Brightness.light),
-            darkTheme: _theme(Brightness.dark),
-            themeMode: brightness == Brightness.dark
-                ? ThemeMode.dark
-                : ThemeMode.light,
-            home: widget,
-          ),
+}) => (WidgetTester tester, Widget widget) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        sessionControllerProvider.overrideWith(() => fake),
+        quickExitServiceProvider.overrideWith(
+          (_) => SimulationQuickExitService(),
         ),
-      );
-    };
+      ],
+      child: MaterialApp(
+        locale: locale,
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: _theme(Brightness.light),
+        darkTheme: _theme(Brightness.dark),
+        themeMode: brightness == Brightness.dark
+            ? ThemeMode.dark
+            : ThemeMode.light,
+        home: widget,
+      ),
+    ),
+  );
+};
 
 // ---------------------------------------------------------------------------
 // Golden tests
@@ -199,7 +199,9 @@ void main() {
       fileName: 'distress_confirmation_light_10s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 10)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 10),
+        ),
         locale: const Locale('en'),
         brightness: Brightness.light,
       ),
@@ -221,7 +223,9 @@ void main() {
       fileName: 'distress_confirmation_light_3s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 3)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 3),
+        ),
         locale: const Locale('en'),
         brightness: Brightness.light,
       ),
@@ -229,10 +233,7 @@ void main() {
         columns: 1,
         scenarioConstraints: BoxConstraints.tight(const Size(390, 844)),
         children: <Widget>[
-          GoldenTestScenario(
-            name: 'light / 3 s',
-            child: const SessionScreen(),
-          ),
+          GoldenTestScenario(name: 'light / 3 s', child: const SessionScreen()),
         ],
       ),
     );
@@ -243,7 +244,9 @@ void main() {
       fileName: 'distress_confirmation_dark_10s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 10)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 10),
+        ),
         locale: const Locale('en'),
         brightness: Brightness.dark,
       ),
@@ -251,10 +254,7 @@ void main() {
         columns: 1,
         scenarioConstraints: BoxConstraints.tight(const Size(390, 844)),
         children: <Widget>[
-          GoldenTestScenario(
-            name: 'dark / 10 s',
-            child: const SessionScreen(),
-          ),
+          GoldenTestScenario(name: 'dark / 10 s', child: const SessionScreen()),
         ],
       ),
     );
@@ -265,7 +265,9 @@ void main() {
       fileName: 'distress_confirmation_dark_3s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 3)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 3),
+        ),
         locale: const Locale('en'),
         brightness: Brightness.dark,
       ),
@@ -273,10 +275,7 @@ void main() {
         columns: 1,
         scenarioConstraints: BoxConstraints.tight(const Size(390, 844)),
         children: <Widget>[
-          GoldenTestScenario(
-            name: 'dark / 3 s',
-            child: const SessionScreen(),
-          ),
+          GoldenTestScenario(name: 'dark / 3 s', child: const SessionScreen()),
         ],
       ),
     );
@@ -287,7 +286,9 @@ void main() {
       fileName: 'distress_confirmation_rtl_10s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 10)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 10),
+        ),
         locale: const Locale('ar'),
         brightness: Brightness.light,
       ),
@@ -295,10 +296,7 @@ void main() {
         columns: 1,
         scenarioConstraints: BoxConstraints.tight(const Size(390, 844)),
         children: <Widget>[
-          GoldenTestScenario(
-            name: 'RTL / 10 s',
-            child: const SessionScreen(),
-          ),
+          GoldenTestScenario(name: 'RTL / 10 s', child: const SessionScreen()),
         ],
       ),
     );
@@ -309,7 +307,9 @@ void main() {
       fileName: 'distress_confirmation_rtl_3s',
       constraints: const BoxConstraints(maxWidth: 390, maxHeight: 844),
       pumpWidget: _harness(
-        fake: _FakeSessionController(_distressState(distressConfirmRemaining: 3)),
+        fake: _FakeSessionController(
+          _distressState(distressConfirmRemaining: 3),
+        ),
         locale: const Locale('ar'),
         brightness: Brightness.light,
       ),
@@ -317,10 +317,7 @@ void main() {
         columns: 1,
         scenarioConstraints: BoxConstraints.tight(const Size(390, 844)),
         children: <Widget>[
-          GoldenTestScenario(
-            name: 'RTL / 3 s',
-            child: const SessionScreen(),
-          ),
+          GoldenTestScenario(name: 'RTL / 3 s', child: const SessionScreen()),
         ],
       ),
     );

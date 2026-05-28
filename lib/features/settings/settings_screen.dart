@@ -162,11 +162,8 @@ class SettingsScreen extends ConsumerWidget {
               leading: const Icon(Icons.local_phone_outlined),
               title: Text(l10n.settingsEmergencyNumberLabel),
               subtitle: Text(state.emergencyCallNumber),
-              onTap: () => _pickEmergencyNumber(
-                context,
-                ref,
-                state.emergencyCallNumber,
-              ),
+              onTap: () =>
+                  _pickEmergencyNumber(context, ref, state.emergencyCallNumber),
             ),
             ListTile(
               leading: const Icon(Icons.article_outlined),
@@ -240,16 +237,15 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     // Curated list of common emergency-services numbers. Country code
     // is shown alongside for clarity.
-    const List<(String label, String number)> presets =
-        <(String, String)>[
-          ('International (GSM)', '112'),
-          ('United States / Canada', '911'),
-          ('United Kingdom', '999'),
-          ('Australia', '000'),
-          ('China', '110'),
-          ('Japan', '110'),
-          ('India', '112'),
-        ];
+    const List<(String label, String number)> presets = <(String, String)>[
+      ('International (GSM)', '112'),
+      ('United States / Canada', '911'),
+      ('United Kingdom', '999'),
+      ('Australia', '000'),
+      ('China', '110'),
+      ('Japan', '110'),
+      ('India', '112'),
+    ];
     final selected = await showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext ctx) => SafeArea(

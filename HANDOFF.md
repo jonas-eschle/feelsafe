@@ -1,10 +1,10 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-05-24 — **Phase 5 formally closed** (3-agent verifier cohort: PM PASS / Architect PASS / qa-expert PASS after 3-4 rounds each). Phase 6 is the next stop.
-**HEAD:** `36d30cf` (`phase-5-fix-r3: NEW-1 + NEW-2 — stealth pause and resume-restore tests`).
-**Tests passing:** `2447/2447` (`flutter test --concurrency=6`).
+**Snapshot:** 2026-05-28 — **Phase 6 implementation + test cohort done; PM verifier returned FIX_REQUIRED.** 4 security-critical P0 defects + 3 lower-priority nits need to land before the architect/qa verifiers may run.
+**HEAD:** `cedaecf` (`phase-6-tests-goldens: alchemist golden tests for 6 visual-critical screens`).
+**Tests passing:** `3538/3538` (`flutter test --concurrency=6`).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
-**Branch:** `main`. **Not pushed.** **OLD/ is INERT** (restored once mid-session after a lefthook accident).
+**Branch:** `main`. **Not pushed.** **OLD/ is INERT** (restored once mid-Phase-6 after a lefthook accident — the agent had touched 200+ files; `git checkout HEAD -- OLD/` cleaned it).
 
 ---
 
@@ -16,14 +16,14 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 
 ## Hard rules (unchanged — applies to every stage going forward)
 
-1. **OLD/ is INERT.** Never read/list/glob/grep/import anything under `OLD/`. If a hook touches it, restore with `git checkout <prior-commit> -- OLD/` — *do not browse the files*. (Happened once mid-Phase-5C; restored cleanly.)
+1. **OLD/ is INERT.** Never read/list/glob/grep/import anything under `OLD/`. If a hook touches it, restore with `git checkout <prior-commit> -- OLD/` — *do not browse the files*. Already happened twice (Phase 5C; Phase 6 mega-agent dispatch).
 2. **NO STUBS at GA.** All 12 S-NN categories in `~/.claude/plans/make-sure-that-there-typed-tulip.md §NO-STUBS` are CI hard fails.
-3. **NO INVENTED DEFERRALS.** "Phase X" comments are legitimate ONLY if the named phase's plan actually scopes the work. The user reinforced this in Phase 5: "Implement EVERYTHING. No bootstrap or similar." See `feedback_no_invented_deferrals.md` in user memory. Grep `lib/` for `"Phase 9 file-picker\|will be available in a future\|coming in Phase\|deferred to Phase"` before every commit; MUST be empty.
+3. **NO INVENTED DEFERRALS.** "Phase X" comments are legitimate ONLY if the named phase's plan actually scopes the work. The Phase 5 user reinforcement and Phase 6 fix-pass B both proved this. See `feedback_no_invented_deferrals.md` in user memory. Grep `lib/features/` for `"Phase 7\|Phase 8\|Phase 9\|Phase 10\|Phase 11"` before every commit; MUST be empty. (`lib/services/` Phase-7 comments are LEGITIMATE — Phase 7 scopes native channels.)
 4. **DO NOT guess.** Use `AskUserQuestion` for spec ambiguity.
-5. **Pre-alpha = break compatibility freely.**
+5. **Pre-alpha = break compatibility freely.** (Drift schema is at v4 now; bump and nuke-and-reseed.)
 6. **Verify after EVERY fix or stage.** Analyzer + tests + grep gates. Re-engage the same verifier on `FIX_REQUIRED`.
-7. **Write/update HANDOFF.md after each phase if tokens exceed 200k.**
-8. **Serial default; parallel only at sanctioned points.** Phase 5 was solo per the plan. Verifier cohorts (architect + qa + nostubs/PM) ran in parallel (disjoint write surfaces). Phase 6 has a parallel widget+golden test cohort AFTER the screens land.
+7. **Write/update HANDOFF.md after each phase if tokens exceed 200k.** (This update is at ~411k.)
+8. **Serial default; parallel only at sanctioned points.** Phase 6 used 4 waves of parallel widget-test agents (6+8+8+6, all disjoint files) and 6 parallel golden agents — all succeeded. Sequential for implementation work.
 9. **Co-Authored-By footer:** `Claude Opus 4.7 <noreply@anthropic.com>`.
 10. **Pure Dart in `lib/domain/`, `lib/services/protocols/`, `lib/data/`.**
 
@@ -39,83 +39,123 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 | Phase 2 (pure-Dart SessionEngine) | ✅ Done | 1161 | `fb4ce10`–`c7e8774` |
 | Phase 3 (Event Strategies + 9 protocols) | ✅ Done | 1581 | `f9bc996`–`03287d1` |
 | Phase 4 (Repositories + Drift schema + seed data) | ✅ Done | 1711 | `4969161`–`8cedc2c` |
-| **Phase 5 (services + Sentry + wiring map)** | ✅ **Done — 3-agent cohort PASS** | **2447** | `5b0bd02`..`36d30cf` (18 commits) |
-| Phase 6..11 | Pending |  |  |
+| Phase 5 (services + Sentry + wiring map) | ✅ Done — 3-agent cohort PASS | 2447 | `5b0bd02`..`36d30cf` (18 commits) |
+| **Phase 6 (screens + routing + R-42 + tests + goldens)** | ⚠️ **Implementation+tests done; PM verifier FIX_REQUIRED** | **3538** | `ee73b62`..`cedaecf` (30 commits) |
+| Phase 7..11 | Pending |  |  |
 
 ---
 
-## What Phase 5 delivered (commits `5b0bd02..36d30cf`, 18 commits)
+## What Phase 6 delivered (commits `ee73b62..cedaecf`, 30 commits)
 
-### Service layer
+### Implementation (5 commits)
+- `ee73b62` phase-6a: foundation + screen scaffolds (router, route_names, shared widgets, ARB keys, `_AppShell` replacement, 25 feature folders).
+- `3dce0ae` phase-6b: remove invented Phase-7 deferrals from features/ (session_controller engine bridge, past_events tombstones, battery_alert step-chain editor, home startSession, event_defaults per-field editors).
+- `01177c1` phase-6c-1: past-events 7-day trash + `deletedAtMs` schema (Drift v1→v2, dedicated PastEventsTrashScreen at `/past-events/trash`).
+- `621e071` phase-6c-2: quick-exit service triplet (Phase 7 native landing — protocol + Real with MethodChannel + Sim).
+- `d451de5` phase-6c-3: `engine.snapshot` getter + session_controller precise remaining time (sealed `EngineState` returned by a getter).
 
-- **21 service triplets** under `lib/services/`: protocol + Real impl + Simulation impl + tests for each. Real impls wrap pub plugins (`just_audio`, `geolocator`, `vibration`, `wakelock_plus`, `torch_light`, `record`, `flutter_contacts`, `flutter_local_notifications`, `battery_plus`, `flutter_background_service`, `sentry_flutter`, `url_launcher`, `share_plus`, `permission_handler`, `local_auth`) and custom Guardian Angela `com.guardianangela.app/*` MethodChannels for SMS/CallState/SystemUi/HardwareButton/DeviceState (Phase 7 native side pending).
-- **Single wiring owner** at `lib/services/service_providers.dart`. CI grep gate enforces no `Real*Service(` constructor calls outside the file (+ declaring class).
-- **Wiring map** at `docs/wiring-map.md` with one row per Riverpod provider; bidirectional consistency tested by `test/wiring/wiring_map_coverage_test.dart`.
-- **Pre-flight contract test** `test/wiring/simulation_swap_test.dart`: every provider can be overridden with its Simulation impl. The smoking-gun test v2 lacked.
+### Widget tests (6 commits, 966 tests across 30 files)
+- `8baa89c` phase-6-tests-prelude: shared widget-test harness (`pumpScreen`).
+- `8ce5ee7` phase-6-tests: home_screen widget test (cohort reference pattern, 19 tests).
+- `d7fa8c8` phase-6-tests-w1: 6 runtime screens — session(53), onboarding(37), fake_call(34), mode_editor(33), contact_form(32), contacts(28). 217 tests.
+- `f9d021a` phase-6-tests-w2: 8 settings+profile screens — profile(39), settings_stealth(37), about(33), settings_security(32), pin_setup(31), settings(31), feedback_form(31), backup_restore(31). 265 tests.
+- `9c6e0b2` phase-6-tests-w3: 8 config+history screens — event_defaults(58), template_editor(35), history_retention(34), battery_alert(34), notifications_settings(34), gps_logging(31), past_events(31), reminder_templates(27). 284 tests.
+- `6c92934` phase-6-tests-w4: 6 remaining screens — past_events_trash(32), distress_modes(31), modes(31), past_events_detail(30), session_completed(30), simulation_summary(27). 181 tests.
 
-### Bootstrap pipeline
+### Fix-pass A (8 commits — major spec gaps)
+- `7c9a139` phase-6-fix-a-flake: pin past-events-trash remaining-days test to real now (was time-sensitive against `_kNow = 2026-05-27`; the calendar moved past it).
+- `41fc163` phase-6-fix-a-format: lefthook format/import-sort cleanup.
+- `48ef136` phase-6-fix-a1: fake_call full rewrite — 5 CallStyles (added `whatsapp`, `telegram`, `signal` to the enum), slide-to-answer, declineIsSafe label variants, voice/vibration chips, hold-5s-for-distress.
+- `95e7bcc` phase-6-fix-a2: simulation_summary full rewrite — `SimulationSummaryController` + `_PinPrompt` with shake animation + event timeline + Share via share_plus.
+- `df91c69` phase-6-fix-a3: notifications_settings per-channel toggles — `NotificationChannelKey` enum, isChannelEnabled + openChannelSettings on the protocol, Real impl using flutter_local_notifications.
+- `ce81cd3` phase-6-fix-a4: contacts import + reorder + delete-all — flutter_contacts native picker, ReorderableListView, typed "DELETE ALL" confirmation; DAO gained `bulkUpdate` + `deleteAll`.
+- `06f607e` phase-6-fix-a5: modes isBuiltIn schema (v2→v3 + nuke-reseed) + built-in protection (chip + disabled-with-tooltip + swipe-to-delete on custom only).
+- `7b10b4f` phase-6-fix-a6: session_completed route params (`?id=` + `?simulation=`) + simulation indicator + View Event Log → /past-events/detail.
 
-- `lib/main.dart` 7-step pipeline (extracted into `runBootstrap(container, runner)` for testability): open encrypted DB → load AppSettings → init Sentry per `AppSettings.sentryEnabled` (D2 — opt-in, EU host enforced via `endsWith('.ingest.de.sentry.io')`) → purge expired session logs per `AppSettings.sessionLogRetentionDays` → init notification channels → kick off TTS voice bootstrap (unawaited) → `runApp`.
-- `JsonRecoveryApp` for Extra-21 (spec 10:206): "Start fresh" deletes `json_store/`; "Restore from backup" uses `file_picker` + `BackupService.importFromJson`.
-- `databaseProvider` is a `FutureProvider` that opens the encrypted Drift DB via `EncryptionService.openEncryptedDatabase` (sqlite3mc PRAGMA key derived from `flutter_secure_storage`).
+### Fix-pass B (7 commits — remaining medium+small gaps)
+- `384fda1` phase-6-fix-b1: forms & validation — contact_form iOS SMS warning + per-contact language Dropdown; profile FocusNode blur listener + dedupe l10n keys.
+- `4629583` phase-6-fix-b2: security & stealth — biometric toggle, per-PIN Off (clearPin) with confirm, "What is this?" info dialogs, timeout slider moved into Session-End card; StealthIconPreset picker, lock-task toggle wired through session controller.
+- `fbfd6a7` phase-6-fix-b3: backup & history — `_includeLogs/_includeMedia` wired into `exportToJson`, error-handling SnackBars, LinearProgressIndicator ribbon, `AppSettings.lastBackupAt` tile, active-session guard; `_SnapSlider` with [1,3,7,14,30,60,90,180,365] stops, Purge-Now button, "Retention updated" snackbar.
+- `196c813` phase-6-fix-b4: templates & editors — From-template/From-scratch FAB bottom sheet, delete confirmation dialog, built-in tooltip, beefed-up empty state CTA; Cancel TextButton with discard-changes dialog, Icon picker DropdownButtonFormField, 55%-scaled Live Preview; Delete IconButton + Share menu now Text+PDF (added `pdf ^3.12.0`, `printing ^5.14.3`); outcome Chip per row.
+- `db1ab1a` phase-6-fix-b5: onboarding & about — "Use my SIM number" button (Extra 28) wired to new `deviceInfoServiceProvider` triplet, Skip TextButton on pages 2/3; Technical Information section with Bundle ID + Platforms tiles.
+- `be8ba73` phase-6-fix-b6: feedback, settings, smaller fixes — RadioListTile + Cancel + new `FeedbackEntry` Drift table (v3→v4) and `FeedbackHistory` DAO/repository; session-lock guard on Redo Onboarding, Emergency Number row with country-preset bottom sheet; Empty trash overflow with typed confirmation; distress_modes empty state + in-use ref check + tooltips; mode editor distress title branching; gps "Address" → "Plus Code"; spec edits at 04:1893–1904 and 04:2109.
 
-### Strategy wiring (Phase-5 round-2 fix updates Phase-3 strategies)
+### Golden tests (1 commit — 6 alchemist files, 37 scenarios, 59 PNG baselines)
+- `cedaecf` phase-6-tests-goldens: home(6), session(6), session_distress_confirmation(6), fake_call(7), onboarding(6), settings(6). Generates both CI and Linux baselines automatically via alchemist.
 
-- `DisguisedReminderStrategy.executeReal` now invokes `notification.showDisguisedReminder` (was no-op).
-- `FakeCallStrategy.executeReal` calls `audio.playRingtone` + `vibration.fakeCallPattern` + `notification.showAlarmEscalation`.
-- `LoudAlarmStrategy.executeReal` calls `notification.showAlarmEscalation`.
-- `CallEmergencyStrategy.executeReal` calls `notification.showAlarmEscalation`.
-
-### Platform manifest / entitlements
-
-- `android/app/src/main/AndroidManifest.xml`: added `USE_FULL_SCREEN_INTENT` permission + `<queries>` block for WhatsApp + Telegram URI scheme checks.
-- `ios/Runner/Runner.entitlements` (new): `com.apple.developer.usernotifications.critical-alerts = true` wired into project.pbxproj Debug + Release.
-
-### Verifier round summary
-
-- Round 1 (initial impl) returned PM:FIX (1) + architect:FIX (14) + qa:FIX (13). Closed in `phase-5-fix-round1` commit (`8bf5adc`).
-- Round 2 returned PM:PASS + architect:FIX (5) + qa:FIX (6 + 3 side-checks). Closed across 6 commits ending at `d5f22d0`.
-- Round 3 returned architect:PASS (advisory spec patch only) + qa:FIX (3 test-only). Closed across 3 commits ending at `36d30cf`.
-- Round 4 (qa-only) returned PASS. Phase 5 closed.
+### Notable new artifacts
+- New service triplets: `quick_exit_service`, `device_info_service`.
+- New Drift schema columns/tables: `deletedAtMs` on session_logs (v1→v2), `isBuiltIn` on session_modes (v2→v3), `feedback_history` table (v3→v4).
+- New shared widgets: `step_chain_editor`, `info_icon_button`, `settings_tile` (in addition to Phase 6a foundation).
+- New domain: `FeedbackType` enum, `FeedbackEntry` model, `outcomeFromEndReason()` mapper.
+- pubspec.yaml deps added: `flutter_localizations` (sdk), `pdf ^3.12.0`, `printing ^5.14.3`. Dev deps: `permission_handler_platform_interface ^4.3.0`, `plugin_platform_interface ^2.1.0`, `share_plus_platform_interface ^7.1.0`.
 
 ---
 
-## Open issues / known drift (non-blocking, pre-accepted)
+## PM verifier output — 2026-05-28 (BLOCKING, must fix before architect runs)
 
-The Phase 4 known-drift list 1–13 carries forward. New Phase 5 items:
+Verdict: **FIX_REQUIRED**. 12/14 checks PASS. Two FAILs and one INFO-coverage skipped.
 
-14. **`file_picker: any` pin** in `pubspec.yaml`. Resolved to `3.0.4` (2021). Transitive constraints block newer majors; re-pin once permission_handler etc support `file_picker ^10.x`.
-15. **`_AppShell` placeholder splash in `lib/main.dart`** — Phase 6 GoRouter + 24 screens replaces. CI re-checks NO-STUBS after Phase 6 commit.
-16. **`_builtInVoicePrompts` hardcoded map** in `lib/services/audio_service.dart` — has the 14 real translated strings; Phase 8 ARB scrum migrates to `AppLocalizations.fakeCallVoicePromptDefault`. Functional now.
-17. **`VibrationServiceProtocol.confirmPulse`** — wired by Phase 6 confirm-action UI per plan §Phase 6 (one-line comment in protocol).
-18. **Phase 7 native counterparts pending:** `com.guardianangela.app/sms`, `.../call_state`, `.../system_ui`, `.../hardware_button`, `.../device_state`. Dart side calls them; Kotlin/Swift land in Phase 7.
+### P0 defects (security/correctness — block Phase 7)
+
+1. **`DeceptiveOldPinDialog` is never invoked.** Widget exists at `lib/core/widgets/deceptive_old_pin_dialog.dart` but `grep -rn 'DeceptiveOldPinDialog\.show\|DeceptiveOldPinDialog(' lib/features/` returns empty. Spec 04:2580 mandates it at PinEntryScreen, SessionScreen session-end prompt, and distress-cancel prompt on every wrong-PIN entry when `AppSettings.deceptivePinDialogEnabled` is true. Deliverable #3 partially met (widget exists), wiring missing.
+2. **Session-end confirm is a generic AlertDialog.** `lib/features/session/session_screen.dart:72-102 _confirmEnd` uses Cancel/Confirm — no swipe-slider, no PIN entry, no wrong-PIN-fires-distress. Spec 04:543-545: "Swipe-to-confirm slider; if PIN required, prompt for PIN after swipe; wrong PIN 5× fires the mode's selected distress chain."
+3. **Distress confirmation Cancel ignores Session-End PIN gate.** `lib/features/session/session_screen.dart:393-469 _DistressConfirmationOverlay` calls `cancelDistress()` immediately on FilledButton tap. Spec 04:640-642: "If Session End PIN configured, PIN prompt appears (15 s timeout); correct PIN dismisses, wrong PIN shakes + 'Incorrect PIN' (or deceptive dialog), timeout fires distress."
+4. **`EmergencyConfirmScreen` + `SwipeSlider` are not implemented.** Spec 02:458-460 requires a confirmation countdown UI before the call (with `SwipeSlider` per spec 02:460 Extra 56 + `[Keep calling]` button). `lib/features/session/session_screen.dart:1004-1028 _CallEmergencyStepUi` shows only a status label. `lib/core/widgets/swipe_slider.dart` does NOT exist. `lib/domain/orchestration/strategies/call_emergency_strategy.dart:20-23` documents the missing controller wiring. Q27 ties this to an `emergencyConfirmationRequests` stream that is absent from `SessionEngine`. Deliverable #4 unmet.
+
+### P1 — must land before Phase 8 fanout
+5. **418 of 902 EN ARB keys are orphan** (no `.<key>` reference in `lib/features|core|main|router`). Sample: `commonYes`, `commonNo`, `commonAdd`, `commonDone`, `commonRetry`, `aboutCredits`, `audioRunningLatePhrase`, `backupExport`, `distressConfirmationTitle`, `distressConfirmationCountdown`. Per the pre-flight contract freeze, ARB keys should be finalized — 46 % unused will mislead Phase 8 translators. Fix: either delete the unused keys or wire them to their intended sites.
+
+### P3 — nits
+6. **Stale "Phase 6 will replace…" comments** at `lib/main.dart:19` and `:163`. Replace with present-tense.
+7. **Home reference test has 19 tests vs the ≥25 plan target.** Other 28 features all meet/exceed. Add ~6 more (empty state checklist progress, simulation/real toggle, etc.) for parity.
 
 ---
 
 ## Next actions (resume here)
 
-**Phase 6 — Screens, routing, deceptive PIN dialog (SOLO, SEQUENTIAL → then parallel test cohort).**
+**Phase 6 fix-pass C — close PM P0 defects + P1 ARB sweep, then re-run PM → architect → qa.**
 
-Per `~/.claude/plans/rippling-weaving-puffin.md` §Phase 6 (line ~161):
+### Step 1 — Fix-Pass C agent (`voltagent-lang:flutter-expert`, opus model, sequential)
 
-- **Agent:** `voltagent-lang:flutter-expert` (single owner for `app_router.dart`, controller reads, ARB keys).
-- **Scope:** 24 screens per `docs/spec/04-screens-navigation.md`. `GoRouter` with named routes (route names enum already exists at `lib/core/constants/route_names.dart` — Phase 0). First-launch detection. Deceptive "Old PIN entered" dialog per D3 (R-42 restoration). `EmergencyConfirmScreen` with countdown. Session-Interrupted prompt per Extra-13. 3-screen onboarding with `ContactFormScreen` on page 2. Replace `_AppShell` placeholder in `lib/main.dart` with the real `GuardianAngelaApp` shell.
-- **Test cohort (parallel, AFTER screens land):**
-  - 24 widget-test agents (one per screen, `test/features/<screen>/<screen>_screen_test.dart`, ≥ 25 tests per file).
-  - 6 golden-test agents for visual-critical screens (home, session, fake_call, distress_confirmation, onboarding, settings) × 3 variants (light, dark, RTL).
-  - Pre-flight contract: ARB keys finalized, controller method signatures stable, route names enum frozen BEFORE test fan-out.
-- **Verification target:** `lib/features/**` coverage ≥ 99% (D6 strict gate).
-- **Commits:** `phase-6: screens + routing + R-42 deceptive PIN`; then `phase-6-tests: 24 widget tests + 6 goldens`.
-- **3-agent verification cohort** after the test commit.
+Scope and suggested commit chain:
 
-### Reading list for Phase 6 dispatch
+- `phase-6-fix-c1: SwipeSlider widget + EmergencyConfirmScreen` — create `lib/core/widgets/swipe_slider.dart` (HorizontalDragGesture + Animated progress, ≥85 % to fire); create `lib/features/session/widgets/emergency_confirm_overlay.dart` rendering during `_CallEmergencyStepUi` step. Wire through `SessionEngine.emergencyConfirmationRequests` (add the stream) per Q27. Strategy fires only after user swipes; `[Keep calling]` extends the countdown.
+- `phase-6-fix-c2: session-end swipe-slider + PIN gate + wrong-PIN distress` — replace `_confirmEnd` with a SwipeSlider; when `appSettings.sessionEndPinHash != null`, prompt PinKeypad after swipe; wrong PIN increments a controller counter and fires distress at 5×; wire `DeceptiveOldPinDialog.show(...)` when `appSettings.deceptivePinDialogEnabled`.
+- `phase-6-fix-c3: distress-cancel PIN gate` — `_DistressConfirmationOverlay` Cancel button → if Session-End PIN configured, PinKeypad with 15 s timeout; correct dismisses, wrong shakes + (deceptive dialog if enabled), timeout fires distress.
+- `phase-6-fix-c4: deceptive-PIN dialog wiring everywhere` — call sites at PinSetupScreen (when entering wrong existing PIN), SessionScreen session-end PIN, distress-cancel PIN, app-PIN unlock. Gate behind `appSettings.deceptivePinDialogEnabled`.
+- `phase-6-fix-c5: ARB sweep` — delete unused EN keys (the 418 orphans) and verify nothing in `lib/` references them; OR wire them to their intended sites if they were meant to be used. Note: this affects only `app_en.arb`; Phase 8 fan-out hasn't touched the others yet.
+- `phase-6-fix-c6: nits` — main.dart Phase-6 comment cleanup; +6 home reference tests.
 
-- `docs/spec/04-screens-navigation.md` — 24 screens + routes.
-- `docs/spec/06-settings.md` — per-setting spec, Sentry gate UI, AppSettings field semantics.
-- `lib/core/constants/route_names.dart` — pre-existing route names enum.
-- `lib/router/app_router.dart` — does NOT yet exist; Phase 6 creates.
-- `lib/services/service_providers.dart` — the wiring graph the screens consume.
-- `lib/main.dart` — `_AppShell` is the placeholder Phase 6 replaces.
+Each commit runs the standard verification gates (see below). Update relevant widget tests to lock the new behavior.
+
+### Step 2 — Re-run PM verifier
+
+Same prompt as the PM agent that ran at `cedaecf`. Pass HEAD = the new fix-pass-c HEAD. Verdict must be PASS before architect runs.
+
+### Step 3 — Spec-vs-code agent (`voltagent-qa-sec:architect-reviewer`, opus)
+
+Per the plan §Post-Phase Verification Cohort. For each normative requirement in spec 04 + spec 06 (the screens phase), find the corresponding code and report alignment. Verdict: PASS/FIX_REQUIRED/QUESTION.
+
+### Step 4 — Spec-vs-tests agent (`voltagent-qa-sec:qa-expert`, opus)
+
+For each spec requirement, find the test that exercises it. Verdict: PASS/FIX_REQUIRED/QUESTION. Spec coverage matrix must be advanced.
+
+### Step 5 — Phase 6 close
+
+When all 3 verifiers PASS, mark Phase 6 closed. Phase 7 (native channels) starts.
+
+---
+
+## Reading list for the resumer
+
+- `~/.claude/plans/rippling-weaving-puffin.md §Phase 6` and §Post-Phase Verification Cohort.
+- `docs/spec/04-screens-navigation.md` — the spec the verifiers compare against.
+- `docs/spec/06-settings.md` — per-setting semantics.
+- `lib/core/widgets/deceptive_old_pin_dialog.dart` — exists; needs callers.
+- `lib/features/session/session_screen.dart` — _confirmEnd + _DistressConfirmationOverlay + _CallEmergencyStepUi (the 3 P0 wiring sites).
+- `lib/services/service_providers.dart` — wiring graph; no changes expected from fix-pass C unless new providers needed.
+- `lib/l10n/l10n/app_en.arb` — 1101 → ~1500 lines after fix-pass B. The orphan sweep will trim or fill.
 
 ---
 
@@ -123,34 +163,32 @@ Per `~/.claude/plans/rippling-weaving-puffin.md` §Phase 6 (line ~161):
 
 ```bash
 flutter analyze --fatal-infos                          # 0 issues
-flutter test --concurrency=6                           # all pass (currently 2447)
+flutter test --concurrency=6                           # all pass (currently 3538)
 grep -r 'package:flutter' lib/domain/                  # must be empty (S-7)
 grep -r 'package:flutter' lib/services/protocols/      # must be empty (S-7)
 grep -r 'package:flutter' lib/data/                    # must be empty (S-7)
-grep -rEn 'UnimplementedError|throw .TODO|TODO|FIXME|XXX|HACK|Container\(\)|Placeholder\(\)' lib/    # only ProviderContainer() in main.dart (Riverpod, allowed)
-grep -rn "Phase 9 file-picker\|will be available in a future\|coming in Phase\|deferred to Phase" lib/    # 0 (NEW gate after user reinforcement)
+grep -rEn 'UnimplementedError|throw .TODO|TODO|FIXME|XXX|HACK|Container\(\)|Placeholder\(\)' lib/ | grep -v 'ProviderContainer()'    # only ProviderContainer() in main.dart (Riverpod, allowed)
+grep -rn "Phase 9 file-picker\|will be available in a future\|coming in Phase\|deferred to Phase" lib/    # 0
+grep -rnE "(Phase 7|Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/    # 0 (legitimate refs are in lib/services/ — Phase 7 = native channels)
 grep -rEn 'class DistressChain|repeatCount|leapToNextEvent|LoudAlarmSound\.(beep|whistle|scream|whoop)|SmsRecipient|flashSpeed\b|maxVolume\b|Hive\b|@HiveType|@HiveField|PauseReason\.bootRestart|EndReason\.appTermination|fakeCallAnswered' lib/ test/ integration_test/   # 0 (S-4)
 grep -rn "import.*['\"].*OLD/" lib/ test/ integration_test/   # 0 (S-5)
 git diff-tree -r --name-only HEAD -- OLD/              # empty (OLD/ untouched)
-grep -rn 'Real.*Service(' lib/ | grep -v service_providers.dart | grep -v 'lib/services/[^/]*_service\.dart:.*class Real'  # only class-declaration lines
+grep -rn 'Real.*Service(' lib/ | grep -v service_providers.dart | grep -v 'lib/services/[^/]*_service\.dart:.*class Real'  # only constructor declarations inside their own service file
 ```
 
-**All currently pass at HEAD `36d30cf`.**
+**All currently pass at HEAD `cedaecf`** except `DeceptiveOldPinDialog` wiring + 3 PIN-gate defects + 1 EmergencyConfirmScreen + 1 SwipeSlider widget + 1 P1 ARB sweep + 2 P3 nits (per PM verifier).
 
 ---
 
 ## Files / paths for the resumer
 
 - **Plans:** `~/.claude/plans/make-sure-that-there-typed-tulip.md`, `~/.claude/plans/rippling-weaving-puffin.md`, `docs/rewrite/v3-plan.md`, `docs/rewrite/lessons-learned.md`.
-- **Spec (12 files):** `docs/spec/00-overview.md` … `docs/spec/11-deferred-enhancements.md`. Phase 5 patched `05:81` (Q19 alarmDndOverride default false) and `03:254` (Phase 4 built-in template list).
-- **Phase 5 service layer:**
-  - `lib/services/service_providers.dart` — SINGLE wiring owner; 21+ Riverpod providers.
-  - `lib/services/protocols/*.dart × 22` — abstract interfaces.
-  - `lib/services/<service>.dart × 21` — Real impls.
-  - `lib/services/sim/<service>_sim.dart × 21` — Simulation impls.
-  - `lib/services/_phone_number_utils.dart` — shared sanitiser.
-  - `docs/wiring-map.md` — provider inventory.
-  - Tests: `test/services/*.dart × 21`, `test/wiring/{simulation_swap,wiring_map_coverage}_test.dart`, `test/main_bootstrap_test.dart`.
-- **Phase 5 main.dart:** `lib/main.dart` — 7-step `runBootstrap` + `_AppShell` placeholder + `JsonRecoveryApp`.
+- **Spec (12 files):** `docs/spec/00-overview.md` … `docs/spec/11-deferred-enhancements.md`. Phase 6 patched 04:1893–1904 (inline stealth card → "superseded by routed pattern") and 04:2109 (auto-save on collapse → "auto-save on each edit").
+- **Phase 6 screen layer:**
+  - 31 routes in `lib/router/app_router.dart` (29 spec routes + Past Events Trash + Past Events Evidence) consuming `lib/core/constants/route_names.dart`.
+  - 31 feature folders under `lib/features/` (one per route + shared mode_editor for distress modes).
+  - Shared widgets in `lib/core/widgets/`: pin_keypad, timing_slider, deceptive_old_pin_dialog (R-42), pride_page_indicator, settings_tile, info_icon_button, step_chain_editor.
+  - Tests in `test/features/<feature>/*_test.dart` × 30 (966 widget tests) + `*_golden_test.dart` × 6 (37 alchemist scenarios + 59 PNG baselines).
+  - Wiring map at `docs/wiring-map.md` updated for new triplets (quick_exit, device_info, feedback_history).
 
 End of hand-off. Resume from §"Next actions".

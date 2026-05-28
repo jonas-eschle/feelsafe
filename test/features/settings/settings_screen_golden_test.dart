@@ -17,8 +17,9 @@ library;
 
 import 'dart:async';
 
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -134,9 +135,7 @@ Widget _buildHarness({
     supportedLocales: AppLocalizations.supportedLocales,
     themeMode: themeMode,
     theme: ThemeData(
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: const Color(0xFF131118),
-      ),
+      colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
       useMaterial3: true,
     ),
     darkTheme: ThemeData(
@@ -159,10 +158,8 @@ Widget _buildHarness({
 ///
 /// The test file lives at `test/features/settings/`; the corpus root is
 /// two directories above at `test/goldens/goldens/ci/`.
-FutureOr<String> _pathResolver(
-  String fileName,
-  String environmentName,
-) => '../../goldens/goldens/ci/$fileName.png';
+FutureOr<String> _pathResolver(String fileName, String environmentName) =>
+    '../../goldens/goldens/ci/$fileName.png';
 
 // ---------------------------------------------------------------------------
 // Golden tests
@@ -174,9 +171,7 @@ void main() {
   AlchemistConfig.runWithConfig(
     config: const AlchemistConfig(
       platformGoldensConfig: PlatformGoldensConfig(enabled: false),
-      ciGoldensConfig: CiGoldensConfig(
-        filePathResolver: _pathResolver,
-      ),
+      ciGoldensConfig: CiGoldensConfig(filePathResolver: _pathResolver),
     ),
     run: _declareTests,
   );
@@ -193,9 +188,7 @@ void _declareTests() {
         settingsControllerProvider.overrideWith(
           () => _FakeSettingsController(_state()),
         ),
-        sessionControllerProvider.overrideWith(
-          _FakeIdleSessionController.new,
-        ),
+        sessionControllerProvider.overrideWith(_FakeIdleSessionController.new),
       ],
     ),
   );
@@ -208,13 +201,9 @@ void _declareTests() {
     builder: () => _buildHarness(
       overrides: <Override>[
         settingsControllerProvider.overrideWith(
-          () => _FakeSettingsController(
-            _state(stealthEnabled: true),
-          ),
+          () => _FakeSettingsController(_state(stealthEnabled: true)),
         ),
-        sessionControllerProvider.overrideWith(
-          _FakeIdleSessionController.new,
-        ),
+        sessionControllerProvider.overrideWith(_FakeIdleSessionController.new),
       ],
     ),
   );
@@ -230,9 +219,7 @@ void _declareTests() {
         settingsControllerProvider.overrideWith(
           () => _FakeSettingsController(_state()),
         ),
-        sessionControllerProvider.overrideWith(
-          _FakeIdleSessionController.new,
-        ),
+        sessionControllerProvider.overrideWith(_FakeIdleSessionController.new),
       ],
     ),
   );
@@ -264,13 +251,9 @@ void _declareTests() {
       locale: const Locale('ar'),
       overrides: <Override>[
         settingsControllerProvider.overrideWith(
-          () => _FakeSettingsController(
-            _state(languageCode: 'ar'),
-          ),
+          () => _FakeSettingsController(_state(languageCode: 'ar')),
         ),
-        sessionControllerProvider.overrideWith(
-          _FakeIdleSessionController.new,
-        ),
+        sessionControllerProvider.overrideWith(_FakeIdleSessionController.new),
       ],
     ),
   );
@@ -288,9 +271,7 @@ void _declareTests() {
             _state(languageCode: 'ar', stealthEnabled: true),
           ),
         ),
-        sessionControllerProvider.overrideWith(
-          _FakeIdleSessionController.new,
-        ),
+        sessionControllerProvider.overrideWith(_FakeIdleSessionController.new),
       ],
     ),
   );

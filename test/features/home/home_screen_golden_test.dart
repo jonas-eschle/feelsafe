@@ -8,8 +8,9 @@
 /// PNG baselines under `test/features/home/goldens/`.
 library;
 
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -115,18 +116,12 @@ final _sevenContacts = <EmergencyContact>[
 /// [locale] defaults to `Locale('en')` when null; pass `Locale('ar')`
 /// for RTL.
 /// [themeMode] defaults to [ThemeMode.light] when null.
-Widget _wrap(
-  HomeState state, {
-  Locale? locale,
-  ThemeMode? themeMode,
-}) {
+Widget _wrap(HomeState state, {Locale? locale, ThemeMode? themeMode}) {
   final effectiveLocale = locale ?? const Locale('en');
   final effectiveThemeMode = themeMode ?? ThemeMode.light;
   return ProviderScope(
     overrides: <Override>[
-      homeControllerProvider.overrideWith(
-        () => _FakeHomeController(state),
-      ),
+      homeControllerProvider.overrideWith(() => _FakeHomeController(state)),
     ],
     child: MaterialApp(
       locale: effectiveLocale,
@@ -139,9 +134,7 @@ Widget _wrap(
       supportedLocales: AppLocalizations.supportedLocales,
       themeMode: effectiveThemeMode,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFF131118),
-        ),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
         useMaterial3: true,
       ),
       darkTheme: ThemeData(
@@ -167,16 +160,10 @@ void main() {
     constraints: const BoxConstraints(maxWidth: 390),
     builder: () => GoldenTestGroup(
       columns: 2,
-      scenarioConstraints: const BoxConstraints(
-        maxWidth: 390,
-        maxHeight: 820,
-      ),
+      scenarioConstraints: const BoxConstraints(maxWidth: 390, maxHeight: 820),
       children: <Widget>[
         // Scenario 1: Light theme, empty state.
-        GoldenTestScenario(
-          name: 'light - empty state',
-          child: _wrap(_state()),
-        ),
+        GoldenTestScenario(name: 'light - empty state', child: _wrap(_state())),
 
         // Scenario 2: Light theme, 3 modes + 3 contacts, mode selected.
         GoldenTestScenario(
@@ -232,10 +219,7 @@ void main() {
         // Scenario 6: RTL (Arabic) locale, empty state.
         GoldenTestScenario(
           name: 'rtl - empty state',
-          child: _wrap(
-            _state(),
-            locale: const Locale('ar'),
-          ),
+          child: _wrap(_state(), locale: const Locale('ar')),
         ),
       ],
     ),

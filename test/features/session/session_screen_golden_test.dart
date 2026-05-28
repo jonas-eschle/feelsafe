@@ -15,8 +15,9 @@
 /// `goldens/goldens/<fileName>.png` (platform) relative to this file.
 library;
 
-import 'package:alchemist/alchemist.dart';
 import 'package:flutter/material.dart';
+
+import 'package:alchemist/alchemist.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -153,9 +154,7 @@ SessionState _state({
 /// Default provider overrides: fake session controller + sim quick-exit.
 List<Override> _overrides(_FakeSessionController fake) => <Override>[
   sessionControllerProvider.overrideWith(() => fake),
-  quickExitServiceProvider.overrideWith(
-    (_) => SimulationQuickExitService(),
-  ),
+  quickExitServiceProvider.overrideWith((_) => SimulationQuickExitService()),
 ];
 
 /// Builds a [GoldenTestScenario] that renders [screen] at phone dimensions.
@@ -163,17 +162,15 @@ List<Override> _overrides(_FakeSessionController fake) => <Override>[
 /// [SessionScreen] contains a [Scaffold] and must be given tight
 /// dimensions — a [SizedBox] enforces [_kPhoneSize] regardless of the
 /// intrinsic-width constraints imposed by the alchemist [Table] layout.
-GoldenTestScenario _scenario({
-  required String name,
-  required Widget screen,
-}) => GoldenTestScenario(
-  name: name,
-  child: SizedBox(
-    width: _kPhoneSize.width,
-    height: _kPhoneSize.height,
-    child: screen,
-  ),
-);
+GoldenTestScenario _scenario({required String name, required Widget screen}) =>
+    GoldenTestScenario(
+      name: name,
+      child: SizedBox(
+        width: _kPhoneSize.width,
+        height: _kPhoneSize.height,
+        child: screen,
+      ),
+    );
 
 /// Returns a [PumpWidget] callback for [goldenTest].
 ///
@@ -201,9 +198,7 @@ PumpWidget _harness({
         supportedLocales: AppLocalizations.supportedLocales,
         themeMode: themeMode,
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF131118),
-          ),
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
         ),
         darkTheme: ThemeData(
@@ -231,10 +226,7 @@ void main() {
     fileName: 'session_screen_s1_light_hold_button',
     builder: () => GoldenTestGroup(
       children: <Widget>[
-        _scenario(
-          name: 'light — hold-button',
-          screen: const SessionScreen(),
-        ),
+        _scenario(name: 'light — hold-button', screen: const SessionScreen()),
       ],
     ),
     pumpWidget: _harness(
@@ -248,10 +240,7 @@ void main() {
     fileName: 'session_screen_s2_dark_hold_button',
     builder: () => GoldenTestGroup(
       children: <Widget>[
-        _scenario(
-          name: 'dark — hold-button',
-          screen: const SessionScreen(),
-        ),
+        _scenario(name: 'dark — hold-button', screen: const SessionScreen()),
       ],
     ),
     pumpWidget: _harness(

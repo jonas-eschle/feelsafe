@@ -61,9 +61,7 @@ class PastEventsTrashScreen extends ConsumerWidget {
           .emptyTrash();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(l10n.pastEventsTrashEmptyAllSuccess(count)),
-        ),
+        SnackBar(content: Text(l10n.pastEventsTrashEmptyAllSuccess(count))),
       );
     }
   }

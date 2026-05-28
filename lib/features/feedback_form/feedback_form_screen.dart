@@ -23,8 +23,7 @@ class FeedbackFormScreen extends ConsumerStatefulWidget {
   const FeedbackFormScreen({super.key});
 
   @override
-  ConsumerState<FeedbackFormScreen> createState() =>
-      _FeedbackFormScreenState();
+  ConsumerState<FeedbackFormScreen> createState() => _FeedbackFormScreenState();
 }
 
 class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
@@ -86,9 +85,7 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
   /// Fire-and-forget local write — see [_send] for rationale.
   Future<void> _persistLocally(FeedbackEntry entry) async {
     try {
-      final repo = await ref.read(
-        feedbackHistoryRepositoryProvider.future,
-      );
+      final repo = await ref.read(feedbackHistoryRepositoryProvider.future);
       await repo.insert(entry);
     } on Object catch (_) {
       // Best-effort; silently swallow.
@@ -159,15 +156,9 @@ class _FeedbackFormScreenState extends ConsumerState<FeedbackFormScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: <Widget>[
-                TextButton(
-                  onPressed: _cancel,
-                  child: Text(l10n.commonCancel),
-                ),
+                TextButton(onPressed: _cancel, child: Text(l10n.commonCancel)),
                 const SizedBox(width: 8),
-                FilledButton(
-                  onPressed: _send,
-                  child: Text(l10n.feedbackSend),
-                ),
+                FilledButton(onPressed: _send, child: Text(l10n.feedbackSend)),
               ],
             ),
           ],

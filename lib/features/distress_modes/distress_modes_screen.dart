@@ -116,8 +116,8 @@ class DistressModesScreen extends ConsumerWidget {
                         message: isLast
                             ? l10n.modesDistressCantDeleteLast
                             : isInUse
-                                ? l10n.modesDistressInUse
-                                : '',
+                            ? l10n.modesDistressInUse
+                            : '',
                         child: Text(l10n.commonDelete),
                       ),
                     ),

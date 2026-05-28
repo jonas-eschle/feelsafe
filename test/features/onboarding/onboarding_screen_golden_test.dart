@@ -106,30 +106,24 @@ ThemeData _darkTheme() => ThemeData(
 /// - `/` — home placeholder (blank [Scaffold])
 /// - `/onboarding` — [OnboardingScreen] under test
 /// - `/contacts/new` — stub so pushNamed does not throw
-GoRouter _router({
-  required List<Override> overrides,
-}) => GoRouter(
+GoRouter _router({required List<Override> overrides}) => GoRouter(
   initialLocation: '/onboarding',
   routes: <RouteBase>[
     GoRoute(
       path: '/',
       name: 'home',
-      builder: (context, state) =>
-          const Scaffold(body: SizedBox.shrink()),
+      builder: (context, state) => const Scaffold(body: SizedBox.shrink()),
     ),
     GoRoute(
       path: '/onboarding',
       name: 'onboarding',
-      builder: (context, state) => ProviderScope(
-        overrides: overrides,
-        child: const OnboardingScreen(),
-      ),
+      builder: (context, state) =>
+          ProviderScope(overrides: overrides, child: const OnboardingScreen()),
     ),
     GoRoute(
       path: '/contacts/new',
       name: 'contact_form',
-      builder: (context, state) =>
-          const Scaffold(body: SizedBox.shrink()),
+      builder: (context, state) => const Scaffold(body: SizedBox.shrink()),
     ),
   ],
 );
@@ -205,9 +199,7 @@ void main() {
           name: 'welcome • light',
           child: FutureBuilder<Widget>(
             future: _buildHarness(
-              overrides: _overrides(
-                _FakeOnboardingController(_state()),
-              ),
+              overrides: _overrides(_FakeOnboardingController(_state())),
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               themeMode: ThemeMode.light,
@@ -239,9 +231,7 @@ void main() {
           name: 'profile • light',
           child: FutureBuilder<Widget>(
             future: _buildHarness(
-              overrides: _overrides(
-                _FakeOnboardingController(_state()),
-              ),
+              overrides: _overrides(_FakeOnboardingController(_state())),
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               themeMode: ThemeMode.light,
@@ -277,9 +267,7 @@ void main() {
           name: 'permissions • light',
           child: FutureBuilder<Widget>(
             future: _buildHarness(
-              overrides: _overrides(
-                _FakeOnboardingController(_state()),
-              ),
+              overrides: _overrides(_FakeOnboardingController(_state())),
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               themeMode: ThemeMode.light,
@@ -317,9 +305,7 @@ void main() {
           name: 'welcome • dark',
           child: FutureBuilder<Widget>(
             future: _buildHarness(
-              overrides: _overrides(
-                _FakeOnboardingController(_state()),
-              ),
+              overrides: _overrides(_FakeOnboardingController(_state())),
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               themeMode: ThemeMode.dark,
@@ -389,9 +375,7 @@ void main() {
           name: 'welcome • RTL (ar)',
           child: FutureBuilder<Widget>(
             future: _buildHarness(
-              overrides: _overrides(
-                _FakeOnboardingController(_state()),
-              ),
+              overrides: _overrides(_FakeOnboardingController(_state())),
               theme: _lightTheme(),
               darkTheme: _darkTheme(),
               themeMode: ThemeMode.light,

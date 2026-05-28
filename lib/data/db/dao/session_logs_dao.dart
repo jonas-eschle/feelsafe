@@ -136,9 +136,8 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
   ///
   /// Used by the Past Events Trash "Empty trash" action (spec 04
   /// §Past Events Trash). Returns the number of rows deleted.
-  Future<int> hardDeleteAllTrashed() => (delete(
-    sessionLogs,
-  )..where((l) => l.deletedAtMs.isNotNull())).go();
+  Future<int> hardDeleteAllTrashed() =>
+      (delete(sessionLogs)..where((l) => l.deletedAtMs.isNotNull())).go();
 
   /// Hard-deletes trashed rows whose [SessionLogs.deletedAtMs] is older
   /// than [cutoff].
