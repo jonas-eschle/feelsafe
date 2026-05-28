@@ -6,9 +6,13 @@
 /// via counters and last-arg fields so tests can assert wiring.
 library;
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -16,14 +20,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
+import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/quick_exit_service_sim.dart';
@@ -42,6 +50,8 @@ class _FakeSessionController extends SessionController {
   int endSessionCalls = 0;
   int disarmCalls = 0;
   int cancelDistressCalls = 0;
+  int confirmDistressCalls = 0;
+  EndReason? lastConfirmDistressReason;
   int holdPressedCalls = 0;
   int holdReleasedCalls = 0;
   int acknowledgeInterruptedCalls = 0;
@@ -55,6 +65,9 @@ class _FakeSessionController extends SessionController {
   int setSimulationSpeedCalls = 0;
   double? lastSimulationSpeedValue;
   int leapCalls = 0;
+  int resetWrongPinAttemptsCalls = 0;
+  int notifyWrongPinAttemptCalls = 0;
+  int _fakeWrongAttempts = 0;
 
   @override
   Future<SessionState> build() async => _initial;
@@ -76,6 +89,27 @@ class _FakeSessionController extends SessionController {
     if (s == null) return;
     state = AsyncData(s.copyWith(clearDistressConfirm: true));
   }
+
+  @override
+  void confirmDistress({EndReason reason = EndReason.hardwarePanic}) {
+    confirmDistressCalls++;
+    lastConfirmDistressReason = reason;
+  }
+
+  @override
+  void resetWrongPinAttempts() {
+    resetWrongPinAttemptsCalls++;
+    _fakeWrongAttempts = 0;
+  }
+
+  @override
+  int notifyWrongPinAttempt() {
+    notifyWrongPinAttemptCalls++;
+    return _fakeWrongAttempts += 1;
+  }
+
+  @override
+  int get wrongPinAttempts => _fakeWrongAttempts;
 
   @override
   void holdPressed() => holdPressedCalls++;
@@ -127,6 +161,36 @@ class _FakeSessionController extends SessionController {
   @override
   void leap() => leapCalls++;
 }
+
+/// In-memory [AppSettingsRepository] for end-session PIN flow tests.
+///
+/// The base class constructor requires a [keyProvider] / [resolveDir];
+/// we supply a no-op key and a temp dir because [load] / [save] are
+/// overridden to never touch disk.
+class _FakeAppSettingsRepository extends AppSettingsRepository {
+  _FakeAppSettingsRepository({AppSettings? initial})
+    : _current = initial ?? const AppSettings(),
+      super(
+        keyProvider: () async =>
+            '0102030405060708090a0b0c0d0e0f'
+            '101112131415161718191a1b1c1d1e1f20',
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('session_end_test_'),
+      );
+
+  AppSettings _current;
+
+  @override
+  Future<AppSettings> load() async => _current;
+
+  @override
+  Future<void> save(AppSettings value) async => _current = value;
+}
+
+/// Returns a SHA-256 hex digest of [digits] using the same UTF-8 encoding
+/// the production PIN-setup screen uses.
+String _hashDigits(String digits) =>
+    sha256.convert(utf8.encode(digits)).toString();
 
 // ---------------------------------------------------------------------------
 // Data helpers
@@ -223,6 +287,7 @@ Future<void> _pump(
 Future<void> _pumpWithRouter(
   WidgetTester tester,
   _FakeSessionController fake, {
+  List<Override> extraOverrides = const <Override>[],
   bool settle = true,
 }) async {
   final router = GoRouter(
@@ -254,6 +319,7 @@ Future<void> _pumpWithRouter(
         quickExitServiceProvider.overrideWith(
           (_) => SimulationQuickExitService(),
         ),
+        ...extraOverrides,
       ],
       child: MaterialApp.router(
         routerConfig: router,
@@ -281,6 +347,28 @@ class _Blank extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
+}
+
+/// Drags the swipe slider knob from its starting position past the
+/// 0.7 threshold so [SwipeSlider.onConfirm] fires.
+Future<void> _swipeToConfirm(WidgetTester tester) async {
+  // The SwipeSlider knob renders an arrow-forward icon — dragging it by
+  // an offset larger than the screen width guarantees the knob crosses
+  // the threshold no matter the actual track width.
+  expect(find.byType(EndSessionOverlay), findsOneWidget);
+  await tester.drag(
+    find.byIcon(Icons.arrow_forward_rounded),
+    const Offset(800, 0),
+  );
+}
+
+/// Taps the PinKeypad digit buttons for each character of [digits].
+Future<void> _typeDigits(WidgetTester tester, String digits) async {
+  for (final code in digits.codeUnits) {
+    final digit = code - 0x30; // ASCII '0' == 0x30
+    await tester.tap(find.widgetWithText(InkWell, '$digit').last);
+    await tester.pump();
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -946,29 +1034,300 @@ void main() {
     });
   });
 
-  // ── End session dialog ────────────────────────────────────────────────────
-  group('SessionScreen — end session', () {
-    testWidgets('tapping end-session icon shows confirmation dialog', (
+  // ── End session overlay (C2) ──────────────────────────────────────────────
+  group('SessionScreen — end session overlay', () {
+    testWidgets('tapping end-session icon shows the swipe overlay', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(_runningState());
-      await _pump(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       await tester.tap(find.byTooltip(l10n.commonClose));
       await tester.pumpAndSettle();
-      expect(find.text(l10n.sessionEndConfirmTitle), findsOneWidget);
+      // The overlay's heading replaces the legacy AlertDialog title.
+      expect(find.text(l10n.sessionEndOverlayTitle), findsOneWidget);
+      expect(find.text(l10n.sessionEndOverlaySwipeLabel), findsOneWidget);
+      // A SwipeSlider is now in the tree.
+      expect(find.byType(EndSessionOverlay), findsOneWidget);
     });
 
-    testWidgets('confirming end session calls endSession', (
+    testWidgets('no PIN configured → swipe ends the session and navigates', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(_runningState());
-      // Route away requires GoRouter in the tree.
-      await _pumpWithRouter(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       await tester.tap(find.byTooltip(l10n.commonClose));
       await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.commonConfirm));
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      check(fake.endSessionCalls).equals(1);
+    });
+
+    testWidgets('PIN configured → swipe shows the PIN keypad', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      // PIN stage rendered, end-session NOT called yet.
+      expect(find.text(l10n.sessionEndPinPromptTitle), findsOneWidget);
+      check(fake.endSessionCalls).equals(0);
+    });
+
+    testWidgets('correct PIN ends the session', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+      check(fake.endSessionCalls).equals(1);
+      check(fake.resetWrongPinAttemptsCalls).isGreaterThan(0);
+    });
+
+    testWidgets('app-PIN entered → shows mismatch hint, no end', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          appPinHash: _hashDigits('9999'),
+          sessionEndPinHash: _hashDigits('1234'),
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '9999');
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.sessionEndPinAppPinMismatch), findsOneWidget);
+      check(fake.endSessionCalls).equals(0);
+      check(fake.confirmDistressCalls).equals(0);
+      check(fake.notifyWrongPinAttemptCalls).equals(0);
+    });
+
+    testWidgets('duress PIN entered → confirmDistress(duressPin)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          duressPinHash: _hashDigits('7777'),
+          sessionEndPinHash: _hashDigits('1234'),
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '7777');
+      await tester.pumpAndSettle();
+      check(fake.confirmDistressCalls).equals(1);
+      check(fake.lastConfirmDistressReason).equals(EndReason.duressPin);
+      check(fake.endSessionCalls).equals(0);
+    });
+
+    testWidgets('wrong PIN (deceptive disabled) → shake + incorrect feedback', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          sessionEndPinHash: _hashDigits('1234'),
+          deceptivePinDialogEnabled: false,
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '0000');
+      await tester.pumpAndSettle();
+      // Counter incremented, engine notified, inline error rendered.
+      check(fake.notifyWrongPinAttemptCalls).equals(1);
+      expect(find.text(l10n.sessionEndPinIncorrect), findsOneWidget);
+      // No deceptive dialog.
+      expect(find.byType(DeceptiveOldPinDialog), findsNothing);
+    });
+
+    testWidgets('wrong PIN (deceptive enabled) → deceptive dialog shown', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '0000');
+      await tester.pump();
+      // Deceptive dialog is in the tree (modal, awaiting user action).
+      expect(find.byType(DeceptiveOldPinDialog), findsOneWidget);
+    });
+
+    testWidgets('5 wrong PINs (real) → confirmDistress(wrongPinExhausted)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          sessionEndPinHash: _hashDigits('1234'),
+          deceptivePinDialogEnabled: false,
+          // wrongPinThreshold defaults to 5 — see test name.
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      for (int i = 0; i < 5; i++) {
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+      }
+      check(fake.notifyWrongPinAttemptCalls).equals(5);
+      check(fake.confirmDistressCalls).equals(1);
+      check(fake.lastConfirmDistressReason).equals(EndReason.wrongPinExhausted);
+    });
+
+    testWidgets('5 wrong PINs (sim) → SnackBar, no distress', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          sessionEndPinHash: _hashDigits('1234'),
+          deceptivePinDialogEnabled: false,
+          // wrongPinThreshold defaults to 5 — see test name.
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      for (int i = 0; i < 5; i++) {
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+      }
+      // Simulation never invokes the controller's real counter or the
+      // distress chain.
+      check(fake.notifyWrongPinAttemptCalls).equals(0);
+      check(fake.confirmDistressCalls).equals(0);
+      // The educational SnackBar is on-screen.
+      expect(find.text(l10n.sessionEndSimDistressWouldFire), findsOneWidget);
+    });
+
+    testWidgets('simulation → [Skip] visible and ends the session', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.sessionEndPinSimSkip), findsOneWidget);
+      await tester.tap(find.text(l10n.sessionEndPinSimSkip));
       await tester.pumpAndSettle();
       check(fake.endSessionCalls).equals(1);
     });

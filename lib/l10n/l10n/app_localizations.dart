@@ -3648,6 +3648,60 @@ abstract class AppLocalizations {
   /// **'Swipe to confirm you want to end the session'**
   String get sessionEndConfirmSwipe;
 
+  /// Heading on the swipe-to-confirm end-session overlay.
+  ///
+  /// In en, this message translates to:
+  /// **'End session?'**
+  String get sessionEndOverlayTitle;
+
+  /// Body text above the end-session swipe slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to confirm you want to end the session'**
+  String get sessionEndOverlayBody;
+
+  /// Track label inside the end-session swipe slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to end'**
+  String get sessionEndOverlaySwipeLabel;
+
+  /// Badge shown on the end-session overlay during a simulation session.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Practice mode'**
+  String get sessionEndOverlaySimBadge;
+
+  /// Title above the PIN keypad shown after a successful end-session swipe.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Session End PIN'**
+  String get sessionEndPinPromptTitle;
+
+  /// Inline hint shown when the user types the app lock PIN at the end-session prompt instead of the Session End PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Session End PIN, not the app lock PIN.'**
+  String get sessionEndPinAppPinMismatch;
+
+  /// Inline error shown beneath the keypad after a wrong PIN entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get sessionEndPinIncorrect;
+
+  /// Button shown only in simulation mode that bypasses the PIN check on the end-session prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip (sim only)'**
+  String get sessionEndPinSimSkip;
+
+  /// Snack-bar shown when the user hits the wrong-PIN threshold during a simulation session, where the distress chain is suppressed.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress chain would fire (5 wrong PINs)'**
+  String get sessionEndSimDistressWouldFire;
+
   /// Title of the emergency-call disarm confirmation.
   ///
   /// In en, this message translates to:

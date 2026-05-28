@@ -225,6 +225,17 @@ class SessionController extends AsyncNotifier<SessionState> {
   DateTime? _startedAt;
   String? _markerLogId;
 
+  /// Consecutive wrong-PIN entries for the lifetime of the current session,
+  /// shared across every PIN prompt (App PIN, Session End PIN, distress
+  /// cancel). Defaults to 0 and resets on every (a) correct PIN entry,
+  /// (b) Duress PIN entry, (c) `startSession` / `endSession` transition.
+  ///
+  /// Spec 06 §Wrong PIN Behavior (R-27): the counter is **in-memory only**
+  /// and never persisted — app restart wipes it. C2 only owns the
+  /// Session End PIN prompt; the field lives on the controller so the
+  /// other prompts can converge on the same counter later.
+  int _wrongPinAttempts = 0;
+
   @override
   Future<SessionState> build() async {
     ref.onDispose(_disposeAll);
@@ -306,6 +317,9 @@ class SessionController extends AsyncNotifier<SessionState> {
         ),
       );
     }
+    // Every new session starts the in-memory wrong-PIN counter from zero
+    // (spec 06 §Wrong PIN Behavior).
+    _wrongPinAttempts = 0;
     final maxPause = mode.maxPauseMinutes;
     final engine = SessionEngine(
       chainSteps: mode.chainSteps,
@@ -511,6 +525,8 @@ class SessionController extends AsyncNotifier<SessionState> {
     if (engine == null) {
       return;
     }
+    // Clearing the counter here closes the session-lifetime scope.
+    _wrongPinAttempts = 0;
     engine.endSession(reason: reason);
     await _finaliseLog(reason);
     await _disposeRunOnly();
@@ -530,6 +546,33 @@ class SessionController extends AsyncNotifier<SessionState> {
       ),
     );
   }
+
+  /// Reset the in-memory wrong-PIN counter to zero.
+  ///
+  /// Called by PIN prompts on (a) correct PIN entry and (b) Duress PIN
+  /// entry — both are "successful" outcomes per spec 06 §Wrong PIN
+  /// Behavior even though the Duress branch fires the distress chain.
+  void resetWrongPinAttempts() {
+    _wrongPinAttempts = 0;
+  }
+
+  /// Increment the wrong-PIN counter and forward to the engine.
+  ///
+  /// Returns the post-increment count so callers can compare against
+  /// `AppSettings.wrongPinThreshold`. Emits
+  /// `ChainEvent.deceptiveOldPinShown` via [SessionEngine.notifyWrongPin]
+  /// so the session log records every misdirection for forensics
+  /// (spec 01 §Events Emitted, R-27).
+  int notifyWrongPinAttempt() {
+    _wrongPinAttempts += 1;
+    _engine?.notifyWrongPin(_wrongPinAttempts);
+    return _wrongPinAttempts;
+  }
+
+  /// Read-only access to the in-memory wrong-PIN counter.
+  ///
+  /// Exposed for the session-end overlay and for tests; not persisted.
+  int get wrongPinAttempts => _wrongPinAttempts;
 
   Future<void> _finaliseLog(EndReason reason) async {
     final recorder = _recorder;

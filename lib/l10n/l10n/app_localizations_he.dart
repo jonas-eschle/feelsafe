@@ -1906,6 +1906,36 @@ class AppLocalizationsHe extends AppLocalizations {
       'Swipe to confirm you want to end the session';
 
   @override
+  String get sessionEndOverlayTitle => 'End session?';
+
+  @override
+  String get sessionEndOverlayBody =>
+      'Swipe to confirm you want to end the session';
+
+  @override
+  String get sessionEndOverlaySwipeLabel => 'Swipe to end';
+
+  @override
+  String get sessionEndOverlaySimBadge => '[SIM] Practice mode';
+
+  @override
+  String get sessionEndPinPromptTitle => 'Enter Session End PIN';
+
+  @override
+  String get sessionEndPinAppPinMismatch =>
+      'Use the Session End PIN, not the app lock PIN.';
+
+  @override
+  String get sessionEndPinIncorrect => 'Incorrect PIN';
+
+  @override
+  String get sessionEndPinSimSkip => 'Skip (sim only)';
+
+  @override
+  String get sessionEndSimDistressWouldFire =>
+      'Distress chain would fire (5 wrong PINs)';
+
+  @override
   String get sessionEmergencyDisarmTitle => 'Are you sure?';
 
   @override

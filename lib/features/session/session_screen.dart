@@ -7,9 +7,11 @@ import 'package:go_router/go_router.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/emergency_confirm_overlay.dart';
+import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -58,7 +60,7 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
           IconButton(
             icon: const Icon(Icons.exit_to_app),
             tooltip: l10n.commonClose,
-            onPressed: () => _confirmEnd(context),
+            onPressed: () => _endSessionFlow(context),
           ),
         ],
       ),
@@ -70,36 +72,50 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     );
   }
 
-  Future<void> _confirmEnd(BuildContext context) async {
-    final l10n = AppLocalizations.of(context);
-    final shouldEnd = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: Text(l10n.sessionEndConfirmTitle),
-        content: Text(l10n.sessionEndConfirmSwipe),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.commonConfirm),
-          ),
-        ],
-      ),
+  Future<void> _endSessionFlow(BuildContext context) async {
+    final sessionState = ref.read(sessionControllerProvider).value;
+    final isSimulation = sessionState?.isSimulation ?? false;
+    final outcome = await EndSessionOverlay.show(
+      context,
+      isSimulation: isSimulation,
     );
-    if (shouldEnd == true && context.mounted) {
-      final controller = ref.read(sessionControllerProvider.notifier);
-      final sessionState = ref.read(sessionControllerProvider).value;
-      final recorderId = controller.currentSessionLogId;
-      final isSimulation = sessionState?.isSimulation ?? false;
-      await controller.endSession();
-      if (!context.mounted) return;
-      final params = <String, String>{if (isSimulation) 'simulation': 'true'};
-      if (recorderId != null) params['id'] = recorderId;
-      context.goNamed(RouteNames.sessionCompleted, queryParameters: params);
+    if (!context.mounted) return;
+    switch (outcome) {
+      case EndSessionOutcome.dismissed:
+        return;
+      case EndSessionOutcome.endConfirmed:
+        await _confirmedEnd(context, isSimulation: isSimulation);
+      case EndSessionOutcome.duressPinEntered:
+        ref
+            .read(sessionControllerProvider.notifier)
+            .confirmDistress(reason: EndReason.duressPin);
+      case EndSessionOutcome.wrongPinExhausted:
+        if (isSimulation) {
+          // Simulation never fires the distress chain — the overlay
+          // surfaces a SnackBar via the wrong-PIN branch, then closes.
+          // Falling through here would be a contract violation; the
+          // overlay's simulation rule explicitly never raises this
+          // outcome (spec 04:548). Treat it as a no-op to keep the
+          // switch exhaustive.
+          return;
+        }
+        ref
+            .read(sessionControllerProvider.notifier)
+            .confirmDistress(reason: EndReason.wrongPinExhausted);
     }
+  }
+
+  Future<void> _confirmedEnd(
+    BuildContext context, {
+    required bool isSimulation,
+  }) async {
+    final controller = ref.read(sessionControllerProvider.notifier);
+    final recorderId = controller.currentSessionLogId;
+    await controller.endSession();
+    if (!context.mounted) return;
+    final params = <String, String>{if (isSimulation) 'simulation': 'true'};
+    if (recorderId != null) params['id'] = recorderId;
+    context.goNamed(RouteNames.sessionCompleted, queryParameters: params);
   }
 
   Future<void> _confirmQuickExit(BuildContext context) async {
