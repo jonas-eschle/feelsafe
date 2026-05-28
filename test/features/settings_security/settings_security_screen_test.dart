@@ -681,9 +681,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeSettingsSecurityController(
-        _secState(appPinSet: true),
-      );
+      final fake = _FakeSettingsSecurityController(_secState(appPinSet: true));
       await _pump(tester, fake: fake);
       await tester.tap(find.text(l10n.securityRemovePin).first);
       await tester.pumpAndSettle();
@@ -703,9 +701,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeSettingsSecurityController(
-        _secState(appPinSet: true),
-      );
+      final fake = _FakeSettingsSecurityController(_secState(appPinSet: true));
       await _pump(tester, fake: fake);
       await tester.tap(find.text(l10n.securityRemovePin).first);
       await tester.pumpAndSettle();
@@ -718,17 +714,16 @@ void main() {
   // ── Info dialog ────────────────────────────────────────────────────────────
 
   group('SettingsSecurityScreen — info dialog', () {
-    testWidgets(
-      'tapping the info icon opens the App PIN explanatory dialog',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-        // First info icon is the App PIN card.
-        await tester.tap(find.byIcon(Icons.info_outline).first);
-        await tester.pumpAndSettle();
-        expect(find.text(l10n.securityAppPinInfo), findsOneWidget);
-      },
-    );
+    testWidgets('tapping the info icon opens the App PIN explanatory dialog', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      // First info icon is the App PIN card.
+      await tester.tap(find.byIcon(Icons.info_outline).first);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.securityAppPinInfo), findsOneWidget);
+    });
   });
 
   // ── Three cards rendered ───────────────────────────────────────────────────

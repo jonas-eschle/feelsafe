@@ -83,8 +83,9 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       isFirstLaunch: s.isFirstLaunch,
       selectedModeId: s.selectedModeId,
       appPinHash: type == PinType.app ? null : s.appPinHash,
-      sessionEndPinHash:
-          type == PinType.sessionEnd ? null : s.sessionEndPinHash,
+      sessionEndPinHash: type == PinType.sessionEnd
+          ? null
+          : s.sessionEndPinHash,
       duressPinHash: type == PinType.duress ? null : s.duressPinHash,
       pinTimeoutSeconds: s.pinTimeoutSeconds,
       wrongPinThreshold: s.wrongPinThreshold,
@@ -102,6 +103,7 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       trashRetentionDays: s.trashRetentionDays,
       telemetryOptOut: s.telemetryOptOut,
       sentryEnabled: s.sentryEnabled,
+      lastBackupAt: s.lastBackupAt,
       defaults: s.defaults,
     );
     await repo.save(next);
@@ -112,9 +114,7 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
   Future<void> setSessionEndBiometric(bool enabled) async {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
-    await repo.save(
-      settings.copyWith(sessionEndPinBiometricEnabled: enabled),
-    );
+    await repo.save(settings.copyWith(sessionEndPinBiometricEnabled: enabled));
     ref.invalidateSelf();
   }
 

@@ -2257,6 +2257,14 @@ class AppLocalizationsAr extends AppLocalizations {
   String get historyRetentionUpdated => 'Retention updated';
 
   @override
+  String get historyRetentionPurgeNow => 'Purge now';
+
+  @override
+  String historyRetentionPurged(Object count) {
+    return 'Purged $count logs';
+  }
+
+  @override
   String get batteryAlertEnableLabel => 'Enable battery alert';
 
   @override
@@ -2409,6 +2417,26 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get backupOverwriteWarning => 'Importing overwrites all current data.';
+
+  @override
+  String get backupImportSuccess => 'Import complete. Restart to apply.';
+
+  @override
+  String backupImportError(Object message) {
+    return 'Import failed: $message';
+  }
+
+  @override
+  String get backupActiveSessionBanner =>
+      'Backup is unavailable during an active session.';
+
+  @override
+  String backupLastBackupAtLabel(Object when) {
+    return 'Last backup at $when';
+  }
+
+  @override
+  String get backupNeverExportedLabel => 'No backup yet';
 
   @override
   String get pastEventsTitle => 'Past sessions';

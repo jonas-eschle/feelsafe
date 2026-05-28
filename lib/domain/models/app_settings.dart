@@ -37,6 +37,7 @@ final class AppSettings {
     this.trashRetentionDays = 7,
     this.telemetryOptOut = false,
     this.sentryEnabled = false,
+    this.lastBackupAt,
     this.defaults = const AppDefaults(),
   }) : assert(
          pinTimeoutSeconds >= 5 && pinTimeoutSeconds <= 120,
@@ -95,6 +96,9 @@ final class AppSettings {
     trashRetentionDays: (json['trashRetentionDays'] as num?)?.toInt() ?? 7,
     telemetryOptOut: (json['telemetryOptOut'] as bool?) ?? false,
     sentryEnabled: (json['sentryEnabled'] as bool?) ?? false,
+    lastBackupAt: json['lastBackupAt'] != null
+        ? DateTime.parse(json['lastBackupAt'] as String)
+        : null,
     defaults: json['defaults'] != null
         ? AppDefaults.fromJson(json['defaults'] as Map<String, dynamic>)
         : const AppDefaults(),
@@ -193,6 +197,11 @@ final class AppSettings {
   /// Master Sentry toggle. Default false (opt-in, Q42).
   final bool sentryEnabled;
 
+  /// Wall-clock UTC time of the most recent successful backup export, or
+  /// null when the user has never exported. Surfaced on the
+  /// Backup & Restore screen. Default null.
+  final DateTime? lastBackupAt;
+
   // ── AppDefaults ────────────────────────────────────────────────────
 
   /// GPS logging, stealth, templates, event defaults, and distress-mode
@@ -224,6 +233,7 @@ final class AppSettings {
     int? trashRetentionDays,
     bool? telemetryOptOut,
     bool? sentryEnabled,
+    DateTime? lastBackupAt,
     AppDefaults? defaults,
   }) => AppSettings(
     themeMode: themeMode ?? this.themeMode,
@@ -256,6 +266,7 @@ final class AppSettings {
     trashRetentionDays: trashRetentionDays ?? this.trashRetentionDays,
     telemetryOptOut: telemetryOptOut ?? this.telemetryOptOut,
     sentryEnabled: sentryEnabled ?? this.sentryEnabled,
+    lastBackupAt: lastBackupAt ?? this.lastBackupAt,
     defaults: defaults ?? this.defaults,
   );
 
@@ -284,6 +295,7 @@ final class AppSettings {
     'trashRetentionDays': trashRetentionDays,
     'telemetryOptOut': telemetryOptOut,
     'sentryEnabled': sentryEnabled,
+    if (lastBackupAt != null) 'lastBackupAt': lastBackupAt!.toIso8601String(),
     'defaults': defaults.toJson(),
   };
 
@@ -317,6 +329,7 @@ final class AppSettings {
           trashRetentionDays == other.trashRetentionDays &&
           telemetryOptOut == other.telemetryOptOut &&
           sentryEnabled == other.sentryEnabled &&
+          lastBackupAt == other.lastBackupAt &&
           defaults == other.defaults);
 
   @override
@@ -344,6 +357,7 @@ final class AppSettings {
     trashRetentionDays,
     telemetryOptOut,
     sentryEnabled,
+    lastBackupAt,
     defaults,
   ]);
 }

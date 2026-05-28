@@ -569,7 +569,7 @@ void main() {
       check(logsHelperText.style).isNotNull();
     });
 
-    testWidgets('both sliders have 1 division per day (no continuous drag)', (
+    testWidgets('both sliders use the spec snap stops', (
       WidgetTester tester,
     ) async {
       await pumpScreen(
@@ -578,10 +578,10 @@ void main() {
         overrides: _overrides(_FakeHistoryRetentionController(_defaultState())),
       );
       final sliders = tester.widgetList<Slider>(find.byType(Slider)).toList();
-      // Session log: 365 - 1 = 364 divisions.
-      check(sliders[0].divisions).equals(364);
-      // Trash: 90 - 1 = 89 divisions.
-      check(sliders[1].divisions).equals(89);
+      // Session log stops [1,3,7,14,30,60,90,180,365] → 8 divisions.
+      check(sliders[0].divisions).equals(8);
+      // Trash stops [1,3,7,14,30,60,90] → 6 divisions.
+      check(sliders[1].divisions).equals(6);
     });
 
     testWidgets('setSessionLogRetention receives integer days argument', (

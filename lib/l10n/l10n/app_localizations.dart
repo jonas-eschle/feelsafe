@@ -4283,6 +4283,18 @@ abstract class AppLocalizations {
   /// **'Retention updated'**
   String get historyRetentionUpdated;
 
+  /// Button label that runs purgeExpiredLogs immediately.
+  ///
+  /// In en, this message translates to:
+  /// **'Purge now'**
+  String get historyRetentionPurgeNow;
+
+  /// Snackbar shown after a successful purge.
+  ///
+  /// In en, this message translates to:
+  /// **'Purged {count} logs'**
+  String historyRetentionPurged(Object count);
+
   /// Battery alert enable toggle.
   ///
   /// In en, this message translates to:
@@ -4588,6 +4600,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Importing overwrites all current data.'**
   String get backupOverwriteWarning;
+
+  /// Snackbar shown after a successful import.
+  ///
+  /// In en, this message translates to:
+  /// **'Import complete. Restart to apply.'**
+  String get backupImportSuccess;
+
+  /// Snackbar shown when an import throws.
+  ///
+  /// In en, this message translates to:
+  /// **'Import failed: {message}'**
+  String backupImportError(Object message);
+
+  /// Banner on the Backup screen while a session is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Backup is unavailable during an active session.'**
+  String get backupActiveSessionBanner;
+
+  /// ListTile label showing the last backup timestamp.
+  ///
+  /// In en, this message translates to:
+  /// **'Last backup at {when}'**
+  String backupLastBackupAtLabel(Object when);
+
+  /// ListTile label when no backup has been exported yet.
+  ///
+  /// In en, this message translates to:
+  /// **'No backup yet'**
+  String get backupNeverExportedLabel;
 
   /// Title of past events screen.
   ///
