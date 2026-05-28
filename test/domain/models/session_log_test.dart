@@ -111,8 +111,8 @@ void main() {
         ).throws<ArgumentError>();
       });
 
-      test('EndReason has exactly the six spec-defined values', () {
-        // Given: spec §EndReason names six values.
+      test('EndReason has exactly the seven spec-defined values', () {
+        // Given: spec §EndReason names seven values.
         // When: collected by name.
         // Then: the set matches exactly — no additions or removals.
         final names = EndReason.values.map((e) => e.name).toSet();
@@ -123,6 +123,7 @@ void main() {
           'duressPin',
           'wrongPinExhausted',
           'userQuit',
+          'distressConfirmTimeout',
         });
       });
 

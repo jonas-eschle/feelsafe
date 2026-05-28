@@ -434,6 +434,38 @@ class SessionController extends AsyncNotifier<SessionState> {
     final current = state.value;
     if (current == null) return;
     state = AsyncData(current.copyWith(distressConfirmRemaining: seconds));
+    _startDistressCountdownTimer();
+  }
+
+  /// Pause the distress-confirmation countdown without dismissing the
+  /// overlay (spec 04 §Distress Confirmation Window).
+  ///
+  /// Used by the distress-cancel PIN gate: when the user taps Cancel and
+  /// a Session End PIN is configured, the 5-second countdown freezes
+  /// while the PIN keypad is on screen so the user has the full
+  /// 15-second PIN window to enter the PIN.
+  /// [distressConfirmRemaining] is preserved as-is; only the periodic
+  /// tick is suspended. No-op when the countdown is not running.
+  void pauseDistressCountdown() {
+    _distressCountdownTimer?.cancel();
+    _distressCountdownTimer = null;
+  }
+
+  /// Resume a previously paused distress-confirmation countdown.
+  ///
+  /// Re-arms the periodic tick at the current
+  /// [SessionState.distressConfirmRemaining] value. No-op when the
+  /// overlay has already been dismissed or no remaining seconds are
+  /// tracked.
+  void resumeDistressCountdown() {
+    final s = state.value;
+    if (s == null) return;
+    if ((s.distressConfirmRemaining ?? 0) <= 0) return;
+    if (_distressCountdownTimer != null) return;
+    _startDistressCountdownTimer();
+  }
+
+  void _startDistressCountdownTimer() {
     _distressCountdownTimer?.cancel();
     _distressCountdownTimer = Timer.periodic(const Duration(seconds: 1), (
       Timer t,

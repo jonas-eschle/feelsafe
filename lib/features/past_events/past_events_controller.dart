@@ -25,7 +25,8 @@ PastEventOutcome outcomeFromEndReason(EndReason? r) => switch (r) {
   EndReason.chainExhausted ||
   EndReason.duressPin ||
   EndReason.hardwarePanic ||
-  EndReason.wrongPinExhausted => PastEventOutcome.distress,
+  EndReason.wrongPinExhausted ||
+  EndReason.distressConfirmTimeout => PastEventOutcome.distress,
   EndReason.userQuit => PastEventOutcome.interrupted,
 };
 

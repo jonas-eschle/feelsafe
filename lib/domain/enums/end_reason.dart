@@ -21,4 +21,13 @@ enum EndReason {
 
   /// User explicitly quit the session from the session screen.
   userQuit,
+
+  /// Distress-confirmation PIN gate timed out (spec 04 §Distress
+  /// Confirmation Window).
+  ///
+  /// Raised by the session screen's distress-cancel PIN prompt when the
+  /// configured 15-second window elapses without a successful PIN
+  /// entry — the distress chain fires immediately. Routed through
+  /// `SessionController.confirmDistress(reason: distressConfirmTimeout)`.
+  distressConfirmTimeout,
 }

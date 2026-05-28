@@ -74,7 +74,7 @@ void main() {
   });
 
   group('EndReason (spec 03:518-525, lessons §5.2)', () {
-    test('has exactly the spec-ordered 6 values', () {
+    test('has exactly the spec-ordered 7 values', () {
       check(EndReason.values).deepEquals([
         EndReason.disarm,
         EndReason.chainExhausted,
@@ -82,6 +82,7 @@ void main() {
         EndReason.duressPin,
         EndReason.wrongPinExhausted,
         EndReason.userQuit,
+        EndReason.distressConfirmTimeout,
       ]);
     });
 
@@ -91,8 +92,8 @@ void main() {
       ).not((it) => it.contains('appTermination'));
     });
 
-    test('contains exactly 6 values — no historical extras', () {
-      check(EndReason.values.length).equals(6);
+    test('contains exactly 7 values — no historical extras', () {
+      check(EndReason.values.length).equals(7);
     });
   });
 

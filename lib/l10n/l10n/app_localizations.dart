@@ -3750,6 +3750,48 @@ abstract class AppLocalizations {
   /// **'If not cancelled, distress chain will begin immediately.'**
   String get distressConfirmFooter;
 
+  /// Title above the PIN keypad shown when the user taps Cancel on the distress confirmation overlay and a Session End PIN is configured.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Session End PIN'**
+  String get distressCancelPinPromptTitle;
+
+  /// Countdown label shown beside the PIN keypad while the 15-second distress-cancel PIN timeout is running.
+  ///
+  /// In en, this message translates to:
+  /// **'{seconds}s remaining'**
+  String distressCancelPinTimeoutLabel(int seconds);
+
+  /// Inline error beneath the keypad when a wrong PIN is entered at the distress-cancel gate.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get distressCancelPinIncorrect;
+
+  /// Inline hint when the user types the app lock PIN at the distress-cancel PIN gate instead of the Session End PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Session End PIN, not the app lock PIN.'**
+  String get distressCancelPinAppPinMismatch;
+
+  /// Button visible only in simulation mode that bypasses the distress-cancel PIN gate.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip (sim only)'**
+  String get distressCancelPinSimSkip;
+
+  /// Snack-bar shown in simulation when the user hits the wrong-PIN threshold at the distress-cancel PIN gate — the distress chain is suppressed.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress chain would fire (5 wrong PINs)'**
+  String get distressCancelSimDistressWouldFire;
+
+  /// Cancel button that returns from the distress-cancel PIN keypad to the distress confirmation overlay.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get distressCancelPinBack;
+
   /// Title shown for the simulation PIN prompt.
   ///
   /// In en, this message translates to:

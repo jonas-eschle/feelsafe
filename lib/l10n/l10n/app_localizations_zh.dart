@@ -1940,6 +1940,31 @@ class AppLocalizationsZh extends AppLocalizations {
       'If not cancelled, distress chain will begin immediately.';
 
   @override
+  String get distressCancelPinPromptTitle => 'Enter Session End PIN';
+
+  @override
+  String distressCancelPinTimeoutLabel(int seconds) {
+    return '${seconds}s remaining';
+  }
+
+  @override
+  String get distressCancelPinIncorrect => 'Incorrect PIN';
+
+  @override
+  String get distressCancelPinAppPinMismatch =>
+      'Use the Session End PIN, not the app lock PIN.';
+
+  @override
+  String get distressCancelPinSimSkip => 'Skip (sim only)';
+
+  @override
+  String get distressCancelSimDistressWouldFire =>
+      'Distress chain would fire (5 wrong PINs)';
+
+  @override
+  String get distressCancelPinBack => 'Cancel';
+
+  @override
   String get simulationPinPromptTitle => 'Enter PIN';
 
   @override

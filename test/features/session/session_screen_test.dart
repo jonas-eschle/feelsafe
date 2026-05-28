@@ -21,6 +21,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
+import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
@@ -67,6 +68,8 @@ class _FakeSessionController extends SessionController {
   int leapCalls = 0;
   int resetWrongPinAttemptsCalls = 0;
   int notifyWrongPinAttemptCalls = 0;
+  int pauseDistressCountdownCalls = 0;
+  int resumeDistressCountdownCalls = 0;
   int _fakeWrongAttempts = 0;
 
   @override
@@ -94,6 +97,16 @@ class _FakeSessionController extends SessionController {
   void confirmDistress({EndReason reason = EndReason.hardwarePanic}) {
     confirmDistressCalls++;
     lastConfirmDistressReason = reason;
+  }
+
+  @override
+  void pauseDistressCountdown() {
+    pauseDistressCountdownCalls++;
+  }
+
+  @override
+  void resumeDistressCountdown() {
+    resumeDistressCountdownCalls++;
   }
 
   @override
@@ -870,7 +883,14 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(distressConfirmRemaining: 4),
       );
-      await _pump(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       expect(find.text(l10n.distressConfirmTitle), findsOneWidget);
     });
 
@@ -881,22 +901,38 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(distressConfirmRemaining: 3),
       );
-      await _pump(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       expect(find.text(l10n.distressConfirmCountdown(3)), findsOneWidget);
     });
 
-    testWidgets('tapping cancel button calls cancelDistress', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeSessionController(
-        _runningState(distressConfirmRemaining: 5),
-      );
-      await _pump(tester, fake);
-      await tester.tap(find.text(l10n.distressConfirmCancel));
-      await tester.pumpAndSettle();
-      check(fake.cancelDistressCalls).equals(1);
-    });
+    testWidgets(
+      'no PIN configured → tapping cancel calls cancelDistress immediately',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository();
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        check(fake.cancelDistressCalls).equals(1);
+        check(fake.pauseDistressCountdownCalls).equals(0);
+      },
+    );
 
     testWidgets('shows footer text explaining imminent distress', (
       WidgetTester tester,
@@ -905,7 +941,14 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(distressConfirmRemaining: 5),
       );
-      await _pump(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       expect(find.text(l10n.distressConfirmFooter), findsOneWidget);
     });
 
@@ -915,9 +958,346 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(distressConfirmRemaining: 5),
       );
-      await _pump(tester, fake);
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
+  });
+
+  // ── Distress-cancel PIN gate (C3) ────────────────────────────────────────
+  group('SessionScreen — distress-cancel PIN gate', () {
+    testWidgets(
+      'PIN configured → tap cancel shows PIN keypad and pauses countdown',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        // PIN keypad replaces confirmation panel.
+        expect(find.text(l10n.distressCancelPinPromptTitle), findsOneWidget);
+        expect(find.byType(PinKeypad), findsOneWidget);
+        // 5-second countdown is paused; not cancelled.
+        check(fake.pauseDistressCountdownCalls).equals(1);
+        check(fake.cancelDistressCalls).equals(0);
+        check(fake.confirmDistressCalls).equals(0);
+      },
+    );
+
+    testWidgets('correct Session End PIN → cancelDistress + counter reset', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+      check(fake.cancelDistressCalls).equals(1);
+      check(fake.resetWrongPinAttemptsCalls).isGreaterThan(0);
+      check(fake.confirmDistressCalls).equals(0);
+    });
+
+    testWidgets('Duress PIN → confirmDistress(reason: duressPin)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          duressPinHash: _hashDigits('7777'),
+          sessionEndPinHash: _hashDigits('1234'),
+        ),
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '7777');
+      await tester.pumpAndSettle();
+      check(fake.confirmDistressCalls).equals(1);
+      check(fake.lastConfirmDistressReason).equals(EndReason.duressPin);
+      check(fake.cancelDistressCalls).equals(0);
+    });
+
+    testWidgets(
+      'App PIN → mismatch hint shown, no wrong-PIN counter increment',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            appPinHash: _hashDigits('9999'),
+            sessionEndPinHash: _hashDigits('1234'),
+          ),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '9999');
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.distressCancelPinAppPinMismatch), findsOneWidget);
+        check(fake.cancelDistressCalls).equals(0);
+        check(fake.confirmDistressCalls).equals(0);
+        check(fake.notifyWrongPinAttemptCalls).equals(0);
+      },
+    );
+
+    testWidgets(
+      'wrong PIN (deceptive disabled) → shake + inline error + engine notify',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            deceptivePinDialogEnabled: false,
+          ),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+        check(fake.notifyWrongPinAttemptCalls).equals(1);
+        expect(find.text(l10n.distressCancelPinIncorrect), findsOneWidget);
+        expect(find.byType(DeceptiveOldPinDialog), findsNothing);
+      },
+    );
+
+    testWidgets('wrong PIN (deceptive enabled) → deceptive dialog shown', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+      await _typeDigits(tester, '0000');
+      await tester.pump();
+      expect(find.byType(DeceptiveOldPinDialog), findsOneWidget);
+    });
+
+    testWidgets(
+      '5 wrong PINs (real) → confirmDistress(reason: wrongPinExhausted)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            deceptivePinDialogEnabled: false,
+          ),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        for (int i = 0; i < 5; i++) {
+          await _typeDigits(tester, '0000');
+          await tester.pumpAndSettle();
+        }
+        check(fake.notifyWrongPinAttemptCalls).equals(5);
+        check(fake.confirmDistressCalls).equals(1);
+        check(
+          fake.lastConfirmDistressReason,
+        ).equals(EndReason.wrongPinExhausted);
+      },
+    );
+
+    testWidgets(
+      '5 wrong PINs (sim) → SnackBar shown, no controller increment, no distress',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5, isSimulation: true),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            deceptivePinDialogEnabled: false,
+          ),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        for (int i = 0; i < 5; i++) {
+          await _typeDigits(tester, '0000');
+          await tester.pumpAndSettle();
+        }
+        check(fake.notifyWrongPinAttemptCalls).equals(0);
+        check(fake.confirmDistressCalls).equals(0);
+        expect(
+          find.text(l10n.distressCancelSimDistressWouldFire),
+          findsOneWidget,
+        );
+      },
+    );
+
+    testWidgets(
+      'simulation → [Skip] visible and cancels distress without PIN',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5, isSimulation: true),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.distressCancelPinSimSkip), findsOneWidget);
+        await tester.tap(find.text(l10n.distressCancelPinSimSkip));
+        await tester.pumpAndSettle();
+        check(fake.cancelDistressCalls).equals(1);
+      },
+    );
+
+    testWidgets(
+      'Cancel button on PIN stage returns to confirmation and resumes countdown',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        check(fake.pauseDistressCountdownCalls).equals(1);
+        // Use the Cancel TextButton inside the PIN stage. The label is
+        // [distressCancelPinBack] = "Cancel".
+        await tester.tap(find.text(l10n.distressCancelPinBack));
+        await tester.pumpAndSettle();
+        // Back at the confirmation stage — the cancel countdown button
+        // is visible again, and the controller's resume was invoked.
+        expect(find.text(l10n.distressConfirmCancel), findsOneWidget);
+        check(fake.resumeDistressCountdownCalls).equals(1);
+        check(fake.cancelDistressCalls).equals(0);
+        check(fake.confirmDistressCalls).equals(0);
+      },
+    );
+
+    testWidgets(
+      '15s timeout → confirmDistress(reason: distressConfirmTimeout)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        // Advance 16 one-second ticks; the timer fires at 0.
+        for (int i = 0; i < 16; i++) {
+          await tester.pump(const Duration(seconds: 1));
+        }
+        check(fake.confirmDistressCalls).equals(1);
+        check(
+          fake.lastConfirmDistressReason,
+        ).equals(EndReason.distressConfirmTimeout);
+      },
+    );
   });
 
   // ── Session-Interrupted Prompt (Extra 13) ─────────────────────────────────

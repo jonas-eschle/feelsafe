@@ -1,13 +1,20 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
+import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/emergency_confirm_overlay.dart';
@@ -447,80 +454,550 @@ class _InterruptedPrompt extends ConsumerWidget {
   }
 }
 
-class _DistressConfirmationOverlay extends ConsumerWidget {
+/// Stage of the distress-confirmation overlay's internal state machine.
+///
+/// The overlay always mounts in [confirmation]; tapping the cancel
+/// button moves to [pinPrompt] when a Session End PIN is configured.
+enum _DistressStage {
+  /// Initial stage — the red "DISTRESS ACTIVATED" panel with the 5-second
+  /// countdown ring and [TAP TO CANCEL] button.
+  confirmation,
+
+  /// PIN keypad stage — only entered when
+  /// [AppSettings.sessionEndPinHash] is non-null and the user tapped
+  /// cancel. A separate 15-second timeout runs while this stage is
+  /// active; the underlying 5-second confirmation countdown is paused.
+  pinPrompt,
+}
+
+/// Distress-confirmation overlay with optional PIN gate (spec 04 §Distress
+/// Confirmation Window, C3 PM-FIX).
+///
+/// Renders the modal countdown when
+/// [SessionState.distressConfirmRemaining] is non-null. The flow:
+///
+/// 1. The user sees the 5-second red countdown panel with a
+///    [TAP TO CANCEL] button. If no Session End PIN is configured, the
+///    tap calls `cancelDistress()` immediately and the overlay
+///    dismisses.
+/// 2. If `AppSettings.sessionEndPinHash != null`, the overlay
+///    transitions to the [pinPrompt] stage:
+///    * the confirmation countdown is paused via
+///      `pauseDistressCountdown()` (so the user has the full 15-second
+///      PIN window),
+///    * a 15-second timer starts and renders "15s remaining",
+///    * the PinKeypad accepts digits and runs the auto-submit ladder
+///      (Duress > App > Session End — spec 06 §Auto-submit, R-27).
+/// 3. PIN-prompt outcomes:
+///    * **Duress PIN** → `confirmDistress(reason: EndReason.duressPin)`
+///    * **App PIN** → inline hint "Use the Session End PIN, not the
+///      app lock PIN."; not counted as wrong PIN
+///    * **Session End PIN** → `cancelDistress()`; wrong-PIN counter
+///      reset to zero
+///    * **Wrong PIN** → shake / DeceptiveOldPinDialog (per
+///      `AppSettings.deceptivePinDialogEnabled`) + counter increment +
+///      `engine.notifyWrongPin(count)`. When count reaches
+///      `AppSettings.wrongPinThreshold`:
+///      - real → `confirmDistress(reason: EndReason.wrongPinExhausted)`
+///      - simulation → SnackBar "Distress chain would fire (5 wrong
+///        PINs)" + entry reset; no real distress (spec 04:548)
+///    * **15s timeout** →
+///      `confirmDistress(reason: EndReason.distressConfirmTimeout)`
+///    * **Cancel button** → return to [confirmation] stage and resume
+///      the 5-second countdown
+/// 4. **Simulation** also surfaces a `[Skip]` `TextButton` next to the
+///    keypad which calls `cancelDistress()` directly so users can
+///    practice without entering a valid PIN.
+class _DistressConfirmationOverlay extends ConsumerStatefulWidget {
   const _DistressConfirmationOverlay({required this.state});
 
   final SessionState state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final remaining = state.distressConfirmRemaining ?? 0;
+  ConsumerState<_DistressConfirmationOverlay> createState() =>
+      _DistressConfirmationOverlayState();
+}
+
+class _DistressConfirmationOverlayState
+    extends ConsumerState<_DistressConfirmationOverlay>
+    with SingleTickerProviderStateMixin {
+  /// Current local stage. Always starts at [_DistressStage.confirmation].
+  _DistressStage _stage = _DistressStage.confirmation;
+
+  /// Cached settings; null until first load completes.
+  AppSettings? _settings;
+
+  /// Whether a settings load is in flight. Prevents double-fetches when
+  /// the user taps cancel before the initial load completes.
+  bool _loadingSettings = false;
+
+  /// Digits the user has typed at the PIN keypad. Defaults to empty.
+  final List<int> _entry = <int>[];
+
+  /// Whether to render the inline "Incorrect PIN" hint. Defaults false.
+  bool _showWrong = false;
+
+  /// Whether to render the "Use the Session End PIN" hint. Defaults false.
+  bool _showAppPinMismatch = false;
+
+  /// Simulation-only local wrong-PIN counter (spec 04:548). Never
+  /// touches the controller's real counter; resets on threshold reached.
+  int _simWrongAttempts = 0;
+
+  /// 15-second PIN-prompt timer. Null when no PIN stage is active.
+  Timer? _pinTimer;
+
+  /// Remaining seconds in the 15s PIN-prompt window. Defaults to the
+  /// configured `pinTimeoutSeconds` (15 by default — spec 06 §Session
+  /// End PIN). Updated by [_pinTimer] each second.
+  int _pinTimeoutRemaining = 15;
+
+  late final AnimationController _shakeCtl;
+  late final Animation<double> _shakeAnim;
+
+  @override
+  void initState() {
+    super.initState();
+    _shakeCtl = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 300),
+    );
+    _shakeAnim = Tween<double>(
+      begin: 0,
+      end: 8,
+    ).animate(CurvedAnimation(parent: _shakeCtl, curve: Curves.elasticIn));
+    // Lazy-load settings: only fetch the encrypted singleton if the user
+    // is likely to engage the PIN gate. Pre-fetching at initState would
+    // force every distress-confirmation surface to wait on the
+    // repository even when no PIN is configured.
+    unawaited(_loadSettings());
+  }
+
+  @override
+  void dispose() {
+    _pinTimer?.cancel();
+    _shakeCtl.dispose();
+    super.dispose();
+  }
+
+  Future<AppSettings> _loadSettings() async {
+    if (_settings != null) return _settings!;
+    if (_loadingSettings) {
+      // Yield until the in-flight load completes; this avoids two parallel
+      // disk reads if the user taps cancel before initState's load lands.
+      while (_loadingSettings && mounted) {
+        await Future<void>.delayed(const Duration(milliseconds: 16));
+      }
+      return _settings ?? const AppSettings();
+    }
+    _loadingSettings = true;
+    try {
+      final settings = await ref.read(appSettingsRepositoryProvider).load();
+      if (mounted) {
+        setState(() => _settings = settings);
+      } else {
+        _settings = settings;
+      }
+      return settings;
+    } finally {
+      _loadingSettings = false;
+    }
+  }
+
+  Future<void> _onCancelTapped() async {
+    final settings = await _loadSettings();
+    if (!mounted) return;
+    if (settings.sessionEndPinHash == null) {
+      // No PIN gate — preserve the legacy fast-path.
+      ref.read(sessionControllerProvider.notifier).cancelDistress();
+      return;
+    }
+    // Pause the visible 5-second countdown so the PIN window is
+    // unaffected by the parent countdown finishing under the keypad
+    // (spec 04 §Distress Confirmation Window — task brief §4).
+    ref.read(sessionControllerProvider.notifier).pauseDistressCountdown();
+    setState(() {
+      _stage = _DistressStage.pinPrompt;
+      _entry.clear();
+      _showWrong = false;
+      _showAppPinMismatch = false;
+      _pinTimeoutRemaining = settings.pinTimeoutSeconds;
+    });
+    _startPinTimer();
+  }
+
+  void _startPinTimer() {
+    _pinTimer?.cancel();
+    _pinTimer = Timer.periodic(const Duration(seconds: 1), (Timer t) {
+      if (!mounted) {
+        t.cancel();
+        return;
+      }
+      final next = _pinTimeoutRemaining - 1;
+      if (next <= 0) {
+        t.cancel();
+        _onPinTimeoutExpired();
+        return;
+      }
+      setState(() => _pinTimeoutRemaining = next);
+    });
+  }
+
+  void _onPinTimeoutExpired() {
+    // Timeout fires the distress chain immediately. We avoid resuming
+    // the 5-second countdown because [confirmDistress] dismisses the
+    // overlay regardless.
+    if (!mounted) return;
+    ref
+        .read(sessionControllerProvider.notifier)
+        .confirmDistress(reason: EndReason.distressConfirmTimeout);
+  }
+
+  void _backToConfirmation() {
+    _pinTimer?.cancel();
+    _pinTimer = null;
+    setState(() {
+      _stage = _DistressStage.confirmation;
+      _entry.clear();
+      _showWrong = false;
+      _showAppPinMismatch = false;
+    });
+    ref.read(sessionControllerProvider.notifier).resumeDistressCountdown();
+  }
+
+  Future<void> _onDigit(int d) async {
+    setState(() {
+      _entry.add(d);
+      _showWrong = false;
+      _showAppPinMismatch = false;
+    });
+    if (_entry.length < 4) return;
+    await _tryAutoSubmit();
+  }
+
+  void _onBackspace() {
+    if (_entry.isEmpty) return;
+    setState(() {
+      _entry.removeLast();
+      _showWrong = false;
+      _showAppPinMismatch = false;
+    });
+  }
+
+  Future<void> _tryAutoSubmit() async {
+    final settings = _settings;
+    if (settings == null) return;
+    // Walk every prefix length `n in [4..entry.length]` and try the
+    // priority ladder Duress > App > Session End. Mirrors the C2 end-
+    // session overlay (spec 06 §Auto-submit, F-149, R-27).
+    for (int n = 4; n <= _entry.length; n++) {
+      final digits = _entry.take(n).join();
+      final hash = sha256.convert(utf8.encode(digits)).toString();
+      if (settings.duressPinHash != null && settings.duressPinHash == hash) {
+        ref.read(sessionControllerProvider.notifier).resetWrongPinAttempts();
+        _pinTimer?.cancel();
+        _pinTimer = null;
+        ref
+            .read(sessionControllerProvider.notifier)
+            .confirmDistress(reason: EndReason.duressPin);
+        return;
+      }
+      if (settings.appPinHash != null && settings.appPinHash == hash) {
+        setState(() {
+          _entry.clear();
+          _showAppPinMismatch = true;
+          _showWrong = false;
+        });
+        return;
+      }
+      if (settings.sessionEndPinHash != null &&
+          settings.sessionEndPinHash == hash) {
+        ref.read(sessionControllerProvider.notifier).resetWrongPinAttempts();
+        _pinTimer?.cancel();
+        _pinTimer = null;
+        ref.read(sessionControllerProvider.notifier).cancelDistress();
+        return;
+      }
+    }
+    if (_entry.length >= 4) {
+      await _handleWrongPin();
+    }
+  }
+
+  Future<void> _handleWrongPin() async {
+    final settings = _settings;
+    if (settings == null) return;
+
+    if (widget.state.isSimulation) {
+      // Simulation never advances the real wrong-PIN counter and never
+      // fires the distress chain (spec 04:548). A local counter drives
+      // the educational SnackBar.
+      _simWrongAttempts += 1;
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      await _showWrongFeedback(settings);
+      if (!mounted) return;
+      if (_simWrongAttempts >= settings.wrongPinThreshold) {
+        messenger?.showSnackBar(
+          SnackBar(
+            content: Text(
+              AppLocalizations.of(context).distressCancelSimDistressWouldFire,
+            ),
+          ),
+        );
+        setState(() {
+          _entry.clear();
+          _showWrong = true;
+          _simWrongAttempts = 0;
+        });
+        return;
+      }
+      setState(() {
+        _entry.clear();
+        _showWrong = true;
+      });
+      return;
+    }
+
+    final controller = ref.read(sessionControllerProvider.notifier);
+    final attempts = controller.notifyWrongPinAttempt();
+    await _showWrongFeedback(settings);
+    if (!mounted) return;
+    if (attempts >= settings.wrongPinThreshold) {
+      _pinTimer?.cancel();
+      _pinTimer = null;
+      controller.confirmDistress(reason: EndReason.wrongPinExhausted);
+      return;
+    }
+    setState(() {
+      _entry.clear();
+      _showWrong = true;
+    });
+  }
+
+  Future<void> _showWrongFeedback(AppSettings settings) async {
+    if (settings.deceptivePinDialogEnabled) {
+      await DeceptiveOldPinDialog.show(context);
+      return;
+    }
+    await _shakeCtl.forward();
+    if (!mounted) return;
+    _shakeCtl.reset();
+  }
+
+  void _onSimSkip() {
+    _pinTimer?.cancel();
+    _pinTimer = null;
+    ref.read(sessionControllerProvider.notifier).cancelDistress();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final remaining = widget.state.distressConfirmRemaining ?? 0;
     return ColoredBox(
       color: Colors.red.shade900.withValues(alpha: 0.95),
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Icon(
-                Icons.warning_amber,
-                size: 64,
+      child: SafeArea(
+        child: switch (_stage) {
+          _DistressStage.confirmation => _DistressConfirmationStage(
+            remainingSeconds: remaining,
+            onCancel: _onCancelTapped,
+          ),
+          _DistressStage.pinPrompt => _DistressPinPromptStage(
+            entryLength: _entry.length,
+            timeoutRemaining: _pinTimeoutRemaining,
+            showWrong: _showWrong,
+            showAppPinMismatch: _showAppPinMismatch,
+            shakeAnim: _shakeAnim,
+            isSimulation: widget.state.isSimulation,
+            onDigit: _onDigit,
+            onBackspace: _onBackspace,
+            onCancel: _backToConfirmation,
+            onSimSkip: widget.state.isSimulation ? _onSimSkip : null,
+          ),
+        },
+      ),
+    );
+  }
+}
+
+class _DistressConfirmationStage extends StatelessWidget {
+  const _DistressConfirmationStage({
+    required this.remainingSeconds,
+    required this.onCancel,
+  });
+
+  final int remainingSeconds;
+  final VoidCallback onCancel;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(Icons.warning_amber, size: 64, color: Colors.yellow.shade300),
+            const SizedBox(height: 16),
+            Text(
+              l10n.distressConfirmTitle,
+              style: Theme.of(
+                context,
+              ).textTheme.headlineMedium?.copyWith(color: Colors.white),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.distressConfirmCountdown(remainingSeconds),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(color: Colors.white),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: 200,
+              height: 200,
+              child: Stack(
+                alignment: Alignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    width: 200,
+                    height: 200,
+                    child: CircularProgressIndicator(
+                      value: remainingSeconds / 5.0,
+                      strokeWidth: 8,
+                      color: Colors.white,
+                    ),
+                  ),
+                  FilledButton(
+                    onPressed: onCancel,
+                    style: FilledButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.red.shade900,
+                    ),
+                    child: Text(l10n.distressConfirmCancel),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.distressConfirmFooter,
+              style: const TextStyle(color: Colors.white70),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _DistressPinPromptStage extends StatelessWidget {
+  const _DistressPinPromptStage({
+    required this.entryLength,
+    required this.timeoutRemaining,
+    required this.showWrong,
+    required this.showAppPinMismatch,
+    required this.shakeAnim,
+    required this.isSimulation,
+    required this.onDigit,
+    required this.onBackspace,
+    required this.onCancel,
+    required this.onSimSkip,
+  });
+
+  final int entryLength;
+  final int timeoutRemaining;
+  final bool showWrong;
+  final bool showAppPinMismatch;
+  final Animation<double> shakeAnim;
+  final bool isSimulation;
+  final ValueChanged<int> onDigit;
+  final VoidCallback onBackspace;
+  final VoidCallback onCancel;
+  final VoidCallback? onSimSkip;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    return SingleChildScrollView(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          const Icon(Icons.lock_outline, size: 48, color: Colors.white),
+          const SizedBox(height: 12),
+          Text(
+            l10n.distressCancelPinPromptTitle,
+            style: textTheme.headlineSmall?.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.distressCancelPinTimeoutLabel(timeoutRemaining),
+            style: textTheme.titleMedium?.copyWith(color: Colors.white),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 16),
+          AnimatedBuilder(
+            animation: shakeAnim,
+            builder: (BuildContext _, Widget? child) {
+              return Transform.translate(
+                offset: Offset(shakeAnim.value, 0),
+                child: child,
+              );
+            },
+            child: Text(
+              List<String>.generate(
+                entryLength < 4 ? 4 : entryLength,
+                (int i) => i < entryLength ? '●' : '○',
+              ).join(' '),
+              style: textTheme.headlineMedium?.copyWith(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          if (showAppPinMismatch) ...<Widget>[
+            const SizedBox(height: 8),
+            Text(
+              l10n.distressCancelPinAppPinMismatch,
+              style: textTheme.bodySmall?.copyWith(
                 color: Colors.yellow.shade300,
               ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.distressConfirmTitle,
-                style: Theme.of(
-                  context,
-                ).textTheme.headlineMedium?.copyWith(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          if (showWrong) ...<Widget>[
+            const SizedBox(height: 8),
+            Text(
+              l10n.distressCancelPinIncorrect,
+              style: textTheme.bodySmall?.copyWith(
+                color: Colors.yellow.shade300,
               ),
-              const SizedBox(height: 8),
-              Text(
-                l10n.distressConfirmCountdown(remaining),
-                style: Theme.of(
-                  context,
-                ).textTheme.titleLarge?.copyWith(color: Colors.white),
+              textAlign: TextAlign.center,
+            ),
+          ],
+          const SizedBox(height: 16),
+          PinKeypad(onDigit: onDigit, onBackspace: onBackspace),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              TextButton(
+                onPressed: onCancel,
+                style: TextButton.styleFrom(foregroundColor: Colors.white),
+                child: Text(l10n.distressCancelPinBack),
               ),
-              const SizedBox(height: 24),
-              SizedBox(
-                width: 200,
-                height: 200,
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: <Widget>[
-                    SizedBox(
-                      width: 200,
-                      height: 200,
-                      child: CircularProgressIndicator(
-                        value: remaining / 5.0,
-                        strokeWidth: 8,
-                        color: Colors.white,
-                      ),
-                    ),
-                    FilledButton(
-                      onPressed: () => ref
-                          .read(sessionControllerProvider.notifier)
-                          .cancelDistress(),
-                      style: FilledButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        foregroundColor: Colors.red.shade900,
-                      ),
-                      child: Text(l10n.distressConfirmCancel),
-                    ),
-                  ],
+              if (onSimSkip != null)
+                TextButton(
+                  onPressed: onSimSkip,
+                  style: TextButton.styleFrom(foregroundColor: Colors.white),
+                  child: Text(l10n.distressCancelPinSimSkip),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                l10n.distressConfirmFooter,
-                style: const TextStyle(color: Colors.white70),
-                textAlign: TextAlign.center,
-              ),
             ],
           ),
-        ),
+        ],
       ),
     );
   }

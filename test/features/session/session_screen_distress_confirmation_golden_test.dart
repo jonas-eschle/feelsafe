@@ -14,6 +14,8 @@
 ///     test/features/session/session_screen_distress_confirmation_golden_test.dart
 library;
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:alchemist/alchemist.dart';
@@ -21,8 +23,10 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
@@ -99,6 +103,40 @@ class _FakeSessionController extends SessionController {
 
   @override
   void leap() {}
+
+  @override
+  void pauseDistressCountdown() {}
+
+  @override
+  void resumeDistressCountdown() {}
+}
+
+/// In-memory [AppSettingsRepository] for the golden tests.
+///
+/// The distress-confirmation overlay (post C3) lazily loads settings to
+/// decide whether to engage the PIN gate. With no override, the real
+/// repository raises a `MissingPluginException` (path_provider) under
+/// `flutter test` — this fake swallows disk I/O so the golden output
+/// shows the confirmation stage exactly as the user would see it when
+/// no Session End PIN is configured.
+class _FakeAppSettingsRepository extends AppSettingsRepository {
+  _FakeAppSettingsRepository({AppSettings? initial})
+    : _current = initial ?? const AppSettings(),
+      super(
+        keyProvider: () async =>
+            '0102030405060708090a0b0c0d0e0f'
+            '101112131415161718191a1b1c1d1e1f20',
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('session_golden_test_'),
+      );
+
+  AppSettings _current;
+
+  @override
+  Future<AppSettings> load() async => _current;
+
+  @override
+  Future<void> save(AppSettings value) async => _current = value;
 }
 
 // ---------------------------------------------------------------------------
@@ -165,6 +203,9 @@ PumpWidget _harness({
         sessionControllerProvider.overrideWith(() => fake),
         quickExitServiceProvider.overrideWith(
           (_) => SimulationQuickExitService(),
+        ),
+        appSettingsRepositoryProvider.overrideWithValue(
+          _FakeAppSettingsRepository(),
         ),
       ],
       child: MaterialApp(
