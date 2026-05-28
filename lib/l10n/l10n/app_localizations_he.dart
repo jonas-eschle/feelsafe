@@ -2915,4 +2915,25 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get pastEventsTrashDeletePermanentlyBody =>
       'This action cannot be undone.';
+
+  @override
+  String sessionEmergencyConfirmTitle(String number, int seconds) {
+    return 'Calling $number in ${seconds}s';
+  }
+
+  @override
+  String get sessionEmergencyConfirmSwipe => 'Swipe to cancel';
+
+  @override
+  String get sessionEmergencyConfirmKeep => 'Keep calling';
+
+  @override
+  String get sessionEmergencyConfirmSimBadge => '[SIM] Practice mode';
+
+  @override
+  String get sessionEmergencyConfirmSimCancelled =>
+      'Simulated cancel — call would not have been placed';
+
+  @override
+  String get swipeSliderSemantics => 'Swipe to confirm';
 }

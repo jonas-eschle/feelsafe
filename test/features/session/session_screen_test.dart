@@ -629,22 +629,45 @@ void main() {
 
   // ── Step: callEmergency ───────────────────────────────────────────────────
   group('SessionScreen — callEmergency step', () {
-    testWidgets('renders emergency icon and status text', (
+    testWidgets('wait phase renders the simple status label', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSessionController(
         _runningState(
           type: ChainStepType.callEmergency,
-          phase: SessionPhase.duration,
+          phase: SessionPhase.wait,
         ),
       );
       await _pump(tester, fake);
+      // Pre-duration we still show the underlying status UI.
       expect(find.byIcon(Icons.emergency), findsOneWidget);
       expect(find.text(l10n.sessionStepCallEmergencyStatus), findsOneWidget);
     });
 
-    testWidgets('renders configured emergency number', (
+    testWidgets(
+      'duration phase replaces the status label with the new overlay',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        const config = CallEmergencyConfig(emergencyNumber: '999');
+        final fake = _FakeSessionController(
+          _runningState(
+            type: ChainStepType.callEmergency,
+            config: config,
+            phase: SessionPhase.duration,
+          ),
+        );
+        await _pump(tester, fake);
+        // The legacy simple status label MUST NOT render under the
+        // overlay (C1 PM-FIX: spec 02:458-460 / Extra 56).
+        expect(find.text(l10n.sessionStepCallEmergencyStatus), findsNothing);
+        // Overlay-specific affordances are present.
+        expect(find.text(l10n.sessionEmergencyConfirmKeep), findsOneWidget);
+        expect(find.text(l10n.sessionEmergencyConfirmSwipe), findsOneWidget);
+      },
+    );
+
+    testWidgets('overlay renders the configured emergency number', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -658,11 +681,40 @@ void main() {
         ),
       );
       await _pump(tester, fake);
+      // remainingSeconds in the running state helper is 15, but the
+      // overlay caps at the step's confirmationDuration (default 5)
+      // via the controller-side remaining-time math. We don't assume
+      // the exact seconds here; we assert the number string is present
+      // somewhere in the heading.
       expect(
-        find.text(l10n.sessionStepCallEmergencyNumber(number)),
-        findsOneWidget,
+        find.textContaining(number),
+        findsAtLeastNWidgets(1),
+        reason: 'Overlay title should contain the override number.',
       );
+      // l10n key is wired correctly (heading uses combined string).
+      expect(l10n.sessionEmergencyConfirmTitle('x', 1), contains('x'));
     });
+
+    testWidgets(
+      'tapping Keep calling re-arms the overlay back to the simple status',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(
+            type: ChainStepType.callEmergency,
+            phase: SessionPhase.duration,
+          ),
+        );
+        await _pump(tester, fake);
+        expect(find.text(l10n.sessionEmergencyConfirmKeep), findsOneWidget);
+        await tester.tap(find.text(l10n.sessionEmergencyConfirmKeep));
+        await tester.pumpAndSettle();
+        // After dismissing, the overlay is gone and the underlying
+        // status label is shown again.
+        expect(find.text(l10n.sessionEmergencyConfirmKeep), findsNothing);
+        expect(find.text(l10n.sessionStepCallEmergencyStatus), findsOneWidget);
+      },
+    );
   });
 
   // ── Step: hardwareButton ──────────────────────────────────────────────────

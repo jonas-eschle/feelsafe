@@ -1990,5 +1990,17 @@
   "pastEventsTrashDeletePermanently": "Delete permanently",
   "@pastEventsTrashDeletePermanently": {"description": "Per-row Delete Permanently action / confirm-dialog title on the trash screen."},
   "pastEventsTrashDeletePermanentlyBody": "This action cannot be undone.",
-  "@pastEventsTrashDeletePermanentlyBody": {"description": "Confirm-dialog body for permanent deletion from the trash screen."}
+  "@pastEventsTrashDeletePermanentlyBody": {"description": "Confirm-dialog body for permanent deletion from the trash screen."},
+  "sessionEmergencyConfirmTitle": "Calling {number} in {seconds}s",
+  "@sessionEmergencyConfirmTitle": {"description": "Headline of the pre-dial emergency-confirmation overlay shown during the duration phase of a callEmergency step. Spec 02:457-460.", "placeholders": {"number": {"type": "String"}, "seconds": {"type": "int"}}},
+  "sessionEmergencyConfirmSwipe": "Swipe to cancel",
+  "@sessionEmergencyConfirmSwipe": {"description": "Label rendered along the SwipeSlider on the emergency-confirmation overlay (Extra 56)."},
+  "sessionEmergencyConfirmKeep": "Keep calling",
+  "@sessionEmergencyConfirmKeep": {"description": "FilledButton on the emergency-confirmation overlay that dismisses the overlay so the dial proceeds (spec 02:460)."},
+  "sessionEmergencyConfirmSimBadge": "[SIM] Practice mode",
+  "@sessionEmergencyConfirmSimBadge": {"description": "Orange [SIM] badge atop the emergency-confirmation overlay when the session is a simulation."},
+  "sessionEmergencyConfirmSimCancelled": "Simulated cancel — call would not have been placed",
+  "@sessionEmergencyConfirmSimCancelled": {"description": "Snackbar shown after the user swipes-to-cancel inside a simulated emergency-confirmation overlay; no real call ever happens in simulation."},
+  "swipeSliderSemantics": "Swipe to confirm",
+  "@swipeSliderSemantics": {"description": "Default screen-reader hint for SwipeSlider — read aloud after the slider's caller-supplied label."}
 }

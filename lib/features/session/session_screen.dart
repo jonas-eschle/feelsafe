@@ -9,6 +9,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/features/session/widgets/emergency_confirm_overlay.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -134,34 +135,78 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   }
 }
 
-class _SessionRoot extends ConsumerWidget {
+class _SessionRoot extends ConsumerStatefulWidget {
   const _SessionRoot({required this.state});
 
   final SessionState state;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_SessionRoot> createState() => _SessionRootState();
+}
+
+class _SessionRootState extends ConsumerState<_SessionRoot> {
+  /// Id of the call-emergency step the user has dismissed via
+  /// `[Keep calling]`. Cleared automatically when the step changes so
+  /// each fresh emergency step re-arms the overlay.
+  ///
+  /// Defaults to null (no step dismissed).
+  String? _dismissedEmergencyStepId;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
     if (state.priorInterrupted) {
       return _InterruptedPrompt(state: state);
     }
     if (state.distressConfirmRemaining != null) {
       return _DistressConfirmationOverlay(state: state);
     }
+    // If the active step changed (or no step is active), clear any
+    // stale dismissed-emergency id so a future emergency step re-arms
+    // the overlay.
+    final step = state.currentStep;
+    if (_dismissedEmergencyStepId != null &&
+        _dismissedEmergencyStepId != step?.id) {
+      // Use addPostFrameCallback so the setState lands outside build.
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() => _dismissedEmergencyStepId = null);
+      });
+    }
+    final showEmergencyOverlay =
+        step != null &&
+        step.type == ChainStepType.callEmergency &&
+        state.phase == SessionPhase.duration &&
+        _dismissedEmergencyStepId != step.id;
     return Stack(
       children: <Widget>[
-        _SessionBody(state: state),
+        _SessionBody(state: state, hideStepUi: showEmergencyOverlay),
         if (state.isSimulation) const _SimulationBanner(),
         if (state.needsGpsDestinationPrompt) const _GpsDestinationPrompt(),
         if (state.lastError != null) _ErrorBanner(message: state.lastError!),
+        if (showEmergencyOverlay)
+          EmergencyConfirmOverlay(
+            state: state,
+            step: step,
+            onKeepCalling: () =>
+                setState(() => _dismissedEmergencyStepId = step.id),
+          ),
       ],
     );
   }
 }
 
 class _SessionBody extends ConsumerWidget {
-  const _SessionBody({required this.state});
+  const _SessionBody({required this.state, this.hideStepUi = false});
 
   final SessionState state;
+
+  /// When true the step-specific UI is replaced with a [SizedBox.shrink]
+  /// so an overlay (e.g. [EmergencyConfirmOverlay]) can take the
+  /// foreground without rendering duplicate content underneath.
+  ///
+  /// Defaults to false.
+  final bool hideStepUi;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -178,45 +223,41 @@ class _SessionBody extends ConsumerWidget {
             const SizedBox(height: 12),
             Expanded(
               child: Center(
-                child: switch (step?.type) {
-                  null => Text(l10n.sessionPhaseEnded),
-                  ChainStepType.holdButton => _HoldButtonStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.disguisedReminder => _DisguisedReminderStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.countdownWarning => _CountdownWarningStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.fakeCall => _FakeCallStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.smsContact => _SmsContactStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.phoneCallContact => _PhoneCallContactStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.loudAlarm => _LoudAlarmStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.callEmergency => _CallEmergencyStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                  ChainStepType.hardwareButton => _HardwareButtonStepUi(
-                    state: state,
-                    step: step!,
-                  ),
-                },
+                child: hideStepUi
+                    ? const SizedBox.shrink()
+                    : switch (step?.type) {
+                        null => Text(l10n.sessionPhaseEnded),
+                        ChainStepType.holdButton => _HoldButtonStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                        ChainStepType.disguisedReminder =>
+                          _DisguisedReminderStepUi(state: state, step: step!),
+                        ChainStepType.countdownWarning =>
+                          _CountdownWarningStepUi(state: state, step: step!),
+                        ChainStepType.fakeCall => _FakeCallStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                        ChainStepType.smsContact => _SmsContactStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                        ChainStepType.phoneCallContact =>
+                          _PhoneCallContactStepUi(state: state, step: step!),
+                        ChainStepType.loudAlarm => _LoudAlarmStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                        ChainStepType.callEmergency => _CallEmergencyStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                        ChainStepType.hardwareButton => _HardwareButtonStepUi(
+                          state: state,
+                          step: step!,
+                        ),
+                      },
               ),
             ),
             const SizedBox(height: 12),

@@ -5513,6 +5513,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This action cannot be undone.'**
   String get pastEventsTrashDeletePermanentlyBody;
+
+  /// Headline of the pre-dial emergency-confirmation overlay shown during the duration phase of a callEmergency step. Spec 02:457-460.
+  ///
+  /// In en, this message translates to:
+  /// **'Calling {number} in {seconds}s'**
+  String sessionEmergencyConfirmTitle(String number, int seconds);
+
+  /// Label rendered along the SwipeSlider on the emergency-confirmation overlay (Extra 56).
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to cancel'**
+  String get sessionEmergencyConfirmSwipe;
+
+  /// FilledButton on the emergency-confirmation overlay that dismisses the overlay so the dial proceeds (spec 02:460).
+  ///
+  /// In en, this message translates to:
+  /// **'Keep calling'**
+  String get sessionEmergencyConfirmKeep;
+
+  /// Orange [SIM] badge atop the emergency-confirmation overlay when the session is a simulation.
+  ///
+  /// In en, this message translates to:
+  /// **'[SIM] Practice mode'**
+  String get sessionEmergencyConfirmSimBadge;
+
+  /// Snackbar shown after the user swipes-to-cancel inside a simulated emergency-confirmation overlay; no real call ever happens in simulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulated cancel — call would not have been placed'**
+  String get sessionEmergencyConfirmSimCancelled;
+
+  /// Default screen-reader hint for SwipeSlider — read aloud after the slider's caller-supplied label.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to confirm'**
+  String get swipeSliderSemantics;
 }
 
 class _AppLocalizationsDelegate
