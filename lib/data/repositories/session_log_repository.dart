@@ -72,6 +72,11 @@ class SessionLogRepository {
     await _dao.restore(id);
   }
 
+  /// Hard-deletes every trashed row. Used by the Past Events Trash
+  /// "Empty trash" action (spec 04 §Past Events Trash). Returns the
+  /// number of rows deleted.
+  Future<int> hardDeleteAllTrashed() => _dao.hardDeleteAllTrashed();
+
   /// Deletes every non-critical log whose reference time
   /// (`endedAt` if set, else `startedAt`) is strictly older than
   /// `now - Duration(days: retentionDays)`, AND every trashed log

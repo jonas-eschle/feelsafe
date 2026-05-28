@@ -21,12 +21,13 @@ void main() {
   });
 
   group('schema regression', () {
-    test('schema version is 3 (Phase 6 gap-5)', () {
+    test('schema version is 4 (Phase 6 fix-b6)', () {
       // Phase 4 shipped v1; Phase 6c bumps to v2 (added
       // session_logs.deleted_at_ms); Phase 6 gap-5 bumps to v3
-      // (added session_modes.is_built_in). Bumping triggers
+      // (added session_modes.is_built_in); Phase 6 fix-b6 bumps to v4
+      // (added the feedback_history table). Bumping triggers
       // nuke-and-reseed (pre-alpha policy).
-      check(db.schemaVersion).equals(3);
+      check(db.schemaVersion).equals(4);
     });
 
     test('contacts table columns match spec 03 §EmergencyContact', () {

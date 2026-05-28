@@ -141,6 +141,15 @@ class PastEventsTrashController extends AsyncNotifier<PastEventsTrashState> {
     await repo.deleteById(id);
     ref.invalidateSelf();
   }
+
+  /// Hard-deletes every trashed row at once (spec 04 §Past Events
+  /// Trash — Empty trash action). Returns the count of rows purged.
+  Future<int> emptyTrash() async {
+    final repo = await ref.read(sessionLogRepositoryProvider.future);
+    final count = await repo.hardDeleteAllTrashed();
+    ref.invalidateSelf();
+    return count;
+  }
 }
 
 /// Provides [PastEventsTrashController].

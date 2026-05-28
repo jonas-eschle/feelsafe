@@ -177,8 +177,12 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         appBar: AppBar(
           title: Text(
             widget.modeId == null
-                ? l10n.modeEditorTitleCreate
-                : l10n.modeEditorTitleEdit,
+                ? (widget.isDistress
+                      ? l10n.distressModeEditorTitleCreate
+                      : l10n.modeEditorTitleCreate)
+                : (widget.isDistress
+                      ? l10n.distressModeEditorTitleEdit
+                      : l10n.modeEditorTitleEdit),
           ),
           actions: <Widget>[
             TextButton(onPressed: _save, child: Text(l10n.commonSave)),

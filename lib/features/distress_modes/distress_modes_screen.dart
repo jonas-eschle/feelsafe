@@ -41,7 +41,7 @@ class DistressModesScreen extends ConsumerWidget {
         error: (Object e, _) => Center(child: Text('Error: $e')),
         data: (state) {
           if (state.modes.isEmpty) {
-            return Center(child: Text(l10n.modesEmpty));
+            return Center(child: Text(l10n.distressModesEmpty));
           }
           return ListView.builder(
             itemCount: state.modes.length,
@@ -49,6 +49,7 @@ class DistressModesScreen extends ConsumerWidget {
               final m = state.modes[i];
               final isDefault = state.defaultId == m.id;
               final isLast = state.modes.length == 1;
+              final isInUse = state.referencedIds.contains(m.id);
               return ListTile(
                 leading: const Icon(Icons.warning_amber_outlined),
                 title: Row(
@@ -82,6 +83,13 @@ class DistressModesScreen extends ConsumerWidget {
                             .setDefault(m.id);
                       case 'delete':
                         if (isLast || isDefault) return;
+                        if (isInUse) {
+                          if (!context.mounted) return;
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text(l10n.modesDistressInUse)),
+                          );
+                          return;
+                        }
                         await ref
                             .read(distressModesControllerProvider.notifier)
                             .delete(m.id);
@@ -103,8 +111,15 @@ class DistressModesScreen extends ConsumerWidget {
                       ),
                     PopupMenuItem<String>(
                       value: 'delete',
-                      enabled: !isLast && !isDefault,
-                      child: Text(l10n.commonDelete),
+                      enabled: !isLast && !isDefault && !isInUse,
+                      child: Tooltip(
+                        message: isLast
+                            ? l10n.modesDistressCantDeleteLast
+                            : isInUse
+                                ? l10n.modesDistressInUse
+                                : '',
+                        child: Text(l10n.commonDelete),
+                      ),
                     ),
                   ],
                 ),

@@ -69,7 +69,13 @@ class _FakeDistressModesController extends DistressModesController {
     lastSetDefaultId = id;
     final current = state.value;
     if (current == null) return;
-    state = AsyncData(DistressModesState(modes: current.modes, defaultId: id));
+    state = AsyncData(
+      DistressModesState(
+        modes: current.modes,
+        defaultId: id,
+        referencedIds: current.referencedIds,
+      ),
+    );
   }
 
   @override
@@ -82,6 +88,7 @@ class _FakeDistressModesController extends DistressModesController {
       DistressModesState(
         modes: current.modes.where((m) => m.id != id).toList(),
         defaultId: current.defaultId,
+        referencedIds: current.referencedIds,
       ),
     );
   }
@@ -120,8 +127,15 @@ SessionMode _mode(String id, String name) => SessionMode(
   chainSteps: <ChainStep>[_step('$id-s0')],
 );
 
-DistressModesState _state({List<SessionMode>? modes, String? defaultId}) =>
-    DistressModesState(modes: modes ?? <SessionMode>[], defaultId: defaultId);
+DistressModesState _state({
+  List<SessionMode>? modes,
+  String? defaultId,
+  Set<String>? referencedIds,
+}) => DistressModesState(
+  modes: modes ?? <SessionMode>[],
+  defaultId: defaultId,
+  referencedIds: referencedIds ?? <String>{},
+);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -303,7 +317,7 @@ void main() {
         const DistressModesScreen(),
         overrides: _overrideWith(fake),
       );
-      expect(find.text(l10n.modesEmpty), findsOneWidget);
+      expect(find.text(l10n.distressModesEmpty), findsOneWidget);
     });
 
     testWidgets('no ListTile when list is empty', (WidgetTester tester) async {

@@ -23,6 +23,7 @@ import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
+import 'package:guardianangela/data/repositories/feedback_history_repository.dart';
 import 'package:guardianangela/data/repositories/json_singleton_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
@@ -33,6 +34,7 @@ import 'package:guardianangela/services/backup_service.dart';
 import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
+import 'package:guardianangela/services/device_info_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
 import 'package:guardianangela/services/hardware_button_service.dart';
@@ -70,7 +72,6 @@ import 'package:guardianangela/services/screen_flash_service.dart';
 import 'package:guardianangela/services/sentry_service.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/session_start_validator.dart';
-import 'package:guardianangela/services/device_info_service.dart';
 import 'package:guardianangela/services/system_ui_service.dart';
 import 'package:guardianangela/services/vibration_service.dart';
 import 'package:guardianangela/services/wakelock_service.dart';
@@ -159,6 +160,17 @@ final sessionLogRepositoryProvider = FutureProvider<SessionLogRepository>((
   final db = await ref.watch(databaseProvider.future);
   return SessionLogRepository(db.sessionLogsDao);
 });
+
+/// [FeedbackHistoryRepository] backed by the Drift database.
+///
+/// Spec 04 §Feedback Form: the screen writes locally before opening
+/// the mailto link so the user keeps a copy regardless of the email
+/// round-trip outcome.
+final feedbackHistoryRepositoryProvider =
+    FutureProvider<FeedbackHistoryRepository>((ref) async {
+      final db = await ref.watch(databaseProvider.future);
+      return FeedbackHistoryRepository(db.feedbackHistoryDao);
+    });
 
 // ---- Output / sensor services ----
 

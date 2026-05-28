@@ -12,6 +12,7 @@ class SettingsHubState {
     required this.themeMode,
     required this.languageCode,
     required this.stealthEnabled,
+    required this.emergencyCallNumber,
   });
 
   /// Selected theme mode.
@@ -22,6 +23,9 @@ class SettingsHubState {
 
   /// Whether stealth mode is currently enabled.
   final bool stealthEnabled;
+
+  /// Active emergency-call number (default `'112'`).
+  final String emergencyCallNumber;
 }
 
 /// Controller for the settings hub.
@@ -33,7 +37,16 @@ class SettingsController extends AsyncNotifier<SettingsHubState> {
       themeMode: settings.themeMode,
       languageCode: settings.languageCode,
       stealthEnabled: settings.defaults.stealth.enabled,
+      emergencyCallNumber: settings.emergencyCallNumber,
     );
+  }
+
+  /// Updates the emergency-call number and persists.
+  Future<void> setEmergencyCallNumber(String number) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(settings.copyWith(emergencyCallNumber: number));
+    ref.invalidateSelf();
   }
 
   /// Updates the theme mode and persists.

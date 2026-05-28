@@ -1889,19 +1889,8 @@ Central hub for app configuration.
 │  ───── pride divider ──────  │
 │                              │
 │  STEALTH MODE                │
-│  ┌──────────────────────────┐│
-│  │ Stealth: OFF          ▼  ││ (collapsed; tap to expand)
-│  │ (or "Stealth: ON (3      ││
-│  │  options configured)")   ││
-│  │                          ││
-│  │ When expanded:           ││
-│  │ ☐ Enable Stealth         ││ (toggle)
-│  │ Fake App Name: [field]   ││ (shown when enabled)
-│  │ ☐ Fake Icon              ││ (shown when enabled)
-│  │ ☐ Notification Disguise  ││ (shown when enabled)
-│  │ Timer: Normal/Small/None ││ (shown when enabled)
-│  │ ☐ Session Screen Stealth ││ (shown when enabled)
-│  └──────────────────────────┘│
+│  > Tap to open Stealth subscreen │ (routed; superseded inline card)
+│  (See §SettingsStealthScreen) │
 │                              │
 │  ───── pride divider ──────  │
 │                              │
@@ -2105,7 +2094,7 @@ Each step type is an `ExpansionTile`. Tapping a step type expands it **inline** 
 **Behavior:**
 - Tap any step type → expands inline (ExpansionTile), showing the same two-tier config layout as mode editor steps
 - All 9 step types shown; multiple can be open simultaneously
-- Changes auto-save on collapse
+- Changes auto-save on each edit (matches the implemented behaviour; the previous "save on collapse" wording was harder to reason about and is superseded)
 
 ## Templates Screen (`/settings/reminder-templates`)
 
@@ -2171,7 +2160,7 @@ steps (if randomizeTemplateOrder is enabled)"
 
 The config fields shown when a step type is expanded in Event Defaults are the same fields previously described for the detail screen, now rendered inline. The LogarithmicSlider requirement applies here:
 
-All time-based sliders MUST display the actual current value next to the slider (e.g., "30s", "2m 15s"). The Randomize toggle shows the resulting jitter range: "30s ± 6s (24–36s)". Changes auto-save on collapse.
+All time-based sliders MUST display the actual current value next to the slider (e.g., "30s", "2m 15s"). The Randomize toggle shows the resulting jitter range: "30s ± 6s (24–36s)". Changes auto-save on each edit (matches the implemented behaviour).
 
 A [Preview] button inside the expanded section simulates the step locally (shows the actual step UI, as in simulation mode).
 

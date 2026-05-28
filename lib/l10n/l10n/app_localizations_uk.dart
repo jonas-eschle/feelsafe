@@ -1170,6 +1170,14 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsEmergencyNumberLabel => 'Номер екстреної служби';
 
   @override
+  String get settingsRedoOnboardingActiveSessionTooltip =>
+      'Cannot redo onboarding during an active session';
+
+  @override
+  String get settingsEmergencyNumberCountryPickerTitle =>
+      'Choose emergency number';
+
+  @override
   String get settingsEmergencyNumberHint => 'напр., 112';
 
   @override
@@ -2264,7 +2272,7 @@ class AppLocalizationsUk extends AppLocalizations {
   String get gpsLoggingFormatDms => 'DMS';
 
   @override
-  String get gpsLoggingFormatAddress => 'Address';
+  String get gpsLoggingFormatAddress => 'Plus Code';
 
   @override
   String get gpsLoggingIncludeInSms => 'Append location to SMS';
@@ -2642,6 +2650,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'At least one distress mode is required.';
 
   @override
+  String get modesDistressInUse =>
+      'This distress mode is in use by another mode.';
+
+  @override
   String get modesDistressTitle => 'Distress modes';
 
   @override
@@ -2894,6 +2906,21 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get pastEventsTrashEmpty => 'Trash is empty';
+
+  @override
+  String get pastEventsTrashEmptyAll => 'Empty trash';
+
+  @override
+  String get pastEventsTrashEmptyAllConfirmTitle => 'Empty trash?';
+
+  @override
+  String get pastEventsTrashEmptyAllConfirmBody =>
+      'Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.';
+
+  @override
+  String pastEventsTrashEmptyAllSuccess(Object count) {
+    return 'Trash emptied ($count logs)';
+  }
 
   @override
   String pastEventsTrashRetentionNote(int days) {

@@ -198,9 +198,7 @@ class _ProfileContactPageState extends ConsumerState<_ProfileContactPage> {
         _phoneCtl.text = number;
       case SimNumberPermissionDenied():
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(l10n.onboardingUseSimNumberPermissionDenied),
-          ),
+          SnackBar(content: Text(l10n.onboardingUseSimNumberPermissionDenied)),
         );
       case SimNumberUnsupported():
         ScaffoldMessenger.of(context).showSnackBar(

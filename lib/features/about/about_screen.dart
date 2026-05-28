@@ -56,16 +56,16 @@ class _AboutScreenState extends State<AboutScreen> {
     final String current = kIsWeb
         ? 'Web'
         : Platform.isAndroid
-            ? 'Android'
-            : Platform.isIOS
-                ? 'iOS'
-                : Platform.isLinux
-                    ? 'Linux'
-                    : Platform.isMacOS
-                        ? 'macOS'
-                        : Platform.isWindows
-                            ? 'Windows'
-                            : Platform.operatingSystem;
+        ? 'Android'
+        : Platform.isIOS
+        ? 'iOS'
+        : Platform.isLinux
+        ? 'Linux'
+        : Platform.isMacOS
+        ? 'macOS'
+        : Platform.isWindows
+        ? 'Windows'
+        : Platform.operatingSystem;
     final marked = supported
         .map((p) => p == current ? '$p (current)' : p)
         .toList();

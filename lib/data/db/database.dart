@@ -6,11 +6,13 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 import 'package:guardianangela/data/db/dao/contacts_dao.dart';
+import 'package:guardianangela/data/db/dao/feedback_history_dao.dart';
 import 'package:guardianangela/data/db/dao/reminder_templates_dao.dart';
 import 'package:guardianangela/data/db/dao/session_logs_dao.dart';
 import 'package:guardianangela/data/db/dao/session_modes_dao.dart';
 import 'package:guardianangela/data/db/dao/sms_retry_jobs_dao.dart';
 import 'package:guardianangela/data/db/tables/contacts_table.dart';
+import 'package:guardianangela/data/db/tables/feedback_history_table.dart';
 import 'package:guardianangela/data/db/tables/reminder_templates_table.dart';
 import 'package:guardianangela/data/db/tables/session_logs_table.dart';
 import 'package:guardianangela/data/db/tables/session_modes_table.dart';
@@ -39,6 +41,7 @@ typedef SeedCallback = Future<void> Function(GuardianAngelaDatabase db);
     SessionModes,
     SessionLogs,
     SmsRetryJobs,
+    FeedbackHistory,
   ],
   daos: [
     ContactsDao,
@@ -46,6 +49,7 @@ typedef SeedCallback = Future<void> Function(GuardianAngelaDatabase db);
     SessionModesDao,
     SessionLogsDao,
     SmsRetryJobsDao,
+    FeedbackHistoryDao,
   ],
 )
 class GuardianAngelaDatabase extends _$GuardianAngelaDatabase {
@@ -82,8 +86,10 @@ class GuardianAngelaDatabase extends _$GuardianAngelaDatabase {
   ///   04:2455–2459 trash retention flow.
   /// - v3 (Phase 6 gap-5): added [SessionModes.isBuiltIn] for the spec
   ///   04 §Modes Screen built-in protection.
+  /// - v4 (Phase 6 fix-b6): added [FeedbackHistory] for the spec 04
+  ///   §Feedback Form local persistence.
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

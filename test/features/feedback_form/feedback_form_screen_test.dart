@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/domain/enums/feedback_type.dart';
 import 'package:guardianangela/features/feedback_form/feedback_form_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
@@ -133,11 +134,20 @@ Future<void> _pumpWithRouter(
 // Finders
 // ---------------------------------------------------------------------------
 
-/// Finds the [DropdownButtonFormField] for the category selector.
-Finder _categoryDropdown() => find.byType(DropdownButtonFormField<String>);
+/// Finds the [RadioGroup] for the category selector.
+Finder _categoryGroup() => find.byType(RadioGroup<FeedbackType>);
 
-/// Finds the [FilledButton] (Send).
-Finder _sendButton() => find.byType(FilledButton);
+/// Finds the [FilledButton] (Send) — pass skipOffstage:false so the
+/// finder picks up the button even when it sits below the viewport in
+/// the ListView's lazy build.
+Finder _sendButton() => find.byType(FilledButton, skipOffstage: false);
+
+/// Ensures the Send button is laid out, then taps it.
+Future<void> _tapSend(WidgetTester tester) async {
+  await tester.ensureVisible(_sendButton());
+  await tester.pumpAndSettle();
+  await tester.tap(_sendButton());
+}
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -186,9 +196,15 @@ void main() {
       expect(find.text(l10n.feedbackHeading), findsOneWidget);
     });
 
-    testWidgets('renders the category dropdown', (WidgetTester tester) async {
+    testWidgets('renders the category radio group', (
+      WidgetTester tester,
+    ) async {
       await pumpScreen(tester, const FeedbackFormScreen());
-      expect(_categoryDropdown(), findsOneWidget);
+      expect(_categoryGroup(), findsOneWidget);
+      expect(
+        find.byType(RadioListTile<FeedbackType>),
+        findsNWidgets(FeedbackType.values.length),
+      );
     });
 
     testWidgets('renders the email text field label', (
@@ -219,61 +235,47 @@ void main() {
     testWidgets('renders the Send FilledButton', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const FeedbackFormScreen());
-      expect(_sendButton(), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text(l10n.feedbackSend),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.byType(FilledButton), findsOneWidget);
       expect(find.text(l10n.feedbackSend), findsOneWidget);
     });
   });
 
   // -------------------------------------------------------------------------
-  // Category dropdown — default and options
+  // Category radio group — default and options
   // -------------------------------------------------------------------------
 
-  group('FeedbackFormScreen — category dropdown', () {
-    testWidgets('default category shows Bug report', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
+  group('FeedbackFormScreen — category radio group', () {
+    testWidgets('default category is Bug', (WidgetTester tester) async {
       await pumpScreen(tester, const FeedbackFormScreen());
-      expect(find.text(l10n.feedbackCategoryBug), findsOneWidget);
+      final group = tester.widget<RadioGroup<FeedbackType>>(_categoryGroup());
+      check(group.groupValue).equals(FeedbackType.bug);
     });
 
-    testWidgets('opening dropdown reveals all three options', (
+    testWidgets('selecting Feature switches the group value', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const FeedbackFormScreen());
-      await tester.tap(_categoryDropdown());
+      await tester.tap(find.text(l10n.feedbackCategoryFeature));
       await tester.pumpAndSettle();
-      // Bug appears twice: as the selected value and in the menu.
-      expect(find.text(l10n.feedbackCategoryBug), findsWidgets);
-      expect(find.text(l10n.feedbackCategoryFeature), findsOneWidget);
-      expect(find.text(l10n.feedbackCategoryOther), findsOneWidget);
+      final group = tester.widget<RadioGroup<FeedbackType>>(_categoryGroup());
+      check(group.groupValue).equals(FeedbackType.feature);
     });
 
-    testWidgets('selecting Feature request updates the displayed value', (
+    testWidgets('selecting Other switches the group value', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const FeedbackFormScreen());
-      await tester.tap(_categoryDropdown());
+      await tester.tap(find.text(l10n.feedbackCategoryOther));
       await tester.pumpAndSettle();
-      // Tap the menu item (last occurrence, inside the dropdown overlay).
-      await tester.tap(find.text(l10n.feedbackCategoryFeature).last);
-      await tester.pumpAndSettle();
-      expect(find.text(l10n.feedbackCategoryFeature), findsOneWidget);
-      expect(find.text(l10n.feedbackCategoryBug), findsNothing);
-    });
-
-    testWidgets('selecting Other updates the displayed value', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await pumpScreen(tester, const FeedbackFormScreen());
-      await tester.tap(_categoryDropdown());
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.feedbackCategoryOther).last);
-      await tester.pumpAndSettle();
-      expect(find.text(l10n.feedbackCategoryOther), findsOneWidget);
+      final group = tester.widget<RadioGroup<FeedbackType>>(_categoryGroup());
+      check(group.groupValue).equals(FeedbackType.other);
     });
   });
 
@@ -287,7 +289,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const FeedbackFormScreen());
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump();
       expect(find.text(l10n.feedbackMessageRequired), findsOneWidget);
       check(launcher.calls).isEmpty();
@@ -300,7 +302,7 @@ void main() {
       await pumpScreen(tester, const FeedbackFormScreen());
       await tester.enterText(find.byType(TextField).last, 'Too short');
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump();
       expect(find.text(l10n.feedbackMessageRequired), findsOneWidget);
       check(launcher.calls).isEmpty();
@@ -314,7 +316,7 @@ void main() {
       // 10 spaces trims to empty — validation must fail.
       await tester.enterText(find.byType(TextField).last, '          ');
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump();
       expect(find.text(l10n.feedbackMessageRequired), findsOneWidget);
       check(launcher.calls).isEmpty();
@@ -333,7 +335,7 @@ void main() {
         'This is a valid message.',
       );
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pumpAndSettle();
       check(launcher.calls).isNotEmpty();
     });
@@ -347,7 +349,7 @@ void main() {
         'This is a valid message.',
       );
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pumpAndSettle();
       final urlArg = launcher.calls.first.arguments.toString();
       check(urlArg).contains('mailto');
@@ -363,7 +365,7 @@ void main() {
         'This is a valid message.',
       );
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump(); // trigger the snackbar animation
       // findsWidgets: the SnackBar may duplicate text in the a11y tree.
       expect(find.text(l10n.feedbackSent), findsWidgets);
@@ -377,7 +379,7 @@ void main() {
       // Exactly 10 non-whitespace characters.
       await tester.enterText(find.byType(TextField).last, '1234567890');
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump();
       expect(find.text(l10n.feedbackMessageRequired), findsNothing);
       // findsWidgets: SnackBar text may appear in both the widget and a11y.
@@ -395,7 +397,7 @@ void main() {
         'Valid message text.',
       );
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pump();
       // findsWidgets: SnackBar text may appear in both the widget and a11y.
       expect(find.text(l10n.feedbackSent), findsWidgets);
@@ -414,7 +416,7 @@ void main() {
         'Valid message text.',
       );
       await tester.pump();
-      await tester.tap(_sendButton());
+      await _tapSend(tester);
       await tester.pumpAndSettle();
       check(launcher.calls).isNotEmpty();
     });
@@ -516,6 +518,11 @@ void main() {
     testWidgets('Send button text is non-empty', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(tester, const FeedbackFormScreen());
+      await tester.scrollUntilVisible(
+        find.text(l10n.feedbackSend),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text(l10n.feedbackSend), findsOneWidget);
     });
 
@@ -540,10 +547,8 @@ void main() {
         final l10n = await loadL10n(const Locale('en'));
         await _pumpWithRouter(tester);
 
-        // Change category to Feature request.
-        await tester.tap(_categoryDropdown());
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.feedbackCategoryFeature).last);
+        // Change category to Feature request via the radio group.
+        await tester.tap(find.text(l10n.feedbackCategoryFeature));
         await tester.pumpAndSettle();
 
         // Fill email.
@@ -562,7 +567,7 @@ void main() {
         await tester.pump();
 
         // Send.
-        await tester.tap(_sendButton());
+        await _tapSend(tester);
         await tester.pump();
 
         // findsWidgets: SnackBar text may appear in both the widget and a11y.

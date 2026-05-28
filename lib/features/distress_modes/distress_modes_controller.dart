@@ -12,13 +12,22 @@ import 'package:guardianangela/services/service_providers.dart';
 @immutable
 class DistressModesState {
   /// Creates a [DistressModesState].
-  const DistressModesState({required this.modes, required this.defaultId});
+  const DistressModesState({
+    required this.modes,
+    required this.defaultId,
+    required this.referencedIds,
+  });
 
   /// Visible distress modes.
   final List<SessionMode> modes;
 
   /// Id of the currently default distress mode, or null.
   final String? defaultId;
+
+  /// Ids of distress modes that are currently referenced by at least
+  /// one regular mode's `distressModeId`. Such rows cannot be deleted
+  /// until the referencing modes drop the link.
+  final Set<String> referencedIds;
 }
 
 /// Controller for the distress modes list.
@@ -27,10 +36,16 @@ class DistressModesController extends AsyncNotifier<DistressModesState> {
   Future<DistressModesState> build() async {
     final db = await ref.watch(databaseProvider.future);
     final modes = await db.sessionModesDao.getDistressModes();
+    final all = await db.sessionModesDao.getAll();
+    final referenced = <String>{
+      for (final SessionMode m in all)
+        if (!m.isDistressMode && m.distressModeId != null) m.distressModeId!,
+    };
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     return DistressModesState(
       modes: modes,
       defaultId: settings.defaults.defaultDistressModeId,
+      referencedIds: referenced,
     );
   }
 
@@ -88,13 +103,15 @@ class DistressModesController extends AsyncNotifier<DistressModesState> {
     ref.invalidateSelf();
   }
 
-  /// Deletes [id]; refuses to delete the default or last remaining mode.
+  /// Deletes [id]; refuses to delete the default, the last remaining
+  /// mode, or any mode currently referenced by another regular mode.
   Future<void> delete(String id) async {
     final db = await ref.read(databaseProvider.future);
     final current = state.value;
     if (current == null) return;
     if (current.defaultId == id) return;
     if (current.modes.length <= 1) return;
+    if (current.referencedIds.contains(id)) return;
     await db.sessionModesDao.deleteById(id);
     ref.invalidateSelf();
   }

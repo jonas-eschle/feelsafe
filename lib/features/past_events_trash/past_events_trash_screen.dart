@@ -24,12 +24,108 @@ class PastEventsTrashScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final stateAsync = ref.watch(pastEventsTrashControllerProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.pastEventsTrashTitle)),
+      appBar: AppBar(
+        title: Text(l10n.pastEventsTrashTitle),
+        actions: <Widget>[
+          PopupMenuButton<String>(
+            onSelected: (String key) {
+              if (key == 'empty') _confirmEmptyTrash(context, ref);
+            },
+            itemBuilder: (_) => <PopupMenuEntry<String>>[
+              PopupMenuItem<String>(
+                value: 'empty',
+                child: Text(l10n.pastEventsTrashEmptyAll),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (Object e, _) => Center(child: Text('Error: $e')),
         data: (PastEventsTrashState state) => _TrashBody(state: state),
       ),
+    );
+  }
+
+  Future<void> _confirmEmptyTrash(BuildContext context, WidgetRef ref) async {
+    final l10n = AppLocalizations.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) =>
+          const _TypedConfirmDialog(expected: 'EMPTY TRASH'),
+    );
+    if (ok ?? false) {
+      final count = await ref
+          .read(pastEventsTrashControllerProvider.notifier)
+          .emptyTrash();
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.pastEventsTrashEmptyAllSuccess(count)),
+        ),
+      );
+    }
+  }
+}
+
+/// Double-confirmation dialog that requires the user to type the
+/// [expected] string verbatim before the FilledButton enables.
+class _TypedConfirmDialog extends StatefulWidget {
+  const _TypedConfirmDialog({required this.expected});
+
+  final String expected;
+
+  @override
+  State<_TypedConfirmDialog> createState() => _TypedConfirmDialogState();
+}
+
+class _TypedConfirmDialogState extends State<_TypedConfirmDialog> {
+  final TextEditingController _ctl = TextEditingController();
+  bool _match = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctl.addListener(() {
+      final next = _ctl.text == widget.expected;
+      if (next != _match) setState(() => _match = next);
+    });
+  }
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.pastEventsTrashEmptyAllConfirmTitle),
+      content: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(l10n.pastEventsTrashEmptyAllConfirmBody),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _ctl,
+            autofocus: true,
+            decoration: InputDecoration(hintText: widget.expected),
+          ),
+        ],
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(false),
+          child: Text(l10n.commonCancel),
+        ),
+        FilledButton(
+          onPressed: _match ? () => Navigator.of(context).pop(true) : null,
+          child: Text(l10n.pastEventsTrashEmptyAll),
+        ),
+      ],
     );
   }
 }

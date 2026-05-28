@@ -49,6 +49,7 @@ class _FakeSettingsController extends SettingsController {
         themeMode: mode,
         languageCode: _initial.languageCode,
         stealthEnabled: _initial.stealthEnabled,
+        emergencyCallNumber: _initial.emergencyCallNumber,
       ),
     );
   }
@@ -62,6 +63,7 @@ class _FakeSettingsController extends SettingsController {
         themeMode: _initial.themeMode,
         languageCode: code,
         stealthEnabled: _initial.stealthEnabled,
+        emergencyCallNumber: _initial.emergencyCallNumber,
       ),
     );
   }
@@ -80,10 +82,12 @@ SettingsHubState _defaultState({
   AppThemeMode themeMode = AppThemeMode.system,
   String languageCode = 'en',
   bool stealthEnabled = false,
+  String emergencyCallNumber = '112',
 }) => SettingsHubState(
   themeMode: themeMode,
   languageCode: languageCode,
   stealthEnabled: stealthEnabled,
+  emergencyCallNumber: emergencyCallNumber,
 );
 
 // ---------------------------------------------------------------------------

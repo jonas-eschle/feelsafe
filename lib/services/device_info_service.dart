@@ -38,8 +38,9 @@ class RealDeviceInfoService implements DeviceInfoServiceProtocol {
       return const SimNumberUnsupported();
     }
     try {
-      final String? number = await _kDeviceInfoChannel
-          .invokeMethod<String>('getSimPhoneNumber');
+      final String? number = await _kDeviceInfoChannel.invokeMethod<String>(
+        'getSimPhoneNumber',
+      );
       if (number == null || number.isEmpty) {
         return const SimNumberUnavailable();
       }

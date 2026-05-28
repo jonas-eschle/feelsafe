@@ -2279,6 +2279,18 @@ abstract class AppLocalizations {
   /// **'Emergency number'**
   String get settingsEmergencyNumberLabel;
 
+  /// Tooltip on the disabled Redo Onboarding row while a session runs.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot redo onboarding during an active session'**
+  String get settingsRedoOnboardingActiveSessionTooltip;
+
+  /// Title of the bottom sheet for picking an emergency-number preset.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose emergency number'**
+  String get settingsEmergencyNumberCountryPickerTitle;
+
   /// TextField hint inside the emergency-number dialog.
   ///
   /// In en, this message translates to:
@@ -4265,10 +4277,10 @@ abstract class AppLocalizations {
   /// **'DMS'**
   String get gpsLoggingFormatDms;
 
-  /// GPS format address.
+  /// GPS format Plus Code (Open Location Code).
   ///
   /// In en, this message translates to:
-  /// **'Address'**
+  /// **'Plus Code'**
   String get gpsLoggingFormatAddress;
 
   /// Toggle to include GPS in SMS.
@@ -4979,6 +4991,12 @@ abstract class AppLocalizations {
   /// **'At least one distress mode is required.'**
   String get modesDistressCantDeleteLast;
 
+  /// Tooltip / snackbar when delete is disabled because another mode references this one as its distressModeId.
+  ///
+  /// In en, this message translates to:
+  /// **'This distress mode is in use by another mode.'**
+  String get modesDistressInUse;
+
   /// Title of distress modes list.
   ///
   /// In en, this message translates to:
@@ -5446,6 +5464,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Trash is empty'**
   String get pastEventsTrashEmpty;
+
+  /// Overflow menu action to delete every trashed log.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty trash'**
+  String get pastEventsTrashEmptyAll;
+
+  /// Empty-trash confirm dialog title.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty trash?'**
+  String get pastEventsTrashEmptyAllConfirmTitle;
+
+  /// Empty-trash confirm dialog body.
+  ///
+  /// In en, this message translates to:
+  /// **'Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.'**
+  String get pastEventsTrashEmptyAllConfirmBody;
+
+  /// Snackbar after empty-trash.
+  ///
+  /// In en, this message translates to:
+  /// **'Trash emptied ({count} logs)'**
+  String pastEventsTrashEmptyAllSuccess(Object count);
 
   /// Retention note shown at the top of the trash screen.
   ///
