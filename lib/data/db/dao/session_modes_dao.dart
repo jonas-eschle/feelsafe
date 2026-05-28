@@ -99,6 +99,7 @@ class SessionModesDao extends DatabaseAccessor<GuardianAngelaDatabase>
       maxPauseMinutes: row.maxPauseMinutes,
       isDistressMode: row.isDistressMode,
       allowDisarmAsDistress: row.allowDisarmAsDistress,
+      isBuiltIn: row.isBuiltIn,
     );
   }
 
@@ -127,5 +128,6 @@ class SessionModesDao extends DatabaseAccessor<GuardianAngelaDatabase>
         maxPauseMinutes: Value(m.maxPauseMinutes),
         isDistressMode: Value(m.isDistressMode),
         allowDisarmAsDistress: Value(m.allowDisarmAsDistress),
+        isBuiltIn: Value(m.isBuiltIn),
       );
 }

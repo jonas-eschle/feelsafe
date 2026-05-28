@@ -10,11 +10,11 @@ import 'package:guardianangela/data/seed_data.dart';
 void main() {
   group('GuardianAngelaDatabase', () {
     test(
-      'schemaVersion is 2 (Phase 6c — added session_logs.deleted_at_ms)',
+      'schemaVersion is 3 (Phase 6 gap-5 — added session_modes.is_built_in)',
       () {
         final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
         try {
-          check(db.schemaVersion).equals(2);
+          check(db.schemaVersion).equals(3);
         } finally {
           unawaited(db.close());
         }

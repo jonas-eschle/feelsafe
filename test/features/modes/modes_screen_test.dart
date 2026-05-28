@@ -66,9 +66,7 @@ class _FakeModesController extends ModesController {
     final current = state.value;
     if (current == null) return;
     state = AsyncData(
-      ModesState(
-        modes: current.modes.where((m) => m.id != id).toList(),
-      ),
+      ModesState(modes: current.modes.where((m) => m.id != id).toList()),
     );
   }
 }
@@ -86,11 +84,7 @@ class _FakeNavigatorObserver extends NavigatorObserver {
 // Test data factories
 // ---------------------------------------------------------------------------
 
-ChainStep _step(
-  String id,
-  ChainStepType type, {
-  int order = 0,
-}) => ChainStep(
+ChainStep _step(String id, ChainStepType type, {int order = 0}) => ChainStep(
   id: id,
   type: type,
   order: order,
@@ -106,13 +100,12 @@ SessionMode _mode(
   String id,
   String name, {
   List<ChainStep>? steps,
+  bool isBuiltIn = false,
 }) => SessionMode(
   id: id,
   name: name,
-  chainSteps: steps ??
-      <ChainStep>[
-        _step('$id-s0', ChainStepType.holdButton),
-      ],
+  isBuiltIn: isBuiltIn,
+  chainSteps: steps ?? <ChainStep>[_step('$id-s0', ChainStepType.holdButton)],
 );
 
 ModesState _state({List<SessionMode>? modes}) =>
@@ -122,8 +115,9 @@ ModesState _state({List<SessionMode>? modes}) =>
 // Helpers
 // ---------------------------------------------------------------------------
 
-List<Override> _overrideWith(_FakeModesController fake) =>
-    <Override>[modesControllerProvider.overrideWith(() => fake)];
+List<Override> _overrideWith(_FakeModesController fake) => <Override>[
+  modesControllerProvider.overrideWith(() => fake),
+];
 
 /// Pumps [ModesScreen] inside a minimal GoRouter.
 ///
@@ -257,70 +251,67 @@ void main() {
       expect(find.text(l10n.modesNewPickerBlank), findsOneWidget);
     });
 
-    testWidgets(
-      'FAB sheet shows blank-mode subtitle',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(_state());
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pumpAndSettle();
-        expect(find.text(l10n.modesNewPickerBlankSubtitle), findsOneWidget);
-      },
-    );
+    testWidgets('FAB sheet shows blank-mode subtitle', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(_state());
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.modesNewPickerBlankSubtitle), findsOneWidget);
+    });
 
-    testWidgets(
-      'FAB sheet includes one From-template row per existing mode',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(
-          _state(
-            modes: <SessionMode>[
-              _mode('m1', 'Walk Mode'),
-              _mode('m2', 'Date Mode'),
-            ],
-          ),
-        );
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pumpAndSettle();
-        expect(
-          find.text(l10n.modesNewPickerFromTemplate('Walk Mode')),
-          findsOneWidget,
-        );
-        expect(
-          find.text(l10n.modesNewPickerFromTemplate('Date Mode')),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('FAB sheet includes one From-template row per existing mode', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[
+            _mode('m1', 'Walk Mode'),
+            _mode('m2', 'Date Mode'),
+          ],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.modesNewPickerFromTemplate('Walk Mode')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.modesNewPickerFromTemplate('Date Mode')),
+        findsOneWidget,
+      );
+    });
 
-    testWidgets(
-      'tapping Blank mode in sheet calls createBlank',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(_state());
-        // createBlank navigates after creation — requires GoRouter context.
-        await _pumpWithRouter(
-          tester,
-          fake: fake,
-          observer: _FakeNavigatorObserver(),
-        );
-        await tester.tap(find.byType(FloatingActionButton));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.modesNewPickerBlank));
-        await tester.pumpAndSettle();
-        check(fake.createBlankCalls).equals(1);
-      },
-    );
+    testWidgets('tapping Blank mode in sheet calls createBlank', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(_state());
+      // createBlank navigates after creation — requires GoRouter context.
+      await _pumpWithRouter(
+        tester,
+        fake: fake,
+        observer: _FakeNavigatorObserver(),
+      );
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.modesNewPickerBlank));
+      await tester.pumpAndSettle();
+      check(fake.createBlankCalls).equals(1);
+    });
   });
 
   // ── Async states ───────────────────────────────────────────────────────────
@@ -439,29 +430,25 @@ void main() {
       expect(find.text('Date Mode'), findsOneWidget);
     });
 
-    testWidgets(
-      'subtitle shows step types joined by →',
-      (WidgetTester tester) async {
-        final m = _mode(
-          'm1',
-          'Night Out',
-          steps: <ChainStep>[
-            _step('s0', ChainStepType.holdButton),
-            _step('s1', ChainStepType.smsContact, order: 1),
-          ],
-        );
-        final fake = _FakeModesController(_state(modes: <SessionMode>[m]));
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        expect(
-          find.text('holdButton → smsContact'),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('subtitle shows step types joined by →', (
+      WidgetTester tester,
+    ) async {
+      final m = _mode(
+        'm1',
+        'Night Out',
+        steps: <ChainStep>[
+          _step('s0', ChainStepType.holdButton),
+          _step('s1', ChainStepType.smsContact, order: 1),
+        ],
+      );
+      final fake = _FakeModesController(_state(modes: <SessionMode>[m]));
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.text('holdButton → smsContact'), findsOneWidget);
+    });
 
     testWidgets('single-step subtitle has no arrow', (
       WidgetTester tester,
@@ -494,10 +481,7 @@ void main() {
         const ModesScreen(),
         overrides: _overrideWith(fake),
       );
-      expect(
-        find.byType(PopupMenuButton<String>),
-        findsNWidgets(2),
-      );
+      expect(find.byType(PopupMenuButton<String>), findsNWidgets(2));
     });
 
     testWidgets('distress modes are NOT shown in the regular list', (
@@ -528,23 +512,22 @@ void main() {
   // ── Popup menu — Edit ──────────────────────────────────────────────────────
 
   group('ModesScreen — popup Edit', () {
-    testWidgets(
-      'tapping Edit in popup navigates to modeEditor route',
-      (WidgetTester tester) async {
-        final observer = _FakeNavigatorObserver();
-        final fake = _FakeModesController(
-          _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
-        );
-        await _pumpWithRouter(tester, fake: fake, observer: observer);
-        final countBefore = observer.pushed.length;
-        await tester.tap(find.byType(PopupMenuButton<String>).first);
-        await tester.pumpAndSettle();
-        final l10n = await loadL10n(const Locale('en'));
-        await tester.tap(find.text(l10n.commonEdit));
-        await tester.pumpAndSettle();
-        check(observer.pushed.length).isGreaterThan(countBefore);
-      },
-    );
+    testWidgets('tapping Edit in popup navigates to modeEditor route', (
+      WidgetTester tester,
+    ) async {
+      final observer = _FakeNavigatorObserver();
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
+      );
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+      final countBefore = observer.pushed.length;
+      await tester.tap(find.byType(PopupMenuButton<String>).first);
+      await tester.pumpAndSettle();
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.commonEdit));
+      await tester.pumpAndSettle();
+      check(observer.pushed.length).isGreaterThan(countBefore);
+    });
   });
 
   // ── Popup menu — Duplicate ─────────────────────────────────────────────────
@@ -574,77 +557,74 @@ void main() {
   // ── Popup menu — Delete ────────────────────────────────────────────────────
 
   group('ModesScreen — popup Delete', () {
-    testWidgets(
-      'tapping Delete opens confirmation dialog with mode name',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(
-          _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
-        );
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        await tester.tap(find.byType(PopupMenuButton<String>).first);
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.commonDelete));
-        await tester.pumpAndSettle();
-        expect(find.byType(AlertDialog), findsOneWidget);
-        expect(find.text(l10n.modesDeleteConfirmTitle), findsOneWidget);
-      },
-    );
+    testWidgets('tapping Delete opens confirmation dialog with mode name', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonDelete));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text(l10n.modesDeleteConfirmTitle), findsOneWidget);
+    });
 
-    testWidgets(
-      'confirming delete calls controller.delete',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(
-          _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
-        );
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        await tester.tap(find.byType(PopupMenuButton<String>).first);
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.commonDelete));
-        await tester.pumpAndSettle();
-        // Confirm via the FilledButton in the dialog.
-        await tester.tap(
-          find.ancestor(
-            of: find.text(l10n.commonDelete).last,
-            matching: find.byType(FilledButton),
-          ),
-        );
-        await tester.pumpAndSettle();
-        check(fake.deleteCalls).equals(1);
-        check(fake.lastDeletedId).equals('m1');
-      },
-    );
+    testWidgets('confirming delete calls controller.delete', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonDelete));
+      await tester.pumpAndSettle();
+      // Confirm via the FilledButton in the dialog.
+      await tester.tap(
+        find.ancestor(
+          of: find.text(l10n.commonDelete).last,
+          matching: find.byType(FilledButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      check(fake.deleteCalls).equals(1);
+      check(fake.lastDeletedId).equals('m1');
+    });
 
-    testWidgets(
-      'cancelling delete dialog does NOT call controller.delete',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final fake = _FakeModesController(
-          _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
-        );
-        await pumpScreen(
-          tester,
-          const ModesScreen(),
-          overrides: _overrideWith(fake),
-        );
-        await tester.tap(find.byType(PopupMenuButton<String>).first);
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.commonDelete));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.commonCancel));
-        await tester.pumpAndSettle();
-        check(fake.deleteCalls).equals(0);
-      },
-    );
+    testWidgets('cancelling delete dialog does NOT call controller.delete', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>).first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonDelete));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      check(fake.deleteCalls).equals(0);
+    });
   });
 
   // ── Row tap → navigate ────────────────────────────────────────────────────
@@ -789,6 +769,138 @@ void main() {
       expect(tester.getSemantics(find.byType(AppBar)), isNotNull);
       handle.dispose();
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  // ── Built-in protection ─────────────────────────────────────────────────
+
+  group('ModesScreen — built-in protection', () {
+    testWidgets('built-in mode renders the Built-in chip badge', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('walk', 'Walk Mode', isBuiltIn: true)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.text(l10n.modesBuiltinBadge), findsOneWidget);
+    });
+
+    testWidgets('custom mode does NOT render the Built-in chip', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('custom', 'Night Out')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.text(l10n.modesBuiltinBadge), findsNothing);
+    });
+
+    testWidgets('built-in mode is NOT wrapped in a Dismissible', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('walk', 'Walk Mode', isBuiltIn: true)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.byType(Dismissible), findsNothing);
+    });
+
+    testWidgets('custom mode IS wrapped in a Dismissible (swipe-to-delete)', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('custom', 'Night Out')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      expect(find.byType(Dismissible), findsOneWidget);
+    });
+
+    testWidgets('built-in mode popup Delete is disabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('walk', 'Walk Mode', isBuiltIn: true)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      final del = tester.widget<PopupMenuItem<String>>(
+        find.widgetWithText(PopupMenuItem<String>, l10n.commonDelete),
+      );
+      expect(del.enabled, isFalse);
+    });
+
+    testWidgets('built-in mode popup Edit remains enabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('walk', 'Walk Mode', isBuiltIn: true)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      final edit = tester.widget<PopupMenuItem<String>>(
+        find.widgetWithText(PopupMenuItem<String>, l10n.commonEdit),
+      );
+      expect(edit.enabled, isTrue);
+    });
+
+    testWidgets('built-in mode duplicate menu remains enabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('walk', 'Walk Mode', isBuiltIn: true)],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      final dup = tester.widget<PopupMenuItem<String>>(
+        find.widgetWithText(PopupMenuItem<String>, l10n.modesDuplicate),
+      );
+      expect(dup.enabled, isTrue);
     });
   });
 }

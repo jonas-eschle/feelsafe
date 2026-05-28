@@ -38,9 +38,20 @@ class ModesScreen extends ConsumerWidget {
             itemCount: state.modes.length,
             itemBuilder: (BuildContext ctx, int i) {
               final m = state.modes[i];
-              return ListTile(
+              final tile = ListTile(
                 leading: const Icon(Icons.directions_walk),
-                title: Text(m.name),
+                title: Row(
+                  children: <Widget>[
+                    Expanded(child: Text(m.name)),
+                    if (m.isBuiltIn) ...<Widget>[
+                      const SizedBox(width: 8),
+                      Chip(
+                        label: Text(l10n.modesBuiltinBadge),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                    ],
+                  ],
+                ),
                 subtitle: Text(
                   m.chainSteps.map((s) => s.type.name).join(' → '),
                 ),
@@ -57,6 +68,7 @@ class ModesScreen extends ConsumerWidget {
                             .read(modesControllerProvider.notifier)
                             .duplicate(m.id);
                       case 'delete':
+                        if (m.isBuiltIn) return;
                         final ok = await _confirmDelete(ctx, m.name);
                         if (ok) {
                           await ref
@@ -76,7 +88,11 @@ class ModesScreen extends ConsumerWidget {
                     ),
                     PopupMenuItem<String>(
                       value: 'delete',
-                      child: Text(l10n.commonDelete),
+                      enabled: !m.isBuiltIn,
+                      child: Tooltip(
+                        message: m.isBuiltIn ? l10n.modesBuiltinNoDelete : '',
+                        child: Text(l10n.commonDelete),
+                      ),
                     ),
                   ],
                 ),
@@ -84,6 +100,22 @@ class ModesScreen extends ConsumerWidget {
                   RouteNames.modeEditor,
                   queryParameters: <String, String>{'id': m.id},
                 ),
+              );
+              if (m.isBuiltIn) return tile;
+              return Dismissible(
+                key: ValueKey<String>(m.id),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Theme.of(ctx).colorScheme.error,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                confirmDismiss: (_) => _confirmDelete(ctx, m.name),
+                onDismissed: (_) {
+                  ref.read(modesControllerProvider.notifier).delete(m.id);
+                },
+                child: tile,
               );
             },
           );

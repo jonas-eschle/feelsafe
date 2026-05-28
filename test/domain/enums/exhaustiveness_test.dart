@@ -188,12 +188,15 @@ void main() {
       check(CallStyle.values.first).equals(CallStyle.platformNative);
     });
 
-    test('has exactly the 4 styles in spec order', () {
+    test('has exactly the 7 styles in spec order', () {
       check(CallStyle.values).deepEquals([
         CallStyle.platformNative,
         CallStyle.androidNative,
         CallStyle.iosNative,
         CallStyle.minimal,
+        CallStyle.whatsapp,
+        CallStyle.telegram,
+        CallStyle.signal,
       ]);
     });
   });

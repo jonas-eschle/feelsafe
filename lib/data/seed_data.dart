@@ -76,6 +76,7 @@ final class SeedData {
     id: walkModeId,
     name: 'Walk Mode',
     iconName: 'directions_walk',
+    isBuiltIn: true,
     chainSteps: [
       ChainStep(
         id: '${_stepIdPrefix}walk_0_hold',
@@ -141,6 +142,7 @@ final class SeedData {
     id: dateModeId,
     name: 'Date Mode',
     iconName: 'restaurant',
+    isBuiltIn: true,
     chainSteps: [
       ChainStep(
         id: '${_stepIdPrefix}date_0_reminder',
@@ -210,6 +212,7 @@ final class SeedData {
     id: defaultDistressModeId,
     name: 'Default Distress',
     iconName: 'warning',
+    isBuiltIn: true,
     chainSteps: [
       ChainStep(
         id: '${_stepIdPrefix}distress_0_sms',

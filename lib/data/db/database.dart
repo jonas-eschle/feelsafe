@@ -80,8 +80,10 @@ class GuardianAngelaDatabase extends _$GuardianAngelaDatabase {
   /// - v1 (Phase 4): initial schema.
   /// - v2 (Phase 6c): added [SessionLogs.deletedAtMs] for the spec
   ///   04:2455–2459 trash retention flow.
+  /// - v3 (Phase 6 gap-5): added [SessionModes.isBuiltIn] for the spec
+  ///   04 §Modes Screen built-in protection.
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

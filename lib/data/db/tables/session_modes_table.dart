@@ -56,6 +56,11 @@ class SessionModes extends Table {
   /// chain (G-014).
   BoolColumn get allowDisarmAsDistress => boolean()();
 
+  /// Whether this row is a shipped seed mode that the UI must protect
+  /// from deletion (spec 04 §Modes Screen).
+  BoolColumn get isBuiltIn =>
+      boolean().withDefault(const Constant(false))();
+
   @override
   Set<Column<Object>> get primaryKey => {id};
 }

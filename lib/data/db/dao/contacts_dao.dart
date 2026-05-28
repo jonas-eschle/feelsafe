@@ -59,9 +59,7 @@ class ContactsDao extends DatabaseAccessor<GuardianAngelaDatabase>
   Future<void> bulkUpdate(List<EmergencyContact> items) =>
       transaction(() async {
         for (final c in items) {
-          await into(
-            contacts,
-          ).insertOnConflictUpdate(_modelToCompanion(c));
+          await into(contacts).insertOnConflictUpdate(_modelToCompanion(c));
         }
       });
 

@@ -34,6 +34,7 @@ final class SessionMode {
     this.maxPauseMinutes,
     this.isDistressMode = false,
     this.allowDisarmAsDistress = true,
+    this.isBuiltIn = false,
   }) : assert(id.isNotEmpty, 'SessionMode.id must be non-empty'),
        assert(name.isNotEmpty, 'SessionMode.name must be non-empty'),
        assert(
@@ -79,6 +80,7 @@ final class SessionMode {
     maxPauseMinutes: (json['maxPauseMinutes'] as num?)?.toInt(),
     isDistressMode: (json['isDistressMode'] as bool?) ?? false,
     allowDisarmAsDistress: (json['allowDisarmAsDistress'] as bool?) ?? true,
+    isBuiltIn: (json['isBuiltIn'] as bool?) ?? false,
   );
 
   /// UUID — primary key.
@@ -136,6 +138,14 @@ final class SessionMode {
   /// the chain runs to exhaustion.
   final bool allowDisarmAsDistress;
 
+  /// Whether this mode is shipped as a built-in seed (Walk Mode, Date
+  /// Mode, etc).
+  ///
+  /// Built-in modes cannot be deleted from the Modes screen and render
+  /// a "Built-in" badge in the list. Users can still edit and
+  /// duplicate them.
+  final bool isBuiltIn;
+
   /// Returns a copy with the specified fields replaced.
   SessionMode copyWith({
     String? id,
@@ -153,6 +163,7 @@ final class SessionMode {
     int? maxPauseMinutes,
     bool? isDistressMode,
     bool? allowDisarmAsDistress,
+    bool? isBuiltIn,
   }) => SessionMode(
     id: id ?? this.id,
     name: name ?? this.name,
@@ -170,6 +181,7 @@ final class SessionMode {
     maxPauseMinutes: maxPauseMinutes ?? this.maxPauseMinutes,
     isDistressMode: isDistressMode ?? this.isDistressMode,
     allowDisarmAsDistress: allowDisarmAsDistress ?? this.allowDisarmAsDistress,
+    isBuiltIn: isBuiltIn ?? this.isBuiltIn,
   );
 
   /// Serialises this mode to a JSON map.
@@ -189,6 +201,7 @@ final class SessionMode {
     if (maxPauseMinutes != null) 'maxPauseMinutes': maxPauseMinutes,
     'isDistressMode': isDistressMode,
     'allowDisarmAsDistress': allowDisarmAsDistress,
+    'isBuiltIn': isBuiltIn,
   };
 
   @override
@@ -234,7 +247,8 @@ final class SessionMode {
         pauseAllowed == other.pauseAllowed &&
         maxPauseMinutes == other.maxPauseMinutes &&
         isDistressMode == other.isDistressMode &&
-        allowDisarmAsDistress == other.allowDisarmAsDistress;
+        allowDisarmAsDistress == other.allowDisarmAsDistress &&
+        isBuiltIn == other.isBuiltIn;
   }
 
   @override
@@ -254,5 +268,6 @@ final class SessionMode {
     maxPauseMinutes,
     isDistressMode,
     allowDisarmAsDistress,
+    isBuiltIn,
   );
 }

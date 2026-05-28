@@ -21,11 +21,12 @@ void main() {
   });
 
   group('schema regression', () {
-    test('schema version is 2 (Phase 6c)', () {
+    test('schema version is 3 (Phase 6 gap-5)', () {
       // Phase 4 shipped v1; Phase 6c bumps to v2 (added
-      // session_logs.deleted_at_ms for the trash flow). Bumping
-      // triggers nuke-and-reseed (pre-alpha policy).
-      check(db.schemaVersion).equals(2);
+      // session_logs.deleted_at_ms); Phase 6 gap-5 bumps to v3
+      // (added session_modes.is_built_in). Bumping triggers
+      // nuke-and-reseed (pre-alpha policy).
+      check(db.schemaVersion).equals(3);
     });
 
     test('contacts table columns match spec 03 §EmergencyContact', () {
@@ -152,6 +153,11 @@ void main() {
           isPk: false,
         ),
         'allow_disarm_as_distress': (
+          type: DriftSqlType.bool,
+          nullable: false,
+          isPk: false,
+        ),
+        'is_built_in': (
           type: DriftSqlType.bool,
           nullable: false,
           isPk: false,
