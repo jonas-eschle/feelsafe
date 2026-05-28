@@ -17,4 +17,13 @@ enum CallStyle {
 
   /// A platform-agnostic minimal call overlay.
   minimal,
+
+  /// Mimic the WhatsApp voice-call UI (green accent, brand badge).
+  whatsapp,
+
+  /// Mimic the Telegram voice-call UI (blue accent, brand badge).
+  telegram,
+
+  /// Mimic the Signal voice-call UI (indigo accent, brand badge).
+  signal,
 }

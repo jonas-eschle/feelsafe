@@ -834,6 +834,72 @@ abstract class AppLocalizations {
   /// **'SIGNAL'**
   String get fakeCallBrandSignal;
 
+  /// Brand badge in the Android native fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'PHONE'**
+  String get fakeCallBrandAndroid;
+
+  /// Brand badge in the iOS native fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'PHONE'**
+  String get fakeCallBrandIos;
+
+  /// Brand badge in the minimal fake-call style.
+  ///
+  /// In en, this message translates to:
+  /// **'CALL'**
+  String get fakeCallBrandMinimal;
+
+  /// Decline button label when declineIsSafe = true (declining disarms the chain).
+  ///
+  /// In en, this message translates to:
+  /// **'Decline (I\'m Safe)'**
+  String get fakeCallDeclineSafeLabel;
+
+  /// Decline button label when declineIsSafe = false (declining keeps the chain running).
+  ///
+  /// In en, this message translates to:
+  /// **'Decline (Stay on alert)'**
+  String get fakeCallDeclineUnsafeLabel;
+
+  /// Hint shown next to the decline button explaining the long-press distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold 5s for distress'**
+  String get fakeCallHoldForDistress;
+
+  /// Indicator chip showing the active voice prompt name when configured.
+  ///
+  /// In en, this message translates to:
+  /// **'TTS prompt: {name}'**
+  String fakeCallVoicePrompt(String name);
+
+  /// Indicator chip showing the active vibration pattern name.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration: {pattern}'**
+  String fakeCallVibrationLabel(String pattern);
+
+  /// Vibration pattern name for the OS default pattern.
+  ///
+  /// In en, this message translates to:
+  /// **'default'**
+  String get fakeCallVibrationPatternDefault;
+
+  /// Label above the slide-to-answer track.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to answer'**
+  String get fakeCallSlideToAnswerHint;
+
+  /// Elapsed call duration mm:ss formatting.
+  ///
+  /// In en, this message translates to:
+  /// **'{mm}:{ss}'**
+  String fakeCallActiveDuration(String mm, String ss);
+
   /// Title of the contacts list screen.
   ///
   /// In en, this message translates to:
@@ -3605,6 +3671,192 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incorrect PIN'**
   String get simulationPinIncorrect;
+
+  /// Duration row on the simulation summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration: {duration}'**
+  String simulationSummaryDuration(String duration);
+
+  /// Header above the event-timeline section.
+  ///
+  /// In en, this message translates to:
+  /// **'Event timeline'**
+  String get simulationSummaryTimelineHeader;
+
+  /// Share button label on simulation summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get simulationSummaryShare;
+
+  /// Badge showing the number of missed events.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed: {count}'**
+  String simulationSummaryMissedEventsBadge(int count);
+
+  /// Badge showing the number of distress confirmations.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress: {count}'**
+  String simulationSummaryDistressBadge(int count);
+
+  /// Badge showing the number of steps fired.
+  ///
+  /// In en, this message translates to:
+  /// **'Steps fired: {count}'**
+  String simulationSummaryStepsFiredBadge(int count);
+
+  /// Subject line when sharing the summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Angela simulation summary'**
+  String get simulationSummaryShareSubject;
+
+  /// Notification channel toggle for alarm escalations.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm escalation'**
+  String get notificationsChannelAlarm;
+
+  /// Subtitle for the alarm channel toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical alerts that bypass DND'**
+  String get notificationsChannelAlarmDescription;
+
+  /// Notification channel toggle for disguised reminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Disguised reminder'**
+  String get notificationsChannelReminder;
+
+  /// Subtitle for the reminders channel toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Check-in reminders during active session'**
+  String get notificationsChannelReminderDescription;
+
+  /// Notification channel toggle for fake-call notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake call'**
+  String get notificationsChannelFakeCall;
+
+  /// Subtitle for the fake-call channel toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Full-screen incoming-call notifications'**
+  String get notificationsChannelFakeCallDescription;
+
+  /// Status label when a channel is enabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabled'**
+  String get notificationsChannelEnabled;
+
+  /// Status label when a channel is disabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Disabled'**
+  String get notificationsChannelDisabled;
+
+  /// Header above the channel toggles list.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification channels'**
+  String get notificationsChannelsHeader;
+
+  /// Button to import a contact from the device address book.
+  ///
+  /// In en, this message translates to:
+  /// **'Import from contacts'**
+  String get contactsImportFromDevice;
+
+  /// Snackbar shown when import is invoked on an unsupported platform.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available on this platform'**
+  String get contactsImportNotSupported;
+
+  /// Snackbar shown when contact-read permission is denied.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact access denied. Enable in system settings.'**
+  String get contactsImportPermissionDenied;
+
+  /// Overflow menu entry for the delete-all action.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get contactsDeleteAllMenu;
+
+  /// Title of the first delete-all confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all contacts?'**
+  String get contactsDeleteAllConfirmTitle;
+
+  /// Body of the first delete-all confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'This removes every emergency contact. There is no undo.'**
+  String get contactsDeleteAllConfirmBody;
+
+  /// Title of the typed-confirmation dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm by typing'**
+  String get contactsDeleteAllTypeConfirmTitle;
+
+  /// Hint inside the typed-confirmation text field.
+  ///
+  /// In en, this message translates to:
+  /// **'Type DELETE ALL to continue'**
+  String get contactsDeleteAllTypeConfirmHint;
+
+  /// Exact text the user must type to confirm delete-all.
+  ///
+  /// In en, this message translates to:
+  /// **'DELETE ALL'**
+  String get contactsDeleteAllTypeConfirmSentinel;
+
+  /// Confirm button on the typed dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete all'**
+  String get contactsDeleteAllConfirmButton;
+
+  /// Semantic hint announcing reorderable rows.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to reorder'**
+  String get contactsReorderHint;
+
+  /// Chip label on the built-in modes.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in'**
+  String get modesBuiltinBadge;
+
+  /// Tooltip explaining why the delete option is disabled on built-in modes.
+  ///
+  /// In en, this message translates to:
+  /// **'Built-in modes cannot be deleted'**
+  String get modesBuiltinNoDelete;
+
+  /// Orange banner shown when the completed session was a simulation.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulation completed'**
+  String get sessionCompletedSimulationBanner;
+
+  /// Button to open the per-session event log detail.
+  ///
+  /// In en, this message translates to:
+  /// **'View event log'**
+  String get sessionCompletedViewEventLog;
 
   /// Section header for general settings.
   ///

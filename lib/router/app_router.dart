@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
 import 'package:guardianangela/features/battery_alert/battery_alert_screen.dart';
@@ -95,7 +96,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/fake-call',
         name: RouteNames.fakeCall,
-        builder: (_, _) => const FakeCallScreen(),
+        builder: (_, GoRouterState state) {
+          final extra = state.extra;
+          final config = extra is FakeCallConfig
+              ? extra
+              : const FakeCallConfig();
+          return FakeCallScreen(config: config);
+        },
       ),
       GoRoute(
         path: '/session/completed',

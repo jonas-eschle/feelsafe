@@ -399,6 +399,45 @@ class AppLocalizationsUk extends AppLocalizations {
   String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
+  String get fakeCallBrandAndroid => 'PHONE';
+
+  @override
+  String get fakeCallBrandIos => 'PHONE';
+
+  @override
+  String get fakeCallBrandMinimal => 'CALL';
+
+  @override
+  String get fakeCallDeclineSafeLabel => 'Decline (I\'m Safe)';
+
+  @override
+  String get fakeCallDeclineUnsafeLabel => 'Decline (Stay on alert)';
+
+  @override
+  String get fakeCallHoldForDistress => 'Hold 5s for distress';
+
+  @override
+  String fakeCallVoicePrompt(String name) {
+    return 'TTS prompt: $name';
+  }
+
+  @override
+  String fakeCallVibrationLabel(String pattern) {
+    return 'Vibration: $pattern';
+  }
+
+  @override
+  String get fakeCallVibrationPatternDefault => 'default';
+
+  @override
+  String get fakeCallSlideToAnswerHint => 'Slide to answer';
+
+  @override
+  String fakeCallActiveDuration(String mm, String ss) {
+    return '$mm:$ss';
+  }
+
+  @override
   String get contactsTitle => 'Екстрені контакти';
 
   @override
@@ -1901,6 +1940,113 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get simulationPinIncorrect => 'Incorrect PIN';
+
+  @override
+  String simulationSummaryDuration(String duration) {
+    return 'Duration: $duration';
+  }
+
+  @override
+  String get simulationSummaryTimelineHeader => 'Event timeline';
+
+  @override
+  String get simulationSummaryShare => 'Share';
+
+  @override
+  String simulationSummaryMissedEventsBadge(int count) {
+    return 'Missed: $count';
+  }
+
+  @override
+  String simulationSummaryDistressBadge(int count) {
+    return 'Distress: $count';
+  }
+
+  @override
+  String simulationSummaryStepsFiredBadge(int count) {
+    return 'Steps fired: $count';
+  }
+
+  @override
+  String get simulationSummaryShareSubject =>
+      'Guardian Angela simulation summary';
+
+  @override
+  String get notificationsChannelAlarm => 'Alarm escalation';
+
+  @override
+  String get notificationsChannelAlarmDescription =>
+      'Critical alerts that bypass DND';
+
+  @override
+  String get notificationsChannelReminder => 'Disguised reminder';
+
+  @override
+  String get notificationsChannelReminderDescription =>
+      'Check-in reminders during active session';
+
+  @override
+  String get notificationsChannelFakeCall => 'Fake call';
+
+  @override
+  String get notificationsChannelFakeCallDescription =>
+      'Full-screen incoming-call notifications';
+
+  @override
+  String get notificationsChannelEnabled => 'Enabled';
+
+  @override
+  String get notificationsChannelDisabled => 'Disabled';
+
+  @override
+  String get notificationsChannelsHeader => 'Notification channels';
+
+  @override
+  String get contactsImportFromDevice => 'Import from contacts';
+
+  @override
+  String get contactsImportNotSupported => 'Not available on this platform';
+
+  @override
+  String get contactsImportPermissionDenied =>
+      'Contact access denied. Enable in system settings.';
+
+  @override
+  String get contactsDeleteAllMenu => 'Delete all';
+
+  @override
+  String get contactsDeleteAllConfirmTitle => 'Delete all contacts?';
+
+  @override
+  String get contactsDeleteAllConfirmBody =>
+      'This removes every emergency contact. There is no undo.';
+
+  @override
+  String get contactsDeleteAllTypeConfirmTitle => 'Confirm by typing';
+
+  @override
+  String get contactsDeleteAllTypeConfirmHint => 'Type DELETE ALL to continue';
+
+  @override
+  String get contactsDeleteAllTypeConfirmSentinel => 'DELETE ALL';
+
+  @override
+  String get contactsDeleteAllConfirmButton => 'Delete all';
+
+  @override
+  String get contactsReorderHint => 'Drag to reorder';
+
+  @override
+  String get modesBuiltinBadge => 'Built-in';
+
+  @override
+  String get modesBuiltinNoDelete => 'Built-in modes cannot be deleted';
+
+  @override
+  String get sessionCompletedSimulationBanner => 'Simulation completed';
+
+  @override
+  String get sessionCompletedViewEventLog => 'View event log';
 
   @override
   String get settingsGeneralHeader => 'General';
