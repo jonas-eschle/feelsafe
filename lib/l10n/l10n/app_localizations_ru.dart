@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -36,20 +34,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonOk => 'ОК';
 
   @override
-  String get profileAngelaWarningTitle => 'Внимание к имени «Angela»';
-
-  @override
-  String get profileAngelaWarningBody =>
-      'Guardian Angela использует «Angela» как ключевое слово безопасности. Использование этого имени в качестве вашего собственного может вызвать путаницу. Всё равно сохранить?';
-
-  @override
   String get commonDelete => 'Удалить';
 
   @override
   String get commonEdit => 'Изменить';
-
-  @override
-  String get commonAdd => 'Добавить';
 
   @override
   String get commonClose => 'Закрыть';
@@ -61,36 +49,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonBack => 'Назад';
 
   @override
-  String get commonDone => 'Готово';
-
-  @override
-  String get commonRetry => 'Повторить';
-
-  @override
-  String get commonYes => 'Да';
-
-  @override
-  String get commonNo => 'Нет';
-
-  @override
-  String get commonEnabled => 'Включено';
-
-  @override
-  String get commonDisabled => 'Отключено';
-
-  @override
-  String get commonNone => 'Нет';
-
-  @override
-  String get commonSeconds => 'секунд';
-
-  @override
-  String get commonMinutes => 'минут';
-
-  @override
-  String get cancel => 'Отмена';
-
-  @override
   String get pinSubmit => 'Подтвердить';
 
   @override
@@ -98,23 +56,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeStartSession => 'Начать сессию';
-
-  @override
-  String get homeStartConfirmTitle => 'Начать сессию?';
-
-  @override
-  String get homeStartConfirmBody =>
-      'Убедитесь, что ваши контакты и PIN настроены. Сессия будет работать на переднем плане, и выбранный режим будет управлять отметками.';
-
-  @override
-  String get homePermissionsMissingTitle => 'Отсутствуют некоторые разрешения';
-
-  @override
-  String get homePermissionsMissingBody =>
-      'Следующие разрешения не были предоставлены. Без них соответствующие шаги цепочки завершатся неудачно без уведомления:';
-
-  @override
-  String get homePermissionsContinueAnyway => 'Запустить всё равно';
 
   @override
   String get homePermissionsNotification => 'Уведомления';
@@ -132,17 +73,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeSimulate => 'Симуляция';
 
   @override
-  String get homeActiveSession => 'Активная сессия';
-
-  @override
-  String get homeResumeSession => 'Продолжить';
-
-  @override
   String get homeNoModes => 'Нет режимов. Нажмите «Режимы», чтобы добавить.';
-
-  @override
-  String get homeNoContacts =>
-      'Нет экстренных контактов. Нажмите «Контакты», чтобы добавить.';
 
   @override
   String get homeContactsBannerNone => 'Экстренные контакты не настроены.';
@@ -154,34 +85,13 @@ class AppLocalizationsRu extends AppLocalizations {
   String get homeMenuContacts => 'Контакты';
 
   @override
-  String get homeMenuModes => 'Режимы';
-
-  @override
   String get homeMenuHistory => 'Прошлые сессии';
-
-  @override
-  String get homeSelectMode => 'Выберите режим';
-
-  @override
-  String get onboardingWelcomeTitle => 'Добро пожаловать в Guardian Angela';
-
-  @override
-  String get onboardingWelcomeBody =>
-      'Спутник, который помогает вам безопасно добраться домой. Guardian Angela присматривает за вами, пока вы идёте, бегаете или путешествуете, и может предупредить выбранных вами контактов, если вам понадобится помощь.';
 
   @override
   String get onboardingProfileTitle => 'Профиль и первый контакт';
 
   @override
-  String get onboardingProfileBody =>
-      'Расскажите немного о себе, чтобы Guardian Angela могла поделиться полезной информацией, если понадобится экстренная помощь. Затем добавьте одного доверенного контакта.';
-
-  @override
   String get onboardingPermissionsTitle => 'Разрешения';
-
-  @override
-  String get onboardingPermissionsBody =>
-      'Guardian Angela нужно несколько разрешений, чтобы обеспечить вашу безопасность. Предоставьте их сейчас или позже в «Настройках».';
 
   @override
   String get onboardingNext => 'Далее';
@@ -207,27 +117,14 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingUseSimNumberPermissionDenied => 'Permission denied';
 
   @override
-  String get onboardingFinish => 'Завершить';
-
-  @override
   String get sessionTitle => 'Сессия';
 
   @override
   String get sessionDisarm => 'Я в безопасности';
 
   @override
-  String get sessionPause => 'Пауза';
-
-  @override
-  String get sessionResume => 'Продолжить';
-
-  @override
   String get sessionHoldPrompt =>
       'Удерживайте, чтобы оставаться в безопасности';
-
-  @override
-  String get sessionHoldSemantic =>
-      'Удерживайте нажатым. Отпускание запускает льготный период.';
 
   @override
   String sessionStepLabel(Object index, Object total) {
@@ -237,11 +134,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String sessionMissCount(Object count) {
     return 'Пропущено: $count';
-  }
-
-  @override
-  String sessionRemaining(Object seconds) {
-    return 'Осталось $seconds с';
   }
 
   @override
@@ -255,32 +147,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get sessionCheckIn => 'Я отметился';
-
-  @override
-  String get sessionDisarmTriggerTitle => 'Сработал триггер отключения';
-
-  @override
-  String get sessionDisarmTriggerBody =>
-      'Сработал триггер отключения. Завершить сессию?';
-
-  @override
-  String get sessionDisarmTriggerConfirm => 'Завершить сессию';
-
-  @override
-  String get sessionDisarmTriggerCancel => 'Продолжить';
-
-  @override
-  String get wrongPinAngelaTitle => 'Старый PIN от Angela';
-
-  @override
-  String get wrongPinAngelaBody =>
-      'Вы уверены, что хотите продолжить с этим старым PIN?';
-
-  @override
-  String get wrongPinAngelaConfirm => 'ОК';
-
-  @override
-  String get wrongPinAngelaCancel => 'Отмена';
 
   @override
   String get sessionStepCountdownTitle => 'Предупреждение';
@@ -300,22 +166,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionStepSmsStatus => 'Отправка сообщения контактам…';
 
   @override
-  String get sessionStepSmsDelivered => 'Доставлено';
-
-  @override
-  String get sessionStepSmsSent => 'Отправлено';
-
-  @override
-  String get sessionStepSmsQueued => 'В очереди';
-
-  @override
-  String get sessionStepSmsFailed => 'Ошибка';
-
-  @override
   String get sessionStepPhoneCallStatus => 'Звонок экстренному контакту…';
-
-  @override
-  String get sessionStepPhoneCallCancel => 'Отменить звонок';
 
   @override
   String get sessionStepLoudAlarmTitle => 'Тревога активна';
@@ -381,12 +232,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get fakeCallTitle => 'Входящий вызов';
-
-  @override
-  String get fakeCallAnswer => 'Ответить';
-
-  @override
-  String get fakeCallDecline => 'Отклонить';
 
   @override
   String get fakeCallHangUp => 'Завершить вызов';
@@ -509,9 +354,6 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get contactRequiredError => 'Имя и номер телефона обязательны.';
-
-  @override
   String get contactFormIosSmsWarning =>
       'On iOS, SMS opens the Messages app. You must tap Send manually.';
 
@@ -524,9 +366,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get modesAdd => 'Добавить режим';
-
-  @override
-  String get modesNewPickerTitle => 'Создать из';
 
   @override
   String get modesNewPickerBlank => 'Пустой режим';
@@ -544,14 +383,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'Скопировать цепочку и триггеры этого режима';
 
   @override
-  String modesNewPickerCopyName(String name) {
-    return 'Копия «$name»';
-  }
-
-  @override
-  String get modesNewPickerBuiltinBadge => 'Встроенный';
-
-  @override
   String get modeEditorTitleCreate => 'Новый режим';
 
   @override
@@ -561,124 +392,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modeFieldName => 'Название';
 
   @override
-  String get modeFieldDistressMode => 'Режим тревоги';
-
-  @override
-  String get modeFieldDistressModeDefault => 'По умолчанию';
-
-  @override
   String get modeChainHeader => 'Цепочка';
 
   @override
   String get modeChainAddStep => 'Добавить шаг';
-
-  @override
-  String get modeChainEmpty => 'Шагов пока нет. Нажмите «Добавить шаг».';
-
-  @override
-  String get modeFieldIcon => 'Значок';
-
-  @override
-  String get modeIconPickerTitle => 'Выбрать значок';
-
-  @override
-  String get modeIconClear => 'Без значка';
-
-  @override
-  String get modeDistressHeader => 'Триггеры тревоги';
-
-  @override
-  String get modeDistressEmpty => 'Триггеры не настроены.';
-
-  @override
-  String get modeDistressAdd => 'Добавить триггер';
-
-  @override
-  String get modeDistressTypeHardware => 'Аппаратная кнопка';
-
-  @override
-  String get modeDistressButtonType => 'Кнопка';
-
-  @override
-  String get modeDistressButtonVolumeUp => 'Громкость +';
-
-  @override
-  String get modeDistressButtonVolumeDown => 'Громкость −';
-
-  @override
-  String get modeDistressButtonPower => 'Питание';
-
-  @override
-  String get modeDistressPattern => 'Шаблон';
-
-  @override
-  String get modeDistressPatternRepeat => 'Повторное нажатие';
-
-  @override
-  String get modeDistressPatternLong => 'Долгое нажатие';
-
-  @override
-  String get modeDistressPressCount => 'Число нажатий';
-
-  @override
-  String get modeDistressPressWindow => 'Окно (мс)';
-
-  @override
-  String get modeDistressLongDuration => 'Длительность (секунды)';
-
-  @override
-  String modeDistressSummaryRepeat(Object count, Object windowMs) {
-    return '$count нажатий / $windowMs мс';
-  }
-
-  @override
-  String modeDistressSummaryLong(Object seconds) {
-    return 'Удерживать $secondsс';
-  }
-
-  @override
-  String get modeOverridesHeader => 'Переопределения режима';
-
-  @override
-  String get modeOverridesUseDefault => 'По умолчанию';
-
-  @override
-  String get modeOverridesGpsLabel => 'Запись GPS';
-
-  @override
-  String get modeOverridesStealthLabel => 'Маскировка';
-
-  @override
-  String get modeOverridesEventDefaultsLabel =>
-      'Значения по умолчанию для событий';
-
-  @override
-  String get modeOverridesLocalTemplatesLabel =>
-      'Локальные шаблоны напоминаний';
-
-  @override
-  String get modeOverridesGpsEnabled => 'GPS включён';
-
-  @override
-  String get modeOverridesGpsIntervalLabel => 'Интервал (секунды)';
-
-  @override
-  String get modeOverridesGpsIncludeInSms => 'Добавлять координаты в SMS';
-
-  @override
-  String get modeOverridesStealthEnabled => 'Маскировка включена';
-
-  @override
-  String get modeOverridesStealthFakeName => 'Фальшивое имя приложения';
-
-  @override
-  String get modeOverridesEventDefaultsHint =>
-      'Свои значения по умолчанию активны для этого режима.';
-
-  @override
-  String modeOverridesLocalTemplatesCount(Object count) {
-    return '$count локальных шаблонов';
-  }
 
   @override
   String get modeUnsavedTitle => 'Отменить изменения?';
@@ -694,303 +411,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modeUnsavedKeep => 'Продолжить';
 
   @override
-  String get stepDuplicate => 'Дублировать шаг';
-
-  @override
-  String get stepTimingHeader => 'Тайминг';
-
-  @override
   String stepTimingSummary(Object wait, Object duration, Object grace) {
     return 'ожидание $waitс / длительность $durationс / льготный $graceс';
   }
 
   @override
-  String get stepCategoryAll => 'Все';
-
-  @override
-  String get stepPickerMore => 'Больше вариантов...';
-
-  @override
-  String get stepCategoryAction => 'Действие';
-
-  @override
-  String get stepCategoryReminder => 'Напоминание';
-
-  @override
-  String get stepCategoryDisarm => 'Регистрация';
-
-  @override
-  String get modeTrackingHeader => 'Отслеживание GPS';
-
-  @override
-  String get modeTrackingEnabled => 'Записывать GPS во время сеанса';
-
-  @override
-  String get modeTrackingIntervalLabel => 'Интервал записи';
-
-  @override
-  String get modeTrackingBufferSizeLabel => 'Размер буфера';
-
-  @override
-  String modeTrackingBufferSizeValue(Object count) {
-    return '$count точек';
-  }
-
-  @override
-  String get modeTrackingBatteryNote =>
-      'Частая запись GPS увеличивает расход батареи.';
-
-  @override
-  String get stepConfigLogGpsLabel => 'Запись GPS';
-
-  @override
-  String get stepConfigLogGpsDefault => 'По умолчанию';
-
-  @override
-  String get stepConfigLogGpsOn => 'Вкл.';
-
-  @override
-  String get stepConfigLogGpsOff => 'Выкл.';
-
-  @override
-  String get stepConfigLogGpsDefaultOn => 'По умолчанию (Вкл.)';
-
-  @override
-  String get stepConfigLogGpsDefaultOff => 'По умолчанию (Выкл.)';
-
-  @override
-  String get moreSettingsHeader => 'Дополнительные настройки';
-
-  @override
-  String moreSettingsHeaderCustomized(int count) {
-    return 'Дополнительные настройки ($count изменено)';
-  }
-
-  @override
-  String get stepTypePickerLabel => 'Тип шага';
-
-  @override
-  String get stepTypeHoldButton => 'Удержание кнопки';
-
-  @override
-  String get stepTypeDisguisedReminder => 'Замаскированное напоминание';
-
-  @override
-  String get stepTypeCountdownWarning => 'Обратный отсчёт';
-
-  @override
-  String get stepTypeFakeCall => 'Ложный вызов';
-
-  @override
-  String get stepTypeSmsContact => 'SMS контакту';
-
-  @override
-  String get stepTypePhoneCallContact => 'Звонок контакту';
-
-  @override
-  String get stepTypeLoudAlarm => 'Громкая тревога';
-
-  @override
-  String get stepTypeCallEmergency => 'Экстренный вызов';
-
-  @override
-  String get stepTypeHardwareButton => 'Аппаратная кнопка';
-
-  @override
-  String get stepFieldDuration => 'Длительность (секунды)';
-
-  @override
-  String get stepFieldGrace => 'Льготный период (секунды)';
-
-  @override
-  String get stepFieldWait => 'Ожидание (секунды)';
-
-  @override
-  String get stepFieldRetryCount => 'Количество повторов';
-
-  @override
-  String get stepFieldRandomize => 'Случайные колебания';
-
-  @override
-  String get stepFieldRandomizeToggle => 'Случайное время (±20%)';
-
-  @override
-  String get stepFieldWaitTooltip => 'Сколько ждать перед началом этого шага.';
-
-  @override
-  String get stepFieldDurationTooltip =>
-      'Сколько шаг активен до начала льготного периода.';
-
-  @override
-  String get stepFieldGraceTooltip =>
-      'Время после активной фазы для подтверждения безопасности перед следующим шагом.';
-
-  @override
-  String get stepFieldRetryCountTooltip =>
-      'Сколько раз повторить этот шаг до эскалации.';
-
-  @override
-  String get stepFieldReminderIntervalTooltip =>
-      'Как часто срабатывает замаскированное напоминание в ожидании подтверждения.';
-
-  @override
-  String get stepFieldReminderGraceTooltip =>
-      'Сколько времени у пользователя на подтверждение безопасности после появления напоминания.';
-
-  @override
-  String get stepPreview => 'Предпросмотр в симуляции';
-
-  @override
-  String stepPreviewFired(Object description) {
-    return 'Предпросмотр выполнен: $description';
-  }
-
-  @override
-  String get stepPreviewTitle => 'Предпросмотр шага';
-
-  @override
-  String get stepPreviewMissingParams => 'Отсутствует ссылка на шаг или режим.';
-
-  @override
-  String get stepPreviewModeNotFound => 'Режим не найден.';
-
-  @override
-  String get stepPreviewStepNotFound => 'Шаг не найден в этом режиме.';
-
-  @override
-  String stepPreviewError(Object error) {
-    return 'Сбой предпросмотра: $error';
-  }
-
-  @override
-  String get stepPreviewReplay => 'Повторить';
-
-  @override
-  String get stepPreviewHoldButtonHint =>
-      'Удерживайте кнопку, чтобы почувствовать реальный отклик.';
-
-  @override
-  String get stepPreviewHoldButtonLabel => 'Удерживать';
-
-  @override
-  String get stepPreviewHoldButtonSemantic => 'Удерживайте для предпросмотра';
-
-  @override
-  String get stepPreviewHoldButtonReleased =>
-      'Отпущено. Сейчас сессия перешла бы в окно отсрочки.';
-
-  @override
-  String get stepPreviewFakeCallHint =>
-      'Появится экран ложного звонка. Проведите для ответа или удерживайте красную кнопку, чтобы имитировать тревогу.';
-
-  @override
-  String get stepConfigFakeCallCaller => 'Имя вызывающего';
-
-  @override
-  String get stepConfigFakeCallDecline => 'Отклонение считается отменой';
-
-  @override
-  String get stepConfigLoudAlarmFlash => 'Мигание экрана';
-
-  @override
-  String get stepConfigLoudAlarmVolume => 'Максимальная громкость';
-
-  @override
-  String get stepConfigCountdownVibrate => 'Вибрация';
-
-  @override
-  String get stepConfigCountdownTone => 'Воспроизводить звук';
-
-  @override
-  String get stepConfigSmsSelection => 'Получатели';
-
-  @override
-  String get stepConfigSmsAllContacts => 'Все контакты';
-
-  @override
-  String get stepConfigSmsSpecific => 'Определённые контакты';
-
-  @override
-  String get stepConfigSmsIncludeLocation => 'Включить местоположение';
-
-  @override
-  String get stepConfigSmsIncludeMedical => 'Включить медицинскую информацию';
-
-  @override
-  String get stepConfigSmsAutoRecordAudio => 'Автозапись аудио';
-
-  @override
-  String get stepConfigSmsAutoRecordVideo => 'Автозапись видео';
-
-  @override
-  String get stepConfigSmsRecordDuration => 'Длительность записи';
-
-  @override
-  String get stepConfigHoldReleaseSensitivity =>
-      'Чувствительность отпускания (с)';
-
-  @override
-  String get stepConfigReminderInterval => 'Интервал напоминаний (секунды)';
-
-  @override
-  String get stepConfigReminderTemplate => 'Шаблон';
-
-  @override
-  String get stepConfigHardwarePattern => 'Шаблон';
-
-  @override
-  String get stepConfigHardwarePressCount => 'Количество нажатий';
-
-  @override
-  String get stepConfigHardwarePressWindow => 'Окно между нажатиями (мс)';
-
-  @override
-  String get stepConfigHardwareLongDuration =>
-      'Длительность долгого нажатия (с)';
-
-  @override
-  String get stepConfigHardwareButton => 'Кнопка';
-
-  @override
-  String get stepConfigHardwareButtonVolumeUp => 'Громкость вверх';
-
-  @override
-  String get stepConfigHardwareButtonVolumeDown => 'Громкость вниз';
-
-  @override
-  String get stepConfigHardwareButtonPower => 'Питание';
-
-  @override
-  String get stepConfigHardwarePatternRepeat => 'Повторное нажатие';
-
-  @override
-  String get stepConfigHardwarePatternLong => 'Долгое нажатие';
-
-  @override
-  String get stepConfigEmergencyNumber => 'Переопределение экстренного номера';
-
-  @override
-  String get stepConfigEmergencyConfirm => 'Подтвердить перед вызовом';
-
-  @override
-  String get stepConfigPhonePreSms => 'Отправить SMS перед звонком';
-
-  @override
-  String get distressModesTitle => 'Режимы тревоги';
-
-  @override
-  String get distressModeInUseTitle => 'Режим тревоги используется';
-
-  @override
-  String distressModeInUseBody(Object modes) {
-    return 'Этот режим тревоги по-прежнему привязан к: $modes. Прежде чем удалить, привяжите эти режимы к другому режиму тревоги.';
-  }
-
-  @override
   String get distressModesEmpty => 'Режимов тревоги пока нет.';
-
-  @override
-  String get distressModesAdd => 'Добавить режим тревоги';
 
   @override
   String get distressModeEditorTitleCreate => 'Новый режим тревоги';
@@ -999,67 +425,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get distressModeEditorTitleEdit => 'Изменить режим тревоги';
 
   @override
-  String get distressModeName => 'Название режима тревоги';
-
-  @override
-  String get distressCountdown => 'Запуск режима тревоги...';
-
-  @override
-  String get distressCountdownStealth => 'Пожалуйста, подождите...';
-
-  @override
   String get templatesTitle => 'Шаблоны напоминаний';
 
   @override
   String get templatesEmpty => 'Шаблонов пока нет.';
-
-  @override
-  String get templatesAdd => 'Добавить шаблон';
-
-  @override
-  String get templateEditorTitleCreate => 'Новый шаблон';
-
-  @override
-  String get templateEditorTitleEdit => 'Изменить шаблон';
-
-  @override
-  String get templateFieldName => 'Название в редакторе';
-
-  @override
-  String get templateFieldTitle => 'Заголовок напоминания';
-
-  @override
-  String get templateFieldBody => 'Текст напоминания';
-
-  @override
-  String get templateFieldConfirmationType => 'Тип подтверждения';
-
-  @override
-  String get templateFieldKeyword => 'Ключевое слово';
-
-  @override
-  String get templateFieldButtonLabel => 'Надпись кнопки';
-
-  @override
-  String get templateFieldDisplayStyle => 'Стиль отображения';
-
-  @override
-  String get templateConfirmTapButton => 'Нажать кнопку';
-
-  @override
-  String get templateConfirmTapWord => 'Нажать слово';
-
-  @override
-  String get templateConfirmSwipe => 'Свайп';
-
-  @override
-  String get templateConfirmDismiss => 'Отклонить';
-
-  @override
-  String get templateDisplayFullscreen => 'На весь экран';
-
-  @override
-  String get templateDisplaySubtle => 'Незаметно';
 
   @override
   String get profileTitle => 'Профиль';
@@ -1080,75 +449,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get profileFieldMedications => 'Лекарства';
 
   @override
-  String get profileFieldConditions => 'Медицинские состояния';
-
-  @override
-  String get profileFieldInstructions => 'Экстренные инструкции';
-
-  @override
-  String get profileAddItem => 'Добавить пункт';
-
-  @override
-  String get settingsTitle => 'Настройки';
-
-  @override
-  String get settingsSectionSecurity => 'Безопасность';
-
-  @override
-  String get settingsSectionStealth => 'Скрытность';
-
-  @override
-  String get settingsSectionDefaults => 'По умолчанию';
-
-  @override
-  String get settingsSectionHistory => 'История';
-
-  @override
-  String get settingsSectionBackup => 'Резервное копирование';
-
-  @override
-  String get settingsSectionAbout => 'О приложении';
-
-  @override
-  String get settingsSectionFeedback => 'Отзывы';
-
-  @override
-  String get settingsSectionContacts => 'Контакты';
-
-  @override
-  String get settingsSectionModes => 'Режимы';
-
-  @override
-  String get settingsSectionProfile => 'Профиль';
-
-  @override
-  String get settingsSectionDistressModes => 'Режимы тревоги';
-
-  @override
-  String get settingsSectionReminderTemplates => 'Шаблоны напоминаний';
-
-  @override
-  String get settingsSectionBatteryAlert => 'Оповещение о батарее';
-
-  @override
-  String get settingsSectionEventDefaults => 'Шаги по умолчанию';
-
-  @override
-  String get settingsSectionGpsLogging => 'Запись GPS';
-
-  @override
-  String get settingsSectionNotifications => 'Уведомления';
-
-  @override
-  String get settingsSectionHistoryRetention => 'Хранение истории';
-
-  @override
-  String get settingsSectionAppearance => 'Внешний вид';
-
-  @override
-  String get settingsThemeMode => 'Тема';
-
-  @override
   String get settingsThemeLight => 'Светлая';
 
   @override
@@ -1156,18 +456,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsThemeSystem => 'Системная';
-
-  @override
-  String get settingsLanguage => 'Язык';
-
-  @override
-  String get settingsEmergencyNumber => 'Экстренный номер';
-
-  @override
-  String get settingsAlarmDnd => 'Тревога игнорирует режим «Не беспокоить»';
-
-  @override
-  String get settingsLanguagePicker => 'Язык';
 
   @override
   String get settingsEmergencyNumberLabel => 'Номер экстренной помощи';
@@ -1181,68 +469,14 @@ class AppLocalizationsRu extends AppLocalizations {
       'Choose emergency number';
 
   @override
-  String get settingsEmergencyNumberHint => 'напр., 112';
-
-  @override
-  String get settingsEmergencyNumberSave => 'Сохранить';
-
-  @override
   String get settingsRedoOnboarding => 'Повторить знакомство';
 
   @override
   String get settingsRedoOnboardingConfirm => 'Начать знакомство заново?';
 
   @override
-  String get settingsRedoOnboardingBody =>
-      'Ваша текущая конфигурация сохраняется.';
-
-  @override
-  String get settingsRedoOnboardingProceed => 'Начать заново';
-
-  @override
-  String get settingsAlarmGradualVolume => 'Постепенное нарастание тревоги';
-
-  @override
-  String settingsAlarmGradualVolumeDuration(int seconds) {
-    return 'Длительность нарастания: $seconds с';
-  }
-
-  @override
-  String get securityTitle => 'Безопасность';
-
-  @override
-  String get securityAppPin => 'PIN приложения';
-
-  @override
-  String get securitySessionEndPin => 'PIN завершения сессии';
-
-  @override
-  String get securityDuressPin => 'PIN принуждения';
-
-  @override
-  String get securityAppPinBiometric =>
-      'Использовать биометрию для PIN приложения';
-
-  @override
   String get securitySessionEndPinBiometric =>
       'Использовать биометрию для PIN завершения сессии';
-
-  @override
-  String get securityDistressCancelBiometric =>
-      'Использовать биометрию для отмены тревоги';
-
-  @override
-  String get securityDuressTest => 'Проверить PIN принуждения';
-
-  @override
-  String get securityDuressTestSubtitle =>
-      'Убедитесь, что ваш PIN принуждения работает.';
-
-  @override
-  String get securityPinTimeout => 'Таймаут PIN (секунды)';
-
-  @override
-  String get securityDisablePin => 'Отключить';
 
   @override
   String get securitySetPin => 'Задать PIN';
@@ -1251,44 +485,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get securityChangePin => 'Изменить PIN';
 
   @override
-  String get pinSetupTitle => 'Задать PIN';
-
-  @override
-  String get pinSetupEnter => 'Введите новый PIN';
-
-  @override
-  String get pinSetupConfirm => 'Подтвердите PIN';
-
-  @override
   String get pinSetupMismatch => 'PIN-коды не совпадают. Попробуйте снова.';
-
-  @override
-  String get pinEntryTitle => 'Введите PIN';
-
-  @override
-  String get pinEntrySubtitle => 'Введите PIN, чтобы продолжить.';
-
-  @override
-  String get pinEntryBiometricReason =>
-      'Подтвердите личность, чтобы продолжить';
-
-  @override
-  String get stealthTitle => 'Скрытность';
-
-  @override
-  String get stealthEnable => 'Включить скрытный режим';
-
-  @override
-  String get stealthFakeName => 'Ложное имя приложения';
-
-  @override
-  String get stealthFakeIcon => 'Ложный значок';
-
-  @override
-  String get stealthNotificationDisguise => 'Маскировать уведомления';
-
-  @override
-  String get stealthTimerDisplay => 'Показывать таймер в скрытном режиме';
 
   @override
   String get stealthTimerDisplayNormal => 'Показывать полный текст';
@@ -1298,16 +495,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stealthTimerDisplayNone => 'Скрыть таймер';
-
-  @override
-  String get stealthSessionScreen => 'Убрать брендинг на экране сессии';
-
-  @override
-  String get stealthPickerTitle => 'Значок приложения';
-
-  @override
-  String get stealthPickerIntro =>
-      'Выберите, как будет выглядеть значок на главном экране.';
 
   @override
   String get stealthPresetMusic => 'Музыка';
@@ -1334,169 +521,16 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stealthPresetClock => 'Часы';
 
   @override
-  String get distressConfirmationTitle => 'Вы в опасности?';
-
-  @override
-  String get distressConfirmationCancel => 'Отмена';
-
-  @override
-  String distressConfirmationCountdown(Object seconds) {
-    return 'Режим тревоги сработает через $seconds с';
-  }
-
-  @override
-  String get imSafeSliderLabel =>
-      'Проведите, чтобы подтвердить «Я в безопасности»';
-
-  @override
   String get batteryAlertTitle => 'Оповещение о батарее';
-
-  @override
-  String get batteryAlertEnable => 'Включить оповещение о батарее';
-
-  @override
-  String batteryAlertThreshold(Object percent) {
-    return 'Порог: $percent%';
-  }
 
   @override
   String get eventDefaultsTitle => 'Шаги по умолчанию';
 
   @override
-  String get eventDefaultsBody =>
-      'Эти значения применяются к любому шагу, который их не переопределяет.';
-
-  @override
-  String get gpsLoggingTitle => 'Запись GPS';
-
-  @override
-  String get gpsLoggingEnable => 'Включить запись GPS';
-
-  @override
-  String get gpsLoggingInterval => 'Интервал замеров (секунды)';
-
-  @override
-  String get gpsLoggingAccuracy => 'Точность';
-
-  @override
-  String get gpsAccuracyLow => 'Низкая';
-
-  @override
-  String get gpsAccuracyMedium => 'Средняя';
-
-  @override
-  String get gpsAccuracyHigh => 'Высокая';
-
-  @override
-  String get gpsLoggingIncludeSms => 'Прикреплять местоположение к SMS';
-
-  @override
-  String get gpsLoggingHistoryDays => 'Хранение истории (дней)';
-
-  @override
-  String get notificationSettingsTitle => 'Уведомления';
-
-  @override
-  String get notificationSettingsBody =>
-      'Guardian Angela использует уведомления для маскировки и напоминаний.';
-
-  @override
   String get historyRetentionTitle => 'Хранение истории';
 
   @override
-  String get historyRetentionBody =>
-      'Как долго Guardian Angela хранит журналы прошлых сессий.';
-
-  @override
-  String historyRetentionDays(Object days) {
-    return 'Хранение: $days дн.';
-  }
-
-  @override
   String get backupTitle => 'Резервное копирование';
-
-  @override
-  String get backupExport => 'Экспорт данных';
-
-  @override
-  String get backupImport => 'Импорт данных';
-
-  @override
-  String get backupNotReady =>
-      'Резервное копирование пока недоступно. Скоро появится.';
-
-  @override
-  String get backupPinOptional => 'Необязательный PIN (шифрует пакет)';
-
-  @override
-  String get backupImportOk => 'Резервная копия успешно импортирована.';
-
-  @override
-  String get backupSelectionHeader => 'Включить в экспорт';
-
-  @override
-  String get backupToggleSettings => 'Настройки';
-
-  @override
-  String get backupToggleSettingsSubtitle =>
-      'Включаются всегда, чтобы резервную копию можно было восстановить.';
-
-  @override
-  String get backupToggleContacts => 'Экстренные контакты';
-
-  @override
-  String get backupToggleModes => 'Режимы';
-
-  @override
-  String get backupToggleDistressModes => 'Режимы тревоги';
-
-  @override
-  String get backupToggleTemplates => 'Шаблоны напоминаний';
-
-  @override
-  String get backupToggleSessionLogs => 'История сессий';
-
-  @override
-  String get backupToggleRecordings => 'Аудиозаписи';
-
-  @override
-  String get historyTitle => 'Прошлые сессии';
-
-  @override
-  String get historyEmpty => 'Прошлых сессий пока нет.';
-
-  @override
-  String get historyTabReal => 'Реальные';
-
-  @override
-  String get historyTabSimulated => 'Симуляция';
-
-  @override
-  String get historySearchHint => 'Поиск по названию режима';
-
-  @override
-  String get historyFilterModeAll => 'Все режимы';
-
-  @override
-  String get historyFilterModeLabel => 'Режим';
-
-  @override
-  String get historyDateRangePick => 'Диапазон дат';
-
-  @override
-  String get historyDetailTitle => 'Сведения о сессии';
-
-  @override
-  String get evidenceExportTitle => 'Экспорт доказательств';
-
-  @override
-  String get evidenceExportAsText => 'Скопировать как текст';
-
-  @override
-  String get evidenceExportAsJson => 'Скопировать как JSON';
-
-  @override
-  String get evidenceCopied => 'Скопировано в буфер обмена.';
 
   @override
   String get aboutTitle => 'О приложении';
@@ -1507,119 +541,10 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
-  String get aboutCredits => 'Сделано с заботой о тех, кто возвращается домой.';
-
-  @override
   String get feedbackTitle => 'Отзывы';
 
   @override
-  String get feedbackBody => 'Мы будем рады услышать от вас.';
-
-  @override
-  String get feedbackFieldMessage => 'Сообщение';
-
-  @override
   String get feedbackSend => 'Открыть email';
-
-  @override
-  String get pickerNoneLabel => '— нет —';
-
-  @override
-  String emergencyConfirmTitle(Object number) {
-    return 'Звонок на $number';
-  }
-
-  @override
-  String get emergencyConfirmSubtitle =>
-      'Удерживайте кнопку отмены, чтобы прервать.';
-
-  @override
-  String emergencyConfirmCountdown(Object seconds) {
-    return 'Звонок через $seconds с';
-  }
-
-  @override
-  String get emergencyConfirmCancel => 'Отмена';
-
-  @override
-  String get stealthCalendarUpcoming => 'Предстоящие';
-
-  @override
-  String get stealthCalendarUpcomingEvent => 'Встреча';
-
-  @override
-  String stealthCalendarUntilEvent(Object minutes) {
-    return 'через $minutes мин';
-  }
-
-  @override
-  String get stealthCalendarToday => 'Сегодня';
-
-  @override
-  String get stealthCalendarEvent1 => 'Кофе с Алексом';
-
-  @override
-  String get stealthCalendarEvent2 => 'Стендап';
-
-  @override
-  String get stealthCalendarEvent3 => 'Обед';
-
-  @override
-  String get stealthCalendarEvent4 => 'Тренировка';
-
-  @override
-  String get stealthCalendarEvent5 => 'Ужин с Сэмом';
-
-  @override
-  String get stealthDisarmGestureHint => 'Проведите вверх, чтобы завершить';
-
-  @override
-  String get stealthMusicTrackTitle => 'Без названия';
-
-  @override
-  String get stealthMusicArtist => 'Неизвестный исполнитель';
-
-  @override
-  String get stealthMusicAlbum => 'Неизвестный альбом';
-
-  @override
-  String get stealthMusicNowPlaying => 'Сейчас играет';
-
-  @override
-  String get stealthMusicSwipeHint => 'Проведите для отключения';
-
-  @override
-  String get stealthMusicPrevious => 'Предыдущий';
-
-  @override
-  String get stealthMusicPause => 'Пауза';
-
-  @override
-  String get stealthMusicNext => 'Следующий';
-
-  @override
-  String get stealthPodcastShowName => 'Подкаст';
-
-  @override
-  String get stealthPodcastEpisodeTitle => 'Эпизод';
-
-  @override
-  String get stealthPodcastEpisodesHeader => 'Эпизоды';
-
-  @override
-  String get stealthPodcastSpeedLabel => '1x';
-
-  @override
-  String get stealthPodcastEpisode1 => 'Эпизод 1';
-
-  @override
-  String get stealthPodcastEpisode2 => 'Эпизод 2';
-
-  @override
-  String get stealthPodcastEpisode3 => 'Эпизод 3';
-
-  @override
-  String get stealthPodcastEpisode4 => 'Эпизод 4';
 
   @override
   String get stealthPresetPodcast => 'Подкаст';
@@ -1635,153 +560,7 @@ class AppLocalizationsRu extends AppLocalizations {
       'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
 
   @override
-  String get sessionSimSpeedLabel => 'Скорость';
-
-  @override
-  String sessionSimSpeedValue(Object value) {
-    return '${value}x';
-  }
-
-  @override
-  String get sessionSimSpeedBackgroundCap => 'Ограничено 60× в фоне';
-
-  @override
-  String get sessionSimAdvancedLabel => 'Дополнительно';
-
-  @override
-  String get sessionSimTriggerPanic => 'Запустить тревогу';
-
-  @override
-  String get sessionSimTriggerArrival => 'Имитировать прибытие';
-
-  @override
-  String get sessionSimTriggerBattery => 'Имитировать низкий заряд';
-
-  @override
-  String get simulateGpsArrival => 'Имитировать прибытие';
-
-  @override
-  String get simulateLowBattery => 'Имитировать низкий заряд';
-
-  @override
-  String get launchGateTitle => 'Разблокировать Guardian Angela';
-
-  @override
-  String get launchGateSubtitle => 'Введите PIN или используйте биометрию.';
-
-  @override
-  String get launchGateWrong => 'Неверный PIN';
-
-  @override
-  String get launchGateBiometricReason => 'Разблокировать Guardian Angela';
-
-  @override
-  String get launchGateUseBiometric => 'Использовать биометрию';
-
-  @override
-  String get audioRunningLatePhrase => 'Привет, я опаздываю. Скоро перезвоню.';
-
-  @override
-  String smsDefaultTemplate(Object name, Object location, Object time) {
-    return '$name может нуждаться в помощи. Местоположение: $location. Время: $time.';
-  }
-
-  @override
-  String smsDefaultPreCallTemplate(Object name) {
-    return '$name пытается с вами связаться. Ожидайте звонка.';
-  }
-
-  @override
-  String simLoudAlarm(Object tail) {
-    return '[SIM] Громкая тревога + $tail';
-  }
-
-  @override
-  String get simLoudAlarmTailFlash => 'вспышка';
-
-  @override
-  String get simLoudAlarmTailVibrate => 'вибрация';
-
-  @override
-  String simSmsContact(Object channel, int count) {
-    return '[SIM] Отправил бы $channel $count контактам';
-  }
-
-  @override
-  String simFakeCallRing(Object caller) {
-    return '[SIM] Входящий вызов от $caller';
-  }
-
-  @override
-  String simCountdownWarning(int seconds) {
-    return '[SIM] Предупреждение об обратном отсчёте $secondsс';
-  }
-
-  @override
-  String simPhoneCall(Object name) {
-    return '[SIM] Позвонил бы $name';
-  }
-
-  @override
-  String get simNoContactToCall => '[SIM] Нет контакта для звонка';
-
-  @override
-  String simCallEmergency(Object number) {
-    return '[SIM] Набрал бы $number';
-  }
-
-  @override
-  String get simHardwareButton => '[SIM] Аппаратный триггер вооружён';
-
-  @override
-  String get simHoldButton => '[SIM] Ожидание удержания кнопки';
-
-  @override
-  String simDisguisedReminder(Object title) {
-    return '[SIM] Показал бы \"$title\"';
-  }
-
-  @override
-  String get simDisguisedReminderEmpty => '[SIM] Шаблон напоминания недоступен';
-
-  @override
-  String get simGpsArrivalTrigger => '[SIM] Срабатывание триггера прибытия GPS';
-
-  @override
-  String get simLowBatteryAlert =>
-      '[SIM] Срабатывание оповещения о низком заряде батареи';
-
-  @override
   String get homeTagline => 'Your angel\'s got your back.';
-
-  @override
-  String get homeSafetyChecklistTitle => 'Safety setup';
-
-  @override
-  String get homeSafetyChecklistDismiss => 'Dismiss checklist';
-
-  @override
-  String get homeSafetyChecklistContact => 'Add an emergency contact';
-
-  @override
-  String get homeSafetyChecklistPin => 'Set a session-end PIN';
-
-  @override
-  String get homeSafetyChecklistStealth => 'Configure stealth mode';
-
-  @override
-  String get homeSafetyChecklistSimulation => 'Test a simulation';
-
-  @override
-  String get homeSafetyChecklistMode => 'Customize a safety mode';
-
-  @override
-  String get homeSafetyChecklistPermissions => 'Grant required permissions';
-
-  @override
-  String homeSafetyChecklistProgress(int done, int total) {
-    return '$done of $total done';
-  }
 
   @override
   String get onboardingWelcomeGreeting => 'Hi, I\'m Angela';
@@ -1803,21 +582,11 @@ class AppLocalizationsRu extends AppLocalizations {
   String get onboardingProfilePhoneHelper => 'Included in emergency messages.';
 
   @override
-  String get onboardingProfileUseSimNumber => 'Use my SIM number';
-
-  @override
-  String get onboardingProfileUseSimUnsupported =>
-      'Not available on this platform; please enter manually.';
-
-  @override
   String get onboardingEmergencyContactHeader => 'Emergency contact';
 
   @override
   String get onboardingEmergencyContactPrompt =>
       'Who should we contact if something goes wrong?';
-
-  @override
-  String get onboardingEmergencyContactNoneAdded => 'No contact added yet';
 
   @override
   String get onboardingEmergencyContactAdd => 'Add emergency contact';
@@ -1828,15 +597,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get onboardingPermissionsGrantAll => 'Grant all';
-
-  @override
-  String get onboardingPermissionsAllGranted => 'All granted';
-
-  @override
-  String get onboardingPermissionsGrant => 'Grant';
-
-  @override
-  String get onboardingPermissionsOpenSettings => 'Open settings';
 
   @override
   String get onboardingPermissionsRequired => 'REQUIRED';
@@ -1881,9 +641,6 @@ class AppLocalizationsRu extends AppLocalizations {
       'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.';
 
   @override
-  String get sessionInterruptedStartSameMode => 'Start same mode';
-
-  @override
   String get sessionInterruptedAcknowledge => 'Acknowledge';
 
   @override
@@ -1910,23 +667,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionGpsDestinationLng => 'Longitude';
 
   @override
-  String get sessionGpsDestinationUseCurrent => 'Use current location';
-
-  @override
   String get sessionGpsDestinationSkip => 'Skip for this session';
 
   @override
   String get sessionGpsDestinationConfirm => 'Use destination';
-
-  @override
-  String get sessionStartChainSummary => 'Chain summary';
-
-  @override
-  String get sessionEndConfirmTitle => 'End session?';
-
-  @override
-  String get sessionEndConfirmSwipe =>
-      'Swipe to confirm you want to end the session';
 
   @override
   String get sessionEndOverlayTitle => 'End session?';
@@ -1957,19 +701,6 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get sessionEndSimDistressWouldFire =>
       'Distress chain would fire (5 wrong PINs)';
-
-  @override
-  String get sessionEmergencyDisarmTitle => 'Are you sure?';
-
-  @override
-  String get sessionEmergencyDisarmBody =>
-      'The emergency call will NOT be made if you disarm now.';
-
-  @override
-  String get sessionEmergencyDisarmCancel => 'Cancel (keep disarming)';
-
-  @override
-  String get sessionEmergencyDisarmGoBack => 'Go back (keep session)';
 
   @override
   String get distressConfirmTitle => 'Distress activated';
@@ -2117,9 +848,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get contactsDeleteAllConfirmButton => 'Delete all';
 
   @override
-  String get contactsReorderHint => 'Drag to reorder';
-
-  @override
   String get modesBuiltinBadge => 'Built-in';
 
   @override
@@ -2145,9 +873,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get settingsLanguageLabel => 'Language';
-
-  @override
-  String get settingsSessionLockedBlocker => 'End your session first.';
 
   @override
   String get settingsSecurityRow => 'Security';
@@ -2204,12 +929,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsOssLicenses => 'Open source licenses';
 
   @override
-  String get settingsExport => 'Export settings';
-
-  @override
-  String get settingsImport => 'Import settings';
-
-  @override
   String get settingsImportConfirmBody =>
       'This will overwrite all current data. Continue?';
 
@@ -2235,9 +954,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get securityRemovePin => 'Remove';
-
-  @override
-  String get securityBiometricToggle => 'Allow biometric';
 
   @override
   String get securityWhatIsThis => 'What is this?';
@@ -2333,9 +1049,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gpsLoggingIncludeInSms => 'Append location to SMS';
 
   @override
-  String get gpsLoggingHistoryRetentionLabel => 'History retention (days)';
-
-  @override
   String get historyRetentionLogsLabel => 'Session log retention (days)';
 
   @override
@@ -2383,12 +1096,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get templatesCreate => 'Create template';
-
-  @override
-  String get templatesFromTemplateSheet => 'From template';
-
-  @override
-  String get templatesFromScratchSheet => 'From scratch';
 
   @override
   String get templatesEditTitle => 'Edit template';
@@ -2500,12 +1207,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get profileFieldEmergencyInstructions => 'Emergency instructions';
-
-  @override
-  String get profilePhotoLabel => 'Photo';
-
-  @override
-  String get profileSaved => 'Profile saved';
 
   @override
   String get aboutAuthor => 'Author: Jonas Eschle';
@@ -2623,9 +1324,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pastEventsEmpty => 'No sessions yet';
 
   @override
-  String get pastEventsSearch => 'Search by mode name';
-
-  @override
   String get pastEventsDeleteConfirm => 'Delete session log?';
 
   @override
@@ -2647,9 +1345,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pastEventsOutcomeInterrupted => 'Interrupted';
 
   @override
-  String get pastEventsDeleteAll => 'Delete all';
-
-  @override
   String get pastEventsTrash => 'Trash';
 
   @override
@@ -2665,13 +1360,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pastEventsDetailShare => 'Share';
 
   @override
-  String get contactImportFromDevice => 'Import from contacts';
-
-  @override
-  String get contactImportPermissionDenied =>
-      'Permission denied — open Settings to enable.';
-
-  @override
   String get contactUnsavedDiscardTitle => 'Discard unsaved changes?';
 
   @override
@@ -2679,9 +1367,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get contactUnsavedDiscardDiscard => 'Discard';
-
-  @override
-  String get modesNewModeChoiceTitle => 'New mode';
 
   @override
   String get modesDuplicate => 'Duplicate';
@@ -2712,22 +1397,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get modesDistressTitle => 'Distress modes';
 
   @override
-  String get modesAllowDisarmAsDistress =>
-      'Allow disarm while active as distress';
-
-  @override
-  String get quickExitTitle => 'Quick exit';
-
-  @override
-  String get quickExitBody => 'Session data will be preserved and encrypted.';
-
-  @override
-  String get quickExitConfirm => 'Exit';
-
-  @override
-  String get validationNameRequired => 'Name is required.';
-
-  @override
   String get validationNameTooShort => 'Name must be at least 2 characters.';
 
   @override
@@ -2753,19 +1422,8 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionHoldAgain => 'Hold again to stay safe';
 
   @override
-  String get sessionEscalating => 'Escalating…';
-
-  @override
-  String get sessionDisarmedToast => 'Disarmed — chain reset to step 1.';
-
-  @override
   String sessionStepNextCheckIn(Object time) {
     return 'Next check-in in $time';
-  }
-
-  @override
-  String sessionStepGraceCountdown(Object time) {
-    return 'Grace period: $time';
   }
 
   @override
@@ -2810,19 +1468,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionQuickExitConfirm => 'Exit app';
 
   @override
-  String get sessionStealthMusicTrack => 'Now playing';
-
-  @override
-  String get sessionStealthMusicArtist => 'Various artists';
-
-  @override
-  String get homeStartingSession => 'Starting session…';
-
-  @override
   String get pastEventsRestore => 'Restore';
-
-  @override
-  String get batteryAlertAddStep => 'Add step';
 
   @override
   String batteryAlertForbiddenStep(Object type) {
@@ -2846,9 +1492,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get stepEditorRemove => 'Remove step';
-
-  @override
-  String get eventDefaultsSavedToast => 'Saved';
 
   @override
   String get eventDefaultsHoldStyle => 'Hold style';

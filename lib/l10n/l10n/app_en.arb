@@ -1,2039 +1,2164 @@
 {
   "@@locale": "en",
   "appTitle": "Guardian Angela",
-  "@appTitle": { "description": "The application name shown in titles and launchers." },
-
+  "@appTitle": {
+    "description": "The application name shown in titles and launchers."
+  },
   "commonSave": "Save",
-  "@commonSave": { "description": "Generic save action." },
+  "@commonSave": {
+    "description": "Generic save action."
+  },
   "angelaDialogTitle": "Old PIN entered",
-  "@angelaDialogTitle": { "description": "Deceptive Angela dialog title (after wrong-PIN threshold)." },
+  "@angelaDialogTitle": {
+    "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
+  },
   "angelaDialogBody": "It looks like you used an old PIN. Are you sure you want to proceed?",
-  "@angelaDialogBody": { "description": "Deceptive Angela dialog body." },
+  "@angelaDialogBody": {
+    "description": "Deceptive Angela dialog body."
+  },
   "angelaDialogCancel": "Cancel",
-  "@angelaDialogCancel": { "description": "Deceptive Angela dialog cancel button." },
+  "@angelaDialogCancel": {
+    "description": "Deceptive Angela dialog cancel button."
+  },
   "angelaDialogConfirm": "Continue",
-  "@angelaDialogConfirm": { "description": "Deceptive Angela dialog confirm button." },
+  "@angelaDialogConfirm": {
+    "description": "Deceptive Angela dialog confirm button."
+  },
   "commonCancel": "Cancel",
-  "@commonCancel": { "description": "Generic cancel action." },
+  "@commonCancel": {
+    "description": "Generic cancel action."
+  },
   "commonOk": "OK",
-  "@commonOk": { "description": "Generic confirm/OK action." },
-  "profileAngelaWarningTitle": "Heads up about the name \"Angela\"",
-  "@profileAngelaWarningTitle": { "description": "Title shown when the user tries to save a profile name containing 'Angela'." },
-  "profileAngelaWarningBody": "Guardian Angela uses \"Angela\" as a safety keyword. Using it as your own name could be confusing. Save anyway?",
-  "@profileAngelaWarningBody": { "description": "Body of the Angela-name warning dialog." },
+  "@commonOk": {
+    "description": "Generic confirm/OK action."
+  },
   "commonDelete": "Delete",
-  "@commonDelete": { "description": "Generic delete action." },
+  "@commonDelete": {
+    "description": "Generic delete action."
+  },
   "commonEdit": "Edit",
-  "@commonEdit": { "description": "Generic edit action." },
-  "commonAdd": "Add",
-  "@commonAdd": { "description": "Generic add action." },
+  "@commonEdit": {
+    "description": "Generic edit action."
+  },
   "commonClose": "Close",
-  "@commonClose": { "description": "Generic close action." },
+  "@commonClose": {
+    "description": "Generic close action."
+  },
   "commonConfirm": "Confirm",
-  "@commonConfirm": { "description": "Generic confirm action." },
+  "@commonConfirm": {
+    "description": "Generic confirm action."
+  },
   "commonBack": "Back",
-  "@commonBack": { "description": "Generic back action." },
-  "commonDone": "Done",
-  "@commonDone": { "description": "Generic done action." },
-  "commonRetry": "Retry",
-  "@commonRetry": { "description": "Generic retry action." },
-  "commonYes": "Yes",
-  "@commonYes": { "description": "Generic yes." },
-  "commonNo": "No",
-  "@commonNo": { "description": "Generic no." },
-  "commonEnabled": "Enabled",
-  "@commonEnabled": { "description": "Toggle on label." },
-  "commonDisabled": "Disabled",
-  "@commonDisabled": { "description": "Toggle off label." },
-  "commonNone": "None",
-  "@commonNone": { "description": "None / empty placeholder." },
-  "commonSeconds": "seconds",
-  "@commonSeconds": { "description": "Seconds unit." },
-  "commonMinutes": "minutes",
-  "@commonMinutes": { "description": "Minutes unit." },
-  "cancel": "Cancel",
-  "@cancel": { "description": "Cancel label used by dialogs." },
+  "@commonBack": {
+    "description": "Generic back action."
+  },
   "pinSubmit": "Submit",
-  "@pinSubmit": { "description": "PIN entry dialog submit button label (Q12)." },
-
+  "@pinSubmit": {
+    "description": "Submit button used by the launch-gate PIN entry."
+  },
   "homeTitle": "Guardian Angela",
-  "@homeTitle": { "description": "Title of the home screen." },
+  "@homeTitle": {
+    "description": "Title of the home screen."
+  },
   "homeStartSession": "Start session",
-  "@homeStartSession": { "description": "Primary CTA on the home screen." },
-  "homeStartConfirmTitle": "Start a session?",
-  "@homeStartConfirmTitle": { "description": "Title for the start-session confirmation dialog." },
-  "homeStartConfirmBody": "Make sure your contacts and PIN are configured. The session will run in the foreground and your selected mode will guide check-ins.",
-  "@homeStartConfirmBody": { "description": "Body for the start-session confirmation dialog." },
-  "homePermissionsMissingTitle": "Some permissions are missing",
-  "@homePermissionsMissingTitle": { "description": "Title for the dialog shown when one or more permissions needed by the selected mode were not granted." },
-  "homePermissionsMissingBody": "The following permissions were not granted. Without them, the corresponding chain steps will fail silently:",
-  "@homePermissionsMissingBody": { "description": "Body of the dialog explaining which permissions the selected mode needs but did not get." },
-  "homePermissionsContinueAnyway": "Start anyway",
-  "@homePermissionsContinueAnyway": { "description": "Button that starts the session even though some permissions were denied." },
+  "@homeStartSession": {
+    "description": "Primary CTA on the home screen."
+  },
   "homePermissionsNotification": "Notifications",
-  "@homePermissionsNotification": { "description": "Label for the notification permission in the missing-permissions dialog." },
+  "@homePermissionsNotification": {
+    "description": "Label for the notification permission in the missing-permissions dialog."
+  },
   "homePermissionsLocation": "Location",
-  "@homePermissionsLocation": { "description": "Label for the location permission in the missing-permissions dialog." },
+  "@homePermissionsLocation": {
+    "description": "Label for the location permission in the missing-permissions dialog."
+  },
   "homePermissionsCallPhone": "Phone calls",
-  "@homePermissionsCallPhone": { "description": "Label for the call-phone permission in the missing-permissions dialog." },
+  "@homePermissionsCallPhone": {
+    "description": "Label for the call-phone permission in the missing-permissions dialog."
+  },
   "homePermissionsSendSms": "Send SMS",
-  "@homePermissionsSendSms": { "description": "Label for the SMS permission in the missing-permissions dialog." },
+  "@homePermissionsSendSms": {
+    "description": "Label for the SMS permission in the missing-permissions dialog."
+  },
   "homeSimulate": "Simulate",
-  "@homeSimulate": { "description": "Toggle that switches between a real and a simulated session." },
-  "homeActiveSession": "Active session",
-  "@homeActiveSession": { "description": "Heading shown while a session is running." },
-  "homeResumeSession": "Resume",
-  "@homeResumeSession": { "description": "Resume CTA when a session is active." },
+  "@homeSimulate": {
+    "description": "Toggle that switches between a real and a simulated session."
+  },
   "homeNoModes": "No modes yet. Tap Modes to add one.",
-  "@homeNoModes": { "description": "Empty state shown on home when no modes exist." },
-  "homeNoContacts": "No emergency contacts yet. Tap Contacts to add one.",
-  "@homeNoContacts": { "description": "Empty state shown on home when no contacts exist." },
+  "@homeNoModes": {
+    "description": "Empty state shown on home when no modes exist."
+  },
   "homeContactsBannerNone": "No emergency contacts configured.",
-  "@homeContactsBannerNone": { "description": "Banner shown when zero contacts are configured." },
+  "@homeContactsBannerNone": {
+    "description": "Banner shown when zero contacts are configured."
+  },
   "homeMenuSettings": "Settings",
-  "@homeMenuSettings": { "description": "Settings button on home." },
+  "@homeMenuSettings": {
+    "description": "Settings button on home."
+  },
   "homeMenuContacts": "Contacts",
-  "@homeMenuContacts": { "description": "Contacts button on home." },
-  "homeMenuModes": "Modes",
-  "@homeMenuModes": { "description": "Modes button on home." },
+  "@homeMenuContacts": {
+    "description": "Contacts button on home."
+  },
   "homeMenuHistory": "Past sessions",
-  "@homeMenuHistory": { "description": "History button on home." },
-  "homeSelectMode": "Select mode",
-  "@homeSelectMode": { "description": "Mode-picker label on home." },
-
-  "onboardingWelcomeTitle": "Welcome to Guardian Angela",
-  "@onboardingWelcomeTitle": { "description": "Title on onboarding welcome page." },
-  "onboardingWelcomeBody": "A companion that keeps you safe on the way home. Guardian Angela watches over you while you walk, run, or travel, and can alert your chosen contacts if you need help.",
-  "@onboardingWelcomeBody": { "description": "Body on onboarding welcome page." },
+  "@homeMenuHistory": {
+    "description": "History button on home."
+  },
   "onboardingProfileTitle": "Profile & first contact",
-  "@onboardingProfileTitle": { "description": "Title on onboarding profile page." },
-  "onboardingProfileBody": "Tell us a bit about you so Guardian Angela can share helpful details if you need emergency help. Then add one trusted contact.",
-  "@onboardingProfileBody": { "description": "Body on onboarding profile page." },
+  "@onboardingProfileTitle": {
+    "description": "Title on onboarding profile page."
+  },
   "onboardingPermissionsTitle": "Permissions",
-  "@onboardingPermissionsTitle": { "description": "Title on onboarding permissions page." },
-  "onboardingPermissionsBody": "Guardian Angela needs a few permissions to keep you safe. Grant them now or later from Settings.",
-  "@onboardingPermissionsBody": { "description": "Body on onboarding permissions page." },
+  "@onboardingPermissionsTitle": {
+    "description": "Title on onboarding permissions page."
+  },
   "onboardingNext": "Next",
-  "@onboardingNext": { "description": "Next button on onboarding." },
+  "@onboardingNext": {
+    "description": "Next button on onboarding."
+  },
   "onboardingSkip": "Skip",
-  "@onboardingSkip": { "description": "Skip button on onboarding." },
+  "@onboardingSkip": {
+    "description": "Skip button on onboarding."
+  },
   "onboardingUseSimNumber": "Use my SIM number",
-  "@onboardingUseSimNumber": { "description": "Button below the Your Name field on onboarding page 2 (spec 04 Extra 28)." },
+  "@onboardingUseSimNumber": {
+    "description": "Button below the Your Name field on onboarding page 2 (spec 04 Extra 28)."
+  },
   "onboardingUseSimNumberHint": "{number}",
-  "@onboardingUseSimNumberHint": { "description": "Read-only hint displaying the SIM phone number.", "placeholders": { "number": {} } },
+  "@onboardingUseSimNumberHint": {
+    "description": "Read-only hint displaying the SIM phone number.",
+    "placeholders": {
+      "number": {}
+    }
+  },
   "onboardingUseSimNumberUnsupported": "Not available on iOS",
-  "@onboardingUseSimNumberUnsupported": { "description": "Snackbar shown when SIM read is unavailable on iOS." },
+  "@onboardingUseSimNumberUnsupported": {
+    "description": "Snackbar shown when SIM read is unavailable on iOS."
+  },
   "onboardingUseSimNumberUnavailable": "Couldn't read number",
-  "@onboardingUseSimNumberUnavailable": { "description": "Snackbar shown when the platform cannot read the SIM number." },
+  "@onboardingUseSimNumberUnavailable": {
+    "description": "Snackbar shown when the platform cannot read the SIM number."
+  },
   "onboardingUseSimNumberPermissionDenied": "Permission denied",
-  "@onboardingUseSimNumberPermissionDenied": { "description": "Snackbar shown when the user denied the runtime permission." },
-  "onboardingFinish": "Finish",
-  "@onboardingFinish": { "description": "Finish button on last onboarding page." },
-
+  "@onboardingUseSimNumberPermissionDenied": {
+    "description": "Snackbar shown when the user denied the runtime permission."
+  },
   "sessionTitle": "Session",
-  "@sessionTitle": { "description": "Title of the active-session screen." },
+  "@sessionTitle": {
+    "description": "Title of the active-session screen."
+  },
   "sessionDisarm": "I'm safe",
-  "@sessionDisarm": { "description": "Label of the disarm CTA." },
-  "sessionPause": "Pause",
-  "@sessionPause": { "description": "Pause button on session screen." },
-  "sessionResume": "Resume",
-  "@sessionResume": { "description": "Resume button on session screen." },
+  "@sessionDisarm": {
+    "description": "Label of the disarm CTA."
+  },
   "sessionHoldPrompt": "Hold to stay safe",
-  "@sessionHoldPrompt": { "description": "Prompt on hold-button step." },
-  "sessionHoldSemantic": "Hold down. Lifting starts a grace period.",
-  "@sessionHoldSemantic": { "description": "Accessibility label for the hold button." },
+  "@sessionHoldPrompt": {
+    "description": "Prompt on hold-button step."
+  },
   "sessionStepLabel": "Step {index} of {total}",
-  "@sessionStepLabel": { "description": "Step counter.", "placeholders": { "index": {}, "total": {} } },
+  "@sessionStepLabel": {
+    "description": "Step counter.",
+    "placeholders": {
+      "index": {},
+      "total": {}
+    }
+  },
   "sessionMissCount": "Missed: {count}",
-  "@sessionMissCount": { "description": "Miss count badge.", "placeholders": { "count": {} } },
-  "sessionRemaining": "{seconds}s left",
-  "@sessionRemaining": { "description": "Remaining seconds label.", "placeholders": { "seconds": {} } },
+  "@sessionMissCount": {
+    "description": "Miss count badge.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "sessionPausedBadge": "Paused",
-  "@sessionPausedBadge": { "description": "Label shown when session is paused." },
+  "@sessionPausedBadge": {
+    "description": "Label shown when session is paused."
+  },
   "sessionPhaseEnded": "Session ended",
-  "@sessionPhaseEnded": { "description": "Label shown when session finished." },
+  "@sessionPhaseEnded": {
+    "description": "Label shown when session finished."
+  },
   "sessionSimulationBanner": "Simulation",
-  "@sessionSimulationBanner": { "description": "Banner for simulated sessions." },
+  "@sessionSimulationBanner": {
+    "description": "Banner for simulated sessions."
+  },
   "sessionCheckIn": "I'm checked in",
-  "@sessionCheckIn": { "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session." },
-  "sessionDisarmTriggerTitle": "Disarm trigger fired",
-  "@sessionDisarmTriggerTitle": { "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)." },
-  "sessionDisarmTriggerBody": "A disarm trigger fired. End the session?",
-  "@sessionDisarmTriggerBody": { "description": "Body of the disarm-trigger confirmation dialog." },
-  "sessionDisarmTriggerConfirm": "End session",
-  "@sessionDisarmTriggerConfirm": { "description": "Confirm button on the disarm-trigger dialog." },
-  "sessionDisarmTriggerCancel": "Continue",
-  "@sessionDisarmTriggerCancel": { "description": "Cancel button on the disarm-trigger dialog." },
-  "wrongPinAngelaTitle": "Old PIN from Angela",
-  "@wrongPinAngelaTitle": { "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations." },
-  "wrongPinAngelaBody": "Are you sure you want to proceed with this old PIN?",
-  "@wrongPinAngelaBody": { "description": "Body of the deceptive wrong-PIN dialog." },
-  "wrongPinAngelaConfirm": "OK",
-  "@wrongPinAngelaConfirm": { "description": "Primary button on the deceptive wrong-PIN dialog." },
-  "wrongPinAngelaCancel": "Cancel",
-  "@wrongPinAngelaCancel": { "description": "Secondary button on the deceptive wrong-PIN dialog." },
+  "@sessionCheckIn": {
+    "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
+  },
   "sessionStepCountdownTitle": "Warning",
-  "@sessionStepCountdownTitle": { "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires." },
+  "@sessionStepCountdownTitle": {
+    "description": "Heading on the countdown-warning step UI; the screen shows a large countdown timer before the next escalation fires."
+  },
   "sessionStepCountdownBody": "The next escalation fires when the countdown ends. Swipe 'I'm safe' below to disarm.",
-  "@sessionStepCountdownBody": { "description": "Subtitle on the countdown-warning step UI." },
+  "@sessionStepCountdownBody": {
+    "description": "Subtitle on the countdown-warning step UI."
+  },
   "sessionStepDisguisedDefaultTitle": "Reminder",
-  "@sessionStepDisguisedDefaultTitle": { "description": "Fallback title shown on a disguisedReminder step when no template title is resolved." },
+  "@sessionStepDisguisedDefaultTitle": {
+    "description": "Fallback title shown on a disguisedReminder step when no template title is resolved."
+  },
   "sessionStepDisguisedDefaultBody": "Tap 'I'm checked in' to confirm you're safe.",
-  "@sessionStepDisguisedDefaultBody": { "description": "Fallback body shown on a disguisedReminder step when no template body is resolved." },
+  "@sessionStepDisguisedDefaultBody": {
+    "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
+  },
   "sessionStepSmsStatus": "Sending message to contacts…",
-  "@sessionStepSmsStatus": { "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available." },
-  "sessionStepSmsDelivered": "Delivered",
-  "@sessionStepSmsDelivered": { "description": "Per-message status label shown when the messaging service reports the message was delivered." },
-  "sessionStepSmsSent": "Sent",
-  "@sessionStepSmsSent": { "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)." },
-  "sessionStepSmsQueued": "Queued",
-  "@sessionStepSmsQueued": { "description": "Per-message status label shown while a message is queued for delivery." },
-  "sessionStepSmsFailed": "Failed",
-  "@sessionStepSmsFailed": { "description": "Per-message status label shown when the messaging service reports a delivery failure." },
+  "@sessionStepSmsStatus": {
+    "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
+  },
   "sessionStepPhoneCallStatus": "Calling emergency contact…",
-  "@sessionStepPhoneCallStatus": { "description": "Status text shown during a phoneCallContact step while the contact is being called." },
-  "sessionStepPhoneCallCancel": "Cancel call",
-  "@sessionStepPhoneCallCancel": { "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)." },
+  "@sessionStepPhoneCallStatus": {
+    "description": "Status text shown during a phoneCallContact step while the contact is being called."
+  },
   "sessionStepLoudAlarmTitle": "Alarm playing",
-  "@sessionStepLoudAlarmTitle": { "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider." },
+  "@sessionStepLoudAlarmTitle": {
+    "description": "Title shown during a loudAlarm step. The alarm sound is playing; the user can disarm via the I'm safe slider."
+  },
   "sessionStepLoudAlarmBody": "The alarm is sounding to attract attention.",
-  "@sessionStepLoudAlarmBody": { "description": "Subtitle shown during a loudAlarm step." },
+  "@sessionStepLoudAlarmBody": {
+    "description": "Subtitle shown during a loudAlarm step."
+  },
   "sessionStepLoudAlarmFlashWarning": "Photosensitive warning: screen is flashing.",
-  "@sessionStepLoudAlarmFlashWarning": { "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true." },
+  "@sessionStepLoudAlarmFlashWarning": {
+    "description": "Photosensitive epilepsy warning shown when LoudAlarmConfig.flashScreen is true."
+  },
   "sessionStepCallEmergencyStatus": "Calling emergency services…",
-  "@sessionStepCallEmergencyStatus": { "description": "Status text shown during a callEmergency step before / while the emergency number is dialed." },
+  "@sessionStepCallEmergencyStatus": {
+    "description": "Status text shown during a callEmergency step before / while the emergency number is dialed."
+  },
   "sessionStepCallEmergencyNumber": "Number: {number}",
-  "@sessionStepCallEmergencyNumber": { "description": "Display of the emergency number being dialed.", "placeholders": { "number": {} } },
+  "@sessionStepCallEmergencyNumber": {
+    "description": "Display of the emergency number being dialed.",
+    "placeholders": {
+      "number": {}
+    }
+  },
   "sessionStepHardwareButtonRepeat": "Press {button} {count} times within {windowMs}ms",
-  "@sessionStepHardwareButtonRepeat": { "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.", "placeholders": { "button": {}, "count": {}, "windowMs": {} } },
+  "@sessionStepHardwareButtonRepeat": {
+    "description": "Instruction text shown during a hardwareButton step with repeat-press pattern.",
+    "placeholders": {
+      "button": {},
+      "count": {},
+      "windowMs": {}
+    }
+  },
   "sessionStepHardwareButtonLong": "Hold {button} for {seconds} seconds",
-  "@sessionStepHardwareButtonLong": { "description": "Instruction text shown during a hardwareButton step with long-press pattern.", "placeholders": { "button": {}, "seconds": {} } },
+  "@sessionStepHardwareButtonLong": {
+    "description": "Instruction text shown during a hardwareButton step with long-press pattern.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
   "sessionStepHardwareButtonVolumeUp": "volume up",
-  "@sessionStepHardwareButtonVolumeUp": { "description": "Lowercase noun for the volume-up hardware button used in step instructions." },
+  "@sessionStepHardwareButtonVolumeUp": {
+    "description": "Lowercase noun for the volume-up hardware button used in step instructions."
+  },
   "sessionStepHardwareButtonVolumeDown": "volume down",
-  "@sessionStepHardwareButtonVolumeDown": { "description": "Lowercase noun for the volume-down hardware button used in step instructions." },
+  "@sessionStepHardwareButtonVolumeDown": {
+    "description": "Lowercase noun for the volume-down hardware button used in step instructions."
+  },
   "sessionStepHardwareButtonPower": "power",
-  "@sessionStepHardwareButtonPower": { "description": "Lowercase noun for the power hardware button used in step instructions." },
-
+  "@sessionStepHardwareButtonPower": {
+    "description": "Lowercase noun for the power hardware button used in step instructions."
+  },
   "sessionCompletedTitle": "Session complete",
-  "@sessionCompletedTitle": { "description": "Title of the session-completed screen." },
+  "@sessionCompletedTitle": {
+    "description": "Title of the session-completed screen."
+  },
   "sessionCompletedBody": "You arrived safely. Guardian Angela is standing down.",
-  "@sessionCompletedBody": { "description": "Body on the session-completed screen." },
+  "@sessionCompletedBody": {
+    "description": "Body on the session-completed screen."
+  },
   "sessionCompletedReturnHome": "Return home",
-  "@sessionCompletedReturnHome": { "description": "Return-home CTA after session." },
-
+  "@sessionCompletedReturnHome": {
+    "description": "Return-home CTA after session."
+  },
   "simulationSummaryTitle": "Simulation summary",
-  "@simulationSummaryTitle": { "description": "Title of the simulation-summary screen." },
+  "@simulationSummaryTitle": {
+    "description": "Title of the simulation-summary screen."
+  },
   "simulationSummaryEmpty": "No steps fired during this simulation.",
-  "@simulationSummaryEmpty": { "description": "Shown when no steps fired." },
+  "@simulationSummaryEmpty": {
+    "description": "Shown when no steps fired."
+  },
   "simulationSummaryReturn": "Back to home",
-  "@simulationSummaryReturn": { "description": "CTA returning to home after sim summary." },
-
+  "@simulationSummaryReturn": {
+    "description": "CTA returning to home after sim summary."
+  },
   "fakeCallTitle": "Incoming call",
-  "@fakeCallTitle": { "description": "Title of the fake-call screen." },
-  "fakeCallAnswer": "Answer",
-  "@fakeCallAnswer": { "description": "Answer-call button." },
-  "fakeCallDecline": "Decline",
-  "@fakeCallDecline": { "description": "Decline-call button." },
+  "@fakeCallTitle": {
+    "description": "Title of the fake-call screen."
+  },
   "fakeCallHangUp": "Hang up",
-  "@fakeCallHangUp": { "description": "Hang-up button." },
+  "@fakeCallHangUp": {
+    "description": "Hang-up button."
+  },
   "fakeCallSlideToAnswer": "slide to answer",
-  "@fakeCallSlideToAnswer": { "description": "Hint text inside the iOS-style slide-to-answer track." },
+  "@fakeCallSlideToAnswer": {
+    "description": "Hint text inside the iOS-style slide-to-answer track."
+  },
   "fakeCallUnknownCaller": "Unknown",
-  "@fakeCallUnknownCaller": { "description": "Fallback caller name when the configured callerName is empty." },
+  "@fakeCallUnknownCaller": {
+    "description": "Fallback caller name when the configured callerName is empty."
+  },
   "fakeCallIncomingWhatsapp": "WhatsApp voice call",
-  "@fakeCallIncomingWhatsapp": { "description": "Incoming-call header for the WhatsApp call style." },
+  "@fakeCallIncomingWhatsapp": {
+    "description": "Incoming-call header for the WhatsApp call style."
+  },
   "fakeCallIncomingTelegram": "Telegram voice call",
-  "@fakeCallIncomingTelegram": { "description": "Incoming-call header for the Telegram call style." },
+  "@fakeCallIncomingTelegram": {
+    "description": "Incoming-call header for the Telegram call style."
+  },
   "fakeCallIncomingSignal": "Signal voice call",
-  "@fakeCallIncomingSignal": { "description": "Incoming-call header for the Signal call style." },
+  "@fakeCallIncomingSignal": {
+    "description": "Incoming-call header for the Signal call style."
+  },
   "fakeCallBrandWhatsapp": "WHATSAPP",
-  "@fakeCallBrandWhatsapp": { "description": "Top-of-screen brand badge in the WhatsApp fake-call style." },
+  "@fakeCallBrandWhatsapp": {
+    "description": "Top-of-screen brand badge in the WhatsApp fake-call style."
+  },
   "fakeCallBrandTelegram": "TELEGRAM",
-  "@fakeCallBrandTelegram": { "description": "Top-of-screen brand badge in the Telegram fake-call style." },
+  "@fakeCallBrandTelegram": {
+    "description": "Top-of-screen brand badge in the Telegram fake-call style."
+  },
   "fakeCallBrandSignal": "SIGNAL",
-  "@fakeCallBrandSignal": { "description": "Top-of-screen brand badge in the Signal fake-call style." },
+  "@fakeCallBrandSignal": {
+    "description": "Top-of-screen brand badge in the Signal fake-call style."
+  },
   "fakeCallBrandAndroid": "PHONE",
-  "@fakeCallBrandAndroid": { "description": "Brand badge in the Android native fake-call style." },
+  "@fakeCallBrandAndroid": {
+    "description": "Brand badge in the Android native fake-call style."
+  },
   "fakeCallBrandIos": "PHONE",
-  "@fakeCallBrandIos": { "description": "Brand badge in the iOS native fake-call style." },
+  "@fakeCallBrandIos": {
+    "description": "Brand badge in the iOS native fake-call style."
+  },
   "fakeCallBrandMinimal": "CALL",
-  "@fakeCallBrandMinimal": { "description": "Brand badge in the minimal fake-call style." },
+  "@fakeCallBrandMinimal": {
+    "description": "Brand badge in the minimal fake-call style."
+  },
   "fakeCallDeclineSafeLabel": "Decline (I'm Safe)",
-  "@fakeCallDeclineSafeLabel": { "description": "Decline button label when declineIsSafe = true (declining disarms the chain)." },
+  "@fakeCallDeclineSafeLabel": {
+    "description": "Decline button label when declineIsSafe = true (declining disarms the chain)."
+  },
   "fakeCallDeclineUnsafeLabel": "Decline (Stay on alert)",
-  "@fakeCallDeclineUnsafeLabel": { "description": "Decline button label when declineIsSafe = false (declining keeps the chain running)." },
+  "@fakeCallDeclineUnsafeLabel": {
+    "description": "Decline button label when declineIsSafe = false (declining keeps the chain running)."
+  },
   "fakeCallHoldForDistress": "Hold 5s for distress",
-  "@fakeCallHoldForDistress": { "description": "Hint shown next to the decline button explaining the long-press distress trigger." },
+  "@fakeCallHoldForDistress": {
+    "description": "Hint shown next to the decline button explaining the long-press distress trigger."
+  },
   "fakeCallVoicePrompt": "TTS prompt: {name}",
   "@fakeCallVoicePrompt": {
     "description": "Indicator chip showing the active voice prompt name when configured.",
-    "placeholders": {"name": {"type": "String"}}
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
   },
   "fakeCallVibrationLabel": "Vibration: {pattern}",
   "@fakeCallVibrationLabel": {
     "description": "Indicator chip showing the active vibration pattern name.",
-    "placeholders": {"pattern": {"type": "String"}}
+    "placeholders": {
+      "pattern": {
+        "type": "String"
+      }
+    }
   },
   "fakeCallVibrationPatternDefault": "default",
-  "@fakeCallVibrationPatternDefault": { "description": "Vibration pattern name for the OS default pattern." },
+  "@fakeCallVibrationPatternDefault": {
+    "description": "Vibration pattern name for the OS default pattern."
+  },
   "fakeCallSlideToAnswerHint": "Slide to answer",
-  "@fakeCallSlideToAnswerHint": { "description": "Label above the slide-to-answer track." },
+  "@fakeCallSlideToAnswerHint": {
+    "description": "Label above the slide-to-answer track."
+  },
   "fakeCallActiveDuration": "{mm}:{ss}",
   "@fakeCallActiveDuration": {
     "description": "Elapsed call duration mm:ss formatting.",
     "placeholders": {
-      "mm": {"type": "String"},
-      "ss": {"type": "String"}
+      "mm": {
+        "type": "String"
+      },
+      "ss": {
+        "type": "String"
+      }
     }
   },
-
   "contactsTitle": "Emergency contacts",
-  "@contactsTitle": { "description": "Title of the contacts list screen." },
+  "@contactsTitle": {
+    "description": "Title of the contacts list screen."
+  },
   "contactsEmpty": "No contacts yet. Add one to receive your distress messages.",
-  "@contactsEmpty": { "description": "Empty state on contacts list." },
+  "@contactsEmpty": {
+    "description": "Empty state on contacts list."
+  },
   "contactsAdd": "Add contact",
-  "@contactsAdd": { "description": "Add-contact FAB." },
+  "@contactsAdd": {
+    "description": "Add-contact FAB."
+  },
   "contactFormTitleCreate": "New contact",
-  "@contactFormTitleCreate": { "description": "Title when creating a contact." },
+  "@contactFormTitleCreate": {
+    "description": "Title when creating a contact."
+  },
   "contactFormTitleEdit": "Edit contact",
-  "@contactFormTitleEdit": { "description": "Title when editing a contact." },
+  "@contactFormTitleEdit": {
+    "description": "Title when editing a contact."
+  },
   "contactFieldName": "Name",
-  "@contactFieldName": { "description": "Name field." },
+  "@contactFieldName": {
+    "description": "Name field."
+  },
   "contactFieldPhone": "Phone number",
-  "@contactFieldPhone": { "description": "Phone number field." },
+  "@contactFieldPhone": {
+    "description": "Phone number field."
+  },
   "contactFieldRelationship": "Relationship (optional)",
-  "@contactFieldRelationship": { "description": "Relationship field." },
+  "@contactFieldRelationship": {
+    "description": "Relationship field."
+  },
   "contactFieldLanguage": "SMS language (optional)",
-  "@contactFieldLanguage": { "description": "Per-contact language field." },
+  "@contactFieldLanguage": {
+    "description": "Per-contact language field."
+  },
   "contactLanguageDefault": "Default (use app language)",
-  "@contactLanguageDefault": { "description": "Default option in the per-contact language dropdown." },
+  "@contactLanguageDefault": {
+    "description": "Default option in the per-contact language dropdown."
+  },
   "contactChannelsHeader": "Messaging channels",
-  "@contactChannelsHeader": { "description": "Channels section header." },
+  "@contactChannelsHeader": {
+    "description": "Channels section header."
+  },
   "contactChannelSms": "SMS",
-  "@contactChannelSms": { "description": "SMS channel label." },
+  "@contactChannelSms": {
+    "description": "SMS channel label."
+  },
   "contactChannelWhatsapp": "WhatsApp",
-  "@contactChannelWhatsapp": { "description": "WhatsApp channel label." },
+  "@contactChannelWhatsapp": {
+    "description": "WhatsApp channel label."
+  },
   "contactChannelTelegram": "Telegram",
-  "@contactChannelTelegram": { "description": "Telegram channel label." },
+  "@contactChannelTelegram": {
+    "description": "Telegram channel label."
+  },
   "contactChannelPhone": "Phone call",
-  "@contactChannelPhone": { "description": "Phone-call channel label." },
+  "@contactChannelPhone": {
+    "description": "Phone-call channel label."
+  },
   "contactDeleteConfirm": "Delete contact?",
-  "@contactDeleteConfirm": { "description": "Confirmation title on delete." },
+  "@contactDeleteConfirm": {
+    "description": "Confirmation title on delete."
+  },
   "contactDeleteBody": "{name} will be removed from your emergency list.",
-  "@contactDeleteBody": { "description": "Confirmation body on delete.", "placeholders": { "name": {} } },
-  "contactRequiredError": "Name and phone number are required.",
-  "@contactRequiredError": { "description": "Validation error for contact form." },
+  "@contactDeleteBody": {
+    "description": "Confirmation body on delete.",
+    "placeholders": {
+      "name": {}
+    }
+  },
   "contactFormIosSmsWarning": "On iOS, SMS opens the Messages app. You must tap Send manually.",
-  "@contactFormIosSmsWarning": { "description": "Warning shown under the contact form on iOS when SMS is enabled (spec 04:1379)." },
-
+  "@contactFormIosSmsWarning": {
+    "description": "Warning shown under the contact form on iOS when SMS is enabled (spec 04:1379)."
+  },
   "modesTitle": "Modes",
-  "@modesTitle": { "description": "Title of the modes list." },
+  "@modesTitle": {
+    "description": "Title of the modes list."
+  },
   "modesEmpty": "No modes yet. Tap Add to create a mode.",
-  "@modesEmpty": { "description": "Empty state on modes." },
+  "@modesEmpty": {
+    "description": "Empty state on modes."
+  },
   "modesAdd": "Add mode",
-  "@modesAdd": { "description": "Add-mode FAB." },
-  "modesNewPickerTitle": "Start from",
-  "@modesNewPickerTitle": { "description": "Title of the picker shown when creating a new mode." },
+  "@modesAdd": {
+    "description": "Add-mode FAB."
+  },
   "modesNewPickerBlank": "Blank mode",
-  "@modesNewPickerBlank": { "description": "Picker option that opens an empty mode editor." },
+  "@modesNewPickerBlank": {
+    "description": "Picker option that opens an empty mode editor."
+  },
   "modesNewPickerBlankSubtitle": "Start with an empty chain",
-  "@modesNewPickerBlankSubtitle": { "description": "Subtitle for the Blank-mode picker option." },
+  "@modesNewPickerBlankSubtitle": {
+    "description": "Subtitle for the Blank-mode picker option."
+  },
   "modesNewPickerFromTemplate": "From {name}",
   "@modesNewPickerFromTemplate": {
     "description": "Picker option that clones an existing mode as the starting template.",
-    "placeholders": { "name": { "type": "String", "example": "Walk Mode" } }
+    "placeholders": {
+      "name": {
+        "type": "String",
+        "example": "Walk Mode"
+      }
+    }
   },
   "modesNewPickerFromTemplateSubtitle": "Copy this mode's chain and triggers",
-  "@modesNewPickerFromTemplateSubtitle": { "description": "Subtitle for the From-template picker option." },
-  "modesNewPickerCopyName": "Copy of {name}",
-  "@modesNewPickerCopyName": {
-    "description": "Default name for a newly cloned mode.",
-    "placeholders": { "name": { "type": "String", "example": "Walk Mode" } }
+  "@modesNewPickerFromTemplateSubtitle": {
+    "description": "Subtitle for the From-template picker option."
   },
-  "modesNewPickerBuiltinBadge": "Built-in",
-  "@modesNewPickerBuiltinBadge": { "description": "Badge label shown next to built-in templates in the new-mode picker." },
   "modeEditorTitleCreate": "New mode",
-  "@modeEditorTitleCreate": { "description": "Title when creating a mode." },
+  "@modeEditorTitleCreate": {
+    "description": "Title when creating a mode."
+  },
   "modeEditorTitleEdit": "Edit mode",
-  "@modeEditorTitleEdit": { "description": "Title when editing a mode." },
+  "@modeEditorTitleEdit": {
+    "description": "Title when editing a mode."
+  },
   "modeFieldName": "Name",
-  "@modeFieldName": { "description": "Mode name field." },
-  "modeFieldDistressMode": "Distress mode",
-  "@modeFieldDistressMode": { "description": "Distress-mode selector." },
-  "modeFieldDistressModeDefault": "Use default",
-  "@modeFieldDistressModeDefault": { "description": "Default option in distress-mode selector." },
+  "@modeFieldName": {
+    "description": "Mode name field."
+  },
   "modeChainHeader": "Chain",
-  "@modeChainHeader": { "description": "Header above the chain-step list." },
+  "@modeChainHeader": {
+    "description": "Header above the chain-step list."
+  },
   "modeChainAddStep": "Add step",
-  "@modeChainAddStep": { "description": "Button to add a chain step." },
-  "modeChainEmpty": "No steps yet. Tap Add step.",
-  "@modeChainEmpty": { "description": "Empty state on mode chain list." },
-
-  "modeFieldIcon": "Icon",
-  "@modeFieldIcon": { "description": "Label for the mode-icon picker." },
-  "modeIconPickerTitle": "Pick an icon",
-  "@modeIconPickerTitle": { "description": "Title of the icon-picker bottom sheet." },
-  "modeIconClear": "No icon",
-  "@modeIconClear": { "description": "Option in the icon picker that clears the icon selection." },
-
-  "modeDistressHeader": "Distress triggers",
-  "@modeDistressHeader": { "description": "Section header for distress-trigger list." },
-  "modeDistressEmpty": "No distress triggers configured.",
-  "@modeDistressEmpty": { "description": "Empty state for distress triggers." },
-  "modeDistressAdd": "Add distress trigger",
-  "@modeDistressAdd": { "description": "Button to add a distress trigger." },
-  "modeDistressTypeHardware": "Hardware button",
-  "@modeDistressTypeHardware": { "description": "Distress trigger type: hardware button." },
-  "modeDistressButtonType": "Button",
-  "@modeDistressButtonType": { "description": "Hardware-button selector label." },
-  "modeDistressButtonVolumeUp": "Volume up",
-  "@modeDistressButtonVolumeUp": { "description": "Hardware-button option: volume up." },
-  "modeDistressButtonVolumeDown": "Volume down",
-  "@modeDistressButtonVolumeDown": { "description": "Hardware-button option: volume down." },
-  "modeDistressButtonPower": "Power",
-  "@modeDistressButtonPower": { "description": "Hardware-button option: power." },
-  "modeDistressPattern": "Pattern",
-  "@modeDistressPattern": { "description": "Distress hardware-pattern selector label." },
-  "modeDistressPatternRepeat": "Repeat press",
-  "@modeDistressPatternRepeat": { "description": "Distress pattern: multiple presses." },
-  "modeDistressPatternLong": "Long press",
-  "@modeDistressPatternLong": { "description": "Distress pattern: long press." },
-  "modeDistressPressCount": "Press count",
-  "@modeDistressPressCount": { "description": "Distress repeat-press count field." },
-  "modeDistressPressWindow": "Press window (ms)",
-  "@modeDistressPressWindow": { "description": "Distress repeat-press window field, in ms." },
-  "modeDistressLongDuration": "Hold duration (seconds)",
-  "@modeDistressLongDuration": { "description": "Distress long-press duration field, in seconds." },
-  "modeDistressSummaryRepeat": "{count} presses / {windowMs} ms",
-  "@modeDistressSummaryRepeat": { "description": "Compact summary of a repeat-press distress trigger.", "placeholders": { "count": {}, "windowMs": {} } },
-  "modeDistressSummaryLong": "Hold {seconds}s",
-  "@modeDistressSummaryLong": { "description": "Compact summary of a long-press distress trigger.", "placeholders": { "seconds": {} } },
-
-  "modeOverridesHeader": "Mode overrides",
-  "@modeOverridesHeader": { "description": "Section header for the per-mode overrides panel." },
-  "modeOverridesUseDefault": "Use app default",
-  "@modeOverridesUseDefault": { "description": "Toggle that resets a mode override to its app-wide default." },
-  "modeOverridesGpsLabel": "GPS logging",
-  "@modeOverridesGpsLabel": { "description": "Sub-label for the GPS-logging override row." },
-  "modeOverridesStealthLabel": "Stealth",
-  "@modeOverridesStealthLabel": { "description": "Sub-label for the stealth override row." },
-  "modeOverridesEventDefaultsLabel": "Event defaults",
-  "@modeOverridesEventDefaultsLabel": { "description": "Sub-label for the event-defaults override row." },
-  "modeOverridesLocalTemplatesLabel": "Local reminder templates",
-  "@modeOverridesLocalTemplatesLabel": { "description": "Sub-label for the local-templates override row." },
-  "modeOverridesGpsEnabled": "GPS logging enabled",
-  "@modeOverridesGpsEnabled": { "description": "Per-mode GPS-logging toggle." },
-  "modeOverridesGpsIntervalLabel": "Sampling interval (seconds)",
-  "@modeOverridesGpsIntervalLabel": { "description": "Per-mode GPS sampling interval label." },
-  "modeOverridesGpsIncludeInSms": "Append location to SMS",
-  "@modeOverridesGpsIncludeInSms": { "description": "Per-mode GPS-in-SMS toggle." },
-  "modeOverridesStealthEnabled": "Stealth enabled",
-  "@modeOverridesStealthEnabled": { "description": "Per-mode stealth toggle." },
-  "modeOverridesStealthFakeName": "Fake app name",
-  "@modeOverridesStealthFakeName": { "description": "Per-mode stealth fake-name field." },
-  "modeOverridesEventDefaultsHint": "Custom event defaults active for this mode.",
-  "@modeOverridesEventDefaultsHint": { "description": "Hint when event defaults are overridden." },
-  "modeOverridesLocalTemplatesCount": "{count} mode-local templates",
-  "@modeOverridesLocalTemplatesCount": { "description": "Mode-local template count summary.", "placeholders": { "count": {} } },
-
+  "@modeChainAddStep": {
+    "description": "Button to add a chain step."
+  },
   "modeUnsavedTitle": "Discard changes?",
-  "@modeUnsavedTitle": { "description": "Unsaved-changes prompt title." },
+  "@modeUnsavedTitle": {
+    "description": "Unsaved-changes prompt title."
+  },
   "modeUnsavedBody": "You have unsaved changes. Discard them and leave the editor?",
-  "@modeUnsavedBody": { "description": "Unsaved-changes prompt body." },
+  "@modeUnsavedBody": {
+    "description": "Unsaved-changes prompt body."
+  },
   "modeUnsavedDiscard": "Discard",
-  "@modeUnsavedDiscard": { "description": "Confirm-discard button label." },
+  "@modeUnsavedDiscard": {
+    "description": "Confirm-discard button label."
+  },
   "modeUnsavedKeep": "Keep editing",
-  "@modeUnsavedKeep": { "description": "Cancel-discard button label." },
-
-  "stepDuplicate": "Duplicate step",
-  "@stepDuplicate": { "description": "Tooltip / label for the duplicate-step action on a chain step tile." },
-  "stepTimingHeader": "Timing",
-  "@stepTimingHeader": { "description": "Header for the collapsible timing panel on a step tile." },
+  "@modeUnsavedKeep": {
+    "description": "Cancel-discard button label."
+  },
   "stepTimingSummary": "wait {wait}s / duration {duration}s / grace {grace}s",
-  "@stepTimingSummary": { "description": "Compact summary shown on a collapsed timing panel.", "placeholders": { "wait": {}, "duration": {}, "grace": {} } },
-
-  "stepCategoryAll": "All",
-  "@stepCategoryAll": { "description": "Step-type picker filter: all categories." },
-  "stepPickerMore": "More options...",
-  "@stepPickerMore": { "description": "Step-type picker: shows the rest of the step types when the top three (hold button, disguised reminder, hardware trigger) are not enough (Issues-v4 #8)." },
-  "stepCategoryAction": "Action",
-  "@stepCategoryAction": { "description": "Step-type picker filter: outgoing-action steps (SMS, calls, alarm)." },
-  "stepCategoryReminder": "Reminder",
-  "@stepCategoryReminder": { "description": "Step-type picker filter: reminder / countdown steps." },
-  "stepCategoryDisarm": "Check-in",
-  "@stepCategoryDisarm": { "description": "Step-type picker filter: hold-button / hardware check-in steps." },
-
-  "modeTrackingHeader": "Tracking",
-  "@modeTrackingHeader": { "description": "Section header for interval-based GPS tracking settings (DE-3)." },
-  "modeTrackingEnabled": "Record GPS during session",
-  "@modeTrackingEnabled": { "description": "Toggle: enable interval-based GPS recording." },
-  "modeTrackingIntervalLabel": "Sampling interval",
-  "@modeTrackingIntervalLabel": { "description": "Label above the tracking-interval slider." },
-  "modeTrackingBufferSizeLabel": "Buffer size",
-  "@modeTrackingBufferSizeLabel": { "description": "Label above the tracking buffer-size slider." },
-  "modeTrackingBufferSizeValue": "{count} points",
-  "@modeTrackingBufferSizeValue": { "description": "Current buffer capacity in points.", "placeholders": { "count": {} } },
-  "modeTrackingBatteryNote": "Frequent GPS tracking increases battery drain.",
-  "@modeTrackingBatteryNote": { "description": "Inline warning shown beneath the tracking section." },
-
-  "stepConfigLogGpsLabel": "GPS log",
-  "@stepConfigLogGpsLabel": { "description": "Label for the per-step GPS log override (DE-2)." },
-  "stepConfigLogGpsDefault": "Default",
-  "@stepConfigLogGpsDefault": { "description": "Use-default option in the GPS log selector." },
-  "stepConfigLogGpsOn": "On",
-  "@stepConfigLogGpsOn": { "description": "Force-on option in the GPS log selector." },
-  "stepConfigLogGpsOff": "Off",
-  "@stepConfigLogGpsOff": { "description": "Force-off option in the GPS log selector." },
-  "stepConfigLogGpsDefaultOn": "Default (On)",
-  "@stepConfigLogGpsDefaultOn": { "description": "Subtitle when the resolved default is on." },
-  "stepConfigLogGpsDefaultOff": "Default (Off)",
-  "@stepConfigLogGpsDefaultOff": { "description": "Subtitle when the resolved default is off." },
-
-  "moreSettingsHeader": "More",
-  "@moreSettingsHeader": { "description": "Header for the More settings collapsible panel." },
-  "moreSettingsHeaderCustomized": "More — {count} customized",
-  "@moreSettingsHeaderCustomized": { "description": "Header when at least one More setting is customized.", "placeholders": { "count": {} } },
-
-  "stepTypePickerLabel": "Step type",
-  "@stepTypePickerLabel": { "description": "Label for the step-type dropdown in the mode editor." },
-
-  "stepTypeHoldButton": "Hold button",
-  "@stepTypeHoldButton": { "description": "Label for holdButton step." },
-  "stepTypeDisguisedReminder": "Disguised reminder",
-  "@stepTypeDisguisedReminder": { "description": "Label for disguisedReminder step." },
-  "stepTypeCountdownWarning": "Countdown warning",
-  "@stepTypeCountdownWarning": { "description": "Label for countdownWarning step." },
-  "stepTypeFakeCall": "Fake call",
-  "@stepTypeFakeCall": { "description": "Label for fakeCall step." },
-  "stepTypeSmsContact": "SMS contact",
-  "@stepTypeSmsContact": { "description": "Label for smsContact step." },
-  "stepTypePhoneCallContact": "Phone contact",
-  "@stepTypePhoneCallContact": { "description": "Label for phoneCallContact step." },
-  "stepTypeLoudAlarm": "Loud alarm",
-  "@stepTypeLoudAlarm": { "description": "Label for loudAlarm step." },
-  "stepTypeCallEmergency": "Call emergency",
-  "@stepTypeCallEmergency": { "description": "Label for callEmergency step." },
-  "stepTypeHardwareButton": "Hardware button",
-  "@stepTypeHardwareButton": { "description": "Label for hardwareButton step." },
-
-  "stepFieldDuration": "Duration (seconds)",
-  "@stepFieldDuration": { "description": "Duration field." },
-  "stepFieldGrace": "Grace period (seconds)",
-  "@stepFieldGrace": { "description": "Grace-period field." },
-  "stepFieldWait": "Wait (seconds)",
-  "@stepFieldWait": { "description": "Wait field." },
-  "stepFieldRetryCount": "Number of retries",
-  "@stepFieldRetryCount": { "description": "Retry-count field. Renamed per Issues-v4 #4 from 'Retries' to clarify the count semantics." },
-  "stepFieldRandomize": "Timing jitter",
-  "@stepFieldRandomize": { "description": "Randomize field." },
-  "stepFieldRandomizeToggle": "Randomize timing (±20%)",
-  "@stepFieldRandomizeToggle": { "description": "Per-step randomize switch label (Issues-v4 #11)." },
-  "stepFieldWaitTooltip": "How long to wait before this step starts.",
-  "@stepFieldWaitTooltip": { "description": "Tooltip for the wait-seconds field." },
-  "stepFieldDurationTooltip": "How long the step is active before the grace window starts.",
-  "@stepFieldDurationTooltip": { "description": "Tooltip for the duration-seconds field." },
-  "stepFieldGraceTooltip": "Time after the active phase to confirm safety before the next step fires.",
-  "@stepFieldGraceTooltip": { "description": "Tooltip for the grace-period field." },
-  "stepFieldRetryCountTooltip": "How many times to repeat this step before escalating.",
-  "@stepFieldRetryCountTooltip": { "description": "Tooltip for the retry-count field." },
-  "stepFieldReminderIntervalTooltip": "How often the disguised reminder fires while waiting for a check-in.",
-  "@stepFieldReminderIntervalTooltip": { "description": "Tooltip for the reminder repeat-interval field (Issues-v4 #4)." },
-  "stepFieldReminderGraceTooltip": "How long the user has to confirm safety after the reminder appears.",
-  "@stepFieldReminderGraceTooltip": { "description": "Tooltip for the reminder grace-period field (Issues-v4 #4)." },
-  "stepPreview": "Preview in simulation",
-  "@stepPreview": { "description": "Label for the preview button on step config forms." },
-  "stepPreviewFired": "Preview ran: {description}",
-  "@stepPreviewFired": { "description": "Toast shown after preview in simulation.", "placeholders": { "description": {} } },
-  "stepPreviewTitle": "Step preview",
-  "@stepPreviewTitle": { "description": "AppBar title for the per-step preview screen (issues-v4 #10)." },
-  "stepPreviewMissingParams": "Missing step or mode reference.",
-  "@stepPreviewMissingParams": { "description": "Shown when the preview screen is opened without the required query parameters." },
-  "stepPreviewModeNotFound": "Mode not found.",
-  "@stepPreviewModeNotFound": { "description": "Shown when the modeId in the preview URL does not resolve to a saved mode." },
-  "stepPreviewStepNotFound": "Step not found in this mode.",
-  "@stepPreviewStepNotFound": { "description": "Shown when the stepId in the preview URL does not exist in the resolved mode." },
-  "stepPreviewError": "Preview failed: {error}",
-  "@stepPreviewError": { "description": "Shown when running the simulation strategy threw.", "placeholders": { "error": {} } },
-  "stepPreviewReplay": "Replay",
-  "@stepPreviewReplay": { "description": "Button on the preview screen that re-runs the strategy." },
-  "stepPreviewHoldButtonHint": "Press and hold the button to feel the live response.",
-  "@stepPreviewHoldButtonHint": { "description": "Caption above the preview hold button." },
-  "stepPreviewHoldButtonLabel": "Hold",
-  "@stepPreviewHoldButtonLabel": { "description": "Visible label inside the preview hold button." },
-  "stepPreviewHoldButtonSemantic": "Hold to preview",
-  "@stepPreviewHoldButtonSemantic": { "description": "Semantics label for the preview hold button." },
-  "stepPreviewHoldButtonReleased": "Released. The session would now enter the grace window.",
-  "@stepPreviewHoldButtonReleased": { "description": "Confirmation shown after the user releases the preview hold button." },
-  "stepPreviewFakeCallHint": "The fake call screen will appear. Slide to answer or hold the red button to simulate distress.",
-  "@stepPreviewFakeCallHint": { "description": "Caption shown beneath the Replay button on the fake-call preview." },
-
-  "stepConfigFakeCallCaller": "Caller name",
-  "@stepConfigFakeCallCaller": { "description": "Fake-call caller name." },
-  "stepConfigFakeCallDecline": "Decline counts as disarm",
-  "@stepConfigFakeCallDecline": { "description": "Fake-call decline toggle." },
-  "stepConfigLoudAlarmFlash": "Strobe screen",
-  "@stepConfigLoudAlarmFlash": { "description": "Flash toggle." },
-  "stepConfigLoudAlarmVolume": "Max volume",
-  "@stepConfigLoudAlarmVolume": { "description": "Max-volume toggle." },
-  "stepConfigCountdownVibrate": "Vibrate",
-  "@stepConfigCountdownVibrate": { "description": "Countdown vibrate toggle." },
-  "stepConfigCountdownTone": "Play tone",
-  "@stepConfigCountdownTone": { "description": "Countdown tone toggle." },
-  "stepConfigSmsSelection": "Recipients",
-  "@stepConfigSmsSelection": { "description": "Sms selection label." },
-  "stepConfigSmsAllContacts": "All contacts",
-  "@stepConfigSmsAllContacts": { "description": "Sms all-contacts option." },
-  "stepConfigSmsSpecific": "Specific contacts",
-  "@stepConfigSmsSpecific": { "description": "Sms specific-contact option." },
-  "stepConfigSmsIncludeLocation": "Include location",
-  "@stepConfigSmsIncludeLocation": { "description": "Include-location toggle." },
-  "stepConfigSmsIncludeMedical": "Include medical info",
-  "@stepConfigSmsIncludeMedical": { "description": "Include-medical-info toggle." },
-  "stepConfigSmsAutoRecordAudio": "Auto-record audio",
-  "@stepConfigSmsAutoRecordAudio": { "description": "Auto-record-audio toggle (issues-v4 #6)." },
-  "stepConfigSmsAutoRecordVideo": "Auto-record video",
-  "@stepConfigSmsAutoRecordVideo": { "description": "Auto-record-video toggle (issues-v4 #6)." },
-  "stepConfigSmsRecordDuration": "Recording duration",
-  "@stepConfigSmsRecordDuration": { "description": "Slider label for the recording duration when auto-record is on (issues-v4 #6)." },
-  "stepConfigHoldReleaseSensitivity": "Release sensitivity (s)",
-  "@stepConfigHoldReleaseSensitivity": { "description": "Hold release sensitivity." },
-  "stepConfigReminderInterval": "Reminder interval (seconds)",
-  "@stepConfigReminderInterval": { "description": "Reminder interval." },
-  "stepConfigReminderTemplate": "Template",
-  "@stepConfigReminderTemplate": { "description": "Template picker label." },
-  "stepConfigHardwarePattern": "Pattern",
-  "@stepConfigHardwarePattern": { "description": "Hardware pattern label." },
-  "stepConfigHardwarePressCount": "Press count",
-  "@stepConfigHardwarePressCount": { "description": "Hardware press count." },
-  "stepConfigHardwarePressWindow": "Press window (ms)",
-  "@stepConfigHardwarePressWindow": { "description": "Maximum gap between presses for the repeat-press pattern." },
-  "stepConfigHardwareLongDuration": "Long-press duration (s)",
-  "@stepConfigHardwareLongDuration": { "description": "Threshold seconds for the long-press pattern." },
-  "stepConfigHardwareButton": "Button",
-  "@stepConfigHardwareButton": { "description": "Hardware button field." },
-  "stepConfigHardwareButtonVolumeUp": "Volume up",
-  "@stepConfigHardwareButtonVolumeUp": { "description": "Volume up label." },
-  "stepConfigHardwareButtonVolumeDown": "Volume down",
-  "@stepConfigHardwareButtonVolumeDown": { "description": "Volume down label." },
-  "stepConfigHardwareButtonPower": "Power",
-  "@stepConfigHardwareButtonPower": { "description": "Power button label." },
-  "stepConfigHardwarePatternRepeat": "Repeat press",
-  "@stepConfigHardwarePatternRepeat": { "description": "Repeat press label." },
-  "stepConfigHardwarePatternLong": "Long press",
-  "@stepConfigHardwarePatternLong": { "description": "Long press label." },
-  "stepConfigEmergencyNumber": "Emergency number override",
-  "@stepConfigEmergencyNumber": { "description": "Emergency-number override label." },
-  "stepConfigEmergencyConfirm": "Confirm before calling",
-  "@stepConfigEmergencyConfirm": { "description": "Confirm-before-calling toggle." },
-  "stepConfigPhonePreSms": "Send pre-call SMS",
-  "@stepConfigPhonePreSms": { "description": "Pre-call SMS toggle." },
-
-  "distressModesTitle": "Distress modes",
-  "@distressModesTitle": { "description": "Title of distress-modes list." },
-  "distressModeInUseTitle": "Distress mode is in use",
-  "@distressModeInUseTitle": { "description": "Title of the dialog shown when the user tries to delete a distress mode that is still bound to one or more modes." },
-  "distressModeInUseBody": "This distress mode is still bound to: {modes}. Rebind those modes to a different distress mode before deleting.",
-  "@distressModeInUseBody": { "description": "Body of the dependent-modes warning dialog.", "placeholders": { "modes": {} } },
+  "@stepTimingSummary": {
+    "description": "Compact summary shown on a collapsed timing panel.",
+    "placeholders": {
+      "wait": {},
+      "duration": {},
+      "grace": {}
+    }
+  },
   "distressModesEmpty": "No distress modes yet.",
-  "@distressModesEmpty": { "description": "Empty state on distress modes." },
-  "distressModesAdd": "Add distress mode",
-  "@distressModesAdd": { "description": "Add-distress-mode FAB." },
+  "@distressModesEmpty": {
+    "description": "Empty state on distress modes."
+  },
   "distressModeEditorTitleCreate": "New distress mode",
-  "@distressModeEditorTitleCreate": { "description": "Title when creating a distress mode." },
+  "@distressModeEditorTitleCreate": {
+    "description": "Title when creating a distress mode."
+  },
   "distressModeEditorTitleEdit": "Edit distress mode",
-  "@distressModeEditorTitleEdit": { "description": "Title when editing a distress mode." },
-  "distressModeName": "Distress mode name",
-  "@distressModeName": { "description": "Distress mode name field." },
-  "distressCountdown": "Triggering distress mode...",
-  "@distressCountdown": { "description": "Label in distress confirmation overlay." },
-  "distressCountdownStealth": "Please wait...",
-  "@distressCountdownStealth": { "description": "Stealth label in distress confirmation." },
-
+  "@distressModeEditorTitleEdit": {
+    "description": "Title when editing a distress mode."
+  },
   "templatesTitle": "Reminder templates",
-  "@templatesTitle": { "description": "Title of the templates list." },
-  "templatesEmpty": "No templates yet.",
-  "@templatesEmpty": { "description": "Empty state on templates." },
-  "templatesAdd": "Add template",
-  "@templatesAdd": { "description": "Add-template FAB." },
-  "templateEditorTitleCreate": "New template",
-  "@templateEditorTitleCreate": { "description": "Title when creating a template." },
-  "templateEditorTitleEdit": "Edit template",
-  "@templateEditorTitleEdit": { "description": "Title when editing a template." },
-  "templateFieldName": "Editor name",
-  "@templateFieldName": { "description": "Template editor-side name field." },
-  "templateFieldTitle": "Reminder title",
-  "@templateFieldTitle": { "description": "Template reminder-title field." },
-  "templateFieldBody": "Reminder body",
-  "@templateFieldBody": { "description": "Template body field." },
-  "templateFieldConfirmationType": "Confirmation type",
-  "@templateFieldConfirmationType": { "description": "Confirmation-type picker." },
-  "templateFieldKeyword": "Keyword",
-  "@templateFieldKeyword": { "description": "Template keyword field." },
-  "templateFieldButtonLabel": "Button label",
-  "@templateFieldButtonLabel": { "description": "Template button-label field." },
-  "templateFieldDisplayStyle": "Display style",
-  "@templateFieldDisplayStyle": { "description": "Template display-style picker." },
-  "templateConfirmTapButton": "Tap button",
-  "@templateConfirmTapButton": { "description": "tapButton confirmation label." },
-  "templateConfirmTapWord": "Tap word",
-  "@templateConfirmTapWord": { "description": "tapWord confirmation label." },
-  "templateConfirmSwipe": "Swipe",
-  "@templateConfirmSwipe": { "description": "swipe confirmation label." },
-  "templateConfirmDismiss": "Dismiss",
-  "@templateConfirmDismiss": { "description": "dismiss confirmation label." },
-  "templateDisplayFullscreen": "Full screen",
-  "@templateDisplayFullscreen": { "description": "Full-screen display style." },
-  "templateDisplaySubtle": "Subtle",
-  "@templateDisplaySubtle": { "description": "Subtle display style." },
-
+  "@templatesTitle": {
+    "description": "Title of templates screen."
+  },
+  "templatesEmpty": "No templates yet",
+  "@templatesEmpty": {
+    "description": "Empty state for templates list."
+  },
   "profileTitle": "Profile",
-  "@profileTitle": { "description": "Title of the profile screen." },
+  "@profileTitle": {
+    "description": "Title of profile editor."
+  },
   "profileFieldName": "Name",
-  "@profileFieldName": { "description": "Profile name field." },
+  "@profileFieldName": {
+    "description": "Profile name field."
+  },
   "profileFieldAge": "Age",
-  "@profileFieldAge": { "description": "Profile age field." },
-"profileFieldBloodType": "Blood type",
-  "@profileFieldBloodType": { "description": "Profile blood type field." },
+  "@profileFieldAge": {
+    "description": "Profile age field."
+  },
+  "profileFieldBloodType": "Blood type",
+  "@profileFieldBloodType": {
+    "description": "Blood type field."
+  },
   "profileFieldAllergies": "Allergies",
-  "@profileFieldAllergies": { "description": "Profile allergies list." },
+  "@profileFieldAllergies": {
+    "description": "Allergies field."
+  },
   "profileFieldMedications": "Medications",
-  "@profileFieldMedications": { "description": "Profile medications list." },
-  "profileFieldConditions": "Medical conditions",
-  "@profileFieldConditions": { "description": "Profile conditions list." },
-  "profileFieldInstructions": "Emergency instructions",
-  "@profileFieldInstructions": { "description": "Profile emergency-instructions." },
-  "profileAddItem": "Add item",
-  "@profileAddItem": { "description": "Add-item action on profile list fields." },
-
-  "settingsTitle": "Settings",
-  "@settingsTitle": { "description": "Title of the settings hub." },
-  "settingsSectionSecurity": "Security",
-  "@settingsSectionSecurity": { "description": "Security submenu entry." },
-  "settingsSectionStealth": "Stealth",
-  "@settingsSectionStealth": { "description": "Stealth submenu entry." },
-  "settingsSectionDefaults": "Defaults",
-  "@settingsSectionDefaults": { "description": "Defaults heading on settings." },
-  "settingsSectionHistory": "History",
-  "@settingsSectionHistory": { "description": "History section header." },
-  "settingsSectionBackup": "Backup",
-  "@settingsSectionBackup": { "description": "Backup submenu entry." },
-  "settingsSectionAbout": "About",
-  "@settingsSectionAbout": { "description": "About entry." },
-  "settingsSectionFeedback": "Feedback",
-  "@settingsSectionFeedback": { "description": "Feedback entry." },
-  "settingsSectionContacts": "Contacts",
-  "@settingsSectionContacts": { "description": "Contacts entry on settings." },
-  "settingsSectionModes": "Modes",
-  "@settingsSectionModes": { "description": "Modes entry on settings." },
-  "settingsSectionProfile": "Profile",
-  "@settingsSectionProfile": { "description": "Profile entry on settings." },
-  "settingsSectionDistressModes": "Distress modes",
-  "@settingsSectionDistressModes": { "description": "Distress modes entry." },
-  "settingsSectionReminderTemplates": "Reminder templates",
-  "@settingsSectionReminderTemplates": { "description": "Templates entry." },
-  "settingsSectionBatteryAlert": "Battery alert",
-  "@settingsSectionBatteryAlert": { "description": "Battery-alert entry." },
-  "settingsSectionEventDefaults": "Step defaults",
-  "@settingsSectionEventDefaults": { "description": "Event-defaults entry." },
-  "settingsSectionGpsLogging": "GPS logging",
-  "@settingsSectionGpsLogging": { "description": "GPS logging entry." },
-  "settingsSectionNotifications": "Notifications",
-  "@settingsSectionNotifications": { "description": "Notifications entry." },
-  "settingsSectionHistoryRetention": "History retention",
-  "@settingsSectionHistoryRetention": { "description": "History retention entry." },
-  "settingsSectionAppearance": "Appearance",
-  "@settingsSectionAppearance": { "description": "Appearance header." },
-  "settingsThemeMode": "Theme",
-  "@settingsThemeMode": { "description": "Theme mode setting." },
+  "@profileFieldMedications": {
+    "description": "Medications field."
+  },
   "settingsThemeLight": "Light",
-  "@settingsThemeLight": { "description": "Light theme label." },
+  "@settingsThemeLight": {
+    "description": "Light theme option."
+  },
   "settingsThemeDark": "Dark",
-  "@settingsThemeDark": { "description": "Dark theme label." },
+  "@settingsThemeDark": {
+    "description": "Dark theme option."
+  },
   "settingsThemeSystem": "System",
-  "@settingsThemeSystem": { "description": "System theme label." },
-  "settingsLanguage": "Language",
-  "@settingsLanguage": { "description": "Language setting." },
-  "settingsEmergencyNumber": "Emergency number",
-  "@settingsEmergencyNumber": { "description": "Emergency dial number setting." },
-  "settingsAlarmDnd": "Alarm overrides Do Not Disturb",
-  "@settingsAlarmDnd": { "description": "DND override toggle." },
-  "settingsLanguagePicker": "Language",
-  "@settingsLanguagePicker": { "description": "Label for the language picker drop-down." },
+  "@settingsThemeSystem": {
+    "description": "System theme option."
+  },
   "settingsEmergencyNumberLabel": "Emergency number",
-  "@settingsEmergencyNumberLabel": { "description": "ListTile title for the emergency call number." },
+  "@settingsEmergencyNumberLabel": {
+    "description": "ListTile title for the emergency call number."
+  },
   "settingsRedoOnboardingActiveSessionTooltip": "Cannot redo onboarding during an active session",
-  "@settingsRedoOnboardingActiveSessionTooltip": {"description": "Tooltip on the disabled Redo Onboarding row while a session runs."},
+  "@settingsRedoOnboardingActiveSessionTooltip": {
+    "description": "Tooltip on the disabled Redo Onboarding row while a session runs."
+  },
   "settingsEmergencyNumberCountryPickerTitle": "Choose emergency number",
-  "@settingsEmergencyNumberCountryPickerTitle": {"description": "Title of the bottom sheet for picking an emergency-number preset."},
-  "settingsEmergencyNumberHint": "e.g., 112",
-  "@settingsEmergencyNumberHint": { "description": "TextField hint inside the emergency-number dialog." },
-  "settingsEmergencyNumberSave": "Save",
-  "@settingsEmergencyNumberSave": { "description": "Save button inside the emergency-number dialog." },
+  "@settingsEmergencyNumberCountryPickerTitle": {
+    "description": "Title of the bottom sheet for picking an emergency-number preset."
+  },
   "settingsRedoOnboarding": "Redo onboarding",
-  "@settingsRedoOnboarding": { "description": "ListTile to restart the onboarding flow." },
-  "settingsRedoOnboardingConfirm": "Restart onboarding?",
-  "@settingsRedoOnboardingConfirm": { "description": "Title of the redo-onboarding confirmation dialog." },
-  "settingsRedoOnboardingBody": "Your current configuration is preserved.",
-  "@settingsRedoOnboardingBody": { "description": "Body of the redo-onboarding confirmation dialog." },
-  "settingsRedoOnboardingProceed": "Restart",
-  "@settingsRedoOnboardingProceed": { "description": "Confirm button in the redo-onboarding dialog." },
-  "settingsAlarmGradualVolume": "Gradual alarm volume",
-  "@settingsAlarmGradualVolume": { "description": "Toggle: ramp volume gradually when the alarm fires." },
-  "settingsAlarmGradualVolumeDuration": "Ramp duration: {seconds}s",
-  "@settingsAlarmGradualVolumeDuration": { "description": "Slider label showing the gradual-volume ramp duration.", "placeholders": { "seconds": { "type": "int" } } },
-
-  "securityTitle": "Security",
-  "@securityTitle": { "description": "Title of the security submenu." },
-  "securityAppPin": "App PIN",
-  "@securityAppPin": { "description": "App-PIN section." },
-  "securitySessionEndPin": "Session-end PIN",
-  "@securitySessionEndPin": { "description": "Session-end PIN section." },
-  "securityDuressPin": "Duress PIN",
-  "@securityDuressPin": { "description": "Duress-PIN section." },
-  "securityAppPinBiometric": "Use biometrics for App PIN",
-  "@securityAppPinBiometric": { "description": "Toggle: enable biometric prompt before App PIN keypad." },
+  "@settingsRedoOnboarding": {
+    "description": "Redo onboarding row label."
+  },
+  "settingsRedoOnboardingConfirm": "This will reset your setup. Continue?",
+  "@settingsRedoOnboardingConfirm": {
+    "description": "Confirmation body before redoing onboarding."
+  },
   "securitySessionEndPinBiometric": "Use biometrics for Session-end PIN",
-  "@securitySessionEndPinBiometric": { "description": "Toggle: enable biometric prompt before session-end PIN." },
-  "securityDistressCancelBiometric": "Use biometrics to cancel distress",
-  "@securityDistressCancelBiometric": { "description": "Toggle: biometric path for distress-trigger cancel." },
-  "securityDuressTest": "Test duress PIN",
-  "@securityDuressTest": { "description": "Row that opens a keypad to verify the duress PIN was entered correctly." },
-  "securityDuressTestSubtitle": "Verify your duress PIN works.",
-  "@securityDuressTestSubtitle": { "description": "Subtitle for the duress-test row." },
-  "securityPinTimeout": "PIN timeout (seconds)",
-  "@securityPinTimeout": { "description": "PIN timeout slider." },
-  "securityDisablePin": "Disable",
-  "@securityDisablePin": { "description": "Disable PIN button." },
+  "@securitySessionEndPinBiometric": {
+    "description": "Toggle: enable biometric prompt before session-end PIN."
+  },
   "securitySetPin": "Set PIN",
-  "@securitySetPin": { "description": "Set-PIN button." },
+  "@securitySetPin": {
+    "description": "Set-PIN button."
+  },
   "securityChangePin": "Change PIN",
-  "@securityChangePin": { "description": "Change-PIN button." },
-
-  "pinSetupTitle": "Set PIN",
-  "@pinSetupTitle": { "description": "Title of the PIN-setup screen." },
-  "pinSetupEnter": "Enter new PIN",
-  "@pinSetupEnter": { "description": "Step 1 prompt in PIN setup." },
-  "pinSetupConfirm": "Confirm PIN",
-  "@pinSetupConfirm": { "description": "Step 2 prompt in PIN setup." },
-  "pinSetupMismatch": "PINs do not match. Try again.",
-  "@pinSetupMismatch": { "description": "Error when PINs differ." },
-  "pinEntryTitle": "Enter PIN",
-  "@pinEntryTitle": { "description": "Title of the PIN-entry dialog." },
-  "pinEntrySubtitle": "Enter your PIN to continue.",
-  "@pinEntrySubtitle": { "description": "Subtitle of the PIN-entry dialog." },
-  "pinEntryBiometricReason": "Authenticate to continue",
-  "@pinEntryBiometricReason": { "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service." },
-
-  "stealthTitle": "Stealth",
-  "@stealthTitle": { "description": "Title of stealth screen." },
-  "stealthEnable": "Enable stealth",
-  "@stealthEnable": { "description": "Master stealth toggle." },
-  "stealthFakeName": "Fake app name",
-  "@stealthFakeName": { "description": "Fake name field." },
-  "stealthFakeIcon": "Fake icon",
-  "@stealthFakeIcon": { "description": "Fake icon picker." },
-  "stealthNotificationDisguise": "Disguise notifications",
-  "@stealthNotificationDisguise": { "description": "Disguised notifications toggle." },
-  "stealthTimerDisplay": "Timer display",
-  "@stealthTimerDisplay": { "description": "Timer display selector label." },
-  "stealthTimerDisplayNormal": "Show full text",
-  "@stealthTimerDisplayNormal": { "description": "Stealth timer normal option." },
-  "stealthTimerDisplaySmall": "Show numbers only",
-  "@stealthTimerDisplaySmall": { "description": "Stealth timer small option." },
-  "stealthTimerDisplayNone": "Hide timer",
-  "@stealthTimerDisplayNone": { "description": "Stealth timer hidden option." },
-  "stealthSessionScreen": "Strip branding on session screen",
-  "@stealthSessionScreen": { "description": "Session screen stealth toggle." },
-  "stealthPickerTitle": "App icon",
-  "@stealthPickerTitle": { "description": "Stealth icon preset picker title." },
-  "stealthPickerIntro": "Pick how the launcher icon looks.",
-  "@stealthPickerIntro": { "description": "Stealth icon preset picker intro." },
+  "@securityChangePin": {
+    "description": "Change-PIN button."
+  },
+  "pinSetupMismatch": "PINs don't match. Try again.",
+  "@pinSetupMismatch": {
+    "description": "Error when the two PIN entries don't match."
+  },
+  "stealthTimerDisplayNormal": "Normal",
+  "@stealthTimerDisplayNormal": {
+    "description": "Stealth timer display option: normal."
+  },
+  "stealthTimerDisplaySmall": "Small (corner)",
+  "@stealthTimerDisplaySmall": {
+    "description": "Stealth timer display option: small corner."
+  },
+  "stealthTimerDisplayNone": "Hidden",
+  "@stealthTimerDisplayNone": {
+    "description": "Stealth timer display option: hidden."
+  },
   "stealthPresetMusic": "Music",
-  "@stealthPresetMusic": { "description": "Stealth preset: Music." },
+  "@stealthPresetMusic": {
+    "description": "Stealth preset: Music."
+  },
   "stealthPresetCalendar": "Calendar",
-  "@stealthPresetCalendar": { "description": "Stealth preset: Calendar." },
+  "@stealthPresetCalendar": {
+    "description": "Stealth preset: Calendar."
+  },
   "stealthPresetFitness": "Fitness",
-  "@stealthPresetFitness": { "description": "Stealth preset: Fitness." },
+  "@stealthPresetFitness": {
+    "description": "Stealth preset: Fitness."
+  },
   "stealthPresetWeather": "Weather",
-  "@stealthPresetWeather": { "description": "Stealth preset: Weather." },
+  "@stealthPresetWeather": {
+    "description": "Stealth preset: Weather."
+  },
   "stealthPresetNews": "News",
-  "@stealthPresetNews": { "description": "Stealth preset: News." },
+  "@stealthPresetNews": {
+    "description": "Stealth preset: News."
+  },
   "stealthPresetPhotos": "Photos",
-  "@stealthPresetPhotos": { "description": "Stealth preset: Photos." },
+  "@stealthPresetPhotos": {
+    "description": "Stealth preset: Photos."
+  },
   "stealthPresetNotes": "Notes",
-  "@stealthPresetNotes": { "description": "Stealth preset: Notes." },
+  "@stealthPresetNotes": {
+    "description": "Stealth preset: Notes."
+  },
   "stealthPresetClock": "Clock",
-  "@stealthPresetClock": { "description": "Stealth preset: Clock." },
-  "distressConfirmationTitle": "Are you in danger?",
-  "@distressConfirmationTitle": { "description": "Distress confirmation title." },
-  "distressConfirmationCancel": "Cancel",
-  "@distressConfirmationCancel": { "description": "Distress cancel button." },
-  "distressConfirmationCountdown": "{seconds}s until distress fires",
-  "@distressConfirmationCountdown": { "description": "Distress countdown copy.", "placeholders": { "seconds": {} } },
-  "imSafeSliderLabel": "Swipe to confirm I'm safe",
-  "@imSafeSliderLabel": { "description": "Swipe-to-confirm disarm slider label." },
-
+  "@stealthPresetClock": {
+    "description": "Stealth preset: Clock."
+  },
   "batteryAlertTitle": "Battery alert",
-  "@batteryAlertTitle": { "description": "Title of battery-alert screen." },
-  "batteryAlertEnable": "Enable battery alert",
-  "@batteryAlertEnable": { "description": "Enable battery-alert toggle." },
-  "batteryAlertThreshold": "Threshold: {percent}%",
-  "@batteryAlertThreshold": { "description": "Threshold slider label.", "placeholders": { "percent": {} } },
-
-  "eventDefaultsTitle": "Step defaults",
-  "@eventDefaultsTitle": { "description": "Title of event-defaults screen." },
-  "eventDefaultsBody": "These defaults apply to any step that does not override them.",
-  "@eventDefaultsBody": { "description": "Lead text on event-defaults screen." },
-
-  "gpsLoggingTitle": "GPS logging",
-  "@gpsLoggingTitle": { "description": "Title of GPS logging screen." },
-  "gpsLoggingEnable": "Enable GPS logging",
-  "@gpsLoggingEnable": { "description": "Enable GPS toggle." },
-  "gpsLoggingInterval": "Sampling interval (seconds)",
-  "@gpsLoggingInterval": { "description": "Sampling interval slider." },
-  "gpsLoggingAccuracy": "Accuracy",
-  "@gpsLoggingAccuracy": { "description": "Accuracy picker." },
-  "gpsAccuracyLow": "Low",
-  "@gpsAccuracyLow": { "description": "Low accuracy preset." },
-  "gpsAccuracyMedium": "Medium",
-  "@gpsAccuracyMedium": { "description": "Medium accuracy preset." },
-  "gpsAccuracyHigh": "High",
-  "@gpsAccuracyHigh": { "description": "High accuracy preset." },
-  "gpsLoggingIncludeSms": "Attach location to SMS",
-  "@gpsLoggingIncludeSms": { "description": "Attach-location toggle." },
-  "gpsLoggingHistoryDays": "History retention (days)",
-  "@gpsLoggingHistoryDays": { "description": "GPS history-retention slider." },
-
-  "notificationSettingsTitle": "Notifications",
-  "@notificationSettingsTitle": { "description": "Title of notifications screen." },
-  "notificationSettingsBody": "Guardian Angela uses notifications to disguise and drive reminders.",
-  "@notificationSettingsBody": { "description": "Lead text on notifications screen." },
-
-  "historyRetentionTitle": "History retention",
-  "@historyRetentionTitle": { "description": "Title of history-retention screen." },
-  "historyRetentionBody": "How long Guardian Angela keeps past session logs.",
-  "@historyRetentionBody": { "description": "Lead text on history retention." },
-  "historyRetentionDays": "Retention: {days} days",
-  "@historyRetentionDays": { "description": "Retention slider label.", "placeholders": { "days": {} } },
-
-  "backupTitle": "Backup",
-  "@backupTitle": { "description": "Title of backup screen." },
-  "backupExport": "Export data",
-  "@backupExport": { "description": "Export button." },
-  "backupImport": "Import data",
-  "@backupImport": { "description": "Import button." },
-  "backupNotReady": "Backup is not available yet. Coming soon.",
-  "@backupNotReady": { "description": "Placeholder message on backup screen." },
-  "backupPinOptional": "Optional PIN (encrypts the bundle)",
-  "@backupPinOptional": { "description": "Label for the optional encryption PIN field on the backup screen." },
-  "backupImportOk": "Backup imported successfully.",
-  "@backupImportOk": { "description": "Success snackbar after importing a backup." },
-  "backupSelectionHeader": "Include in export",
-  "@backupSelectionHeader": { "description": "Section header above the per-element backup toggles." },
-  "backupToggleSettings": "Settings",
-  "@backupToggleSettings": { "description": "Always-on toggle showing that settings are always exported." },
-  "backupToggleSettingsSubtitle": "Always included so the backup can be restored.",
-  "@backupToggleSettingsSubtitle": { "description": "Explanation under the disabled Settings toggle." },
-  "backupToggleContacts": "Emergency contacts",
-  "@backupToggleContacts": { "description": "Toggle to include contacts in the export." },
-  "backupToggleModes": "Modes",
-  "@backupToggleModes": { "description": "Toggle to include user-facing modes in the export." },
-  "backupToggleDistressModes": "Distress modes",
-  "@backupToggleDistressModes": { "description": "Toggle to include distress-flagged modes in the export." },
-  "backupToggleTemplates": "Reminder templates",
-  "@backupToggleTemplates": { "description": "Toggle to include reminder templates in the export." },
-  "backupToggleSessionLogs": "Session history",
-  "@backupToggleSessionLogs": { "description": "Toggle to include session logs in the export." },
-  "backupToggleRecordings": "Audio recordings",
-  "@backupToggleRecordings": { "description": "Toggle to include audio-evidence recordings in the export." },
-
-  "historyTitle": "Past sessions",
-  "@historyTitle": { "description": "Title of the past-sessions screen." },
-  "historyEmpty": "No past sessions yet.",
-  "@historyEmpty": { "description": "Empty state on history." },
-  "historyTabReal": "Real",
-  "@historyTabReal": { "description": "Tab label for real (non-simulated) sessions on the past-events screen." },
-  "historyTabSimulated": "Simulated",
-  "@historyTabSimulated": { "description": "Tab label for simulated sessions on the past-events screen." },
-  "historySearchHint": "Search by mode name",
-  "@historySearchHint": { "description": "Hint text for the history search field." },
-  "historyFilterModeAll": "All modes",
-  "@historyFilterModeAll": { "description": "Mode filter dropdown — all option." },
-  "historyFilterModeLabel": "Mode",
-  "@historyFilterModeLabel": { "description": "Mode filter dropdown label." },
-  "historyDateRangePick": "Date range",
-  "@historyDateRangePick": { "description": "Button label that opens the date-range picker." },
-  "historyDetailTitle": "Session details",
-  "@historyDetailTitle": { "description": "Title of the session-detail screen." },
-  "evidenceExportTitle": "Export evidence",
-  "@evidenceExportTitle": { "description": "Title of the evidence-export screen." },
-  "evidenceExportAsText": "Copy as text",
-  "@evidenceExportAsText": { "description": "Copy-as-text button." },
-  "evidenceExportAsJson": "Copy as JSON",
-  "@evidenceExportAsJson": { "description": "Copy-as-JSON button." },
-  "evidenceCopied": "Copied to clipboard.",
-  "@evidenceCopied": { "description": "Clipboard-copied toast." },
-
+  "@batteryAlertTitle": {
+    "description": "Title of battery alert screen."
+  },
+  "eventDefaultsTitle": "Event defaults",
+  "@eventDefaultsTitle": {
+    "description": "Title of event defaults screen."
+  },
+  "historyRetentionTitle": "History & retention",
+  "@historyRetentionTitle": {
+    "description": "Title of history retention screen."
+  },
+  "backupTitle": "Backup & restore",
+  "@backupTitle": {
+    "description": "Title of backup screen."
+  },
   "aboutTitle": "About",
-  "@aboutTitle": { "description": "Title of about screen." },
-  "aboutVersion": "Version",
-  "@aboutVersion": { "description": "Version label on about." },
-  "aboutCredits": "Built with care for people on their way home.",
-  "@aboutCredits": { "description": "Credits line on about." },
-
-  "feedbackTitle": "Feedback",
-  "@feedbackTitle": { "description": "Title of feedback screen." },
-  "feedbackBody": "We would love to hear from you.",
-  "@feedbackBody": { "description": "Lead line on feedback." },
-  "feedbackFieldMessage": "Message",
-  "@feedbackFieldMessage": { "description": "Message field label." },
-  "feedbackSend": "Open email",
-  "@feedbackSend": { "description": "Send button on feedback." },
-
-  "pickerNoneLabel": "— none —",
-  "@pickerNoneLabel": { "description": "Placeholder in pickers when nothing is selected." },
-
-  "moreSettingsHeader": "More settings",
-  "@moreSettingsHeader": { "description": "Header for the collapsible More settings tile in step config editors (spec 11 §DE-4)." },
-  "moreSettingsHeaderCustomized": "More settings ({count} customized)",
-  "@moreSettingsHeaderCustomized": { "description": "Header for the More settings tile when one or more rare-toggle fields differ from their defaults.", "placeholders": { "count": { "type": "int" } } },
-
-  "stepConfigLogGpsLabel": "GPS logging",
-  "@stepConfigLogGpsLabel": { "description": "Label for the per-step GPS logging tri-state selector (spec 11 §DE-2)." },
-  "stepConfigLogGpsDefault": "Default",
-  "@stepConfigLogGpsDefault": { "description": "Tri-state segment label: defer to the per-type/global default." },
-  "stepConfigLogGpsOn": "On",
-  "@stepConfigLogGpsOn": { "description": "Tri-state segment label: force GPS logging on for this step." },
-  "stepConfigLogGpsOff": "Off",
-  "@stepConfigLogGpsOff": { "description": "Tri-state segment label: skip GPS logging for this step." },
-  "stepConfigLogGpsDefaultOn": "Default (On)",
-  "@stepConfigLogGpsDefaultOn": { "description": "Muted hint under the GPS selector when set to Default and the resolved value is On." },
-  "stepConfigLogGpsDefaultOff": "Default (Off)",
-  "@stepConfigLogGpsDefaultOff": { "description": "Muted hint under the GPS selector when set to Default and the resolved value is Off." },
-
-  "emergencyConfirmTitle": "Calling {number}",
-  "@emergencyConfirmTitle": {"description": "Title of the emergency-confirm pre-dial screen.", "placeholders": {"number": {}}},
-  "emergencyConfirmSubtitle": "Hold the cancel button to abort.",
-  "@emergencyConfirmSubtitle": {"description": "Subtitle of the emergency-confirm pre-dial screen."},
-  "emergencyConfirmCountdown": "Calling in {seconds}s",
-  "@emergencyConfirmCountdown": {"description": "Countdown line on the pre-dial screen.", "placeholders": {"seconds": {}}},
-  "emergencyConfirmCancel": "Cancel",
-  "@emergencyConfirmCancel": {"description": "Cancel button on the pre-dial screen."},
-  "stealthCalendarUpcoming": "Upcoming",
-  "@stealthCalendarUpcoming": {"description": "Header in the calendar stealth UI."},
-  "stealthCalendarUpcomingEvent": "Meeting",
-  "@stealthCalendarUpcomingEvent": {"description": "Stealth calendar event title placeholder."},
-  "stealthCalendarUntilEvent": "in {minutes} min",
-  "@stealthCalendarUntilEvent": {"description": "Stealth calendar countdown.", "placeholders": {"minutes": {}}},
-  "stealthCalendarToday": "Today",
-  "@stealthCalendarToday": {"description": "Today header in the stealth calendar."},
-  "stealthCalendarEvent1": "Coffee with Alex",
-  "@stealthCalendarEvent1": {"description": "Stealth calendar mock event."},
-  "stealthCalendarEvent2": "Standup",
-  "@stealthCalendarEvent2": {"description": "Stealth calendar mock event."},
-  "stealthCalendarEvent3": "Lunch",
-  "@stealthCalendarEvent3": {"description": "Stealth calendar mock event."},
-  "stealthCalendarEvent4": "Workout",
-  "@stealthCalendarEvent4": {"description": "Stealth calendar mock event."},
-  "stealthCalendarEvent5": "Dinner with Sam",
-  "@stealthCalendarEvent5": {"description": "Stealth calendar mock event."},
-  "stealthDisarmGestureHint": "Swipe up to end",
-  "@stealthDisarmGestureHint": {"description": "Hint shown on stealth screens for the disarm gesture."},
-  "stealthMusicTrackTitle": "Untitled Track",
-  "@stealthMusicTrackTitle": {"description": "Default track title on the stealth music screen."},
-  "stealthMusicArtist": "Unknown Artist",
-  "@stealthMusicArtist": {"description": "Default artist on the stealth music screen."},
-  "stealthMusicAlbum": "Unknown Album",
-  "@stealthMusicAlbum": {"description": "Default album on the stealth music screen."},
-  "stealthMusicNowPlaying": "Now playing",
-  "@stealthMusicNowPlaying": {"description": "Now-playing label on the stealth music screen."},
-  "stealthMusicSwipeHint": "Swipe to disarm",
-  "@stealthMusicSwipeHint": {"description": "Disarm-gesture hint on the stealth music screen."},
-  "stealthMusicPrevious": "Previous",
-  "@stealthMusicPrevious": {"description": "Previous-track button label."},
-  "stealthMusicPause": "Pause",
-  "@stealthMusicPause": {"description": "Pause button label."},
-  "stealthMusicNext": "Next",
-  "@stealthMusicNext": {"description": "Next-track button label."},
-  "stealthPodcastShowName": "Podcast",
-  "@stealthPodcastShowName": {"description": "Podcast show name placeholder."},
-  "stealthPodcastEpisodeTitle": "Episode",
-  "@stealthPodcastEpisodeTitle": {"description": "Podcast episode title placeholder."},
-  "stealthPodcastEpisodesHeader": "Episodes",
-  "@stealthPodcastEpisodesHeader": {"description": "Episodes-list header on the stealth podcast screen."},
-  "stealthPodcastSpeedLabel": "1x",
-  "@stealthPodcastSpeedLabel": {"description": "Speed-toggle label on the stealth podcast screen."},
-  "stealthPodcastEpisode1": "Episode 1",
-  "@stealthPodcastEpisode1": {"description": "Stealth podcast episode placeholder."},
-  "stealthPodcastEpisode2": "Episode 2",
-  "@stealthPodcastEpisode2": {"description": "Stealth podcast episode placeholder."},
-  "stealthPodcastEpisode3": "Episode 3",
-  "@stealthPodcastEpisode3": {"description": "Stealth podcast episode placeholder."},
-  "stealthPodcastEpisode4": "Episode 4",
-  "@stealthPodcastEpisode4": {"description": "Stealth podcast episode placeholder."},
+  "@aboutTitle": {
+    "description": "Title of about screen."
+  },
+  "aboutVersion": "Version: {version}",
+  "@aboutVersion": {
+    "description": "Version line on about.",
+    "placeholders": {
+      "version": {}
+    }
+  },
+  "feedbackTitle": "Send feedback",
+  "@feedbackTitle": {
+    "description": "Title of feedback form."
+  },
+  "feedbackSend": "Send",
+  "@feedbackSend": {
+    "description": "Send button."
+  },
   "stealthPresetPodcast": "Podcast",
-  "@stealthPresetPodcast": {"description": "Stealth preset name shown in the picker."},
+  "@stealthPresetPodcast": {
+    "description": "Stealth preset name shown in the picker."
+  },
   "stealthPresetNone": "None",
-  "@stealthPresetNone": {"description": "Stealth preset: no disguise (real session screen)."},
+  "@stealthPresetNone": {
+    "description": "Stealth preset: no disguise (real session screen)."
+  },
   "stealthLockTaskLabel": "Pin app during session",
-  "@stealthLockTaskLabel": {"description": "Lock-task / pinned-app mode toggle label (spec 04 §Stealth Settings)."},
+  "@stealthLockTaskLabel": {
+    "description": "Lock-task / pinned-app mode toggle label (spec 04 §Stealth Settings)."
+  },
   "stealthLockTaskSubtitle": "Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.",
-  "@stealthLockTaskSubtitle": {"description": "Helper subtitle below the lock-task toggle."},
-  "sessionSimSpeedLabel": "Speed",
-  "@sessionSimSpeedLabel": {"description": "Label of the simulation speed slider."},
-  "sessionSimSpeedValue": "{value}x",
-  "@sessionSimSpeedValue": {"description": "Simulation speed value display.", "placeholders": {"value": {}}},
-  "sessionSimSpeedBackgroundCap": "Capped at 60× in background",
-  "@sessionSimSpeedBackgroundCap": {"description": "Indicator that simulation speed is capped at 60x while app is backgrounded."},
-  "sessionSimAdvancedLabel": "Advanced",
-  "@sessionSimAdvancedLabel": {"description": "Label of the advanced-controls toggle in simulation."},
-  "sessionSimTriggerPanic": "Trigger panic",
-  "@sessionSimTriggerPanic": {"description": "Simulation button — fires the distress mode."},
-  "sessionSimTriggerArrival": "Trigger arrival",
-  "@sessionSimTriggerArrival": {"description": "Simulation button — fakes a GPS arrival event."},
-  "sessionSimTriggerBattery": "Trigger low battery",
-  "@sessionSimTriggerBattery": {"description": "Simulation button — fakes a low-battery event."},
-  "simulateGpsArrival": "Simulate arrival",
-  "@simulateGpsArrival": {"description": "Top-level simulate-arrival action."},
-  "simulateLowBattery": "Simulate low battery",
-  "@simulateLowBattery": {"description": "Top-level simulate-low-battery action."},
-  "launchGateTitle": "Unlock Guardian Angela",
-  "@launchGateTitle": {"description": "Title of the Q14 launch-gate screen."},
-  "launchGateSubtitle": "Enter your PIN or use biometrics.",
-  "@launchGateSubtitle": {"description": "Subtitle of the Q14 launch-gate screen."},
-  "launchGateWrong": "Wrong PIN",
-  "@launchGateWrong": {"description": "Error label on the Q14 launch-gate screen."},
-  "launchGateBiometricReason": "Unlock Guardian Angela",
-  "@launchGateBiometricReason": {"description": "Reason string for biometric prompt."},
-  "launchGateUseBiometric": "Use biometrics",
-  "@launchGateUseBiometric": {"description": "Button to fall back to biometric auth on the launch gate."},
-  "pinSubmit": "Submit",
-  "@pinSubmit": {"description": "Submit button used by the launch-gate PIN entry."},
-
-  "audioRunningLatePhrase": "Hi, I am running late. I will call you back soon.",
-  "@audioRunningLatePhrase": {"description": "TTS fallback phrase spoken when the bundled fake-call voice asset is missing. Read aloud, so plain spoken language."},
-  "smsDefaultTemplate": "{name} may need help. Location: {location}. Time: {time}.",
-  "@smsDefaultTemplate": {"description": "Default SMS body template used by smsContact steps when no per-step template is set. Placeholders: {name}, {location}, {time}.", "placeholders": {"name": {}, "location": {}, "time": {}}},
-  "smsDefaultPreCallTemplate": "{name} is trying to reach you. Please expect a call.",
-  "@smsDefaultPreCallTemplate": {"description": "Default pre-call SMS body sent ahead of a phone-call-contact step. Placeholders: {name}.", "placeholders": {"name": {}}},
-
-  "simLoudAlarm": "[SIM] Loud alarm + {tail}",
-  "@simLoudAlarm": {"description": "Simulation summary for a loud-alarm step. {tail} is either the localized 'flash' or 'vibrate' word.", "placeholders": {"tail": {}}},
-  "simLoudAlarmTailFlash": "flash",
-  "@simLoudAlarmTailFlash": {"description": "Word substituted into simLoudAlarm when the step's flashScreen=true."},
-  "simLoudAlarmTailVibrate": "vibrate",
-  "@simLoudAlarmTailVibrate": {"description": "Word substituted into simLoudAlarm when the step's flashScreen=false."},
-  "simSmsContact": "[SIM] Would send {channel} to {count} contacts",
-  "@simSmsContact": {"description": "Simulation summary for an smsContact step. {channel} is sms/whatsapp/telegram, {count} is the number of contacts that match the step's channel.", "placeholders": {"channel": {}, "count": {"type": "int"}}},
-  "simFakeCallRing": "[SIM] Incoming call from {caller}",
-  "@simFakeCallRing": {"description": "Simulation summary for a fakeCall step. {caller} is the configured caller name (defaults to 'Angela').", "placeholders": {"caller": {}}},
-  "simCountdownWarning": "[SIM] {seconds}s countdown warning",
-  "@simCountdownWarning": {"description": "Simulation summary for a countdownWarning step. {seconds} is the step duration.", "placeholders": {"seconds": {"type": "int"}}},
-  "simPhoneCall": "[SIM] Would call {name}",
-  "@simPhoneCall": {"description": "Simulation summary for a phoneCallContact step when a contact resolves. {name} is the target contact's name.", "placeholders": {"name": {}}},
-  "simNoContactToCall": "[SIM] No contact to call",
-  "@simNoContactToCall": {"description": "Simulation summary for a phoneCallContact step that has no resolvable contact."},
-  "simCallEmergency": "[SIM] Would dial {number}",
-  "@simCallEmergency": {"description": "Simulation summary for a callEmergency step. {number} is the resolved emergency number.", "placeholders": {"number": {}}},
-  "simHardwareButton": "[SIM] Hardware trigger armed",
-  "@simHardwareButton": {"description": "Simulation summary for a hardwareButton step (no-op strategy)."},
-  "simHoldButton": "[SIM] Waiting for hold button",
-  "@simHoldButton": {"description": "Simulation summary for a holdButton step (no-op strategy)."},
-  "simDisguisedReminder": "[SIM] Would show \"{title}\"",
-  "@simDisguisedReminder": {"description": "Simulation summary for a disguisedReminder step that resolves a template. {title} is the template title.", "placeholders": {"title": {}}},
-  "simDisguisedReminderEmpty": "[SIM] No reminder template available",
-  "@simDisguisedReminderEmpty": {"description": "Simulation summary for a disguisedReminder step when no templates are available."},
-  "simGpsArrivalTrigger": "[SIM] GPS arrival trigger fired",
-  "@simGpsArrivalTrigger": {"description": "Simulation summary toast emitted when the user invokes simulateGpsArrival()."},
-  "simLowBatteryAlert": "[SIM] Low-battery alert fired",
-  "@simLowBatteryAlert": {"description": "Simulation summary toast emitted when the user invokes simulateLowBattery()."},
-
+  "@stealthLockTaskSubtitle": {
+    "description": "Helper subtitle below the lock-task toggle."
+  },
   "homeTagline": "Your angel's got your back.",
-  "@homeTagline": {"description": "Tagline shown below the Guardian Angela logo."},
-  "homeSafetyChecklistTitle": "Safety setup",
-  "@homeSafetyChecklistTitle": {"description": "Header of the post-onboarding safety setup checklist on home."},
-  "homeSafetyChecklistDismiss": "Dismiss checklist",
-  "@homeSafetyChecklistDismiss": {"description": "Tooltip/label for the checklist dismiss button."},
-  "homeSafetyChecklistContact": "Add an emergency contact",
-  "@homeSafetyChecklistContact": {"description": "Checklist item: add contact."},
-  "homeSafetyChecklistPin": "Set a session-end PIN",
-  "@homeSafetyChecklistPin": {"description": "Checklist item: set session-end PIN."},
-  "homeSafetyChecklistStealth": "Configure stealth mode",
-  "@homeSafetyChecklistStealth": {"description": "Checklist item: configure stealth."},
-  "homeSafetyChecklistSimulation": "Test a simulation",
-  "@homeSafetyChecklistSimulation": {"description": "Checklist item: simulate a session."},
-  "homeSafetyChecklistMode": "Customize a safety mode",
-  "@homeSafetyChecklistMode": {"description": "Checklist item: customize a mode."},
-  "homeSafetyChecklistPermissions": "Grant required permissions",
-  "@homeSafetyChecklistPermissions": {"description": "Checklist item: grant permissions."},
-  "homeSafetyChecklistProgress": "{done} of {total} done",
-  "@homeSafetyChecklistProgress": {"description": "Checklist progress indicator.", "placeholders": {"done": {"type": "int"}, "total": {"type": "int"}}},
-
+  "@homeTagline": {
+    "description": "Tagline shown below the Guardian Angela logo."
+  },
   "onboardingWelcomeGreeting": "Hi, I'm Angela",
-  "@onboardingWelcomeGreeting": {"description": "Greeting on welcome page."},
+  "@onboardingWelcomeGreeting": {
+    "description": "Greeting on welcome page."
+  },
   "onboardingWelcomeBodyFull": "I'm your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.",
-  "@onboardingWelcomeBodyFull": {"description": "Welcome body text on onboarding."},
+  "@onboardingWelcomeBodyFull": {
+    "description": "Welcome body text on onboarding."
+  },
   "onboardingGetStarted": "Get started",
-  "@onboardingGetStarted": {"description": "CTA on the welcome page."},
+  "@onboardingGetStarted": {
+    "description": "CTA on the welcome page."
+  },
   "onboardingProfileNameLabel": "Name",
-  "@onboardingProfileNameLabel": {"description": "Name input label on profile page."},
+  "@onboardingProfileNameLabel": {
+    "description": "Name input label on profile page."
+  },
   "onboardingProfilePhoneLabel": "Phone number",
-  "@onboardingProfilePhoneLabel": {"description": "Phone input label on profile page."},
+  "@onboardingProfilePhoneLabel": {
+    "description": "Phone input label on profile page."
+  },
   "onboardingProfilePhoneHelper": "Included in emergency messages.",
-  "@onboardingProfilePhoneHelper": {"description": "Helper text below phone field."},
-  "onboardingProfileUseSimNumber": "Use my SIM number",
-  "@onboardingProfileUseSimNumber": {"description": "Button to copy SIM phone number into profile (Android only)."},
-  "onboardingProfileUseSimUnsupported": "Not available on this platform; please enter manually.",
-  "@onboardingProfileUseSimUnsupported": {"description": "SnackBar when SIM number read is unsupported."},
+  "@onboardingProfilePhoneHelper": {
+    "description": "Helper text below phone field."
+  },
   "onboardingEmergencyContactHeader": "Emergency contact",
-  "@onboardingEmergencyContactHeader": {"description": "Section header for emergency contact on onboarding."},
+  "@onboardingEmergencyContactHeader": {
+    "description": "Section header for emergency contact on onboarding."
+  },
   "onboardingEmergencyContactPrompt": "Who should we contact if something goes wrong?",
-  "@onboardingEmergencyContactPrompt": {"description": "Prompt above emergency contact card."},
-  "onboardingEmergencyContactNoneAdded": "No contact added yet",
-  "@onboardingEmergencyContactNoneAdded": {"description": "Empty-state text on onboarding."},
+  "@onboardingEmergencyContactPrompt": {
+    "description": "Prompt above emergency contact card."
+  },
   "onboardingEmergencyContactAdd": "Add emergency contact",
-  "@onboardingEmergencyContactAdd": {"description": "Button to launch contact form from onboarding."},
+  "@onboardingEmergencyContactAdd": {
+    "description": "Button to launch contact form from onboarding."
+  },
   "onboardingPermissionsIntro": "These permissions keep you safe during sessions.",
-  "@onboardingPermissionsIntro": {"description": "Intro text on permissions page."},
+  "@onboardingPermissionsIntro": {
+    "description": "Intro text on permissions page."
+  },
   "onboardingPermissionsGrantAll": "Grant all",
-  "@onboardingPermissionsGrantAll": {"description": "Button that requests all permissions."},
-  "onboardingPermissionsAllGranted": "All granted",
-  "@onboardingPermissionsAllGranted": {"description": "Disabled-state label when every permission is granted."},
-  "onboardingPermissionsGrant": "Grant",
-  "@onboardingPermissionsGrant": {"description": "Per-tile grant button."},
-  "onboardingPermissionsOpenSettings": "Open settings",
-  "@onboardingPermissionsOpenSettings": {"description": "Per-tile open-settings link for permanently denied permissions."},
+  "@onboardingPermissionsGrantAll": {
+    "description": "Button that requests all permissions."
+  },
   "onboardingPermissionsRequired": "REQUIRED",
-  "@onboardingPermissionsRequired": {"description": "Badge label for required permissions."},
+  "@onboardingPermissionsRequired": {
+    "description": "Badge label for required permissions."
+  },
   "onboardingPermissionsOptional": "OPTIONAL",
-  "@onboardingPermissionsOptional": {"description": "Badge label for optional permissions."},
+  "@onboardingPermissionsOptional": {
+    "description": "Badge label for optional permissions."
+  },
   "onboardingPermissionsMicrophone": "Microphone",
-  "@onboardingPermissionsMicrophone": {"description": "Microphone permission label."},
+  "@onboardingPermissionsMicrophone": {
+    "description": "Microphone permission label."
+  },
   "onboardingPermissionsCamera": "Camera",
-  "@onboardingPermissionsCamera": {"description": "Camera permission label."},
+  "@onboardingPermissionsCamera": {
+    "description": "Camera permission label."
+  },
   "onboardingPermissionsNotificationDesc": "Required for session alerts and reminders.",
-  "@onboardingPermissionsNotificationDesc": {"description": "Notification permission description."},
+  "@onboardingPermissionsNotificationDesc": {
+    "description": "Notification permission description."
+  },
   "onboardingPermissionsSmsDesc": "Required to send emergency text alerts.",
-  "@onboardingPermissionsSmsDesc": {"description": "SMS permission description."},
+  "@onboardingPermissionsSmsDesc": {
+    "description": "SMS permission description."
+  },
   "onboardingPermissionsPhoneDesc": "Required to make emergency and fake calls.",
-  "@onboardingPermissionsPhoneDesc": {"description": "Phone permission description."},
+  "@onboardingPermissionsPhoneDesc": {
+    "description": "Phone permission description."
+  },
   "onboardingPermissionsLocationDesc": "Included in emergency messages when GPS logging is on.",
-  "@onboardingPermissionsLocationDesc": {"description": "Location permission description."},
+  "@onboardingPermissionsLocationDesc": {
+    "description": "Location permission description."
+  },
   "onboardingPermissionsMicrophoneDesc": "Used for audio recording during distress.",
-  "@onboardingPermissionsMicrophoneDesc": {"description": "Microphone permission description."},
+  "@onboardingPermissionsMicrophoneDesc": {
+    "description": "Microphone permission description."
+  },
   "onboardingPermissionsCameraDesc": "Used for flash SOS signaling.",
-  "@onboardingPermissionsCameraDesc": {"description": "Camera permission description."},
-
+  "@onboardingPermissionsCameraDesc": {
+    "description": "Camera permission description."
+  },
   "sessionInterruptedTitle": "Session interrupted",
-  "@sessionInterruptedTitle": {"description": "Title of the session-interrupted modal (Extra 13)."},
+  "@sessionInterruptedTitle": {
+    "description": "Title of the session-interrupted modal (Extra 13)."
+  },
   "sessionInterruptedBody": "A session was running when the app stopped. The session state is gone — nothing was restored. We're showing this so you know.",
-  "@sessionInterruptedBody": {"description": "Body text of the session-interrupted modal."},
-  "sessionInterruptedStartSameMode": "Start same mode",
-  "@sessionInterruptedStartSameMode": {"description": "CTA to start a fresh session with the same mode."},
+  "@sessionInterruptedBody": {
+    "description": "Body text of the session-interrupted modal."
+  },
   "sessionInterruptedAcknowledge": "Acknowledge",
-  "@sessionInterruptedAcknowledge": {"description": "CTA to dismiss the modal."},
+  "@sessionInterruptedAcknowledge": {
+    "description": "CTA to dismiss the modal."
+  },
   "sessionInterruptedMode": "Mode: {name}",
-  "@sessionInterruptedMode": {"description": "Mode line in the interrupted modal.", "placeholders": {"name": {}}},
+  "@sessionInterruptedMode": {
+    "description": "Mode line in the interrupted modal.",
+    "placeholders": {
+      "name": {}
+    }
+  },
   "sessionInterruptedStarted": "Started: {time}",
-  "@sessionInterruptedStarted": {"description": "Started-at line in the interrupted modal.", "placeholders": {"time": {}}},
-
+  "@sessionInterruptedStarted": {
+    "description": "Started-at line in the interrupted modal.",
+    "placeholders": {
+      "time": {}
+    }
+  },
   "sessionGpsDestinationTitle": "Destination",
-  "@sessionGpsDestinationTitle": {"description": "Title of the GPS destination sheet."},
-  "sessionGpsDestinationBody": "Set the destination for GPS-arrival disarm.",
-  "@sessionGpsDestinationBody": {"description": "Body of the GPS destination sheet."},
+  "@sessionGpsDestinationTitle": {
+    "description": "Title of the GPS destination prompt sheet."
+  },
+  "sessionGpsDestinationBody": "Enter the destination coordinates for the GPS arrival disarm trigger.",
+  "@sessionGpsDestinationBody": {
+    "description": "Body of the GPS destination prompt sheet."
+  },
   "sessionGpsDestinationLat": "Latitude",
-  "@sessionGpsDestinationLat": {"description": "Latitude field label."},
+  "@sessionGpsDestinationLat": {
+    "description": "Label for the latitude field on the GPS destination sheet."
+  },
   "sessionGpsDestinationLng": "Longitude",
-  "@sessionGpsDestinationLng": {"description": "Longitude field label."},
-  "sessionGpsDestinationUseCurrent": "Use current location",
-  "@sessionGpsDestinationUseCurrent": {"description": "Button that fills in the current GPS coordinates."},
-  "sessionGpsDestinationSkip": "Skip",
-  "@sessionGpsDestinationSkip": {"description": "Skip button on the GPS destination sheet."},
-  "sessionGpsDestinationConfirm": "Confirm",
-  "@sessionGpsDestinationConfirm": {"description": "Confirm button on the GPS destination sheet."},
-
-  "sessionStartChainSummary": "Chain summary",
-  "@sessionStartChainSummary": {"description": "Section header for chain summary on home."},
-  "sessionEndConfirmTitle": "End session?",
-  "@sessionEndConfirmTitle": {"description": "Title of the end-session confirmation."},
-  "sessionEndConfirmSwipe": "Swipe to confirm you want to end the session",
-  "@sessionEndConfirmSwipe": {"description": "Swipe slider label on the end-session dialog."},
+  "@sessionGpsDestinationLng": {
+    "description": "Label for the longitude field on the GPS destination sheet."
+  },
+  "sessionGpsDestinationSkip": "Skip for this session",
+  "@sessionGpsDestinationSkip": {
+    "description": "Skip button on the GPS destination sheet."
+  },
+  "sessionGpsDestinationConfirm": "Use destination",
+  "@sessionGpsDestinationConfirm": {
+    "description": "Confirm button on the GPS destination sheet."
+  },
   "sessionEndOverlayTitle": "End session?",
-  "@sessionEndOverlayTitle": {"description": "Heading on the swipe-to-confirm end-session overlay."},
+  "@sessionEndOverlayTitle": {
+    "description": "Heading on the swipe-to-confirm end-session overlay."
+  },
   "sessionEndOverlayBody": "Swipe to confirm you want to end the session",
-  "@sessionEndOverlayBody": {"description": "Body text above the end-session swipe slider."},
+  "@sessionEndOverlayBody": {
+    "description": "Body text above the end-session swipe slider."
+  },
   "sessionEndOverlaySwipeLabel": "Swipe to end",
-  "@sessionEndOverlaySwipeLabel": {"description": "Track label inside the end-session swipe slider."},
+  "@sessionEndOverlaySwipeLabel": {
+    "description": "Track label inside the end-session swipe slider."
+  },
   "sessionEndOverlaySimBadge": "[SIM] Practice mode",
-  "@sessionEndOverlaySimBadge": {"description": "Badge shown on the end-session overlay during a simulation session."},
+  "@sessionEndOverlaySimBadge": {
+    "description": "Badge shown on the end-session overlay during a simulation session."
+  },
   "sessionEndPinPromptTitle": "Enter Session End PIN",
-  "@sessionEndPinPromptTitle": {"description": "Title above the PIN keypad shown after a successful end-session swipe."},
+  "@sessionEndPinPromptTitle": {
+    "description": "Title above the PIN keypad shown after a successful end-session swipe."
+  },
   "sessionEndPinAppPinMismatch": "Use the Session End PIN, not the app lock PIN.",
-  "@sessionEndPinAppPinMismatch": {"description": "Inline hint shown when the user types the app lock PIN at the end-session prompt instead of the Session End PIN."},
+  "@sessionEndPinAppPinMismatch": {
+    "description": "Inline hint shown when the user types the app lock PIN at the end-session prompt instead of the Session End PIN."
+  },
   "sessionEndPinIncorrect": "Incorrect PIN",
-  "@sessionEndPinIncorrect": {"description": "Inline error shown beneath the keypad after a wrong PIN entry."},
+  "@sessionEndPinIncorrect": {
+    "description": "Inline error shown beneath the keypad after a wrong PIN entry."
+  },
   "sessionEndPinSimSkip": "Skip (sim only)",
-  "@sessionEndPinSimSkip": {"description": "Button shown only in simulation mode that bypasses the PIN check on the end-session prompt."},
+  "@sessionEndPinSimSkip": {
+    "description": "Button shown only in simulation mode that bypasses the PIN check on the end-session prompt."
+  },
   "sessionEndSimDistressWouldFire": "Distress chain would fire (5 wrong PINs)",
-  "@sessionEndSimDistressWouldFire": {"description": "Snack-bar shown when the user hits the wrong-PIN threshold during a simulation session, where the distress chain is suppressed."},
-  "sessionEmergencyDisarmTitle": "Are you sure?",
-  "@sessionEmergencyDisarmTitle": {"description": "Title of the emergency-call disarm confirmation."},
-  "sessionEmergencyDisarmBody": "The emergency call will NOT be made if you disarm now.",
-  "@sessionEmergencyDisarmBody": {"description": "Body of the emergency-call disarm confirmation."},
-  "sessionEmergencyDisarmCancel": "Cancel (keep disarming)",
-  "@sessionEmergencyDisarmCancel": {"description": "Disarm confirmation: cancel button."},
-  "sessionEmergencyDisarmGoBack": "Go back (keep session)",
-  "@sessionEmergencyDisarmGoBack": {"description": "Disarm confirmation: go-back button."},
-
+  "@sessionEndSimDistressWouldFire": {
+    "description": "Snack-bar shown when the user hits the wrong-PIN threshold during a simulation session, where the distress chain is suppressed."
+  },
   "distressConfirmTitle": "Distress activated",
-  "@distressConfirmTitle": {"description": "Title shown during the distress confirmation window."},
+  "@distressConfirmTitle": {
+    "description": "Title shown during the distress confirmation window."
+  },
   "distressConfirmCountdown": "Tap to cancel — you have {seconds} seconds",
-  "@distressConfirmCountdown": {"description": "Countdown subtitle.", "placeholders": {"seconds": {"type": "int"}}},
+  "@distressConfirmCountdown": {
+    "description": "Countdown subtitle.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "distressConfirmCancel": "Tap to cancel",
-  "@distressConfirmCancel": {"description": "Cancel button on distress confirmation."},
+  "@distressConfirmCancel": {
+    "description": "Cancel button on distress confirmation."
+  },
   "distressConfirmFooter": "If not cancelled, distress chain will begin immediately.",
-  "@distressConfirmFooter": {"description": "Footer text on distress confirmation."},
-
+  "@distressConfirmFooter": {
+    "description": "Footer text on distress confirmation."
+  },
   "distressCancelPinPromptTitle": "Enter Session End PIN",
-  "@distressCancelPinPromptTitle": {"description": "Title above the PIN keypad shown when the user taps Cancel on the distress confirmation overlay and a Session End PIN is configured."},
+  "@distressCancelPinPromptTitle": {
+    "description": "Title above the PIN keypad shown when the user taps Cancel on the distress confirmation overlay and a Session End PIN is configured."
+  },
   "distressCancelPinTimeoutLabel": "{seconds}s remaining",
-  "@distressCancelPinTimeoutLabel": {"description": "Countdown label shown beside the PIN keypad while the 15-second distress-cancel PIN timeout is running.", "placeholders": {"seconds": {"type": "int"}}},
+  "@distressCancelPinTimeoutLabel": {
+    "description": "Countdown label shown beside the PIN keypad while the 15-second distress-cancel PIN timeout is running.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "distressCancelPinIncorrect": "Incorrect PIN",
-  "@distressCancelPinIncorrect": {"description": "Inline error beneath the keypad when a wrong PIN is entered at the distress-cancel gate."},
+  "@distressCancelPinIncorrect": {
+    "description": "Inline error beneath the keypad when a wrong PIN is entered at the distress-cancel gate."
+  },
   "distressCancelPinAppPinMismatch": "Use the Session End PIN, not the app lock PIN.",
-  "@distressCancelPinAppPinMismatch": {"description": "Inline hint when the user types the app lock PIN at the distress-cancel PIN gate instead of the Session End PIN."},
+  "@distressCancelPinAppPinMismatch": {
+    "description": "Inline hint when the user types the app lock PIN at the distress-cancel PIN gate instead of the Session End PIN."
+  },
   "distressCancelPinSimSkip": "Skip (sim only)",
-  "@distressCancelPinSimSkip": {"description": "Button visible only in simulation mode that bypasses the distress-cancel PIN gate."},
+  "@distressCancelPinSimSkip": {
+    "description": "Button visible only in simulation mode that bypasses the distress-cancel PIN gate."
+  },
   "distressCancelSimDistressWouldFire": "Distress chain would fire (5 wrong PINs)",
-  "@distressCancelSimDistressWouldFire": {"description": "Snack-bar shown in simulation when the user hits the wrong-PIN threshold at the distress-cancel PIN gate — the distress chain is suppressed."},
+  "@distressCancelSimDistressWouldFire": {
+    "description": "Snack-bar shown in simulation when the user hits the wrong-PIN threshold at the distress-cancel PIN gate — the distress chain is suppressed."
+  },
   "distressCancelPinBack": "Cancel",
-  "@distressCancelPinBack": {"description": "Cancel button that returns from the distress-cancel PIN keypad to the distress confirmation overlay."},
-
+  "@distressCancelPinBack": {
+    "description": "Cancel button that returns from the distress-cancel PIN keypad to the distress confirmation overlay."
+  },
   "simulationPinPromptTitle": "Enter PIN",
-  "@simulationPinPromptTitle": {"description": "Title shown for the simulation PIN prompt."},
+  "@simulationPinPromptTitle": {
+    "description": "Title shown for the simulation PIN prompt."
+  },
   "simulationPinPromptBody": "Practice entering your Session End PIN",
-  "@simulationPinPromptBody": {"description": "Body text on simulation PIN prompt."},
+  "@simulationPinPromptBody": {
+    "description": "Body text on simulation PIN prompt."
+  },
   "simulationPinPromptSkip": "Skip",
-  "@simulationPinPromptSkip": {"description": "Skip button on simulation PIN prompt."},
+  "@simulationPinPromptSkip": {
+    "description": "Skip button on simulation PIN prompt."
+  },
   "simulationPinIncorrect": "Incorrect PIN",
-  "@simulationPinIncorrect": {"description": "Shake feedback on wrong PIN in simulation."},
+  "@simulationPinIncorrect": {
+    "description": "Shake feedback on wrong PIN in simulation."
+  },
   "simulationSummaryDuration": "Duration: {duration}",
   "@simulationSummaryDuration": {
     "description": "Duration row on the simulation summary.",
-    "placeholders": {"duration": {"type": "String"}}
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
   },
   "simulationSummaryTimelineHeader": "Event timeline",
-  "@simulationSummaryTimelineHeader": {"description": "Header above the event-timeline section."},
+  "@simulationSummaryTimelineHeader": {
+    "description": "Header above the event-timeline section."
+  },
   "simulationSummaryShare": "Share",
-  "@simulationSummaryShare": {"description": "Share button label on simulation summary."},
+  "@simulationSummaryShare": {
+    "description": "Share button label on simulation summary."
+  },
   "simulationSummaryMissedEventsBadge": "Missed: {count}",
   "@simulationSummaryMissedEventsBadge": {
     "description": "Badge showing the number of missed events.",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "simulationSummaryDistressBadge": "Distress: {count}",
   "@simulationSummaryDistressBadge": {
     "description": "Badge showing the number of distress confirmations.",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "simulationSummaryStepsFiredBadge": "Steps fired: {count}",
   "@simulationSummaryStepsFiredBadge": {
     "description": "Badge showing the number of steps fired.",
-    "placeholders": {"count": {"type": "int"}}
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
   },
   "simulationSummaryShareSubject": "Guardian Angela simulation summary",
-  "@simulationSummaryShareSubject": {"description": "Subject line when sharing the summary."},
-
+  "@simulationSummaryShareSubject": {
+    "description": "Subject line when sharing the summary."
+  },
   "notificationsChannelAlarm": "Alarm escalation",
-  "@notificationsChannelAlarm": {"description": "Notification channel toggle for alarm escalations."},
+  "@notificationsChannelAlarm": {
+    "description": "Notification channel toggle for alarm escalations."
+  },
   "notificationsChannelAlarmDescription": "Critical alerts that bypass DND",
-  "@notificationsChannelAlarmDescription": {"description": "Subtitle for the alarm channel toggle."},
+  "@notificationsChannelAlarmDescription": {
+    "description": "Subtitle for the alarm channel toggle."
+  },
   "notificationsChannelReminder": "Disguised reminder",
-  "@notificationsChannelReminder": {"description": "Notification channel toggle for disguised reminders."},
+  "@notificationsChannelReminder": {
+    "description": "Notification channel toggle for disguised reminders."
+  },
   "notificationsChannelReminderDescription": "Check-in reminders during active session",
-  "@notificationsChannelReminderDescription": {"description": "Subtitle for the reminders channel toggle."},
+  "@notificationsChannelReminderDescription": {
+    "description": "Subtitle for the reminders channel toggle."
+  },
   "notificationsChannelFakeCall": "Fake call",
-  "@notificationsChannelFakeCall": {"description": "Notification channel toggle for fake-call notifications."},
+  "@notificationsChannelFakeCall": {
+    "description": "Notification channel toggle for fake-call notifications."
+  },
   "notificationsChannelFakeCallDescription": "Full-screen incoming-call notifications",
-  "@notificationsChannelFakeCallDescription": {"description": "Subtitle for the fake-call channel toggle."},
+  "@notificationsChannelFakeCallDescription": {
+    "description": "Subtitle for the fake-call channel toggle."
+  },
   "notificationsChannelEnabled": "Enabled",
-  "@notificationsChannelEnabled": {"description": "Status label when a channel is enabled."},
+  "@notificationsChannelEnabled": {
+    "description": "Status label when a channel is enabled."
+  },
   "notificationsChannelDisabled": "Disabled",
-  "@notificationsChannelDisabled": {"description": "Status label when a channel is disabled."},
+  "@notificationsChannelDisabled": {
+    "description": "Status label when a channel is disabled."
+  },
   "notificationsChannelsHeader": "Notification channels",
-  "@notificationsChannelsHeader": {"description": "Header above the channel toggles list."},
-
+  "@notificationsChannelsHeader": {
+    "description": "Header above the channel toggles list."
+  },
   "contactsImportFromDevice": "Import from contacts",
-  "@contactsImportFromDevice": {"description": "Button to import a contact from the device address book."},
+  "@contactsImportFromDevice": {
+    "description": "Button to import a contact from the device address book."
+  },
   "contactsImportNotSupported": "Not available on this platform",
-  "@contactsImportNotSupported": {"description": "Snackbar shown when import is invoked on an unsupported platform."},
+  "@contactsImportNotSupported": {
+    "description": "Snackbar shown when import is invoked on an unsupported platform."
+  },
   "contactsImportPermissionDenied": "Contact access denied. Enable in system settings.",
-  "@contactsImportPermissionDenied": {"description": "Snackbar shown when contact-read permission is denied."},
+  "@contactsImportPermissionDenied": {
+    "description": "Snackbar shown when contact-read permission is denied."
+  },
   "contactsDeleteAllMenu": "Delete all",
-  "@contactsDeleteAllMenu": {"description": "Overflow menu entry for the delete-all action."},
+  "@contactsDeleteAllMenu": {
+    "description": "Overflow menu entry for the delete-all action."
+  },
   "contactsDeleteAllConfirmTitle": "Delete all contacts?",
-  "@contactsDeleteAllConfirmTitle": {"description": "Title of the first delete-all confirmation dialog."},
+  "@contactsDeleteAllConfirmTitle": {
+    "description": "Title of the first delete-all confirmation dialog."
+  },
   "contactsDeleteAllConfirmBody": "This removes every emergency contact. There is no undo.",
-  "@contactsDeleteAllConfirmBody": {"description": "Body of the first delete-all confirmation dialog."},
+  "@contactsDeleteAllConfirmBody": {
+    "description": "Body of the first delete-all confirmation dialog."
+  },
   "contactsDeleteAllTypeConfirmTitle": "Confirm by typing",
-  "@contactsDeleteAllTypeConfirmTitle": {"description": "Title of the typed-confirmation dialog."},
+  "@contactsDeleteAllTypeConfirmTitle": {
+    "description": "Title of the typed-confirmation dialog."
+  },
   "contactsDeleteAllTypeConfirmHint": "Type DELETE ALL to continue",
-  "@contactsDeleteAllTypeConfirmHint": {"description": "Hint inside the typed-confirmation text field."},
+  "@contactsDeleteAllTypeConfirmHint": {
+    "description": "Hint inside the typed-confirmation text field."
+  },
   "contactsDeleteAllTypeConfirmSentinel": "DELETE ALL",
-  "@contactsDeleteAllTypeConfirmSentinel": {"description": "Exact text the user must type to confirm delete-all."},
+  "@contactsDeleteAllTypeConfirmSentinel": {
+    "description": "Exact text the user must type to confirm delete-all."
+  },
   "contactsDeleteAllConfirmButton": "Delete all",
-  "@contactsDeleteAllConfirmButton": {"description": "Confirm button on the typed dialog."},
-  "contactsReorderHint": "Drag to reorder",
-  "@contactsReorderHint": {"description": "Semantic hint announcing reorderable rows."},
-
+  "@contactsDeleteAllConfirmButton": {
+    "description": "Confirm button on the typed dialog."
+  },
   "modesBuiltinBadge": "Built-in",
-  "@modesBuiltinBadge": {"description": "Chip label on the built-in modes."},
+  "@modesBuiltinBadge": {
+    "description": "Chip label on the built-in modes."
+  },
   "modesBuiltinNoDelete": "Built-in modes cannot be deleted",
-  "@modesBuiltinNoDelete": {"description": "Tooltip explaining why the delete option is disabled on built-in modes."},
-
+  "@modesBuiltinNoDelete": {
+    "description": "Tooltip explaining why the delete option is disabled on built-in modes."
+  },
   "sessionCompletedSimulationBanner": "Simulation completed",
-  "@sessionCompletedSimulationBanner": {"description": "Orange banner shown when the completed session was a simulation."},
+  "@sessionCompletedSimulationBanner": {
+    "description": "Orange banner shown when the completed session was a simulation."
+  },
   "sessionCompletedViewEventLog": "View event log",
-  "@sessionCompletedViewEventLog": {"description": "Button to open the per-session event log detail."},
-
+  "@sessionCompletedViewEventLog": {
+    "description": "Button to open the per-session event log detail."
+  },
   "settingsGeneralHeader": "General",
-  "@settingsGeneralHeader": {"description": "Section header for general settings."},
+  "@settingsGeneralHeader": {
+    "description": "Section header for general settings."
+  },
   "settingsAppHeader": "App",
-  "@settingsAppHeader": {"description": "Section header for app settings."},
+  "@settingsAppHeader": {
+    "description": "Section header for app settings."
+  },
   "settingsConfigurationHeader": "Configuration",
-  "@settingsConfigurationHeader": {"description": "Section header for configuration."},
+  "@settingsConfigurationHeader": {
+    "description": "Section header for configuration."
+  },
   "settingsThemeLabel": "Theme",
-  "@settingsThemeLabel": {"description": "Theme label."},
-  "settingsThemeLight": "Light",
-  "@settingsThemeLight": {"description": "Light theme option."},
-  "settingsThemeDark": "Dark",
-  "@settingsThemeDark": {"description": "Dark theme option."},
-  "settingsThemeSystem": "System",
-  "@settingsThemeSystem": {"description": "System theme option."},
+  "@settingsThemeLabel": {
+    "description": "Theme label."
+  },
   "settingsLanguageLabel": "Language",
-  "@settingsLanguageLabel": {"description": "Language label."},
-  "settingsSessionLockedBlocker": "End your session first.",
-  "@settingsSessionLockedBlocker": {"description": "Prompt shown when an action is blocked during an active session."},
+  "@settingsLanguageLabel": {
+    "description": "Language label."
+  },
   "settingsSecurityRow": "Security",
-  "@settingsSecurityRow": {"description": "Security section link."},
+  "@settingsSecurityRow": {
+    "description": "Security section link."
+  },
   "settingsSecuritySubtitle": "App PIN, Session End PIN, Duress PIN",
-  "@settingsSecuritySubtitle": {"description": "Subtitle for the security row."},
+  "@settingsSecuritySubtitle": {
+    "description": "Subtitle for the security row."
+  },
   "settingsStealthRow": "Stealth",
-  "@settingsStealthRow": {"description": "Stealth row label."},
+  "@settingsStealthRow": {
+    "description": "Stealth row label."
+  },
   "settingsStealthSummaryOff": "Stealth: OFF",
-  "@settingsStealthSummaryOff": {"description": "Stealth row subtitle when disabled."},
+  "@settingsStealthSummaryOff": {
+    "description": "Stealth row subtitle when disabled."
+  },
   "settingsStealthSummaryOn": "Stealth: ON",
-  "@settingsStealthSummaryOn": {"description": "Stealth row subtitle when enabled."},
+  "@settingsStealthSummaryOn": {
+    "description": "Stealth row subtitle when enabled."
+  },
   "settingsProfileRow": "Profile",
-  "@settingsProfileRow": {"description": "Profile row label."},
+  "@settingsProfileRow": {
+    "description": "Profile row label."
+  },
   "settingsModesRow": "Modes",
-  "@settingsModesRow": {"description": "Modes row label."},
+  "@settingsModesRow": {
+    "description": "Modes row label."
+  },
   "settingsDistressModesRow": "Distress modes",
-  "@settingsDistressModesRow": {"description": "Distress modes row label."},
+  "@settingsDistressModesRow": {
+    "description": "Distress modes row label."
+  },
   "settingsBatteryAlertRow": "Battery alert",
-  "@settingsBatteryAlertRow": {"description": "Battery alert row label."},
+  "@settingsBatteryAlertRow": {
+    "description": "Battery alert row label."
+  },
   "settingsEventDefaultsRow": "Event defaults",
-  "@settingsEventDefaultsRow": {"description": "Event defaults row label."},
+  "@settingsEventDefaultsRow": {
+    "description": "Event defaults row label."
+  },
   "settingsGpsLoggingRow": "GPS logging",
-  "@settingsGpsLoggingRow": {"description": "GPS logging row label."},
+  "@settingsGpsLoggingRow": {
+    "description": "GPS logging row label."
+  },
   "settingsRemindersRow": "Reminder templates",
-  "@settingsRemindersRow": {"description": "Reminder templates row label."},
+  "@settingsRemindersRow": {
+    "description": "Reminder templates row label."
+  },
   "settingsNotificationsRow": "Notifications",
-  "@settingsNotificationsRow": {"description": "Notifications row label."},
+  "@settingsNotificationsRow": {
+    "description": "Notifications row label."
+  },
   "settingsHistoryRetentionRow": "History & retention",
-  "@settingsHistoryRetentionRow": {"description": "History & retention row label."},
+  "@settingsHistoryRetentionRow": {
+    "description": "History & retention row label."
+  },
   "settingsAboutRow": "About",
-  "@settingsAboutRow": {"description": "About row label."},
+  "@settingsAboutRow": {
+    "description": "About row label."
+  },
   "settingsFeedbackRow": "Send feedback",
-  "@settingsFeedbackRow": {"description": "Feedback row label."},
+  "@settingsFeedbackRow": {
+    "description": "Feedback row label."
+  },
   "settingsBackupRow": "Backup & restore",
-  "@settingsBackupRow": {"description": "Backup & restore row label."},
-  "settingsRedoOnboarding": "Redo onboarding",
-  "@settingsRedoOnboarding": {"description": "Redo onboarding row label."},
-  "settingsRedoOnboardingConfirm": "This will reset your setup. Continue?",
-  "@settingsRedoOnboardingConfirm": {"description": "Confirmation body before redoing onboarding."},
+  "@settingsBackupRow": {
+    "description": "Backup & restore row label."
+  },
   "settingsOssLicenses": "Open source licenses",
-  "@settingsOssLicenses": {"description": "Open source licenses row."},
-  "settingsExport": "Export settings",
-  "@settingsExport": {"description": "Export settings button."},
-  "settingsImport": "Import settings",
-  "@settingsImport": {"description": "Import settings button."},
+  "@settingsOssLicenses": {
+    "description": "Open source licenses row."
+  },
   "settingsImportConfirmBody": "This will overwrite all current data. Continue?",
-  "@settingsImportConfirmBody": {"description": "Backup import confirmation."},
-
+  "@settingsImportConfirmBody": {
+    "description": "Backup import confirmation."
+  },
   "securityAppPinTitle": "App PIN",
-  "@securityAppPinTitle": {"description": "Header for the App PIN section."},
+  "@securityAppPinTitle": {
+    "description": "Header for the App PIN section."
+  },
   "securityAppPinBody": "Locks the app each time you open it.",
-  "@securityAppPinBody": {"description": "App PIN explanation."},
+  "@securityAppPinBody": {
+    "description": "App PIN explanation."
+  },
   "securitySessionEndPinTitle": "Session End PIN",
-  "@securitySessionEndPinTitle": {"description": "Header for session end PIN."},
+  "@securitySessionEndPinTitle": {
+    "description": "Header for session end PIN."
+  },
   "securitySessionEndPinBody": "Required to disarm or end a running session.",
-  "@securitySessionEndPinBody": {"description": "Session end PIN explanation."},
+  "@securitySessionEndPinBody": {
+    "description": "Session end PIN explanation."
+  },
   "securityDuressPinTitle": "Duress PIN",
-  "@securityDuressPinTitle": {"description": "Header for duress PIN."},
+  "@securityDuressPinTitle": {
+    "description": "Header for duress PIN."
+  },
   "securityDuressPinBody": "Entered at any prompt to silently fire the distress chain.",
-  "@securityDuressPinBody": {"description": "Duress PIN explanation."},
+  "@securityDuressPinBody": {
+    "description": "Duress PIN explanation."
+  },
   "securityRemovePin": "Remove",
-  "@securityRemovePin": {"description": "Button to remove a PIN."},
-  "securityBiometricToggle": "Allow biometric",
-  "@securityBiometricToggle": {"description": "Biometric toggle."},
+  "@securityRemovePin": {
+    "description": "Button to remove a PIN."
+  },
   "securityWhatIsThis": "What is this?",
-  "@securityWhatIsThis": {"description": "Info button label on PIN cards."},
+  "@securityWhatIsThis": {
+    "description": "Info button label on PIN cards."
+  },
   "securityAppPinInfo": "Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.",
-  "@securityAppPinInfo": {"description": "Explanatory dialog body for the App PIN card."},
+  "@securityAppPinInfo": {
+    "description": "Explanatory dialog body for the App PIN card."
+  },
   "securitySessionEndPinInfo": "Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.",
-  "@securitySessionEndPinInfo": {"description": "Explanatory dialog body for the Session End PIN card."},
+  "@securitySessionEndPinInfo": {
+    "description": "Explanatory dialog body for the Session End PIN card."
+  },
   "securityDuressPinInfo": "If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.",
-  "@securityDuressPinInfo": {"description": "Explanatory dialog body for the Duress PIN card."},
+  "@securityDuressPinInfo": {
+    "description": "Explanatory dialog body for the Duress PIN card."
+  },
   "securityPinTimeoutLabel": "PIN timeout (seconds)",
-  "@securityPinTimeoutLabel": {"description": "PIN timeout slider label."},
+  "@securityPinTimeoutLabel": {
+    "description": "PIN timeout slider label."
+  },
   "securityWrongPinThresholdLabel": "Wrong PIN attempts before escalation",
-  "@securityWrongPinThresholdLabel": {"description": "Wrong PIN threshold slider label."},
+  "@securityWrongPinThresholdLabel": {
+    "description": "Wrong PIN threshold slider label."
+  },
   "securityDeceptiveDialogToggle": "Show deceptive dialog on wrong PIN",
-  "@securityDeceptiveDialogToggle": {"description": "Deceptive dialog toggle label."},
-
+  "@securityDeceptiveDialogToggle": {
+    "description": "Deceptive dialog toggle label."
+  },
   "pinSetupEnterNew": "Enter new PIN",
-  "@pinSetupEnterNew": {"description": "Heading for entering a new PIN."},
+  "@pinSetupEnterNew": {
+    "description": "Heading for entering a new PIN."
+  },
   "pinSetupConfirmNew": "Confirm new PIN",
-  "@pinSetupConfirmNew": {"description": "Heading for confirming a new PIN."},
-  "pinSetupMismatch": "PINs don't match. Try again.",
-  "@pinSetupMismatch": {"description": "Error when the two PIN entries don't match."},
+  "@pinSetupConfirmNew": {
+    "description": "Heading for confirming a new PIN."
+  },
   "pinSetupTooShort": "PIN must be at least 4 digits.",
-  "@pinSetupTooShort": {"description": "Validation when PIN is shorter than 4 digits."},
+  "@pinSetupTooShort": {
+    "description": "Validation when PIN is shorter than 4 digits."
+  },
   "pinSetupCollision": "This PIN conflicts with another configured PIN.",
-  "@pinSetupCollision": {"description": "Validation when PIN collides with another configured PIN."},
+  "@pinSetupCollision": {
+    "description": "Validation when PIN collides with another configured PIN."
+  },
   "pinSetupSaved": "PIN saved",
-  "@pinSetupSaved": {"description": "Snackbar when the PIN is saved."},
-
+  "@pinSetupSaved": {
+    "description": "Snackbar when the PIN is saved."
+  },
   "stealthEnabledLabel": "Enable stealth",
-  "@stealthEnabledLabel": {"description": "Master toggle for stealth mode."},
+  "@stealthEnabledLabel": {
+    "description": "Master toggle for stealth mode."
+  },
   "stealthFakeNameLabel": "Fake app name",
-  "@stealthFakeNameLabel": {"description": "Stealth fake-name input label."},
+  "@stealthFakeNameLabel": {
+    "description": "Stealth fake-name input label."
+  },
   "stealthFakeIconLabel": "Fake icon",
-  "@stealthFakeIconLabel": {"description": "Stealth icon preset selector label."},
+  "@stealthFakeIconLabel": {
+    "description": "Stealth icon preset selector label."
+  },
   "stealthNotificationDisguiseLabel": "Notification disguise",
-  "@stealthNotificationDisguiseLabel": {"description": "Stealth notification disguise toggle."},
+  "@stealthNotificationDisguiseLabel": {
+    "description": "Stealth notification disguise toggle."
+  },
   "stealthTimerDisplayLabel": "Timer display",
-  "@stealthTimerDisplayLabel": {"description": "Stealth timer display selector."},
-  "stealthTimerDisplayNormal": "Normal",
-  "@stealthTimerDisplayNormal": {"description": "Stealth timer display option: normal."},
-  "stealthTimerDisplaySmall": "Small (corner)",
-  "@stealthTimerDisplaySmall": {"description": "Stealth timer display option: small corner."},
-  "stealthTimerDisplayNone": "Hidden",
-  "@stealthTimerDisplayNone": {"description": "Stealth timer display option: hidden."},
+  "@stealthTimerDisplayLabel": {
+    "description": "Stealth timer display selector."
+  },
   "stealthSessionScreenLabel": "Session screen stealth",
-  "@stealthSessionScreenLabel": {"description": "Toggle to remove branding from session screen."},
-
+  "@stealthSessionScreenLabel": {
+    "description": "Toggle to remove branding from session screen."
+  },
   "gpsLoggingEnabled": "Log GPS during sessions",
-  "@gpsLoggingEnabled": {"description": "GPS logging master toggle."},
+  "@gpsLoggingEnabled": {
+    "description": "GPS logging master toggle."
+  },
   "gpsLoggingIntervalLabel": "Interval",
-  "@gpsLoggingIntervalLabel": {"description": "GPS interval slider label."},
+  "@gpsLoggingIntervalLabel": {
+    "description": "GPS interval slider label."
+  },
   "gpsLoggingAccuracyLabel": "Accuracy",
-  "@gpsLoggingAccuracyLabel": {"description": "GPS accuracy selector."},
+  "@gpsLoggingAccuracyLabel": {
+    "description": "GPS accuracy selector."
+  },
   "gpsLoggingAccuracyHigh": "High",
-  "@gpsLoggingAccuracyHigh": {"description": "GPS accuracy high."},
+  "@gpsLoggingAccuracyHigh": {
+    "description": "GPS accuracy high."
+  },
   "gpsLoggingAccuracyBalanced": "Balanced",
-  "@gpsLoggingAccuracyBalanced": {"description": "GPS accuracy balanced."},
+  "@gpsLoggingAccuracyBalanced": {
+    "description": "GPS accuracy balanced."
+  },
   "gpsLoggingAccuracyLow": "Low",
-  "@gpsLoggingAccuracyLow": {"description": "GPS accuracy low."},
+  "@gpsLoggingAccuracyLow": {
+    "description": "GPS accuracy low."
+  },
   "gpsLoggingFormatLabel": "Coordinate format",
-  "@gpsLoggingFormatLabel": {"description": "GPS coordinate format label."},
+  "@gpsLoggingFormatLabel": {
+    "description": "GPS coordinate format label."
+  },
   "gpsLoggingFormatDecimal": "Decimal",
-  "@gpsLoggingFormatDecimal": {"description": "GPS format decimal."},
+  "@gpsLoggingFormatDecimal": {
+    "description": "GPS format decimal."
+  },
   "gpsLoggingFormatDms": "DMS",
-  "@gpsLoggingFormatDms": {"description": "GPS format DMS."},
+  "@gpsLoggingFormatDms": {
+    "description": "GPS format DMS."
+  },
   "gpsLoggingFormatAddress": "Plus Code",
-  "@gpsLoggingFormatAddress": {"description": "GPS format Plus Code (Open Location Code)."},
+  "@gpsLoggingFormatAddress": {
+    "description": "GPS format Plus Code (Open Location Code)."
+  },
   "gpsLoggingIncludeInSms": "Append location to SMS",
-  "@gpsLoggingIncludeInSms": {"description": "Toggle to include GPS in SMS."},
-  "gpsLoggingHistoryRetentionLabel": "History retention (days)",
-  "@gpsLoggingHistoryRetentionLabel": {"description": "GPS history retention slider label."},
-
-  "historyRetentionTitle": "History & retention",
-  "@historyRetentionTitle": {"description": "Title of history retention screen."},
+  "@gpsLoggingIncludeInSms": {
+    "description": "Toggle to include GPS in SMS."
+  },
   "historyRetentionLogsLabel": "Session log retention (days)",
-  "@historyRetentionLogsLabel": {"description": "Session log retention slider label."},
+  "@historyRetentionLogsLabel": {
+    "description": "Session log retention slider label."
+  },
   "historyRetentionLogsHelper": "Logs older than this move into the trash.",
-  "@historyRetentionLogsHelper": {"description": "Helper text for session log retention."},
+  "@historyRetentionLogsHelper": {
+    "description": "Helper text for session log retention."
+  },
   "historyRetentionTrashLabel": "Trash retention (days)",
-  "@historyRetentionTrashLabel": {"description": "Trash retention slider label."},
+  "@historyRetentionTrashLabel": {
+    "description": "Trash retention slider label."
+  },
   "historyRetentionTrashHelper": "Trashed logs are permanently deleted after this window.",
-  "@historyRetentionTrashHelper": {"description": "Helper text for trash retention."},
+  "@historyRetentionTrashHelper": {
+    "description": "Helper text for trash retention."
+  },
   "historyRetentionUpdated": "Retention updated",
-  "@historyRetentionUpdated": {"description": "Snackbar shown after a retention slider change."},
+  "@historyRetentionUpdated": {
+    "description": "Snackbar shown after a retention slider change."
+  },
   "historyRetentionPurgeNow": "Purge now",
-  "@historyRetentionPurgeNow": {"description": "Button label that runs purgeExpiredLogs immediately."},
+  "@historyRetentionPurgeNow": {
+    "description": "Button label that runs purgeExpiredLogs immediately."
+  },
   "historyRetentionPurged": "Purged {count} logs",
-  "@historyRetentionPurged": {"description": "Snackbar shown after a successful purge.", "placeholders": {"count": {}}},
-
-  "batteryAlertTitle": "Battery alert",
-  "@batteryAlertTitle": {"description": "Title of battery alert screen."},
+  "@historyRetentionPurged": {
+    "description": "Snackbar shown after a successful purge.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "batteryAlertEnableLabel": "Enable battery alert",
-  "@batteryAlertEnableLabel": {"description": "Battery alert enable toggle."},
+  "@batteryAlertEnableLabel": {
+    "description": "Battery alert enable toggle."
+  },
   "batteryAlertThresholdLabel": "Battery threshold (%)",
-  "@batteryAlertThresholdLabel": {"description": "Battery threshold slider label."},
+  "@batteryAlertThresholdLabel": {
+    "description": "Battery threshold slider label."
+  },
   "batteryAlertChainHeader": "Alert chain",
-  "@batteryAlertChainHeader": {"description": "Section header for the battery alert chain."},
+  "@batteryAlertChainHeader": {
+    "description": "Section header for the battery alert chain."
+  },
   "batteryAlertResetChain": "Reset",
-  "@batteryAlertResetChain": {"description": "Reset chain button."},
-
-  "eventDefaultsTitle": "Event defaults",
-  "@eventDefaultsTitle": {"description": "Title of event defaults screen."},
+  "@batteryAlertResetChain": {
+    "description": "Reset chain button."
+  },
   "eventDefaultsCheckInHeader": "Check-in methods",
-  "@eventDefaultsCheckInHeader": {"description": "Section header for check-in methods."},
+  "@eventDefaultsCheckInHeader": {
+    "description": "Section header for check-in methods."
+  },
   "eventDefaultsEscalationHeader": "Escalation steps",
-  "@eventDefaultsEscalationHeader": {"description": "Section header for escalation steps."},
+  "@eventDefaultsEscalationHeader": {
+    "description": "Section header for escalation steps."
+  },
   "eventDefaultsPanicHeader": "Panic trigger",
-  "@eventDefaultsPanicHeader": {"description": "Section header for panic triggers."},
-
-  "templatesTitle": "Reminder templates",
-  "@templatesTitle": {"description": "Title of templates screen."},
+  "@eventDefaultsPanicHeader": {
+    "description": "Section header for panic triggers."
+  },
   "templatesCreate": "Create template",
-  "@templatesCreate": {"description": "Create template button."},
-  "templatesFromTemplateSheet": "From template",
-  "@templatesFromTemplateSheet": {"description": "Bottom sheet entry for cloning a template."},
-  "templatesFromScratchSheet": "From scratch",
-  "@templatesFromScratchSheet": {"description": "Bottom sheet entry for blank template."},
+  "@templatesCreate": {
+    "description": "Create template button."
+  },
   "templatesEditTitle": "Edit template",
-  "@templatesEditTitle": {"description": "Title of template editor when editing."},
+  "@templatesEditTitle": {
+    "description": "Title of template editor when editing."
+  },
   "templatesCreateTitle": "New template",
-  "@templatesCreateTitle": {"description": "Title of template editor when creating."},
+  "@templatesCreateTitle": {
+    "description": "Title of template editor when creating."
+  },
   "templatesNameLabel": "Name",
-  "@templatesNameLabel": {"description": "Template name label."},
+  "@templatesNameLabel": {
+    "description": "Template name label."
+  },
   "templatesTitleLabel": "Title",
-  "@templatesTitleLabel": {"description": "Template title label."},
+  "@templatesTitleLabel": {
+    "description": "Template title label."
+  },
   "templatesBodyLabel": "Body",
-  "@templatesBodyLabel": {"description": "Template body label."},
-  "templatesEmpty": "No templates yet",
-  "@templatesEmpty": {"description": "Empty state for templates list."},
+  "@templatesBodyLabel": {
+    "description": "Template body label."
+  },
   "templatesBuiltinNoDelete": "Built-in templates cannot be deleted",
-  "@templatesBuiltinNoDelete": {"description": "Tooltip on disabled delete for built-in templates."},
+  "@templatesBuiltinNoDelete": {
+    "description": "Tooltip on disabled delete for built-in templates."
+  },
   "templatesAddFromTemplate": "From template",
-  "@templatesAddFromTemplate": {"description": "Bottom-sheet option that opens the built-in template picker."},
+  "@templatesAddFromTemplate": {
+    "description": "Bottom-sheet option that opens the built-in template picker."
+  },
   "templatesAddFromScratch": "From scratch",
-  "@templatesAddFromScratch": {"description": "Bottom-sheet option that opens the empty template editor."},
+  "@templatesAddFromScratch": {
+    "description": "Bottom-sheet option that opens the empty template editor."
+  },
   "templatesDeleteConfirmTitle": "Delete \"{name}\"?",
-  "@templatesDeleteConfirmTitle": {"description": "Delete-confirmation dialog title.", "placeholders": {"name": {}}},
+  "@templatesDeleteConfirmTitle": {
+    "description": "Delete-confirmation dialog title.",
+    "placeholders": {
+      "name": {}
+    }
+  },
   "templatesDeleteConfirmBody": "This template will be removed permanently.",
-  "@templatesDeleteConfirmBody": {"description": "Delete-confirmation dialog body."},
+  "@templatesDeleteConfirmBody": {
+    "description": "Delete-confirmation dialog body."
+  },
   "templatesEmptyAddFirst": "Add your first template",
-  "@templatesEmptyAddFirst": {"description": "Button under the empty-state illustration."},
+  "@templatesEmptyAddFirst": {
+    "description": "Button under the empty-state illustration."
+  },
   "templatesPickFromBuiltinTitle": "Pick a built-in template",
-  "@templatesPickFromBuiltinTitle": {"description": "Title of the built-in-template picker bottom sheet."},
+  "@templatesPickFromBuiltinTitle": {
+    "description": "Title of the built-in-template picker bottom sheet."
+  },
   "templatesIconLabel": "Icon",
-  "@templatesIconLabel": {"description": "Icon picker field label in the template editor."},
+  "@templatesIconLabel": {
+    "description": "Icon picker field label in the template editor."
+  },
   "templatesIconCalendar": "Calendar",
-  "@templatesIconCalendar": {"description": "Built-in icon category."},
+  "@templatesIconCalendar": {
+    "description": "Built-in icon category."
+  },
   "templatesIconAppNotification": "App notification",
-  "@templatesIconAppNotification": {"description": "Built-in icon category."},
+  "@templatesIconAppNotification": {
+    "description": "Built-in icon category."
+  },
   "templatesIconFitness": "Fitness",
-  "@templatesIconFitness": {"description": "Built-in icon category."},
+  "@templatesIconFitness": {
+    "description": "Built-in icon category."
+  },
   "templatesIconHealth": "Health",
-  "@templatesIconHealth": {"description": "Built-in icon category."},
+  "@templatesIconHealth": {
+    "description": "Built-in icon category."
+  },
   "templatesIconFood": "Food",
-  "@templatesIconFood": {"description": "Built-in icon category."},
+  "@templatesIconFood": {
+    "description": "Built-in icon category."
+  },
   "templatesIconCoffee": "Coffee",
-  "@templatesIconCoffee": {"description": "Built-in icon category."},
+  "@templatesIconCoffee": {
+    "description": "Built-in icon category."
+  },
   "templatesIconBattery": "Battery",
-  "@templatesIconBattery": {"description": "Built-in icon category."},
+  "@templatesIconBattery": {
+    "description": "Built-in icon category."
+  },
   "templatesIconWeather": "Weather",
-  "@templatesIconWeather": {"description": "Built-in icon category."},
+  "@templatesIconWeather": {
+    "description": "Built-in icon category."
+  },
   "templatesPreviewHeading": "Live preview",
-  "@templatesPreviewHeading": {"description": "Section header above the live preview panel."},
+  "@templatesPreviewHeading": {
+    "description": "Section header above the live preview panel."
+  },
   "templatesDiscardChangesTitle": "Discard changes?",
-  "@templatesDiscardChangesTitle": {"description": "Dialog title when leaving a dirty editor."},
+  "@templatesDiscardChangesTitle": {
+    "description": "Dialog title when leaving a dirty editor."
+  },
   "templatesDiscardChangesBody": "Unsaved edits will be lost.",
-  "@templatesDiscardChangesBody": {"description": "Dialog body when leaving a dirty editor."},
+  "@templatesDiscardChangesBody": {
+    "description": "Dialog body when leaving a dirty editor."
+  },
   "templatesDiscardKeep": "Keep editing",
-  "@templatesDiscardKeep": {"description": "Stay-on-editor action."},
+  "@templatesDiscardKeep": {
+    "description": "Stay-on-editor action."
+  },
   "templatesDiscardDiscard": "Discard",
-  "@templatesDiscardDiscard": {"description": "Discard action."},
-
+  "@templatesDiscardDiscard": {
+    "description": "Discard action."
+  },
   "notificationsTitle": "Notifications",
-  "@notificationsTitle": {"description": "Title of notification settings."},
+  "@notificationsTitle": {
+    "description": "Title of notification settings."
+  },
   "notificationsStatusGranted": "Granted",
-  "@notificationsStatusGranted": {"description": "Granted status label."},
+  "@notificationsStatusGranted": {
+    "description": "Granted status label."
+  },
   "notificationsStatusDenied": "Denied",
-  "@notificationsStatusDenied": {"description": "Denied status label."},
+  "@notificationsStatusDenied": {
+    "description": "Denied status label."
+  },
   "notificationsStatusUnknown": "Not yet asked",
-  "@notificationsStatusUnknown": {"description": "Unknown status label."},
+  "@notificationsStatusUnknown": {
+    "description": "Unknown status label."
+  },
   "notificationsRequest": "Request permission",
-  "@notificationsRequest": {"description": "Request permission button."},
+  "@notificationsRequest": {
+    "description": "Request permission button."
+  },
   "notificationsOpenSettings": "Open system settings",
-  "@notificationsOpenSettings": {"description": "Open settings button."},
-
-  "profileTitle": "Profile",
-  "@profileTitle": {"description": "Title of profile editor."},
-  "profileFieldName": "Name",
-  "@profileFieldName": {"description": "Profile name field."},
+  "@notificationsOpenSettings": {
+    "description": "Open settings button."
+  },
   "profileFieldPhone": "Phone number",
-  "@profileFieldPhone": {"description": "Profile phone field."},
+  "@profileFieldPhone": {
+    "description": "Profile phone field."
+  },
   "profileFieldDescription": "Physical description",
-  "@profileFieldDescription": {"description": "Profile description field."},
-  "profileFieldAge": "Age",
-  "@profileFieldAge": {"description": "Profile age field."},
-  "profileFieldBloodType": "Blood type",
-  "@profileFieldBloodType": {"description": "Blood type field."},
-  "profileFieldAllergies": "Allergies",
-  "@profileFieldAllergies": {"description": "Allergies field."},
-  "profileFieldMedications": "Medications",
-  "@profileFieldMedications": {"description": "Medications field."},
+  "@profileFieldDescription": {
+    "description": "Profile description field."
+  },
   "profileFieldMedicalConditions": "Medical conditions",
-  "@profileFieldMedicalConditions": {"description": "Medical conditions field."},
+  "@profileFieldMedicalConditions": {
+    "description": "Medical conditions field."
+  },
   "profileFieldEmergencyInstructions": "Emergency instructions",
-  "@profileFieldEmergencyInstructions": {"description": "Emergency instructions field."},
-  "profilePhotoLabel": "Photo",
-  "@profilePhotoLabel": {"description": "Profile photo label."},
-  "profileSaved": "Profile saved",
-  "@profileSaved": {"description": "Profile save confirmation."},
-
-  "aboutTitle": "About",
-  "@aboutTitle": {"description": "Title of about screen."},
-  "aboutVersion": "Version: {version}",
-  "@aboutVersion": {"description": "Version line on about.", "placeholders": {"version": {}}},
+  "@profileFieldEmergencyInstructions": {
+    "description": "Emergency instructions field."
+  },
   "aboutAuthor": "Author: Jonas Eschle",
-  "@aboutAuthor": {"description": "Author line."},
+  "@aboutAuthor": {
+    "description": "Author line."
+  },
   "aboutEmail": "guardian.angela.app@gmail.com",
-  "@aboutEmail": {"description": "Contact email."},
+  "@aboutEmail": {
+    "description": "Contact email."
+  },
   "aboutPrivacyPolicy": "Privacy policy",
-  "@aboutPrivacyPolicy": {"description": "Privacy policy link."},
+  "@aboutPrivacyPolicy": {
+    "description": "Privacy policy link."
+  },
   "aboutTermsOfService": "Terms of service",
-  "@aboutTermsOfService": {"description": "Terms of service link."},
+  "@aboutTermsOfService": {
+    "description": "Terms of service link."
+  },
   "aboutSourceCode": "Source code",
-  "@aboutSourceCode": {"description": "Source code link."},
+  "@aboutSourceCode": {
+    "description": "Source code link."
+  },
   "aboutSupport": "Support / donate",
-  "@aboutSupport": {"description": "Support link."},
+  "@aboutSupport": {
+    "description": "Support link."
+  },
   "aboutLicenses": "Open source licenses",
-  "@aboutLicenses": {"description": "Licenses link."},
+  "@aboutLicenses": {
+    "description": "Licenses link."
+  },
   "aboutTagline": "Made with love for LGBTQ+ safety.",
-  "@aboutTagline": {"description": "Bottom tagline on about screen."},
+  "@aboutTagline": {
+    "description": "Bottom tagline on about screen."
+  },
   "aboutTechnicalSection": "Technical information",
-  "@aboutTechnicalSection": {"description": "Header above the technical-info ListTiles."},
+  "@aboutTechnicalSection": {
+    "description": "Header above the technical-info ListTiles."
+  },
   "aboutBundleId": "Bundle ID: {id}",
-  "@aboutBundleId": {"description": "Bundle ID tile.", "placeholders": {"id": {}}},
+  "@aboutBundleId": {
+    "description": "Bundle ID tile.",
+    "placeholders": {
+      "id": {}
+    }
+  },
   "aboutPlatforms": "Platforms: {list}",
-  "@aboutPlatforms": {"description": "Platform list tile.", "placeholders": {"list": {}}},
-
-  "feedbackTitle": "Send feedback",
-  "@feedbackTitle": {"description": "Title of feedback form."},
+  "@aboutPlatforms": {
+    "description": "Platform list tile.",
+    "placeholders": {
+      "list": {}
+    }
+  },
   "feedbackHeading": "We'd love to hear from you",
-  "@feedbackHeading": {"description": "Top heading of feedback form."},
+  "@feedbackHeading": {
+    "description": "Top heading of feedback form."
+  },
   "feedbackCategoryLabel": "Category",
-  "@feedbackCategoryLabel": {"description": "Category label."},
+  "@feedbackCategoryLabel": {
+    "description": "Category label."
+  },
   "feedbackCategoryBug": "Bug report",
-  "@feedbackCategoryBug": {"description": "Bug option."},
+  "@feedbackCategoryBug": {
+    "description": "Bug option."
+  },
   "feedbackCategoryFeature": "Feature request",
-  "@feedbackCategoryFeature": {"description": "Feature option."},
+  "@feedbackCategoryFeature": {
+    "description": "Feature option."
+  },
   "feedbackCategoryOther": "Other",
-  "@feedbackCategoryOther": {"description": "Other option."},
+  "@feedbackCategoryOther": {
+    "description": "Other option."
+  },
   "feedbackEmailLabel": "Email (optional)",
-  "@feedbackEmailLabel": {"description": "Email label."},
+  "@feedbackEmailLabel": {
+    "description": "Email label."
+  },
   "feedbackMessageLabel": "Message",
-  "@feedbackMessageLabel": {"description": "Message label."},
+  "@feedbackMessageLabel": {
+    "description": "Message label."
+  },
   "feedbackIncludeLog": "Include last session log",
-  "@feedbackIncludeLog": {"description": "Include log checkbox."},
-  "feedbackSend": "Send",
-  "@feedbackSend": {"description": "Send button."},
+  "@feedbackIncludeLog": {
+    "description": "Include log checkbox."
+  },
   "feedbackSent": "Thanks for your feedback!",
-  "@feedbackSent": {"description": "Snackbar after sending."},
+  "@feedbackSent": {
+    "description": "Snackbar after sending."
+  },
   "feedbackMessageRequired": "Message must be at least 10 characters.",
-  "@feedbackMessageRequired": {"description": "Validation message."},
-
-  "backupTitle": "Backup & restore",
-  "@backupTitle": {"description": "Title of backup screen."},
+  "@feedbackMessageRequired": {
+    "description": "Validation message."
+  },
   "backupIncludeLogs": "Include session logs",
-  "@backupIncludeLogs": {"description": "Backup include logs toggle."},
+  "@backupIncludeLogs": {
+    "description": "Backup include logs toggle."
+  },
   "backupIncludeMedia": "Include media",
-  "@backupIncludeMedia": {"description": "Backup include media toggle."},
+  "@backupIncludeMedia": {
+    "description": "Backup include media toggle."
+  },
   "backupExportButton": "Export",
-  "@backupExportButton": {"description": "Backup export button."},
+  "@backupExportButton": {
+    "description": "Backup export button."
+  },
   "backupImportButton": "Import",
-  "@backupImportButton": {"description": "Backup import button."},
+  "@backupImportButton": {
+    "description": "Backup import button."
+  },
   "backupOverwriteWarning": "Importing overwrites all current data.",
-  "@backupOverwriteWarning": {"description": "Backup overwrite warning."},
+  "@backupOverwriteWarning": {
+    "description": "Backup overwrite warning."
+  },
   "backupImportSuccess": "Import complete. Restart to apply.",
-  "@backupImportSuccess": {"description": "Snackbar shown after a successful import."},
+  "@backupImportSuccess": {
+    "description": "Snackbar shown after a successful import."
+  },
   "backupImportError": "Import failed: {message}",
-  "@backupImportError": {"description": "Snackbar shown when an import throws.", "placeholders": {"message": {}}},
+  "@backupImportError": {
+    "description": "Snackbar shown when an import throws.",
+    "placeholders": {
+      "message": {}
+    }
+  },
   "backupActiveSessionBanner": "Backup is unavailable during an active session.",
-  "@backupActiveSessionBanner": {"description": "Banner on the Backup screen while a session is running."},
+  "@backupActiveSessionBanner": {
+    "description": "Banner on the Backup screen while a session is running."
+  },
   "backupLastBackupAtLabel": "Last backup at {when}",
-  "@backupLastBackupAtLabel": {"description": "ListTile label showing the last backup timestamp.", "placeholders": {"when": {}}},
+  "@backupLastBackupAtLabel": {
+    "description": "ListTile label showing the last backup timestamp.",
+    "placeholders": {
+      "when": {}
+    }
+  },
   "backupNeverExportedLabel": "No backup yet",
-  "@backupNeverExportedLabel": {"description": "ListTile label when no backup has been exported yet."},
-
+  "@backupNeverExportedLabel": {
+    "description": "ListTile label when no backup has been exported yet."
+  },
   "pastEventsTitle": "Past sessions",
-  "@pastEventsTitle": {"description": "Title of past events screen."},
+  "@pastEventsTitle": {
+    "description": "Title of past events screen."
+  },
   "pastEventsTabReal": "Real",
-  "@pastEventsTabReal": {"description": "Tab label for real sessions."},
+  "@pastEventsTabReal": {
+    "description": "Tab label for real sessions."
+  },
   "pastEventsTabSimulated": "Simulated",
-  "@pastEventsTabSimulated": {"description": "Tab label for simulated sessions."},
+  "@pastEventsTabSimulated": {
+    "description": "Tab label for simulated sessions."
+  },
   "pastEventsEmpty": "No sessions yet",
-  "@pastEventsEmpty": {"description": "Empty state."},
-  "pastEventsSearch": "Search by mode name",
-  "@pastEventsSearch": {"description": "Search field placeholder."},
+  "@pastEventsEmpty": {
+    "description": "Empty state."
+  },
   "pastEventsDeleteConfirm": "Delete session log?",
-  "@pastEventsDeleteConfirm": {"description": "Delete confirmation title."},
+  "@pastEventsDeleteConfirm": {
+    "description": "Delete confirmation title."
+  },
   "pastEventsDetailShareText": "Share as text",
-  "@pastEventsDetailShareText": {"description": "Share menu — text option."},
+  "@pastEventsDetailShareText": {
+    "description": "Share menu — text option."
+  },
   "pastEventsDetailSharePdf": "Share as PDF",
-  "@pastEventsDetailSharePdf": {"description": "Share menu — PDF option."},
+  "@pastEventsDetailSharePdf": {
+    "description": "Share menu — PDF option."
+  },
   "pastEventsDetailDelete": "Delete",
-  "@pastEventsDetailDelete": {"description": "AppBar delete action."},
+  "@pastEventsDetailDelete": {
+    "description": "Delete button in detail screen."
+  },
   "pastEventsOutcomeCompleted": "Completed",
-  "@pastEventsOutcomeCompleted": {"description": "Outcome badge: clean completion."},
+  "@pastEventsOutcomeCompleted": {
+    "description": "Outcome badge: clean completion."
+  },
   "pastEventsOutcomeDistress": "Distress",
-  "@pastEventsOutcomeDistress": {"description": "Outcome badge: distress chain fired."},
+  "@pastEventsOutcomeDistress": {
+    "description": "Outcome badge: distress chain fired."
+  },
   "pastEventsOutcomeInterrupted": "Interrupted",
-  "@pastEventsOutcomeInterrupted": {"description": "Outcome badge: any other end reason."},
-  "pastEventsDeleteAll": "Delete all",
-  "@pastEventsDeleteAll": {"description": "Delete all action."},
+  "@pastEventsOutcomeInterrupted": {
+    "description": "Outcome badge: any other end reason."
+  },
   "pastEventsTrash": "Trash",
-  "@pastEventsTrash": {"description": "Trash action."},
+  "@pastEventsTrash": {
+    "description": "Trash action."
+  },
   "pastEventsUndo": "Undo",
-  "@pastEventsUndo": {"description": "Undo snackbar action."},
+  "@pastEventsUndo": {
+    "description": "Undo snackbar action."
+  },
   "pastEventsSoftDeleted": "Moved to trash",
-  "@pastEventsSoftDeleted": {"description": "Snackbar after soft delete."},
+  "@pastEventsSoftDeleted": {
+    "description": "Snackbar after soft delete."
+  },
   "pastEventsDetailTitle": "Session log",
-  "@pastEventsDetailTitle": {"description": "Title of past event detail."},
+  "@pastEventsDetailTitle": {
+    "description": "Title of past event detail."
+  },
   "pastEventsDetailShare": "Share",
-  "@pastEventsDetailShare": {"description": "Share button in detail screen."},
-  "pastEventsDetailDelete": "Delete",
-  "@pastEventsDetailDelete": {"description": "Delete button in detail screen."},
-
-  "contactImportFromDevice": "Import from contacts",
-  "@contactImportFromDevice": {"description": "Button to import from device contacts (Extra 27)."},
-  "contactImportPermissionDenied": "Permission denied — open Settings to enable.",
-  "@contactImportPermissionDenied": {"description": "Snackbar when contacts permission is denied."},
+  "@pastEventsDetailShare": {
+    "description": "Share button in detail screen."
+  },
   "contactUnsavedDiscardTitle": "Discard unsaved changes?",
-  "@contactUnsavedDiscardTitle": {"description": "Unsaved changes title for contact form."},
+  "@contactUnsavedDiscardTitle": {
+    "description": "Unsaved changes title for contact form."
+  },
   "contactUnsavedDiscardKeep": "Keep editing",
-  "@contactUnsavedDiscardKeep": {"description": "Keep editing button."},
+  "@contactUnsavedDiscardKeep": {
+    "description": "Keep editing button."
+  },
   "contactUnsavedDiscardDiscard": "Discard",
-  "@contactUnsavedDiscardDiscard": {"description": "Discard button."},
-
-  "modesNewModeChoiceTitle": "New mode",
-  "@modesNewModeChoiceTitle": {"description": "Title of the new mode picker."},
+  "@contactUnsavedDiscardDiscard": {
+    "description": "Discard button."
+  },
   "modesDuplicate": "Duplicate",
-  "@modesDuplicate": {"description": "Duplicate action for modes."},
+  "@modesDuplicate": {
+    "description": "Duplicate action for modes."
+  },
   "modesDeleteConfirmTitle": "Delete mode?",
-  "@modesDeleteConfirmTitle": {"description": "Delete confirmation title."},
+  "@modesDeleteConfirmTitle": {
+    "description": "Delete confirmation title."
+  },
   "modesDeleteConfirmBody": "{name} will be permanently removed.",
-  "@modesDeleteConfirmBody": {"description": "Delete confirmation body.", "placeholders": {"name": {}}},
+  "@modesDeleteConfirmBody": {
+    "description": "Delete confirmation body.",
+    "placeholders": {
+      "name": {}
+    }
+  },
   "modesDistressDefaultBadge": "Default",
-  "@modesDistressDefaultBadge": {"description": "Badge for default distress mode."},
+  "@modesDistressDefaultBadge": {
+    "description": "Badge for default distress mode."
+  },
   "modesDistressSetDefault": "Set as default",
-  "@modesDistressSetDefault": {"description": "Set as default action."},
+  "@modesDistressSetDefault": {
+    "description": "Set as default action."
+  },
   "modesDistressCantDeleteLast": "At least one distress mode is required.",
-  "@modesDistressCantDeleteLast": {"description": "Tooltip when delete is disabled for last distress mode."},
+  "@modesDistressCantDeleteLast": {
+    "description": "Tooltip when delete is disabled for last distress mode."
+  },
   "modesDistressInUse": "This distress mode is in use by another mode.",
-  "@modesDistressInUse": {"description": "Tooltip / snackbar when delete is disabled because another mode references this one as its distressModeId."},
+  "@modesDistressInUse": {
+    "description": "Tooltip / snackbar when delete is disabled because another mode references this one as its distressModeId."
+  },
   "modesDistressTitle": "Distress modes",
-  "@modesDistressTitle": {"description": "Title of distress modes list."},
-  "modesAllowDisarmAsDistress": "Allow disarm while active as distress",
-  "@modesAllowDisarmAsDistress": {"description": "Toggle in distress mode editor (G-014)."},
-
-  "quickExitTitle": "Quick exit",
-  "@quickExitTitle": {"description": "Title of quick exit prompt."},
-  "quickExitBody": "Session data will be preserved and encrypted.",
-  "@quickExitBody": {"description": "Body of quick exit prompt."},
-  "quickExitConfirm": "Exit",
-  "@quickExitConfirm": {"description": "Quick exit confirm button."},
-
-  "validationNameRequired": "Name is required.",
-  "@validationNameRequired": {"description": "Validation: name required."},
+  "@modesDistressTitle": {
+    "description": "Title of distress modes list."
+  },
   "validationNameTooShort": "Name must be at least 2 characters.",
-  "@validationNameTooShort": {"description": "Validation: name too short."},
+  "@validationNameTooShort": {
+    "description": "Validation: name too short."
+  },
   "validationPhoneRequired": "Phone number is required.",
-  "@validationPhoneRequired": {"description": "Validation: phone required."},
+  "@validationPhoneRequired": {
+    "description": "Validation: phone required."
+  },
   "validationChannelsRequired": "Select at least one channel.",
-  "@validationChannelsRequired": {"description": "Validation: at least one channel required."},
-
+  "@validationChannelsRequired": {
+    "description": "Validation: at least one channel required."
+  },
   "sessionHoldTouchToBegin": "Touch to begin",
-  "@sessionHoldTouchToBegin": {"description": "Hold-button step prompt before the first press."},
+  "@sessionHoldTouchToBegin": {
+    "description": "Hold-button step prompt before the first press."
+  },
   "sessionHoldReleaseCountdown": "Countdown: {seconds}s",
-  "@sessionHoldReleaseCountdown": {"description": "Hold-button countdown after release.", "placeholders": {"seconds": {}}},
+  "@sessionHoldReleaseCountdown": {
+    "description": "Hold-button countdown after release.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
   "sessionHoldGraceCountdown": "Grace: {seconds}s — re-hold to stay safe",
-  "@sessionHoldGraceCountdown": {"description": "Hold-button grace-period countdown.", "placeholders": {"seconds": {}}},
+  "@sessionHoldGraceCountdown": {
+    "description": "Hold-button grace-period countdown.",
+    "placeholders": {
+      "seconds": {}
+    }
+  },
   "sessionHoldAgain": "Hold again to stay safe",
-  "@sessionHoldAgain": {"description": "Prompt after the user released the hold button."},
-  "sessionEscalating": "Escalating…",
-  "@sessionEscalating": {"description": "Label shown when the chain transitions to the next step."},
-  "sessionDisarmedToast": "Disarmed — chain reset to step 1.",
-  "@sessionDisarmedToast": {"description": "Snackbar shown after a successful disarm."},
+  "@sessionHoldAgain": {
+    "description": "Prompt after the user released the hold button."
+  },
   "sessionStepNextCheckIn": "Next check-in in {time}",
-  "@sessionStepNextCheckIn": {"description": "Countdown to the next disguised-reminder.", "placeholders": {"time": {}}},
-  "sessionStepGraceCountdown": "Grace period: {time}",
-  "@sessionStepGraceCountdown": {"description": "Countdown shown during a step grace phase.", "placeholders": {"time": {}}},
+  "@sessionStepNextCheckIn": {
+    "description": "Countdown to the next disguised-reminder.",
+    "placeholders": {
+      "time": {}
+    }
+  },
   "sessionStepFakeCallActive": "Incoming call from {caller}",
-  "@sessionStepFakeCallActive": {"description": "Status text shown while a fake call is ringing.", "placeholders": {"caller": {}}},
+  "@sessionStepFakeCallActive": {
+    "description": "Status text shown while a fake call is ringing.",
+    "placeholders": {
+      "caller": {}
+    }
+  },
   "sessionStepFakeCallOpen": "Open call screen",
-  "@sessionStepFakeCallOpen": {"description": "Button that opens the full-screen fake-call UI."},
+  "@sessionStepFakeCallOpen": {
+    "description": "Button that opens the full-screen fake-call UI."
+  },
   "sessionStepSimBlockedSms": "[SIM] Would send SMS to {count} contacts",
-  "@sessionStepSimBlockedSms": {"description": "Simulation-mode placeholder card for the SMS step.", "placeholders": {"count": {}}},
+  "@sessionStepSimBlockedSms": {
+    "description": "Simulation-mode placeholder card for the SMS step.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "sessionStepSimBlockedPhone": "[SIM] Would call emergency contact",
-  "@sessionStepSimBlockedPhone": {"description": "Simulation-mode placeholder card for the phone-call step."},
+  "@sessionStepSimBlockedPhone": {
+    "description": "Simulation-mode placeholder card for the phone-call step."
+  },
   "sessionStepSimBlockedEmergency": "[SIM] Would call emergency services",
-  "@sessionStepSimBlockedEmergency": {"description": "Simulation-mode placeholder card for the emergency-call step."},
+  "@sessionStepSimBlockedEmergency": {
+    "description": "Simulation-mode placeholder card for the emergency-call step."
+  },
   "sessionStepSimBlockedAlarm": "[SIM] Alarm would have sounded at full volume",
-  "@sessionStepSimBlockedAlarm": {"description": "Simulation-mode placeholder card for the loud-alarm step."},
+  "@sessionStepSimBlockedAlarm": {
+    "description": "Simulation-mode placeholder card for the loud-alarm step."
+  },
   "sessionStartFailedTitle": "Cannot start session",
-  "@sessionStartFailedTitle": {"description": "Title of the dialog shown when session start validation fails."},
+  "@sessionStartFailedTitle": {
+    "description": "Title of the dialog shown when session start validation fails."
+  },
   "sessionStartFailedBody": "Fix the following issues before starting:",
-  "@sessionStartFailedBody": {"description": "Body of the dialog shown when session start validation fails."},
-  "sessionGpsDestinationTitle": "Destination",
-  "@sessionGpsDestinationTitle": {"description": "Title of the GPS destination prompt sheet."},
-  "sessionGpsDestinationBody": "Enter the destination coordinates for the GPS arrival disarm trigger.",
-  "@sessionGpsDestinationBody": {"description": "Body of the GPS destination prompt sheet."},
-  "sessionGpsDestinationLat": "Latitude",
-  "@sessionGpsDestinationLat": {"description": "Label for the latitude field on the GPS destination sheet."},
-  "sessionGpsDestinationLng": "Longitude",
-  "@sessionGpsDestinationLng": {"description": "Label for the longitude field on the GPS destination sheet."},
-  "sessionGpsDestinationUseCurrent": "Use current location",
-  "@sessionGpsDestinationUseCurrent": {"description": "Shortcut button on the GPS destination sheet."},
-  "sessionGpsDestinationSkip": "Skip for this session",
-  "@sessionGpsDestinationSkip": {"description": "Skip button on the GPS destination sheet."},
-  "sessionGpsDestinationConfirm": "Use destination",
-  "@sessionGpsDestinationConfirm": {"description": "Confirm button on the GPS destination sheet."},
+  "@sessionStartFailedBody": {
+    "description": "Body of the dialog shown when session start validation fails."
+  },
   "sessionQuickExitTitle": "Quick exit",
-  "@sessionQuickExitTitle": {"description": "Title of the quick-exit confirmation dialog."},
+  "@sessionQuickExitTitle": {
+    "description": "Title of the quick-exit confirmation dialog."
+  },
   "sessionQuickExitBody": "Session data will be preserved and encrypted. Reopen the app any time to recover it.",
-  "@sessionQuickExitBody": {"description": "Body of the quick-exit confirmation dialog."},
+  "@sessionQuickExitBody": {
+    "description": "Body of the quick-exit confirmation dialog."
+  },
   "sessionQuickExitConfirm": "Exit app",
-  "@sessionQuickExitConfirm": {"description": "Confirm button on the quick-exit dialog."},
-  "sessionStealthMusicTrack": "Now playing",
-  "@sessionStealthMusicTrack": {"description": "Title on the stealth fake-music-player session screen."},
-  "sessionStealthMusicArtist": "Various artists",
-  "@sessionStealthMusicArtist": {"description": "Subtitle on the stealth fake-music-player session screen."},
-
-  "homeStartingSession": "Starting session…",
-  "@homeStartingSession": {"description": "Snackbar shown while a session is being started."},
-
+  "@sessionQuickExitConfirm": {
+    "description": "Confirm button on the quick-exit dialog."
+  },
   "pastEventsRestore": "Restore",
-  "@pastEventsRestore": {"description": "Restore action shown on the past-events SnackBar (undo soft delete)."},
-
-  "batteryAlertAddStep": "Add step",
-  "@batteryAlertAddStep": {"description": "Button label that opens the step-type picker on the battery alert chain editor."},
+  "@pastEventsRestore": {
+    "description": "Restore action shown on the past-events SnackBar (undo soft delete)."
+  },
   "batteryAlertForbiddenStep": "{type} is not allowed in the battery-alert chain.",
-  "@batteryAlertForbiddenStep": {"description": "Error snack shown when the user tries to add an interactive step to a battery-alert chain.", "placeholders": {"type": {}}},
-
+  "@batteryAlertForbiddenStep": {
+    "description": "Error snack shown when the user tries to add an interactive step to a battery-alert chain.",
+    "placeholders": {
+      "type": {}
+    }
+  },
   "stepEditorWait": "Wait (s)",
-  "@stepEditorWait": {"description": "Label for the wait-seconds field of a chain step."},
+  "@stepEditorWait": {
+    "description": "Label for the wait-seconds field of a chain step."
+  },
   "stepEditorDuration": "Duration (s)",
-  "@stepEditorDuration": {"description": "Label for the duration-seconds field of a chain step."},
+  "@stepEditorDuration": {
+    "description": "Label for the duration-seconds field of a chain step."
+  },
   "stepEditorGrace": "Grace (s)",
-  "@stepEditorGrace": {"description": "Label for the grace-period-seconds field of a chain step."},
+  "@stepEditorGrace": {
+    "description": "Label for the grace-period-seconds field of a chain step."
+  },
   "stepEditorRetryCount": "Retry count",
-  "@stepEditorRetryCount": {"description": "Label for the retry-count field of a chain step."},
+  "@stepEditorRetryCount": {
+    "description": "Label for the retry-count field of a chain step."
+  },
   "stepEditorRandomize": "Randomize timing (±20%)",
-  "@stepEditorRandomize": {"description": "Label for the randomize toggle of a chain step."},
+  "@stepEditorRandomize": {
+    "description": "Label for the randomize toggle of a chain step."
+  },
   "stepEditorRemove": "Remove step",
-  "@stepEditorRemove": {"description": "Button label that removes the step."},
-
-  "eventDefaultsSavedToast": "Saved",
-  "@eventDefaultsSavedToast": {"description": "Confirmation shown after saving an event default."},
+  "@stepEditorRemove": {
+    "description": "Button label that removes the step."
+  },
   "eventDefaultsHoldStyle": "Hold style",
-  "@eventDefaultsHoldStyle": {"description": "Field label for HoldButtonConfig.holdStyle."},
+  "@eventDefaultsHoldStyle": {
+    "description": "Field label for HoldButtonConfig.holdStyle."
+  },
   "eventDefaultsHoldSensitivity": "Release sensitivity",
-  "@eventDefaultsHoldSensitivity": {"description": "Field label for HoldButtonConfig.releaseSensitivity (range 0.3–3.0)."},
+  "@eventDefaultsHoldSensitivity": {
+    "description": "Field label for HoldButtonConfig.releaseSensitivity (range 0.3–3.0)."
+  },
   "eventDefaultsHoldVibrate": "Vibrate on release",
-  "@eventDefaultsHoldVibrate": {"description": "Field label for HoldButtonConfig.vibrateOnRelease."},
+  "@eventDefaultsHoldVibrate": {
+    "description": "Field label for HoldButtonConfig.vibrateOnRelease."
+  },
   "eventDefaultsHoldSound": "Sound on release",
-  "@eventDefaultsHoldSound": {"description": "Field label for HoldButtonConfig.soundOnRelease."},
+  "@eventDefaultsHoldSound": {
+    "description": "Field label for HoldButtonConfig.soundOnRelease."
+  },
   "eventDefaultsBlackScreen": "Black screen overlay",
-  "@eventDefaultsBlackScreen": {"description": "Field label for the StepConfig.blackScreenMode flag (per step type)."},
+  "@eventDefaultsBlackScreen": {
+    "description": "Field label for the StepConfig.blackScreenMode flag (per step type)."
+  },
   "eventDefaultsReminderRandomInterval": "Randomize interval",
-  "@eventDefaultsReminderRandomInterval": {"description": "Field label for DisguisedReminderConfig.randomizeInterval."},
+  "@eventDefaultsReminderRandomInterval": {
+    "description": "Field label for DisguisedReminderConfig.randomizeInterval."
+  },
   "eventDefaultsReminderRandomTemplate": "Randomize template order",
-  "@eventDefaultsReminderRandomTemplate": {"description": "Field label for DisguisedReminderConfig.randomizeTemplateOrder."},
+  "@eventDefaultsReminderRandomTemplate": {
+    "description": "Field label for DisguisedReminderConfig.randomizeTemplateOrder."
+  },
   "eventDefaultsReminderResetOnEarly": "Reset on early check-in",
-  "@eventDefaultsReminderResetOnEarly": {"description": "Field label for DisguisedReminderConfig.resetOnEarlyCheckIn."},
+  "@eventDefaultsReminderResetOnEarly": {
+    "description": "Field label for DisguisedReminderConfig.resetOnEarlyCheckIn."
+  },
   "eventDefaultsCountdownStyle": "Countdown style",
-  "@eventDefaultsCountdownStyle": {"description": "Field label for CountdownWarningConfig.style."},
+  "@eventDefaultsCountdownStyle": {
+    "description": "Field label for CountdownWarningConfig.style."
+  },
   "eventDefaultsCountdownVibrate": "Vibrate",
-  "@eventDefaultsCountdownVibrate": {"description": "Field label for CountdownWarningConfig.vibrate."},
+  "@eventDefaultsCountdownVibrate": {
+    "description": "Field label for CountdownWarningConfig.vibrate."
+  },
   "eventDefaultsCountdownSound": "Sound",
-  "@eventDefaultsCountdownSound": {"description": "Field label for CountdownWarningConfig.sound."},
+  "@eventDefaultsCountdownSound": {
+    "description": "Field label for CountdownWarningConfig.sound."
+  },
   "eventDefaultsFakeCallStyle": "Call style",
-  "@eventDefaultsFakeCallStyle": {"description": "Field label for FakeCallConfig.callStyle."},
+  "@eventDefaultsFakeCallStyle": {
+    "description": "Field label for FakeCallConfig.callStyle."
+  },
   "eventDefaultsFakeCallCallerName": "Caller name",
-  "@eventDefaultsFakeCallCallerName": {"description": "Field label for FakeCallConfig.callerName."},
+  "@eventDefaultsFakeCallCallerName": {
+    "description": "Field label for FakeCallConfig.callerName."
+  },
   "eventDefaultsFakeCallRingDuration": "Ring duration (s)",
-  "@eventDefaultsFakeCallRingDuration": {"description": "Field label for FakeCallConfig.ringDurationSeconds (5–120)."},
+  "@eventDefaultsFakeCallRingDuration": {
+    "description": "Field label for FakeCallConfig.ringDurationSeconds (5–120)."
+  },
   "eventDefaultsFakeCallDeclineIsSafe": "Decline counts as safe",
-  "@eventDefaultsFakeCallDeclineIsSafe": {"description": "Field label for FakeCallConfig.declineIsSafe."},
+  "@eventDefaultsFakeCallDeclineIsSafe": {
+    "description": "Field label for FakeCallConfig.declineIsSafe."
+  },
   "eventDefaultsFakeCallVoiceOutput": "Voice output",
-  "@eventDefaultsFakeCallVoiceOutput": {"description": "Field label for FakeCallConfig.voiceOutputMode."},
+  "@eventDefaultsFakeCallVoiceOutput": {
+    "description": "Field label for FakeCallConfig.voiceOutputMode."
+  },
   "eventDefaultsSmsChannel": "Channel",
-  "@eventDefaultsSmsChannel": {"description": "Field label for SmsContactConfig.channel."},
+  "@eventDefaultsSmsChannel": {
+    "description": "Field label for SmsContactConfig.channel."
+  },
   "eventDefaultsSmsIncludeLocation": "Include location",
-  "@eventDefaultsSmsIncludeLocation": {"description": "Field label for SmsContactConfig.includeLocation."},
+  "@eventDefaultsSmsIncludeLocation": {
+    "description": "Field label for SmsContactConfig.includeLocation."
+  },
   "eventDefaultsSmsIncludeMedical": "Include medical info",
-  "@eventDefaultsSmsIncludeMedical": {"description": "Field label for SmsContactConfig.includeMedicalInfo."},
+  "@eventDefaultsSmsIncludeMedical": {
+    "description": "Field label for SmsContactConfig.includeMedicalInfo."
+  },
   "eventDefaultsSmsAutoRecord": "Record audio before sending",
-  "@eventDefaultsSmsAutoRecord": {"description": "Field label for SmsContactConfig.autoRecordAudio."},
+  "@eventDefaultsSmsAutoRecord": {
+    "description": "Field label for SmsContactConfig.autoRecordAudio."
+  },
   "eventDefaultsSmsRecordDuration": "Recording duration (s)",
-  "@eventDefaultsSmsRecordDuration": {"description": "Field label for SmsContactConfig.recordDurationSeconds."},
+  "@eventDefaultsSmsRecordDuration": {
+    "description": "Field label for SmsContactConfig.recordDurationSeconds."
+  },
   "eventDefaultsLoudAlarmVolume": "Volume",
-  "@eventDefaultsLoudAlarmVolume": {"description": "Field label for LoudAlarmConfig.volume (0.0–1.0)."},
+  "@eventDefaultsLoudAlarmVolume": {
+    "description": "Field label for LoudAlarmConfig.volume (0.0–1.0)."
+  },
   "eventDefaultsLoudAlarmSound": "Sound",
-  "@eventDefaultsLoudAlarmSound": {"description": "Field label for LoudAlarmConfig.soundChoice."},
+  "@eventDefaultsLoudAlarmSound": {
+    "description": "Field label for LoudAlarmConfig.soundChoice."
+  },
   "eventDefaultsLoudAlarmFlashScreen": "Flash screen",
-  "@eventDefaultsLoudAlarmFlashScreen": {"description": "Field label for LoudAlarmConfig.flashScreen."},
+  "@eventDefaultsLoudAlarmFlashScreen": {
+    "description": "Field label for LoudAlarmConfig.flashScreen."
+  },
   "eventDefaultsLoudAlarmFlashLight": "Flash camera light",
-  "@eventDefaultsLoudAlarmFlashLight": {"description": "Field label for LoudAlarmConfig.flashLight."},
+  "@eventDefaultsLoudAlarmFlashLight": {
+    "description": "Field label for LoudAlarmConfig.flashLight."
+  },
   "eventDefaultsLoudAlarmGradual": "Gradual volume ramp",
-  "@eventDefaultsLoudAlarmGradual": {"description": "Field label for LoudAlarmConfig.gradualVolume."},
+  "@eventDefaultsLoudAlarmGradual": {
+    "description": "Field label for LoudAlarmConfig.gradualVolume."
+  },
   "eventDefaultsCallEmergencyNumber": "Emergency number (override)",
-  "@eventDefaultsCallEmergencyNumber": {"description": "Field label for CallEmergencyConfig.emergencyNumber (null = inherit)."},
+  "@eventDefaultsCallEmergencyNumber": {
+    "description": "Field label for CallEmergencyConfig.emergencyNumber (null = inherit)."
+  },
   "eventDefaultsCallEmergencyConfirm": "Show confirmation countdown",
-  "@eventDefaultsCallEmergencyConfirm": {"description": "Field label for CallEmergencyConfig.showConfirmation."},
+  "@eventDefaultsCallEmergencyConfirm": {
+    "description": "Field label for CallEmergencyConfig.showConfirmation."
+  },
   "eventDefaultsCallEmergencyConfirmDuration": "Confirmation seconds",
-  "@eventDefaultsCallEmergencyConfirmDuration": {"description": "Field label for CallEmergencyConfig.confirmationDurationSeconds."},
+  "@eventDefaultsCallEmergencyConfirmDuration": {
+    "description": "Field label for CallEmergencyConfig.confirmationDurationSeconds."
+  },
   "eventDefaultsCallEmergencySmsFirst": "Send location SMS first",
-  "@eventDefaultsCallEmergencySmsFirst": {"description": "Field label for CallEmergencyConfig.sendLocationSmsFirst."},
+  "@eventDefaultsCallEmergencySmsFirst": {
+    "description": "Field label for CallEmergencyConfig.sendLocationSmsFirst."
+  },
   "eventDefaultsPhonePrimaryContact": "Primary contact (id)",
-  "@eventDefaultsPhonePrimaryContact": {"description": "Field label for PhoneCallContactConfig.contactId (null = first sorted)."},
+  "@eventDefaultsPhonePrimaryContact": {
+    "description": "Field label for PhoneCallContactConfig.contactId (null = first sorted)."
+  },
   "eventDefaultsHardwareButton": "Button",
-  "@eventDefaultsHardwareButton": {"description": "Field label for HardwareButtonConfig.buttonType."},
+  "@eventDefaultsHardwareButton": {
+    "description": "Field label for HardwareButtonConfig.buttonType."
+  },
   "eventDefaultsHardwarePattern": "Press pattern",
-  "@eventDefaultsHardwarePattern": {"description": "Field label for HardwareButtonConfig.pressPattern."},
+  "@eventDefaultsHardwarePattern": {
+    "description": "Field label for HardwareButtonConfig.pressPattern."
+  },
   "eventDefaultsHardwarePressCount": "Press count",
-  "@eventDefaultsHardwarePressCount": {"description": "Field label for HardwareButtonConfig.pressCount (repeat-press only)."},
+  "@eventDefaultsHardwarePressCount": {
+    "description": "Field label for HardwareButtonConfig.pressCount (repeat-press only)."
+  },
   "eventDefaultsHardwareLongDuration": "Long-press duration (s)",
-  "@eventDefaultsHardwareLongDuration": {"description": "Field label for HardwareButtonConfig.longPressDurationSeconds (long-press only)."},
-
+  "@eventDefaultsHardwareLongDuration": {
+    "description": "Field label for HardwareButtonConfig.longPressDurationSeconds (long-press only)."
+  },
   "pastEventsTrashTitle": "Trash",
-  "@pastEventsTrashTitle": {"description": "Title of the past-events trash screen."},
+  "@pastEventsTrashTitle": {
+    "description": "Title of the past-events trash screen."
+  },
   "pastEventsTrashEmpty": "Trash is empty",
-  "@pastEventsTrashEmpty": {"description": "Empty-state copy for the past-events trash screen."},
+  "@pastEventsTrashEmpty": {
+    "description": "Empty-state copy for the past-events trash screen."
+  },
   "pastEventsTrashEmptyAll": "Empty trash",
-  "@pastEventsTrashEmptyAll": {"description": "Overflow menu action to delete every trashed log."},
+  "@pastEventsTrashEmptyAll": {
+    "description": "Overflow menu action to delete every trashed log."
+  },
   "pastEventsTrashEmptyAllConfirmTitle": "Empty trash?",
-  "@pastEventsTrashEmptyAllConfirmTitle": {"description": "Empty-trash confirm dialog title."},
+  "@pastEventsTrashEmptyAllConfirmTitle": {
+    "description": "Empty-trash confirm dialog title."
+  },
   "pastEventsTrashEmptyAllConfirmBody": "Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.",
-  "@pastEventsTrashEmptyAllConfirmBody": {"description": "Empty-trash confirm dialog body."},
+  "@pastEventsTrashEmptyAllConfirmBody": {
+    "description": "Empty-trash confirm dialog body."
+  },
   "pastEventsTrashEmptyAllSuccess": "Trash emptied ({count} logs)",
-  "@pastEventsTrashEmptyAllSuccess": {"description": "Snackbar after empty-trash.", "placeholders": {"count": {}}},
+  "@pastEventsTrashEmptyAllSuccess": {
+    "description": "Snackbar after empty-trash.",
+    "placeholders": {
+      "count": {}
+    }
+  },
   "pastEventsTrashRetentionNote": "Logs in the trash are permanently deleted after {days} days.",
-  "@pastEventsTrashRetentionNote": {"description": "Retention note shown at the top of the trash screen.", "placeholders": {"days": {"type": "int"}}},
+  "@pastEventsTrashRetentionNote": {
+    "description": "Retention note shown at the top of the trash screen.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "pastEventsTrashRemainingDays": "{days} day(s) until permanent deletion",
-  "@pastEventsTrashRemainingDays": {"description": "Per-row remaining-restore countdown.", "placeholders": {"days": {"type": "int"}}},
+  "@pastEventsTrashRemainingDays": {
+    "description": "Per-row remaining-restore countdown.",
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
   "pastEventsTrashDeletePermanently": "Delete permanently",
-  "@pastEventsTrashDeletePermanently": {"description": "Per-row Delete Permanently action / confirm-dialog title on the trash screen."},
+  "@pastEventsTrashDeletePermanently": {
+    "description": "Per-row Delete Permanently action / confirm-dialog title on the trash screen."
+  },
   "pastEventsTrashDeletePermanentlyBody": "This action cannot be undone.",
-  "@pastEventsTrashDeletePermanentlyBody": {"description": "Confirm-dialog body for permanent deletion from the trash screen."},
+  "@pastEventsTrashDeletePermanentlyBody": {
+    "description": "Confirm-dialog body for permanent deletion from the trash screen."
+  },
   "sessionEmergencyConfirmTitle": "Calling {number} in {seconds}s",
-  "@sessionEmergencyConfirmTitle": {"description": "Headline of the pre-dial emergency-confirmation overlay shown during the duration phase of a callEmergency step. Spec 02:457-460.", "placeholders": {"number": {"type": "String"}, "seconds": {"type": "int"}}},
+  "@sessionEmergencyConfirmTitle": {
+    "description": "Headline of the pre-dial emergency-confirmation overlay shown during the duration phase of a callEmergency step. Spec 02:457-460.",
+    "placeholders": {
+      "number": {
+        "type": "String"
+      },
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
   "sessionEmergencyConfirmSwipe": "Swipe to cancel",
-  "@sessionEmergencyConfirmSwipe": {"description": "Label rendered along the SwipeSlider on the emergency-confirmation overlay (Extra 56)."},
+  "@sessionEmergencyConfirmSwipe": {
+    "description": "Label rendered along the SwipeSlider on the emergency-confirmation overlay (Extra 56)."
+  },
   "sessionEmergencyConfirmKeep": "Keep calling",
-  "@sessionEmergencyConfirmKeep": {"description": "FilledButton on the emergency-confirmation overlay that dismisses the overlay so the dial proceeds (spec 02:460)."},
+  "@sessionEmergencyConfirmKeep": {
+    "description": "FilledButton on the emergency-confirmation overlay that dismisses the overlay so the dial proceeds (spec 02:460)."
+  },
   "sessionEmergencyConfirmSimBadge": "[SIM] Practice mode",
-  "@sessionEmergencyConfirmSimBadge": {"description": "Orange [SIM] badge atop the emergency-confirmation overlay when the session is a simulation."},
+  "@sessionEmergencyConfirmSimBadge": {
+    "description": "Orange [SIM] badge atop the emergency-confirmation overlay when the session is a simulation."
+  },
   "sessionEmergencyConfirmSimCancelled": "Simulated cancel — call would not have been placed",
-  "@sessionEmergencyConfirmSimCancelled": {"description": "Snackbar shown after the user swipes-to-cancel inside a simulated emergency-confirmation overlay; no real call ever happens in simulation."},
+  "@sessionEmergencyConfirmSimCancelled": {
+    "description": "Snackbar shown after the user swipes-to-cancel inside a simulated emergency-confirmation overlay; no real call ever happens in simulation."
+  },
   "swipeSliderSemantics": "Swipe to confirm",
-  "@swipeSliderSemantics": {"description": "Default screen-reader hint for SwipeSlider — read aloud after the slider's caller-supplied label."}
+  "@swipeSliderSemantics": {
+    "description": "Default screen-reader hint for SwipeSlider — read aloud after the slider's caller-supplied label."
+  }
 }

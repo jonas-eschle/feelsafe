@@ -5,50 +5,25 @@
   "commonCancel": "取消",
   "commonDelete": "删除",
   "commonEdit": "编辑",
-  "commonAdd": "添加",
   "commonClose": "关闭",
   "commonConfirm": "确认",
   "commonBack": "返回",
-  "commonDone": "完成",
-  "commonRetry": "重试",
-  "commonYes": "是",
-  "commonNo": "否",
-  "commonEnabled": "已启用",
-  "commonDisabled": "已禁用",
-  "commonNone": "无",
-  "commonSeconds": "秒",
-  "commonMinutes": "分钟",
-  "cancel": "取消",
   "homeTitle": "Guardian Angela",
   "homeStartSession": "开始会话",
   "homeSimulate": "模拟",
-  "homeActiveSession": "活动会话",
-  "homeResumeSession": "继续",
   "homeNoModes": "尚无模式。点击“模式”添加一个。",
-  "homeNoContacts": "尚无紧急联系人。点击“联系人”添加一个。",
   "homeMenuSettings": "设置",
   "homeMenuContacts": "联系人",
-  "homeMenuModes": "模式",
   "homeMenuHistory": "历史会话",
-  "homeSelectMode": "选择模式",
-  "onboardingWelcomeTitle": "欢迎使用 Guardian Angela",
-  "onboardingWelcomeBody": "一位守护您回家路上的伙伴。无论您步行、跑步还是出行，Guardian Angela 都会时刻守护着您，并可在您需要帮助时通知您选定的联系人。",
   "onboardingProfileTitle": "个人资料和首位联系人",
-  "onboardingProfileBody": "请告诉我们一些您的信息，以便在紧急情况下，Guardian Angela 能够提供有用的详情。然后，请添加一位可信赖的联系人。",
   "onboardingPermissionsTitle": "权限",
-  "onboardingPermissionsBody": "Guardian Angela 需要一些权限才能保护您的安全。您可现在授权，或稍后在“设置”中授权。",
   "onboardingNext": "下一步",
   "onboardingSkip": "跳过",
-  "onboardingFinish": "完成",
   "sessionTitle": "会话",
   "sessionDisarm": "我安全",
-  "sessionPause": "暂停",
-  "sessionResume": "继续",
   "sessionHoldPrompt": "按住以保持安全",
-  "sessionHoldSemantic": "按住按钮。松开将开始宽限期。",
   "sessionStepLabel": "第 {index} 步，共 {total} 步",
   "sessionMissCount": "错过次数：{count}",
-  "sessionRemaining": "剩余 {seconds} 秒",
   "sessionPausedBadge": "已暂停",
   "sessionPhaseEnded": "会话已结束",
   "sessionSimulationBanner": "模拟",
@@ -59,8 +34,6 @@
   "simulationSummaryEmpty": "本次模拟未触发任何步骤。",
   "simulationSummaryReturn": "返回主页",
   "fakeCallTitle": "来电",
-  "fakeCallAnswer": "接听",
-  "fakeCallDecline": "拒接",
   "fakeCallHangUp": "挂断",
   "contactsTitle": "紧急联系人",
   "contactsEmpty": "尚无联系人。添加一位以接收您的求救信息。",
@@ -78,123 +51,23 @@
   "contactChannelPhone": "电话呼叫",
   "contactDeleteConfirm": "删除联系人？",
   "contactDeleteBody": "{name} 将从您的紧急联系人列表中移除。",
-  "contactRequiredError": "姓名和电话号码为必填项。",
   "modesTitle": "模式",
   "modesEmpty": "尚无模式。点击“添加”创建一个模式。",
   "modesAdd": "添加模式",
-  "modesNewPickerTitle": "起始方式",
   "modesNewPickerBlank": "空白模式",
   "modesNewPickerBlankSubtitle": "从一个空的链开始",
   "modesNewPickerFromTemplate": "基于“{name}”",
   "modesNewPickerFromTemplateSubtitle": "复制此模式的链和触发器",
-  "modesNewPickerCopyName": "“{name}”的副本",
-  "modesNewPickerBuiltinBadge": "内置",
   "modeEditorTitleCreate": "新建模式",
   "modeEditorTitleEdit": "编辑模式",
   "modeFieldName": "名称",
-  "modeFieldDistressMode": "求救模式",
-  "modeFieldDistressModeDefault": "使用默认",
   "modeChainHeader": "链",
   "modeChainAddStep": "添加步骤",
-  "modeChainEmpty": "尚无步骤。点击“添加步骤”。",
-  "modeTrackingHeader": "GPS 追踪",
-  "modeTrackingEnabled": "会话期间记录 GPS",
-  "modeTrackingIntervalLabel": "采样间隔",
-  "modeTrackingBufferSizeLabel": "缓冲区大小",
-  "modeTrackingBufferSizeValue": "{count} 个点",
-  "modeTrackingBatteryNote": "频繁的 GPS 追踪会增加电池消耗。",
-  "stepTypeHoldButton": "按住按钮",
-  "stepTypeDisguisedReminder": "伪装提醒",
-  "stepTypeCountdownWarning": "倒计时警告",
-  "stepTypeFakeCall": "伪装来电",
-  "stepTypeSmsContact": "短信联系人",
-  "stepTypePhoneCallContact": "电话联系人",
-  "stepTypeLoudAlarm": "响亮警报",
-  "stepTypeCallEmergency": "呼叫紧急电话",
-  "stepTypeHardwareButton": "硬件按键",
-  "stepFieldDuration": "持续时间（秒）",
-  "stepFieldGrace": "宽限期（秒）",
-  "stepFieldWait": "等待（秒）",
-  "stepFieldRetryCount": "重试次数",
-  "stepFieldRandomize": "时间抖动",
-  "stepFieldRandomizeToggle": "随机化时间（±20%）",
-  "stepFieldWaitTooltip": "此步骤开始前等待多长时间。",
-  "stepFieldDurationTooltip": "此步骤在宽限期开始前活跃多长时间。",
-  "stepFieldGraceTooltip": "在下一步骤启动前确认安全的活动阶段后时间。",
-  "stepFieldRetryCountTooltip": "升级前重复此步骤多少次。",
-  "stepFieldReminderIntervalTooltip": "在等待签到时伪装提醒触发的频率。",
-  "stepFieldReminderGraceTooltip": "提醒出现后用户确认安全的时间。",
-  "stepPreview": "在模拟中预览",
-  "stepPreviewFired": "已运行预览：{description}",
-  "stepPreviewTitle": "步骤预览",
-  "stepPreviewMissingParams": "缺少步骤或模式引用。",
-  "stepPreviewModeNotFound": "未找到该模式。",
-  "stepPreviewStepNotFound": "在该模式中未找到此步骤。",
-  "stepPreviewError": "预览失败：{error}",
-  "stepPreviewReplay": "重新播放",
-  "stepPreviewHoldButtonHint": "按住按钮以感受真实响应。",
-  "stepPreviewHoldButtonLabel": "按住",
-  "stepPreviewHoldButtonSemantic": "按住以预览",
-  "stepPreviewHoldButtonReleased": "已松开。会话现在将进入宽限窗口。",
-  "stepPreviewFakeCallHint": "将出现伪装来电界面。滑动接听或按住红色按钮以模拟求助。",
-  "stepConfigFakeCallCaller": "来电者姓名",
-  "stepConfigFakeCallDecline": "拒接视为撤防",
-  "stepConfigLoudAlarmFlash": "屏幕闪烁",
-  "stepConfigLoudAlarmVolume": "最大音量",
-  "stepConfigCountdownVibrate": "振动",
-  "stepConfigCountdownTone": "播放提示音",
-  "stepConfigSmsSelection": "收件人",
-  "stepConfigSmsAllContacts": "所有联系人",
-  "stepConfigSmsSpecific": "指定联系人",
-  "stepConfigSmsIncludeLocation": "包含位置信息",
-  "stepConfigSmsIncludeMedical": "包含医疗信息",
-  "stepConfigSmsAutoRecordAudio": "自动录音",
-  "stepConfigSmsAutoRecordVideo": "自动录像",
-  "stepConfigSmsRecordDuration": "录制时长",
-  "stepConfigHoldReleaseSensitivity": "松开灵敏度（秒）",
-  "stepConfigReminderInterval": "提醒间隔（秒）",
-  "stepConfigReminderTemplate": "模板",
-  "stepConfigHardwarePattern": "模式",
-  "stepConfigHardwarePressCount": "按压次数",
-  "stepConfigHardwarePressWindow": "按压间隔（毫秒）",
-  "stepConfigHardwareLongDuration": "长按时长（秒）",
-  "stepConfigHardwareButton": "按键",
-  "stepConfigHardwareButtonVolumeUp": "音量加",
-  "stepConfigHardwareButtonVolumeDown": "音量减",
-  "stepConfigHardwareButtonPower": "电源键",
-  "stepConfigHardwarePatternRepeat": "重复按压",
-  "stepConfigHardwarePatternLong": "长按",
-  "stepConfigEmergencyNumber": "覆盖紧急号码",
-  "stepConfigEmergencyConfirm": "拨打前确认",
-  "stepConfigPhonePreSms": "拨打前发送短信",
-  "distressModesTitle": "求救模式",
-  "distressModeInUseTitle": "求救模式正在使用中",
-  "distressModeInUseBody": "此求救模式仍绑定到：{modes}。请先将这些模式改绑到其他求救模式，再删除本模式。",
   "distressModesEmpty": "尚无求救模式。",
-  "distressModesAdd": "添加求救模式",
   "distressModeEditorTitleCreate": "新建求救模式",
   "distressModeEditorTitleEdit": "编辑求救模式",
-  "distressModeName": "求救模式名称",
-  "distressCountdown": "正在触发求救模式……",
-  "distressCountdownStealth": "请稍候……",
   "templatesTitle": "提醒模板",
   "templatesEmpty": "尚无模板。",
-  "templatesAdd": "添加模板",
-  "templateEditorTitleCreate": "新建模板",
-  "templateEditorTitleEdit": "编辑模板",
-  "templateFieldName": "编辑器名称",
-  "templateFieldTitle": "提醒标题",
-  "templateFieldBody": "提醒内容",
-  "templateFieldConfirmationType": "确认方式",
-  "templateFieldKeyword": "关键词",
-  "templateFieldButtonLabel": "按钮标签",
-  "templateFieldDisplayStyle": "显示样式",
-  "templateConfirmTapButton": "点击按钮",
-  "templateConfirmTapWord": "点击字词",
-  "templateConfirmSwipe": "滑动",
-  "templateConfirmDismiss": "忽略",
-  "templateDisplayFullscreen": "全屏",
-  "templateDisplaySubtle": "低调",
   "profileTitle": "个人资料",
   "profileFieldName": "姓名",
   "profileFieldAge": "年龄",
@@ -203,68 +76,15 @@
   "profileFieldBloodType": "血型",
   "profileFieldAllergies": "过敏史",
   "profileFieldMedications": "用药",
-  "profileFieldConditions": "病史",
-  "profileFieldInstructions": "紧急说明",
-  "profileAddItem": "添加项",
-  "settingsTitle": "设置",
-  "settingsSectionSecurity": "安全",
-  "settingsSectionStealth": "隐身",
-  "settingsSectionDefaults": "默认值",
-  "settingsSectionHistory": "历史记录",
-  "settingsSectionBackup": "备份",
-  "settingsSectionAbout": "关于",
-  "settingsSectionFeedback": "反馈",
-  "settingsSectionContacts": "联系人",
-  "settingsSectionModes": "模式",
-  "settingsSectionProfile": "个人资料",
-  "settingsSectionDistressModes": "求救模式",
-  "settingsSectionReminderTemplates": "提醒模板",
-  "settingsSectionBatteryAlert": "电量警报",
-  "settingsSectionEventDefaults": "步骤默认值",
-  "settingsSectionGpsLogging": "GPS 记录",
-  "settingsSectionNotifications": "通知",
-  "settingsSectionHistoryRetention": "历史保留",
-  "settingsSectionAppearance": "外观",
-  "settingsThemeMode": "主题",
   "settingsThemeLight": "浅色",
   "settingsThemeDark": "深色",
   "settingsThemeSystem": "跟随系统",
-  "settingsLanguage": "语言",
-  "settingsEmergencyNumber": "紧急电话号码",
-  "settingsAlarmDnd": "警报忽略勿扰模式",
-  "settingsLanguagePicker": "语言",
   "settingsEmergencyNumberLabel": "紧急号码",
-  "settingsEmergencyNumberHint": "例如 112",
-  "settingsEmergencyNumberSave": "保存",
   "settingsRedoOnboarding": "重新引导",
   "settingsRedoOnboardingConfirm": "重新开始引导？",
-  "settingsRedoOnboardingBody": "您当前的配置将保留。",
-  "settingsRedoOnboardingProceed": "重新开始",
-  "settingsAlarmGradualVolume": "渐进式报警音量",
-  "settingsAlarmGradualVolumeDuration": "渐增时长：{seconds} 秒",
-  "securityTitle": "安全",
-  "securityAppPin": "应用 PIN 码",
-  "securitySessionEndPin": "会话结束 PIN 码",
-  "securityDuressPin": "胁迫 PIN 码",
-  "securityPinTimeout": "PIN 码超时（秒）",
-  "securityDisablePin": "禁用",
   "securitySetPin": "设置 PIN 码",
   "securityChangePin": "更改 PIN 码",
-  "pinSetupTitle": "设置 PIN 码",
-  "pinSetupEnter": "输入新 PIN 码",
-  "pinSetupConfirm": "确认 PIN 码",
   "pinSetupMismatch": "两次输入的 PIN 码不一致，请重试。",
-  "pinEntryTitle": "输入 PIN 码",
-  "pinEntrySubtitle": "请输入您的 PIN 码以继续。",
-  "stealthTitle": "隐身",
-  "stealthEnable": "启用隐身",
-  "stealthFakeName": "伪装应用名称",
-  "stealthFakeIcon": "伪装图标",
-  "stealthNotificationDisguise": "伪装通知",
-  "stealthTimerDisplay": "在隐身模式下显示计时器",
-  "stealthSessionScreen": "隐藏会话界面品牌标识",
-  "stealthPickerTitle": "应用图标",
-  "stealthPickerIntro": "选择启动器中图标的外观。",
   "stealthPresetMusic": "音乐",
   "stealthPresetCalendar": "日历",
   "stealthPresetFitness": "健身",
@@ -273,102 +93,19 @@
   "stealthPresetPhotos": "照片",
   "stealthPresetNotes": "备忘录",
   "stealthPresetClock": "时钟",
-  "distressConfirmationTitle": "你处于危险中吗？",
-  "distressConfirmationCancel": "取消",
-  "distressConfirmationCountdown": "求救模式将在 {seconds} 秒后启动",
-  "imSafeSliderLabel": "滑动以确认“我安全”",
   "batteryAlertTitle": "电量警报",
-  "batteryAlertEnable": "启用电量警报",
-  "batteryAlertThreshold": "阈值：{percent}%",
   "eventDefaultsTitle": "步骤默认值",
-  "eventDefaultsBody": "这些默认值适用于任何未单独设置的步骤。",
-  "gpsLoggingTitle": "GPS 记录",
-  "gpsLoggingEnable": "启用 GPS 记录",
-  "gpsLoggingInterval": "采样间隔（秒）",
-  "gpsLoggingAccuracy": "精度",
-  "gpsAccuracyLow": "低",
-  "gpsAccuracyMedium": "中",
-  "gpsAccuracyHigh": "高",
-  "gpsLoggingIncludeSms": "在短信中附加位置",
-  "gpsLoggingHistoryDays": "历史保留（天）",
-  "notificationSettingsTitle": "通知",
-  "notificationSettingsBody": "Guardian Angela 使用通知来伪装和驱动提醒。",
   "historyRetentionTitle": "历史保留",
-  "historyRetentionBody": "Guardian Angela 保留历史会话日志的时长。",
-  "historyRetentionDays": "保留：{days} 天",
   "backupTitle": "备份",
-  "backupExport": "导出数据",
-  "backupImport": "导入数据",
-  "backupNotReady": "备份功能尚未可用，敬请期待。",
-  "backupPinOptional": "可选 PIN（加密备份包）",
-  "backupImportOk": "备份导入成功。",
-  "historyTitle": "历史会话",
-  "historyEmpty": "尚无历史会话。",
-  "historyDetailTitle": "会话详情",
-  "evidenceExportTitle": "导出证据",
-  "evidenceExportAsText": "复制为文本",
-  "evidenceExportAsJson": "复制为 JSON",
-  "evidenceCopied": "已复制到剪贴板。",
   "aboutTitle": "关于",
   "aboutVersion": "版本",
-  "aboutCredits": "为回家路上的人们倾心打造。",
   "feedbackTitle": "反馈",
-  "feedbackBody": "我们期待您的反馈。",
-  "feedbackFieldMessage": "留言",
   "feedbackSend": "打开邮箱",
-  "pickerNoneLabel": "— 无 —",
-  "moreSettingsHeader": "更多设置",
-  "moreSettingsHeaderCustomized": "更多设置（已自定义 {count} 项）",
-  "stepConfigLogGpsLabel": "GPS 记录",
-  "stepConfigLogGpsDefault": "默认",
-  "stepConfigLogGpsOn": "开启",
-  "stepConfigLogGpsOff": "关闭",
-  "stepConfigLogGpsDefaultOn": "默认（开启）",
-  "stepConfigLogGpsDefaultOff": "默认（关闭）",
-  "modeFieldIcon": "图标",
-  "modeIconPickerTitle": "选择图标",
-  "modeIconClear": "无图标",
-  "modeDistressHeader": "求救触发器",
-  "modeDistressEmpty": "未配置求救触发器。",
-  "modeDistressAdd": "添加触发器",
-  "modeDistressTypeHardware": "硬件按键",
-  "modeDistressButtonType": "按键",
-  "modeDistressButtonVolumeUp": "音量上",
-  "modeDistressButtonVolumeDown": "音量下",
-  "modeDistressButtonPower": "电源",
-  "modeDistressPattern": "模式",
-  "modeDistressPatternRepeat": "重复按键",
-  "modeDistressPatternLong": "长按",
-  "modeDistressPressCount": "按键次数",
-  "modeDistressPressWindow": "窗口(毫秒)",
-  "modeDistressLongDuration": "按住时长(秒)",
-  "modeDistressSummaryRepeat": "{count}次 / {windowMs}毫秒",
-  "modeDistressSummaryLong": "按住{seconds}秒",
-  "modeOverridesHeader": "模式覆盖",
-  "modeOverridesUseDefault": "使用应用默认",
-  "modeOverridesGpsLabel": "GPS 记录",
-  "modeOverridesStealthLabel": "隐身",
-  "modeOverridesEventDefaultsLabel": "事件默认值",
-  "modeOverridesLocalTemplatesLabel": "本地提醒模板",
-  "modeOverridesGpsEnabled": "启用 GPS 记录",
-  "modeOverridesGpsIntervalLabel": "采样间隔(秒)",
-  "modeOverridesGpsIncludeInSms": "在短信中附加位置",
-  "modeOverridesStealthEnabled": "启用隐身",
-  "modeOverridesStealthFakeName": "伪装应用名称",
-  "modeOverridesEventDefaultsHint": "此模式启用了自定义事件默认值。",
-  "modeOverridesLocalTemplatesCount": "{count} 个本地模板",
   "modeUnsavedTitle": "放弃更改?",
   "modeUnsavedBody": "您有未保存的更改。放弃并离开编辑器?",
   "modeUnsavedDiscard": "放弃",
   "modeUnsavedKeep": "继续编辑",
-  "stepDuplicate": "复制步骤",
-  "stepTimingHeader": "时间",
   "stepTimingSummary": "等待 {wait}秒 / 时长 {duration}秒 / 宽限 {grace}秒",
-  "stepCategoryAll": "全部",
-  "stepPickerMore": "更多选项...",
-  "stepCategoryAction": "动作",
-  "stepCategoryReminder": "提醒",
-  "stepCategoryDisarm": "签到",
   "angelaDialogTitle": "已输入旧 PIN 码",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
@@ -389,33 +126,14 @@
   "@commonOk": {
     "description": "Generic confirm/OK action."
   },
-  "profileAngelaWarningTitle": "关于名称“Angela”的提示",
-  "@profileAngelaWarningTitle": {
-    "description": "Title shown when the user tries to save a profile name containing 'Angela'."
-  },
-  "profileAngelaWarningBody": "Guardian Angela 将“Angela”用作安全关键词。把它作为您自己的姓名可能会造成混淆。仍要保存吗？",
-  "@profileAngelaWarningBody": {
-    "description": "Body of the Angela-name warning dialog."
-  },
   "pinSubmit": "提交",
   "@pinSubmit": {
     "description": "Submit button used by the launch-gate PIN entry."
   },
-  "homeStartConfirmTitle": "开始一次会话？",
-  "@homeStartConfirmTitle": {
-    "description": "Title for the start-session confirmation dialog."
-  },
-  "homeStartConfirmBody": "请确认您的联系人和 PIN 码已配置。会话将在前台运行，所选模式将引导签到。",
-  "homePermissionsMissingTitle": "缺少某些权限",
-  "homePermissionsMissingBody": "未授予以下权限。没有它们，相应的链步骤将静默失败：",
-  "homePermissionsContinueAnyway": "仍然启动",
   "homePermissionsNotification": "通知",
   "homePermissionsLocation": "位置",
   "homePermissionsCallPhone": "电话呼叫",
   "homePermissionsSendSms": "发送短信",
-  "@homeStartConfirmBody": {
-    "description": "Body for the start-session confirmation dialog."
-  },
   "homeContactsBannerNone": "尚未配置紧急联系人。",
   "@homeContactsBannerNone": {
     "description": "Banner shown when zero contacts are configured."
@@ -423,38 +141,6 @@
   "sessionCheckIn": "我已签到",
   "@sessionCheckIn": {
     "description": "In-app button shown during a disguisedReminder step (Q6, Date Mode). Tapping resets the chain to step 0 without ending the session."
-  },
-  "sessionDisarmTriggerTitle": "解除触发器已触发",
-  "@sessionDisarmTriggerTitle": {
-    "description": "Title of the disarm-trigger confirmation dialog (GPS arrival / timer)."
-  },
-  "sessionDisarmTriggerBody": "解除触发器已触发。结束会话吗？",
-  "@sessionDisarmTriggerBody": {
-    "description": "Body of the disarm-trigger confirmation dialog."
-  },
-  "sessionDisarmTriggerConfirm": "结束会话",
-  "@sessionDisarmTriggerConfirm": {
-    "description": "Confirm button on the disarm-trigger dialog."
-  },
-  "sessionDisarmTriggerCancel": "继续",
-  "@sessionDisarmTriggerCancel": {
-    "description": "Cancel button on the disarm-trigger dialog."
-  },
-  "wrongPinAngelaTitle": "Angela 的旧 PIN 码",
-  "@wrongPinAngelaTitle": {
-    "description": "Title of the deceptive dialog shown after the wrong-PIN threshold is reached. 'Angela' is a deliberate safety keyword per spec 06 and MUST be kept in translations."
-  },
-  "wrongPinAngelaBody": "确定要使用此旧 PIN 码继续吗？",
-  "@wrongPinAngelaBody": {
-    "description": "Body of the deceptive wrong-PIN dialog."
-  },
-  "wrongPinAngelaConfirm": "确定",
-  "@wrongPinAngelaConfirm": {
-    "description": "Primary button on the deceptive wrong-PIN dialog."
-  },
-  "wrongPinAngelaCancel": "取消",
-  "@wrongPinAngelaCancel": {
-    "description": "Secondary button on the deceptive wrong-PIN dialog."
   },
   "sessionStepCountdownTitle": "警告",
   "@sessionStepCountdownTitle": {
@@ -476,29 +162,9 @@
   "@sessionStepSmsStatus": {
     "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."
   },
-  "sessionStepSmsDelivered": "已送达",
-  "@sessionStepSmsDelivered": {
-    "description": "Per-message status label shown when the messaging service reports the message was delivered."
-  },
-  "sessionStepSmsSent": "已发送",
-  "@sessionStepSmsSent": {
-    "description": "Per-message status label shown when the messaging service reports the message was sent (but not yet acknowledged as delivered)."
-  },
-  "sessionStepSmsQueued": "排队中",
-  "@sessionStepSmsQueued": {
-    "description": "Per-message status label shown while a message is queued for delivery."
-  },
-  "sessionStepSmsFailed": "失败",
-  "@sessionStepSmsFailed": {
-    "description": "Per-message status label shown when the messaging service reports a delivery failure."
-  },
   "sessionStepPhoneCallStatus": "正在呼叫紧急联系人……",
   "@sessionStepPhoneCallStatus": {
     "description": "Status text shown during a phoneCallContact step while the contact is being called."
-  },
-  "sessionStepPhoneCallCancel": "取消通话",
-  "@sessionStepPhoneCallCancel": {
-    "description": "Button shown during a phoneCallContact step that cancels the in-flight call (disarms the session)."
   },
   "sessionStepLoudAlarmTitle": "警报响起中",
   "@sessionStepLoudAlarmTitle": {
@@ -588,33 +254,9 @@
   "@contactLanguageDefault": {
     "description": "Default option in the per-contact language dropdown."
   },
-  "stepTypePickerLabel": "步骤类型",
-  "@stepTypePickerLabel": {
-    "description": "Label for the step-type dropdown in the mode editor."
-  },
-  "securityAppPinBiometric": "为应用 PIN 码启用生物识别",
-  "@securityAppPinBiometric": {
-    "description": "Toggle: enable biometric prompt before App PIN keypad."
-  },
   "securitySessionEndPinBiometric": "为会话结束 PIN 码启用生物识别",
   "@securitySessionEndPinBiometric": {
     "description": "Toggle: enable biometric prompt before session-end PIN."
-  },
-  "securityDistressCancelBiometric": "使用生物识别取消求救",
-  "@securityDistressCancelBiometric": {
-    "description": "Toggle: biometric path for distress-trigger cancel."
-  },
-  "securityDuressTest": "测试胁迫 PIN 码",
-  "@securityDuressTest": {
-    "description": "Row that opens a keypad to verify the duress PIN was entered correctly."
-  },
-  "securityDuressTestSubtitle": "验证您的胁迫 PIN 码是否正常。",
-  "@securityDuressTestSubtitle": {
-    "description": "Subtitle for the duress-test row."
-  },
-  "pinEntryBiometricReason": "请验证身份以继续",
-  "@pinEntryBiometricReason": {
-    "description": "Prompt shown to the user by the OS biometric sheet when the PIN dialog opens with a biometric service."
   },
   "stealthTimerDisplayNormal": "显示完整文字",
   "@stealthTimerDisplayNormal": {
@@ -628,187 +270,6 @@
   "@stealthTimerDisplayNone": {
     "description": "Stealth timer hidden option."
   },
-  "backupSelectionHeader": "包含在导出中",
-  "@backupSelectionHeader": {
-    "description": "Section header above the per-element backup toggles."
-  },
-  "backupToggleSettings": "设置",
-  "@backupToggleSettings": {
-    "description": "Always-on toggle showing that settings are always exported."
-  },
-  "backupToggleSettingsSubtitle": "始终包含，以便备份可恢复。",
-  "@backupToggleSettingsSubtitle": {
-    "description": "Explanation under the disabled Settings toggle."
-  },
-  "backupToggleContacts": "紧急联系人",
-  "@backupToggleContacts": {
-    "description": "Toggle to include contacts in the export."
-  },
-  "backupToggleModes": "模式",
-  "@backupToggleModes": {
-    "description": "Toggle to include user-facing modes in the export."
-  },
-  "backupToggleDistressModes": "求救模式",
-  "@backupToggleDistressModes": {
-    "description": "Toggle to include distress-flagged modes in the export."
-  },
-  "backupToggleTemplates": "提醒模板",
-  "@backupToggleTemplates": {
-    "description": "Toggle to include reminder templates in the export."
-  },
-  "backupToggleSessionLogs": "会话历史",
-  "@backupToggleSessionLogs": {
-    "description": "Toggle to include session logs in the export."
-  },
-  "backupToggleRecordings": "录音文件",
-  "@backupToggleRecordings": {
-    "description": "Toggle to include audio-evidence recordings in the export."
-  },
-  "historySearchHint": "按模式名称搜索",
-  "@historySearchHint": {
-    "description": "Hint text for the history search field."
-  },
-  "historyFilterModeAll": "全部模式",
-  "@historyFilterModeAll": {
-    "description": "Mode filter dropdown — all option."
-  },
-  "historyFilterModeLabel": "模式",
-  "@historyFilterModeLabel": {
-    "description": "Mode filter dropdown label."
-  },
-  "historyDateRangePick": "日期范围",
-  "@historyDateRangePick": {
-    "description": "Button label that opens the date-range picker."
-  },
-  "emergencyConfirmTitle": "正在拨打 {number}",
-  "@emergencyConfirmTitle": {
-    "description": "Title of the emergency-confirm pre-dial screen.",
-    "placeholders": {
-      "number": {}
-    }
-  },
-  "emergencyConfirmSubtitle": "按住取消按钮以中止。",
-  "@emergencyConfirmSubtitle": {
-    "description": "Subtitle of the emergency-confirm pre-dial screen."
-  },
-  "emergencyConfirmCountdown": "{seconds} 秒后拨打",
-  "@emergencyConfirmCountdown": {
-    "description": "Countdown line on the pre-dial screen.",
-    "placeholders": {
-      "seconds": {}
-    }
-  },
-  "emergencyConfirmCancel": "取消",
-  "@emergencyConfirmCancel": {
-    "description": "Cancel button on the pre-dial screen."
-  },
-  "stealthCalendarUpcoming": "即将到来",
-  "@stealthCalendarUpcoming": {
-    "description": "Header in the calendar stealth UI."
-  },
-  "stealthCalendarUpcomingEvent": "会议",
-  "@stealthCalendarUpcomingEvent": {
-    "description": "Stealth calendar event title placeholder."
-  },
-  "stealthCalendarUntilEvent": "{minutes} 分钟后",
-  "@stealthCalendarUntilEvent": {
-    "description": "Stealth calendar countdown.",
-    "placeholders": {
-      "minutes": {}
-    }
-  },
-  "stealthCalendarToday": "今天",
-  "@stealthCalendarToday": {
-    "description": "Today header in the stealth calendar."
-  },
-  "stealthCalendarEvent1": "与 Alex 喝咖啡",
-  "@stealthCalendarEvent1": {
-    "description": "Stealth calendar mock event."
-  },
-  "stealthCalendarEvent2": "站会",
-  "@stealthCalendarEvent2": {
-    "description": "Stealth calendar mock event."
-  },
-  "stealthCalendarEvent3": "午餐",
-  "@stealthCalendarEvent3": {
-    "description": "Stealth calendar mock event."
-  },
-  "stealthCalendarEvent4": "健身",
-  "@stealthCalendarEvent4": {
-    "description": "Stealth calendar mock event."
-  },
-  "stealthCalendarEvent5": "与 Sam 共进晚餐",
-  "@stealthCalendarEvent5": {
-    "description": "Stealth calendar mock event."
-  },
-  "stealthDisarmGestureHint": "向上滑动以结束",
-  "@stealthDisarmGestureHint": {
-    "description": "Hint shown on stealth screens for the disarm gesture."
-  },
-  "stealthMusicTrackTitle": "未命名曲目",
-  "@stealthMusicTrackTitle": {
-    "description": "Default track title on the stealth music screen."
-  },
-  "stealthMusicArtist": "未知艺术家",
-  "@stealthMusicArtist": {
-    "description": "Default artist on the stealth music screen."
-  },
-  "stealthMusicAlbum": "未知专辑",
-  "@stealthMusicAlbum": {
-    "description": "Default album on the stealth music screen."
-  },
-  "stealthMusicNowPlaying": "正在播放",
-  "@stealthMusicNowPlaying": {
-    "description": "Now-playing label on the stealth music screen."
-  },
-  "stealthMusicSwipeHint": "滑动以解除",
-  "@stealthMusicSwipeHint": {
-    "description": "Disarm-gesture hint on the stealth music screen."
-  },
-  "stealthMusicPrevious": "上一首",
-  "@stealthMusicPrevious": {
-    "description": "Previous-track button label."
-  },
-  "stealthMusicPause": "暂停",
-  "@stealthMusicPause": {
-    "description": "Pause button label."
-  },
-  "stealthMusicNext": "下一首",
-  "@stealthMusicNext": {
-    "description": "Next-track button label."
-  },
-  "stealthPodcastShowName": "播客",
-  "@stealthPodcastShowName": {
-    "description": "Podcast show name placeholder."
-  },
-  "stealthPodcastEpisodeTitle": "单集",
-  "@stealthPodcastEpisodeTitle": {
-    "description": "Podcast episode title placeholder."
-  },
-  "stealthPodcastEpisodesHeader": "单集列表",
-  "@stealthPodcastEpisodesHeader": {
-    "description": "Episodes-list header on the stealth podcast screen."
-  },
-  "stealthPodcastSpeedLabel": "1x",
-  "@stealthPodcastSpeedLabel": {
-    "description": "Speed-toggle label on the stealth podcast screen."
-  },
-  "stealthPodcastEpisode1": "第 1 集",
-  "@stealthPodcastEpisode1": {
-    "description": "Stealth podcast episode placeholder."
-  },
-  "stealthPodcastEpisode2": "第 2 集",
-  "@stealthPodcastEpisode2": {
-    "description": "Stealth podcast episode placeholder."
-  },
-  "stealthPodcastEpisode3": "第 3 集",
-  "@stealthPodcastEpisode3": {
-    "description": "Stealth podcast episode placeholder."
-  },
-  "stealthPodcastEpisode4": "第 4 集",
-  "@stealthPodcastEpisode4": {
-    "description": "Stealth podcast episode placeholder."
-  },
   "stealthPresetPodcast": "播客",
   "@stealthPresetPodcast": {
     "description": "Stealth preset name shown in the picker."
@@ -816,84 +277,5 @@
   "stealthPresetNone": "无",
   "@stealthPresetNone": {
     "description": "Stealth preset: no disguise (real session screen)."
-  },
-  "sessionSimSpeedLabel": "速度",
-  "@sessionSimSpeedLabel": {
-    "description": "Label of the simulation speed slider."
-  },
-  "sessionSimSpeedValue": "{value}x",
-  "@sessionSimSpeedValue": {
-    "description": "Simulation speed value display.",
-    "placeholders": {
-      "value": {}
-    }
-  },
-  "sessionSimSpeedBackgroundCap": "后台时上限为 60×",
-  "@sessionSimSpeedBackgroundCap": {
-    "description": "Indicator that simulation speed is capped at 60x while app is backgrounded."
-  },
-  "sessionSimAdvancedLabel": "高级",
-  "@sessionSimAdvancedLabel": {
-    "description": "Label of the advanced-controls toggle in simulation."
-  },
-  "sessionSimTriggerPanic": "触发求救",
-  "@sessionSimTriggerPanic": {
-    "description": "Simulation button — fires the distress chain."
-  },
-  "sessionSimTriggerArrival": "触发到达",
-  "@sessionSimTriggerArrival": {
-    "description": "Simulation button — fakes a GPS arrival event."
-  },
-  "sessionSimTriggerBattery": "触发低电量",
-  "@sessionSimTriggerBattery": {
-    "description": "Simulation button — fakes a low-battery event."
-  },
-  "simulateGpsArrival": "模拟到达",
-  "@simulateGpsArrival": {
-    "description": "Top-level simulate-arrival action."
-  },
-  "simulateLowBattery": "模拟低电量",
-  "@simulateLowBattery": {
-    "description": "Top-level simulate-low-battery action."
-  },
-  "launchGateTitle": "解锁 Guardian Angela",
-  "@launchGateTitle": {
-    "description": "Title of the Q14 launch-gate screen."
-  },
-  "launchGateSubtitle": "请输入 PIN 码或使用生物识别。",
-  "@launchGateSubtitle": {
-    "description": "Subtitle of the Q14 launch-gate screen."
-  },
-  "launchGateWrong": "PIN 码错误",
-  "@launchGateWrong": {
-    "description": "Error label on the Q14 launch-gate screen."
-  },
-  "launchGateBiometricReason": "解锁 Guardian Angela",
-  "@launchGateBiometricReason": {
-    "description": "Reason string for biometric prompt."
-  },
-  "launchGateUseBiometric": "使用生物识别",
-  "@launchGateUseBiometric": {
-    "description": "Button to fall back to biometric auth on the launch gate."
-  },
-  "historyTabReal": "真实",
-  "historyTabSimulated": "模拟",
-  "audioRunningLatePhrase": "你好，我要迟到了，我会尽快回电。",
-  "smsDefaultTemplate": "{name} 可能需要帮助。位置：{location}。时间：{time}。",
-  "smsDefaultPreCallTemplate": "{name} 正在尝试联系你。请等待来电。",
-  "simLoudAlarm": "[SIM] 响亮警报 + {tail}",
-  "simLoudAlarmTailFlash": "闪光",
-  "simLoudAlarmTailVibrate": "振动",
-  "simSmsContact": "[SIM] 将通过 {channel} 发送给 {count} 位联系人",
-  "simFakeCallRing": "[SIM] 来自 {caller} 的来电",
-  "simCountdownWarning": "[SIM] {seconds}秒倒计时警告",
-  "simPhoneCall": "[SIM] 将拨打 {name}",
-  "simNoContactToCall": "[SIM] 没有可拨打的联系人",
-  "simCallEmergency": "[SIM] 将拨打 {number}",
-  "simHardwareButton": "[SIM] 已启用硬件触发",
-  "simHoldButton": "[SIM] 等待按住按钮",
-  "simDisguisedReminder": "[SIM] 将显示\"{title}\"",
-  "simDisguisedReminderEmpty": "[SIM] 没有可用的提醒模板",
-  "simGpsArrivalTrigger": "[SIM] GPS 到达触发已激活",
-  "simLowBatteryAlert": "[SIM] 低电量警报已激活"
+  }
 }
