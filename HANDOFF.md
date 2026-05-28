@@ -1,10 +1,10 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-05-28 — **Phase 6 implementation + test cohort done; PM verifier returned FIX_REQUIRED.** 4 security-critical P0 defects + 3 lower-priority nits need to land before the architect/qa verifiers may run.
-**HEAD:** `cedaecf` (`phase-6-tests-goldens: alchemist golden tests for 6 visual-critical screens`).
-**Tests passing:** `3538/3538` (`flutter test --concurrency=6`).
+**Snapshot:** 2026-05-28 — **Phase 6 fix-pass C completed; ready for PM re-verify → architect → qa.** All 4 PM P0 defects + the P1 ARB sweep + the P3 nits are addressed. Next step is to re-run the PM verifier on this HEAD; if PASS, dispatch the architect + qa-expert verifiers in parallel.
+**HEAD:** `e77900e` (`phase-6-fix-c6: nits — main.dart present-tense comment + 6 home tests`).
+**Tests passing:** `3582/3582` (`flutter test --concurrency=6`).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
-**Branch:** `main`. **Not pushed.** **OLD/ is INERT** (restored once mid-Phase-6 after a lefthook accident — the agent had touched 200+ files; `git checkout HEAD -- OLD/` cleaned it).
+**Branch:** `main`. **Not pushed.** **OLD/ is INERT** (restored twice already; fix-pass-C agents did not touch it).
 
 ---
 
@@ -40,7 +40,8 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 | Phase 3 (Event Strategies + 9 protocols) | ✅ Done | 1581 | `f9bc996`–`03287d1` |
 | Phase 4 (Repositories + Drift schema + seed data) | ✅ Done | 1711 | `4969161`–`8cedc2c` |
 | Phase 5 (services + Sentry + wiring map) | ✅ Done — 3-agent cohort PASS | 2447 | `5b0bd02`..`36d30cf` (18 commits) |
-| **Phase 6 (screens + routing + R-42 + tests + goldens)** | ⚠️ **Implementation+tests done; PM verifier FIX_REQUIRED** | **3538** | `ee73b62`..`cedaecf` (30 commits) |
+| Phase 6 (screens + routing + R-42 + tests + goldens) | ✅ Implementation + tests + fix-pass-C done | 3538 | `ee73b62`..`cedaecf` (30 commits) |
+| **Phase 6 fix-pass C (PM-FIX_REQUIRED defects)** | ✅ **Implementation done; pending PM re-verify** | **3582** | `5bd1486`..`e77900e` (7 commits) |
 | Phase 7..11 | Pending |  |  |
 
 ---
@@ -92,6 +93,22 @@ After `/clear`, say "Continue from handoff.md" and start from §"Next actions". 
 
 ---
 
+## Phase 6 fix-pass C — landed (commits `5bd1486..e77900e`, 7 commits)
+
+- `5bd1486` phase-6-fix-c-prelude: HANDOFF.md update + leftover dart format / import_sorter output from after the goldens commit (cedaecf). Zero-functional change.
+- `5dc9b05` phase-6-fix-c1: SwipeSlider (`lib/core/widgets/swipe_slider.dart`, 70 % threshold) + EmergencyConfirmOverlay (`lib/features/session/widgets/emergency_confirm_overlay.dart`). The overlay replaces `_CallEmergencyStepUi` during the `duration` phase of a `callEmergency` step. Keep-calling dismisses locally; swipe-to-cancel ends the session (real) or shows a SnackBar (sim, no real call). +6 EN ARB keys. +18 tests.
+- `62fcc21` phase-6-fix-c2: session-end SwipeSlider + PIN gate + wrong-PIN distress. Replaced `_confirmEnd` with `EndSessionOverlay`, a two-stage widget (swipe-to-end → PIN keypad). PIN ladder: Duress > App-mismatch hint > Session End > wrong-PIN counter. Wrong PIN count fires distress at `wrongPinThreshold` (default 5) in real session; sim shows informational SnackBar. Deceptive dialog gated behind `appSettings.deceptivePinDialogEnabled`. Wrong-PIN counter lives on `SessionController` (in-memory, shared with C3). Existing canonical `EndReason.duressPin` and `EndReason.wrongPinExhausted` used. +10 EN ARB keys. +10 tests.
+- `be29430` phase-6-fix-c3: distress-cancel PIN gate with 15s timeout. Rewrote `_DistressConfirmationOverlay` as `ConsumerStatefulWidget` two-stage state machine (confirmation → pinPrompt). Tap Cancel: if Session End PIN configured, the 5-second distress countdown pauses (via new `controller.pauseDistressCountdown`/`resumeDistressCountdown`) while a 15-second PIN prompt opens. Same PIN ladder as C2. Timeout fires distress with new `EndReason.distressConfirmTimeout`. Exhaustive switches updated (1 production + 2 tests). +7 EN ARB keys. +11 tests.
+- `4525a76` phase-6-fix-c5: ARB orphan sweep — dropped 454 keys with no `l10n.<key>` reference in `lib/` or `test/`. Sweep was JSON-safe (python script preserving authoring order) across all 14 ARB files. EN: 1841 → 1005 entries. `flutter gen-l10n` regenerated the 14 `app_localizations*.dart` files.
+- `9ffa48e` phase-6-fix-c5-import-sort: post-commit import_sorter blank-line additions on the regenerated l10n .dart files. Zero functional change.
+- `e77900e` phase-6-fix-c6: nits — main.dart `:19`/`:163` "Phase 6 will replace..." → present-tense; +6 HomeScreen reference tests (19 → 25 to hit plan target). Validation-error dialog, clearValidationErrors, empty-contacts banner, 8-contact overflow, mode-chip selection follow-through, simulate-button enable.
+
+### Out-of-scope findings noted during fix-pass C
+
+- **`PinEntryScreen` / app-lock-on-launch does NOT exist.** Per spec 04:1900-1945 + 06:130 the App PIN is supposed to lock the app on open. There is no route, no screen, and no app-startup gate. PM verifier did not catch it. Not fixed in fix-pass C (out of scope). Architect should flag.
+- **`SettingsSecurityScreen._confirmClear` removes a PIN without verifying the existing PIN first** (`lib/features/settings_security/settings_security_screen.dart:204-231`). An attacker who can unlock the device can remove any configured PIN. Out of fix-pass C scope; flag for architect.
+- **Strategy dispatch (`controller -> strategy.executeReal`) is NOT WIRED.** The `EventStrategyRegistry` is only used by tests; no production code path calls a strategy. The engine fires phase timers but no SMS, no phone call, no alarm ever runs. Likely a Phase 7 (native channels) item; flag explicitly so it's not silently deferred.
+
 ## PM verifier output — 2026-05-28 (BLOCKING, must fix before architect runs)
 
 Verdict: **FIX_REQUIRED**. 12/14 checks PASS. Two FAILs and one INFO-coverage skipped.
@@ -114,9 +131,11 @@ Verdict: **FIX_REQUIRED**. 12/14 checks PASS. Two FAILs and one INFO-coverage sk
 
 ## Next actions (resume here)
 
-**Phase 6 fix-pass C — close PM P0 defects + P1 ARB sweep, then re-run PM → architect → qa.**
+**Phase 6 fix-pass C is done. Re-run PM verifier → architect → qa.**
 
-### Step 1 — Fix-Pass C agent (`voltagent-lang:flutter-expert`, opus model, sequential)
+### Step 1 — DONE (kept for reference)
+
+### Old Fix-Pass C plan (kept for reference)
 
 Scope and suggested commit chain:
 
