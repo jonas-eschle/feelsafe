@@ -100,6 +100,18 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     state = AsyncData(_copyWith(cur, deceptiveDialogEnabled: enabled));
   }
 
+  int appBiometricCalls = 0;
+  bool? lastAppBiometric;
+
+  @override
+  Future<void> setAppBiometric(bool enabled) async {
+    appBiometricCalls++;
+    lastAppBiometric = enabled;
+    final cur = state.value;
+    if (cur == null) return;
+    state = AsyncData(_copyWith(cur, appBiometricEnabled: enabled));
+  }
+
   // Helper because [SettingsSecurityState] has no copyWith.
   SettingsSecurityState _copyWith(
     SettingsSecurityState s, {
@@ -110,6 +122,7 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     int? wrongPinThreshold,
     bool? deceptiveDialogEnabled,
     bool? sessionEndBiometricEnabled,
+    bool? appBiometricEnabled,
   }) => SettingsSecurityState(
     appPinSet: appPinSet ?? s.appPinSet,
     sessionEndPinSet: sessionEndPinSet ?? s.sessionEndPinSet,
@@ -119,6 +132,7 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     deceptiveDialogEnabled: deceptiveDialogEnabled ?? s.deceptiveDialogEnabled,
     sessionEndBiometricEnabled:
         sessionEndBiometricEnabled ?? s.sessionEndBiometricEnabled,
+    appBiometricEnabled: appBiometricEnabled ?? s.appBiometricEnabled,
   );
 }
 
@@ -148,6 +162,7 @@ SettingsSecurityState _secState({
   int wrongPinThreshold = 5,
   bool deceptiveDialogEnabled = false,
   bool sessionEndBiometricEnabled = false,
+  bool appBiometricEnabled = false,
 }) => SettingsSecurityState(
   appPinSet: appPinSet,
   sessionEndPinSet: sessionEndPinSet,
@@ -156,6 +171,7 @@ SettingsSecurityState _secState({
   wrongPinThreshold: wrongPinThreshold,
   deceptiveDialogEnabled: deceptiveDialogEnabled,
   sessionEndBiometricEnabled: sessionEndBiometricEnabled,
+  appBiometricEnabled: appBiometricEnabled,
 );
 
 // ---------------------------------------------------------------------------
@@ -557,11 +573,11 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text(l10n.securityDeceptiveDialogToggle), findsOneWidget);
-      // Two SwitchListTiles total: session-end biometric + deceptive.
-      // skipOffstage:false counts laid-out but scrolled-off items.
+      // Three SwitchListTiles total: app-lock biometric + session-end
+      // biometric + deceptive. skipOffstage:false counts scrolled-off items.
       expect(
         find.byType(SwitchListTile, skipOffstage: false),
-        findsNWidgets(2),
+        findsNWidgets(3),
       );
     });
 
@@ -662,6 +678,49 @@ void main() {
       await tester.pumpAndSettle();
       check(fake.sessionEndBiometricCalls).equals(1);
       check(fake.lastSessionEndBiometric).equals(true);
+    });
+  });
+
+  // ── App-lock biometric toggle ──────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — app-lock biometric toggle', () {
+    testWidgets('renders inside the App PIN card with the right label', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      expect(find.text(l10n.securityAppPinBiometric), findsOneWidget);
+    });
+
+    testWidgets('reflects state — on when appBiometricEnabled is true', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(
+        tester,
+        fake: _FakeSettingsSecurityController(
+          _secState(appBiometricEnabled: true),
+        ),
+      );
+      final tile = tester.widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(l10n.securityAppPinBiometric),
+          matching: find.byType(SwitchListTile),
+        ),
+      );
+      check(tile.value).isTrue();
+    });
+
+    testWidgets('toggling the switch calls setAppBiometric(true)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(_secState());
+      await _pump(tester, fake: fake);
+      await tester.tap(find.text(l10n.securityAppPinBiometric));
+      await tester.pumpAndSettle();
+      check(fake.appBiometricCalls).equals(1);
+      check(fake.lastAppBiometric).equals(true);
     });
   });
 

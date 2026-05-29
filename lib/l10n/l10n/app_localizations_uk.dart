@@ -636,6 +636,18 @@ class AppLocalizationsUk extends AppLocalizations {
       'Використовувати біометрію для PIN-коду завершення сесії';
 
   @override
+  String get securityAppPinBiometric => 'Use biometrics for App lock';
+
+  @override
+  String get launchPinTitle => 'Enter your App PIN';
+
+  @override
+  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+
+  @override
+  String get launchPinIncorrect => 'Incorrect PIN';
+
+  @override
   String get securitySetPin => 'Встановити PIN';
 
   @override

@@ -17,6 +17,8 @@ import 'package:guardianangela/features/feedback_form/feedback_form_screen.dart'
 import 'package:guardianangela/features/gps_logging/gps_logging_screen.dart';
 import 'package:guardianangela/features/history_retention/history_retention_screen.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
+import 'package:guardianangela/features/launch_gate/launch_gate_controller.dart';
+import 'package:guardianangela/features/launch_gate/launch_pin_screen.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
 import 'package:guardianangela/features/modes/modes_screen.dart';
 import 'package:guardianangela/features/notifications_settings/notifications_settings_screen.dart';
@@ -36,17 +38,19 @@ import 'package:guardianangela/features/simulation_summary/simulation_summary_sc
 import 'package:guardianangela/features/template_editor/template_editor_screen.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
-/// Default refresh stream for first-launch redirection.
+/// Refresh listenable for redirect re-evaluation.
 ///
-/// GoRouter calls [GoRouter.refreshListenable] whenever this stream emits;
-/// the router then re-evaluates redirects. The home / onboarding redirect
-/// must respond when the user finishes onboarding (or restarts it).
-class _FirstLaunchListenable extends ChangeNotifier {
-  _FirstLaunchListenable(this._ref) {
+/// GoRouter re-evaluates redirects whenever this notifies. Two triggers:
+/// (a) the first-launch flag flips (onboarding finished / restarted), and
+/// (b) the App-lock launch gate locks or unlocks — so [LaunchGateController]
+/// `unlock()` immediately routes away from the launch screen.
+class _RouterRefreshListenable extends ChangeNotifier {
+  _RouterRefreshListenable(this._ref) {
     _ref.listen<AsyncValue<bool>>(
       _firstLaunchProvider,
       (_, _) => notifyListeners(),
     );
+    _ref.listen<bool>(launchGateProvider, (_, _) => notifyListeners());
   }
 
   final Ref _ref;
@@ -69,11 +73,23 @@ final _firstLaunchProvider = FutureProvider<bool>((ref) async {
 final goRouterProvider = Provider<GoRouter>((ref) {
   return GoRouter(
     initialLocation: '/',
-    refreshListenable: _FirstLaunchListenable(ref),
+    refreshListenable: _RouterRefreshListenable(ref),
     redirect: (BuildContext context, GoRouterState state) {
       final firstLaunch = ref.read(_firstLaunchProvider).value;
       if (firstLaunch == true && state.matchedLocation != '/onboarding') {
         return '/onboarding';
+      }
+      // App-lock launch gate (spec 06 §App PIN). Seeded synchronously at
+      // bootstrap from `appPinHash != null`, so the first evaluation already
+      // knows whether to gate — no flash of app content before the lock.
+      // Onboarding wins (a PIN can only be set after onboarding, so the two
+      // never both apply, but the order keeps that invariant explicit).
+      final locked = ref.read(launchGateProvider);
+      if (locked && state.matchedLocation != '/launch-pin') {
+        return '/launch-pin';
+      }
+      if (!locked && state.matchedLocation == '/launch-pin') {
+        return '/';
       }
       return null;
     },
@@ -87,6 +103,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/onboarding',
         name: RouteNames.onboarding,
         builder: (_, _) => const OnboardingScreen(),
+      ),
+      GoRoute(
+        path: '/launch-pin',
+        name: RouteNames.launchPin,
+        builder: (_, _) => const LaunchPinScreen(),
       ),
       GoRoute(
         path: '/session',

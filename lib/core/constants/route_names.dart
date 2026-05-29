@@ -20,6 +20,10 @@ final class RouteNames {
   /// First-launch onboarding flow.
   static const String onboarding = 'onboarding';
 
+  /// App-lock launch gate (App PIN / biometric) shown on cold start when an
+  /// App PIN is configured. Spec 06 §App PIN.
+  static const String launchPin = 'launch_pin';
+
   // ── Session ────────────────────────────────────────────────────────
   /// Active session screen.
   static const String session = 'session';

@@ -29,6 +29,7 @@ class SettingsSecurityState {
     required this.wrongPinThreshold,
     required this.deceptiveDialogEnabled,
     required this.sessionEndBiometricEnabled,
+    required this.appBiometricEnabled,
   });
 
   /// Whether an App PIN is configured.
@@ -51,6 +52,10 @@ class SettingsSecurityState {
 
   /// Whether biometric is allowed to substitute for the Session End PIN.
   final bool sessionEndBiometricEnabled;
+
+  /// Whether biometric is allowed to substitute for the App PIN at the
+  /// launch gate (spec 06 §App PIN).
+  final bool appBiometricEnabled;
 }
 
 /// Controller for the security submenu.
@@ -66,6 +71,7 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       wrongPinThreshold: settings.wrongPinThreshold,
       deceptiveDialogEnabled: settings.deceptivePinDialogEnabled,
       sessionEndBiometricEnabled: settings.sessionEndPinBiometricEnabled,
+      appBiometricEnabled: settings.appPinBiometricEnabled,
     );
   }
 
@@ -115,6 +121,14 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
     await repo.save(settings.copyWith(sessionEndPinBiometricEnabled: enabled));
+    ref.invalidateSelf();
+  }
+
+  /// Toggles the biometric substitute for the App PIN (launch gate).
+  Future<void> setAppBiometric(bool enabled) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(settings.copyWith(appPinBiometricEnabled: enabled));
     ref.invalidateSelf();
   }
 

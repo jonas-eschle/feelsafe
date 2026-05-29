@@ -28,6 +28,7 @@ Any row missing a provider, or any provider missing a row, is a CI failure.
 | `homeChecklistRepositoryProvider` | `HomeChecklistRepository` | `HomeChecklistRepository()` (SharedPreferences-backed) | inject a fake via `homeChecklistRepositoryProvider.overrideWithValue(...)` | `wired-real` | spec 04 §Safety Setup Checklist |
 | `sessionLogRepositoryProvider` | `SessionLogRepository` | `SessionLogRepository(dao)` | override `databaseProvider` with `GuardianAngelaDatabase.memory()` | `wired-real` | spec 03 §SessionLog |
 | `vibrationServiceProvider` | `VibrationServiceProtocol` | `RealVibrationService` | `SimulationVibrationService` | `wired-real` | spec 05 §VibrationService |
+| `biometricServiceProvider` | `BiometricServiceProtocol` | `RealBiometricService` (`package:local_auth`) | `SimulationBiometricService` | `wired-real` | spec 06 §App PIN |
 | `wakelockServiceProvider` | `WakelockServiceProtocol` | `RealWakelockService` | `SimulationWakelockService` | `wired-real` | spec 05 §WakelockService |
 | `flashServiceProvider` | `FlashServiceProtocol` | `RealFlashService` | `SimulationFlashService` | `wired-real` | spec 05 §FlashService |
 | `screenFlashServiceProvider` | `ScreenFlashServiceProtocol` | `RealScreenFlashService` | `SimulationScreenFlashService` | `wired-real` | spec 05 §ScreenFlashService |

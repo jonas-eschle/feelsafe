@@ -808,6 +808,22 @@
   "@securitySessionEndPinBiometric": {
     "description": "Toggle: enable biometric prompt before session-end PIN."
   },
+  "securityAppPinBiometric": "Use biometrics for App lock",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN."
+  },
+  "launchPinTitle": "Enter your App PIN",
+  "@launchPinTitle": {
+    "description": "Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set."
+  },
+  "launchPinBiometricReason": "Unlock Guardian Angela",
+  "@launchPinBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate."
+  },
+  "launchPinIncorrect": "Incorrect PIN",
+  "@launchPinIncorrect": {
+    "description": "Inline error shown beneath the launch-gate keypad after a wrong PIN entry."
+  },
   "securitySetPin": "Set PIN",
   "@securitySetPin": {
     "description": "Set-PIN button."

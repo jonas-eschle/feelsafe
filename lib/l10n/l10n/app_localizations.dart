@@ -1242,6 +1242,30 @@ abstract class AppLocalizations {
   /// **'Use biometrics for Session-end PIN'**
   String get securitySessionEndPinBiometric;
 
+  /// Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics for App lock'**
+  String get securityAppPinBiometric;
+
+  /// Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your App PIN'**
+  String get launchPinTitle;
+
+  /// Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Guardian Angela'**
+  String get launchPinBiometricReason;
+
+  /// Inline error shown beneath the launch-gate keypad after a wrong PIN entry.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get launchPinIncorrect;
+
   /// Set-PIN button.
   ///
   /// In en, this message translates to:

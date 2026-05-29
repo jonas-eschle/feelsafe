@@ -441,6 +441,52 @@ class SessionController extends AsyncNotifier<SessionState> {
     _clearDistressCountdown();
   }
 
+  /// Fires the distress chain when there is no active session.
+  ///
+  /// Used by the App-lock launch gate (spec 06 §App PIN / §Duress PIN): a
+  /// Duress PIN entered at cold start, or the wrong-PIN threshold reached
+  /// there, must silently start the distress chain even though no safety
+  /// session is running. Resolves the **global** default distress mode
+  /// (`AppDefaults.defaultDistressModeId` — there is no active mode to inherit
+  /// from at launch), starts it, and immediately enters the distress chain so
+  /// the run is flagged distress and stamped with [reason] for forensics.
+  ///
+  /// When a session IS already running this delegates to [confirmDistress]
+  /// (the running-session path). Fail-loud — surfaces an error rather than
+  /// silently doing nothing — when no default distress mode is configured or
+  /// the referenced mode is missing.
+  Future<void> startDistressSession({required EndReason reason}) async {
+    if (_engine != null) {
+      confirmDistress(reason: reason);
+      return;
+    }
+    final settings = await ref.read(appSettingsRepositoryProvider).load();
+    final distressId = settings.defaults.defaultDistressModeId;
+    if (distressId == null) {
+      _surfaceError(
+        'Distress requested at the launch gate but no default distress mode '
+        'is configured.',
+      );
+      return;
+    }
+    final db = await ref.read(databaseProvider.future);
+    final distressMode = await db.sessionModesDao.getById(distressId);
+    if (distressMode == null) {
+      _surfaceError('Default distress mode "$distressId" not found.');
+      return;
+    }
+    // Start the distress mode as the session, then immediately enter the
+    // distress chain so it is flagged distress and stamped with [reason]. This
+    // reuses the fully-tested startSession + confirmDistress paths rather than
+    // duplicating engine bootstrap.
+    await startSession(
+      mode: distressMode,
+      simulate: false,
+      distressMode: distressMode,
+    );
+    confirmDistress(reason: reason);
+  }
+
   /// Begins the distress-confirmation countdown.
   ///
   /// Called by [SessionScreen] when a distress trigger fires and the

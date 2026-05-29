@@ -33,6 +33,7 @@ import 'package:path_provider/path_provider.dart';
 
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/features/launch_gate/launch_gate_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/router/app_router.dart';
 import 'package:guardianangela/services/audio_service.dart';
@@ -96,6 +97,13 @@ Future<void> runBootstrap(
     runner(JsonRecoveryApp(reason: e.toString()));
     return;
   }
+
+  // Seed the App-lock launch gate (spec 06 §App PIN) synchronously, before
+  // runApp, so the router's first redirect already knows whether to gate —
+  // no flash of app content behind the lock. Cold-start only; never re-locks.
+  container
+      .read(launchGateProvider.notifier)
+      .lockForLaunch(appPinSet: settings.appPinHash != null);
 
   // Step 3 — Initialize Sentry per user consent (D2: opt-in only).
   final sentryService = container.read(sentryServiceProvider);

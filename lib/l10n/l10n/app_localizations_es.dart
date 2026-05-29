@@ -638,6 +638,18 @@ class AppLocalizationsEs extends AppLocalizations {
       'Usar biometría para el PIN de fin de sesión';
 
   @override
+  String get securityAppPinBiometric => 'Use biometrics for App lock';
+
+  @override
+  String get launchPinTitle => 'Enter your App PIN';
+
+  @override
+  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+
+  @override
+  String get launchPinIncorrect => 'Incorrect PIN';
+
+  @override
   String get securitySetPin => 'Establecer PIN';
 
   @override

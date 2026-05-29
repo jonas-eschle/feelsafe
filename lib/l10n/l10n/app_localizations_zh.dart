@@ -623,6 +623,18 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securitySessionEndPinBiometric => '为会话结束 PIN 码启用生物识别';
 
   @override
+  String get securityAppPinBiometric => 'Use biometrics for App lock';
+
+  @override
+  String get launchPinTitle => 'Enter your App PIN';
+
+  @override
+  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+
+  @override
+  String get launchPinIncorrect => 'Incorrect PIN';
+
+  @override
   String get securitySetPin => '设置 PIN 码';
 
   @override

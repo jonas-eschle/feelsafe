@@ -32,6 +32,7 @@ class SettingsSecurityScreen extends ConsumerWidget {
               body: l10n.securityAppPinBody,
               infoBody: l10n.securityAppPinInfo,
               isSet: s.appPinSet,
+              appBiometricEnabled: s.appBiometricEnabled,
             ),
             const SizedBox(height: 16),
             _PinCard(
@@ -93,6 +94,7 @@ class _PinCard extends ConsumerWidget {
     required this.isSet,
     this.sessionEndBiometricEnabled,
     this.pinTimeoutSeconds,
+    this.appBiometricEnabled,
   });
 
   final PinType type;
@@ -102,6 +104,7 @@ class _PinCard extends ConsumerWidget {
   final bool isSet;
   final bool? sessionEndBiometricEnabled;
   final int? pinTimeoutSeconds;
+  final bool? appBiometricEnabled;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -152,6 +155,16 @@ class _PinCard extends ConsumerWidget {
                 ],
               ),
             ),
+            if (type == PinType.app)
+              SwitchListTile(
+                title: Text(l10n.securityAppPinBiometric),
+                value: appBiometricEnabled ?? false,
+                onChanged: (bool v) {
+                  ref
+                      .read(settingsSecurityControllerProvider.notifier)
+                      .setAppBiometric(v);
+                },
+              ),
             if (type == PinType.sessionEnd) ...<Widget>[
               SwitchListTile(
                 title: Text(l10n.securitySessionEndPinBiometric),
