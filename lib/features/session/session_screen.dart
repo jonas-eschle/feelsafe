@@ -1125,11 +1125,7 @@ class _DisarmAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SwipeSlider(
-      label: label,
-      onConfirm: onDisarm,
-      threshold: 0.85,
-    );
+    return SwipeSlider(label: label, onConfirm: onDisarm, threshold: 0.85);
   }
 }
 

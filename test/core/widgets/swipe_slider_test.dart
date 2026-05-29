@@ -158,9 +158,7 @@ void main() {
 
       // Exactly one HapticFeedback.lightImpact() call mapped to the
       // platform-channel argument 'HapticFeedbackType.lightImpact'.
-      check(
-        hapticCalls,
-      ).deepEquals(<String>['HapticFeedbackType.lightImpact']);
+      check(hapticCalls).deepEquals(<String>['HapticFeedbackType.lightImpact']);
     });
 
     testWidgets('aborted-below-threshold drag does NOT fire haptic', (

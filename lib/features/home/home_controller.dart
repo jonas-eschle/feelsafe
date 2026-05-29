@@ -149,10 +149,7 @@ class HomeController extends AsyncNotifier<HomeState> {
       try {
         await ref.read(homeChecklistRepositoryProvider).markSimulationDone();
       } catch (e) {
-        log(
-          'markSimulationDone failed: $e',
-          name: 'HomeController',
-        );
+        log('markSimulationDone failed: $e', name: 'HomeController');
       }
     }
     return true;

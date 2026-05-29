@@ -1,10 +1,16 @@
 pre-commit:
   commands:
     format:
-      # Exclude OLD/ — inert archive, not formatted in v3 tree
+      # Exclude OLD/ — inert archive, not formatted in v3 tree.
+      # stage_fixed re-stages files the formatter rewrote, so a commit
+      # can never land unformatted (which would fail CI ci.yml:format).
       run: dart format lib/ test/ integration_test/ 2>/dev/null; dart format lib/ test/
+      stage_fixed: true
     import-sorter:
+      # stage_fixed re-stages re-sorted files (e.g. regenerated l10n)
+      # so a commit can never land import-unsorted (CI ci.yml:import).
       run: dart run import_sorter:main --no-comments
+      stage_fixed: true
 
 pre-push:
   commands:

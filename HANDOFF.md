@@ -129,6 +129,8 @@ Per `~/.claude/plans/rippling-weaving-puffin.md §Phase 7`:
 ## Quick verification commands (run after every fix or stage — per Rule 6)
 
 ```bash
+dart format --output=none --set-exit-if-changed lib/ test/                   # 0 changed (CI format gate, ci.yml:30)
+dart run import_sorter:main --no-comments --exit-if-changed                  # Sorted 0 files (CI import gate, ci.yml:48)
 flutter analyze --fatal-infos                                                # 0 issues
 flutter test --concurrency=6                                                 # all pass (currently 3619)
 grep -r 'package:flutter' lib/domain/                                        # empty (S-7)

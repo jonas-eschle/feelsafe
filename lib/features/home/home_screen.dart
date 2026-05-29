@@ -69,10 +69,7 @@ class _HomeBody extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            SafetySetupChecklist(
-              contacts: state.contacts,
-              modes: state.modes,
-            ),
+            SafetySetupChecklist(contacts: state.contacts, modes: state.modes),
             const Center(child: GuardianAngelaLogo()),
             const SizedBox(height: 8),
             Center(child: Text(l10n.homeTitle, style: textTheme.titleLarge)),

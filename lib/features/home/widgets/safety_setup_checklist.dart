@@ -246,10 +246,7 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
     String routeName, {
     Map<String, String> queryParameters = const <String, String>{},
   }) async {
-    await context.pushNamed<void>(
-      routeName,
-      queryParameters: queryParameters,
-    );
+    await context.pushNamed<void>(routeName, queryParameters: queryParameters);
     if (!mounted) return;
     await _refresh();
   }
@@ -311,10 +308,7 @@ class _Header extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  l10n.homeChecklistTitle,
-                  style: textTheme.titleMedium,
-                ),
+                Text(l10n.homeChecklistTitle, style: textTheme.titleMedium),
                 Text(
                   l10n.homeChecklistProgress('$doneCount', '6'),
                   style: textTheme.bodySmall,
