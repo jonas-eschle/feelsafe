@@ -3,6 +3,12 @@
          alarm escalation) to surface on the lock screen (spec 05:848-853).
          Android 14+ will prompt the user the first time the channel is used. -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
+    <!-- Biometric (fingerprint / Face) unlock for the App-lock launch gate
+         (spec 06 §App PIN). USE_FINGERPRINT covers API < 28; USE_BIOMETRIC is
+         the API 28+ permission. Both are normal permissions (no runtime
+         prompt). -->
+    <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
+    <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
     <application
         android:label="guardianangela"
         android:name="${applicationName}"

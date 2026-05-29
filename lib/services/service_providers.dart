@@ -33,6 +33,7 @@ import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/background_session_service.dart';
 import 'package:guardianangela/services/backup_service.dart';
 import 'package:guardianangela/services/battery_monitor_service.dart';
+import 'package:guardianangela/services/biometric_service.dart';
 import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
 import 'package:guardianangela/services/device_info_service.dart';
@@ -48,6 +49,7 @@ import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
+import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/device_info_service_protocol.dart';
@@ -189,6 +191,16 @@ final feedbackHistoryRepositoryProvider =
 /// `lib/services/sim/vibration_service_sim.dart`.
 final vibrationServiceProvider = Provider<VibrationServiceProtocol>((ref) {
   return RealVibrationService();
+});
+
+/// [BiometricServiceProtocol] backed by `package:local_auth`.
+///
+/// Powers the App-lock launch gate's optional biometric unlock (opt-in via
+/// `AppSettings.appPinBiometricEnabled`). Tests override with
+/// [SimulationBiometricService] from
+/// `lib/services/sim/biometric_service_sim.dart`.
+final biometricServiceProvider = Provider<BiometricServiceProtocol>((ref) {
+  return RealBiometricService();
 });
 
 /// [WakelockServiceProtocol] backed by `package:wakelock_plus`.

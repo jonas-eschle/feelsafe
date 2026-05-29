@@ -78,6 +78,8 @@
 	<string>Guardian Angela needs your location in the background to share it with emergency contacts during an active session.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Guardian Angela can import an emergency contact from your device contacts so you do not have to type the phone number.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Guardian Angela can use Face ID to unlock the app instead of your App PIN.</string>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
