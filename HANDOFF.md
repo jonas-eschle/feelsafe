@@ -1,8 +1,8 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-05-28 — **Phase 6 fix-pass C done + PM re-verifier PASS.** The architect + qa-expert verifier cohort is the next stop; both run in parallel (read-only). When both PASS, Phase 6 closes and Phase 7 (native channels) begins.
-**HEAD:** `b66f5e4` (`phase-6-fix-c-handoff-2: update HANDOFF.md for PM PASS + next-step pointers`).
-**Tests passing:** `3582/3582` (`flutter test --concurrency=6`).
+**Snapshot:** 2026-05-29 — **Phase 6 CLOSED.** PM (`2edca2d`) + architect + qa-expert verifiers all PASS on fix-pass-D HEAD. Phase 7 (native channels — Android SMS, phone, audio; iOS CallKit) is next.
+**HEAD:** `92dfd88` (`phase-6-fix-d8: backfill R-27 row in spec_coverage_test for the cross-overlay PIN test`).
+**Tests passing:** `3619/3619` (`flutter test --concurrency=6`).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
 **Branch:** `main`. **Not pushed.** **OLD/ is INERT.**
 
@@ -38,82 +38,91 @@ Start from §"Next actions". The plan files in `~/.claude/plans/` (`make-sure-th
 | Phase | Status | Tests | Commits |
 |---|---|---|---|
 | Pre-flight + Phase 0..5 | ✅ Done — 3-agent cohort PASS | 2447 | `40d9add..36d30cf` |
-| Phase 6 (screens + routing + R-42 + tests + goldens) | ✅ Implementation + tests | 3538 | `ee73b62..cedaecf` (30 commits) |
-| **Phase 6 fix-pass C (PM-FIX_REQUIRED defects)** | ✅ **PM PASS at `2edca2d`; pending architect + qa-expert** | **3582** | `5bd1486..b66f5e4` (11 commits) |
+| Phase 6 (screens + routing + R-42 + tests + goldens) | ✅ Done | 3538 | `ee73b62..cedaecf` |
+| Phase 6 fix-pass C (PM-FIX_REQUIRED) | ✅ Done — PM PASS at `2edca2d` | 3582 | `5bd1486..b66f5e4` |
+| **Phase 6 fix-pass D (architect + qa-expert FIX_REQUIRED + scope expansion)** | ✅ **CLOSED — architect + qa-expert PASS at `58e0155`** | **3619** | `a41ab4d..92dfd88` (5 commits) |
 | Phase 7..11 | Pending |  |  |
 
 ---
 
-## What Phase 6 fix-pass C delivered (commits `5bd1486..b66f5e4`, 11 commits)
+## What Phase 6 fix-pass D delivered (commits `a41ab4d..92dfd88`, 5 commits)
 
-- `5bd1486` phase-6-fix-c-prelude: HANDOFF.md update + leftover `dart format` / `import_sorter` output from after the goldens commit. Zero functional change.
-- `5dc9b05` phase-6-fix-c1: `SwipeSlider` widget (70 % threshold, single-fire per drag) + `EmergencyConfirmOverlay` that replaces `_CallEmergencyStepUi` during the `duration` phase of a `callEmergency` step. Keep-calling dismisses locally; swipe-cancel ends the session (real) or shows a SnackBar (sim). +6 EN ARB keys. +18 tests.
-- `62fcc21` phase-6-fix-c2: `EndSessionOverlay` replaces the generic AlertDialog. Two-stage state machine (swipe-to-end → PIN keypad). PIN ladder: Duress > App-mismatch hint > Session End > wrong-PIN counter. 5 wrong PINs fires distress in real session; sim shows informational SnackBar. Deceptive dialog gated behind `appSettings.deceptivePinDialogEnabled`. Wrong-PIN counter on `SessionController` (in-memory, shared with C3). +10 EN ARB keys. +10 tests.
-- `be29430` phase-6-fix-c3: distress-cancel PIN gate with 15-second timeout. Rewrote `_DistressConfirmationOverlay` as `ConsumerStatefulWidget`. Tap Cancel pauses the 5s distress countdown (new `pauseDistressCountdown`/`resumeDistressCountdown` on the controller) while a 15s PIN prompt opens. Same PIN ladder as C2. Timeout fires distress via new `EndReason.distressConfirmTimeout`. +7 EN ARB keys. +11 tests.
-- `4525a76` phase-6-fix-c5: ARB orphan sweep — dropped 454 keys with no `l10n.<key>` reference in `lib/` or `test/` from all 14 ARB files. EN: 1841 → 502 keys. `flutter gen-l10n` regenerated.
-- `9ffa48e` phase-6-fix-c5-import-sort: post-commit `import_sorter` follow-up (zero functional change).
-- `e77900e` phase-6-fix-c6: nits — `main.dart:19,163` "Phase 6 will replace..." → present-tense; +6 HomeScreen reference tests (19 → 25 to hit plan target).
-- `007fa6a` phase-6-fix-c-handoff: HANDOFF.md update with the new HEAD + out-of-scope findings.
-- `c691798` phase-6-fix-c7: drop two stale profile-field keys (`profileFieldPhoneNumber`, `profileFieldPhysicalDescription`) from all 13 non-EN ARBs. They were absent from EN but still in non-EN — violated the "non-EN MUST be a subset of EN" parity gate (PM re-verifier defect at `007fa6a`).
-- `2edca2d` phase-6-fix-c7-import-sort: post-commit `import_sorter` follow-up (zero functional change).
-- `b66f5e4` phase-6-fix-c-handoff-2: HANDOFF.md update for PM PASS + next-step pointers.
+Architect (`voltagent-qa-sec:architect-reviewer`) returned FIX_REQUIRED with 1 defect at HEAD `ce6d224`. qa-expert (`voltagent-qa-sec:qa-expert`) returned FIX_REQUIRED with 3 numbered defects + 1 QUESTION + 3 untriaged MISSING/WEAK alignment rows. Secondary investigation flagged the latter two MISSING rows as full missing-implementation defects (not test-only gaps). User answered the QUESTION (haptic is normative) and approved scope expansion to ship D5 + D6 in fix-pass D.
 
-C4 (DeceptiveOldPinDialog wiring at remaining sites) was effectively empty — C2 + C3 covered the two active spec sites; the third (`PinEntryScreen`) does not exist; the simulation summary `_PinPrompt` is intentionally shake-only per spec 04:548.
+- `a41ab4d` phase-6-fix-d1-d4 — grace-period SwipeSlider, haptic, back-forward + cross-overlay tests.
+  - **D1** `_DisarmAction` (`session_screen.dart:1108-1131`) replaced with `SwipeSlider(threshold: 0.85)`. New `SessionState.stealthEnabled` (resolved at startSession from `mode.overrides?.stealth ?? appDefaults.stealth`) drives the label switch between `sessionDisarm` ("I'm safe") and the new `sessionDisarmStealth` ("No Angela needed") ARB keys. Spec 04:849-852.
+  - **D2** `SwipeSlider` gains `HapticFeedback.lightImpact()` on threshold cross; spec 02:460 Extra 56 updated to document the haptic + single-fire wording.
+  - **D3** New `swipe_slider_test.dart` test for back-then-forward gesture (drag +240, -200, +240, release) asserting confirmCount == 1.
+  - **D4** New `session_screen_test.dart` cross-overlay test: 2 wrong PINs in EndSessionOverlay, dismiss, distress-cancel gate, 3 wrong PINs → confirmDistress fires once with `wrongPinExhausted` (proves R-27 shared counter).
+- `e3c1f99` phase-6-fix-d5 — HomeScreen Chain Summary pill row + timing-details sheet.
+  - New widget `lib/features/home/widgets/chain_summary.dart` with `ChainSummary` card + `ChainStepTimingSheet` modal + top-level `chainStepIcon` / `chainStepDisplayName` helpers (exhaustive `switch` on `ChainStepType`). 11 EN ARB keys (`homeChainSummaryTitle` etc) + 9 `chainStepName*` keys. 5 widget tests under `HomeScreen — chain summary` group. Spec 04:429-439.
+- `ed9f79e` phase-6-fix-d6 — HomeScreen Safety Setup Checklist + tutorials + info sheets + persistence.
+  - New widget `lib/features/home/widgets/safety_setup_checklist.dart` (`ConsumerStatefulWidget` + `WidgetsBindingObserver`) with collapsible `Card`, 6 tappable rows, `LinearProgressIndicator`, `ChecklistSheetContent` shared tutorial/info layout. Completion sources: HomeState (contacts, modes), AppSettings (PIN, stealth), `HomeChecklistRepository` (simulation flag, dismissed flag, first-visit flag, SharedPreferences-backed), `Permission.notification.status`. New provider `homeChecklistRepositoryProvider` in `service_providers.dart` + row in `docs/wiring-map.md`. `home_controller.dart` calls `markSimulationDone()` on first simulate=true. 24 new EN ARB keys + 21 new widget tests in `safety_setup_checklist_test.dart`. Spec 04:480-518.
+- `58e0155` phase-6-fix-d7 — language agent translated the 44 new EN keys (D1+D5+D6) into all 13 non-EN ARBs (ar, de, el, es, fa, fr, he, hi, pl, ru, uk, zh, zh_TW). ICU placeholders preserved; `@<key>` description blocks kept byte-identical to EN. `flutter gen-l10n` regenerated dart bindings.
+- `92dfd88` phase-6-fix-d8 — qa-expert housekeeping: backfill R-27 row in `test/spec_coverage_test.dart` to reference `session_screen_test.dart` for the new cross-overlay shared wrong-PIN counter test.
+
+Tests: 3582 → 3619 (+37). Analyzer 0. ARB parity green.
 
 ---
 
-## Out-of-scope findings (architect should NOT double-flag these)
+## Spec-vs-spec drifts surfaced during architect re-review (NOT blockers — spec cleanup items)
 
-These three real defects surfaced during fix-pass C but are intentionally not in fix-pass C scope. They should be addressed in a separate fix pass or in Phase 7.
+The architect's PASS-pass at HEAD `58e0155` flagged two internal spec contradictions inside `docs/spec/`. **The code chose the only working route in each case.** These are spec-team cleanup items, not implementation defects:
 
-1. **`PinEntryScreen` / app-lock-on-launch does NOT exist.** Per spec 04:1900-1945 + 06:130 the App PIN is supposed to lock the app on open. There is no route, no screen, no app-startup gate.
-2. **`SettingsSecurityScreen._confirmClear` removes a PIN without verifying the existing PIN first** (`lib/features/settings_security/settings_security_screen.dart:204-231`). An attacker who can unlock the device can remove any configured PIN.
-3. **Strategy dispatch (`controller → strategy.executeReal`) is NOT WIRED in production.** The `EventStrategyRegistry` is only used by tests; no production code path calls a strategy. The engine fires phase timers but no SMS, no phone call, no alarm ever runs. Likely a Phase 7 (native channels) item.
+1. **Spec 04:491 / 04:501 vs 06:128-138.** The Home § mocks write `?type=session` as the PIN-setup discriminator, but the working discriminator (per `PinSetupScreen` + spec 06) is `sessionEnd`. Code uses `sessionEnd`. → Patch 04:491/501 to match.
+2. **Spec 04:492 / 04:502 vs 06:533 + 06:569.** The Home § says "Configure stealth → `/settings/defaults`" but Pivot 3 explicitly removed `/settings/defaults` from the route map; the surviving route is `/settings/stealth`. Code targets `/settings/stealth`. → Patch 04:492/502 to match.
+
+Open a separate `phase-6-spec-cleanup` PR to fix 04 to match 06 — no code change.
+
+---
+
+## Out-of-scope findings carried into Phase 7 (or a follow-up fix pass)
+
+The three defects flagged during fix-pass C are still open. Phase 7's plan covers exactly one (the strategy-dispatch wiring); the other two need their own fix pass.
+
+1. **`PinEntryScreen` / app-lock-on-launch does NOT exist.** Spec 04:1900-1945 + 06:130 mandate an App PIN gate on app open. No route, no screen, no app-startup gate. **Not Phase 7 scope.** Open a follow-up `phase-6-fix-e1` or similar before Phase 7 close.
+2. **`SettingsSecurityScreen._confirmClear` removes a PIN without verifying the existing PIN first** (`lib/features/settings_security/settings_security_screen.dart:204-231`). An attacker who can unlock the device can wipe any configured PIN. **Not Phase 7 scope.** Same fix pass as #1.
+3. **Strategy dispatch (`controller → strategy.executeReal`) is NOT WIRED in production.** The `EventStrategyRegistry` is only used by tests; the engine fires phase timers but no SMS, no phone call, no alarm ever runs. **Phase 7 scope** — native channels finally give strategies something to dispatch to. Verify the wiring lands during Phase 7.
 
 ---
 
 ## Next actions (resume here)
 
-**Dispatch the architect + qa-expert verifiers in parallel.** Both are read-only — they can run concurrently without contention. When both PASS, Phase 6 closes.
+**Phase 7 — Native channels (PARALLEL: Android ∥ iOS).**
 
-### Step 1 — Spec-vs-code agent (`voltagent-qa-sec:architect-reviewer`, opus, parallel with Step 2)
+Per `~/.claude/plans/rippling-weaving-puffin.md §Phase 7`:
 
-Prompt skeleton: `~/.claude/plans/rippling-weaving-puffin.md §Spec-vs-code agent prompt skeleton`. Phase = "Phase 6 (screens, routing, R-42 + tests + fix-pass C)". Scope:
-- `docs/spec/04-screens-navigation.md` (24 screens + global UI patterns + `DeceptiveOldPinDialog` + `SwipeSlider` Extra 56)
-- `docs/spec/06-settings.md` (PIN priority, R-27, R-42, Session End methods)
-- `docs/spec/02-event-types.md` lines 440-475 (callEmergency confirmation)
-- `lib/features/`, `lib/router/`, `lib/core/widgets/` at HEAD `b66f5e4`
+- **Pre-flight contract:** Dart bridge interfaces in `lib/services/*/native_*_bridge.dart` finalized in Phase 5; verify before dispatching.
+- **Agents (parallel — disjoint platform trees, proven safe):**
+  - `voltagent-lang:kotlin-specialist` → Android: 11 Kotlin files (`MainActivity`, `SmsChannel`, `SmsWorker`, `CallStateChannel`, `SystemUiChannel`, `PhoneCallHelper`, `BootReceiver`, `HardwareButtonChannel`, `DeviceStateChannel`, `StealthIconChannel`, `GuardianAngelaAppWidget`) + `AndroidManifest.xml` permissions + drawables/layouts/mipmaps resources.
+  - `voltagent-lang:swift-expert` → iOS: 5 Swift files (`AppDelegate`, `SceneDelegate`, `CallStatePlugin`, `SystemUiPlugin`, `AlarmAudioPlugin`) + `Info.plist` (literal copy from OLD per D4 one-time extraction) + entitlements.
+- **Tests:** Patrol integration tests on emulator (Android) + simulator (iOS): SMS send, phone call, call state listener, hardware button panic, GPS arrival, notification disguise.
+- **Verification:** `flutter build apk --debug` succeeds; `flutter build ios --no-codesign` succeeds; native integration tests green; no `import.*OLD/` in either tree.
+- **Commit:** single `phase-7: native channels android+ios` after both platforms land.
+- **Post-phase cohort (mandatory):** PM (`code-reviewer`) → architect (`architect-reviewer`) → qa-expert serial gate per `rippling-weaving-puffin.md §Post-Phase Verification Cohort`.
 
-Prefix the brief with the three out-of-scope findings above so the architect doesn't double-flag them. Verdict must be PASS before Phase 6 closes; FIX_REQUIRED triggers another fix-pass round on the architect-flagged defects only.
+**Before Phase 7 starts, dispatch the follow-up fix pass for Out-of-scope items #1 and #2** (PIN entry on launch + PIN-removal verification). These are Dart UI/logic changes that don't depend on native channels and the verifier cohort should sweep them too.
 
-### Step 2 — Spec-vs-tests agent (`voltagent-qa-sec:qa-expert`, opus, parallel with Step 1)
-
-Prompt skeleton: `~/.claude/plans/rippling-weaving-puffin.md §Spec-vs-tests agent prompt skeleton`. Tests in scope:
-- 30 widget tests in `test/features/<feature>/*_test.dart`
-- 6 alchemist golden tests in `test/features/<feature>/*_golden_test.dart`
-- Fix-pass-C tests: `test/core/widgets/swipe_slider_test.dart`, `test/features/session/widgets/emergency_confirm_overlay_test.dart`, `test/features/session/session_screen_test.dart` (now ~88 tests including PIN-gate coverage), `test/features/home/home_screen_test.dart` (25 tests)
-
-Confirm each normative spec requirement has a test that exercises the behaviour (not just imports the symbol). Mark `test/spec_coverage_test.dart` rows. Verdict must be PASS.
-
-### Step 3 — Phase 6 close
-
-When both verifiers PASS, mark Phase 6 closed in HANDOFF.md + the plan. Phase 7 (native channels — Android SMS, phone, audio; iOS CallKit) starts. Re-evaluate the three out-of-scope findings above against Phase 7's plan and pull any that don't fit into a follow-up fix pass.
+### Phase 7 prep checklist
+- [ ] Confirm `lib/services/*/native_*_bridge.dart` contracts are finalized (Phase 5 commit `40d9add..36d30cf` range).
+- [ ] Sanity-check: `grep -n "Phase 7" lib/services/` — there should be intentional Phase 7 markers in service files that need wiring.
+- [ ] Dispatch Android + iOS agents in parallel.
+- [ ] Re-evaluate out-of-scope finding #3 (strategy dispatch wiring) during Phase 7 verification — confirm it landed.
 
 ---
 
 ## Reading list for the resumer
 
-- `~/.claude/plans/rippling-weaving-puffin.md §Phase 6` + §Post-Phase Verification Cohort.
-- `docs/spec/04-screens-navigation.md`, `docs/spec/06-settings.md`, `docs/spec/02-event-types.md` 440-475.
-- New widgets at HEAD `b66f5e4`:
-  - `lib/core/widgets/swipe_slider.dart`
-  - `lib/features/session/widgets/emergency_confirm_overlay.dart`
-  - `lib/features/session/widgets/end_session_overlay.dart`
-- Updated session UI:
-  - `lib/features/session/session_screen.dart` — `_DistressConfirmationOverlay` is now `ConsumerStatefulWidget`; PIN gate, 15s timeout, sim Skip
-  - `lib/features/session/session_controller.dart` — `pauseDistressCountdown` / `resumeDistressCountdown`, wrong-PIN counter
-- `lib/domain/enums/end_reason.dart` — added `distressConfirmTimeout`
-- `lib/l10n/l10n/app_en.arb` — now 502 keys after orphan sweep
+- `~/.claude/plans/rippling-weaving-puffin.md §Phase 7` (lines 172-181) + §Post-Phase Verification Cohort.
+- `docs/spec/05-services.md` §Native channels + `docs/spec/10-platform-matrix.md` for the per-platform capability matrix.
+- `lib/services/protocols/` for the Dart bridge interfaces Phase 7 implements behind.
+- New surfaces from fix-pass D:
+  - `lib/core/widgets/swipe_slider.dart` (haptic + back-forward guard)
+  - `lib/features/session/session_screen.dart` (grace-period SwipeSlider + stealth label)
+  - `lib/features/session/session_controller.dart` (`stealthEnabled` flag)
+  - `lib/features/home/widgets/chain_summary.dart` + `safety_setup_checklist.dart`
+  - `lib/features/home/home_checklist_repository.dart` + `homeChecklistRepositoryProvider`
+- ARB delta from D1+D5+D6: 44 new EN keys, translated into 13 non-EN locales.
 
 ---
 
@@ -121,7 +130,7 @@ When both verifiers PASS, mark Phase 6 closed in HANDOFF.md + the plan. Phase 7 
 
 ```bash
 flutter analyze --fatal-infos                                                # 0 issues
-flutter test --concurrency=6                                                 # all pass (currently 3582)
+flutter test --concurrency=6                                                 # all pass (currently 3619)
 grep -r 'package:flutter' lib/domain/                                        # empty (S-7)
 grep -r 'package:flutter' lib/services/protocols/                            # empty (S-7)
 grep -r 'package:flutter' lib/data/                                          # empty (S-7)
@@ -134,7 +143,7 @@ git diff-tree -r --name-only HEAD -- OLD/                                    # e
 python3 -c "import json; from pathlib import Path; en={k for k in json.loads(Path('lib/l10n/l10n/app_en.arb').read_text()) if not k.startswith('@')}; [print(arb.name,'orphan:',sorted({k for k in json.loads(arb.read_text()) if not k.startswith('@')} - en)) for arb in sorted(Path('lib/l10n/l10n').glob('app_*.arb')) if arb.name != 'app_en.arb' and ({k for k in json.loads(arb.read_text()) if not k.startswith('@')} - en)]"  # 0 lines (ARB parity)
 ```
 
-All currently pass at HEAD `b66f5e4`.
+All currently pass at HEAD `92dfd88`.
 
 ---
 
