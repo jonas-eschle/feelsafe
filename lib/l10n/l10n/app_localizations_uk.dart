@@ -124,160 +124,160 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionDisarm => 'Я в безпеці';
 
   @override
-  String get sessionDisarmStealth => 'No Angela needed';
+  String get sessionDisarmStealth => 'Анджела не потрібна';
 
   @override
-  String get homeChainSummaryTitle => 'Chain Summary';
+  String get homeChainSummaryTitle => 'Зведення ланцюга';
 
   @override
   String get homeChainSummaryEmpty =>
-      'This mode has no steps yet — tap the mode to edit.';
+      'У цьому режимі ще немає кроків — торкніться режиму для редагування.';
 
   @override
   String homeChainSummaryTimingTitle(Object name) {
-    return 'Step: $name';
+    return 'Крок: $name';
   }
 
   @override
   String homeChainSummaryWait(Object seconds) {
-    return 'Wait: ${seconds}s';
+    return 'Очікування: $seconds с';
   }
 
   @override
   String homeChainSummaryDuration(Object seconds) {
-    return 'Active: ${seconds}s';
+    return 'Активно: $seconds с';
   }
 
   @override
   String homeChainSummaryGrace(Object seconds) {
-    return 'Grace period: ${seconds}s';
+    return 'Пільговий період: $seconds с';
   }
 
   @override
   String homeChainSummaryRetry(Object count) {
-    return 'Retries: $count';
+    return 'Повторів: $count';
   }
 
   @override
   String homeChainSummaryNextStep(Object name) {
-    return 'Next step: $name';
+    return 'Наступний крок: $name';
   }
 
   @override
-  String get homeChainSummaryNextStepNone => 'Next step: end of chain';
+  String get homeChainSummaryNextStepNone => 'Наступний крок: кінець ланцюга';
 
   @override
-  String get homeChainSummaryClose => 'Close';
+  String get homeChainSummaryClose => 'Закрити';
 
   @override
-  String get chainStepNameHoldButton => 'Hold to stay safe';
+  String get chainStepNameHoldButton => 'Утримуйте, щоб бути в безпеці';
 
   @override
-  String get chainStepNameDisguisedReminder => 'Disguised reminder';
+  String get chainStepNameDisguisedReminder => 'Замасковане нагадування';
 
   @override
-  String get chainStepNameCountdownWarning => 'Countdown warning';
+  String get chainStepNameCountdownWarning => 'Попередження з відліком';
 
   @override
-  String get chainStepNameFakeCall => 'Fake call';
+  String get chainStepNameFakeCall => 'Фейковий дзвінок';
 
   @override
-  String get chainStepNameSmsContact => 'SMS contact';
+  String get chainStepNameSmsContact => 'SMS контакту';
 
   @override
-  String get chainStepNamePhoneCallContact => 'Phone call contact';
+  String get chainStepNamePhoneCallContact => 'Дзвінок контакту';
 
   @override
-  String get chainStepNameLoudAlarm => 'Loud alarm';
+  String get chainStepNameLoudAlarm => 'Гучна тривога';
 
   @override
-  String get chainStepNameCallEmergency => 'Emergency call';
+  String get chainStepNameCallEmergency => 'Екстрений виклик';
 
   @override
-  String get chainStepNameHardwareButton => 'Hardware button';
+  String get chainStepNameHardwareButton => 'Апаратна кнопка';
 
   @override
-  String get homeChecklistTitle => 'Safety Setup';
+  String get homeChecklistTitle => 'Налаштування безпеки';
 
   @override
-  String get homeChecklistDismissTooltip => 'Dismiss checklist';
+  String get homeChecklistDismissTooltip => 'Сховати список';
 
   @override
-  String get homeChecklistExpandTooltip => 'Show checklist';
+  String get homeChecklistExpandTooltip => 'Показати список';
 
   @override
-  String get homeChecklistCollapseTooltip => 'Hide checklist';
+  String get homeChecklistCollapseTooltip => 'Згорнути список';
 
   @override
   String homeChecklistProgress(Object done, Object total) {
-    return '$done of $total done';
+    return '$done з $total виконано';
   }
 
   @override
-  String get homeChecklistAllDoneBanner => 'All set — you\'re protected!';
+  String get homeChecklistAllDoneBanner => 'Готово — ви під захистом!';
 
   @override
-  String get homeChecklistInfoTooltip => 'Why this matters';
+  String get homeChecklistInfoTooltip => 'Чому це важливо';
 
   @override
-  String get homeChecklistGotIt => 'Got it';
+  String get homeChecklistGotIt => 'Зрозуміло';
 
   @override
-  String get homeChecklistGoThere => 'Go there';
+  String get homeChecklistGoThere => 'Перейти';
 
   @override
-  String get homeChecklistItem1Title => 'Add an emergency contact';
+  String get homeChecklistItem1Title => 'Додати екстрений контакт';
 
   @override
-  String get homeChecklistItem2Title => 'Set a session-end PIN';
+  String get homeChecklistItem2Title => 'Задати PIN завершення сеансу';
 
   @override
-  String get homeChecklistItem3Title => 'Configure stealth mode';
+  String get homeChecklistItem3Title => 'Налаштувати прихований режим';
 
   @override
-  String get homeChecklistItem4Title => 'Test a simulation';
+  String get homeChecklistItem4Title => 'Спробувати симуляцію';
 
   @override
-  String get homeChecklistItem5Title => 'Customize a safety mode';
+  String get homeChecklistItem5Title => 'Налаштувати режим безпеки';
 
   @override
-  String get homeChecklistItem6Title => 'Grant required permissions';
+  String get homeChecklistItem6Title => 'Надати необхідні дозволи';
 
   @override
   String get checklistInfo1Body =>
-      'Emergency contacts are the people Guardian Angela messages and calls when you fail to check in. Without at least one contact, the chain has nowhere to escalate.';
+      'Екстрені контакти — це люди, яким Guardian Angela пише та телефонує, коли ви не позначаєте себе як у безпеці. Без хоча б одного контакту ланцюгу нікому передавати сигнал.';
 
   @override
   String get checklistInfo2Body =>
-      'A session-end PIN prevents an attacker from quietly ending an active session. They can still attempt it, but typing the wrong PIN five times silently fires your distress chain.';
+      'PIN завершення сеансу не дає зловмиснику тихо завершити активний сеанс. Він може намагатися, але п\'ять помилкових спроб мовчки запустять вашу тривожну ланцюжку.';
 
   @override
   String get checklistInfo3Body =>
-      'Stealth mode disguises the active session as something innocuous on your screen — a music player, a paused timer, a blank lock screen. Use it when somebody nearby cannot see you running a safety app.';
+      'Прихований режим маскує активний сеанс під щось безневинне на екрані — музичний плеєр, призупинений таймер, порожній екран блокування. Використовуйте, коли поряд хтось не повинен бачити, що у вас додаток безпеки.';
 
   @override
   String get checklistInfo4Body =>
-      'Simulation runs your safety mode end-to-end without sending real SMS, placing real calls, or sounding the loud alarm. Use it to learn the timings before you ever need them.';
+      'Симуляція прогоняє ваш режим безпеки від початку до кінця, не надсилаючи справжніх SMS, не здійснюючи дзвінків і не вмикаючи гучну тривогу. Використовуйте, щоб опанувати тайминги заздалегідь.';
 
   @override
   String get checklistInfo5Body =>
-      'Custom modes let you tune the steps, timings, and triggers to a specific situation — walking home, a first date, a late shift. The two seed modes are starting points, not the destination.';
+      'Власні режими дають змогу налаштувати кроки, тайминги та тригери під конкретну ситуацію — шлях додому, перше побачення, нічна зміна. Два вбудованих режими — це точка старту, а не фініш.';
 
   @override
   String get checklistInfo6Body =>
-      'Without notification permission, Guardian Angela cannot keep its persistent foreground status, deliver disguised reminders, or warn you that the chain is about to escalate.';
+      'Без дозволу на сповіщення Guardian Angela не може утримувати постійний статус на передньому плані, доставляти замасковані нагадування або попередити вас, що ланцюг ось-ось загостриться.';
 
   @override
   String get checklistTutorial3Body =>
-      'Open the stealth defaults and toggle \'Enable stealth mode\'. From there you can pick a fake music brand, hide the session timer, or disguise the home-screen icon.';
+      'Відкрийте налаштування прихованого режиму за замовчуванням і увімкніть «Увімкнути прихований режим». Звідти можна обрати фальшивий музичний бренд, сховати таймер сеансу або замаскувати значок на головному екрані.';
 
   @override
   String get checklistTutorial4Body =>
-      'Tap the outlined \'Simulate\' button on the home screen after selecting a mode. The session runs with an orange border and the [SIM] badge — nothing leaves your phone.';
+      'На головному екрані після вибору режиму натисніть обведену кнопку «Симулювати». Сеанс запускається з помаранчевою рамкою і значком [SIM] — нічого не покидає ваш телефон.';
 
   @override
   String get checklistTutorial5Body =>
-      'Open the Modes screen and either edit a seed mode (Walk / Date) or create a new one from scratch. Tweak the chain, add a fake call, set custom timings.';
+      'Відкрийте екран «Режими» і або відредагуйте вбудований режим (Прогулянка / Побачення), або створіть новий з нуля. Підлаштуйте ланцюг, додайте фейковий дзвінок, задайте власні тайминги.';
 
   @override
   String get sessionHoldPrompt => 'Тримайте, щоб залишатися в безпеці';

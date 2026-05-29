@@ -275,5 +275,191 @@
   "stealthPresetNone": "Keine",
   "@stealthPresetNone": {
     "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionDisarmStealth": "Keine Angela nötig",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "Kettenübersicht",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "Dieser Modus hat noch keine Schritte – tippe auf den Modus zum Bearbeiten.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "Schritt: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "Warten: {seconds} s",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "Aktiv: {seconds} s",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "Karenzzeit: {seconds} s",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "Wiederholungen: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "Nächster Schritt: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "Nächster Schritt: Ende der Kette",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "Schließen",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "Halten, um sicher zu bleiben",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "Getarnte Erinnerung",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "Countdown-Warnung",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "Fake-Anruf",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS-Kontakt",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "Anruf an Kontakt",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "Lauter Alarm",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "Notruf",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "Hardware-Taste",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "Sicherheits-Einrichtung",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "Checkliste ausblenden",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "Checkliste anzeigen",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "Checkliste verbergen",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{done} von {total} erledigt",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "Alles erledigt – du bist geschützt!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "Warum das wichtig ist",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "Verstanden",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "Dorthin",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "Notfallkontakt hinzufügen",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "Sitzungsende-PIN festlegen",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "Stealth-Modus einrichten",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "Simulation ausprobieren",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "Sicherheitsmodus anpassen",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "Erforderliche Berechtigungen erteilen",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "Notfallkontakte sind die Personen, denen Guardian Angela schreibt und anruft, wenn du dich nicht meldest. Ohne mindestens einen Kontakt hat die Kette niemanden, an den sie eskalieren kann.",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "Eine Sitzungsende-PIN verhindert, dass ein Angreifer eine laufende Sitzung still beendet. Versuche werden weiter zugelassen, aber fünf falsche Eingaben lösen lautlos deine Notfallkette aus.",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "Der Stealth-Modus tarnt die laufende Sitzung als etwas Unverdächtiges – einen Musikplayer, einen pausierten Timer, einen leeren Sperrbildschirm. Verwende ihn, wenn jemand in der Nähe nicht sehen soll, dass du eine Sicherheits-App benutzt.",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "Die Simulation spielt deinen Sicherheitsmodus vollständig durch, ohne echte SMS zu senden, echte Anrufe zu starten oder den lauten Alarm auszulösen. So lernst du die Abläufe, bevor du sie wirklich brauchst.",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "Mit eigenen Modi stimmst du Schritte, Zeiten und Auslöser auf eine konkrete Situation ab – Heimweg, erstes Date, Spätschicht. Die beiden vorinstallierten Modi sind Startpunkte, nicht das Ziel.",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "Ohne Benachrichtigungs-Berechtigung kann Guardian Angela keinen dauerhaften Vordergrund-Status halten, keine getarnten Erinnerungen liefern und dich nicht warnen, wenn die Kette gleich eskaliert.",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "Öffne die Stealth-Standardeinstellungen und aktiviere „Stealth-Modus aktivieren“. Dort wählst du eine Fake-Musikmarke, blendest den Sitzungstimer aus oder tarnst das Startbildschirm-Symbol.",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "Tippe auf der Startseite nach Auswahl eines Modus auf den umrandeten Button „Simulieren“. Die Sitzung läuft mit orangem Rahmen und [SIM]-Badge – nichts verlässt dein Handy.",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "Öffne den Modi-Bildschirm und bearbeite entweder einen vorinstallierten Modus (Spaziergang/Date) oder erstelle einen neuen von Grund auf. Passe die Kette an, füge einen Fake-Anruf hinzu, lege eigene Zeiten fest.",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   }
 }

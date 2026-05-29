@@ -17,8 +17,6 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:guardianangela/l10n/l10n/app_localizations.dart';
-
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/seed_data.dart';
@@ -31,6 +29,7 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/features/home/home_checklist_repository.dart';
 import 'package:guardianangela/features/home/widgets/safety_setup_checklist.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
 
@@ -115,28 +114,25 @@ EmergencyContact _contact(String id, String name) => EmergencyContact(
   sortOrder: 0,
 );
 
-SessionMode _mode(
-  String id,
-  String name, {
-  List<ChainStep>? chainSteps,
-}) => SessionMode(
-  id: id,
-  name: name,
-  chainSteps:
-      chainSteps ??
-      <ChainStep>[
-        ChainStep(
-          id: '$id-step-0',
-          type: ChainStepType.holdButton,
-          order: 0,
-          waitSeconds: 0,
-          durationSeconds: 30,
-          gracePeriodSeconds: 5,
-          retryCount: 0,
-          randomize: false,
-        ),
-      ],
-);
+SessionMode _mode(String id, String name, {List<ChainStep>? chainSteps}) =>
+    SessionMode(
+      id: id,
+      name: name,
+      chainSteps:
+          chainSteps ??
+          <ChainStep>[
+            ChainStep(
+              id: '$id-step-0',
+              type: ChainStepType.holdButton,
+              order: 0,
+              waitSeconds: 0,
+              durationSeconds: 30,
+              gracePeriodSeconds: 5,
+              retryCount: 0,
+              randomize: false,
+            ),
+          ],
+    );
 
 AppSettings _settings({
   String? sessionEndPinHash,
@@ -172,8 +168,7 @@ Future<_PushedRoute> _pump(
             // Default the lookup to "denied" so the test does not hang
             // waiting on the real `permission_handler` platform channel.
             permissionLookup: permissionLookup ?? () async => false,
-            permissionRequester:
-                permissionRequester ?? () async => false,
+            permissionRequester: permissionRequester ?? () async => false,
           ),
         ),
         routes: <GoRoute>[
@@ -280,10 +275,7 @@ void main() {
         modes: <SessionMode>[_mode('custom-1', 'Custom')],
         repo: _FakeChecklistRepository(simulationDone: true),
         settingsRepo: _FakeAppSettingsRepository(
-          initial: _settings(
-            sessionEndPinHash: 'hash',
-            stealthEnabled: true,
-          ),
+          initial: _settings(sessionEndPinHash: 'hash', stealthEnabled: true),
         ),
         permissionLookup: () async => true,
       );
@@ -333,10 +325,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        repo: _FakeChecklistRepository(simulationDone: true),
-      );
+      await _pump(tester, repo: _FakeChecklistRepository(simulationDone: true));
       expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
     });
 
@@ -344,45 +333,31 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        modes: <SessionMode>[_mode('user-mode-1', 'Custom')],
-      );
+      await _pump(tester, modes: <SessionMode>[_mode('user-mode-1', 'Custom')]);
       expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
     });
 
-    testWidgets(
-      'item 5 stays UNDONE when only seed modes (walk/date) exist',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(
-          tester,
-          modes: <SessionMode>[
-            _mode(SeedData.walkModeId, 'Walk Mode'),
-            _mode(SeedData.dateModeId, 'Date Mode'),
-          ],
-        );
-        expect(
-          find.text(l10n.homeChecklistProgress('0', '6')),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('item 5 stays UNDONE when only seed modes (walk/date) exist', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(
+        tester,
+        modes: <SessionMode>[
+          _mode(SeedData.walkModeId, 'Walk Mode'),
+          _mode(SeedData.dateModeId, 'Date Mode'),
+        ],
+      );
+      expect(find.text(l10n.homeChecklistProgress('0', '6')), findsOneWidget);
+    });
 
-    testWidgets(
-      'item 6 flips to done when permissionLookup returns true',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(
-          tester,
-          permissionLookup: () async => true,
-        );
-        expect(
-          find.text(l10n.homeChecklistProgress('1', '6')),
-          findsOneWidget,
-        );
-      },
-    );
+    testWidgets('item 6 flips to done when permissionLookup returns true', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, permissionLookup: () async => true);
+      expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+    });
   });
 
   group('SafetySetupChecklist — tap navigation', () {
@@ -396,17 +371,16 @@ void main() {
       check(pushed.lastPushed).equals(RouteNames.contactForm);
     });
 
-    testWidgets(
-      'tapping item 2 pushes pin-setup with ?type=sessionEnd',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final pushed = await _pump(tester);
-        await tester.tap(find.text(l10n.homeChecklistItem2Title));
-        await tester.pumpAndSettle();
-        check(pushed.lastPushed).equals(RouteNames.pinSetup);
-        check(pushed.lastQueryParameters['type']).equals('sessionEnd');
-      },
-    );
+    testWidgets('tapping item 2 pushes pin-setup with ?type=sessionEnd', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final pushed = await _pump(tester);
+      await tester.tap(find.text(l10n.homeChecklistItem2Title));
+      await tester.pumpAndSettle();
+      check(pushed.lastPushed).equals(RouteNames.pinSetup);
+      check(pushed.lastQueryParameters['type']).equals('sessionEnd');
+    });
 
     testWidgets(
       'tapping item 3 opens tutorial; "Go there" pushes settings-stealth',
@@ -422,32 +396,30 @@ void main() {
       },
     );
 
-    testWidgets(
-      'tapping item 4 opens tutorial WITHOUT a "Go there" button',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        await _pump(tester);
-        await tester.tap(find.text(l10n.homeChecklistItem4Title));
-        await tester.pumpAndSettle();
-        expect(find.text(l10n.checklistTutorial4Body), findsOneWidget);
-        // The simulate-tutorial sheet only confirms; no deep-link button.
-        expect(find.text(l10n.homeChecklistGoThere), findsNothing);
-        expect(find.text(l10n.homeChecklistGotIt), findsOneWidget);
-      },
-    );
+    testWidgets('tapping item 4 opens tutorial WITHOUT a "Go there" button', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester);
+      await tester.tap(find.text(l10n.homeChecklistItem4Title));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.checklistTutorial4Body), findsOneWidget);
+      // The simulate-tutorial sheet only confirms; no deep-link button.
+      expect(find.text(l10n.homeChecklistGoThere), findsNothing);
+      expect(find.text(l10n.homeChecklistGotIt), findsOneWidget);
+    });
 
-    testWidgets(
-      'tapping item 5 opens tutorial; "Go there" pushes modes',
-      (WidgetTester tester) async {
-        final l10n = await loadL10n(const Locale('en'));
-        final pushed = await _pump(tester);
-        await tester.tap(find.text(l10n.homeChecklistItem5Title));
-        await tester.pumpAndSettle();
-        await tester.tap(find.text(l10n.homeChecklistGoThere));
-        await tester.pumpAndSettle();
-        check(pushed.lastPushed).equals(RouteNames.modes);
-      },
-    );
+    testWidgets('tapping item 5 opens tutorial; "Go there" pushes modes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final pushed = await _pump(tester);
+      await tester.tap(find.text(l10n.homeChecklistItem5Title));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.homeChecklistGoThere));
+      await tester.pumpAndSettle();
+      check(pushed.lastPushed).equals(RouteNames.modes);
+    });
 
     testWidgets(
       'tapping item 6 invokes the permission requester and flips state',
@@ -462,10 +434,7 @@ void main() {
         await tester.tap(find.text(l10n.homeChecklistItem6Title));
         await tester.pumpAndSettle();
         // After the grant, the progress reflects the change.
-        expect(
-          find.text(l10n.homeChecklistProgress('1', '6')),
-          findsOneWidget,
-        );
+        expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
       },
     );
   });
@@ -519,8 +488,8 @@ void main() {
       'expanded by default on first visit; collapsed on subsequent visits',
       (WidgetTester tester) async {
         final l10n = await loadL10n(const Locale('en'));
-        // First visit — flag false → expanded.
-        final repo = _FakeChecklistRepository(firstVisitDone: false);
+        // First visit — flag false → expanded (matches the fake's default).
+        final repo = _FakeChecklistRepository();
         await _pump(tester, repo: repo);
         expect(find.text(l10n.homeChecklistItem1Title), findsOneWidget);
         // Side effect: flag has been persisted.

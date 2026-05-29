@@ -275,5 +275,191 @@
   "stealthPresetNone": "Ninguno",
   "@stealthPresetNone": {
     "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionDisarmStealth": "No hace falta Angela",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "Resumen de la cadena",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "Este modo aún no tiene pasos: toca el modo para editarlo.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "Paso: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "Espera: {seconds} s",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "Activo: {seconds} s",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "Periodo de gracia: {seconds} s",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "Reintentos: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "Siguiente paso: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "Siguiente paso: fin de la cadena",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "Cerrar",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "Mantén para seguir a salvo",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "Recordatorio camuflado",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "Aviso con cuenta atrás",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "Llamada falsa",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS a contacto",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "Llamada a contacto",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "Alarma sonora",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "Llamada de emergencia",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "Botón físico",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "Configuración de seguridad",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "Ocultar lista",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "Mostrar lista",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "Contraer lista",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{done} de {total} listos",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "Todo listo: ¡estás protegida!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "Por qué importa",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "Entendido",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "Ir ahí",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "Añade un contacto de emergencia",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "Define un PIN de fin de sesión",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "Configura el modo sigiloso",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "Prueba una simulación",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "Personaliza un modo de seguridad",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "Concede los permisos necesarios",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "Los contactos de emergencia son las personas a las que Guardian Angela envía mensajes y llama cuando no consigues confirmar. Sin al menos un contacto, la cadena no tiene a quién escalar.",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "El PIN de fin de sesión impide que un atacante cierre en silencio una sesión activa. Puede intentarlo, pero cinco intentos fallidos disparan tu cadena de emergencia sin avisar.",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "El modo sigiloso disfraza la sesión activa de algo inocuo en pantalla: un reproductor de música, un temporizador en pausa, una pantalla de bloqueo en blanco. Úsalo cuando alguien cerca no puede verte usar una app de seguridad.",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "La simulación ejecuta tu modo de seguridad de principio a fin sin enviar SMS reales, realizar llamadas reales ni hacer sonar la alarma. Úsala para aprender los tiempos antes de necesitarlos.",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "Los modos personalizados te dejan ajustar pasos, tiempos y desencadenantes a una situación concreta: volver a casa, una primera cita, un turno de noche. Los dos modos preinstalados son puntos de partida, no la meta.",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "Sin permiso de notificaciones, Guardian Angela no puede mantener su estado persistente en primer plano, enviar recordatorios camuflados ni avisarte de que la cadena va a escalar.",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "Abre los valores predeterminados de sigilo y activa «Habilitar modo sigiloso». Desde ahí puedes elegir una marca de música falsa, ocultar el temporizador de la sesión o disfrazar el icono de inicio.",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "Toca el botón «Simular» con contorno en la pantalla de inicio tras elegir un modo. La sesión corre con borde naranja y la insignia [SIM]: nada sale de tu teléfono.",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "Abre la pantalla de Modos y edita un modo preinstalado (Paseo/Cita) o crea uno nuevo desde cero. Ajusta la cadena, añade una llamada falsa, define tiempos personalizados.",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   }
 }

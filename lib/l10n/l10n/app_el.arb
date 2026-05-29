@@ -146,5 +146,191 @@
   "stealthTimerDisplaySmall": "Εμφάνιση μόνο αριθμών",
   "stealthTimerDisplayNone": "Απόκρυψη χρονομέτρου",
   "stealthPresetPodcast": "Podcast",
-  "stealthPresetNone": "Καμία"
+  "stealthPresetNone": "Καμία",
+  "sessionDisarmStealth": "Δεν χρειάζεται η Άντζελα",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "Σύνοψη αλυσίδας",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "Αυτή η κατάσταση δεν έχει ακόμη βήματα — πατήστε την για επεξεργασία.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "Βήμα: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "Αναμονή: {seconds} δευτ.",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "Ενεργό: {seconds} δευτ.",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "Περίοδος χάριτος: {seconds} δευτ.",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "Επαναλήψεις: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "Επόμενο βήμα: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "Επόμενο βήμα: τέλος αλυσίδας",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "Κλείσιμο",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "Κρατήστε για να μείνετε ασφαλείς",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "Καμουφλαρισμένη υπενθύμιση",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "Προειδοποίηση αντίστροφης μέτρησης",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "Ψεύτικη κλήση",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS σε επαφή",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "Κλήση σε επαφή",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "Δυνατός συναγερμός",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "Κλήση έκτακτης ανάγκης",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "Πλήκτρο υλικού",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "Ρύθμιση ασφάλειας",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "Απόκρυψη λίστας",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "Εμφάνιση λίστας",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "Σύμπτυξη λίστας",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{done} από {total} ολοκληρώθηκαν",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "Έτοιμα — προστατεύεσαι!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "Γιατί έχει σημασία",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "Εντάξει",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "Πήγαινε εκεί",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "Προσθήκη επαφής έκτακτης ανάγκης",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "Ορισμός PIN λήξης συνεδρίας",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "Ρύθμιση κρυφής λειτουργίας",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "Δοκιμή προσομοίωσης",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "Προσαρμογή λειτουργίας ασφαλείας",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "Παραχώρηση απαιτούμενων αδειών",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "Οι επαφές έκτακτης ανάγκης είναι τα άτομα που η Guardian Angela ειδοποιεί με μήνυμα και κλήση όταν δεν δηλώσεις ότι είσαι ασφαλής. Χωρίς τουλάχιστον μία επαφή, η αλυσίδα δεν έχει πού να κλιμακωθεί.",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "Το PIN λήξης συνεδρίας εμποδίζει κάποιον επιτιθέμενο να τερματίσει αθόρυβα μια ενεργή συνεδρία. Μπορεί να προσπαθήσει, αλλά πέντε λανθασμένες πληκτρολογήσεις ενεργοποιούν σιωπηλά την αλυσίδα κινδύνου σου.",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "Η κρυφή λειτουργία μεταμφιέζει την ενεργή συνεδρία ως κάτι αθώο στην οθόνη — αναπαραγωγή μουσικής, παγωμένο χρονόμετρο, κενή οθόνη κλειδώματος. Χρησιμοποίησέ την όταν κάποιος δίπλα σου δεν πρέπει να δει εφαρμογή ασφαλείας.",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "Η προσομοίωση εκτελεί τη λειτουργία ασφαλείας σου από άκρη σε άκρη χωρίς να στέλνει πραγματικά SMS, να κάνει πραγματικές κλήσεις ή να ηχεί τον δυνατό συναγερμό. Χρησιμοποίησέ την για να μάθεις τους χρονισμούς πριν τους χρειαστείς.",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "Οι προσαρμοσμένες λειτουργίες σου επιτρέπουν να ρυθμίσεις βήματα, χρονισμούς και ενεργοποιητές για μια συγκεκριμένη κατάσταση — επιστροφή στο σπίτι, πρώτο ραντεβού, βραδινή βάρδια. Οι δύο ενσωματωμένες λειτουργίες είναι αφετηρία, όχι προορισμός.",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "Χωρίς άδεια ειδοποιήσεων, η Guardian Angela δεν μπορεί να διατηρήσει τη μόνιμη κατάσταση προσκηνίου, να παραδώσει καμουφλαρισμένες υπενθυμίσεις ή να σε προειδοποιήσει ότι η αλυσίδα πρόκειται να κλιμακωθεί.",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "Άνοιξε τις προεπιλογές κρυφής λειτουργίας και ενεργοποίησε το «Ενεργοποίηση κρυφής λειτουργίας». Από εκεί διαλέγεις μια ψεύτικη μάρκα μουσικής, κρύβεις το χρονόμετρο συνεδρίας ή μεταμφιέζεις το εικονίδιο στην αρχική οθόνη.",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "Στην αρχική οθόνη, αφού επιλέξεις λειτουργία, πάτα το περιγραμμένο κουμπί «Προσομοίωση». Η συνεδρία τρέχει με πορτοκαλί πλαίσιο και σήμα [SIM] — τίποτα δεν φεύγει από το τηλέφωνό σου.",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "Άνοιξε την οθόνη Λειτουργιών και είτε επεξεργάσου μια ενσωματωμένη λειτουργία (Περπάτημα / Ραντεβού) είτε δημιούργησε μία από την αρχή. Ρύθμισε την αλυσίδα, πρόσθεσε ψεύτικη κλήση, όρισε δικούς σου χρονισμούς.",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
+  }
 }

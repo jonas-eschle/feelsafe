@@ -164,5 +164,191 @@
   "stealthTimerDisplaySmall": "Afficher uniquement les chiffres",
   "stealthTimerDisplayNone": "Masquer le minuteur",
   "stealthPresetPodcast": "Podcast",
-  "stealthPresetNone": "Aucun"
+  "stealthPresetNone": "Aucun",
+  "sessionDisarmStealth": "Pas besoin d’Angela",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "Résumé de la chaîne",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "Ce mode n’a pas encore d’étapes – appuyez sur le mode pour le modifier.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "Étape : {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "Attente : {seconds} s",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "Actif : {seconds} s",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "Délai de grâce : {seconds} s",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "Tentatives : {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "Étape suivante : {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "Étape suivante : fin de la chaîne",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "Fermer",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "Maintenir pour rester en sécurité",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "Rappel camouflé",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "Avertissement avec compte à rebours",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "Faux appel",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS à un contact",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "Appel d’un contact",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "Alarme sonore",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "Appel d’urgence",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "Bouton matériel",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "Configuration de sécurité",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "Ignorer la liste",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "Afficher la liste",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "Masquer la liste",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{done} sur {total} terminés",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "C’est prêt – vous êtes protégée !",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "Pourquoi c’est important",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "Compris",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "Y aller",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "Ajouter un contact d’urgence",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "Définir un code PIN de fin de session",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "Configurer le mode furtif",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "Tester une simulation",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "Personnaliser un mode de sécurité",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "Accorder les autorisations requises",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "Les contacts d’urgence sont les personnes que Guardian Angela contacte par message et par appel si vous ne confirmez pas votre sécurité. Sans au moins un contact, la chaîne n’a personne vers qui escalader.",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "Un code PIN de fin de session empêche un agresseur de mettre fin discrètement à une session active. Il peut essayer, mais cinq saisies fausses déclenchent en silence votre chaîne de détresse.",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "Le mode furtif déguise la session active en quelque chose d’anodin à l’écran : un lecteur de musique, un minuteur en pause, un écran de verrouillage vide. À utiliser quand quelqu’un près de vous ne doit pas voir une appli de sécurité.",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "La simulation exécute votre mode de sécurité de bout en bout sans envoyer de vrais SMS, passer de vrais appels ni faire sonner l’alarme. Utilisez-la pour apprendre les délais avant d’en avoir besoin.",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "Les modes personnalisés vous permettent d’ajuster étapes, durées et déclencheurs à une situation précise : rentrer chez soi, un premier rendez-vous, un service de nuit. Les deux modes préinstallés sont des points de départ, pas la destination.",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "Sans autorisation de notifications, Guardian Angela ne peut pas conserver son état persistant en premier plan, livrer les rappels camouflés ou vous prévenir que la chaîne va escalader.",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "Ouvrez les paramètres furtifs par défaut et activez « Activer le mode furtif ». De là vous pouvez choisir une fausse marque de musique, masquer le minuteur de session ou déguiser l’icône d’accueil.",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "Appuyez sur le bouton « Simuler » contouré sur l’écran d’accueil après avoir choisi un mode. La session tourne avec une bordure orange et le badge [SIM] – rien ne quitte votre téléphone.",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "Ouvrez l’écran Modes et modifiez un mode préinstallé (Marche / Rendez-vous) ou créez-en un de toutes pièces. Ajustez la chaîne, ajoutez un faux appel, définissez vos propres délais.",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
+  }
 }

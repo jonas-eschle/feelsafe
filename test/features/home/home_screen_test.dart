@@ -31,7 +31,6 @@ import 'package:guardianangela/domain/models/validation_result.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
-import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -81,28 +80,25 @@ class _FakeHomeController extends HomeController {
 // Test data factories
 // ---------------------------------------------------------------------------
 
-SessionMode _mode(
-  String id,
-  String name, {
-  List<ChainStep>? chainSteps,
-}) => SessionMode(
-  id: id,
-  name: name,
-  chainSteps:
-      chainSteps ??
-      <ChainStep>[
-        ChainStep(
-          id: '$id-step-0',
-          type: ChainStepType.holdButton,
-          order: 0,
-          waitSeconds: 0,
-          durationSeconds: 30,
-          gracePeriodSeconds: 5,
-          retryCount: 0,
-          randomize: false,
-        ),
-      ],
-);
+SessionMode _mode(String id, String name, {List<ChainStep>? chainSteps}) =>
+    SessionMode(
+      id: id,
+      name: name,
+      chainSteps:
+          chainSteps ??
+          <ChainStep>[
+            ChainStep(
+              id: '$id-step-0',
+              type: ChainStepType.holdButton,
+              order: 0,
+              waitSeconds: 0,
+              durationSeconds: 30,
+              gracePeriodSeconds: 5,
+              retryCount: 0,
+              randomize: false,
+            ),
+          ],
+    );
 
 ChainStep _step(
   String id,
@@ -715,10 +711,7 @@ void main() {
         overrides: <Override>[
           homeControllerProvider.overrideWith(
             () => _FakeHomeController(
-              _state(
-                modes: <SessionMode>[mode],
-                selectedModeId: 'walk',
-              ),
+              _state(modes: <SessionMode>[mode], selectedModeId: 'walk'),
             ),
           ),
         ],
@@ -739,9 +732,7 @@ void main() {
         const HomeScreen(),
         overrides: <Override>[
           homeControllerProvider.overrideWith(
-            () => _FakeHomeController(
-              _state(modes: <SessionMode>[]),
-            ),
+            () => _FakeHomeController(_state(modes: <SessionMode>[])),
           ),
         ],
       );
@@ -763,8 +754,6 @@ void main() {
             'walk-0',
             ChainStepType.fakeCall,
             waitSeconds: 2,
-            durationSeconds: 30,
-            gracePeriodSeconds: 5,
             retryCount: 1,
           ),
           _step('walk-1', ChainStepType.smsContact, order: 1),
@@ -776,10 +765,7 @@ void main() {
         overrides: <Override>[
           homeControllerProvider.overrideWith(
             () => _FakeHomeController(
-              _state(
-                modes: <SessionMode>[mode],
-                selectedModeId: 'walk',
-              ),
+              _state(modes: <SessionMode>[mode], selectedModeId: 'walk'),
             ),
           ),
         ],
@@ -798,9 +784,7 @@ void main() {
       expect(find.text(l10n.homeChainSummaryRetry('1')), findsOneWidget);
       // The next step is smsContact.
       expect(
-        find.text(
-          l10n.homeChainSummaryNextStep(l10n.chainStepNameSmsContact),
-        ),
+        find.text(l10n.homeChainSummaryNextStep(l10n.chainStepNameSmsContact)),
         findsOneWidget,
       );
     });
@@ -823,10 +807,7 @@ void main() {
           overrides: <Override>[
             homeControllerProvider.overrideWith(
               () => _FakeHomeController(
-                _state(
-                  modes: <SessionMode>[mode],
-                  selectedModeId: 'walk',
-                ),
+                _state(modes: <SessionMode>[mode], selectedModeId: 'walk'),
               ),
             ),
           ],
@@ -848,10 +829,7 @@ void main() {
         overrides: <Override>[
           homeControllerProvider.overrideWith(
             () => _FakeHomeController(
-              _state(
-                modes: <SessionMode>[mode],
-                selectedModeId: 'walk',
-              ),
+              _state(modes: <SessionMode>[mode], selectedModeId: 'walk'),
             ),
           ),
         ],

@@ -275,5 +275,191 @@
   "stealthPresetNone": "無",
   "@stealthPresetNone": {
     "description": "Stealth preset: no disguise (real session screen)."
+  },
+  "sessionDisarmStealth": "不必找 Angela",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "鏈路摘要",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "此模式尚無步驟——點選模式即可編輯。",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "步驟:{name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "等待:{seconds} 秒",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "進行中:{seconds} 秒",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "寬限期:{seconds} 秒",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "重試次數:{count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "下一步:{name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "下一步:鏈路結束",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "關閉",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "長按以保持安全",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "偽裝提醒",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "倒數警告",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "假來電",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "簡訊聯絡人",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "電話聯絡人",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "高聲警報",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "緊急呼救",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "硬體按鍵",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "安全設定",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "關閉清單",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "展開清單",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "收合清單",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "已完成 {done}/{total}",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "全部就緒——你已受到守護!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "為什麼這很重要",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "我知道了",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "前往",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "新增緊急聯絡人",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "設定會話結束 PIN",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "設定隱身模式",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "試一次模擬",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "自訂一個安全模式",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "授予所需權限",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "緊急聯絡人是你未能按時報平安時 Guardian Angela 會傳訊息與撥打電話的人。沒有至少一位聯絡人,鏈路就無處升級。",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "會話結束 PIN 可防止有人偷偷結束進行中的會話。他們仍可嘗試,但連續輸錯五次將靜默觸發你的求救鏈路。",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "隱身模式會把進行中的會話偽裝成螢幕上不起眼的東西——音樂播放器、暫停的計時器、空白的鎖定畫面。當身旁的人不能讓你看見安全應用時使用。",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "模擬會從頭到尾跑完你的安全模式,但不會真的傳簡訊、撥打電話或響起警報。用它在真正需要前熟悉時間流程。",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "自訂模式可針對特定情境調整步驟、時間與觸發條件——夜路回家、第一次約會、值晚班。內建的兩個模式只是起點,而非終點。",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "沒有通知權限,Guardian Angela 無法維持常駐前景狀態、無法傳送偽裝提醒,也無法在鏈路即將升級時提醒你。",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "開啟隱身預設並打開「啟用隱身模式」。在這裡可以選擇一個偽裝的音樂品牌、隱藏會話計時器,或偽裝主畫面圖示。",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "選定模式後,在主畫面點擊有外框的「模擬」按鈕。會話會以橘色外框和 [SIM] 標籤運行——任何資訊都不會離開你的手機。",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "開啟「模式」頁,既可編輯內建模式(散步 / 約會),也可從零開始建立。調整鏈路、加入假來電、設定自訂時長。",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   }
 }

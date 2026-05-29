@@ -125,160 +125,161 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionDisarm => 'Είμαι ασφαλής';
 
   @override
-  String get sessionDisarmStealth => 'No Angela needed';
+  String get sessionDisarmStealth => 'Δεν χρειάζεται η Άντζελα';
 
   @override
-  String get homeChainSummaryTitle => 'Chain Summary';
+  String get homeChainSummaryTitle => 'Σύνοψη αλυσίδας';
 
   @override
   String get homeChainSummaryEmpty =>
-      'This mode has no steps yet — tap the mode to edit.';
+      'Αυτή η κατάσταση δεν έχει ακόμη βήματα — πατήστε την για επεξεργασία.';
 
   @override
   String homeChainSummaryTimingTitle(Object name) {
-    return 'Step: $name';
+    return 'Βήμα: $name';
   }
 
   @override
   String homeChainSummaryWait(Object seconds) {
-    return 'Wait: ${seconds}s';
+    return 'Αναμονή: $seconds δευτ.';
   }
 
   @override
   String homeChainSummaryDuration(Object seconds) {
-    return 'Active: ${seconds}s';
+    return 'Ενεργό: $seconds δευτ.';
   }
 
   @override
   String homeChainSummaryGrace(Object seconds) {
-    return 'Grace period: ${seconds}s';
+    return 'Περίοδος χάριτος: $seconds δευτ.';
   }
 
   @override
   String homeChainSummaryRetry(Object count) {
-    return 'Retries: $count';
+    return 'Επαναλήψεις: $count';
   }
 
   @override
   String homeChainSummaryNextStep(Object name) {
-    return 'Next step: $name';
+    return 'Επόμενο βήμα: $name';
   }
 
   @override
-  String get homeChainSummaryNextStepNone => 'Next step: end of chain';
+  String get homeChainSummaryNextStepNone => 'Επόμενο βήμα: τέλος αλυσίδας';
 
   @override
-  String get homeChainSummaryClose => 'Close';
+  String get homeChainSummaryClose => 'Κλείσιμο';
 
   @override
-  String get chainStepNameHoldButton => 'Hold to stay safe';
+  String get chainStepNameHoldButton => 'Κρατήστε για να μείνετε ασφαλείς';
 
   @override
-  String get chainStepNameDisguisedReminder => 'Disguised reminder';
+  String get chainStepNameDisguisedReminder => 'Καμουφλαρισμένη υπενθύμιση';
 
   @override
-  String get chainStepNameCountdownWarning => 'Countdown warning';
+  String get chainStepNameCountdownWarning =>
+      'Προειδοποίηση αντίστροφης μέτρησης';
 
   @override
-  String get chainStepNameFakeCall => 'Fake call';
+  String get chainStepNameFakeCall => 'Ψεύτικη κλήση';
 
   @override
-  String get chainStepNameSmsContact => 'SMS contact';
+  String get chainStepNameSmsContact => 'SMS σε επαφή';
 
   @override
-  String get chainStepNamePhoneCallContact => 'Phone call contact';
+  String get chainStepNamePhoneCallContact => 'Κλήση σε επαφή';
 
   @override
-  String get chainStepNameLoudAlarm => 'Loud alarm';
+  String get chainStepNameLoudAlarm => 'Δυνατός συναγερμός';
 
   @override
-  String get chainStepNameCallEmergency => 'Emergency call';
+  String get chainStepNameCallEmergency => 'Κλήση έκτακτης ανάγκης';
 
   @override
-  String get chainStepNameHardwareButton => 'Hardware button';
+  String get chainStepNameHardwareButton => 'Πλήκτρο υλικού';
 
   @override
-  String get homeChecklistTitle => 'Safety Setup';
+  String get homeChecklistTitle => 'Ρύθμιση ασφάλειας';
 
   @override
-  String get homeChecklistDismissTooltip => 'Dismiss checklist';
+  String get homeChecklistDismissTooltip => 'Απόκρυψη λίστας';
 
   @override
-  String get homeChecklistExpandTooltip => 'Show checklist';
+  String get homeChecklistExpandTooltip => 'Εμφάνιση λίστας';
 
   @override
-  String get homeChecklistCollapseTooltip => 'Hide checklist';
+  String get homeChecklistCollapseTooltip => 'Σύμπτυξη λίστας';
 
   @override
   String homeChecklistProgress(Object done, Object total) {
-    return '$done of $total done';
+    return '$done από $total ολοκληρώθηκαν';
   }
 
   @override
-  String get homeChecklistAllDoneBanner => 'All set — you\'re protected!';
+  String get homeChecklistAllDoneBanner => 'Έτοιμα — προστατεύεσαι!';
 
   @override
-  String get homeChecklistInfoTooltip => 'Why this matters';
+  String get homeChecklistInfoTooltip => 'Γιατί έχει σημασία';
 
   @override
-  String get homeChecklistGotIt => 'Got it';
+  String get homeChecklistGotIt => 'Εντάξει';
 
   @override
-  String get homeChecklistGoThere => 'Go there';
+  String get homeChecklistGoThere => 'Πήγαινε εκεί';
 
   @override
-  String get homeChecklistItem1Title => 'Add an emergency contact';
+  String get homeChecklistItem1Title => 'Προσθήκη επαφής έκτακτης ανάγκης';
 
   @override
-  String get homeChecklistItem2Title => 'Set a session-end PIN';
+  String get homeChecklistItem2Title => 'Ορισμός PIN λήξης συνεδρίας';
 
   @override
-  String get homeChecklistItem3Title => 'Configure stealth mode';
+  String get homeChecklistItem3Title => 'Ρύθμιση κρυφής λειτουργίας';
 
   @override
-  String get homeChecklistItem4Title => 'Test a simulation';
+  String get homeChecklistItem4Title => 'Δοκιμή προσομοίωσης';
 
   @override
-  String get homeChecklistItem5Title => 'Customize a safety mode';
+  String get homeChecklistItem5Title => 'Προσαρμογή λειτουργίας ασφαλείας';
 
   @override
-  String get homeChecklistItem6Title => 'Grant required permissions';
+  String get homeChecklistItem6Title => 'Παραχώρηση απαιτούμενων αδειών';
 
   @override
   String get checklistInfo1Body =>
-      'Emergency contacts are the people Guardian Angela messages and calls when you fail to check in. Without at least one contact, the chain has nowhere to escalate.';
+      'Οι επαφές έκτακτης ανάγκης είναι τα άτομα που η Guardian Angela ειδοποιεί με μήνυμα και κλήση όταν δεν δηλώσεις ότι είσαι ασφαλής. Χωρίς τουλάχιστον μία επαφή, η αλυσίδα δεν έχει πού να κλιμακωθεί.';
 
   @override
   String get checklistInfo2Body =>
-      'A session-end PIN prevents an attacker from quietly ending an active session. They can still attempt it, but typing the wrong PIN five times silently fires your distress chain.';
+      'Το PIN λήξης συνεδρίας εμποδίζει κάποιον επιτιθέμενο να τερματίσει αθόρυβα μια ενεργή συνεδρία. Μπορεί να προσπαθήσει, αλλά πέντε λανθασμένες πληκτρολογήσεις ενεργοποιούν σιωπηλά την αλυσίδα κινδύνου σου.';
 
   @override
   String get checklistInfo3Body =>
-      'Stealth mode disguises the active session as something innocuous on your screen — a music player, a paused timer, a blank lock screen. Use it when somebody nearby cannot see you running a safety app.';
+      'Η κρυφή λειτουργία μεταμφιέζει την ενεργή συνεδρία ως κάτι αθώο στην οθόνη — αναπαραγωγή μουσικής, παγωμένο χρονόμετρο, κενή οθόνη κλειδώματος. Χρησιμοποίησέ την όταν κάποιος δίπλα σου δεν πρέπει να δει εφαρμογή ασφαλείας.';
 
   @override
   String get checklistInfo4Body =>
-      'Simulation runs your safety mode end-to-end without sending real SMS, placing real calls, or sounding the loud alarm. Use it to learn the timings before you ever need them.';
+      'Η προσομοίωση εκτελεί τη λειτουργία ασφαλείας σου από άκρη σε άκρη χωρίς να στέλνει πραγματικά SMS, να κάνει πραγματικές κλήσεις ή να ηχεί τον δυνατό συναγερμό. Χρησιμοποίησέ την για να μάθεις τους χρονισμούς πριν τους χρειαστείς.';
 
   @override
   String get checklistInfo5Body =>
-      'Custom modes let you tune the steps, timings, and triggers to a specific situation — walking home, a first date, a late shift. The two seed modes are starting points, not the destination.';
+      'Οι προσαρμοσμένες λειτουργίες σου επιτρέπουν να ρυθμίσεις βήματα, χρονισμούς και ενεργοποιητές για μια συγκεκριμένη κατάσταση — επιστροφή στο σπίτι, πρώτο ραντεβού, βραδινή βάρδια. Οι δύο ενσωματωμένες λειτουργίες είναι αφετηρία, όχι προορισμός.';
 
   @override
   String get checklistInfo6Body =>
-      'Without notification permission, Guardian Angela cannot keep its persistent foreground status, deliver disguised reminders, or warn you that the chain is about to escalate.';
+      'Χωρίς άδεια ειδοποιήσεων, η Guardian Angela δεν μπορεί να διατηρήσει τη μόνιμη κατάσταση προσκηνίου, να παραδώσει καμουφλαρισμένες υπενθυμίσεις ή να σε προειδοποιήσει ότι η αλυσίδα πρόκειται να κλιμακωθεί.';
 
   @override
   String get checklistTutorial3Body =>
-      'Open the stealth defaults and toggle \'Enable stealth mode\'. From there you can pick a fake music brand, hide the session timer, or disguise the home-screen icon.';
+      'Άνοιξε τις προεπιλογές κρυφής λειτουργίας και ενεργοποίησε το «Ενεργοποίηση κρυφής λειτουργίας». Από εκεί διαλέγεις μια ψεύτικη μάρκα μουσικής, κρύβεις το χρονόμετρο συνεδρίας ή μεταμφιέζεις το εικονίδιο στην αρχική οθόνη.';
 
   @override
   String get checklistTutorial4Body =>
-      'Tap the outlined \'Simulate\' button on the home screen after selecting a mode. The session runs with an orange border and the [SIM] badge — nothing leaves your phone.';
+      'Στην αρχική οθόνη, αφού επιλέξεις λειτουργία, πάτα το περιγραμμένο κουμπί «Προσομοίωση». Η συνεδρία τρέχει με πορτοκαλί πλαίσιο και σήμα [SIM] — τίποτα δεν φεύγει από το τηλέφωνό σου.';
 
   @override
   String get checklistTutorial5Body =>
-      'Open the Modes screen and either edit a seed mode (Walk / Date) or create a new one from scratch. Tweak the chain, add a fake call, set custom timings.';
+      'Άνοιξε την οθόνη Λειτουργιών και είτε επεξεργάσου μια ενσωματωμένη λειτουργία (Περπάτημα / Ραντεβού) είτε δημιούργησε μία από την αρχή. Ρύθμισε την αλυσίδα, πρόσθεσε ψεύτικη κλήση, όρισε δικούς σου χρονισμούς.';
 
   @override
   String get sessionHoldPrompt =>

@@ -146,5 +146,191 @@
   "stealthTimerDisplaySmall": "نمایش فقط اعداد",
   "stealthTimerDisplayNone": "پنهان کردن تایمر",
   "stealthPresetPodcast": "پادکست",
-  "stealthPresetNone": "هیچ‌کدام"
+  "stealthPresetNone": "هیچ‌کدام",
+  "sessionDisarmStealth": "نیازی به آنجلا نیست",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "خلاصهٔ زنجیره",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "این حالت هنوز مرحله‌ای ندارد — برای ویرایش روی حالت بزن.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "مرحله: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "انتظار: {seconds} ثانیه",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "فعال: {seconds} ثانیه",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "مهلت: {seconds} ثانیه",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "تلاش‌های مجدد: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "مرحلهٔ بعد: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "مرحلهٔ بعد: پایان زنجیره",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "بستن",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "برای ایمن ماندن نگه دار",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "یادآور استتاری",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "هشدار شمارش معکوس",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "تماس ساختگی",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS به مخاطب",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "تماس با مخاطب",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "زنگ هشدار بلند",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "تماس اضطراری",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "دکمهٔ سخت‌افزاری",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "راه‌اندازی ایمنی",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "بستن فهرست",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "نمایش فهرست",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "جمع کردن فهرست",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{done} از {total} انجام شد",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "همه چیز آماده است — تو در امانی!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "چرا مهم است",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "فهمیدم",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "برو آن‌جا",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "یک مخاطب اضطراری اضافه کن",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "PIN پایان جلسه را تعیین کن",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "حالت مخفی را تنظیم کن",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "یک شبیه‌سازی را امتحان کن",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "یک حالت ایمنی را شخصی‌سازی کن",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "دسترسی‌های لازم را بده",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "مخاطبان اضطراری کسانی‌اند که Guardian Angela وقتی به‌موقع علامت ایمن نزدی به آن‌ها پیام می‌دهد و زنگ می‌زند. بدون حداقل یک مخاطب، زنجیره جایی برای تشدید هشدار ندارد.",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "PIN پایان جلسه مانع می‌شود مهاجم بی‌سروصدا یک جلسهٔ فعال را پایان دهد. می‌تواند تلاش کند، اما پنج بار وارد کردن PIN اشتباه، زنجیرهٔ هشدار تو را بی‌صدا فعال می‌کند.",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "حالت مخفی، جلسهٔ فعال را روی صفحه به چیزی بی‌خطر تغییر چهره می‌دهد — یک پخش‌کنندهٔ موسیقی، یک تایمر متوقف، یک صفحهٔ قفل خالی. وقتی کسی نزدیک تو نباید ببیند برنامهٔ ایمنی اجرا می‌کنی از آن استفاده کن.",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "شبیه‌سازی حالت ایمنی را از ابتدا تا انتها اجرا می‌کند بدون ارسال SMS واقعی، بدون تماس واقعی و بدون پخش زنگ بلند. از آن برای آموختن زمان‌بندی‌ها پیش از نیاز واقعی استفاده کن.",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "حالت‌های دلخواه به تو اجازه می‌دهند مراحل، زمان‌بندی‌ها و محرّک‌ها را برای موقعیتی خاص تنظیم کنی — راه برگشت به خانه، اولین قرار، شیفت شب. دو حالت پیش‌فرض نقطهٔ شروع‌اند، نه مقصد.",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "بدون اجازهٔ اعلان، Guardian Angela نمی‌تواند وضعیت دائمی پیش‌زمینه را حفظ کند، یادآورهای استتاری بفرستد یا قبل از تشدید زنجیره به تو هشدار دهد.",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "پیش‌فرض‌های مخفی را باز کن و «فعال‌سازی حالت مخفی» را روشن کن. از همان‌جا می‌توانی یک نام تجاری موسیقی ساختگی انتخاب کنی، تایمر جلسه را پنهان کنی یا آیکن صفحهٔ اصلی را تغییر چهره دهی.",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "پس از انتخاب یک حالت، روی دکمهٔ «شبیه‌سازی» با حاشیه در صفحهٔ اصلی بزن. جلسه با حاشیهٔ نارنجی و نشان [SIM] اجرا می‌شود — هیچ چیز از گوشی‌ات خارج نمی‌شود.",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "صفحهٔ «حالت‌ها» را باز کن و یا یک حالت پیش‌فرض (پیاده‌روی / قرار) را ویرایش کن، یا یک حالت تازه از صفر بساز. زنجیره را تنظیم کن، تماس ساختگی اضافه کن، زمان‌بندی دلخواه بگذار.",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
+  }
 }

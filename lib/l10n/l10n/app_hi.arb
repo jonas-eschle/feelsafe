@@ -146,5 +146,191 @@
   "stealthTimerDisplaySmall": "केवल संख्याएँ दिखाएँ",
   "stealthTimerDisplayNone": "टाइमर छिपाएँ",
   "stealthPresetPodcast": "पॉडकास्ट",
-  "stealthPresetNone": "कोई नहीं"
+  "stealthPresetNone": "कोई नहीं",
+  "sessionDisarmStealth": "एंजेला की ज़रूरत नहीं",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
+  },
+  "homeChainSummaryTitle": "चेन सारांश",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "इस मोड में अभी कोई चरण नहीं है — संपादित करने के लिए मोड पर टैप करें।",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "चरण: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "प्रतीक्षा: {seconds} सेकंड",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "सक्रिय: {seconds} सेकंड",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "छूट अवधि: {seconds} सेकंड",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "पुनःप्रयास: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "अगला चरण: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "अगला चरण: चेन समाप्त",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "बंद करें",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "सुरक्षित रहने के लिए दबाए रखें",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "छिपा हुआ रिमाइंडर",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "उलटी गिनती चेतावनी",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "नकली कॉल",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "संपर्क को SMS",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "संपर्क को फोन",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "तेज़ अलार्म",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "आपातकालीन कॉल",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "हार्डवेयर बटन",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
+  "homeChecklistTitle": "सुरक्षा सेटअप",
+  "@homeChecklistTitle": {
+    "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
+  },
+  "homeChecklistDismissTooltip": "सूची हटाएँ",
+  "@homeChecklistDismissTooltip": {
+    "description": "Tooltip on the [×] button that permanently dismisses the checklist card."
+  },
+  "homeChecklistExpandTooltip": "सूची दिखाएँ",
+  "@homeChecklistExpandTooltip": {
+    "description": "Tooltip on the chevron button that expands the collapsed checklist card."
+  },
+  "homeChecklistCollapseTooltip": "सूची छिपाएँ",
+  "@homeChecklistCollapseTooltip": {
+    "description": "Tooltip on the chevron button that collapses the expanded checklist card."
+  },
+  "homeChecklistProgress": "{total} में से {done} पूरे",
+  "@homeChecklistProgress": {
+    "description": "Progress text shown next to the progress bar.",
+    "placeholders": {
+      "done": {"example": "3"},
+      "total": {"example": "6"}
+    }
+  },
+  "homeChecklistAllDoneBanner": "सब तैयार — आप सुरक्षित हैं!",
+  "@homeChecklistAllDoneBanner": {
+    "description": "Brief banner shown the moment the last item is checked. The card auto-dismisses next visit."
+  },
+  "homeChecklistInfoTooltip": "क्यों ज़रूरी है",
+  "@homeChecklistInfoTooltip": {
+    "description": "Tooltip on the (ℹ) info icon at the end of each checklist row."
+  },
+  "homeChecklistGotIt": "समझ गई",
+  "@homeChecklistGotIt": {
+    "description": "Single primary action on info and confirm-only tutorial sheets."
+  },
+  "homeChecklistGoThere": "वहाँ जाएँ",
+  "@homeChecklistGoThere": {
+    "description": "Primary action on tutorial sheets that deep-link into a settings or modes screen."
+  },
+  "homeChecklistItem1Title": "आपातकालीन संपर्क जोड़ें",
+  "@homeChecklistItem1Title": {
+    "description": "Title of checklist item 1. Completes when at least one EmergencyContact exists."
+  },
+  "homeChecklistItem2Title": "सत्र-समाप्ति PIN सेट करें",
+  "@homeChecklistItem2Title": {
+    "description": "Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null."
+  },
+  "homeChecklistItem3Title": "स्टेल्थ मोड कॉन्फ़िगर करें",
+  "@homeChecklistItem3Title": {
+    "description": "Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true."
+  },
+  "homeChecklistItem4Title": "एक सिमुलेशन आज़माएँ",
+  "@homeChecklistItem4Title": {
+    "description": "Title of checklist item 4. Completes after the first Simulate session."
+  },
+  "homeChecklistItem5Title": "एक सुरक्षा मोड अनुकूलित करें",
+  "@homeChecklistItem5Title": {
+    "description": "Title of checklist item 5. Completes when any non-seed SessionMode exists."
+  },
+  "homeChecklistItem6Title": "ज़रूरी अनुमतियाँ दें",
+  "@homeChecklistItem6Title": {
+    "description": "Title of checklist item 6. Completes when Permission.notification.status.isGranted."
+  },
+  "checklistInfo1Body": "आपातकालीन संपर्क वे लोग हैं जिन्हें Guardian Angela तब संदेश भेजती और कॉल करती है जब आप समय पर चेक-इन नहीं कर पातीं। बिना कम से कम एक संपर्क के, चेन को आगे बढ़ाने की कोई जगह नहीं रहती।",
+  "@checklistInfo1Body": {
+    "description": "Info sheet body for checklist item 1 (kept under 80 words)."
+  },
+  "checklistInfo2Body": "सत्र-समाप्ति PIN किसी हमलावर को चुपचाप सक्रिय सत्र बंद करने से रोकती है। वह कोशिश कर सकता है, पर पाँच ग़लत प्रयास चुपचाप आपकी डिस्ट्रेस चेन चालू कर देंगे।",
+  "@checklistInfo2Body": {
+    "description": "Info sheet body for checklist item 2 (kept under 80 words)."
+  },
+  "checklistInfo3Body": "स्टेल्थ मोड सक्रिय सत्र को स्क्रीन पर किसी सामान्य चीज़ की तरह छिपाता है — म्यूज़िक प्लेयर, रुका हुआ टाइमर, खाली लॉक स्क्रीन। उपयोग तब करें जब पास का कोई व्यक्ति आपको सुरक्षा ऐप चलाते हुए न देख सके।",
+  "@checklistInfo3Body": {
+    "description": "Info sheet body for checklist item 3 (kept under 80 words)."
+  },
+  "checklistInfo4Body": "सिमुलेशन आपके सुरक्षा मोड को पूरा चलाता है, पर असली SMS नहीं भेजता, असली कॉल नहीं लगाता और तेज़ अलार्म नहीं बजाता। ज़रूरत पड़ने से पहले समय-क्रम सीखने के लिए इसका उपयोग करें।",
+  "@checklistInfo4Body": {
+    "description": "Info sheet body for checklist item 4 (kept under 80 words)."
+  },
+  "checklistInfo5Body": "कस्टम मोड आपको किसी ख़ास स्थिति के अनुसार चरण, समय और ट्रिगर ट्यून करने देते हैं — घर लौटना, पहली डेट, देर की शिफ़्ट। दो बिल्ट-इन मोड शुरुआती बिंदु हैं, मंज़िल नहीं।",
+  "@checklistInfo5Body": {
+    "description": "Info sheet body for checklist item 5 (kept under 80 words)."
+  },
+  "checklistInfo6Body": "नोटिफ़िकेशन अनुमति के बिना Guardian Angela अपनी स्थायी फ़ोरग्राउंड स्थिति नहीं रख सकती, छिपे रिमाइंडर नहीं भेज सकती, और चेन के बढ़ने से पहले आपको सूचित नहीं कर सकती।",
+  "@checklistInfo6Body": {
+    "description": "Info sheet body for checklist item 6 (kept under 80 words)."
+  },
+  "checklistTutorial3Body": "स्टेल्थ डिफ़ॉल्ट खोलें और ‘स्टेल्थ मोड सक्षम करें’ चालू करें। वहाँ से आप नकली म्यूज़िक ब्रांड चुन सकती हैं, सत्र टाइमर छिपा सकती हैं या होम-स्क्रीन आइकन छिपा सकती हैं।",
+  "@checklistTutorial3Body": {
+    "description": "Tutorial sheet body for item 3 (kept under 80 words)."
+  },
+  "checklistTutorial4Body": "मोड चुनने के बाद होम स्क्रीन पर आउटलाइन वाले ‘सिमुलेट’ बटन पर टैप करें। सत्र नारंगी बॉर्डर और [SIM] बैज के साथ चलता है — कुछ भी आपके फ़ोन से बाहर नहीं जाता।",
+  "@checklistTutorial4Body": {
+    "description": "Tutorial sheet body for item 4 (kept under 80 words)."
+  },
+  "checklistTutorial5Body": "मोड स्क्रीन खोलें और या तो किसी बिल्ट-इन मोड (वॉक/डेट) को संपादित करें या नया मोड बनाएँ। चेन में बदलाव करें, नकली कॉल जोड़ें, अपने समय निर्धारित करें।",
+  "@checklistTutorial5Body": {
+    "description": "Tutorial sheet body for item 5 (kept under 80 words)."
+  }
 }

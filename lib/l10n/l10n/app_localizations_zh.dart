@@ -122,160 +122,159 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionDisarm => '我安全';
 
   @override
-  String get sessionDisarmStealth => 'No Angela needed';
+  String get sessionDisarmStealth => '无需 Angela';
 
   @override
-  String get homeChainSummaryTitle => 'Chain Summary';
+  String get homeChainSummaryTitle => '链路概要';
 
   @override
-  String get homeChainSummaryEmpty =>
-      'This mode has no steps yet — tap the mode to edit.';
+  String get homeChainSummaryEmpty => '该模式还没有步骤——点击模式即可编辑。';
 
   @override
   String homeChainSummaryTimingTitle(Object name) {
-    return 'Step: $name';
+    return '步骤:$name';
   }
 
   @override
   String homeChainSummaryWait(Object seconds) {
-    return 'Wait: ${seconds}s';
+    return '等待:$seconds 秒';
   }
 
   @override
   String homeChainSummaryDuration(Object seconds) {
-    return 'Active: ${seconds}s';
+    return '进行中:$seconds 秒';
   }
 
   @override
   String homeChainSummaryGrace(Object seconds) {
-    return 'Grace period: ${seconds}s';
+    return '宽限期:$seconds 秒';
   }
 
   @override
   String homeChainSummaryRetry(Object count) {
-    return 'Retries: $count';
+    return '重试次数:$count';
   }
 
   @override
   String homeChainSummaryNextStep(Object name) {
-    return 'Next step: $name';
+    return '下一步:$name';
   }
 
   @override
-  String get homeChainSummaryNextStepNone => 'Next step: end of chain';
+  String get homeChainSummaryNextStepNone => '下一步:链路结束';
 
   @override
-  String get homeChainSummaryClose => 'Close';
+  String get homeChainSummaryClose => '关闭';
 
   @override
-  String get chainStepNameHoldButton => 'Hold to stay safe';
+  String get chainStepNameHoldButton => '长按以保持安全';
 
   @override
-  String get chainStepNameDisguisedReminder => 'Disguised reminder';
+  String get chainStepNameDisguisedReminder => '伪装提醒';
 
   @override
-  String get chainStepNameCountdownWarning => 'Countdown warning';
+  String get chainStepNameCountdownWarning => '倒计时警告';
 
   @override
-  String get chainStepNameFakeCall => 'Fake call';
+  String get chainStepNameFakeCall => '虚假来电';
 
   @override
-  String get chainStepNameSmsContact => 'SMS contact';
+  String get chainStepNameSmsContact => '短信联系人';
 
   @override
-  String get chainStepNamePhoneCallContact => 'Phone call contact';
+  String get chainStepNamePhoneCallContact => '电话联系人';
 
   @override
-  String get chainStepNameLoudAlarm => 'Loud alarm';
+  String get chainStepNameLoudAlarm => '高声警报';
 
   @override
-  String get chainStepNameCallEmergency => 'Emergency call';
+  String get chainStepNameCallEmergency => '紧急呼救';
 
   @override
-  String get chainStepNameHardwareButton => 'Hardware button';
+  String get chainStepNameHardwareButton => '硬件按键';
 
   @override
-  String get homeChecklistTitle => 'Safety Setup';
+  String get homeChecklistTitle => '安全设置';
 
   @override
-  String get homeChecklistDismissTooltip => 'Dismiss checklist';
+  String get homeChecklistDismissTooltip => '关闭清单';
 
   @override
-  String get homeChecklistExpandTooltip => 'Show checklist';
+  String get homeChecklistExpandTooltip => '展开清单';
 
   @override
-  String get homeChecklistCollapseTooltip => 'Hide checklist';
+  String get homeChecklistCollapseTooltip => '收起清单';
 
   @override
   String homeChecklistProgress(Object done, Object total) {
-    return '$done of $total done';
+    return '已完成 $done/$total';
   }
 
   @override
-  String get homeChecklistAllDoneBanner => 'All set — you\'re protected!';
+  String get homeChecklistAllDoneBanner => '全部就绪——你已受到守护!';
 
   @override
-  String get homeChecklistInfoTooltip => 'Why this matters';
+  String get homeChecklistInfoTooltip => '为什么重要';
 
   @override
-  String get homeChecklistGotIt => 'Got it';
+  String get homeChecklistGotIt => '我知道了';
 
   @override
-  String get homeChecklistGoThere => 'Go there';
+  String get homeChecklistGoThere => '前往';
 
   @override
-  String get homeChecklistItem1Title => 'Add an emergency contact';
+  String get homeChecklistItem1Title => '添加紧急联系人';
 
   @override
-  String get homeChecklistItem2Title => 'Set a session-end PIN';
+  String get homeChecklistItem2Title => '设置会话结束 PIN';
 
   @override
-  String get homeChecklistItem3Title => 'Configure stealth mode';
+  String get homeChecklistItem3Title => '配置隐身模式';
 
   @override
-  String get homeChecklistItem4Title => 'Test a simulation';
+  String get homeChecklistItem4Title => '试一次模拟';
 
   @override
-  String get homeChecklistItem5Title => 'Customize a safety mode';
+  String get homeChecklistItem5Title => '定制一个安全模式';
 
   @override
-  String get homeChecklistItem6Title => 'Grant required permissions';
+  String get homeChecklistItem6Title => '授予所需权限';
 
   @override
   String get checklistInfo1Body =>
-      'Emergency contacts are the people Guardian Angela messages and calls when you fail to check in. Without at least one contact, the chain has nowhere to escalate.';
+      '紧急联系人是当你未能按时签到时,Guardian Angela 会向其发送短信和打电话的人。没有至少一位联系人,链路就无处升级。';
 
   @override
   String get checklistInfo2Body =>
-      'A session-end PIN prevents an attacker from quietly ending an active session. They can still attempt it, but typing the wrong PIN five times silently fires your distress chain.';
+      '会话结束 PIN 可防止攻击者悄悄结束正在进行的会话。他们仍可尝试,但连续输错五次将静默触发你的求助链路。';
 
   @override
   String get checklistInfo3Body =>
-      'Stealth mode disguises the active session as something innocuous on your screen — a music player, a paused timer, a blank lock screen. Use it when somebody nearby cannot see you running a safety app.';
+      '隐身模式会把正在进行的会话伪装成屏幕上不起眼的东西——音乐播放器、暂停的计时器、空白锁屏。当身边的人不能让你看到安全应用时使用。';
 
   @override
   String get checklistInfo4Body =>
-      'Simulation runs your safety mode end-to-end without sending real SMS, placing real calls, or sounding the loud alarm. Use it to learn the timings before you ever need them.';
+      '模拟会从头到尾运行你的安全模式,但不会真正发送短信、拨打电话或响起警报。用它在真正需要前熟悉时序。';
 
   @override
   String get checklistInfo5Body =>
-      'Custom modes let you tune the steps, timings, and triggers to a specific situation — walking home, a first date, a late shift. The two seed modes are starting points, not the destination.';
+      '自定义模式可针对具体情境调整步骤、时长和触发条件——走夜路、第一次约会、上夜班。内置的两个模式只是起点,而非终点。';
 
   @override
   String get checklistInfo6Body =>
-      'Without notification permission, Guardian Angela cannot keep its persistent foreground status, deliver disguised reminders, or warn you that the chain is about to escalate.';
+      '没有通知权限,Guardian Angela 无法保持常驻前台状态、无法发出伪装提醒,也无法在链路即将升级时提醒你。';
 
   @override
   String get checklistTutorial3Body =>
-      'Open the stealth defaults and toggle \'Enable stealth mode\'. From there you can pick a fake music brand, hide the session timer, or disguise the home-screen icon.';
+      '打开隐身默认设置并打开「启用隐身模式」。在那里你可以选择一个伪装的音乐品牌、隐藏会话计时器,或者伪装主屏图标。';
 
   @override
   String get checklistTutorial4Body =>
-      'Tap the outlined \'Simulate\' button on the home screen after selecting a mode. The session runs with an orange border and the [SIM] badge — nothing leaves your phone.';
+      '选定模式后,在首页点击带边框的「模拟」按钮。会话会以橙色边框和 [SIM] 标记运行——任何信息都不会离开你的手机。';
 
   @override
   String get checklistTutorial5Body =>
-      'Open the Modes screen and either edit a seed mode (Walk / Date) or create a new one from scratch. Tweak the chain, add a fake call, set custom timings.';
+      '打开「模式」页,既可编辑内置模式(步行 / 约会),也可从零创建。调整链路、加入虚假来电、设置自定义时长。';
 
   @override
   String get sessionHoldPrompt => '按住以保持安全';
@@ -1901,6 +1900,161 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionDisarm => '我很安全';
+
+  @override
+  String get sessionDisarmStealth => '不必找 Angela';
+
+  @override
+  String get homeChainSummaryTitle => '鏈路摘要';
+
+  @override
+  String get homeChainSummaryEmpty => '此模式尚無步驟——點選模式即可編輯。';
+
+  @override
+  String homeChainSummaryTimingTitle(Object name) {
+    return '步驟:$name';
+  }
+
+  @override
+  String homeChainSummaryWait(Object seconds) {
+    return '等待:$seconds 秒';
+  }
+
+  @override
+  String homeChainSummaryDuration(Object seconds) {
+    return '進行中:$seconds 秒';
+  }
+
+  @override
+  String homeChainSummaryGrace(Object seconds) {
+    return '寬限期:$seconds 秒';
+  }
+
+  @override
+  String homeChainSummaryRetry(Object count) {
+    return '重試次數:$count';
+  }
+
+  @override
+  String homeChainSummaryNextStep(Object name) {
+    return '下一步:$name';
+  }
+
+  @override
+  String get homeChainSummaryNextStepNone => '下一步:鏈路結束';
+
+  @override
+  String get homeChainSummaryClose => '關閉';
+
+  @override
+  String get chainStepNameHoldButton => '長按以保持安全';
+
+  @override
+  String get chainStepNameDisguisedReminder => '偽裝提醒';
+
+  @override
+  String get chainStepNameCountdownWarning => '倒數警告';
+
+  @override
+  String get chainStepNameFakeCall => '假來電';
+
+  @override
+  String get chainStepNameSmsContact => '簡訊聯絡人';
+
+  @override
+  String get chainStepNamePhoneCallContact => '電話聯絡人';
+
+  @override
+  String get chainStepNameLoudAlarm => '高聲警報';
+
+  @override
+  String get chainStepNameCallEmergency => '緊急呼救';
+
+  @override
+  String get chainStepNameHardwareButton => '硬體按鍵';
+
+  @override
+  String get homeChecklistTitle => '安全設定';
+
+  @override
+  String get homeChecklistDismissTooltip => '關閉清單';
+
+  @override
+  String get homeChecklistExpandTooltip => '展開清單';
+
+  @override
+  String get homeChecklistCollapseTooltip => '收合清單';
+
+  @override
+  String homeChecklistProgress(Object done, Object total) {
+    return '已完成 $done/$total';
+  }
+
+  @override
+  String get homeChecklistAllDoneBanner => '全部就緒——你已受到守護!';
+
+  @override
+  String get homeChecklistInfoTooltip => '為什麼這很重要';
+
+  @override
+  String get homeChecklistGotIt => '我知道了';
+
+  @override
+  String get homeChecklistGoThere => '前往';
+
+  @override
+  String get homeChecklistItem1Title => '新增緊急聯絡人';
+
+  @override
+  String get homeChecklistItem2Title => '設定會話結束 PIN';
+
+  @override
+  String get homeChecklistItem3Title => '設定隱身模式';
+
+  @override
+  String get homeChecklistItem4Title => '試一次模擬';
+
+  @override
+  String get homeChecklistItem5Title => '自訂一個安全模式';
+
+  @override
+  String get homeChecklistItem6Title => '授予所需權限';
+
+  @override
+  String get checklistInfo1Body =>
+      '緊急聯絡人是你未能按時報平安時 Guardian Angela 會傳訊息與撥打電話的人。沒有至少一位聯絡人,鏈路就無處升級。';
+
+  @override
+  String get checklistInfo2Body =>
+      '會話結束 PIN 可防止有人偷偷結束進行中的會話。他們仍可嘗試,但連續輸錯五次將靜默觸發你的求救鏈路。';
+
+  @override
+  String get checklistInfo3Body =>
+      '隱身模式會把進行中的會話偽裝成螢幕上不起眼的東西——音樂播放器、暫停的計時器、空白的鎖定畫面。當身旁的人不能讓你看見安全應用時使用。';
+
+  @override
+  String get checklistInfo4Body =>
+      '模擬會從頭到尾跑完你的安全模式,但不會真的傳簡訊、撥打電話或響起警報。用它在真正需要前熟悉時間流程。';
+
+  @override
+  String get checklistInfo5Body =>
+      '自訂模式可針對特定情境調整步驟、時間與觸發條件——夜路回家、第一次約會、值晚班。內建的兩個模式只是起點,而非終點。';
+
+  @override
+  String get checklistInfo6Body =>
+      '沒有通知權限,Guardian Angela 無法維持常駐前景狀態、無法傳送偽裝提醒,也無法在鏈路即將升級時提醒你。';
+
+  @override
+  String get checklistTutorial3Body =>
+      '開啟隱身預設並打開「啟用隱身模式」。在這裡可以選擇一個偽裝的音樂品牌、隱藏會話計時器,或偽裝主畫面圖示。';
+
+  @override
+  String get checklistTutorial4Body =>
+      '選定模式後,在主畫面點擊有外框的「模擬」按鈕。會話會以橘色外框和 [SIM] 標籤運行——任何資訊都不會離開你的手機。';
+
+  @override
+  String get checklistTutorial5Body =>
+      '開啟「模式」頁,既可編輯內建模式(散步 / 約會),也可從零開始建立。調整鏈路、加入假來電、設定自訂時長。';
 
   @override
   String get sessionHoldPrompt => '按住以保持安全';
