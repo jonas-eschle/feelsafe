@@ -46,7 +46,12 @@ void main() {
       'R-24': [], // ContactFormScreen in onboarding (Phase 6)
       'R-25': [], // SessionLogRecorder subscription (Phase 5)
       'R-26': [], // battery alert separate engine (Phase 5)
-      'R-27': [], // PIN collision: app != session-end != duress (Phase 5)
+      'R-27': [
+        // Cross-overlay shared in-memory wrong-PIN counter (spec 06:187 R-27 §Counter scope).
+        // EndSessionOverlay (2 wrong) + distress-cancel (3 wrong) shares one
+        // controller counter and fires confirmDistress on the combined 5th attempt.
+        'test/features/session/session_screen_test.dart',
+      ],
       'R-28': [], // permission audit helper (Phase 5)
       'R-29': [], // distress mode CRUD (Phase 6)
       'R-30': [], // per-step × global gradual volume (Phase 3)
