@@ -22,6 +22,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
+import 'package:guardianangela/core/widgets/swipe_slider.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
@@ -243,6 +244,7 @@ SessionState _runningState({
   String? lastError,
   int missCount = 0,
   int elapsedSeconds = 42,
+  bool stealthEnabled = false,
 }) {
   final step = _step(type, config: config);
   return SessionState(
@@ -262,6 +264,7 @@ SessionState _runningState({
     priorStartedAt: priorStartedAt,
     lastError: lastError,
     needsGpsDestinationPrompt: needsGpsDestinationPrompt,
+    stealthEnabled: stealthEnabled,
   );
 }
 
@@ -362,15 +365,20 @@ class _Blank extends StatelessWidget {
   Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
-/// Drags the swipe slider knob from its starting position past the
-/// 0.7 threshold so [SwipeSlider.onConfirm] fires.
+/// Drags the [EndSessionOverlay] swipe slider knob past the 0.7
+/// threshold so [SwipeSlider.onConfirm] fires.
+///
+/// The session screen now also renders a grace-period disarm
+/// [SwipeSlider] under the active step, so we scope the find to the
+/// overlay's subtree to avoid an ambiguous match against the disarm
+/// slider's arrow knob.
 Future<void> _swipeToConfirm(WidgetTester tester) async {
-  // The SwipeSlider knob renders an arrow-forward icon — dragging it by
-  // an offset larger than the screen width guarantees the knob crosses
-  // the threshold no matter the actual track width.
   expect(find.byType(EndSessionOverlay), findsOneWidget);
   await tester.drag(
-    find.byIcon(Icons.arrow_forward_rounded),
+    find.descendant(
+      of: find.byType(EndSessionOverlay),
+      matching: find.byIcon(Icons.arrow_forward_rounded),
+    ),
     const Offset(800, 0),
   );
 }
@@ -1835,6 +1843,164 @@ void main() {
       // Step 1 of 1.
       expect(find.text(l10n.sessionStepLabel('1', '1')), findsOneWidget);
     });
+  });
+
+  // ── Grace-period disarm slider ────────────────────────────────────────────
+  group('SessionScreen — grace-period disarm slider', () {
+    testWidgets('renders SwipeSlider (not a FilledButton) for the disarm CTA', (
+      WidgetTester tester,
+    ) async {
+      // Spec 04 §Grace Period Slider mandates an 85 %-swipe gate so a
+      // stray tap cannot disarm the chain.
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      expect(find.byType(SwipeSlider), findsOneWidget);
+    });
+
+    testWidgets('disarm slider uses the 0.85 spec threshold', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      final slider = tester.widget<SwipeSlider>(find.byType(SwipeSlider));
+      expect(slider.threshold, 0.85);
+    });
+
+    testWidgets('shows "I\'m safe" label when stealth is disabled', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionDisarm), findsOneWidget);
+      expect(find.text(l10n.sessionDisarmStealth), findsNothing);
+    });
+
+    testWidgets(
+      'shows the stealth-variant "No Angela needed" label when stealth is on',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(stealthEnabled: true),
+        );
+        await _pump(tester, fake);
+        expect(find.text(l10n.sessionDisarmStealth), findsOneWidget);
+        expect(find.text(l10n.sessionDisarm), findsNothing);
+      },
+    );
+
+    testWidgets('completing a full swipe past 0.85 calls controller.disarm()', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      // Drag by an offset larger than any reasonable track so the
+      // 0.85 threshold is guaranteed crossed regardless of layout width.
+      await tester.drag(
+        find.byIcon(Icons.arrow_forward_rounded),
+        const Offset(2000, 0),
+      );
+      await tester.pumpAndSettle();
+      expect(fake.disarmCalls, 1);
+    });
+
+    testWidgets('a too-short drag below the 0.85 threshold does NOT disarm', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      // Drag by a tiny offset — well under 85 % of the track width.
+      await tester.drag(
+        find.byIcon(Icons.arrow_forward_rounded),
+        const Offset(40, 0),
+      );
+      await tester.pumpAndSettle();
+      expect(fake.disarmCalls, 0);
+    });
+
+    testWidgets('disarm slider disappears once the session ends', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(phase: SessionPhase.ended),
+      );
+      await _pump(tester, fake);
+      expect(find.byType(SwipeSlider), findsNothing);
+    });
+  });
+
+  // ── Shared wrong-PIN counter (R-27 cross-overlay) ─────────────────────────
+  group('SessionScreen — shared wrong-PIN counter across overlays', () {
+    testWidgets(
+      'EndSessionOverlay (2 wrong) + distress-cancel (3 wrong) shares one '
+      'controller counter and fires distress on the combined 5th attempt',
+      (WidgetTester tester) async {
+        // Spec 06 §Wrong PIN Behavior (R-27) — "Counter scope": the
+        // 5-attempt wrong-PIN budget is shared across every PIN gate in
+        // the same session. A future regression where one overlay owns a
+        // local counter would silently double the user's effective budget
+        // and break the safety contract. This test exercises the cross-
+        // overlay accumulation explicitly.
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(_runningState());
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            deceptivePinDialogEnabled: false,
+            // wrongPinThreshold defaults to 5.
+          ),
+        );
+        await _pumpWithRouter(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+
+        // ── Stage 1 — EndSessionOverlay: 2 wrong PINs, then Cancel ───────
+        await tester.tap(find.byTooltip(l10n.commonClose));
+        await tester.pumpAndSettle();
+        await _swipeToConfirm(tester);
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+        check(fake.notifyWrongPinAttemptCalls).equals(2);
+        check(fake.confirmDistressCalls).equals(0);
+
+        // Dismiss the overlay (counter must persist on the controller).
+        await tester.tap(find.text(l10n.commonCancel));
+        await tester.pumpAndSettle();
+        expect(find.byType(EndSessionOverlay), findsNothing);
+
+        // ── Stage 2 — push state into distress confirmation ──────────────
+        fake.state = AsyncData(_runningState(distressConfirmRemaining: 5));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+
+        // ── Stage 3 — distress-cancel PIN gate: 3 wrong PINs ─────────────
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+        await _typeDigits(tester, '0000');
+        await tester.pumpAndSettle();
+
+        // ── Stage 4 — assertions ─────────────────────────────────────────
+        // Combined 5 increments on the controller counter.
+        check(fake.notifyWrongPinAttemptCalls).equals(5);
+        // Crossing the 5-attempt threshold fired the distress chain
+        // exactly once with the wrong-PIN-exhausted reason — confirming
+        // both overlays consult the same counter.
+        check(fake.confirmDistressCalls).equals(1);
+        check(
+          fake.lastConfirmDistressReason,
+        ).equals(EndReason.wrongPinExhausted);
+      },
+    );
   });
 }
 

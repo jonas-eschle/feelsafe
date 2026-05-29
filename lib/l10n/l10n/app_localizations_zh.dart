@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -122,6 +120,9 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sessionDisarm => '我安全';
+
+  @override
+  String get sessionDisarmStealth => 'No Angela needed';
 
   @override
   String get sessionHoldPrompt => '按住以保持安全';

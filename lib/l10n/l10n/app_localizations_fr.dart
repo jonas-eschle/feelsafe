@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -124,6 +122,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get sessionDisarm => 'Je suis en sécurité';
+
+  @override
+  String get sessionDisarmStealth => 'No Angela needed';
 
   @override
   String get sessionHoldPrompt => 'Maintenez pour rester en sécurité';

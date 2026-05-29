@@ -4,12 +4,14 @@
 ///   * dragging the knob below the threshold does NOT fire `onConfirm`
 ///     and the knob animates back to the start;
 ///   * dragging past the threshold fires `onConfirm` exactly once;
-///   * a single drag-cycle is debounced — continuing the drag after
-///     crossing the threshold does not double-fire;
+///   * a single drag-cycle is debounced — continuing the drag (forward or
+///     backward) after crossing the threshold does not double-fire;
+///   * crossing the threshold triggers a light-impact haptic exactly once;
 ///   * Semantics expose a slider role with the supplied label.
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -94,6 +96,102 @@ void main() {
       await gesture.up();
       await tester.pumpAndSettle();
       check(confirmCount).equals(1);
+    });
+
+    testWidgets(
+      'dragging back below threshold then forward within the same gesture '
+      'does not re-fire',
+      (WidgetTester tester) async {
+        // Guards against a regression where `_didFire` is reset on backwards
+        // motion within the same pan-update sequence. Only a fresh pan-down
+        // event may re-arm the slider.
+        var confirmCount = 0;
+        await _pump(tester, onConfirm: () => confirmCount++);
+        final slider = find.byType(SwipeSlider);
+        final start = tester.getCenter(slider);
+        final gesture = await tester.startGesture(start);
+        // Cross the threshold (240 > 179.2).
+        await gesture.moveBy(const Offset(240, 0));
+        await tester.pump();
+        // Move backwards well below the threshold.
+        await gesture.moveBy(const Offset(-200, 0));
+        await tester.pump();
+        // Cross forward again.
+        await gesture.moveBy(const Offset(240, 0));
+        await tester.pump();
+        await gesture.up();
+        await tester.pumpAndSettle();
+        check(confirmCount).equals(1);
+      },
+    );
+  });
+
+  group('SwipeSlider — haptic feedback', () {
+    testWidgets('crossing the threshold triggers a light-impact haptic', (
+      WidgetTester tester,
+    ) async {
+      final hapticCalls = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            hapticCalls.add(call.arguments as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      await _pump(tester, onConfirm: () {});
+      final slider = find.byType(SwipeSlider);
+      final start = tester.getCenter(slider);
+      final gesture = await tester.startGesture(start);
+      await gesture.moveBy(const Offset(240, 0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      // Exactly one HapticFeedback.lightImpact() call mapped to the
+      // platform-channel argument 'HapticFeedbackType.lightImpact'.
+      check(
+        hapticCalls,
+      ).deepEquals(<String>['HapticFeedbackType.lightImpact']);
+    });
+
+    testWidgets('aborted-below-threshold drag does NOT fire haptic', (
+      WidgetTester tester,
+    ) async {
+      final hapticCalls = <String>[];
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall call) async {
+          if (call.method == 'HapticFeedback.vibrate') {
+            hapticCalls.add(call.arguments as String);
+          }
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      await _pump(tester, onConfirm: () {});
+      final slider = find.byType(SwipeSlider);
+      final start = tester.getCenter(slider);
+      final gesture = await tester.startGesture(start);
+      await gesture.moveBy(const Offset(80, 0));
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+      check(hapticCalls).isEmpty();
     });
   });
 

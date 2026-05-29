@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -338,11 +337,17 @@ abstract class AppLocalizations {
   /// **'Session'**
   String get sessionTitle;
 
-  /// Label of the disarm CTA.
+  /// Label of the disarm swipe slider in normal (non-stealth) sessions. Stealth sessions swap this for sessionDisarmStealth.
   ///
   /// In en, this message translates to:
   /// **'I\'m safe'**
   String get sessionDisarm;
+
+  /// Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider.
+  ///
+  /// In en, this message translates to:
+  /// **'No Angela needed'**
+  String get sessionDisarmStealth;
 
   /// Prompt on hold-button step.
   ///

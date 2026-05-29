@@ -11,6 +11,7 @@ import 'package:go_router/go_router.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
+import 'package:guardianangela/core/widgets/swipe_slider.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
@@ -288,7 +289,9 @@ class _SessionBody extends ConsumerWidget {
               _DisarmAction(
                 onDisarm: () =>
                     ref.read(sessionControllerProvider.notifier).disarm(),
-                label: l10n.sessionDisarm,
+                label: state.stealthEnabled
+                    ? l10n.sessionDisarmStealth
+                    : l10n.sessionDisarm,
               ),
             if (state.isSimulation)
               _SimulationControlsBar(state: state, textTheme: textTheme),
@@ -1105,6 +1108,15 @@ class _GpsDestinationPromptState extends ConsumerState<_GpsDestinationPrompt> {
   }
 }
 
+/// Grace-period "I'm Safe" disarm slider.
+///
+/// Spec 04 §Grace Period Slider requires an 85 %-threshold swipe (not a
+/// tap) so a stray screen-press during a live session cannot disarm the
+/// chain. The reusable [SwipeSlider] enforces the threshold, the
+/// spring-back animation on incomplete release, and the single-fire-per-
+/// gesture guard. [label] is the stealth-aware string chosen at the
+/// call-site ("I'm safe" in normal mode, "No Angela needed" when
+/// `SessionState.stealthEnabled` is true).
 class _DisarmAction extends StatelessWidget {
   const _DisarmAction({required this.onDisarm, required this.label});
 
@@ -1113,11 +1125,10 @@ class _DisarmAction extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FilledButton.icon(
-      icon: const Icon(Icons.check_circle_outline),
-      label: Text(label),
-      style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
-      onPressed: onDisarm,
+    return SwipeSlider(
+      label: label,
+      onConfirm: onDisarm,
+      threshold: 0.85,
     );
   }
 }

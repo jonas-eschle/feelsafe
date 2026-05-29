@@ -79,6 +79,7 @@ class SessionState {
     this.priorStartedAt,
     this.lastError,
     this.needsGpsDestinationPrompt = false,
+    this.stealthEnabled = false,
   });
 
   /// The clean starting state used before the engine is wired.
@@ -151,6 +152,15 @@ class SessionState {
   /// Whether the GPS-destination prompt sheet should be shown (Extra 22).
   final bool needsGpsDestinationPrompt;
 
+  /// Whether the resolved [StealthConfig] for the current session has
+  /// `enabled == true`. Captured at `startSession` time from the mode
+  /// override (or `AppDefaults.stealth`) so every session-screen surface
+  /// can re-render in the stealth variant without re-reading providers
+  /// — keeps the grace-period slider label, fake music player chrome and
+  /// other stealth toggles consistent throughout the session. Resets to
+  /// `false` on `endSession`. Spec 04 §Stealth Mode UI.
+  final bool stealthEnabled;
+
   /// The currently executing [ChainStep], or null if no step is active.
   ChainStep? get currentStep {
     if (currentStepIndex < 0 || currentStepIndex >= activeChain.length) {
@@ -183,6 +193,7 @@ class SessionState {
     String? lastError,
     bool clearError = false,
     bool? needsGpsDestinationPrompt,
+    bool? stealthEnabled,
   }) => SessionState(
     isSimulation: isSimulation ?? this.isSimulation,
     elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -208,6 +219,7 @@ class SessionState {
     lastError: clearError ? null : (lastError ?? this.lastError),
     needsGpsDestinationPrompt:
         needsGpsDestinationPrompt ?? this.needsGpsDestinationPrompt,
+    stealthEnabled: stealthEnabled ?? this.stealthEnabled,
   );
 }
 
@@ -345,6 +357,10 @@ class SessionController extends AsyncNotifier<SessionState> {
           t.destinationSource == GpsDestinationSource.promptAtStart,
     );
 
+    // Resolved StealthConfig is shared between the lock-task call below and
+    // every session-screen surface (via SessionState.stealthEnabled).
+    final stealth = mode.overrides?.stealth ?? settings.defaults.stealth;
+
     final next = (state.value ?? const SessionState.initial()).copyWith(
       isSimulation: simulate,
       elapsedSeconds: 0,
@@ -358,6 +374,7 @@ class SessionController extends AsyncNotifier<SessionState> {
       simSpeedMultiplier: simulate ? speedMultiplier : 1.0,
       simulationSilent: simulate,
       needsGpsDestinationPrompt: needsGps,
+      stealthEnabled: stealth.enabled,
       clearPrior: true,
       clearError: true,
       clearRemaining: true,
@@ -368,7 +385,6 @@ class SessionController extends AsyncNotifier<SessionState> {
     // Engage Android lock-task / pinned-app mode when the user enabled
     // it in stealth settings. Non-Android platforms no-op (spec 04
     // §Stealth Settings: lockTaskMode).
-    final stealth = mode.overrides?.stealth ?? settings.defaults.stealth;
     if (stealth.lockTaskMode && !simulate) {
       await ref.read(systemUiServiceProvider).toggleLockTaskMode(true);
     }
@@ -574,6 +590,7 @@ class SessionController extends AsyncNotifier<SessionState> {
       s.copyWith(
         phase: SessionPhase.ended,
         isPaused: false,
+        stealthEnabled: false,
         clearRemaining: true,
       ),
     );

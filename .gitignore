@@ -63,3 +63,6 @@ app.*.map.json
 /OLD/android/.kotlin/
 /coverage/
 /.sentry-native/
+
+# Alchemist golden test diff outputs (transient on golden failures)
+test/**/failures/

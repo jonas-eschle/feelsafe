@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -129,6 +130,9 @@ class _SwipeSliderState extends State<SwipeSlider>
       _didFire = true;
       // Snap the knob to the end so the visual confirms the action.
       setState(() => _dragX = maxX);
+      // Light-impact haptic mirrors the fake-call slide-to-answer feedback
+      // so the user feels the commit even before the visual snap completes.
+      HapticFeedback.lightImpact();
       widget.onConfirm();
     }
   }

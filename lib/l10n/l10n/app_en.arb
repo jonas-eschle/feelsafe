@@ -149,7 +149,11 @@
   },
   "sessionDisarm": "I'm safe",
   "@sessionDisarm": {
-    "description": "Label of the disarm CTA."
+    "description": "Label of the disarm swipe slider in normal (non-stealth) sessions. Stealth sessions swap this for sessionDisarmStealth."
+  },
+  "sessionDisarmStealth": "No Angela needed",
+  "@sessionDisarmStealth": {
+    "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
   },
   "sessionHoldPrompt": "Hold to stay safe",
   "@sessionHoldPrompt": {
