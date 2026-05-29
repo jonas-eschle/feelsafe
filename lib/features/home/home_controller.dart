@@ -142,6 +142,19 @@ class HomeController extends AsyncNotifier<HomeState> {
           simulate: simulate,
           distressMode: distressMode,
         );
+    if (simulate) {
+      // The Safety Setup Checklist's "Test a simulation" item flips to
+      // done once the user has triggered at least one simulation session.
+      // Spec 04 §Safety Setup Checklist item 4.
+      try {
+        await ref.read(homeChecklistRepositoryProvider).markSimulationDone();
+      } catch (e) {
+        log(
+          'markSimulationDone failed: $e',
+          name: 'HomeController',
+        );
+      }
+    }
     return true;
   }
 }

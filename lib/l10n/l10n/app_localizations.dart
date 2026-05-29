@@ -463,6 +463,150 @@ abstract class AppLocalizations {
   /// **'Hardware button'**
   String get chainStepNameHardwareButton;
 
+  /// Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist).
+  ///
+  /// In en, this message translates to:
+  /// **'Safety Setup'**
+  String get homeChecklistTitle;
+
+  /// Tooltip on the [×] button that permanently dismisses the checklist card.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss checklist'**
+  String get homeChecklistDismissTooltip;
+
+  /// Tooltip on the chevron button that expands the collapsed checklist card.
+  ///
+  /// In en, this message translates to:
+  /// **'Show checklist'**
+  String get homeChecklistExpandTooltip;
+
+  /// Tooltip on the chevron button that collapses the expanded checklist card.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide checklist'**
+  String get homeChecklistCollapseTooltip;
+
+  /// Progress text shown next to the progress bar.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total} done'**
+  String homeChecklistProgress(Object done, Object total);
+
+  /// Brief banner shown the moment the last item is checked. The card auto-dismisses next visit.
+  ///
+  /// In en, this message translates to:
+  /// **'All set — you\'re protected!'**
+  String get homeChecklistAllDoneBanner;
+
+  /// Tooltip on the (ℹ) info icon at the end of each checklist row.
+  ///
+  /// In en, this message translates to:
+  /// **'Why this matters'**
+  String get homeChecklistInfoTooltip;
+
+  /// Single primary action on info and confirm-only tutorial sheets.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get homeChecklistGotIt;
+
+  /// Primary action on tutorial sheets that deep-link into a settings or modes screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Go there'**
+  String get homeChecklistGoThere;
+
+  /// Title of checklist item 1. Completes when at least one EmergencyContact exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Add an emergency contact'**
+  String get homeChecklistItem1Title;
+
+  /// Title of checklist item 2. Completes when AppSettings.sessionEndPinHash is non-null.
+  ///
+  /// In en, this message translates to:
+  /// **'Set a session-end PIN'**
+  String get homeChecklistItem2Title;
+
+  /// Title of checklist item 3. Completes when AppSettings.defaults.stealth.enabled is true.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure stealth mode'**
+  String get homeChecklistItem3Title;
+
+  /// Title of checklist item 4. Completes after the first Simulate session.
+  ///
+  /// In en, this message translates to:
+  /// **'Test a simulation'**
+  String get homeChecklistItem4Title;
+
+  /// Title of checklist item 5. Completes when any non-seed SessionMode exists.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize a safety mode'**
+  String get homeChecklistItem5Title;
+
+  /// Title of checklist item 6. Completes when Permission.notification.status.isGranted.
+  ///
+  /// In en, this message translates to:
+  /// **'Grant required permissions'**
+  String get homeChecklistItem6Title;
+
+  /// Info sheet body for checklist item 1 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts are the people Guardian Angela messages and calls when you fail to check in. Without at least one contact, the chain has nowhere to escalate.'**
+  String get checklistInfo1Body;
+
+  /// Info sheet body for checklist item 2 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'A session-end PIN prevents an attacker from quietly ending an active session. They can still attempt it, but typing the wrong PIN five times silently fires your distress chain.'**
+  String get checklistInfo2Body;
+
+  /// Info sheet body for checklist item 3 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth mode disguises the active session as something innocuous on your screen — a music player, a paused timer, a blank lock screen. Use it when somebody nearby cannot see you running a safety app.'**
+  String get checklistInfo3Body;
+
+  /// Info sheet body for checklist item 4 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Simulation runs your safety mode end-to-end without sending real SMS, placing real calls, or sounding the loud alarm. Use it to learn the timings before you ever need them.'**
+  String get checklistInfo4Body;
+
+  /// Info sheet body for checklist item 5 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Custom modes let you tune the steps, timings, and triggers to a specific situation — walking home, a first date, a late shift. The two seed modes are starting points, not the destination.'**
+  String get checklistInfo5Body;
+
+  /// Info sheet body for checklist item 6 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Without notification permission, Guardian Angela cannot keep its persistent foreground status, deliver disguised reminders, or warn you that the chain is about to escalate.'**
+  String get checklistInfo6Body;
+
+  /// Tutorial sheet body for item 3 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Open the stealth defaults and toggle \'Enable stealth mode\'. From there you can pick a fake music brand, hide the session timer, or disguise the home-screen icon.'**
+  String get checklistTutorial3Body;
+
+  /// Tutorial sheet body for item 4 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap the outlined \'Simulate\' button on the home screen after selecting a mode. The session runs with an orange border and the [SIM] badge — nothing leaves your phone.'**
+  String get checklistTutorial4Body;
+
+  /// Tutorial sheet body for item 5 (kept under 80 words).
+  ///
+  /// In en, this message translates to:
+  /// **'Open the Modes screen and either edit a seed mode (Walk / Date) or create a new one from scratch. Tweak the chain, add a fake call, set custom timings.'**
+  String get checklistTutorial5Body;
+
   /// Prompt on hold-button step.
   ///
   /// In en, this message translates to:

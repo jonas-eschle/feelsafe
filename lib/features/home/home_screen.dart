@@ -8,6 +8,7 @@ import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
+import 'package:guardianangela/features/home/widgets/safety_setup_checklist.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Home dashboard.
@@ -68,6 +69,10 @@ class _HomeBody extends ConsumerWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
+            SafetySetupChecklist(
+              contacts: state.contacts,
+              modes: state.modes,
+            ),
             const Center(child: GuardianAngelaLogo()),
             const SizedBox(height: 8),
             Center(child: Text(l10n.homeTitle, style: textTheme.titleLarge)),

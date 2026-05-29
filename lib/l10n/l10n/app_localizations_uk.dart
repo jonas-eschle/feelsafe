@@ -197,6 +197,89 @@ class AppLocalizationsUk extends AppLocalizations {
   String get chainStepNameHardwareButton => 'Hardware button';
 
   @override
+  String get homeChecklistTitle => 'Safety Setup';
+
+  @override
+  String get homeChecklistDismissTooltip => 'Dismiss checklist';
+
+  @override
+  String get homeChecklistExpandTooltip => 'Show checklist';
+
+  @override
+  String get homeChecklistCollapseTooltip => 'Hide checklist';
+
+  @override
+  String homeChecklistProgress(Object done, Object total) {
+    return '$done of $total done';
+  }
+
+  @override
+  String get homeChecklistAllDoneBanner => 'All set — you\'re protected!';
+
+  @override
+  String get homeChecklistInfoTooltip => 'Why this matters';
+
+  @override
+  String get homeChecklistGotIt => 'Got it';
+
+  @override
+  String get homeChecklistGoThere => 'Go there';
+
+  @override
+  String get homeChecklistItem1Title => 'Add an emergency contact';
+
+  @override
+  String get homeChecklistItem2Title => 'Set a session-end PIN';
+
+  @override
+  String get homeChecklistItem3Title => 'Configure stealth mode';
+
+  @override
+  String get homeChecklistItem4Title => 'Test a simulation';
+
+  @override
+  String get homeChecklistItem5Title => 'Customize a safety mode';
+
+  @override
+  String get homeChecklistItem6Title => 'Grant required permissions';
+
+  @override
+  String get checklistInfo1Body =>
+      'Emergency contacts are the people Guardian Angela messages and calls when you fail to check in. Without at least one contact, the chain has nowhere to escalate.';
+
+  @override
+  String get checklistInfo2Body =>
+      'A session-end PIN prevents an attacker from quietly ending an active session. They can still attempt it, but typing the wrong PIN five times silently fires your distress chain.';
+
+  @override
+  String get checklistInfo3Body =>
+      'Stealth mode disguises the active session as something innocuous on your screen — a music player, a paused timer, a blank lock screen. Use it when somebody nearby cannot see you running a safety app.';
+
+  @override
+  String get checklistInfo4Body =>
+      'Simulation runs your safety mode end-to-end without sending real SMS, placing real calls, or sounding the loud alarm. Use it to learn the timings before you ever need them.';
+
+  @override
+  String get checklistInfo5Body =>
+      'Custom modes let you tune the steps, timings, and triggers to a specific situation — walking home, a first date, a late shift. The two seed modes are starting points, not the destination.';
+
+  @override
+  String get checklistInfo6Body =>
+      'Without notification permission, Guardian Angela cannot keep its persistent foreground status, deliver disguised reminders, or warn you that the chain is about to escalate.';
+
+  @override
+  String get checklistTutorial3Body =>
+      'Open the stealth defaults and toggle \'Enable stealth mode\'. From there you can pick a fake music brand, hide the session timer, or disguise the home-screen icon.';
+
+  @override
+  String get checklistTutorial4Body =>
+      'Tap the outlined \'Simulate\' button on the home screen after selecting a mode. The session runs with an orange border and the [SIM] badge — nothing leaves your phone.';
+
+  @override
+  String get checklistTutorial5Body =>
+      'Open the Modes screen and either edit a seed mode (Walk / Date) or create a new one from scratch. Tweak the chain, add a fake call, set custom timings.';
+
+  @override
   String get sessionHoldPrompt => 'Тримайте, щоб залишатися в безпеці';
 
   @override

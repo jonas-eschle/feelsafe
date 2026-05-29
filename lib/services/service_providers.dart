@@ -28,6 +28,7 @@ import 'package:guardianangela/data/repositories/json_singleton_repository.dart'
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
+import 'package:guardianangela/features/home/home_checklist_repository.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/background_session_service.dart';
 import 'package:guardianangela/services/backup_service.dart';
@@ -144,6 +145,14 @@ final batteryAlertConfigRepositoryProvider =
         keyProvider: ref.read(keyProviderProvider),
       );
     });
+
+/// [HomeChecklistRepository] backing the Safety Setup Checklist's
+/// dismissed / simulation-done / first-visit-done flags.
+final homeChecklistRepositoryProvider = Provider<HomeChecklistRepository>((
+  ref,
+) {
+  return HomeChecklistRepository();
+});
 
 // ---------------------------------------------------------------------------
 // SessionLogRepository (Drift-backed)

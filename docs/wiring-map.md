@@ -25,6 +25,7 @@ Any row missing a provider, or any provider missing a row, is a CI failure.
 | `appSettingsRepositoryProvider` | `AppSettingsRepository` | `AppSettingsRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §AppSettings |
 | `userProfileRepositoryProvider` | `UserProfileRepository` | `UserProfileRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §UserProfile |
 | `batteryAlertConfigRepositoryProvider` | `BatteryAlertConfigRepository` | `BatteryAlertConfigRepository(keyProvider:)` | override `encryptionServiceProvider` with `SimulationEncryptionService` | `wired-real` | spec 03 §BatteryAlertConfig |
+| `homeChecklistRepositoryProvider` | `HomeChecklistRepository` | `HomeChecklistRepository()` (SharedPreferences-backed) | inject a fake via `homeChecklistRepositoryProvider.overrideWithValue(...)` | `wired-real` | spec 04 §Safety Setup Checklist |
 | `sessionLogRepositoryProvider` | `SessionLogRepository` | `SessionLogRepository(dao)` | override `databaseProvider` with `GuardianAngelaDatabase.memory()` | `wired-real` | spec 03 §SessionLog |
 | `vibrationServiceProvider` | `VibrationServiceProtocol` | `RealVibrationService` | `SimulationVibrationService` | `wired-real` | spec 05 §VibrationService |
 | `wakelockServiceProvider` | `WakelockServiceProtocol` | `RealWakelockService` | `SimulationWakelockService` | `wired-real` | spec 05 §WakelockService |
