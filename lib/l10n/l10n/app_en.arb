@@ -155,6 +155,88 @@
   "@sessionDisarmStealth": {
     "description": "Stealth-variant label of the grace-period disarm slider. Replaces sessionDisarm whenever the resolved StealthConfig.enabled is true so the surface no longer reads as a safety-app affordance. Spec 04 §Grace Period Slider."
   },
+  "homeChainSummaryTitle": "Chain Summary",
+  "@homeChainSummaryTitle": {
+    "description": "Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary)."
+  },
+  "homeChainSummaryEmpty": "This mode has no steps yet — tap the mode to edit.",
+  "@homeChainSummaryEmpty": {
+    "description": "Helper text shown inside the Chain Summary card when the selected mode has zero chain steps."
+  },
+  "homeChainSummaryTimingTitle": "Step: {name}",
+  "@homeChainSummaryTimingTitle": {
+    "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
+    "placeholders": { "name": {"example": "Fake Call"} }
+  },
+  "homeChainSummaryWait": "Wait: {seconds}s",
+  "@homeChainSummaryWait": {
+    "description": "Wait-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryDuration": "Active: {seconds}s",
+  "@homeChainSummaryDuration": {
+    "description": "Active-phase duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "30"} }
+  },
+  "homeChainSummaryGrace": "Grace period: {seconds}s",
+  "@homeChainSummaryGrace": {
+    "description": "Grace-period duration row in the timing-details sheet.",
+    "placeholders": { "seconds": {"example": "5"} }
+  },
+  "homeChainSummaryRetry": "Retries: {count}",
+  "@homeChainSummaryRetry": {
+    "description": "Retry-count row in the timing-details sheet.",
+    "placeholders": { "count": {"example": "0"} }
+  },
+  "homeChainSummaryNextStep": "Next step: {name}",
+  "@homeChainSummaryNextStep": {
+    "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
+    "placeholders": { "name": {"example": "SMS"} }
+  },
+  "homeChainSummaryNextStepNone": "Next step: end of chain",
+  "@homeChainSummaryNextStepNone": {
+    "description": "Next-step row in the timing-details sheet when the tapped step is the last in the chain."
+  },
+  "homeChainSummaryClose": "Close",
+  "@homeChainSummaryClose": {
+    "description": "Close-button label on the timing-details bottom sheet."
+  },
+  "chainStepNameHoldButton": "Hold to stay safe",
+  "@chainStepNameHoldButton": {
+    "description": "Display name for the holdButton chain step type."
+  },
+  "chainStepNameDisguisedReminder": "Disguised reminder",
+  "@chainStepNameDisguisedReminder": {
+    "description": "Display name for the disguisedReminder chain step type."
+  },
+  "chainStepNameCountdownWarning": "Countdown warning",
+  "@chainStepNameCountdownWarning": {
+    "description": "Display name for the countdownWarning chain step type."
+  },
+  "chainStepNameFakeCall": "Fake call",
+  "@chainStepNameFakeCall": {
+    "description": "Display name for the fakeCall chain step type."
+  },
+  "chainStepNameSmsContact": "SMS contact",
+  "@chainStepNameSmsContact": {
+    "description": "Display name for the smsContact chain step type."
+  },
+  "chainStepNamePhoneCallContact": "Phone call contact",
+  "@chainStepNamePhoneCallContact": {
+    "description": "Display name for the phoneCallContact chain step type."
+  },
+  "chainStepNameLoudAlarm": "Loud alarm",
+  "@chainStepNameLoudAlarm": {
+    "description": "Display name for the loudAlarm chain step type."
+  },
+  "chainStepNameCallEmergency": "Emergency call",
+  "@chainStepNameCallEmergency": {
+    "description": "Display name for the callEmergency chain step type."
+  },
+  "chainStepNameHardwareButton": "Hardware button",
+  "@chainStepNameHardwareButton": {
+    "description": "Display name for the hardwareButton chain step type."
+  },
   "sessionHoldPrompt": "Hold to stay safe",
   "@sessionHoldPrompt": {
     "description": "Prompt on hold-button step."

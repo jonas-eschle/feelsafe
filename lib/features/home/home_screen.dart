@@ -5,7 +5,9 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/home/widgets/chain_summary.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Home dashboard.
@@ -80,6 +82,17 @@ class _HomeBody extends ConsumerWidget {
               )
             else
               _ModeSelector(state: state),
+            if (state.selectedModeId != null && state.modes.isNotEmpty) ...[
+              const SizedBox(height: 16),
+              ChainSummary(
+                steps: state.modes
+                    .firstWhere(
+                      (SessionMode m) => m.id == state.selectedModeId,
+                      orElse: () => state.modes.first,
+                    )
+                    .chainSteps,
+              ),
+            ],
             const SizedBox(height: 16),
             if (state.contacts.isEmpty)
               Card(

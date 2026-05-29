@@ -127,6 +127,76 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sessionDisarmStealth => 'No Angela needed';
 
   @override
+  String get homeChainSummaryTitle => 'Chain Summary';
+
+  @override
+  String get homeChainSummaryEmpty =>
+      'This mode has no steps yet — tap the mode to edit.';
+
+  @override
+  String homeChainSummaryTimingTitle(Object name) {
+    return 'Step: $name';
+  }
+
+  @override
+  String homeChainSummaryWait(Object seconds) {
+    return 'Wait: ${seconds}s';
+  }
+
+  @override
+  String homeChainSummaryDuration(Object seconds) {
+    return 'Active: ${seconds}s';
+  }
+
+  @override
+  String homeChainSummaryGrace(Object seconds) {
+    return 'Grace period: ${seconds}s';
+  }
+
+  @override
+  String homeChainSummaryRetry(Object count) {
+    return 'Retries: $count';
+  }
+
+  @override
+  String homeChainSummaryNextStep(Object name) {
+    return 'Next step: $name';
+  }
+
+  @override
+  String get homeChainSummaryNextStepNone => 'Next step: end of chain';
+
+  @override
+  String get homeChainSummaryClose => 'Close';
+
+  @override
+  String get chainStepNameHoldButton => 'Hold to stay safe';
+
+  @override
+  String get chainStepNameDisguisedReminder => 'Disguised reminder';
+
+  @override
+  String get chainStepNameCountdownWarning => 'Countdown warning';
+
+  @override
+  String get chainStepNameFakeCall => 'Fake call';
+
+  @override
+  String get chainStepNameSmsContact => 'SMS contact';
+
+  @override
+  String get chainStepNamePhoneCallContact => 'Phone call contact';
+
+  @override
+  String get chainStepNameLoudAlarm => 'Loud alarm';
+
+  @override
+  String get chainStepNameCallEmergency => 'Emergency call';
+
+  @override
+  String get chainStepNameHardwareButton => 'Hardware button';
+
+  @override
   String get sessionHoldPrompt => 'Mantén pulsado para seguir a salvo';
 
   @override

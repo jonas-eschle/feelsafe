@@ -349,6 +349,120 @@ abstract class AppLocalizations {
   /// **'No Angela needed'**
   String get sessionDisarmStealth;
 
+  /// Header above the Chain Summary horizontal-pill row on the home screen (spec 04 §Chain Summary).
+  ///
+  /// In en, this message translates to:
+  /// **'Chain Summary'**
+  String get homeChainSummaryTitle;
+
+  /// Helper text shown inside the Chain Summary card when the selected mode has zero chain steps.
+  ///
+  /// In en, this message translates to:
+  /// **'This mode has no steps yet — tap the mode to edit.'**
+  String get homeChainSummaryEmpty;
+
+  /// Title of the timing-details bottom sheet opened when the user taps a chain summary pill.
+  ///
+  /// In en, this message translates to:
+  /// **'Step: {name}'**
+  String homeChainSummaryTimingTitle(Object name);
+
+  /// Wait-phase duration row in the timing-details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait: {seconds}s'**
+  String homeChainSummaryWait(Object seconds);
+
+  /// Active-phase duration row in the timing-details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Active: {seconds}s'**
+  String homeChainSummaryDuration(Object seconds);
+
+  /// Grace-period duration row in the timing-details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace period: {seconds}s'**
+  String homeChainSummaryGrace(Object seconds);
+
+  /// Retry-count row in the timing-details sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Retries: {count}'**
+  String homeChainSummaryRetry(Object count);
+
+  /// Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step: {name}'**
+  String homeChainSummaryNextStep(Object name);
+
+  /// Next-step row in the timing-details sheet when the tapped step is the last in the chain.
+  ///
+  /// In en, this message translates to:
+  /// **'Next step: end of chain'**
+  String get homeChainSummaryNextStepNone;
+
+  /// Close-button label on the timing-details bottom sheet.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get homeChainSummaryClose;
+
+  /// Display name for the holdButton chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to stay safe'**
+  String get chainStepNameHoldButton;
+
+  /// Display name for the disguisedReminder chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Disguised reminder'**
+  String get chainStepNameDisguisedReminder;
+
+  /// Display name for the countdownWarning chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Countdown warning'**
+  String get chainStepNameCountdownWarning;
+
+  /// Display name for the fakeCall chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Fake call'**
+  String get chainStepNameFakeCall;
+
+  /// Display name for the smsContact chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'SMS contact'**
+  String get chainStepNameSmsContact;
+
+  /// Display name for the phoneCallContact chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone call contact'**
+  String get chainStepNamePhoneCallContact;
+
+  /// Display name for the loudAlarm chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Loud alarm'**
+  String get chainStepNameLoudAlarm;
+
+  /// Display name for the callEmergency chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency call'**
+  String get chainStepNameCallEmergency;
+
+  /// Display name for the hardwareButton chain step type.
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware button'**
+  String get chainStepNameHardwareButton;
+
   /// Prompt on hold-button step.
   ///
   /// In en, this message translates to:

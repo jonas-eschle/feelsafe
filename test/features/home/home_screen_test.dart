@@ -30,6 +30,8 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/validation_result.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
+import 'package:guardianangela/features/home/widgets/chain_summary.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -79,21 +81,46 @@ class _FakeHomeController extends HomeController {
 // Test data factories
 // ---------------------------------------------------------------------------
 
-SessionMode _mode(String id, String name) => SessionMode(
+SessionMode _mode(
+  String id,
+  String name, {
+  List<ChainStep>? chainSteps,
+}) => SessionMode(
   id: id,
   name: name,
-  chainSteps: <ChainStep>[
-    ChainStep(
-      id: '$id-step-0',
-      type: ChainStepType.holdButton,
-      order: 0,
-      waitSeconds: 0,
-      durationSeconds: 30,
-      gracePeriodSeconds: 5,
-      retryCount: 0,
-      randomize: false,
-    ),
-  ],
+  chainSteps:
+      chainSteps ??
+      <ChainStep>[
+        ChainStep(
+          id: '$id-step-0',
+          type: ChainStepType.holdButton,
+          order: 0,
+          waitSeconds: 0,
+          durationSeconds: 30,
+          gracePeriodSeconds: 5,
+          retryCount: 0,
+          randomize: false,
+        ),
+      ],
+);
+
+ChainStep _step(
+  String id,
+  ChainStepType type, {
+  int waitSeconds = 0,
+  int durationSeconds = 30,
+  int gracePeriodSeconds = 5,
+  int retryCount = 0,
+  int order = 0,
+}) => ChainStep(
+  id: id,
+  type: type,
+  order: order,
+  waitSeconds: waitSeconds,
+  durationSeconds: durationSeconds,
+  gracePeriodSeconds: gracePeriodSeconds,
+  retryCount: retryCount,
+  randomize: false,
 );
 
 EmergencyContact _contact(String id, String name) => EmergencyContact(
@@ -664,6 +691,177 @@ void main() {
         ),
       );
       check(simulate.onPressed).isNotNull();
+    });
+  });
+
+  // ── Chain Summary (spec 04:429-439) ─────────────────────────────────────
+  group('HomeScreen — chain summary', () {
+    testWidgets('renders a ChainSummary card when a mode is selected', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final mode = _mode(
+        'walk',
+        'Walk Mode',
+        chainSteps: <ChainStep>[
+          _step('walk-0', ChainStepType.holdButton),
+          _step('walk-1', ChainStepType.fakeCall, order: 1),
+          _step('walk-2', ChainStepType.smsContact, order: 2),
+        ],
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[mode],
+                selectedModeId: 'walk',
+              ),
+            ),
+          ),
+        ],
+      );
+      expect(find.byType(ChainSummary), findsOneWidget);
+      expect(find.text(l10n.homeChainSummaryTitle), findsOneWidget);
+      // Every step name appears in the pill row.
+      expect(find.text(l10n.chainStepNameHoldButton), findsOneWidget);
+      expect(find.text(l10n.chainStepNameFakeCall), findsOneWidget);
+      expect(find.text(l10n.chainStepNameSmsContact), findsOneWidget);
+    });
+
+    testWidgets('does NOT render the Chain Summary when no modes exist', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(modes: <SessionMode>[]),
+            ),
+          ),
+        ],
+      );
+      expect(find.byType(ChainSummary), findsNothing);
+    });
+
+    testWidgets('tapping a pill opens the timing-details bottom sheet', (
+      WidgetTester tester,
+    ) async {
+      // Verifies: pill is interactive, sheet shows the step name,
+      // wait/active/grace/retry rows, AND the "next step" row resolves
+      // to the next step in the chain (not "end of chain").
+      final l10n = await loadL10n(const Locale('en'));
+      final mode = _mode(
+        'walk',
+        'Walk Mode',
+        chainSteps: <ChainStep>[
+          _step(
+            'walk-0',
+            ChainStepType.fakeCall,
+            waitSeconds: 2,
+            durationSeconds: 30,
+            gracePeriodSeconds: 5,
+            retryCount: 1,
+          ),
+          _step('walk-1', ChainStepType.smsContact, order: 1),
+        ],
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[mode],
+                selectedModeId: 'walk',
+              ),
+            ),
+          ),
+        ],
+      );
+      // Tap the fakeCall pill.
+      await tester.tap(find.text(l10n.chainStepNameFakeCall));
+      await tester.pumpAndSettle();
+      expect(find.byType(ChainStepTimingSheet), findsOneWidget);
+      expect(
+        find.text(l10n.homeChainSummaryTimingTitle(l10n.chainStepNameFakeCall)),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.homeChainSummaryWait('2')), findsOneWidget);
+      expect(find.text(l10n.homeChainSummaryDuration('30')), findsOneWidget);
+      expect(find.text(l10n.homeChainSummaryGrace('5')), findsOneWidget);
+      expect(find.text(l10n.homeChainSummaryRetry('1')), findsOneWidget);
+      // The next step is smsContact.
+      expect(
+        find.text(
+          l10n.homeChainSummaryNextStep(l10n.chainStepNameSmsContact),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets(
+      'timing-details on the LAST step shows "end of chain" not a next step',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final mode = _mode(
+          'walk',
+          'Walk Mode',
+          chainSteps: <ChainStep>[
+            _step('walk-0', ChainStepType.holdButton),
+            _step('walk-1', ChainStepType.smsContact, order: 1),
+          ],
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(
+              () => _FakeHomeController(
+                _state(
+                  modes: <SessionMode>[mode],
+                  selectedModeId: 'walk',
+                ),
+              ),
+            ),
+          ],
+        );
+        await tester.tap(find.text(l10n.chainStepNameSmsContact));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.homeChainSummaryNextStepNone), findsOneWidget);
+      },
+    );
+
+    testWidgets('Close button dismisses the timing-details sheet', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final mode = _mode('walk', 'Walk Mode');
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[mode],
+                selectedModeId: 'walk',
+              ),
+            ),
+          ),
+        ],
+      );
+      await tester.tap(find.text(l10n.chainStepNameHoldButton));
+      await tester.pumpAndSettle();
+      expect(find.byType(ChainStepTimingSheet), findsOneWidget);
+      await tester.tap(find.text(l10n.homeChainSummaryClose));
+      await tester.pumpAndSettle();
+      expect(find.byType(ChainStepTimingSheet), findsNothing);
     });
   });
 }
