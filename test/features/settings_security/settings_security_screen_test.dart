@@ -10,9 +10,13 @@
 /// Spec ref: `docs/spec/04-screens-navigation.md §Security Submenu`.
 library;
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:crypto/crypto.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -20,10 +24,43 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/features/settings_security/remove_pin_dialog.dart';
 import 'package:guardianangela/features/settings_security/settings_security_controller.dart';
 import 'package:guardianangela/features/settings_security/settings_security_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
+
+String _hashDigits(String digits) =>
+    sha256.convert(utf8.encode(digits)).toString();
+
+/// In-memory [AppSettingsRepository] so [RemovePinDialog] can read a stored
+/// hash without touching real storage.
+class _FakeAppSettingsRepository extends AppSettingsRepository {
+  _FakeAppSettingsRepository(this._current)
+    : super(
+        keyProvider: () async =>
+            '0102030405060708090a0b0c0d0e0f'
+            '101112131415161718191a1b1c1d1e1f20',
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('settings_sec_test_'),
+      );
+
+  final AppSettings _current;
+
+  @override
+  Future<AppSettings> load() async => _current;
+}
+
+Future<void> _enterDigits(WidgetTester tester, List<int> digits) async {
+  for (final d in digits) {
+    await tester.tap(find.widgetWithText(InkWell, '$d').last);
+    await tester.pump();
+  }
+  await tester.pumpAndSettle();
+}
 
 // ---------------------------------------------------------------------------
 // Test fake
@@ -185,11 +222,13 @@ Future<void> _pump(
   Locale locale = const Locale('en'),
   ThemeMode themeMode = ThemeMode.light,
   bool settle = true,
+  List<Override> extraOverrides = const <Override>[],
 }) => pumpScreen(
   tester,
   const SettingsSecurityScreen(),
   overrides: <Override>[
     settingsSecurityControllerProvider.overrideWith(() => fake),
+    ...extraOverrides,
   ],
   locale: locale,
   themeMode: themeMode,
@@ -736,32 +775,68 @@ void main() {
       expect(find.text(l10n.securityRemovePin), findsNothing);
     });
 
-    testWidgets('tapping Remove + confirming calls clearPin for the App PIN', (
+    testWidgets('tapping Remove opens the verify dialog, not a one-tap wipe', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSettingsSecurityController(_secState(appPinSet: true));
-      await _pump(tester, fake: fake);
+      await _pump(
+        tester,
+        fake: fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FakeAppSettingsRepository(
+              const AppSettings().copyWith(appPinHash: _hashDigits('1234')),
+            ),
+          ),
+        ],
+      );
       await tester.tap(find.text(l10n.securityRemovePin).first);
       await tester.pumpAndSettle();
-      // Confirm dialog has a FilledButton with "Remove" label — tap it.
-      await tester.tap(
-        find.descendant(
-          of: find.byType(FilledButton),
-          matching: find.text(l10n.securityRemovePin),
-        ),
+      // A PIN must be entered first — the PIN is NOT cleared on the tap.
+      expect(find.byType(RemovePinDialog), findsOneWidget);
+      check(fake.clearPinCalls).equals(0);
+    });
+
+    testWidgets('entering the correct PIN in the dialog calls clearPin', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(_secState(appPinSet: true));
+      await _pump(
+        tester,
+        fake: fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FakeAppSettingsRepository(
+              const AppSettings().copyWith(appPinHash: _hashDigits('1234')),
+            ),
+          ),
+        ],
       );
+      await tester.tap(find.text(l10n.securityRemovePin).first);
       await tester.pumpAndSettle();
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
       check(fake.clearPinCalls).equals(1);
       check(fake.lastClearedType).equals(PinType.app);
     });
 
-    testWidgets('cancelling the confirm dialog leaves the PIN intact', (
+    testWidgets('cancelling the verify dialog leaves the PIN intact', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeSettingsSecurityController(_secState(appPinSet: true));
-      await _pump(tester, fake: fake);
+      await _pump(
+        tester,
+        fake: fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FakeAppSettingsRepository(
+              const AppSettings().copyWith(appPinHash: _hashDigits('1234')),
+            ),
+          ),
+        ],
+      );
       await tester.tap(find.text(l10n.securityRemovePin).first);
       await tester.pumpAndSettle();
       await tester.tap(find.text(l10n.commonCancel));

@@ -1439,6 +1439,14 @@
   "@securityRemovePin": {
     "description": "Button to remove a PIN."
   },
+  "securityRemovePinPrompt": "Enter your current PIN to remove it.",
+  "@securityRemovePinPrompt": {
+    "description": "Body of the dialog shown before removing a PIN — the user must re-enter the PIN being removed to confirm their identity."
+  },
+  "securityRemovePinIncorrect": "Incorrect PIN",
+  "@securityRemovePinIncorrect": {
+    "description": "Inline error beneath the keypad when the entered PIN does not match the one being removed."
+  },
   "securityWhatIsThis": "What is this?",
   "@securityWhatIsThis": {
     "description": "Info button label on PIN cards."

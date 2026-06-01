@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/features/settings_security/remove_pin_dialog.dart';
 import 'package:guardianangela/features/settings_security/settings_security_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -149,7 +150,7 @@ class _PinCard extends ConsumerWidget {
                   const SizedBox(width: 8),
                   if (isSet)
                     TextButton(
-                      onPressed: () => _confirmClear(context, ref, l10n),
+                      onPressed: () => _confirmClear(context, ref),
                       child: Text(l10n.securityRemovePin),
                     ),
                 ],
@@ -214,29 +215,16 @@ class _PinCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _confirmClear(
-    BuildContext context,
-    WidgetRef ref,
-    AppLocalizations l10n,
-  ) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext ctx) => AlertDialog(
-        title: Text(title),
-        content: Text(l10n.securityRemovePin),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: Text(l10n.commonCancel),
-          ),
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: Text(l10n.securityRemovePin),
-          ),
-        ],
-      ),
+  Future<void> _confirmClear(BuildContext context, WidgetRef ref) async {
+    // Require the current PIN before removing it: an attacker holding the
+    // unlocked device must not be able to wipe the victim's PIN protection
+    // with a one-tap "are you sure?" (spec 06 §Security).
+    final verified = await RemovePinDialog.show(
+      context,
+      type: type,
+      title: title,
     );
-    if (ok ?? false) {
+    if (verified) {
       await ref
           .read(settingsSecurityControllerProvider.notifier)
           .clearPin(type);

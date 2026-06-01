@@ -2130,6 +2130,18 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get securityRemovePin;
 
+  /// Body of the dialog shown before removing a PIN — the user must re-enter the PIN being removed to confirm their identity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your current PIN to remove it.'**
+  String get securityRemovePinPrompt;
+
+  /// Inline error beneath the keypad when the entered PIN does not match the one being removed.
+  ///
+  /// In en, this message translates to:
+  /// **'Incorrect PIN'**
+  String get securityRemovePinIncorrect;
+
   /// Info button label on PIN cards.
   ///
   /// In en, this message translates to:

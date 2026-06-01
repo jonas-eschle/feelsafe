@@ -1128,6 +1128,12 @@ class AppLocalizationsRu extends AppLocalizations {
   String get securityRemovePin => 'Remove';
 
   @override
+  String get securityRemovePinPrompt => 'Enter your current PIN to remove it.';
+
+  @override
+  String get securityRemovePinIncorrect => 'Incorrect PIN';
+
+  @override
   String get securityWhatIsThis => 'What is this?';
 
   @override
