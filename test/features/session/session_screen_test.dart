@@ -1117,7 +1117,7 @@ void main() {
         );
         await tester.tap(find.text(l10n.distressConfirmCancel));
         await tester.pumpAndSettle();
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
         check(fake.notifyWrongPinAttemptCalls).equals(1);
         expect(find.text(l10n.distressCancelPinIncorrect), findsOneWidget);
@@ -1144,7 +1144,7 @@ void main() {
       );
       await tester.tap(find.text(l10n.distressConfirmCancel));
       await tester.pumpAndSettle();
-      await _typeDigits(tester, '0000');
+      await _typeDigits(tester, '00000000');
       await tester.pump();
       expect(find.byType(DeceptiveOldPinDialog), findsOneWidget);
     });
@@ -1172,7 +1172,7 @@ void main() {
         await tester.tap(find.text(l10n.distressConfirmCancel));
         await tester.pumpAndSettle();
         for (int i = 0; i < 5; i++) {
-          await _typeDigits(tester, '0000');
+          await _typeDigits(tester, '00000000');
           await tester.pumpAndSettle();
         }
         check(fake.notifyWrongPinAttemptCalls).equals(5);
@@ -1206,7 +1206,7 @@ void main() {
         await tester.tap(find.text(l10n.distressConfirmCancel));
         await tester.pumpAndSettle();
         for (int i = 0; i < 5; i++) {
-          await _typeDigits(tester, '0000');
+          await _typeDigits(tester, '00000000');
           await tester.pumpAndSettle();
         }
         check(fake.notifyWrongPinAttemptCalls).equals(0);
@@ -1594,7 +1594,7 @@ void main() {
       await tester.pumpAndSettle();
       await _swipeToConfirm(tester);
       await tester.pumpAndSettle();
-      await _typeDigits(tester, '0000');
+      await _typeDigits(tester, '00000000');
       await tester.pumpAndSettle();
       // Counter incremented, engine notified, inline error rendered.
       check(fake.notifyWrongPinAttemptCalls).equals(1);
@@ -1622,7 +1622,7 @@ void main() {
       await tester.pumpAndSettle();
       await _swipeToConfirm(tester);
       await tester.pumpAndSettle();
-      await _typeDigits(tester, '0000');
+      await _typeDigits(tester, '00000000');
       await tester.pump();
       // Deceptive dialog is in the tree (modal, awaiting user action).
       expect(find.byType(DeceptiveOldPinDialog), findsOneWidget);
@@ -1652,7 +1652,7 @@ void main() {
       await _swipeToConfirm(tester);
       await tester.pumpAndSettle();
       for (int i = 0; i < 5; i++) {
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
       }
       check(fake.notifyWrongPinAttemptCalls).equals(5);
@@ -1684,7 +1684,7 @@ void main() {
       await _swipeToConfirm(tester);
       await tester.pumpAndSettle();
       for (int i = 0; i < 5; i++) {
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
       }
       // Simulation never invokes the controller's real counter or the
@@ -1963,9 +1963,9 @@ void main() {
         await tester.pumpAndSettle();
         await _swipeToConfirm(tester);
         await tester.pumpAndSettle();
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
         check(fake.notifyWrongPinAttemptCalls).equals(2);
         check(fake.confirmDistressCalls).equals(0);
@@ -1982,11 +1982,11 @@ void main() {
         await tester.pumpAndSettle();
 
         // ── Stage 3 — distress-cancel PIN gate: 3 wrong PINs ─────────────
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
-        await _typeDigits(tester, '0000');
+        await _typeDigits(tester, '00000000');
         await tester.pumpAndSettle();
 
         // ── Stage 4 — assertions ─────────────────────────────────────────

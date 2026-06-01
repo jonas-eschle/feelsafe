@@ -8,6 +8,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/core/constants/pin_constants.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
@@ -669,12 +670,13 @@ class _DistressConfirmationOverlayState
   }
 
   Future<void> _onDigit(int d) async {
+    if (_entry.length >= kPinMaxLength) return;
     setState(() {
       _entry.add(d);
       _showWrong = false;
       _showAppPinMismatch = false;
     });
-    if (_entry.length < 4) return;
+    if (_entry.length < kPinMinLength) return;
     await _tryAutoSubmit();
   }
 
@@ -690,10 +692,10 @@ class _DistressConfirmationOverlayState
   Future<void> _tryAutoSubmit() async {
     final settings = _settings;
     if (settings == null) return;
-    // Walk every prefix length `n in [4..entry.length]` and try the
-    // priority ladder Duress > App > Session End. Mirrors the C2 end-
+    // Walk every prefix length `n in [kPinMinLength..entry.length]` and try
+    // the priority ladder Duress > App > Session End. Mirrors the C2 end-
     // session overlay (spec 06 §Auto-submit, F-149, R-27).
-    for (int n = 4; n <= _entry.length; n++) {
+    for (int n = kPinMinLength; n <= _entry.length; n++) {
       final digits = _entry.take(n).join();
       final hash = sha256.convert(utf8.encode(digits)).toString();
       if (settings.duressPinHash != null && settings.duressPinHash == hash) {
@@ -722,7 +724,10 @@ class _DistressConfirmationOverlayState
         return;
       }
     }
-    if (_entry.length >= 4) {
+    // Count a wrong attempt only at the max length with no match — a shorter
+    // non-match may be a prefix of a longer correct PIN; counting it early
+    // would block 5–8 digit PINs and fire a false distress on a legit user.
+    if (_entry.length >= kPinMaxLength) {
       await _handleWrongPin();
     }
   }

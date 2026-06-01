@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/constants/pin_constants.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
@@ -115,11 +116,12 @@ class _LaunchPinScreenState extends ConsumerState<LaunchPinScreen>
   }
 
   Future<void> _onDigit(int d) async {
+    if (_entry.length >= kPinMaxLength) return;
     setState(() {
       _entry.add(d);
       _showWrong = false;
     });
-    if (_entry.length < 4) return;
+    if (_entry.length < kPinMinLength) return;
     await _tryAutoSubmit();
   }
 
@@ -134,10 +136,10 @@ class _LaunchPinScreenState extends ConsumerState<LaunchPinScreen>
   Future<void> _tryAutoSubmit() async {
     final settings = _settings;
     if (settings == null) return;
-    // Walk every prefix length n in [4..entry.length], Duress > App at each
-    // length (spec 06 auto-submit, R-27). Session End PIN is not accepted at
-    // the App-lock gate. First match stops the loop.
-    for (int n = 4; n <= _entry.length; n++) {
+    // Walk every prefix length n in [kPinMinLength..entry.length], Duress >
+    // App at each length (spec 06 auto-submit, R-27). Session End PIN is not
+    // accepted at the App-lock gate. First match stops the loop.
+    for (int n = kPinMinLength; n <= _entry.length; n++) {
       final digits = _entry.take(n).join();
       final hash = sha256.convert(utf8.encode(digits)).toString();
       if (settings.duressPinHash != null && settings.duressPinHash == hash) {
@@ -152,7 +154,10 @@ class _LaunchPinScreenState extends ConsumerState<LaunchPinScreen>
         return;
       }
     }
-    if (_entry.length >= 4) {
+    // Only count a wrong attempt once the entry is at the max length with no
+    // match — a shorter non-match may still be a prefix of a longer correct
+    // PIN, and counting it early would fire a false distress on a legit user.
+    if (_entry.length >= kPinMaxLength) {
       await _handleWrongPin(settings);
     }
   }

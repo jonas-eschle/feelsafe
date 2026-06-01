@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/constants/pin_constants.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/core/widgets/swipe_slider.dart';
@@ -204,12 +205,13 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
   }
 
   Future<void> _onDigit(int d) async {
+    if (_entry.length >= kPinMaxLength) return;
     setState(() {
       _entry.add(d);
       _showWrong = false;
       _showAppPinMismatch = false;
     });
-    if (_entry.length < 4) {
+    if (_entry.length < kPinMinLength) {
       return;
     }
     await _tryAutoSubmit();
@@ -227,10 +229,10 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
   Future<void> _tryAutoSubmit() async {
     final settings = _settings;
     if (settings == null) return;
-    // Walk every prefix length `n in [4..entry.length]` and try the
-    // priority ladder. Spec 06 §Auto-submit algorithm (F-149, R-27):
+    // Walk every prefix length `n in [kPinMinLength..entry.length]` and try
+    // the priority ladder. Spec 06 §Auto-submit algorithm (F-149, R-27):
     // Duress > App > Session End. A match at any length stops the loop.
-    for (int n = 4; n <= _entry.length; n++) {
+    for (int n = kPinMinLength; n <= _entry.length; n++) {
       final digits = _entry.take(n).join();
       final hash = sha256.convert(utf8.encode(digits)).toString();
       // (a) Duress PIN — silent distress.
@@ -263,9 +265,11 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
         return;
       }
     }
-    // No match at any length — only fire the wrong-PIN branch when the
-    // user has provided enough digits for at least one comparison.
-    if (_entry.length >= 4) {
+    // Only count a wrong attempt once the entry reaches the max length with
+    // no match. A shorter non-match may still be a prefix of a longer correct
+    // PIN; counting it early would block 5–8 digit PINs and, at the
+    // wrongPinThreshold, fire a false distress on a legitimate user.
+    if (_entry.length >= kPinMaxLength) {
       await _handleWrongPin();
     }
   }

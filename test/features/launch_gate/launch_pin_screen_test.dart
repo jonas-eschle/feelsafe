@@ -217,13 +217,35 @@ void main() {
     });
   });
 
+  group('LaunchPinScreen — variable-length PIN (no false distress)', () {
+    testWidgets('a 6-digit App PIN unlocks when fully entered', (
+      WidgetTester tester,
+    ) async {
+      final h = await _pumpGate(tester, settings: _settings(appPin: '123456'));
+      await _enterDigits(tester, <int>[1, 2, 3, 4, 5, 6]);
+      check(h.gate.unlockCalls).equals(1);
+      check(h.session.distressCalls).equals(0);
+    });
+
+    testWidgets('typing the 4-digit prefix of a 6-digit PIN does NOT count '
+        'as wrong (would otherwise fire false distress)', (
+      WidgetTester tester,
+    ) async {
+      final h = await _pumpGate(tester, settings: _settings(appPin: '123456'));
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
+      check(h.gate.unlockCalls).equals(0);
+      check(h.session.wrongCalls).equals(0);
+      check(h.session.distressCalls).equals(0);
+    });
+  });
+
   group('LaunchPinScreen — wrong PIN', () {
     testWidgets('wrong PIN shows the inline hint (deceptive off)', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final h = await _pumpGate(tester, settings: _settings());
-      await _enterDigits(tester, <int>[5, 5, 5, 5]);
+      await _enterDigits(tester, <int>[5, 5, 5, 5, 5, 5, 5, 5]);
       expect(find.text(l10n.launchPinIncorrect), findsOneWidget);
       check(h.session.wrongCalls).equals(1);
       check(h.gate.unlockCalls).equals(0);
@@ -233,7 +255,7 @@ void main() {
       WidgetTester tester,
     ) async {
       final h = await _pumpGate(tester, settings: _settings(deceptive: true));
-      await _enterDigits(tester, <int>[5, 5, 5, 5]);
+      await _enterDigits(tester, <int>[5, 5, 5, 5, 5, 5, 5, 5]);
       expect(find.byType(DeceptiveOldPinDialog), findsOneWidget);
       check(h.session.wrongCalls).equals(1);
       check(h.gate.unlockCalls).equals(0);
@@ -243,9 +265,9 @@ void main() {
       WidgetTester tester,
     ) async {
       final h = await _pumpGate(tester, settings: _settings(threshold: 2));
-      await _enterDigits(tester, <int>[5, 5, 5, 5]);
+      await _enterDigits(tester, <int>[5, 5, 5, 5, 5, 5, 5, 5]);
       check(h.session.distressCalls).equals(0);
-      await _enterDigits(tester, <int>[5, 5, 5, 5]);
+      await _enterDigits(tester, <int>[5, 5, 5, 5, 5, 5, 5, 5]);
       check(h.session.distressCalls).equals(1);
       check(h.session.lastReason).equals(EndReason.wrongPinExhausted);
       check(h.gate.unlockCalls).equals(0);
