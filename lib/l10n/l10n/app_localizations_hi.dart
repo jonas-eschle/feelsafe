@@ -1841,4 +1841,22 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'पुष्टि के लिए स्वाइप करें';
+
+  @override
+  String get homeWidgetStatusIdle => 'निष्क्रिय';
+
+  @override
+  String get homeWidgetStatusSession => 'सत्र सक्रिय';
+
+  @override
+  String get homeWidgetStatusSim => 'सिमुलेशन सक्रिय';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'बैटरी चेतावनी';
+
+  @override
+  String get homeWidgetQuickExit => 'त्वरित निकास';
+
+  @override
+  String get homeWidgetFakeCall => 'नकली कॉल';
 }

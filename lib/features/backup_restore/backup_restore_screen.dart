@@ -1,8 +1,9 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -13,7 +14,7 @@ import 'package:guardianangela/services/service_providers.dart';
 /// Backup & restore screen.
 ///
 /// Wraps `BackupService.exportToJson` + `importFromJson`. Sharing uses
-/// `share_plus`; import uses `file_picker`. See spec 04 §Backup &
+/// `share_plus`; import uses `file_selector`. See spec 04 §Backup &
 /// Restore (lines 2358–2402). During an active session the buttons are
 /// disabled and a banner explains why.
 class BackupRestoreScreen extends ConsumerStatefulWidget {
@@ -101,16 +102,18 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       ),
     );
     if (confirm != true) return;
-    final result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const <String>['json'],
-      withData: true,
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'JSON',
+      extensions: <String>['json'],
     );
-    if (result == null || result.files.isEmpty) return;
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[typeGroup],
+    );
+    if (file == null) return;
     setState(() => _busy = true);
     try {
-      final bytes = result.files.first.bytes;
-      if (bytes == null) return;
+      final Uint8List bytes = await file.readAsBytes();
+      if (bytes.isEmpty) return;
       final service = await ref.read(backupServiceProvider.future);
       await service.importFromJson(utf8.decode(bytes));
       if (!mounted) return;

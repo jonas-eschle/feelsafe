@@ -1855,4 +1855,22 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'Zum Bestätigen wischen';
+
+  @override
+  String get homeWidgetStatusIdle => 'Bereit';
+
+  @override
+  String get homeWidgetStatusSession => 'Sitzung aktiv';
+
+  @override
+  String get homeWidgetStatusSim => 'Simulation aktiv';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'Akku-Warnung';
+
+  @override
+  String get homeWidgetQuickExit => 'Schnell beenden';
+
+  @override
+  String get homeWidgetFakeCall => 'Fake-Anruf';
 }

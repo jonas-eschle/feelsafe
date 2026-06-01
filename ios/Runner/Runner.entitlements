@@ -4,5 +4,9 @@
 <dict>
     <key>com.apple.developer.usernotifications.critical-alerts</key>
     <true/>
+    <key>com.apple.security.application-groups</key>
+    <array>
+        <string>group.com.guardianangela.shared</string>
+    </array>
 </dict>
 </plist>

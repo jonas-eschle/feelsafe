@@ -9,11 +9,13 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:alchemist/alchemist.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -21,7 +23,10 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/sim/home_widget_service_sim.dart';
 
 // ---------------------------------------------------------------------------
 // Fake controller
@@ -43,6 +48,26 @@ class _FakeHomeController extends HomeController {
 
   @override
   void clearValidationErrors() {}
+}
+
+/// Minimal [SessionController] override for golden tests.
+///
+/// [HomeScreen.didChangeDependencies] calls [configureWidgetLabels] via the
+/// notifier. Overriding with a no-op subclass avoids the need to initialize
+/// the real controller (which requires repositories, a database, etc.).
+class _FakeSessionController extends SessionController {
+  @override
+  Future<SessionState> build() async => const SessionState.initial();
+
+  @override
+  void configureWidgetLabels({
+    required String statusIdle,
+    required String statusSession,
+    required String statusSim,
+    required String statusBattery,
+    required String quickExit,
+    required String fakeCall,
+  }) {}
 }
 
 // ---------------------------------------------------------------------------
@@ -122,6 +147,10 @@ Widget _wrap(HomeState state, {Locale? locale, ThemeMode? themeMode}) {
   return ProviderScope(
     overrides: <Override>[
       homeControllerProvider.overrideWith(() => _FakeHomeController(state)),
+      homeWidgetServiceProvider.overrideWithValue(
+        SimulationHomeWidgetService(),
+      ),
+      sessionControllerProvider.overrideWith(_FakeSessionController.new),
     ],
     child: MaterialApp(
       locale: effectiveLocale,
@@ -153,7 +182,29 @@ Widget _wrap(HomeState state, {Locale? locale, ThemeMode? themeMode}) {
 // Golden tests
 // ---------------------------------------------------------------------------
 
+/// Installs a no-op handler for the 'home_widget/updates' EventChannel so
+/// HomeScreen's [HomeWidget.widgetClicked] subscription does not throw a
+/// [MissingPluginException] in the golden test environment.
+void _installHomeWidgetEventChannelNoop() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockStreamHandler(
+        const EventChannel('home_widget/updates'),
+        // Handler that emits no events and never closes the stream.
+        _HomeWidgetNoopStreamHandler(),
+      );
+}
+
+class _HomeWidgetNoopStreamHandler extends MockStreamHandler {
+  @override
+  void onListen(Object? arguments, MockStreamHandlerEventSink events) {}
+
+  @override
+  void onCancel(Object? arguments) {}
+}
+
 void main() {
+  setUpAll(_installHomeWidgetEventChannelNoop);
+
   goldenTest(
     'HomeScreen — variants',
     fileName: 'home_screen',

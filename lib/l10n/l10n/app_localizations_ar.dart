@@ -1826,4 +1826,22 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'اسحبي للتأكيد';
+
+  @override
+  String get homeWidgetStatusIdle => 'خامل';
+
+  @override
+  String get homeWidgetStatusSession => 'جلسة نشطة';
+
+  @override
+  String get homeWidgetStatusSim => 'محاكاة نشطة';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'تنبيه البطارية';
+
+  @override
+  String get homeWidgetQuickExit => 'خروج سريع';
+
+  @override
+  String get homeWidgetFakeCall => 'مكالمة وهمية';
 }

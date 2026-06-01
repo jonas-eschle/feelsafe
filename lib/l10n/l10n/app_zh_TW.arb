@@ -840,5 +840,11 @@
   "sessionEmergencyConfirmKeep": "繼續撥打",
   "sessionEmergencyConfirmSimBadge": "[SIM] 練習模式",
   "sessionEmergencyConfirmSimCancelled": "模擬取消——不會真的撥出電話",
-  "swipeSliderSemantics": "滑動以確認"
+  "swipeSliderSemantics": "滑動以確認",
+  "homeWidgetStatusIdle": "待命",
+  "homeWidgetStatusSession": "守護中",
+  "homeWidgetStatusSim": "模擬中",
+  "homeWidgetStatusBatteryAlert": "電量警示",
+  "homeWidgetQuickExit": "快速離開",
+  "homeWidgetFakeCall": "模擬來電"
 }

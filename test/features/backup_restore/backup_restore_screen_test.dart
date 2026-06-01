@@ -5,7 +5,7 @@
 ///   - Include-session-logs toggle (default ON, togglable).
 ///   - Include-media toggle (default ON, togglable).
 ///   - Export button: calls BackupService.exportToJson + share_plus.
-///   - Import button: confirmation dialog → FilePicker → importFromJson.
+///   - Import button: confirmation dialog → file_selector → importFromJson.
 ///   - Overwrite warning text visible at all times.
 ///   - Buttons disabled while busy (_busy flag).
 ///   - Error handling: corrupt-file (importFromJson throws FormatException).
@@ -24,8 +24,8 @@
 ///   `dev.fluttercommunity.plus/share` via the binary messenger mock so
 ///   no real platform bridge is exercised.
 ///
-///   [FilePicker.platform] is replaced with [_FakeFilePicker] following the
-///   pattern from `test/main_bootstrap_test.dart`.
+///   [FileSelectorPlatform.instance] is replaced with [_FakeFileSelector]
+///   following the pattern from `test/main_bootstrap_test.dart`.
 library;
 
 import 'dart:convert';
@@ -35,9 +35,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
@@ -47,34 +48,31 @@ import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
 import '../../helpers/widget_test_helpers.dart';
 
+// ignore: depend_on_referenced_packages
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
+    show FileSelectorPlatform;
+
+
 // ---------------------------------------------------------------------------
-// Fake FilePicker
+// Fake FileSelector
 // ---------------------------------------------------------------------------
 
-/// Fake [FilePicker] that returns a canned result without calling platform
-/// channels. Extends [FilePicker] (required by PlatformInterface.verifyToken).
-class _FakeFilePicker extends FilePicker {
-  _FakeFilePicker({this.result});
+/// Fake [FileSelectorPlatform] that returns a canned [XFile] without calling
+/// platform channels. Mixes in [MockPlatformInterfaceMixin] to satisfy
+/// PlatformInterface.verifyToken.
+class _FakeFileSelector extends FileSelectorPlatform
+    with MockPlatformInterfaceMixin {
+  _FakeFileSelector({this.file});
 
-  /// The result to return from [pickFiles]. `null` simulates cancellation.
-  final FilePickerResult? result;
+  /// The file to return from [openFile]. `null` simulates cancellation.
+  final XFile? file;
 
   @override
-  Future<FilePickerResult?> pickFiles({
-    FileType type = FileType.any,
-    List<String>? allowedExtensions,
-    void Function(FilePickerStatus)? onFileLoading,
-    bool allowCompression = true,
-    bool allowMultiple = false,
-    bool withData = false,
-    bool withReadStream = false,
-    bool lockParentWindow = false,
-    bool readSequential = false,
+  Future<XFile?> openFile({
+    List<XTypeGroup>? acceptedTypeGroups,
     String? initialDirectory,
-    String? dialogTitle,
-    String? fileName,
-    int compressionQuality = 30,
-  }) async => result;
+    String? confirmButtonText,
+  }) async => file;
 }
 
 // ---------------------------------------------------------------------------
@@ -145,11 +143,11 @@ const String _validJson =
     '"settings":{},"templates":[],'
     '"eventDefaults":{},"profile":{}}';
 
-/// A [PlatformFile] carrying [_validJson] bytes.
-PlatformFile _jsonPlatformFile([String json = _validJson]) => PlatformFile(
+/// An [XFile] carrying [_validJson] bytes.
+XFile _xFile([String json = _validJson]) => XFile.fromData(
+  Uint8List.fromList(utf8.encode(json)),
   name: 'backup.json',
-  size: json.length,
-  bytes: utf8.encode(json),
+  mimeType: 'application/json',
 );
 
 /// Mocks the share_plus MethodChannel so calls do not reach the platform.
@@ -491,10 +489,9 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
-      addTearDown(() => FilePicker.platform = FilePicker.platform);
+      final original = FileSelectorPlatform.instance;
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -522,9 +519,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -549,9 +544,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -575,7 +568,7 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
       // Return null to simulate user cancelling the picker.
-      FilePicker.platform = _FakeFilePicker();
+      FileSelectorPlatform.instance = _FakeFileSelector();
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -616,9 +609,7 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -644,9 +635,7 @@ void main() {
       // Uses the non-throwing service.
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -694,7 +683,7 @@ void main() {
       // Equivalent to an aborted import (Cancel path) — no snackbar.
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
-      FilePicker.platform = _FakeFilePicker();
+      FileSelectorPlatform.instance = _FakeFileSelector();
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -869,9 +858,7 @@ void main() {
     testWidgets('corrupt-import surfaces a snackbar with the FormatException', (
       WidgetTester tester,
     ) async {
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([_jsonPlatformFile()]),
-      );
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
       final l10n = await loadL10n(const Locale('en'));
       final fake = _CorruptBackupService();
       await pumpScreen(

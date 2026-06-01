@@ -840,5 +840,11 @@
   "sessionEmergencyConfirmKeep": "Seguir llamando",
   "sessionEmergencyConfirmSimBadge": "[SIM] Modo de práctica",
   "sessionEmergencyConfirmSimCancelled": "Cancelación simulada: la llamada no se habría realizado",
-  "swipeSliderSemantics": "Desliza para confirmar"
+  "swipeSliderSemantics": "Desliza para confirmar",
+  "homeWidgetStatusIdle": "En espera",
+  "homeWidgetStatusSession": "Sesión activa",
+  "homeWidgetStatusSim": "Simulación activa",
+  "homeWidgetStatusBatteryAlert": "Alerta de batería",
+  "homeWidgetQuickExit": "Salida rápida",
+  "homeWidgetFakeCall": "Llamada falsa"
 }

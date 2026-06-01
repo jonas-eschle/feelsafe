@@ -2370,5 +2370,29 @@
   "swipeSliderSemantics": "Swipe to confirm",
   "@swipeSliderSemantics": {
     "description": "Default screen-reader hint for SwipeSlider — read aloud after the slider's caller-supplied label."
+  },
+  "homeWidgetStatusIdle": "Idle",
+  "@homeWidgetStatusIdle": {
+    "description": "Home-screen widget status text shown when no session is running."
+  },
+  "homeWidgetStatusSession": "Session active",
+  "@homeWidgetStatusSession": {
+    "description": "Home-screen widget status text shown while a real safety session is active."
+  },
+  "homeWidgetStatusSim": "Simulation active",
+  "@homeWidgetStatusSim": {
+    "description": "Home-screen widget status text shown while a simulation session is active."
+  },
+  "homeWidgetStatusBatteryAlert": "Battery alert",
+  "@homeWidgetStatusBatteryAlert": {
+    "description": "Home-screen widget status text shown when a low-battery alert fires during a session."
+  },
+  "homeWidgetQuickExit": "Quick Exit",
+  "@homeWidgetQuickExit": {
+    "description": "Home-screen widget button label for Quick Exit (ends session, PIN-gated)."
+  },
+  "homeWidgetFakeCall": "Fake Call",
+  "@homeWidgetFakeCall": {
+    "description": "Home-screen widget button label for Fake Call (deep-links to /fake-call)."
   }
 }

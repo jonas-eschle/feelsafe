@@ -1846,4 +1846,22 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'Проведіть, щоб підтвердити';
+
+  @override
+  String get homeWidgetStatusIdle => 'Очікування';
+
+  @override
+  String get homeWidgetStatusSession => 'Сесія активна';
+
+  @override
+  String get homeWidgetStatusSim => 'Симуляція активна';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'Сповіщення про батарею';
+
+  @override
+  String get homeWidgetQuickExit => 'Швидкий вихід';
+
+  @override
+  String get homeWidgetFakeCall => 'Несправжній дзвінок';
 }

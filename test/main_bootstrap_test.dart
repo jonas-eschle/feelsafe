@@ -16,17 +16,19 @@
 //   c) The bootstrap ordering contract (steps must be exercised in order —
 //      verified by checking that the correct state is achieved after each
 //      step in a simulated sequence).
-//   d) The restore-from-backup flow via a fake FilePicker + BackupService.
+//   d) The restore-from-backup flow via a fake FileSelector + BackupService.
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
@@ -40,6 +42,11 @@ import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
+
+// ignore: depend_on_referenced_packages
+import 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
+    show FileSelectorPlatform;
+
 
 // ---------------------------------------------------------------------------
 // Q8: Bootstrap ordering — sequence tracker fakes
@@ -176,24 +183,22 @@ class _ThrowingSettingsRepo implements AppSettingsRepository {
 GuardianAngelaDatabase _openDb() =>
     GuardianAngelaDatabase.memory(seedCallback: (_) async {});
 
-/// Fake [FilePicker] that returns a canned result without calling platform
-/// channels. Extends [FilePicker] (required by PlatformInterface.verifyToken).
-class _FakeFilePicker extends FilePicker {
-  _FakeFilePicker({this.result});
+/// Fake [FileSelectorPlatform] that returns a canned [XFile] without calling
+/// platform channels. Mixes in [MockPlatformInterfaceMixin] to satisfy
+/// PlatformInterface.verifyToken.
+class _FakeFileSelector extends FileSelectorPlatform
+    with MockPlatformInterfaceMixin {
+  _FakeFileSelector({this.file});
 
-  /// The result to return from [pickFiles]. `null` simulates cancellation.
-  final FilePickerResult? result;
+  /// The file to return from [openFile]. `null` simulates cancellation.
+  final XFile? file;
 
   @override
-  Future<FilePickerResult?> pickFiles({
-    FileType type = FileType.any,
-    List<String>? allowedExtensions,
-    void Function(FilePickerStatus)? onFileLoading,
-    bool allowCompression = true,
-    bool allowMultiple = false,
-    bool withData = false,
-    bool withReadStream = false,
-  }) async => result;
+  Future<XFile?> openFile({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
+  }) async => file;
 }
 
 /// [BackupServiceProtocol] that always throws on [importFromJson].
@@ -309,13 +314,13 @@ void main() {
     tearDown(() {
       // Reset to a no-op fake so real platform channels are never called by
       // any later test that might inadvertently leave a bad state.
-      FilePicker.platform = _FakeFilePicker();
+      FileSelectorPlatform.instance = _FakeFileSelector();
     });
 
     testWidgets('cancelled pick shows "No file selected."', (
       WidgetTester tester,
     ) async {
-      FilePicker.platform = _FakeFilePicker();
+      FileSelectorPlatform.instance = _FakeFileSelector();
 
       await tester.pumpWidget(_recoveryWithBackup(SimulationBackupService()));
       await tester.pumpAndSettle();
@@ -333,11 +338,12 @@ void main() {
           '{"version":"1.0","_schemaVersion":1,"timestamp":"",'
           '"contacts":[],"modes":[],"settings":{},'
           '"templates":[],"eventDefaults":{},"profile":{}}';
-      final bytes = Uint8List.fromList(validJson.codeUnits);
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([
-          PlatformFile(name: 'backup.json', size: bytes.length, bytes: bytes),
-        ]),
+      FileSelectorPlatform.instance = _FakeFileSelector(
+        file: XFile.fromData(
+          Uint8List.fromList(utf8.encode(validJson)),
+          name: 'backup.json',
+          mimeType: 'application/json',
+        ),
       );
 
       final sim = SimulationBackupService();
@@ -359,11 +365,12 @@ void main() {
       WidgetTester tester,
     ) async {
       const validJson = '{"not":"a valid backup"}';
-      final bytes = Uint8List.fromList(validJson.codeUnits);
-      FilePicker.platform = _FakeFilePicker(
-        result: FilePickerResult([
-          PlatformFile(name: 'broken.json', size: bytes.length, bytes: bytes),
-        ]),
+      FileSelectorPlatform.instance = _FakeFileSelector(
+        file: XFile.fromData(
+          Uint8List.fromList(utf8.encode(validJson)),
+          name: 'broken.json',
+          mimeType: 'application/json',
+        ),
       );
 
       // SimulationBackupService that throws on import.

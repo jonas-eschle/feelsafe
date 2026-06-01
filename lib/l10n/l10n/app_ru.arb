@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "Продолжить звонок",
   "sessionEmergencyConfirmSimBadge": "[SIM] Режим тренировки",
   "sessionEmergencyConfirmSimCancelled": "Симулированная отмена — звонок не был бы совершён",
-  "swipeSliderSemantics": "Проведите для подтверждения"
+  "swipeSliderSemantics": "Проведите для подтверждения",
+  "homeWidgetStatusIdle": "Ожидание",
+  "homeWidgetStatusSession": "Сессия активна",
+  "homeWidgetStatusSim": "Симуляция активна",
+  "homeWidgetStatusBatteryAlert": "Оповещение о батарее",
+  "homeWidgetQuickExit": "Быстрый выход",
+  "homeWidgetFakeCall": "Ложный вызов"
 }

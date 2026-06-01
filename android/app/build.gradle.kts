@@ -42,6 +42,14 @@ android {
 dependencies {
     // Core library desugaring for flutter_local_notifications Java 8+ APIs on older Android
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.5")
+
+    // WorkManager for SmsWorker (CoroutineWorker) — provides the Kotlin coroutines
+    // extension and the runtime WorkManager library. Version chosen to be compatible
+    // with what flutter_background_service and other plugins bring transitively.
+    implementation("androidx.work:work-runtime-ktx:2.10.1")
+
+    // AndroidX Core-KTX for ContextCompat (used in CallStateChannel, DeviceInfoChannel).
+    implementation("androidx.core:core-ktx:1.16.0")
 }
 
 flutter {

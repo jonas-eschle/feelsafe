@@ -840,5 +840,11 @@
   "sessionEmergencyConfirmKeep": "继续呼叫",
   "sessionEmergencyConfirmSimBadge": "[SIM] 练习模式",
   "sessionEmergencyConfirmSimCancelled": "模拟取消——本不会拨打电话",
-  "swipeSliderSemantics": "滑动以确认"
+  "swipeSliderSemantics": "滑动以确认",
+  "homeWidgetStatusIdle": "待机",
+  "homeWidgetStatusSession": "会话进行中",
+  "homeWidgetStatusSim": "模拟进行中",
+  "homeWidgetStatusBatteryAlert": "电量警报",
+  "homeWidgetQuickExit": "快速退出",
+  "homeWidgetFakeCall": "模拟来电"
 }

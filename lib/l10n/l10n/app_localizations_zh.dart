@@ -1775,6 +1775,24 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => '滑动以确认';
+
+  @override
+  String get homeWidgetStatusIdle => '待机';
+
+  @override
+  String get homeWidgetStatusSession => '会话进行中';
+
+  @override
+  String get homeWidgetStatusSim => '模拟进行中';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => '电量警报';
+
+  @override
+  String get homeWidgetQuickExit => '快速退出';
+
+  @override
+  String get homeWidgetFakeCall => '模拟来电';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -3546,4 +3564,22 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get swipeSliderSemantics => '滑動以確認';
+
+  @override
+  String get homeWidgetStatusIdle => '待命';
+
+  @override
+  String get homeWidgetStatusSession => '守護中';
+
+  @override
+  String get homeWidgetStatusSim => '模擬中';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => '電量警示';
+
+  @override
+  String get homeWidgetQuickExit => '快速離開';
+
+  @override
+  String get homeWidgetFakeCall => '模擬來電';
 }

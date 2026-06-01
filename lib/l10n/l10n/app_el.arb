@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "Συνέχιση κλήσης",
   "sessionEmergencyConfirmSimBadge": "[SIM] Λειτουργία εξάσκησης",
   "sessionEmergencyConfirmSimCancelled": "Προσομοιωμένη ακύρωση — η κλήση δεν θα είχε πραγματοποιηθεί",
-  "swipeSliderSemantics": "Σύρετε για επιβεβαίωση"
+  "swipeSliderSemantics": "Σύρετε για επιβεβαίωση",
+  "homeWidgetStatusIdle": "Σε αναμονή",
+  "homeWidgetStatusSession": "Ενεργή συνεδρία",
+  "homeWidgetStatusSim": "Ενεργή προσομοίωση",
+  "homeWidgetStatusBatteryAlert": "Ειδοποίηση μπαταρίας",
+  "homeWidgetQuickExit": "Γρήγορη έξοδος",
+  "homeWidgetFakeCall": "Ψεύτικη κλήση"
 }

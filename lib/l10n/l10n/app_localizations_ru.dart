@@ -1854,4 +1854,22 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'Проведите для подтверждения';
+
+  @override
+  String get homeWidgetStatusIdle => 'Ожидание';
+
+  @override
+  String get homeWidgetStatusSession => 'Сессия активна';
+
+  @override
+  String get homeWidgetStatusSim => 'Симуляция активна';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'Оповещение о батарее';
+
+  @override
+  String get homeWidgetQuickExit => 'Быстрый выход';
+
+  @override
+  String get homeWidgetFakeCall => 'Ложный вызов';
 }

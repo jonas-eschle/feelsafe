@@ -1849,4 +1849,22 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'Przesuń, aby potwierdzić';
+
+  @override
+  String get homeWidgetStatusIdle => 'Gotowy';
+
+  @override
+  String get homeWidgetStatusSession => 'Sesja aktywna';
+
+  @override
+  String get homeWidgetStatusSim => 'Symulacja aktywna';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'Alarm baterii';
+
+  @override
+  String get homeWidgetQuickExit => 'Szybkie wyjście';
+
+  @override
+  String get homeWidgetFakeCall => 'Fałszywe połączenie';
 }

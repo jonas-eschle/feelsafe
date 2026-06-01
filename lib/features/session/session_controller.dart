@@ -13,11 +13,14 @@ import 'package:guardianangela/domain/engine/triggers.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
@@ -234,8 +237,20 @@ class SessionController extends AsyncNotifier<SessionState> {
   StreamSubscription<ChainEventData>? _eventsSub;
   Timer? _tick;
   SessionLogRecorder? _recorder;
+  EventServices? _eventServices;
   DateTime? _startedAt;
   String? _markerLogId;
+
+  // Pre-localised labels for the home-screen widget. Callers (HomeScreen)
+  // supply these before calling startSession via [configureWidgetLabels] so
+  // the controller can publish fully-localised widget data without needing a
+  // BuildContext (spec 04 §Home Screen Widget).
+  String _widgetStatusIdle = 'Idle';
+  String _widgetStatusSession = 'Session active';
+  String _widgetStatusSim = 'Simulation active';
+  String _widgetStatusBattery = 'Battery alert';
+  String _widgetQuickExit = 'Quick Exit';
+  String _widgetFakeCall = 'Fake Call';
 
   /// Consecutive wrong-PIN entries for the lifetime of the current session,
   /// shared across every PIN prompt (App PIN, Session End PIN, distress
@@ -283,6 +298,58 @@ class SessionController extends AsyncNotifier<SessionState> {
   void acknowledgeInterruptedPrompt() {
     final current = state.value ?? const SessionState.initial();
     state = AsyncData(current.copyWith(clearPrior: true));
+  }
+
+  /// Supplies pre-localised widget labels from [HomeScreen] (which has a
+  /// [BuildContext] for l10n) before session transitions.
+  ///
+  /// Callers provide labels once at app startup or when the locale changes.
+  /// The controller uses them for every subsequent [_publishWidgetStatus] call,
+  /// avoiding BuildContext access inside the notifier.
+  void configureWidgetLabels({
+    required String statusIdle,
+    required String statusSession,
+    required String statusSim,
+    required String statusBattery,
+    required String quickExit,
+    required String fakeCall,
+  }) {
+    _widgetStatusIdle = statusIdle;
+    _widgetStatusSession = statusSession;
+    _widgetStatusSim = statusSim;
+    _widgetStatusBattery = statusBattery;
+    _widgetQuickExit = quickExit;
+    _widgetFakeCall = fakeCall;
+  }
+
+  /// Publishes [status] to the home-screen widget via [homeWidgetServiceProvider].
+  ///
+  /// Fire-and-forget — widget updates must never block session transitions.
+  /// [elapsed] is forwarded to the service to render the mm:ss timer.
+  void _publishWidgetStatus(HomeWidgetStatus status, {Duration? elapsed}) {
+    final statusText = switch (status) {
+      HomeWidgetStatus.idle => _widgetStatusIdle,
+      HomeWidgetStatus.sessionActive => _widgetStatusSession,
+      HomeWidgetStatus.simulationActive => _widgetStatusSim,
+      HomeWidgetStatus.batteryAlert => _widgetStatusBattery,
+    };
+    unawaited(
+      ref
+          .read(homeWidgetServiceProvider)
+          .publishStatus(
+            status: status,
+            elapsed: elapsed,
+            statusText: statusText,
+            quickExitLabel: _widgetQuickExit,
+            fakeCallLabel: _widgetFakeCall,
+          )
+          .catchError((Object e) {
+            log(
+              'homeWidgetService.publishStatus error: $e',
+              name: 'SessionController',
+            );
+          }),
+    );
   }
 
   /// Starts the engine for [mode].
@@ -388,7 +455,39 @@ class SessionController extends AsyncNotifier<SessionState> {
       clearDistressConfirm: true,
     );
     state = AsyncData(next);
+    _publishWidgetStatus(
+      simulate
+          ? HomeWidgetStatus.simulationActive
+          : HomeWidgetStatus.sessionActive,
+    );
     _distressMode = distressMode;
+    // Build one EventServices bundle per session. Constructed here (before
+    // engine.start) so every strategy executed during this session shares the
+    // same resolved contact list and profile data without re-reading providers
+    // inside hot paths. Stored in _eventServices and nulled out in the finalize
+    // path alongside _engine and _recorder.
+    final contactService = await ref.read(contactServiceProvider.future);
+    _eventServices = EventServices(
+      audio: ref.read(audioServiceProvider),
+      vibration: ref.read(vibrationServiceProvider),
+      messaging: ref.read(messagingServiceProvider),
+      phone: ref.read(phoneServiceProvider),
+      location: ref.read(locationServiceProvider),
+      recording: ref.read(recordingServiceProvider),
+      flash: ref.read(flashServiceProvider),
+      screenFlash: ref.read(screenFlashServiceProvider),
+      contacts: contactService,
+      notification: ref.read(notificationServiceProvider),
+      isSimulation: simulate,
+      userName: profile.name,
+      userDescription: profile.physicalDescription,
+      userMedicalInfo: profile.medicalConditions,
+      emergencyNumberDefault: settings.emergencyCallNumber,
+      isCancelled: () {
+        final e = _engine;
+        return e == null || e.isEnded;
+      },
+    );
     // Engage Android lock-task / pinned-app mode when the user enabled
     // it in stealth settings. Non-Android platforms no-op (spec 04
     // §Stealth Settings: lockTaskMode).
@@ -569,6 +668,17 @@ class SessionController extends AsyncNotifier<SessionState> {
     state = AsyncData(s.copyWith(clearDistressConfirm: true));
   }
 
+  /// Notifies the home-screen widget that a battery alert has fired.
+  ///
+  /// Called by [SessionScreen] when [BatteryMonitorService] fires a low-battery
+  /// alert during an active session. The widget switches to the batteryAlert
+  /// status until the session ends (spec 04 §Home Screen Widget). No-op when
+  /// no session is active.
+  void notifyBatteryAlert() {
+    if (_engine == null) return;
+    _publishWidgetStatus(HomeWidgetStatus.batteryAlert);
+  }
+
   /// Quick-exit trigger. The native side performs `finishAndRemoveTask` /
   /// `exit(0)`; here we finalise the log so encrypted data survives.
   Future<void> triggerQuickExit() async {
@@ -652,6 +762,7 @@ class SessionController extends AsyncNotifier<SessionState> {
         clearRemaining: true,
       ),
     );
+    _publishWidgetStatus(HomeWidgetStatus.idle);
   }
 
   /// Reset the in-memory wrong-PIN counter to zero.
@@ -703,6 +814,7 @@ class SessionController extends AsyncNotifier<SessionState> {
       _markerLogId = null;
     }
     _recorder = null;
+    _eventServices = null;
   }
 
   Future<void> _disposeRunOnly() async {
@@ -713,6 +825,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     await _eventsSub?.cancel();
     _eventsSub = null;
     _engine = null;
+    _eventServices = null;
   }
 
   void _disposeAll() {
@@ -765,6 +878,29 @@ class SessionController extends AsyncNotifier<SessionState> {
     };
   }
 
+  /// Resolves the active step's strategy and runs its real action.
+  ///
+  /// No-op in simulation (Layer-1 sim guard — strategies also self-guard via
+  /// Layer-2 in [EventServices.isSimulation]). Fire-and-forget: the engine's
+  /// phase timers advance the chain independently so a slow or failing action
+  /// never blocks escalation (spec 01 §Non-Blocking Event Execution). Failures
+  /// are isolated and reported via [SessionEngine.notifyStepExecutionFailed].
+  Future<void> _dispatchStep() async {
+    final services = _eventServices;
+    final engine = _engine;
+    if (services == null || engine == null || services.isSimulation) return;
+    final step = engine.currentStep;
+    if (step == null) return;
+    final index = engine.currentStepIndex;
+    try {
+      await const EventStrategyRegistry()
+          .forStep(step)
+          .executeReal(step, services);
+    } catch (error) {
+      engine.notifyStepExecutionFailed(index, error);
+    }
+  }
+
   void _onEngineEvent(ChainEventData event) {
     final recorder = _recorder;
     recorder?.onEvent(event);
@@ -785,8 +921,21 @@ class SessionController extends AsyncNotifier<SessionState> {
             clearError: true,
           ),
         );
+        // Dispatch the real action for every step type except disguisedReminder.
+        // disguisedReminder waits for its interval/delay and only fires on
+        // reminderFired — dispatching here would run the notification before
+        // the wait elapses (spec 01 §Non-Blocking Event Execution, spec 02
+        // §disguisedReminder waitSeconds).
+        if (event.stepType != ChainStepType.disguisedReminder) {
+          unawaited(_dispatchStep());
+        }
       case ChainEvent.reminderFired:
         state = AsyncData(s.copyWith(phase: SessionPhase.duration));
+        // disguisedReminder actions fire here: the engine has already waited
+        // the full waitSeconds and any retry interval before emitting this
+        // event, so the notification is timed correctly (spec 02
+        // §disguisedReminder §reminderFired).
+        unawaited(_dispatchStep());
       case ChainEvent.graceExpired:
         final missCount =
             (event.metadata['missCount'] as int?) ?? s.missCount + 1;
@@ -815,6 +964,9 @@ class SessionController extends AsyncNotifier<SessionState> {
             missCount: 0,
           ),
         );
+        // Distress chain activation is a significant status transition that
+        // the home-screen widget should reflect immediately.
+        _publishWidgetStatus(HomeWidgetStatus.sessionActive);
       case ChainEvent.distressCompleted:
         // No additional UI handling — sessionEnded will fire next.
         break;
@@ -834,6 +986,7 @@ class SessionController extends AsyncNotifier<SessionState> {
               );
         unawaited(_finaliseLog(reason));
         state = AsyncData(s.copyWith(phase: SessionPhase.ended));
+        _publishWidgetStatus(HomeWidgetStatus.idle);
       case ChainEvent.stepExecutionFailed:
         final msg = event.metadata['error']?.toString() ?? 'unknown error';
         _surfaceError('Step execution failed: $msg');

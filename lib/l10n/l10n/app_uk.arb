@@ -840,5 +840,11 @@
   "sessionEmergencyConfirmKeep": "Продовжити виклик",
   "sessionEmergencyConfirmSimBadge": "[SIM] Режим практики",
   "sessionEmergencyConfirmSimCancelled": "Симульоване скасування — виклик не було б здійснено",
-  "swipeSliderSemantics": "Проведіть, щоб підтвердити"
+  "swipeSliderSemantics": "Проведіть, щоб підтвердити",
+  "homeWidgetStatusIdle": "Очікування",
+  "homeWidgetStatusSession": "Сесія активна",
+  "homeWidgetStatusSim": "Симуляція активна",
+  "homeWidgetStatusBatteryAlert": "Сповіщення про батарею",
+  "homeWidgetQuickExit": "Швидкий вихід",
+  "homeWidgetFakeCall": "Несправжній дзвінок"
 }

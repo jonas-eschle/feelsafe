@@ -40,6 +40,7 @@ import 'package:guardianangela/services/device_info_service.dart';
 import 'package:guardianangela/services/encryption_service.dart';
 import 'package:guardianangela/services/flash_service.dart';
 import 'package:guardianangela/services/hardware_button_service.dart';
+import 'package:guardianangela/services/home_widget_service.dart';
 import 'package:guardianangela/services/location_service.dart';
 import 'package:guardianangela/services/messaging_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
@@ -56,6 +57,7 @@ import 'package:guardianangela/services/protocols/device_info_service_protocol.d
 import 'package:guardianangela/services/protocols/encryption_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
 import 'package:guardianangela/services/protocols/hardware_button_service_protocol.dart';
+import 'package:guardianangela/services/protocols/home_widget_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
@@ -528,4 +530,21 @@ final backupServiceProvider = FutureProvider<BackupServiceProtocol>((
     batteryAlertConfig: ref.read(batteryAlertConfigRepositoryProvider),
     sessionLogs: sessionLogRepo,
   );
+});
+
+// ---------------------------------------------------------------------------
+// HomeWidgetService — Phase 7
+// ---------------------------------------------------------------------------
+
+/// [HomeWidgetServiceProtocol] backed by `package:home_widget 0.9.x`.
+///
+/// Writes five pre-localised string keys to the shared widget data store and
+/// triggers a native widget refresh on every session-state transition.
+/// The interactivity callback [homeWidgetCallback] handles Android background
+/// taps; iOS taps use the `guardianangela://` URL scheme directly.
+///
+/// Tests override with [SimulationHomeWidgetService] from
+/// `lib/services/sim/home_widget_service_sim.dart`.
+final homeWidgetServiceProvider = Provider<HomeWidgetServiceProtocol>((ref) {
+  return RealHomeWidgetService();
 });

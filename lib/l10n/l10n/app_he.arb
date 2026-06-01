@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "המשיכי בשיחה",
   "sessionEmergencyConfirmSimBadge": "[SIM] מצב תרגול",
   "sessionEmergencyConfirmSimCancelled": "ביטול מדומה — השיחה לא הייתה מתבצעת",
-  "swipeSliderSemantics": "החליקי כדי לאשר"
+  "swipeSliderSemantics": "החליקי כדי לאשר",
+  "homeWidgetStatusIdle": "בהמתנה",
+  "homeWidgetStatusSession": "מושב פעיל",
+  "homeWidgetStatusSim": "סימולציה פעילה",
+  "homeWidgetStatusBatteryAlert": "התראת סוללה",
+  "homeWidgetQuickExit": "יציאה מהירה",
+  "homeWidgetFakeCall": "שיחה מזויפת"
 }

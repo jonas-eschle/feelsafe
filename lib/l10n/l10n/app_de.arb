@@ -840,5 +840,11 @@
   "sessionEmergencyConfirmKeep": "Anruf fortsetzen",
   "sessionEmergencyConfirmSimBadge": "[SIM] Übungsmodus",
   "sessionEmergencyConfirmSimCancelled": "Simulierter Abbruch – der Anruf wäre nicht getätigt worden",
-  "swipeSliderSemantics": "Zum Bestätigen wischen"
+  "swipeSliderSemantics": "Zum Bestätigen wischen",
+  "homeWidgetStatusIdle": "Bereit",
+  "homeWidgetStatusSession": "Sitzung aktiv",
+  "homeWidgetStatusSim": "Simulation aktiv",
+  "homeWidgetStatusBatteryAlert": "Akku-Warnung",
+  "homeWidgetQuickExit": "Schnell beenden",
+  "homeWidgetFakeCall": "Fake-Anruf"
 }

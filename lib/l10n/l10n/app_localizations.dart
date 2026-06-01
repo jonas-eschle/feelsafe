@@ -3437,6 +3437,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Swipe to confirm'**
   String get swipeSliderSemantics;
+
+  /// Home-screen widget status text shown when no session is running.
+  ///
+  /// In en, this message translates to:
+  /// **'Idle'**
+  String get homeWidgetStatusIdle;
+
+  /// Home-screen widget status text shown while a real safety session is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Session active'**
+  String get homeWidgetStatusSession;
+
+  /// Home-screen widget status text shown while a simulation session is active.
+  ///
+  /// In en, this message translates to:
+  /// **'Simulation active'**
+  String get homeWidgetStatusSim;
+
+  /// Home-screen widget status text shown when a low-battery alert fires during a session.
+  ///
+  /// In en, this message translates to:
+  /// **'Battery alert'**
+  String get homeWidgetStatusBatteryAlert;
+
+  /// Home-screen widget button label for Quick Exit (ends session, PIN-gated).
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Exit'**
+  String get homeWidgetQuickExit;
+
+  /// Home-screen widget button label for Fake Call (deep-links to /fake-call).
+  ///
+  /// In en, this message translates to:
+  /// **'Fake Call'**
+  String get homeWidgetFakeCall;
 }
 
 class _AppLocalizationsDelegate

@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  RemoteViews layout for GuardianAngelaAppWidget.
+  Uses only RemoteViews-compatible widgets: LinearLayout, TextView, Button.
+  Background: semi-transparent dark surface for readability on any wallpaper.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#CC131118"
+    android:gravity="center_vertical"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- Status text: pre-localised by Dart (ga_status_text) -->
+    <TextView
+        android:id="@+id/widget_status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:text="Idle"
+        android:textColor="#FFFFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Elapsed timer: mm:ss or empty when no session (ga_elapsed) -->
+    <TextView
+        android:id="@+id/widget_elapsed"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="2dp"
+        android:text=""
+        android:textColor="#FFAAAAAA"
+        android:textSize="12sp" />
+
+    <!-- Button row -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal">
+
+        <!-- Quick Exit button (ga_quick_exit label, deep-link guardianangela://quick-exit) -->
+        <Button
+            android:id="@+id/widget_btn_quick_exit"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginEnd="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FFD32F2F"
+            android:text="Quick Exit"
+            android:textColor="#FFFFFFFF"
+            android:textSize="11sp" />
+
+        <!-- Fake Call button (ga_fake_call label, deep-link guardianangela://fake-call) -->
+        <Button
+            android:id="@+id/widget_btn_fake_call"
+            android:layout_width="0dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="4dp"
+            android:layout_weight="1"
+            android:backgroundTint="#FF1565C0"
+            android:text="Fake Call"
+            android:textColor="#FFFFFFFF"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+</LinearLayout>

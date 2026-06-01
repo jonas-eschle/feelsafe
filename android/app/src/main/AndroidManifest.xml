@@ -1,18 +1,121 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Required for full-screen intent notifications (disguised reminders,
-         alarm escalation) to surface on the lock screen (spec 05:848-853).
-         Android 14+ will prompt the user the first time the channel is used. -->
+
+    <!-- ── Existing permissions (kept) ──────────────────────────────────── -->
+
+    <!-- Full-screen intent notifications (disguised reminders, alarm escalation)
+         to surface on the lock screen (spec 05:848-853).
+         Android 14+ prompts the user the first time the channel is used. -->
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
-    <!-- Biometric (fingerprint / Face) unlock for the App-lock launch gate
-         (spec 06 §App PIN). USE_FINGERPRINT covers API < 28; USE_BIOMETRIC is
-         the API 28+ permission. Both are normal permissions (no runtime
-         prompt). -->
+
+    <!-- Biometric unlock (fingerprint / Face ID) for the App-lock launch gate
+         (spec 06 §App PIN). USE_FINGERPRINT covers API < 28. -->
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
+
+    <!-- ── Phase 7 additions ─────────────────────────────────────────────── -->
+
+    <!-- CALL_PHONE: auto-dial via url_launcher tel: (spec 10:52,270). -->
+    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <!-- SEND_SMS: SmsChannel/SmsWorker auto-send without user interaction
+         (spec 05:270, 10:271). -->
+    <uses-permission android:name="android.permission.SEND_SMS"/>
+
+    <!-- READ_PHONE_STATE: CallStateChannel telephony listener (spec 10:272). -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+
+    <!-- READ_PHONE_NUMBERS: DeviceInfoChannel getSimPhoneNumber on API 26+.
+         Not listed in spec-10 permissions block (§5-D1) but required by
+         TelephonyManager.getLine1Number / SubscriptionManager.getPhoneNumber. -->
+    <uses-permission android:name="android.permission.READ_PHONE_NUMBERS"/>
+
+    <!-- RECORD_AUDIO: `record` plugin for fake-call voice and user recording
+         (spec 10:273). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
+
+    <!-- ACCESS_FINE_LOCATION: geolocator GPS (spec 10:274). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+
+    <!-- ACCESS_BACKGROUND_LOCATION: required on Android 10+ for background GPS.
+         Matrix 10:129 says "full background support"; flag §5-D7 reconciled here
+         by including it (spec 10:274 lists only ACCESS_FINE_LOCATION but that is
+         foreground-only on Android 10+). -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+
+    <!-- CAMERA: torch_light SOS flash (spec 10:275). -->
+    <uses-permission android:name="android.permission.CAMERA"/>
+
+    <!-- VIBRATE: vibration plugin (spec 10:276). -->
+    <uses-permission android:name="android.permission.VIBRATE"/>
+
+    <!-- WAKE_LOCK: wakelock_plus (spec 10:277). -->
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+
+    <!-- FOREGROUND_SERVICE: background session (spec 10:278). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+
+    <!-- FOREGROUND_SERVICE_SPECIAL_USE: required on Android 14+ for foreground
+         services that do not fit a predefined type. flutter_background_service
+         runs the session keep-alive as a general foreground service; "specialUse"
+         is the correct typed permission for this case (§5-D8 resolved). -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
+
+    <!-- SCHEDULE_EXACT_ALARM: watchdog alarm (spec 10:279,174). -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+
+    <!-- POST_NOTIFICATIONS: Android 13+ notifications (matrix 10:90).
+         Absent from spec-10 permission block but required by
+         flutter_local_notifications (§5-D9 resolved). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
+    <!-- RECEIVE_BOOT_COMPLETED: BootReceiver re-enqueues WorkManager SMS jobs
+         after reboot (spec 05:282). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+    <!-- ── Package visibility (Android 11+) ─────────────────────────────── -->
+    <queries>
+        <!-- Required for Flutter engine ProcessTextPlugin. -->
+        <intent>
+            <action android:name="android.intent.action.PROCESS_TEXT"/>
+            <data android:mimeType="text/plain"/>
+        </intent>
+        <!-- url_launcher tel: (CALL_PHONE / auto-dial). -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <!-- url_launcher sms: (messaging_service iOS-style SMS fallback). -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="sms"/>
+        </intent>
+        <!-- url_launcher https: (WhatsApp wa.me, Telegram t.me). -->
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="https"/>
+        </intent>
+        <!-- canLaunchUrl WhatsApp (package-visibility whatsapp scheme). -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="whatsapp"/>
+        </intent>
+        <!-- canLaunchUrl Telegram (tg: scheme). -->
+        <intent>
+            <action android:name="android.intent.action.SENDTO"/>
+            <data android:scheme="tg"/>
+        </intent>
+    </queries>
+
     <application
         android:label="guardianangela"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
+
+        <!--
+          MainActivity: no LAUNCHER intent-filter here — the launcher filter
+          lives exclusively on the MainActivityAlias below so StealthIconChannel
+          can disable the alias without making the app unlaunchable (§5-D6).
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -22,45 +125,77 @@
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme"/>
+        </activity>
+
+        <!--
+          Launcher alias — the only component with a MAIN/LAUNCHER intent-filter.
+          StealthIconChannel.setStealthIconEnabled(false) disables this alias,
+          removing the app from the launcher/recents, while MainActivity remains
+          enabled so the app stays launchable via other means (deep links, etc.).
+          Toggling this alias may cause Android to kill the process; expected.
+        -->
+        <activity-alias
+            android:name=".MainActivityAlias"
+            android:targetActivity=".MainActivity"
+            android:enabled="true"
+            android:exported="true"
+            android:label="@string/widget_description">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
+        </activity-alias>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data
             android:name="flutterEmbedding"
-            android:value="2" />
-    </application>
-    <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility and
-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
+            android:value="2"/>
 
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
-    <queries>
-        <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
-        </intent>
-        <!-- Required for canLaunchUrl to detect WhatsApp on API 30+
-             (package visibility: https://developer.android.com/training/package-visibility) -->
-        <intent>
-            <action android:name="android.intent.action.SENDTO" />
-            <data android:scheme="whatsapp" />
-        </intent>
-        <!-- Required for canLaunchUrl to detect Telegram on API 30+ -->
-        <intent>
-            <action android:name="android.intent.action.SENDTO" />
-            <data android:scheme="tg" />
-        </intent>
-    </queries>
+        <!-- ── BootReceiver ──────────────────────────────────────────────── -->
+        <receiver
+            android:name=".BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+            </intent-filter>
+        </receiver>
+
+        <!-- ── Home-screen widget provider ──────────────────────────────── -->
+        <receiver
+            android:name=".GuardianAngelaAppWidget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE"/>
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/guardian_angela_app_widget_info"/>
+        </receiver>
+
+        <!--
+          Foreground service for flutter_background_service session keep-alive.
+          foregroundServiceType="specialUse" is required on Android 14+ for a
+          foreground service that does not map to a predefined type.
+          The android:property below documents the special-use case as required
+          by the Google Play policy for FOREGROUND_SERVICE_SPECIAL_USE.
+          Note: the service class is owned by flutter_background_service plugin;
+          we only declare the manifest entry here to override the type.
+        -->
+        <service
+            android:name="id.flutter.flutter_background_service.BackgroundService"
+            android:enabled="true"
+            android:exported="true"
+            android:foregroundServiceType="specialUse"
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Guardian Angela session monitor — keeps a safety dead-man's-switch session alive while the user is travelling, running, or in any situation where they need periodic check-ins. The foreground notification informs the user the session is active."/>
+        </service>
+
+    </application>
 </manifest>

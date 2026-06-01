@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "ادامهٔ تماس",
   "sessionEmergencyConfirmSimBadge": "[SIM] حالت تمرین",
   "sessionEmergencyConfirmSimCancelled": "لغو شبیه‌سازی‌شده — تماسی برقرار نمی‌شد",
-  "swipeSliderSemantics": "برای تأیید بکشید"
+  "swipeSliderSemantics": "برای تأیید بکشید",
+  "homeWidgetStatusIdle": "آماده‌به‌کار",
+  "homeWidgetStatusSession": "جلسه فعال",
+  "homeWidgetStatusSim": "شبیه‌سازی فعال",
+  "homeWidgetStatusBatteryAlert": "هشدار باتری",
+  "homeWidgetQuickExit": "خروج سریع",
+  "homeWidgetFakeCall": "تماس ساختگی"
 }

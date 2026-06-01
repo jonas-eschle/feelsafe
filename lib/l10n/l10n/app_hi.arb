@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "कॉल जारी रखें",
   "sessionEmergencyConfirmSimBadge": "[SIM] अभ्यास मोड",
   "sessionEmergencyConfirmSimCancelled": "सिमुलेटेड रद्द — कॉल नहीं की जाती",
-  "swipeSliderSemantics": "पुष्टि के लिए स्वाइप करें"
+  "swipeSliderSemantics": "पुष्टि के लिए स्वाइप करें",
+  "homeWidgetStatusIdle": "निष्क्रिय",
+  "homeWidgetStatusSession": "सत्र सक्रिय",
+  "homeWidgetStatusSim": "सिमुलेशन सक्रिय",
+  "homeWidgetStatusBatteryAlert": "बैटरी चेतावनी",
+  "homeWidgetQuickExit": "त्वरित निकास",
+  "homeWidgetFakeCall": "नकली कॉल"
 }

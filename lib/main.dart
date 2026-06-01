@@ -23,10 +23,11 @@ import 'dart:async' show unawaited;
 import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 
-import 'package:file_picker/file_picker.dart';
+import 'package:file_selector/file_selector.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
@@ -311,13 +312,15 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
     setState(() => _isRestoring = true);
 
     // Step 1 — let the user pick a JSON file.
-    final FilePickerResult? result = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: const ['json'],
-      withData: true,
+    const XTypeGroup typeGroup = XTypeGroup(
+      label: 'JSON',
+      extensions: <String>['json'],
+    );
+    final XFile? file = await openFile(
+      acceptedTypeGroups: <XTypeGroup>[typeGroup],
     );
 
-    if (result == null || result.files.isEmpty) {
+    if (file == null) {
       if (!mounted) return;
       setState(() {
         _isRestoring = false;
@@ -328,8 +331,8 @@ class _RecoveryScreenState extends State<_RecoveryScreen> {
 
     // Step 2 — decode and import.
     try {
-      final bytes = result.files.first.bytes;
-      if (bytes == null || bytes.isEmpty) {
+      final Uint8List bytes = await file.readAsBytes();
+      if (bytes.isEmpty) {
         throw const FormatException('Selected file is empty or unreadable.');
       }
       final jsonString = utf8.decode(bytes);

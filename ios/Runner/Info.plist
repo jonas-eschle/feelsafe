@@ -63,12 +63,21 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<!--
+	  UIBackgroundModes:
+	  - audio: alarm / fake-call audio session + audio_service headphone-remote (C1).
+	  - location: background GPS via geolocator.
+	  - fetch: flutter_background_service BGTaskScheduler keep-alive.
+	  - processing: BGProcessingTask for longer background work.
+	  voip is intentionally ABSENT — there is no CallKit provider / PushKit usage;
+	  only CXCallObserver is used (read-only observation, not voip socket).
+	-->
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>
 		<string>location</string>
 		<string>fetch</string>
-		<string>voip</string>
+		<string>processing</string>
 	</array>
 	<key>NSCameraUsageDescription</key>
 	<string>Guardian Angela may use the camera flash as a visual alert during alarm escalation.</string>
@@ -86,6 +95,17 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<!--
+	  LSApplicationQueriesSchemes: allows url_launcher canLaunchUrl() checks
+	  for phone calls (tel), SMS (sms), Telegram (tg), and WhatsApp (whatsapp).
+	-->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>tel</string>
+		<string>sms</string>
+		<string>tg</string>
+		<string>whatsapp</string>
 	</array>
 	<!--
 	  URL scheme used by the home-screen widget to open the main app

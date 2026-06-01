@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "Kontynuuj dzwonienie",
   "sessionEmergencyConfirmSimBadge": "[SIM] Tryb ćwiczeniowy",
   "sessionEmergencyConfirmSimCancelled": "Symulowane anulowanie — połączenie nie zostałoby wykonane",
-  "swipeSliderSemantics": "Przesuń, aby potwierdzić"
+  "swipeSliderSemantics": "Przesuń, aby potwierdzić",
+  "homeWidgetStatusIdle": "Gotowy",
+  "homeWidgetStatusSession": "Sesja aktywna",
+  "homeWidgetStatusSim": "Symulacja aktywna",
+  "homeWidgetStatusBatteryAlert": "Alarm baterii",
+  "homeWidgetQuickExit": "Szybkie wyjście",
+  "homeWidgetFakeCall": "Fałszywe połączenie"
 }

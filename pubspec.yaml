@@ -51,7 +51,7 @@ dependencies:
 
   # Services — background / native
   flutter_background_service: ^5.1.0
-  home_widget: ^0.6.0
+  home_widget: ^0.9.0
   image_picker: ^1.2.0
 
   # Utils
@@ -68,7 +68,7 @@ dependencies:
   # Icons
   cupertino_icons: ^1.0.8
   pointycastle: ^3.9.1
-  file_picker: any
+  file_selector: ^1.0.0
   audio_session: ^0.2.3
   pdf: ^3.12.0
   printing: ^5.14.3

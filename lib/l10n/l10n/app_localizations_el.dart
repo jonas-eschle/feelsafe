@@ -1868,4 +1868,22 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'Σύρετε για επιβεβαίωση';
+
+  @override
+  String get homeWidgetStatusIdle => 'Σε αναμονή';
+
+  @override
+  String get homeWidgetStatusSession => 'Ενεργή συνεδρία';
+
+  @override
+  String get homeWidgetStatusSim => 'Ενεργή προσομοίωση';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'Ειδοποίηση μπαταρίας';
+
+  @override
+  String get homeWidgetQuickExit => 'Γρήγορη έξοδος';
+
+  @override
+  String get homeWidgetFakeCall => 'Ψεύτικη κλήση';
 }

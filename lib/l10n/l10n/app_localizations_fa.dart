@@ -1837,4 +1837,22 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'برای تأیید بکشید';
+
+  @override
+  String get homeWidgetStatusIdle => 'آماده‌به‌کار';
+
+  @override
+  String get homeWidgetStatusSession => 'جلسه فعال';
+
+  @override
+  String get homeWidgetStatusSim => 'شبیه‌سازی فعال';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'هشدار باتری';
+
+  @override
+  String get homeWidgetQuickExit => 'خروج سریع';
+
+  @override
+  String get homeWidgetFakeCall => 'تماس ساختگی';
 }

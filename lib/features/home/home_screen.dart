@@ -1,27 +1,159 @@
+import 'dart:async';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:home_widget/home_widget.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
+import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
 import 'package:guardianangela/features/home/widgets/safety_setup_checklist.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 
 /// Home dashboard.
 ///
 /// Shows the Guardian Angela brand, mode selector, contact chips, and
 /// the primary "Start Session" and "Simulate" buttons. Settings,
 /// contacts, and history live in the app bar. See spec 04 §Home Screen.
-class HomeScreen extends ConsumerWidget {
+///
+/// Also owns the home-screen widget lifecycle:
+/// - Registers the interactivity callback on first mount (spec 04
+///   §Home Screen Widget: "HomeScreen registers the interactivity callback").
+/// - Drains [HomeWidget.initiallyLaunchedFromHomeWidget] to route cold-start
+///   widget taps.
+/// - Subscribes to [HomeWidget.widgetClicked] for foreground taps and routes
+///   them to the correct destination.
+/// - Publishes an initial Idle status and supplies pre-localised labels to
+///   [SessionController] once the locale is resolved.
+class HomeScreen extends ConsumerStatefulWidget {
   /// Creates a [HomeScreen].
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends ConsumerState<HomeScreen> {
+  StreamSubscription<Uri?>? _widgetClickedSub;
+
+  @override
+  void initState() {
+    super.initState();
+    // Register the Android interactivity callback once. The real service
+    // delegates to HomeWidget.registerInteractivityCallback; the sim service
+    // is a no-op. Done in initState (before first build) so the callback is
+    // registered before any tap can arrive.
+    ref.read(homeWidgetServiceProvider).registerCallback();
+
+    // Subscribe to foreground widget taps. Guarded with try-catch because the
+    // EventChannel is unavailable in unit / golden tests that do not mock the
+    // 'home_widget/updates' platform channel.
+    try {
+      _widgetClickedSub = HomeWidget.widgetClicked.listen(_onWidgetUri);
+    } catch (e) {
+      log(
+        'HomeScreen: widgetClicked subscription failed (non-fatal): $e',
+        name: 'HomeScreen',
+      );
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Publish the initial Idle status and supply localised labels once
+    // the locale is available. didChangeDependencies is called after
+    // initState when the context's inherited dependencies are first resolved.
+    _publishIdleAndConfigureLabels();
+    // Drain any cold-start URI from the widget (app launched via widget tap).
+    _drainColdStartUri();
+  }
+
+  @override
+  void dispose() {
+    _widgetClickedSub?.cancel();
+    super.dispose();
+  }
+
+  void _publishIdleAndConfigureLabels() {
+    if (!mounted) return;
+    final l10n = AppLocalizations.of(context);
+    // Supply pre-localised labels to SessionController so it can publish
+    // widget updates without a BuildContext.
+    ref
+        .read(sessionControllerProvider.notifier)
+        .configureWidgetLabels(
+          statusIdle: l10n.homeWidgetStatusIdle,
+          statusSession: l10n.homeWidgetStatusSession,
+          statusSim: l10n.homeWidgetStatusSim,
+          statusBattery: l10n.homeWidgetStatusBatteryAlert,
+          quickExit: l10n.homeWidgetQuickExit,
+          fakeCall: l10n.homeWidgetFakeCall,
+        );
+    // Publish initial Idle status so the widget reflects the current state.
+    ref
+        .read(homeWidgetServiceProvider)
+        .publishStatus(
+          status: HomeWidgetStatus.idle,
+          statusText: l10n.homeWidgetStatusIdle,
+          quickExitLabel: l10n.homeWidgetQuickExit,
+          fakeCallLabel: l10n.homeWidgetFakeCall,
+        )
+        .ignore();
+  }
+
+  Future<void> _drainColdStartUri() async {
+    try {
+      final uri = await HomeWidget.initiallyLaunchedFromHomeWidget();
+      if (uri != null && mounted) {
+        _routeWidgetUri(uri);
+      }
+    } catch (e) {
+      log(
+        'HomeScreen: cold-start widget URI drain failed: $e',
+        name: 'HomeScreen',
+      );
+    }
+  }
+
+  void _onWidgetUri(Uri? uri) {
+    if (uri == null || !mounted) return;
+    _routeWidgetUri(uri);
+  }
+
+  void _routeWidgetUri(Uri uri) {
+    // Only handle guardianangela:// deep links from the widget.
+    if (uri.scheme != 'guardianangela') return;
+    switch (uri.host) {
+      case 'quick-exit':
+        // Quick Exit is PIN-gated via the existing session-end flow.
+        // Route to /session if a session is running; otherwise it is a no-op.
+        final sessionState = ref.read(sessionControllerProvider).value;
+        if (sessionState != null &&
+            sessionState.phase != SessionPhase.idle &&
+            sessionState.phase != SessionPhase.ended) {
+          context.pushNamed(RouteNames.session);
+        }
+      case 'fake-call':
+        context.pushNamed(RouteNames.fakeCall);
+      default:
+        log(
+          'HomeScreen: unknown widget URI path: ${uri.host}',
+          name: 'HomeScreen',
+        );
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final stateAsync = ref.watch(homeControllerProvider);
     return Scaffold(

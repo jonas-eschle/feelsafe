@@ -31,7 +31,18 @@ import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
+import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/contact_service_sim.dart';
+import 'package:guardianangela/services/sim/flash_service_sim.dart';
+import 'package:guardianangela/services/sim/home_widget_service_sim.dart';
+import 'package:guardianangela/services/sim/location_service_sim.dart';
+import 'package:guardianangela/services/sim/messaging_service_sim.dart';
+import 'package:guardianangela/services/sim/notification_service_sim.dart';
+import 'package:guardianangela/services/sim/phone_service_sim.dart';
+import 'package:guardianangela/services/sim/recording_service_sim.dart';
+import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
+import 'package:guardianangela/services/sim/vibration_service_sim.dart';
 
 class _FakeAppSettingsRepository extends AppSettingsRepository {
   _FakeAppSettingsRepository(this._current)
@@ -83,6 +94,28 @@ ProviderContainer _container(AppSettings settings, GuardianAngelaDatabase db) {
         _FakeAppSettingsRepository(settings),
       ),
       databaseProvider.overrideWith((ref) async => db),
+      // Sim service overrides so startSession doesn't touch real hardware
+      // or platform channels (required since Phase 7 wired EventServices).
+      systemUiServiceProvider.overrideWithValue(SimulationSystemUiService()),
+      homeWidgetServiceProvider.overrideWithValue(
+        SimulationHomeWidgetService(),
+      ),
+      audioServiceProvider.overrideWithValue(SimulationAudioService()),
+      vibrationServiceProvider.overrideWithValue(SimulationVibrationService()),
+      flashServiceProvider.overrideWithValue(SimulationFlashService()),
+      screenFlashServiceProvider.overrideWithValue(
+        SimulationScreenFlashService(),
+      ),
+      recordingServiceProvider.overrideWithValue(SimulationRecordingService()),
+      locationServiceProvider.overrideWithValue(SimulationLocationService()),
+      notificationServiceProvider.overrideWithValue(
+        SimulationNotificationService(),
+      ),
+      phoneServiceProvider.overrideWithValue(SimulationPhoneService()),
+      messagingServiceProvider.overrideWithValue(SimulationMessagingService()),
+      contactServiceProvider.overrideWith(
+        (_) async => SimulationContactService(),
+      ),
     ],
   );
   addTearDown(container.dispose);
@@ -153,6 +186,33 @@ void main() {
           ),
           systemUiServiceProvider.overrideWithValue(
             SimulationSystemUiService(),
+          ),
+          homeWidgetServiceProvider.overrideWithValue(
+            SimulationHomeWidgetService(),
+          ),
+          audioServiceProvider.overrideWithValue(SimulationAudioService()),
+          vibrationServiceProvider.overrideWithValue(
+            SimulationVibrationService(),
+          ),
+          flashServiceProvider.overrideWithValue(SimulationFlashService()),
+          screenFlashServiceProvider.overrideWithValue(
+            SimulationScreenFlashService(),
+          ),
+          recordingServiceProvider.overrideWithValue(
+            SimulationRecordingService(),
+          ),
+          locationServiceProvider.overrideWithValue(
+            SimulationLocationService(),
+          ),
+          notificationServiceProvider.overrideWithValue(
+            SimulationNotificationService(),
+          ),
+          phoneServiceProvider.overrideWithValue(SimulationPhoneService()),
+          messagingServiceProvider.overrideWithValue(
+            SimulationMessagingService(),
+          ),
+          contactServiceProvider.overrideWith(
+            (_) async => SimulationContactService(),
           ),
           sessionLogRecorderProvider.overrideWith(
             (ref) async =>

@@ -1813,4 +1813,22 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get swipeSliderSemantics => 'החליקי כדי לאשר';
+
+  @override
+  String get homeWidgetStatusIdle => 'בהמתנה';
+
+  @override
+  String get homeWidgetStatusSession => 'מושב פעיל';
+
+  @override
+  String get homeWidgetStatusSim => 'סימולציה פעילה';
+
+  @override
+  String get homeWidgetStatusBatteryAlert => 'התראת סוללה';
+
+  @override
+  String get homeWidgetQuickExit => 'יציאה מהירה';
+
+  @override
+  String get homeWidgetFakeCall => 'שיחה מזויפת';
 }

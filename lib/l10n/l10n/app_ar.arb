@@ -711,5 +711,11 @@
   "sessionEmergencyConfirmKeep": "متابعة الاتصال",
   "sessionEmergencyConfirmSimBadge": "[SIM] وضع التدريب",
   "sessionEmergencyConfirmSimCancelled": "إلغاء محاكى — لم يكن ليتم إجراء المكالمة",
-  "swipeSliderSemantics": "اسحبي للتأكيد"
+  "swipeSliderSemantics": "اسحبي للتأكيد",
+  "homeWidgetStatusIdle": "خامل",
+  "homeWidgetStatusSession": "جلسة نشطة",
+  "homeWidgetStatusSim": "محاكاة نشطة",
+  "homeWidgetStatusBatteryAlert": "تنبيه البطارية",
+  "homeWidgetQuickExit": "خروج سريع",
+  "homeWidgetFakeCall": "مكالمة وهمية"
 }
