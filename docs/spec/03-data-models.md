@@ -807,11 +807,11 @@ final class AppSettings {
 - `selectedModeId`: UUID of the current active mode (for quick resume).
 
 **Security — three distinct PINs:**
-- `appPinHash`: When set, unlocks the app on every open. Null = no app lock. May try biometric first via `appPinBiometricEnabled`.
+- `appPinHash`: When set, the App-lock launch gate (`LaunchPinScreen`, route `/settings`-independent `/launch-pin`) covers the app on **cold start** before any other screen (cold-start only — no re-lock on resume). Null = no app lock. Tries biometric first when `appPinBiometricEnabled` (opt-in, default off), falling back to the PIN keypad.
 - `sessionEndPinHash`: When set, required to disarm or manually end a running session. Timeout configurable via `pinTimeoutSeconds` (default 15 s, max 120 s). May try biometric first via `sessionEndPinBiometricEnabled`.
 - `duressPinHash`: When entered at ANY PIN prompt, shows a fake "Session ended" screen to the attacker and silently fires the mode's selected distress mode. Must differ from the other two PINs.
 - `wrongPinThreshold`: After this many wrong attempts at a PIN prompt, silently fire distress (A3). Default 5.
-- `requireLaunchAuth` + `launchAuthBiometric`: gate the home screen behind a PIN-or-biometric prompt on cold start. Both default off / on respectively (Q14).
+- `requireLaunchAuth` + `launchAuthBiometric`: **superseded (2026-06).** The launch gate is driven by `appPinHash != null` (trigger) + `appPinBiometricEnabled` (biometric), not by a separate toggle — see `appPinHash` above and `06-settings.md` §App PIN. These two fields are retained on the model (default off / on) but currently unused; candidate for removal in a dedicated schema-cleanup pass.
 
 **Global behavior:**
 - `emergencyCallNumber`: defaults to `112`. Settings has an "Emergency number" editor.

@@ -488,8 +488,8 @@ A collapsible banner card at the top of the home screen (below the app bar, abov
 │  ━━━━━━━━━━━━━━━━░░░░░ 40%              │
 ├──────────────────────────────────────────┤
 │  ✓ Add an emergency contact         ℹ   │ (completed, muted)
-│  ☐ Set a session-end PIN            ℹ   │ → /settings/pin-setup?type=session
-│  ☐ Configure stealth mode           ℹ   │ → tutorial → /settings/defaults
+│  ☐ Set a session-end PIN            ℹ   │ → /settings/pin-setup?type=sessionEnd
+│  ☐ Configure stealth mode           ℹ   │ → tutorial → /settings/stealth
 │  ☐ Test a simulation                ℹ   │ → tutorial → "Got it"
 │  ☐ Customize a safety mode          ℹ   │ → tutorial → /modes
 │  ☐ Grant required permissions       ℹ   │ → ensureNotificationPermission()
@@ -498,8 +498,8 @@ A collapsible banner card at the top of the home screen (below the app bar, abov
 
 **Checklist items (each is tappable):**
 1. **Add an emergency contact** — direct link: `/contacts/edit` (new contact). Completes when at least one contact exists.
-2. **Set a session-end PIN** — direct link: `/settings/pin-setup?type=session`. Completes when `AppSettings.sessionEndPinHash` is non-null.
-3. **Configure stealth mode** — opens a tutorial bottom sheet explaining what stealth does; the "Go there" button navigates to `/settings/defaults`. Completes when `AppSettings.defaults.stealth.enabled` is true.
+2. **Set a session-end PIN** — direct link: `/settings/pin-setup?type=sessionEnd`. Completes when `AppSettings.sessionEndPinHash` is non-null.
+3. **Configure stealth mode** — opens a tutorial bottom sheet explaining what stealth does; the "Go there" button navigates to `/settings/stealth`. Completes when `AppSettings.defaults.stealth.enabled` is true.
 4. **Test a simulation** — opens a tutorial bottom sheet explaining simulation; the confirm button simply closes the sheet so the user can press the Simulate button on the home screen. Completes after the first simulation session (flag persisted in `SharedPreferences`, fallback to `isSimulation` logs).
 5. **Customize a safety mode** — opens a tutorial bottom sheet explaining modes; the "Go there" button navigates to `/modes`. Completes when any non-template mode exists.
 6. **Grant required permissions** — calls `ensureNotificationPermission(context)` inline (rationale dialog, OS prompt, or deep-link into system settings for permanently-denied). Completes when `Permission.notification.status.isGranted`.

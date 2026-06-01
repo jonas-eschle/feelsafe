@@ -141,6 +141,8 @@ Priority order (every keystroke at length ≥ 4):
 
 **No persisted per-PIN length fields:** because hashes are length-independent and the auto-submit loop tries every `n ∈ [4..maxInput]`, the system does not need to store each PIN's length anywhere on disk. Tests assert the algorithm directly (e.g., "App PIN = `123456`; entering `12345` does NOT auto-submit; entering `123456` does auto-submit").
 
+**When a wrong attempt is counted (false-distress avoidance):** because PIN length is not known at entry time, a non-matching entry of length `< kPinMaxLength` (8) may still be the prefix of a longer correct PIN. Counting it as a wrong attempt at length 4 would (a) make 5–8 digit PINs unenterable (the keypad would clear before the full PIN is typed) and (b) at a distress-firing prompt, fire the distress chain on a **legitimate** user — the worst-case false positive. Therefore the keypads count a wrong attempt **only once the entry reaches `kPinMaxLength` with no match** (entry is also capped at `kPinMaxLength`). A correct PIN of any length still auto-submits the instant its full value is typed. Applies uniformly to the launch gate (`LaunchPinScreen`), the session-end overlay (`EndSessionOverlay`), and the distress-cancel prompt.
+
 `AppSettings.pinLength` no longer exists. Legacy JSON with a `pinLength` key is ignored on load — this is a one-way schema change (no migration required because schema mismatches trigger a reseed per spec).
 
 #### App PIN
@@ -148,8 +150,10 @@ Priority order (every keystroke at length ≥ 4):
 - **Info:** "Locks the app each time you open it. Anyone picking up your phone cannot see Guardian Angela without this PIN."
 - **Control:** "Set PIN" / "Change PIN" / "Remove" button
 - **Options:** Length chosen at setup (4–8 digits). Disabled by default.
-- **Persistence:** `AppSettings.appPinHash` (hashed, stored in the encrypted `app_settings.json` singleton)
-- **Effect:** All app screens require PIN entry on launch.
+- **Biometric:** Toggle "Use biometrics for App lock" — when enabled, the launch gate first shows the device biometric (fingerprint / Face ID) and falls back to the App PIN keypad on cancel, failure, or absence. Opt-in, default off (`AppSettings.appPinBiometricEnabled`); see the coercion §Note under Session End PIN below.
+- **Persistence:** `AppSettings.appPinHash` (hashed, stored in the encrypted `app_settings.json` singleton) + `AppSettings.appPinBiometricEnabled`.
+- **Effect:** On **cold start**, when an App PIN is set, the whole app is gated behind the launch PIN screen (`LaunchPinScreen`, route `/launch-pin`) before any other screen — there is no flash of app content. The gate is cold-start only (no re-lock on resume). The Duress PIN and wrong-PIN escalation apply here (§Wrong PIN Behavior): a Duress PIN silently fires the global default distress chain and fake-unlocks; reaching `wrongPinThreshold` fires distress silently and the gate stays locked.
+- **Removal:** Removing the App PIN (like any PIN) requires re-entering it first (`RemovePinDialog`) — a one-tap "are you sure?" would let anyone holding the unlocked device wipe the victim's protection.
 
 #### Session End PIN
 - **Label:** "Session End PIN" ℹ
@@ -159,7 +163,7 @@ Priority order (every keystroke at length ≥ 4):
 - **Biometric:** Toggle "Biometric for session end" — when enabled, the session-end PIN prompt first shows the device biometric (fingerprint / Face ID) and only falls back to the PIN keypad on cancel, failure, or absence. Stored on `AppSettings.sessionEndPinBiometricEnabled` (Q18); the analogous `appPinBiometricEnabled` and `distressCancelBiometricEnabled` flags live on the same model. There is no separate `SharedPreferences` mirror — pre-alpha policy is to break schema freely rather than maintain a duplicate storage location.
 - **Persistence:** `AppSettings.sessionEndPinHash` + `AppSettings.pinTimeoutSeconds` + `AppSettings.sessionEndPinBiometricEnabled`.
 - **Effect:** Disarm and manual session end require PIN entry (or biometric) with timeout.
-- **Note:** Biometric may substitute for Session End PIN. It may NOT substitute for App PIN or Quick Exit (fingerprint can be forced from unconscious user).
+- **Note:** Biometric may substitute for the Session End PIN and — **opt-in, default off** — for the App PIN at the launch gate (`appPinBiometricEnabled`). It may NOT substitute for Quick Exit. The coercion risk (a fingerprint can be forced from an unconscious user) is exactly why App-lock biometric is off by default and the PIN keypad always remains as the fallback; users opt in only when they judge the convenience worth the risk. (Supersedes the earlier blanket "biometric may NOT substitute for App PIN" — reconciled with `03-data-models.md` §`appPinHash` and the glossary, which already allowed it.)
 
 #### Duress PIN
 - **Label:** "Duress PIN" ℹ
