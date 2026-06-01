@@ -101,7 +101,7 @@ class AppLocalizationsZh extends AppLocalizations {
   String get onboardingSkip => '跳过';
 
   @override
-  String get onboardingUseSimNumber => 'Use my SIM number';
+  String get onboardingUseSimNumber => '使用我的 SIM 卡号码';
 
   @override
   String onboardingUseSimNumberHint(Object number) {
@@ -109,13 +109,13 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get onboardingUseSimNumberUnsupported => 'Not available on iOS';
+  String get onboardingUseSimNumberUnsupported => '在 iOS 上不可用';
 
   @override
-  String get onboardingUseSimNumberUnavailable => 'Couldn\'t read number';
+  String get onboardingUseSimNumberUnavailable => '无法读取号码';
 
   @override
-  String get onboardingUseSimNumberPermissionDenied => 'Permission denied';
+  String get onboardingUseSimNumberPermissionDenied => '权限被拒绝';
 
   @override
   String get sessionTitle => '会话';
@@ -410,38 +410,38 @@ class AppLocalizationsZh extends AppLocalizations {
   String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
-  String get fakeCallBrandAndroid => 'PHONE';
+  String get fakeCallBrandAndroid => '电话';
 
   @override
-  String get fakeCallBrandIos => 'PHONE';
+  String get fakeCallBrandIos => '电话';
 
   @override
-  String get fakeCallBrandMinimal => 'CALL';
+  String get fakeCallBrandMinimal => '通话';
 
   @override
-  String get fakeCallDeclineSafeLabel => 'Decline (I\'m Safe)';
+  String get fakeCallDeclineSafeLabel => '拒接（我安全）';
 
   @override
-  String get fakeCallDeclineUnsafeLabel => 'Decline (Stay on alert)';
+  String get fakeCallDeclineUnsafeLabel => '拒接（保持警戒）';
 
   @override
-  String get fakeCallHoldForDistress => 'Hold 5s for distress';
+  String get fakeCallHoldForDistress => '按住 5 秒求救';
 
   @override
   String fakeCallVoicePrompt(String name) {
-    return 'TTS prompt: $name';
+    return '语音提示：$name';
   }
 
   @override
   String fakeCallVibrationLabel(String pattern) {
-    return 'Vibration: $pattern';
+    return '振动：$pattern';
   }
 
   @override
-  String get fakeCallVibrationPatternDefault => 'default';
+  String get fakeCallVibrationPatternDefault => '默认';
 
   @override
-  String get fakeCallSlideToAnswerHint => 'Slide to answer';
+  String get fakeCallSlideToAnswerHint => '滑动以接听';
 
   @override
   String fakeCallActiveDuration(String mm, String ss) {
@@ -502,8 +502,7 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
-  String get contactFormIosSmsWarning =>
-      'On iOS, SMS opens the Messages app. You must tap Send manually.';
+  String get contactFormIosSmsWarning => '在 iOS 上，短信会打开“信息”应用，您必须手动点击发送。';
 
   @override
   String get modesTitle => '模式';
@@ -606,12 +605,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsEmergencyNumberLabel => '紧急号码';
 
   @override
-  String get settingsRedoOnboardingActiveSessionTooltip =>
-      'Cannot redo onboarding during an active session';
+  String get settingsRedoOnboardingActiveSessionTooltip => '会话进行期间无法重新引导';
 
   @override
-  String get settingsEmergencyNumberCountryPickerTitle =>
-      'Choose emergency number';
+  String get settingsEmergencyNumberCountryPickerTitle => '选择紧急号码';
 
   @override
   String get settingsRedoOnboarding => '重新引导';
@@ -709,407 +706,383 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stealthPresetNone => '无';
 
   @override
-  String get stealthLockTaskLabel => 'Pin app during session';
+  String get stealthLockTaskLabel => '会话期间固定应用';
 
   @override
   String get stealthLockTaskSubtitle =>
-      'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
+      '防止在会话进行期间离开应用。在 Android 上将启用屏幕固定；在其他平台上此项无效。';
 
   @override
-  String get homeTagline => 'Your angel\'s got your back.';
+  String get homeTagline => '你的守护天使一直在你身边。';
 
   @override
-  String get onboardingWelcomeGreeting => 'Hi, I\'m Angela';
+  String get onboardingWelcomeGreeting => '你好，我是 Angela';
 
   @override
   String get onboardingWelcomeBodyFull =>
-      'I\'m your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.';
+      '我是你的专属守护者。我会陪你同行，守护你的夜晚出行，并在情况不对时采取行动。';
 
   @override
-  String get onboardingGetStarted => 'Get started';
+  String get onboardingGetStarted => '开始使用';
 
   @override
-  String get onboardingProfileNameLabel => 'Name';
+  String get onboardingProfileNameLabel => '姓名';
 
   @override
-  String get onboardingProfilePhoneLabel => 'Phone number';
+  String get onboardingProfilePhoneLabel => '电话号码';
 
   @override
-  String get onboardingProfilePhoneHelper => 'Included in emergency messages.';
+  String get onboardingProfilePhoneHelper => '将包含在紧急消息中。';
 
   @override
-  String get onboardingEmergencyContactHeader => 'Emergency contact';
+  String get onboardingEmergencyContactHeader => '紧急联系人';
 
   @override
-  String get onboardingEmergencyContactPrompt =>
-      'Who should we contact if something goes wrong?';
+  String get onboardingEmergencyContactPrompt => '如果出现意外，我们应该联系谁？';
 
   @override
-  String get onboardingEmergencyContactAdd => 'Add emergency contact';
+  String get onboardingEmergencyContactAdd => '添加紧急联系人';
 
   @override
-  String get onboardingPermissionsIntro =>
-      'These permissions keep you safe during sessions.';
+  String get onboardingPermissionsIntro => '这些权限可在会话期间保障你的安全。';
 
   @override
-  String get onboardingPermissionsGrantAll => 'Grant all';
+  String get onboardingPermissionsGrantAll => '全部授予';
 
   @override
-  String get onboardingPermissionsRequired => 'REQUIRED';
+  String get onboardingPermissionsRequired => '必需';
 
   @override
-  String get onboardingPermissionsOptional => 'OPTIONAL';
+  String get onboardingPermissionsOptional => '可选';
 
   @override
-  String get onboardingPermissionsMicrophone => 'Microphone';
+  String get onboardingPermissionsMicrophone => '麦克风';
 
   @override
-  String get onboardingPermissionsCamera => 'Camera';
+  String get onboardingPermissionsCamera => '相机';
 
   @override
-  String get onboardingPermissionsNotificationDesc =>
-      'Required for session alerts and reminders.';
+  String get onboardingPermissionsNotificationDesc => '用于会话提醒和提醒通知所必需。';
 
   @override
-  String get onboardingPermissionsSmsDesc =>
-      'Required to send emergency text alerts.';
+  String get onboardingPermissionsSmsDesc => '发送紧急短信警报所必需。';
 
   @override
-  String get onboardingPermissionsPhoneDesc =>
-      'Required to make emergency and fake calls.';
+  String get onboardingPermissionsPhoneDesc => '拨打紧急电话和虚假来电所必需。';
 
   @override
-  String get onboardingPermissionsLocationDesc =>
-      'Included in emergency messages when GPS logging is on.';
+  String get onboardingPermissionsLocationDesc => '开启 GPS 记录后将包含在紧急消息中。';
 
   @override
-  String get onboardingPermissionsMicrophoneDesc =>
-      'Used for audio recording during distress.';
+  String get onboardingPermissionsMicrophoneDesc => '用于求救时的录音。';
 
   @override
-  String get onboardingPermissionsCameraDesc => 'Used for flash SOS signaling.';
+  String get onboardingPermissionsCameraDesc => '用于闪光灯 SOS 信号。';
 
   @override
-  String get sessionInterruptedTitle => 'Session interrupted';
+  String get sessionInterruptedTitle => '会话已中断';
 
   @override
   String get sessionInterruptedBody =>
-      'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.';
+      '应用停止时有一个会话正在进行。会话状态已丢失——未恢复任何内容。我们显示此提示是为了让你知晓。';
 
   @override
-  String get sessionInterruptedAcknowledge => 'Acknowledge';
+  String get sessionInterruptedAcknowledge => '知道了';
 
   @override
   String sessionInterruptedMode(Object name) {
-    return 'Mode: $name';
+    return '模式：$name';
   }
 
   @override
   String sessionInterruptedStarted(Object time) {
-    return 'Started: $time';
+    return '开始时间：$time';
   }
 
   @override
-  String get sessionGpsDestinationTitle => 'Destination';
+  String get sessionGpsDestinationTitle => '目的地';
 
   @override
-  String get sessionGpsDestinationBody =>
-      'Enter the destination coordinates for the GPS arrival disarm trigger.';
+  String get sessionGpsDestinationBody => '请输入用于 GPS 到达撤防触发器的目的地坐标。';
 
   @override
-  String get sessionGpsDestinationLat => 'Latitude';
+  String get sessionGpsDestinationLat => '纬度';
 
   @override
-  String get sessionGpsDestinationLng => 'Longitude';
+  String get sessionGpsDestinationLng => '经度';
 
   @override
-  String get sessionGpsDestinationSkip => 'Skip for this session';
+  String get sessionGpsDestinationSkip => '本次会话跳过';
 
   @override
-  String get sessionGpsDestinationConfirm => 'Use destination';
+  String get sessionGpsDestinationConfirm => '使用目的地';
 
   @override
-  String get sessionEndOverlayTitle => 'End session?';
+  String get sessionEndOverlayTitle => '结束会话？';
 
   @override
-  String get sessionEndOverlayBody =>
-      'Swipe to confirm you want to end the session';
+  String get sessionEndOverlayBody => '滑动以确认结束会话';
 
   @override
-  String get sessionEndOverlaySwipeLabel => 'Swipe to end';
+  String get sessionEndOverlaySwipeLabel => '滑动以结束';
 
   @override
-  String get sessionEndOverlaySimBadge => '[SIM] Practice mode';
+  String get sessionEndOverlaySimBadge => '[SIM] 练习模式';
 
   @override
-  String get sessionEndPinPromptTitle => 'Enter Session End PIN';
+  String get sessionEndPinPromptTitle => '输入会话结束 PIN 码';
 
   @override
-  String get sessionEndPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+  String get sessionEndPinAppPinMismatch => '请使用会话结束 PIN 码，而非应用锁 PIN 码。';
 
   @override
-  String get sessionEndPinIncorrect => 'Incorrect PIN';
+  String get sessionEndPinIncorrect => 'PIN 码错误';
 
   @override
-  String get sessionEndPinSimSkip => 'Skip (sim only)';
+  String get sessionEndPinSimSkip => '跳过（仅模拟）';
 
   @override
-  String get sessionEndSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+  String get sessionEndSimDistressWouldFire => '求救链路将被触发（连续 5 次输错 PIN 码）';
 
   @override
-  String get distressConfirmTitle => 'Distress activated';
+  String get distressConfirmTitle => '已激活求救';
 
   @override
   String distressConfirmCountdown(int seconds) {
-    return 'Tap to cancel — you have $seconds seconds';
+    return '点击以取消——你还有 $seconds 秒';
   }
 
   @override
-  String get distressConfirmCancel => 'Tap to cancel';
+  String get distressConfirmCancel => '点击以取消';
 
   @override
-  String get distressConfirmFooter =>
-      'If not cancelled, distress chain will begin immediately.';
+  String get distressConfirmFooter => '如不取消，求救链路将立即开始。';
 
   @override
-  String get distressCancelPinPromptTitle => 'Enter Session End PIN';
+  String get distressCancelPinPromptTitle => '输入会话结束 PIN 码';
 
   @override
   String distressCancelPinTimeoutLabel(int seconds) {
-    return '${seconds}s remaining';
+    return '剩余 $seconds 秒';
   }
 
   @override
-  String get distressCancelPinIncorrect => 'Incorrect PIN';
+  String get distressCancelPinIncorrect => 'PIN 码错误';
 
   @override
-  String get distressCancelPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+  String get distressCancelPinAppPinMismatch => '请使用会话结束 PIN 码，而非应用锁 PIN 码。';
 
   @override
-  String get distressCancelPinSimSkip => 'Skip (sim only)';
+  String get distressCancelPinSimSkip => '跳过（仅模拟）';
 
   @override
-  String get distressCancelSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+  String get distressCancelSimDistressWouldFire => '求救链路将被触发（连续 5 次输错 PIN 码）';
 
   @override
-  String get distressCancelPinBack => 'Cancel';
+  String get distressCancelPinBack => '取消';
 
   @override
-  String get simulationPinPromptTitle => 'Enter PIN';
+  String get simulationPinPromptTitle => '输入 PIN 码';
 
   @override
-  String get simulationPinPromptBody =>
-      'Practice entering your Session End PIN';
+  String get simulationPinPromptBody => '练习输入你的会话结束 PIN 码';
 
   @override
-  String get simulationPinPromptSkip => 'Skip';
+  String get simulationPinPromptSkip => '跳过';
 
   @override
-  String get simulationPinIncorrect => 'Incorrect PIN';
+  String get simulationPinIncorrect => 'PIN 码错误';
 
   @override
   String simulationSummaryDuration(String duration) {
-    return 'Duration: $duration';
+    return '时长：$duration';
   }
 
   @override
-  String get simulationSummaryTimelineHeader => 'Event timeline';
+  String get simulationSummaryTimelineHeader => '事件时间线';
 
   @override
-  String get simulationSummaryShare => 'Share';
+  String get simulationSummaryShare => '分享';
 
   @override
   String simulationSummaryMissedEventsBadge(int count) {
-    return 'Missed: $count';
+    return '错过：$count';
   }
 
   @override
   String simulationSummaryDistressBadge(int count) {
-    return 'Distress: $count';
+    return '求救：$count';
   }
 
   @override
   String simulationSummaryStepsFiredBadge(int count) {
-    return 'Steps fired: $count';
+    return '已触发步骤：$count';
   }
 
   @override
-  String get simulationSummaryShareSubject =>
-      'Guardian Angela simulation summary';
+  String get simulationSummaryShareSubject => 'Guardian Angela 模拟摘要';
 
   @override
-  String get notificationsChannelAlarm => 'Alarm escalation';
+  String get notificationsChannelAlarm => '警报升级';
 
   @override
-  String get notificationsChannelAlarmDescription =>
-      'Critical alerts that bypass DND';
+  String get notificationsChannelAlarmDescription => '可绕过勿扰模式的关键警报';
 
   @override
-  String get notificationsChannelReminder => 'Disguised reminder';
+  String get notificationsChannelReminder => '伪装提醒';
 
   @override
-  String get notificationsChannelReminderDescription =>
-      'Check-in reminders during active session';
+  String get notificationsChannelReminderDescription => '会话进行期间的签到提醒';
 
   @override
-  String get notificationsChannelFakeCall => 'Fake call';
+  String get notificationsChannelFakeCall => '虚假来电';
 
   @override
-  String get notificationsChannelFakeCallDescription =>
-      'Full-screen incoming-call notifications';
+  String get notificationsChannelFakeCallDescription => '全屏来电通知';
 
   @override
-  String get notificationsChannelEnabled => 'Enabled';
+  String get notificationsChannelEnabled => '已启用';
 
   @override
-  String get notificationsChannelDisabled => 'Disabled';
+  String get notificationsChannelDisabled => '已停用';
 
   @override
-  String get notificationsChannelsHeader => 'Notification channels';
+  String get notificationsChannelsHeader => '通知渠道';
 
   @override
-  String get contactsImportFromDevice => 'Import from contacts';
+  String get contactsImportFromDevice => '从通讯录导入';
 
   @override
-  String get contactsImportNotSupported => 'Not available on this platform';
+  String get contactsImportNotSupported => '此平台不可用';
 
   @override
-  String get contactsImportPermissionDenied =>
-      'Contact access denied. Enable in system settings.';
+  String get contactsImportPermissionDenied => '通讯录访问被拒绝。请在系统设置中启用。';
 
   @override
-  String get contactsDeleteAllMenu => 'Delete all';
+  String get contactsDeleteAllMenu => '全部删除';
 
   @override
-  String get contactsDeleteAllConfirmTitle => 'Delete all contacts?';
+  String get contactsDeleteAllConfirmTitle => '删除所有联系人？';
 
   @override
-  String get contactsDeleteAllConfirmBody =>
-      'This removes every emergency contact. There is no undo.';
+  String get contactsDeleteAllConfirmBody => '此操作将移除每一位紧急联系人，且无法撤销。';
 
   @override
-  String get contactsDeleteAllTypeConfirmTitle => 'Confirm by typing';
+  String get contactsDeleteAllTypeConfirmTitle => '通过输入确认';
 
   @override
-  String get contactsDeleteAllTypeConfirmHint => 'Type DELETE ALL to continue';
+  String get contactsDeleteAllTypeConfirmHint => '输入 DELETE ALL 以继续';
 
   @override
   String get contactsDeleteAllTypeConfirmSentinel => 'DELETE ALL';
 
   @override
-  String get contactsDeleteAllConfirmButton => 'Delete all';
+  String get contactsDeleteAllConfirmButton => '全部删除';
 
   @override
-  String get modesBuiltinBadge => 'Built-in';
+  String get modesBuiltinBadge => '内置';
 
   @override
-  String get modesBuiltinNoDelete => 'Built-in modes cannot be deleted';
+  String get modesBuiltinNoDelete => '内置模式无法删除';
 
   @override
-  String get sessionCompletedSimulationBanner => 'Simulation completed';
+  String get sessionCompletedSimulationBanner => '模拟已完成';
 
   @override
-  String get sessionCompletedViewEventLog => 'View event log';
+  String get sessionCompletedViewEventLog => '查看事件日志';
 
   @override
-  String get settingsGeneralHeader => 'General';
+  String get settingsGeneralHeader => '通用';
 
   @override
-  String get settingsAppHeader => 'App';
+  String get settingsAppHeader => '应用';
 
   @override
-  String get settingsConfigurationHeader => 'Configuration';
+  String get settingsConfigurationHeader => '配置';
 
   @override
-  String get settingsThemeLabel => 'Theme';
+  String get settingsThemeLabel => '主题';
 
   @override
-  String get settingsLanguageLabel => 'Language';
+  String get settingsLanguageLabel => '语言';
 
   @override
-  String get settingsSecurityRow => 'Security';
+  String get settingsSecurityRow => '安全';
 
   @override
-  String get settingsSecuritySubtitle => 'App PIN, Session End PIN, Duress PIN';
+  String get settingsSecuritySubtitle => '应用 PIN 码、会话结束 PIN 码、胁迫 PIN 码';
 
   @override
-  String get settingsStealthRow => 'Stealth';
+  String get settingsStealthRow => '隐身';
 
   @override
-  String get settingsStealthSummaryOff => 'Stealth: OFF';
+  String get settingsStealthSummaryOff => '隐身：关闭';
 
   @override
-  String get settingsStealthSummaryOn => 'Stealth: ON';
+  String get settingsStealthSummaryOn => '隐身：开启';
 
   @override
-  String get settingsProfileRow => 'Profile';
+  String get settingsProfileRow => '个人资料';
 
   @override
-  String get settingsModesRow => 'Modes';
+  String get settingsModesRow => '模式';
 
   @override
-  String get settingsDistressModesRow => 'Distress modes';
+  String get settingsDistressModesRow => '求救模式';
 
   @override
-  String get settingsBatteryAlertRow => 'Battery alert';
+  String get settingsBatteryAlertRow => '电量警报';
 
   @override
-  String get settingsEventDefaultsRow => 'Event defaults';
+  String get settingsEventDefaultsRow => '步骤默认值';
 
   @override
-  String get settingsGpsLoggingRow => 'GPS logging';
+  String get settingsGpsLoggingRow => 'GPS 记录';
 
   @override
-  String get settingsRemindersRow => 'Reminder templates';
+  String get settingsRemindersRow => '提醒模板';
 
   @override
-  String get settingsNotificationsRow => 'Notifications';
+  String get settingsNotificationsRow => '通知';
 
   @override
-  String get settingsHistoryRetentionRow => 'History & retention';
+  String get settingsHistoryRetentionRow => '历史与保留';
 
   @override
-  String get settingsAboutRow => 'About';
+  String get settingsAboutRow => '关于';
 
   @override
-  String get settingsFeedbackRow => 'Send feedback';
+  String get settingsFeedbackRow => '发送反馈';
 
   @override
-  String get settingsBackupRow => 'Backup & restore';
+  String get settingsBackupRow => '备份与恢复';
 
   @override
-  String get settingsOssLicenses => 'Open source licenses';
+  String get settingsOssLicenses => '开源许可';
 
   @override
-  String get settingsImportConfirmBody =>
-      'This will overwrite all current data. Continue?';
+  String get settingsImportConfirmBody => '此操作将覆盖所有当前数据。是否继续？';
 
   @override
-  String get securityAppPinTitle => 'App PIN';
+  String get securityAppPinTitle => '应用 PIN 码';
 
   @override
-  String get securityAppPinBody => 'Locks the app each time you open it.';
+  String get securityAppPinBody => '每次打开应用时将其锁定。';
 
   @override
-  String get securitySessionEndPinTitle => 'Session End PIN';
+  String get securitySessionEndPinTitle => '会话结束 PIN 码';
 
   @override
-  String get securitySessionEndPinBody =>
-      'Required to disarm or end a running session.';
+  String get securitySessionEndPinBody => '撤防或结束进行中的会话所必需。';
 
   @override
-  String get securityDuressPinTitle => 'Duress PIN';
+  String get securityDuressPinTitle => '胁迫 PIN 码';
 
   @override
-  String get securityDuressPinBody =>
-      'Entered at any prompt to silently fire the distress chain.';
+  String get securityDuressPinBody => '在任意提示处输入即可静默触发求救链路。';
 
   @override
-  String get securityRemovePin => 'Remove';
+  String get securityRemovePin => '移除';
 
   @override
   String get securityRemovePinPrompt => '请输入当前 PIN 码以将其移除。';
@@ -1118,707 +1091,690 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityRemovePinIncorrect => 'PIN 码错误';
 
   @override
-  String get securityWhatIsThis => 'What is this?';
+  String get securityWhatIsThis => '这是什么？';
 
   @override
   String get securityAppPinInfo =>
-      'Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.';
+      '在你打开应用时将其锁定。键盘会在任何界面之前出现。适用于他人短暂拿到你已解锁的手机的情况。';
 
   @override
   String get securitySessionEndPinInfo =>
-      'Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.';
+      '撤防或结束进行中的安全会话所必需。没有它，夺取你手机的攻击者将无法停止链路。请设置一个与应用 PIN 码不同的密码。';
 
   @override
   String get securityDuressPinInfo =>
-      'If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.';
+      '只要你在任意提示处输入此 PIN 码，求救链路就会静默运行——你的联系人会收到警报，警报也会就绪，而攻击者不会察觉。请选择一个与所有其他 PIN 码都不同的密码。';
 
   @override
-  String get securityPinTimeoutLabel => 'PIN timeout (seconds)';
+  String get securityPinTimeoutLabel => 'PIN 码超时（秒）';
 
   @override
-  String get securityWrongPinThresholdLabel =>
-      'Wrong PIN attempts before escalation';
+  String get securityWrongPinThresholdLabel => '升级前允许输错 PIN 码的次数';
 
   @override
-  String get securityDeceptiveDialogToggle =>
-      'Show deceptive dialog on wrong PIN';
+  String get securityDeceptiveDialogToggle => '输错 PIN 码时显示欺骗性对话框';
 
   @override
-  String get pinSetupEnterNew => 'Enter new PIN';
+  String get pinSetupEnterNew => '输入新 PIN 码';
 
   @override
-  String get pinSetupConfirmNew => 'Confirm new PIN';
+  String get pinSetupConfirmNew => '确认新 PIN 码';
 
   @override
-  String get pinSetupTooShort => 'PIN must be at least 4 digits.';
+  String get pinSetupTooShort => 'PIN 码至少需要 4 位数字。';
 
   @override
-  String get pinSetupCollision =>
-      'This PIN conflicts with another configured PIN.';
+  String get pinSetupCollision => '此 PIN 码与另一个已配置的 PIN 码冲突。';
 
   @override
-  String get pinSetupSaved => 'PIN saved';
+  String get pinSetupSaved => 'PIN 码已保存';
 
   @override
-  String get stealthEnabledLabel => 'Enable stealth';
+  String get stealthEnabledLabel => '启用隐身模式';
 
   @override
-  String get stealthFakeNameLabel => 'Fake app name';
+  String get stealthFakeNameLabel => '伪装应用名称';
 
   @override
-  String get stealthFakeIconLabel => 'Fake icon';
+  String get stealthFakeIconLabel => '伪装图标';
 
   @override
-  String get stealthNotificationDisguiseLabel => 'Notification disguise';
+  String get stealthNotificationDisguiseLabel => '通知伪装';
 
   @override
-  String get stealthTimerDisplayLabel => 'Timer display';
+  String get stealthTimerDisplayLabel => '计时器显示';
 
   @override
-  String get stealthSessionScreenLabel => 'Session screen stealth';
+  String get stealthSessionScreenLabel => '会话界面隐身';
 
   @override
-  String get gpsLoggingEnabled => 'Log GPS during sessions';
+  String get gpsLoggingEnabled => '会话期间记录 GPS';
 
   @override
-  String get gpsLoggingIntervalLabel => 'Interval';
+  String get gpsLoggingIntervalLabel => '间隔';
 
   @override
-  String get gpsLoggingAccuracyLabel => 'Accuracy';
+  String get gpsLoggingAccuracyLabel => '精度';
 
   @override
-  String get gpsLoggingAccuracyHigh => 'High';
+  String get gpsLoggingAccuracyHigh => '高';
 
   @override
-  String get gpsLoggingAccuracyBalanced => 'Balanced';
+  String get gpsLoggingAccuracyBalanced => '均衡';
 
   @override
-  String get gpsLoggingAccuracyLow => 'Low';
+  String get gpsLoggingAccuracyLow => '低';
 
   @override
-  String get gpsLoggingFormatLabel => 'Coordinate format';
+  String get gpsLoggingFormatLabel => '坐标格式';
 
   @override
-  String get gpsLoggingFormatDecimal => 'Decimal';
+  String get gpsLoggingFormatDecimal => '十进制';
 
   @override
-  String get gpsLoggingFormatDms => 'DMS';
+  String get gpsLoggingFormatDms => '度分秒';
 
   @override
   String get gpsLoggingFormatAddress => 'Plus Code';
 
   @override
-  String get gpsLoggingIncludeInSms => 'Append location to SMS';
+  String get gpsLoggingIncludeInSms => '在短信中附加位置';
 
   @override
-  String get historyRetentionLogsLabel => 'Session log retention (days)';
+  String get historyRetentionLogsLabel => '会话日志保留天数';
 
   @override
-  String get historyRetentionLogsHelper =>
-      'Logs older than this move into the trash.';
+  String get historyRetentionLogsHelper => '超过此时长的日志将移入回收站。';
 
   @override
-  String get historyRetentionTrashLabel => 'Trash retention (days)';
+  String get historyRetentionTrashLabel => '回收站保留天数';
 
   @override
-  String get historyRetentionTrashHelper =>
-      'Trashed logs are permanently deleted after this window.';
+  String get historyRetentionTrashHelper => '回收站中的日志将在此时段后被永久删除。';
 
   @override
-  String get historyRetentionUpdated => 'Retention updated';
+  String get historyRetentionUpdated => '保留设置已更新';
 
   @override
-  String get historyRetentionPurgeNow => 'Purge now';
+  String get historyRetentionPurgeNow => '立即清除';
 
   @override
   String historyRetentionPurged(Object count) {
-    return 'Purged $count logs';
+    return '已清除 $count 条日志';
   }
 
   @override
-  String get batteryAlertEnableLabel => 'Enable battery alert';
+  String get batteryAlertEnableLabel => '启用电量警报';
 
   @override
-  String get batteryAlertThresholdLabel => 'Battery threshold (%)';
+  String get batteryAlertThresholdLabel => '电量阈值（%）';
 
   @override
-  String get batteryAlertChainHeader => 'Alert chain';
+  String get batteryAlertChainHeader => '警报链路';
 
   @override
-  String get batteryAlertResetChain => 'Reset';
+  String get batteryAlertResetChain => '重置';
 
   @override
-  String get eventDefaultsCheckInHeader => 'Check-in methods';
+  String get eventDefaultsCheckInHeader => '签到方式';
 
   @override
-  String get eventDefaultsEscalationHeader => 'Escalation steps';
+  String get eventDefaultsEscalationHeader => '升级步骤';
 
   @override
-  String get eventDefaultsPanicHeader => 'Panic trigger';
+  String get eventDefaultsPanicHeader => '紧急触发器';
 
   @override
-  String get templatesCreate => 'Create template';
+  String get templatesCreate => '创建模板';
 
   @override
-  String get templatesEditTitle => 'Edit template';
+  String get templatesEditTitle => '编辑模板';
 
   @override
-  String get templatesCreateTitle => 'New template';
+  String get templatesCreateTitle => '新建模板';
 
   @override
-  String get templatesNameLabel => 'Name';
+  String get templatesNameLabel => '名称';
 
   @override
-  String get templatesTitleLabel => 'Title';
+  String get templatesTitleLabel => '标题';
 
   @override
-  String get templatesBodyLabel => 'Body';
+  String get templatesBodyLabel => '正文';
 
   @override
-  String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
+  String get templatesBuiltinNoDelete => '内置模板无法删除';
 
   @override
-  String get templatesAddFromTemplate => 'From template';
+  String get templatesAddFromTemplate => '基于模板';
 
   @override
-  String get templatesAddFromScratch => 'From scratch';
+  String get templatesAddFromScratch => '从零开始';
 
   @override
   String templatesDeleteConfirmTitle(Object name) {
-    return 'Delete \"$name\"?';
+    return '删除“$name”？';
   }
 
   @override
-  String get templatesDeleteConfirmBody =>
-      'This template will be removed permanently.';
+  String get templatesDeleteConfirmBody => '此模板将被永久移除。';
 
   @override
-  String get templatesEmptyAddFirst => 'Add your first template';
+  String get templatesEmptyAddFirst => '添加你的第一个模板';
 
   @override
-  String get templatesPickFromBuiltinTitle => 'Pick a built-in template';
+  String get templatesPickFromBuiltinTitle => '选择一个内置模板';
 
   @override
-  String get templatesIconLabel => 'Icon';
+  String get templatesIconLabel => '图标';
 
   @override
-  String get templatesIconCalendar => 'Calendar';
+  String get templatesIconCalendar => '日历';
 
   @override
-  String get templatesIconAppNotification => 'App notification';
+  String get templatesIconAppNotification => '应用通知';
 
   @override
-  String get templatesIconFitness => 'Fitness';
+  String get templatesIconFitness => '健身';
 
   @override
-  String get templatesIconHealth => 'Health';
+  String get templatesIconHealth => '健康';
 
   @override
-  String get templatesIconFood => 'Food';
+  String get templatesIconFood => '餐饮';
 
   @override
-  String get templatesIconCoffee => 'Coffee';
+  String get templatesIconCoffee => '咖啡';
 
   @override
-  String get templatesIconBattery => 'Battery';
+  String get templatesIconBattery => '电池';
 
   @override
-  String get templatesIconWeather => 'Weather';
+  String get templatesIconWeather => '天气';
 
   @override
-  String get templatesPreviewHeading => 'Live preview';
+  String get templatesPreviewHeading => '实时预览';
 
   @override
-  String get templatesDiscardChangesTitle => 'Discard changes?';
+  String get templatesDiscardChangesTitle => '放弃更改？';
 
   @override
-  String get templatesDiscardChangesBody => 'Unsaved edits will be lost.';
+  String get templatesDiscardChangesBody => '未保存的编辑将丢失。';
 
   @override
-  String get templatesDiscardKeep => 'Keep editing';
+  String get templatesDiscardKeep => '继续编辑';
 
   @override
-  String get templatesDiscardDiscard => 'Discard';
+  String get templatesDiscardDiscard => '放弃';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => '通知';
 
   @override
-  String get notificationsStatusGranted => 'Granted';
+  String get notificationsStatusGranted => '已授予';
 
   @override
-  String get notificationsStatusDenied => 'Denied';
+  String get notificationsStatusDenied => '已拒绝';
 
   @override
-  String get notificationsStatusUnknown => 'Not yet asked';
+  String get notificationsStatusUnknown => '尚未询问';
 
   @override
-  String get notificationsRequest => 'Request permission';
+  String get notificationsRequest => '请求权限';
 
   @override
-  String get notificationsOpenSettings => 'Open system settings';
+  String get notificationsOpenSettings => '打开系统设置';
 
   @override
-  String get profileFieldPhone => 'Phone number';
+  String get profileFieldPhone => '电话号码';
 
   @override
-  String get profileFieldDescription => 'Physical description';
+  String get profileFieldDescription => '外貌描述';
 
   @override
-  String get profileFieldMedicalConditions => 'Medical conditions';
+  String get profileFieldMedicalConditions => '健康状况';
 
   @override
-  String get profileFieldEmergencyInstructions => 'Emergency instructions';
+  String get profileFieldEmergencyInstructions => '紧急情况说明';
 
   @override
-  String get aboutAuthor => 'Author: Jonas Eschle';
+  String get aboutAuthor => '作者：Jonas Eschle';
 
   @override
   String get aboutEmail => 'guardian.angela.app@gmail.com';
 
   @override
-  String get aboutPrivacyPolicy => 'Privacy policy';
+  String get aboutPrivacyPolicy => '隐私政策';
 
   @override
-  String get aboutTermsOfService => 'Terms of service';
+  String get aboutTermsOfService => '服务条款';
 
   @override
-  String get aboutSourceCode => 'Source code';
+  String get aboutSourceCode => '源代码';
 
   @override
-  String get aboutSupport => 'Support / donate';
+  String get aboutSupport => '支持 / 捐赠';
 
   @override
-  String get aboutLicenses => 'Open source licenses';
+  String get aboutLicenses => '开源许可';
 
   @override
-  String get aboutTagline => 'Made with love for LGBTQ+ safety.';
+  String get aboutTagline => '为 LGBTQ+ 群体的安全用心打造。';
 
   @override
-  String get aboutTechnicalSection => 'Technical information';
+  String get aboutTechnicalSection => '技术信息';
 
   @override
   String aboutBundleId(Object id) {
-    return 'Bundle ID: $id';
+    return 'Bundle ID：$id';
   }
 
   @override
   String aboutPlatforms(Object list) {
-    return 'Platforms: $list';
+    return '平台：$list';
   }
 
   @override
-  String get feedbackHeading => 'We\'d love to hear from you';
+  String get feedbackHeading => '我们很想听听你的想法';
 
   @override
-  String get feedbackCategoryLabel => 'Category';
+  String get feedbackCategoryLabel => '类别';
 
   @override
-  String get feedbackCategoryBug => 'Bug report';
+  String get feedbackCategoryBug => '错误报告';
 
   @override
-  String get feedbackCategoryFeature => 'Feature request';
+  String get feedbackCategoryFeature => '功能建议';
 
   @override
-  String get feedbackCategoryOther => 'Other';
+  String get feedbackCategoryOther => '其他';
 
   @override
-  String get feedbackEmailLabel => 'Email (optional)';
+  String get feedbackEmailLabel => '电子邮箱（可选）';
 
   @override
-  String get feedbackMessageLabel => 'Message';
+  String get feedbackMessageLabel => '留言';
 
   @override
-  String get feedbackIncludeLog => 'Include last session log';
+  String get feedbackIncludeLog => '包含上次会话日志';
 
   @override
-  String get feedbackSent => 'Thanks for your feedback!';
+  String get feedbackSent => '感谢你的反馈！';
 
   @override
-  String get feedbackMessageRequired =>
-      'Message must be at least 10 characters.';
+  String get feedbackMessageRequired => '留言至少需要 10 个字符。';
 
   @override
-  String get backupIncludeLogs => 'Include session logs';
+  String get backupIncludeLogs => '包含会话日志';
 
   @override
-  String get backupIncludeMedia => 'Include media';
+  String get backupIncludeMedia => '包含媒体文件';
 
   @override
-  String get backupExportButton => 'Export';
+  String get backupExportButton => '导出';
 
   @override
-  String get backupImportButton => 'Import';
+  String get backupImportButton => '导入';
 
   @override
-  String get backupOverwriteWarning => 'Importing overwrites all current data.';
+  String get backupOverwriteWarning => '导入将覆盖所有当前数据。';
 
   @override
-  String get backupImportSuccess => 'Import complete. Restart to apply.';
+  String get backupImportSuccess => '导入完成。请重启以应用。';
 
   @override
   String backupImportError(Object message) {
-    return 'Import failed: $message';
+    return '导入失败：$message';
   }
 
   @override
-  String get backupActiveSessionBanner =>
-      'Backup is unavailable during an active session.';
+  String get backupActiveSessionBanner => '会话进行期间无法备份。';
 
   @override
   String backupLastBackupAtLabel(Object when) {
-    return 'Last backup at $when';
+    return '上次备份于 $when';
   }
 
   @override
-  String get backupNeverExportedLabel => 'No backup yet';
+  String get backupNeverExportedLabel => '尚无备份';
 
   @override
-  String get pastEventsTitle => 'Past sessions';
+  String get pastEventsTitle => '历史会话';
 
   @override
-  String get pastEventsTabReal => 'Real';
+  String get pastEventsTabReal => '真实';
 
   @override
-  String get pastEventsTabSimulated => 'Simulated';
+  String get pastEventsTabSimulated => '模拟';
 
   @override
-  String get pastEventsEmpty => 'No sessions yet';
+  String get pastEventsEmpty => '尚无会话';
 
   @override
-  String get pastEventsDeleteConfirm => 'Delete session log?';
+  String get pastEventsDeleteConfirm => '删除会话日志？';
 
   @override
-  String get pastEventsDetailShareText => 'Share as text';
+  String get pastEventsDetailShareText => '以文本分享';
 
   @override
-  String get pastEventsDetailSharePdf => 'Share as PDF';
+  String get pastEventsDetailSharePdf => '以 PDF 分享';
 
   @override
-  String get pastEventsDetailDelete => 'Delete';
+  String get pastEventsDetailDelete => '删除';
 
   @override
-  String get pastEventsOutcomeCompleted => 'Completed';
+  String get pastEventsOutcomeCompleted => '已完成';
 
   @override
-  String get pastEventsOutcomeDistress => 'Distress';
+  String get pastEventsOutcomeDistress => '求救';
 
   @override
-  String get pastEventsOutcomeInterrupted => 'Interrupted';
+  String get pastEventsOutcomeInterrupted => '已中断';
 
   @override
-  String get pastEventsTrash => 'Trash';
+  String get pastEventsTrash => '回收站';
 
   @override
-  String get pastEventsUndo => 'Undo';
+  String get pastEventsUndo => '撤销';
 
   @override
-  String get pastEventsSoftDeleted => 'Moved to trash';
+  String get pastEventsSoftDeleted => '已移入回收站';
 
   @override
-  String get pastEventsDetailTitle => 'Session log';
+  String get pastEventsDetailTitle => '会话日志';
 
   @override
-  String get pastEventsDetailShare => 'Share';
+  String get pastEventsDetailShare => '分享';
 
   @override
-  String get contactUnsavedDiscardTitle => 'Discard unsaved changes?';
+  String get contactUnsavedDiscardTitle => '放弃未保存的更改？';
 
   @override
-  String get contactUnsavedDiscardKeep => 'Keep editing';
+  String get contactUnsavedDiscardKeep => '继续编辑';
 
   @override
-  String get contactUnsavedDiscardDiscard => 'Discard';
+  String get contactUnsavedDiscardDiscard => '放弃';
 
   @override
-  String get modesDuplicate => 'Duplicate';
+  String get modesDuplicate => '复制';
 
   @override
-  String get modesDeleteConfirmTitle => 'Delete mode?';
+  String get modesDeleteConfirmTitle => '删除模式？';
 
   @override
   String modesDeleteConfirmBody(Object name) {
-    return '$name will be permanently removed.';
+    return '$name 将被永久移除。';
   }
 
   @override
-  String get modesDistressDefaultBadge => 'Default';
+  String get modesDistressDefaultBadge => '默认';
 
   @override
-  String get modesDistressSetDefault => 'Set as default';
+  String get modesDistressSetDefault => '设为默认';
 
   @override
-  String get modesDistressCantDeleteLast =>
-      'At least one distress mode is required.';
+  String get modesDistressCantDeleteLast => '至少需要一个求救模式。';
 
   @override
-  String get modesDistressInUse =>
-      'This distress mode is in use by another mode.';
+  String get modesDistressInUse => '此求救模式正被另一个模式使用。';
 
   @override
-  String get modesDistressTitle => 'Distress modes';
+  String get modesDistressTitle => '求救模式';
 
   @override
-  String get validationNameTooShort => 'Name must be at least 2 characters.';
+  String get validationNameTooShort => '姓名至少需要 2 个字符。';
 
   @override
-  String get validationPhoneRequired => 'Phone number is required.';
+  String get validationPhoneRequired => '电话号码为必填项。';
 
   @override
-  String get validationChannelsRequired => 'Select at least one channel.';
+  String get validationChannelsRequired => '请至少选择一个渠道。';
 
   @override
-  String get sessionHoldTouchToBegin => 'Touch to begin';
+  String get sessionHoldTouchToBegin => '触摸以开始';
 
   @override
   String sessionHoldReleaseCountdown(Object seconds) {
-    return 'Countdown: ${seconds}s';
+    return '倒计时：$seconds 秒';
   }
 
   @override
   String sessionHoldGraceCountdown(Object seconds) {
-    return 'Grace: ${seconds}s — re-hold to stay safe';
+    return '宽限期：$seconds 秒——重新按住以保持安全';
   }
 
   @override
-  String get sessionHoldAgain => 'Hold again to stay safe';
+  String get sessionHoldAgain => '重新按住以保持安全';
 
   @override
   String sessionStepNextCheckIn(Object time) {
-    return 'Next check-in in $time';
+    return '下次签到将在 $time 后';
   }
 
   @override
   String sessionStepFakeCallActive(Object caller) {
-    return 'Incoming call from $caller';
+    return '来自 $caller 的来电';
   }
 
   @override
-  String get sessionStepFakeCallOpen => 'Open call screen';
+  String get sessionStepFakeCallOpen => '打开通话界面';
 
   @override
   String sessionStepSimBlockedSms(Object count) {
-    return '[SIM] Would send SMS to $count contacts';
+    return '[SIM] 将向 $count 位联系人发送短信';
   }
 
   @override
-  String get sessionStepSimBlockedPhone => '[SIM] Would call emergency contact';
+  String get sessionStepSimBlockedPhone => '[SIM] 将呼叫紧急联系人';
 
   @override
-  String get sessionStepSimBlockedEmergency =>
-      '[SIM] Would call emergency services';
+  String get sessionStepSimBlockedEmergency => '[SIM] 将呼叫紧急服务';
 
   @override
-  String get sessionStepSimBlockedAlarm =>
-      '[SIM] Alarm would have sounded at full volume';
+  String get sessionStepSimBlockedAlarm => '[SIM] 警报本会以最大音量响起';
 
   @override
-  String get sessionStartFailedTitle => 'Cannot start session';
+  String get sessionStartFailedTitle => '无法开始会话';
 
   @override
-  String get sessionStartFailedBody =>
-      'Fix the following issues before starting:';
+  String get sessionStartFailedBody => '请在开始前修复以下问题：';
 
   @override
-  String get sessionQuickExitTitle => 'Quick exit';
+  String get sessionQuickExitTitle => '快速退出';
 
   @override
-  String get sessionQuickExitBody =>
-      'Session data will be preserved and encrypted. Reopen the app any time to recover it.';
+  String get sessionQuickExitBody => '会话数据将被保留并加密。随时重新打开应用即可恢复。';
 
   @override
-  String get sessionQuickExitConfirm => 'Exit app';
+  String get sessionQuickExitConfirm => '退出应用';
 
   @override
-  String get pastEventsRestore => 'Restore';
+  String get pastEventsRestore => '恢复';
 
   @override
   String batteryAlertForbiddenStep(Object type) {
-    return '$type is not allowed in the battery-alert chain.';
+    return '$type 不允许出现在电量警报链路中。';
   }
 
   @override
-  String get stepEditorWait => 'Wait (s)';
+  String get stepEditorWait => '等待（秒）';
 
   @override
-  String get stepEditorDuration => 'Duration (s)';
+  String get stepEditorDuration => '时长（秒）';
 
   @override
-  String get stepEditorGrace => 'Grace (s)';
+  String get stepEditorGrace => '宽限期（秒）';
 
   @override
-  String get stepEditorRetryCount => 'Retry count';
+  String get stepEditorRetryCount => '重试次数';
 
   @override
-  String get stepEditorRandomize => 'Randomize timing (±20%)';
+  String get stepEditorRandomize => '随机化时序（±20%）';
 
   @override
-  String get stepEditorRemove => 'Remove step';
+  String get stepEditorRemove => '移除步骤';
 
   @override
-  String get eventDefaultsHoldStyle => 'Hold style';
+  String get eventDefaultsHoldStyle => '长按样式';
 
   @override
-  String get eventDefaultsHoldSensitivity => 'Release sensitivity';
+  String get eventDefaultsHoldSensitivity => '松开灵敏度';
 
   @override
-  String get eventDefaultsHoldVibrate => 'Vibrate on release';
+  String get eventDefaultsHoldVibrate => '松开时振动';
 
   @override
-  String get eventDefaultsHoldSound => 'Sound on release';
+  String get eventDefaultsHoldSound => '松开时发声';
 
   @override
-  String get eventDefaultsBlackScreen => 'Black screen overlay';
+  String get eventDefaultsBlackScreen => '黑屏遮罩';
 
   @override
-  String get eventDefaultsReminderRandomInterval => 'Randomize interval';
+  String get eventDefaultsReminderRandomInterval => '随机化间隔';
 
   @override
-  String get eventDefaultsReminderRandomTemplate => 'Randomize template order';
+  String get eventDefaultsReminderRandomTemplate => '随机化模板顺序';
 
   @override
-  String get eventDefaultsReminderResetOnEarly => 'Reset on early check-in';
+  String get eventDefaultsReminderResetOnEarly => '提前签到时重置';
 
   @override
-  String get eventDefaultsCountdownStyle => 'Countdown style';
+  String get eventDefaultsCountdownStyle => '倒计时样式';
 
   @override
-  String get eventDefaultsCountdownVibrate => 'Vibrate';
+  String get eventDefaultsCountdownVibrate => '振动';
 
   @override
-  String get eventDefaultsCountdownSound => 'Sound';
+  String get eventDefaultsCountdownSound => '声音';
 
   @override
-  String get eventDefaultsFakeCallStyle => 'Call style';
+  String get eventDefaultsFakeCallStyle => '来电样式';
 
   @override
-  String get eventDefaultsFakeCallCallerName => 'Caller name';
+  String get eventDefaultsFakeCallCallerName => '来电者姓名';
 
   @override
-  String get eventDefaultsFakeCallRingDuration => 'Ring duration (s)';
+  String get eventDefaultsFakeCallRingDuration => '响铃时长（秒）';
 
   @override
-  String get eventDefaultsFakeCallDeclineIsSafe => 'Decline counts as safe';
+  String get eventDefaultsFakeCallDeclineIsSafe => '拒接视为安全';
 
   @override
-  String get eventDefaultsFakeCallVoiceOutput => 'Voice output';
+  String get eventDefaultsFakeCallVoiceOutput => '语音输出';
 
   @override
-  String get eventDefaultsSmsChannel => 'Channel';
+  String get eventDefaultsSmsChannel => '渠道';
 
   @override
-  String get eventDefaultsSmsIncludeLocation => 'Include location';
+  String get eventDefaultsSmsIncludeLocation => '包含位置';
 
   @override
-  String get eventDefaultsSmsIncludeMedical => 'Include medical info';
+  String get eventDefaultsSmsIncludeMedical => '包含医疗信息';
 
   @override
-  String get eventDefaultsSmsAutoRecord => 'Record audio before sending';
+  String get eventDefaultsSmsAutoRecord => '发送前录音';
 
   @override
-  String get eventDefaultsSmsRecordDuration => 'Recording duration (s)';
+  String get eventDefaultsSmsRecordDuration => '录音时长（秒）';
 
   @override
-  String get eventDefaultsLoudAlarmVolume => 'Volume';
+  String get eventDefaultsLoudAlarmVolume => '音量';
 
   @override
-  String get eventDefaultsLoudAlarmSound => 'Sound';
+  String get eventDefaultsLoudAlarmSound => '声音';
 
   @override
-  String get eventDefaultsLoudAlarmFlashScreen => 'Flash screen';
+  String get eventDefaultsLoudAlarmFlashScreen => '屏幕闪烁';
 
   @override
-  String get eventDefaultsLoudAlarmFlashLight => 'Flash camera light';
+  String get eventDefaultsLoudAlarmFlashLight => '闪烁相机闪光灯';
 
   @override
-  String get eventDefaultsLoudAlarmGradual => 'Gradual volume ramp';
+  String get eventDefaultsLoudAlarmGradual => '音量渐强';
 
   @override
-  String get eventDefaultsCallEmergencyNumber => 'Emergency number (override)';
+  String get eventDefaultsCallEmergencyNumber => '紧急号码（覆盖）';
 
   @override
-  String get eventDefaultsCallEmergencyConfirm => 'Show confirmation countdown';
+  String get eventDefaultsCallEmergencyConfirm => '显示确认倒计时';
 
   @override
-  String get eventDefaultsCallEmergencyConfirmDuration =>
-      'Confirmation seconds';
+  String get eventDefaultsCallEmergencyConfirmDuration => '确认秒数';
 
   @override
-  String get eventDefaultsCallEmergencySmsFirst => 'Send location SMS first';
+  String get eventDefaultsCallEmergencySmsFirst => '先发送位置短信';
 
   @override
-  String get eventDefaultsPhonePrimaryContact => 'Primary contact (id)';
+  String get eventDefaultsPhonePrimaryContact => '主要联系人（id）';
 
   @override
-  String get eventDefaultsHardwareButton => 'Button';
+  String get eventDefaultsHardwareButton => '按键';
 
   @override
-  String get eventDefaultsHardwarePattern => 'Press pattern';
+  String get eventDefaultsHardwarePattern => '按压模式';
 
   @override
-  String get eventDefaultsHardwarePressCount => 'Press count';
+  String get eventDefaultsHardwarePressCount => '按压次数';
 
   @override
-  String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
+  String get eventDefaultsHardwareLongDuration => '长按时长（秒）';
 
   @override
-  String get pastEventsTrashTitle => 'Trash';
+  String get pastEventsTrashTitle => '回收站';
 
   @override
-  String get pastEventsTrashEmpty => 'Trash is empty';
+  String get pastEventsTrashEmpty => '回收站为空';
 
   @override
-  String get pastEventsTrashEmptyAll => 'Empty trash';
+  String get pastEventsTrashEmptyAll => '清空回收站';
 
   @override
-  String get pastEventsTrashEmptyAllConfirmTitle => 'Empty trash?';
+  String get pastEventsTrashEmptyAllConfirmTitle => '清空回收站？';
 
   @override
   String get pastEventsTrashEmptyAllConfirmBody =>
-      'Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.';
+      '请在下方输入 EMPTY TRASH 以确认。此操作将永久删除每一条已回收的日志。';
 
   @override
   String pastEventsTrashEmptyAllSuccess(Object count) {
-    return 'Trash emptied ($count logs)';
+    return '回收站已清空（$count 条日志）';
   }
 
   @override
   String pastEventsTrashRetentionNote(int days) {
-    return 'Logs in the trash are permanently deleted after $days days.';
+    return '回收站中的日志将在 $days 天后被永久删除。';
   }
 
   @override
   String pastEventsTrashRemainingDays(int days) {
-    return '$days day(s) until permanent deletion';
+    return '距永久删除还有 $days 天';
   }
 
   @override
-  String get pastEventsTrashDeletePermanently => 'Delete permanently';
+  String get pastEventsTrashDeletePermanently => '永久删除';
 
   @override
-  String get pastEventsTrashDeletePermanentlyBody =>
-      'This action cannot be undone.';
+  String get pastEventsTrashDeletePermanentlyBody => '此操作无法撤销。';
 
   @override
   String sessionEmergencyConfirmTitle(String number, int seconds) {
-    return 'Calling $number in ${seconds}s';
+    return '将在 $seconds 秒后呼叫 $number';
   }
 
   @override
-  String get sessionEmergencyConfirmSwipe => 'Swipe to cancel';
+  String get sessionEmergencyConfirmSwipe => '滑动以取消';
 
   @override
-  String get sessionEmergencyConfirmKeep => 'Keep calling';
+  String get sessionEmergencyConfirmKeep => '继续呼叫';
 
   @override
-  String get sessionEmergencyConfirmSimBadge => '[SIM] Practice mode';
+  String get sessionEmergencyConfirmSimBadge => '[SIM] 练习模式';
 
   @override
-  String get sessionEmergencyConfirmSimCancelled =>
-      'Simulated cancel — call would not have been placed';
+  String get sessionEmergencyConfirmSimCancelled => '模拟取消——本不会拨打电话';
 
   @override
-  String get swipeSliderSemantics => 'Swipe to confirm';
+  String get swipeSliderSemantics => '滑动以确认';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -1914,6 +1870,23 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get onboardingSkip => '略過';
+
+  @override
+  String get onboardingUseSimNumber => '使用我的 SIM 卡號碼';
+
+  @override
+  String onboardingUseSimNumberHint(Object number) {
+    return '$number';
+  }
+
+  @override
+  String get onboardingUseSimNumberUnsupported => 'iOS 不支援此功能';
+
+  @override
+  String get onboardingUseSimNumberUnavailable => '無法讀取號碼';
+
+  @override
+  String get onboardingUseSimNumberPermissionDenied => '權限遭拒';
 
   @override
   String get sessionTitle => '守護中';
@@ -2208,6 +2181,45 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
+  String get fakeCallBrandAndroid => '電話';
+
+  @override
+  String get fakeCallBrandIos => '電話';
+
+  @override
+  String get fakeCallBrandMinimal => '通話';
+
+  @override
+  String get fakeCallDeclineSafeLabel => '拒接(我很安全)';
+
+  @override
+  String get fakeCallDeclineUnsafeLabel => '拒接(保持警戒)';
+
+  @override
+  String get fakeCallHoldForDistress => '按住 5 秒以求救';
+
+  @override
+  String fakeCallVoicePrompt(String name) {
+    return '語音提示:$name';
+  }
+
+  @override
+  String fakeCallVibrationLabel(String pattern) {
+    return '震動:$pattern';
+  }
+
+  @override
+  String get fakeCallVibrationPatternDefault => '預設';
+
+  @override
+  String get fakeCallSlideToAnswerHint => '滑動以接聽';
+
+  @override
+  String fakeCallActiveDuration(String mm, String ss) {
+    return '$mm:$ss';
+  }
+
+  @override
   String get contactsTitle => '緊急聯絡人';
 
   @override
@@ -2259,6 +2271,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String contactDeleteBody(Object name) {
     return '$name 將從你的緊急聯絡清單中移除。';
   }
+
+  @override
+  String get contactFormIosSmsWarning => '在 iOS 上,簡訊會開啟「訊息」App,你必須手動點選「傳送」。';
 
   @override
   String get modesTitle => '模式';
@@ -2361,6 +2376,12 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get settingsEmergencyNumberLabel => '緊急號碼';
 
   @override
+  String get settingsRedoOnboardingActiveSessionTooltip => '守護進行中無法重新引導';
+
+  @override
+  String get settingsEmergencyNumberCountryPickerTitle => '選擇緊急號碼';
+
+  @override
   String get settingsRedoOnboarding => '重新引導';
 
   @override
@@ -2456,8 +2477,1073 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stealthPresetNone => '無';
 
   @override
+  String get stealthLockTaskLabel => '守護期間鎖定 App';
+
+  @override
+  String get stealthLockTaskSubtitle =>
+      '守護進行中防止離開 App。在 Android 上會啟用螢幕固定;在其他平台上則不會有作用。';
+
+  @override
+  String get homeTagline => '你的天使,守護有你。';
+
+  @override
+  String get onboardingWelcomeGreeting => '嗨,我是 Angela';
+
+  @override
+  String get onboardingWelcomeBodyFull =>
+      '我是你的專屬守護者。我會陪你同行、守望你的夜晚外出,並在情況不對時採取行動。';
+
+  @override
+  String get onboardingGetStarted => '開始使用';
+
+  @override
+  String get onboardingProfileNameLabel => '姓名';
+
+  @override
+  String get onboardingProfilePhoneLabel => '電話號碼';
+
+  @override
+  String get onboardingProfilePhoneHelper => '將包含在緊急訊息中。';
+
+  @override
+  String get onboardingEmergencyContactHeader => '緊急聯絡人';
+
+  @override
+  String get onboardingEmergencyContactPrompt => '若情況不對,我們該聯絡誰?';
+
+  @override
+  String get onboardingEmergencyContactAdd => '新增緊急聯絡人';
+
+  @override
+  String get onboardingPermissionsIntro => '這些權限可在守護期間保護你的安全。';
+
+  @override
+  String get onboardingPermissionsGrantAll => '全部授予';
+
+  @override
+  String get onboardingPermissionsRequired => '必要';
+
+  @override
+  String get onboardingPermissionsOptional => '選用';
+
+  @override
+  String get onboardingPermissionsMicrophone => '麥克風';
+
+  @override
+  String get onboardingPermissionsCamera => '相機';
+
+  @override
+  String get onboardingPermissionsNotificationDesc => '用於守護警示與提醒,為必要權限。';
+
+  @override
+  String get onboardingPermissionsSmsDesc => '傳送緊急簡訊警示所需。';
+
+  @override
+  String get onboardingPermissionsPhoneDesc => '撥打緊急電話與假來電所需。';
+
+  @override
+  String get onboardingPermissionsLocationDesc => '開啟 GPS 紀錄時,將包含在緊急訊息中。';
+
+  @override
+  String get onboardingPermissionsMicrophoneDesc => '用於求救期間錄製音訊。';
+
+  @override
+  String get onboardingPermissionsCameraDesc => '用於閃光燈 SOS 求救訊號。';
+
+  @override
+  String get sessionInterruptedTitle => '守護已中斷';
+
+  @override
+  String get sessionInterruptedBody =>
+      'App 停止時有守護正在進行。守護狀態已遺失——未還原任何內容。我們顯示此訊息只是讓你知道。';
+
+  @override
+  String get sessionInterruptedAcknowledge => '我知道了';
+
+  @override
+  String sessionInterruptedMode(Object name) {
+    return '模式:$name';
+  }
+
+  @override
+  String sessionInterruptedStarted(Object time) {
+    return '開始時間:$time';
+  }
+
+  @override
+  String get sessionGpsDestinationTitle => '目的地';
+
+  @override
+  String get sessionGpsDestinationBody => '請輸入目的地座標,做為 GPS 抵達解除的觸發條件。';
+
+  @override
+  String get sessionGpsDestinationLat => '緯度';
+
+  @override
+  String get sessionGpsDestinationLng => '經度';
+
+  @override
+  String get sessionGpsDestinationSkip => '本次守護略過';
+
+  @override
+  String get sessionGpsDestinationConfirm => '使用此目的地';
+
+  @override
+  String get sessionEndOverlayTitle => '結束守護?';
+
+  @override
+  String get sessionEndOverlayBody => '滑動以確認你要結束守護';
+
+  @override
+  String get sessionEndOverlaySwipeLabel => '滑動以結束';
+
+  @override
+  String get sessionEndOverlaySimBadge => '[SIM] 練習模式';
+
+  @override
+  String get sessionEndPinPromptTitle => '輸入結束守護 PIN';
+
+  @override
+  String get sessionEndPinAppPinMismatch => '請使用結束守護 PIN,而非 App 鎖定 PIN。';
+
+  @override
+  String get sessionEndPinIncorrect => 'PIN 錯誤';
+
+  @override
+  String get sessionEndPinSimSkip => '略過(僅模擬)';
+
+  @override
+  String get sessionEndSimDistressWouldFire => '求救鏈路將會觸發(輸錯 5 次 PIN)';
+
+  @override
+  String get distressConfirmTitle => '已啟動求救';
+
+  @override
+  String distressConfirmCountdown(int seconds) {
+    return '點按以取消——你還有 $seconds 秒';
+  }
+
+  @override
+  String get distressConfirmCancel => '點按以取消';
+
+  @override
+  String get distressConfirmFooter => '若未取消,求救鏈路將立即開始。';
+
+  @override
+  String get distressCancelPinPromptTitle => '輸入結束守護 PIN';
+
+  @override
+  String distressCancelPinTimeoutLabel(int seconds) {
+    return '剩餘 $seconds 秒';
+  }
+
+  @override
+  String get distressCancelPinIncorrect => 'PIN 錯誤';
+
+  @override
+  String get distressCancelPinAppPinMismatch => '請使用結束守護 PIN,而非 App 鎖定 PIN。';
+
+  @override
+  String get distressCancelPinSimSkip => '略過(僅模擬)';
+
+  @override
+  String get distressCancelSimDistressWouldFire => '求救鏈路將會觸發(輸錯 5 次 PIN)';
+
+  @override
+  String get distressCancelPinBack => '取消';
+
+  @override
+  String get simulationPinPromptTitle => '輸入 PIN';
+
+  @override
+  String get simulationPinPromptBody => '練習輸入你的結束守護 PIN';
+
+  @override
+  String get simulationPinPromptSkip => '略過';
+
+  @override
+  String get simulationPinIncorrect => 'PIN 錯誤';
+
+  @override
+  String simulationSummaryDuration(String duration) {
+    return '時長:$duration';
+  }
+
+  @override
+  String get simulationSummaryTimelineHeader => '事件時間軸';
+
+  @override
+  String get simulationSummaryShare => '分享';
+
+  @override
+  String simulationSummaryMissedEventsBadge(int count) {
+    return '錯過:$count';
+  }
+
+  @override
+  String simulationSummaryDistressBadge(int count) {
+    return '求救:$count';
+  }
+
+  @override
+  String simulationSummaryStepsFiredBadge(int count) {
+    return '已觸發步驟:$count';
+  }
+
+  @override
+  String get simulationSummaryShareSubject => 'Guardian Angela 模擬摘要';
+
+  @override
+  String get notificationsChannelAlarm => '警報升級';
+
+  @override
+  String get notificationsChannelAlarmDescription => '可略過勿擾模式的重要警示';
+
+  @override
+  String get notificationsChannelReminder => '偽裝提醒';
+
+  @override
+  String get notificationsChannelReminderDescription => '守護進行中的報平安提醒';
+
+  @override
+  String get notificationsChannelFakeCall => '假來電';
+
+  @override
+  String get notificationsChannelFakeCallDescription => '全螢幕來電通知';
+
+  @override
+  String get notificationsChannelEnabled => '已啟用';
+
+  @override
+  String get notificationsChannelDisabled => '已停用';
+
+  @override
+  String get notificationsChannelsHeader => '通知管道';
+
+  @override
+  String get contactsImportFromDevice => '從通訊錄匯入';
+
+  @override
+  String get contactsImportNotSupported => '此平台不支援';
+
+  @override
+  String get contactsImportPermissionDenied => '通訊錄存取遭拒,請於系統設定中啟用。';
+
+  @override
+  String get contactsDeleteAllMenu => '全部刪除';
+
+  @override
+  String get contactsDeleteAllConfirmTitle => '刪除所有聯絡人?';
+
+  @override
+  String get contactsDeleteAllConfirmBody => '這將移除每一位緊急聯絡人,且無法復原。';
+
+  @override
+  String get contactsDeleteAllTypeConfirmTitle => '輸入文字以確認';
+
+  @override
+  String get contactsDeleteAllTypeConfirmHint => '輸入「DELETE ALL」以繼續';
+
+  @override
+  String get contactsDeleteAllTypeConfirmSentinel => 'DELETE ALL';
+
+  @override
+  String get contactsDeleteAllConfirmButton => '全部刪除';
+
+  @override
+  String get modesBuiltinBadge => '內建';
+
+  @override
+  String get modesBuiltinNoDelete => '內建模式無法刪除';
+
+  @override
+  String get sessionCompletedSimulationBanner => '模擬已完成';
+
+  @override
+  String get sessionCompletedViewEventLog => '檢視事件紀錄';
+
+  @override
+  String get settingsGeneralHeader => '一般';
+
+  @override
+  String get settingsAppHeader => '應用程式';
+
+  @override
+  String get settingsConfigurationHeader => '設定';
+
+  @override
+  String get settingsThemeLabel => '主題';
+
+  @override
+  String get settingsLanguageLabel => '語言';
+
+  @override
+  String get settingsSecurityRow => '安全性';
+
+  @override
+  String get settingsSecuritySubtitle => 'App PIN、結束守護 PIN、脅迫 PIN';
+
+  @override
+  String get settingsStealthRow => '隱身模式';
+
+  @override
+  String get settingsStealthSummaryOff => '隱身模式:關閉';
+
+  @override
+  String get settingsStealthSummaryOn => '隱身模式:開啟';
+
+  @override
+  String get settingsProfileRow => '個人資料';
+
+  @override
+  String get settingsModesRow => '模式';
+
+  @override
+  String get settingsDistressModesRow => '求救模式';
+
+  @override
+  String get settingsBatteryAlertRow => '電量警示';
+
+  @override
+  String get settingsEventDefaultsRow => '步驟預設值';
+
+  @override
+  String get settingsGpsLoggingRow => 'GPS 紀錄';
+
+  @override
+  String get settingsRemindersRow => '提醒範本';
+
+  @override
+  String get settingsNotificationsRow => '通知';
+
+  @override
+  String get settingsHistoryRetentionRow => '紀錄與保留';
+
+  @override
+  String get settingsAboutRow => '關於';
+
+  @override
+  String get settingsFeedbackRow => '傳送意見回饋';
+
+  @override
+  String get settingsBackupRow => '備份與還原';
+
+  @override
+  String get settingsOssLicenses => '開放原始碼授權';
+
+  @override
+  String get settingsImportConfirmBody => '這將覆寫所有目前的資料。是否繼續?';
+
+  @override
+  String get securityAppPinTitle => 'App PIN';
+
+  @override
+  String get securityAppPinBody => '每次開啟 App 時鎖定。';
+
+  @override
+  String get securitySessionEndPinTitle => '結束守護 PIN';
+
+  @override
+  String get securitySessionEndPinBody => '解除或結束進行中的守護時所需。';
+
+  @override
+  String get securityDuressPinTitle => '脅迫 PIN';
+
+  @override
+  String get securityDuressPinBody => '在任何提示輸入即可靜默觸發求救鏈路。';
+
+  @override
+  String get securityRemovePin => '移除';
+
+  @override
   String get securityRemovePinPrompt => '請輸入目前的 PIN 以將其移除。';
 
   @override
   String get securityRemovePinIncorrect => 'PIN 錯誤';
+
+  @override
+  String get securityWhatIsThis => '這是什麼?';
+
+  @override
+  String get securityAppPinInfo =>
+      '在你開啟 App 時鎖定。鍵盤會在任何畫面之前出現。若有人短暫拿到你已解鎖的手機,此功能很有用。';
+
+  @override
+  String get securitySessionEndPinInfo =>
+      '解除或結束進行中的安全守護時所需。少了它,搶走你手機的人無法停止鏈路。請設定與 App PIN 不同的密碼。';
+
+  @override
+  String get securityDuressPinInfo =>
+      '若你在任何提示輸入此 PIN,求救鏈路會靜默執行——你的聯絡人會收到警示、警報會待命,而對方不會察覺。請選擇與其他所有 PIN 都不同的密碼。';
+
+  @override
+  String get securityPinTimeoutLabel => 'PIN 逾時(秒)';
+
+  @override
+  String get securityWrongPinThresholdLabel => '升級前可輸錯 PIN 的次數';
+
+  @override
+  String get securityDeceptiveDialogToggle => '輸錯 PIN 時顯示誘導性對話框';
+
+  @override
+  String get pinSetupEnterNew => '輸入新 PIN';
+
+  @override
+  String get pinSetupConfirmNew => '確認新 PIN';
+
+  @override
+  String get pinSetupTooShort => 'PIN 至少需 4 位數。';
+
+  @override
+  String get pinSetupCollision => '此 PIN 與另一組已設定的 PIN 衝突。';
+
+  @override
+  String get pinSetupSaved => 'PIN 已儲存';
+
+  @override
+  String get stealthEnabledLabel => '啟用隱身模式';
+
+  @override
+  String get stealthFakeNameLabel => '偽裝 App 名稱';
+
+  @override
+  String get stealthFakeIconLabel => '偽裝圖示';
+
+  @override
+  String get stealthNotificationDisguiseLabel => '通知偽裝';
+
+  @override
+  String get stealthTimerDisplayLabel => '計時器顯示';
+
+  @override
+  String get stealthSessionScreenLabel => '守護畫面隱身';
+
+  @override
+  String get gpsLoggingEnabled => '守護期間記錄 GPS';
+
+  @override
+  String get gpsLoggingIntervalLabel => '間隔';
+
+  @override
+  String get gpsLoggingAccuracyLabel => '精確度';
+
+  @override
+  String get gpsLoggingAccuracyHigh => '高';
+
+  @override
+  String get gpsLoggingAccuracyBalanced => '平衡';
+
+  @override
+  String get gpsLoggingAccuracyLow => '低';
+
+  @override
+  String get gpsLoggingFormatLabel => '座標格式';
+
+  @override
+  String get gpsLoggingFormatDecimal => '十進位';
+
+  @override
+  String get gpsLoggingFormatDms => '度分秒';
+
+  @override
+  String get gpsLoggingFormatAddress => 'Plus Code';
+
+  @override
+  String get gpsLoggingIncludeInSms => '在簡訊附加位置';
+
+  @override
+  String get historyRetentionLogsLabel => '守護紀錄保留(天)';
+
+  @override
+  String get historyRetentionLogsHelper => '超過此天數的紀錄會移入垃圾桶。';
+
+  @override
+  String get historyRetentionTrashLabel => '垃圾桶保留(天)';
+
+  @override
+  String get historyRetentionTrashHelper => '垃圾桶中的紀錄會在此期限後永久刪除。';
+
+  @override
+  String get historyRetentionUpdated => '保留設定已更新';
+
+  @override
+  String get historyRetentionPurgeNow => '立即清除';
+
+  @override
+  String historyRetentionPurged(Object count) {
+    return '已清除 $count 筆紀錄';
+  }
+
+  @override
+  String get batteryAlertEnableLabel => '啟用電量警示';
+
+  @override
+  String get batteryAlertThresholdLabel => '電量門檻(%)';
+
+  @override
+  String get batteryAlertChainHeader => '警示鏈路';
+
+  @override
+  String get batteryAlertResetChain => '重設';
+
+  @override
+  String get eventDefaultsCheckInHeader => '報平安方式';
+
+  @override
+  String get eventDefaultsEscalationHeader => '升級步驟';
+
+  @override
+  String get eventDefaultsPanicHeader => '緊急觸發';
+
+  @override
+  String get templatesCreate => '建立範本';
+
+  @override
+  String get templatesEditTitle => '編輯範本';
+
+  @override
+  String get templatesCreateTitle => '新範本';
+
+  @override
+  String get templatesNameLabel => '名稱';
+
+  @override
+  String get templatesTitleLabel => '標題';
+
+  @override
+  String get templatesBodyLabel => '內文';
+
+  @override
+  String get templatesBuiltinNoDelete => '內建範本無法刪除';
+
+  @override
+  String get templatesAddFromTemplate => '從範本建立';
+
+  @override
+  String get templatesAddFromScratch => '從零開始';
+
+  @override
+  String templatesDeleteConfirmTitle(Object name) {
+    return '刪除「$name」?';
+  }
+
+  @override
+  String get templatesDeleteConfirmBody => '此範本將被永久移除。';
+
+  @override
+  String get templatesEmptyAddFirst => '新增你的第一個範本';
+
+  @override
+  String get templatesPickFromBuiltinTitle => '選擇內建範本';
+
+  @override
+  String get templatesIconLabel => '圖示';
+
+  @override
+  String get templatesIconCalendar => '行事曆';
+
+  @override
+  String get templatesIconAppNotification => 'App 通知';
+
+  @override
+  String get templatesIconFitness => '健身';
+
+  @override
+  String get templatesIconHealth => '健康';
+
+  @override
+  String get templatesIconFood => '食物';
+
+  @override
+  String get templatesIconCoffee => '咖啡';
+
+  @override
+  String get templatesIconBattery => '電量';
+
+  @override
+  String get templatesIconWeather => '天氣';
+
+  @override
+  String get templatesPreviewHeading => '即時預覽';
+
+  @override
+  String get templatesDiscardChangesTitle => '捨棄變更?';
+
+  @override
+  String get templatesDiscardChangesBody => '未儲存的編輯內容將會遺失。';
+
+  @override
+  String get templatesDiscardKeep => '繼續編輯';
+
+  @override
+  String get templatesDiscardDiscard => '捨棄';
+
+  @override
+  String get notificationsTitle => '通知';
+
+  @override
+  String get notificationsStatusGranted => '已授予';
+
+  @override
+  String get notificationsStatusDenied => '已拒絕';
+
+  @override
+  String get notificationsStatusUnknown => '尚未詢問';
+
+  @override
+  String get notificationsRequest => '請求權限';
+
+  @override
+  String get notificationsOpenSettings => '開啟系統設定';
+
+  @override
+  String get profileFieldPhone => '電話號碼';
+
+  @override
+  String get profileFieldDescription => '外貌描述';
+
+  @override
+  String get profileFieldMedicalConditions => '病史';
+
+  @override
+  String get profileFieldEmergencyInstructions => '緊急指示';
+
+  @override
+  String get aboutAuthor => '作者:Jonas Eschle';
+
+  @override
+  String get aboutEmail => 'guardian.angela.app@gmail.com';
+
+  @override
+  String get aboutPrivacyPolicy => '隱私權政策';
+
+  @override
+  String get aboutTermsOfService => '服務條款';
+
+  @override
+  String get aboutSourceCode => '原始碼';
+
+  @override
+  String get aboutSupport => '支持 / 贊助';
+
+  @override
+  String get aboutLicenses => '開放原始碼授權';
+
+  @override
+  String get aboutTagline => '為 LGBTQ+ 的安全而用心打造。';
+
+  @override
+  String get aboutTechnicalSection => '技術資訊';
+
+  @override
+  String aboutBundleId(Object id) {
+    return '套件 ID:$id';
+  }
+
+  @override
+  String aboutPlatforms(Object list) {
+    return '平台:$list';
+  }
+
+  @override
+  String get feedbackHeading => '我們很想聽聽你的想法';
+
+  @override
+  String get feedbackCategoryLabel => '類別';
+
+  @override
+  String get feedbackCategoryBug => '錯誤回報';
+
+  @override
+  String get feedbackCategoryFeature => '功能建議';
+
+  @override
+  String get feedbackCategoryOther => '其他';
+
+  @override
+  String get feedbackEmailLabel => '電子郵件(選填)';
+
+  @override
+  String get feedbackMessageLabel => '訊息';
+
+  @override
+  String get feedbackIncludeLog => '附上最近一次守護紀錄';
+
+  @override
+  String get feedbackSent => '感謝你的意見回饋!';
+
+  @override
+  String get feedbackMessageRequired => '訊息至少需 10 個字元。';
+
+  @override
+  String get backupIncludeLogs => '包含守護紀錄';
+
+  @override
+  String get backupIncludeMedia => '包含媒體';
+
+  @override
+  String get backupExportButton => '匯出';
+
+  @override
+  String get backupImportButton => '匯入';
+
+  @override
+  String get backupOverwriteWarning => '匯入會覆寫所有目前的資料。';
+
+  @override
+  String get backupImportSuccess => '匯入完成。請重新啟動以套用。';
+
+  @override
+  String backupImportError(Object message) {
+    return '匯入失敗:$message';
+  }
+
+  @override
+  String get backupActiveSessionBanner => '守護進行中無法備份。';
+
+  @override
+  String backupLastBackupAtLabel(Object when) {
+    return '上次備份於 $when';
+  }
+
+  @override
+  String get backupNeverExportedLabel => '尚無備份';
+
+  @override
+  String get pastEventsTitle => '過往守護';
+
+  @override
+  String get pastEventsTabReal => '實際';
+
+  @override
+  String get pastEventsTabSimulated => '模擬';
+
+  @override
+  String get pastEventsEmpty => '尚無守護紀錄';
+
+  @override
+  String get pastEventsDeleteConfirm => '刪除守護紀錄?';
+
+  @override
+  String get pastEventsDetailShareText => '以文字分享';
+
+  @override
+  String get pastEventsDetailSharePdf => '以 PDF 分享';
+
+  @override
+  String get pastEventsDetailDelete => '刪除';
+
+  @override
+  String get pastEventsOutcomeCompleted => '已完成';
+
+  @override
+  String get pastEventsOutcomeDistress => '求救';
+
+  @override
+  String get pastEventsOutcomeInterrupted => '已中斷';
+
+  @override
+  String get pastEventsTrash => '移至垃圾桶';
+
+  @override
+  String get pastEventsUndo => '復原';
+
+  @override
+  String get pastEventsSoftDeleted => '已移至垃圾桶';
+
+  @override
+  String get pastEventsDetailTitle => '守護紀錄';
+
+  @override
+  String get pastEventsDetailShare => '分享';
+
+  @override
+  String get contactUnsavedDiscardTitle => '捨棄未儲存的變更?';
+
+  @override
+  String get contactUnsavedDiscardKeep => '繼續編輯';
+
+  @override
+  String get contactUnsavedDiscardDiscard => '捨棄';
+
+  @override
+  String get modesDuplicate => '複製';
+
+  @override
+  String get modesDeleteConfirmTitle => '刪除模式?';
+
+  @override
+  String modesDeleteConfirmBody(Object name) {
+    return '$name 將被永久移除。';
+  }
+
+  @override
+  String get modesDistressDefaultBadge => '預設';
+
+  @override
+  String get modesDistressSetDefault => '設為預設';
+
+  @override
+  String get modesDistressCantDeleteLast => '至少需保留一個求救模式。';
+
+  @override
+  String get modesDistressInUse => '此求救模式正被另一個模式使用中。';
+
+  @override
+  String get modesDistressTitle => '求救模式';
+
+  @override
+  String get validationNameTooShort => '名稱至少需 2 個字元。';
+
+  @override
+  String get validationPhoneRequired => '電話號碼為必填。';
+
+  @override
+  String get validationChannelsRequired => '請至少選擇一個通訊管道。';
+
+  @override
+  String get sessionHoldTouchToBegin => '觸碰以開始';
+
+  @override
+  String sessionHoldReleaseCountdown(Object seconds) {
+    return '倒數:$seconds 秒';
+  }
+
+  @override
+  String sessionHoldGraceCountdown(Object seconds) {
+    return '寬限:$seconds 秒——再次按住以保持安全';
+  }
+
+  @override
+  String get sessionHoldAgain => '再次按住以保持安全';
+
+  @override
+  String sessionStepNextCheckIn(Object time) {
+    return '$time 後進行下次報平安';
+  }
+
+  @override
+  String sessionStepFakeCallActive(Object caller) {
+    return '$caller 來電';
+  }
+
+  @override
+  String get sessionStepFakeCallOpen => '開啟通話畫面';
+
+  @override
+  String sessionStepSimBlockedSms(Object count) {
+    return '[SIM] 將傳送簡訊給 $count 位聯絡人';
+  }
+
+  @override
+  String get sessionStepSimBlockedPhone => '[SIM] 將致電緊急聯絡人';
+
+  @override
+  String get sessionStepSimBlockedEmergency => '[SIM] 將撥打緊急服務電話';
+
+  @override
+  String get sessionStepSimBlockedAlarm => '[SIM] 警報將以最大音量響起';
+
+  @override
+  String get sessionStartFailedTitle => '無法開始守護';
+
+  @override
+  String get sessionStartFailedBody => '開始前請先修正下列問題:';
+
+  @override
+  String get sessionQuickExitTitle => '快速離開';
+
+  @override
+  String get sessionQuickExitBody => '守護資料將被保留並加密。隨時重新開啟 App 即可復原。';
+
+  @override
+  String get sessionQuickExitConfirm => '離開 App';
+
+  @override
+  String get pastEventsRestore => '還原';
+
+  @override
+  String batteryAlertForbiddenStep(Object type) {
+    return '電量警示鏈路不允許使用 $type。';
+  }
+
+  @override
+  String get stepEditorWait => '等待(秒)';
+
+  @override
+  String get stepEditorDuration => '時長(秒)';
+
+  @override
+  String get stepEditorGrace => '寬限(秒)';
+
+  @override
+  String get stepEditorRetryCount => '重試次數';
+
+  @override
+  String get stepEditorRandomize => '隨機化時間(±20%)';
+
+  @override
+  String get stepEditorRemove => '移除步驟';
+
+  @override
+  String get eventDefaultsHoldStyle => '按住樣式';
+
+  @override
+  String get eventDefaultsHoldSensitivity => '放開靈敏度';
+
+  @override
+  String get eventDefaultsHoldVibrate => '放開時震動';
+
+  @override
+  String get eventDefaultsHoldSound => '放開時發聲';
+
+  @override
+  String get eventDefaultsBlackScreen => '黑屏覆蓋';
+
+  @override
+  String get eventDefaultsReminderRandomInterval => '隨機化間隔';
+
+  @override
+  String get eventDefaultsReminderRandomTemplate => '隨機化範本順序';
+
+  @override
+  String get eventDefaultsReminderResetOnEarly => '提早報平安時重設';
+
+  @override
+  String get eventDefaultsCountdownStyle => '倒數樣式';
+
+  @override
+  String get eventDefaultsCountdownVibrate => '震動';
+
+  @override
+  String get eventDefaultsCountdownSound => '聲音';
+
+  @override
+  String get eventDefaultsFakeCallStyle => '來電樣式';
+
+  @override
+  String get eventDefaultsFakeCallCallerName => '來電者名稱';
+
+  @override
+  String get eventDefaultsFakeCallRingDuration => '響鈴時長(秒)';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafe => '拒接視為安全';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutput => '語音輸出';
+
+  @override
+  String get eventDefaultsSmsChannel => '通訊管道';
+
+  @override
+  String get eventDefaultsSmsIncludeLocation => '包含位置';
+
+  @override
+  String get eventDefaultsSmsIncludeMedical => '包含醫療資訊';
+
+  @override
+  String get eventDefaultsSmsAutoRecord => '傳送前錄製音訊';
+
+  @override
+  String get eventDefaultsSmsRecordDuration => '錄音時長(秒)';
+
+  @override
+  String get eventDefaultsLoudAlarmVolume => '音量';
+
+  @override
+  String get eventDefaultsLoudAlarmSound => '聲音';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreen => '閃爍螢幕';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLight => '閃爍相機閃光燈';
+
+  @override
+  String get eventDefaultsLoudAlarmGradual => '音量漸強';
+
+  @override
+  String get eventDefaultsCallEmergencyNumber => '緊急號碼(覆寫)';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirm => '顯示確認倒數';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDuration => '確認秒數';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirst => '先傳送位置簡訊';
+
+  @override
+  String get eventDefaultsPhonePrimaryContact => '主要聯絡人(id)';
+
+  @override
+  String get eventDefaultsHardwareButton => '按鍵';
+
+  @override
+  String get eventDefaultsHardwarePattern => '按壓模式';
+
+  @override
+  String get eventDefaultsHardwarePressCount => '按壓次數';
+
+  @override
+  String get eventDefaultsHardwareLongDuration => '長按時長(秒)';
+
+  @override
+  String get pastEventsTrashTitle => '垃圾桶';
+
+  @override
+  String get pastEventsTrashEmpty => '垃圾桶是空的';
+
+  @override
+  String get pastEventsTrashEmptyAll => '清空垃圾桶';
+
+  @override
+  String get pastEventsTrashEmptyAllConfirmTitle => '清空垃圾桶?';
+
+  @override
+  String get pastEventsTrashEmptyAllConfirmBody =>
+      '請在下方輸入「EMPTY TRASH」以確認。這將永久刪除每一筆已丟棄的紀錄。';
+
+  @override
+  String pastEventsTrashEmptyAllSuccess(Object count) {
+    return '垃圾桶已清空($count 筆紀錄)';
+  }
+
+  @override
+  String pastEventsTrashRetentionNote(int days) {
+    return '垃圾桶中的紀錄會在 $days 天後永久刪除。';
+  }
+
+  @override
+  String pastEventsTrashRemainingDays(int days) {
+    return '$days 天後永久刪除';
+  }
+
+  @override
+  String get pastEventsTrashDeletePermanently => '永久刪除';
+
+  @override
+  String get pastEventsTrashDeletePermanentlyBody => '此操作無法復原。';
+
+  @override
+  String sessionEmergencyConfirmTitle(String number, int seconds) {
+    return '$seconds 秒後撥打 $number';
+  }
+
+  @override
+  String get sessionEmergencyConfirmSwipe => '滑動以取消';
+
+  @override
+  String get sessionEmergencyConfirmKeep => '繼續撥打';
+
+  @override
+  String get sessionEmergencyConfirmSimBadge => '[SIM] 練習模式';
+
+  @override
+  String get sessionEmergencyConfirmSimCancelled => '模擬取消——不會真的撥出電話';
+
+  @override
+  String get swipeSliderSemantics => '滑動以確認';
 }

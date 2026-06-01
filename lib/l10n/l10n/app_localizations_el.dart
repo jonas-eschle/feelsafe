@@ -104,7 +104,7 @@ class AppLocalizationsEl extends AppLocalizations {
   String get onboardingSkip => 'Παράλειψη';
 
   @override
-  String get onboardingUseSimNumber => 'Use my SIM number';
+  String get onboardingUseSimNumber => 'Χρήση του αριθμού της SIM μου';
 
   @override
   String onboardingUseSimNumberHint(Object number) {
@@ -112,13 +112,13 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
-  String get onboardingUseSimNumberUnsupported => 'Not available on iOS';
+  String get onboardingUseSimNumberUnsupported => 'Μη διαθέσιμο σε iOS';
 
   @override
-  String get onboardingUseSimNumberUnavailable => 'Couldn\'t read number';
+  String get onboardingUseSimNumberUnavailable => 'Αδυναμία ανάγνωσης αριθμού';
 
   @override
-  String get onboardingUseSimNumberPermissionDenied => 'Permission denied';
+  String get onboardingUseSimNumberPermissionDenied => 'Η άδεια απορρίφθηκε';
 
   @override
   String get sessionTitle => 'Συνεδρία';
@@ -423,38 +423,38 @@ class AppLocalizationsEl extends AppLocalizations {
   String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
-  String get fakeCallBrandAndroid => 'PHONE';
+  String get fakeCallBrandAndroid => 'ΤΗΛΕΦΩΝΟ';
 
   @override
-  String get fakeCallBrandIos => 'PHONE';
+  String get fakeCallBrandIos => 'ΤΗΛΕΦΩΝΟ';
 
   @override
-  String get fakeCallBrandMinimal => 'CALL';
+  String get fakeCallBrandMinimal => 'ΚΛΗΣΗ';
 
   @override
-  String get fakeCallDeclineSafeLabel => 'Decline (I\'m Safe)';
+  String get fakeCallDeclineSafeLabel => 'Απόρριψη (Είμαι ασφαλής)';
 
   @override
-  String get fakeCallDeclineUnsafeLabel => 'Decline (Stay on alert)';
+  String get fakeCallDeclineUnsafeLabel => 'Απόρριψη (Παραμονή σε επιφυλακή)';
 
   @override
-  String get fakeCallHoldForDistress => 'Hold 5s for distress';
+  String get fakeCallHoldForDistress => 'Κρατήστε 5 δευτ. για κίνδυνο';
 
   @override
   String fakeCallVoicePrompt(String name) {
-    return 'TTS prompt: $name';
+    return 'Φωνητική προτροπή: $name';
   }
 
   @override
   String fakeCallVibrationLabel(String pattern) {
-    return 'Vibration: $pattern';
+    return 'Δόνηση: $pattern';
   }
 
   @override
-  String get fakeCallVibrationPatternDefault => 'default';
+  String get fakeCallVibrationPatternDefault => 'προεπιλογή';
 
   @override
-  String get fakeCallSlideToAnswerHint => 'Slide to answer';
+  String get fakeCallSlideToAnswerHint => 'Σύρετε για απάντηση';
 
   @override
   String fakeCallActiveDuration(String mm, String ss) {
@@ -517,7 +517,7 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get contactFormIosSmsWarning =>
-      'On iOS, SMS opens the Messages app. You must tap Send manually.';
+      'Στο iOS, το SMS ανοίγει την εφαρμογή Μηνύματα. Πρέπει να πατήσετε «Αποστολή» χειροκίνητα.';
 
   @override
   String get modesTitle => 'Λειτουργίες';
@@ -624,11 +624,11 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get settingsRedoOnboardingActiveSessionTooltip =>
-      'Cannot redo onboarding during an active session';
+      'Δεν είναι δυνατή η επανεκκίνηση εισαγωγής κατά τη διάρκεια ενεργής συνεδρίας';
 
   @override
   String get settingsEmergencyNumberCountryPickerTitle =>
-      'Choose emergency number';
+      'Επιλογή αριθμού έκτακτης ανάγκης';
 
   @override
   String get settingsRedoOnboarding => 'Επανεκκίνηση εισαγωγής';
@@ -728,407 +728,418 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stealthPresetNone => 'Καμία';
 
   @override
-  String get stealthLockTaskLabel => 'Pin app during session';
+  String get stealthLockTaskLabel => 'Καρφίτσωμα εφαρμογής κατά τη συνεδρία';
 
   @override
   String get stealthLockTaskSubtitle =>
-      'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
+      'Αποτρέπει την έξοδο από την εφαρμογή ενώ τρέχει μια συνεδρία. Στο Android ενεργοποιεί το καρφίτσωμα οθόνης· στις άλλες πλατφόρμες δεν έχει καμία επίδραση.';
 
   @override
-  String get homeTagline => 'Your angel\'s got your back.';
+  String get homeTagline => 'Ο άγγελός σου σε προσέχει.';
 
   @override
-  String get onboardingWelcomeGreeting => 'Hi, I\'m Angela';
+  String get onboardingWelcomeGreeting => 'Γεια, είμαι η Άντζελα';
 
   @override
   String get onboardingWelcomeBodyFull =>
-      'I\'m your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.';
+      'Είμαι ο προσωπικός σου φύλακας. Σε συνοδεύω, προσέχω τη βραδινή σου έξοδο και αναλαμβάνω δράση αν κάτι δεν πάει καλά.';
 
   @override
-  String get onboardingGetStarted => 'Get started';
+  String get onboardingGetStarted => 'Ξεκινήστε';
 
   @override
-  String get onboardingProfileNameLabel => 'Name';
+  String get onboardingProfileNameLabel => 'Όνομα';
 
   @override
-  String get onboardingProfilePhoneLabel => 'Phone number';
+  String get onboardingProfilePhoneLabel => 'Αριθμός τηλεφώνου';
 
   @override
-  String get onboardingProfilePhoneHelper => 'Included in emergency messages.';
+  String get onboardingProfilePhoneHelper =>
+      'Συμπεριλαμβάνεται στα μηνύματα έκτακτης ανάγκης.';
 
   @override
-  String get onboardingEmergencyContactHeader => 'Emergency contact';
+  String get onboardingEmergencyContactHeader => 'Επαφή έκτακτης ανάγκης';
 
   @override
   String get onboardingEmergencyContactPrompt =>
-      'Who should we contact if something goes wrong?';
+      'Ποιον να ειδοποιήσουμε αν κάτι πάει στραβά;';
 
   @override
-  String get onboardingEmergencyContactAdd => 'Add emergency contact';
+  String get onboardingEmergencyContactAdd =>
+      'Προσθήκη επαφής έκτακτης ανάγκης';
 
   @override
   String get onboardingPermissionsIntro =>
-      'These permissions keep you safe during sessions.';
+      'Αυτές οι άδειες σε κρατούν ασφαλή κατά τη διάρκεια των συνεδριών.';
 
   @override
-  String get onboardingPermissionsGrantAll => 'Grant all';
+  String get onboardingPermissionsGrantAll => 'Παραχώρηση όλων';
 
   @override
-  String get onboardingPermissionsRequired => 'REQUIRED';
+  String get onboardingPermissionsRequired => 'ΑΠΑΙΤΕΙΤΑΙ';
 
   @override
-  String get onboardingPermissionsOptional => 'OPTIONAL';
+  String get onboardingPermissionsOptional => 'ΠΡΟΑΙΡΕΤΙΚΟ';
 
   @override
-  String get onboardingPermissionsMicrophone => 'Microphone';
+  String get onboardingPermissionsMicrophone => 'Μικρόφωνο';
 
   @override
-  String get onboardingPermissionsCamera => 'Camera';
+  String get onboardingPermissionsCamera => 'Κάμερα';
 
   @override
   String get onboardingPermissionsNotificationDesc =>
-      'Required for session alerts and reminders.';
+      'Απαιτείται για ειδοποιήσεις και υπενθυμίσεις συνεδρίας.';
 
   @override
   String get onboardingPermissionsSmsDesc =>
-      'Required to send emergency text alerts.';
+      'Απαιτείται για την αποστολή μηνυμάτων έκτακτης ανάγκης.';
 
   @override
   String get onboardingPermissionsPhoneDesc =>
-      'Required to make emergency and fake calls.';
+      'Απαιτείται για κλήσεις έκτακτης ανάγκης και ψεύτικες κλήσεις.';
 
   @override
   String get onboardingPermissionsLocationDesc =>
-      'Included in emergency messages when GPS logging is on.';
+      'Συμπεριλαμβάνεται στα μηνύματα έκτακτης ανάγκης όταν είναι ενεργή η καταγραφή GPS.';
 
   @override
   String get onboardingPermissionsMicrophoneDesc =>
-      'Used for audio recording during distress.';
+      'Χρησιμοποιείται για ηχογράφηση κατά τη διάρκεια κινδύνου.';
 
   @override
-  String get onboardingPermissionsCameraDesc => 'Used for flash SOS signaling.';
+  String get onboardingPermissionsCameraDesc =>
+      'Χρησιμοποιείται για σήμα SOS με φλας.';
 
   @override
-  String get sessionInterruptedTitle => 'Session interrupted';
+  String get sessionInterruptedTitle => 'Η συνεδρία διακόπηκε';
 
   @override
   String get sessionInterruptedBody =>
-      'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.';
+      'Μια συνεδρία ήταν σε εξέλιξη όταν η εφαρμογή σταμάτησε. Η κατάσταση της συνεδρίας χάθηκε — τίποτα δεν αποκαταστάθηκε. Το εμφανίζουμε για να το γνωρίζετε.';
 
   @override
-  String get sessionInterruptedAcknowledge => 'Acknowledge';
+  String get sessionInterruptedAcknowledge => 'Κατανοητό';
 
   @override
   String sessionInterruptedMode(Object name) {
-    return 'Mode: $name';
+    return 'Λειτουργία: $name';
   }
 
   @override
   String sessionInterruptedStarted(Object time) {
-    return 'Started: $time';
+    return 'Έναρξη: $time';
   }
 
   @override
-  String get sessionGpsDestinationTitle => 'Destination';
+  String get sessionGpsDestinationTitle => 'Προορισμός';
 
   @override
   String get sessionGpsDestinationBody =>
-      'Enter the destination coordinates for the GPS arrival disarm trigger.';
+      'Εισαγάγετε τις συντεταγμένες προορισμού για τη σκανδάλη αποδέσμευσης κατά την άφιξη μέσω GPS.';
 
   @override
-  String get sessionGpsDestinationLat => 'Latitude';
+  String get sessionGpsDestinationLat => 'Γεωγραφικό πλάτος';
 
   @override
-  String get sessionGpsDestinationLng => 'Longitude';
+  String get sessionGpsDestinationLng => 'Γεωγραφικό μήκος';
 
   @override
-  String get sessionGpsDestinationSkip => 'Skip for this session';
+  String get sessionGpsDestinationSkip => 'Παράλειψη για αυτή τη συνεδρία';
 
   @override
-  String get sessionGpsDestinationConfirm => 'Use destination';
+  String get sessionGpsDestinationConfirm => 'Χρήση προορισμού';
 
   @override
-  String get sessionEndOverlayTitle => 'End session?';
+  String get sessionEndOverlayTitle => 'Τερματισμός συνεδρίας;';
 
   @override
   String get sessionEndOverlayBody =>
-      'Swipe to confirm you want to end the session';
+      'Σύρετε για να επιβεβαιώσετε ότι θέλετε να τερματίσετε τη συνεδρία';
 
   @override
-  String get sessionEndOverlaySwipeLabel => 'Swipe to end';
+  String get sessionEndOverlaySwipeLabel => 'Σύρετε για τερματισμό';
 
   @override
-  String get sessionEndOverlaySimBadge => '[SIM] Practice mode';
+  String get sessionEndOverlaySimBadge => '[SIM] Λειτουργία εξάσκησης';
 
   @override
-  String get sessionEndPinPromptTitle => 'Enter Session End PIN';
+  String get sessionEndPinPromptTitle =>
+      'Εισαγάγετε το PIN τερματισμού συνεδρίας';
 
   @override
   String get sessionEndPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+      'Χρησιμοποιήστε το PIN τερματισμού συνεδρίας, όχι το PIN κλειδώματος της εφαρμογής.';
 
   @override
-  String get sessionEndPinIncorrect => 'Incorrect PIN';
+  String get sessionEndPinIncorrect => 'Λανθασμένο PIN';
 
   @override
-  String get sessionEndPinSimSkip => 'Skip (sim only)';
+  String get sessionEndPinSimSkip => 'Παράλειψη (μόνο προσομοίωση)';
 
   @override
   String get sessionEndSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+      'Η αλυσίδα κινδύνου θα ενεργοποιούνταν (5 λανθασμένα PIN)';
 
   @override
-  String get distressConfirmTitle => 'Distress activated';
+  String get distressConfirmTitle => 'Ο κίνδυνος ενεργοποιήθηκε';
 
   @override
   String distressConfirmCountdown(int seconds) {
-    return 'Tap to cancel — you have $seconds seconds';
+    return 'Πατήστε για ακύρωση — έχετε $seconds δευτερόλεπτα';
   }
 
   @override
-  String get distressConfirmCancel => 'Tap to cancel';
+  String get distressConfirmCancel => 'Πατήστε για ακύρωση';
 
   @override
   String get distressConfirmFooter =>
-      'If not cancelled, distress chain will begin immediately.';
+      'Αν δεν ακυρωθεί, η αλυσίδα κινδύνου θα ξεκινήσει αμέσως.';
 
   @override
-  String get distressCancelPinPromptTitle => 'Enter Session End PIN';
+  String get distressCancelPinPromptTitle =>
+      'Εισαγάγετε το PIN τερματισμού συνεδρίας';
 
   @override
   String distressCancelPinTimeoutLabel(int seconds) {
-    return '${seconds}s remaining';
+    return 'Απομένουν $seconds δευτ.';
   }
 
   @override
-  String get distressCancelPinIncorrect => 'Incorrect PIN';
+  String get distressCancelPinIncorrect => 'Λανθασμένο PIN';
 
   @override
   String get distressCancelPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+      'Χρησιμοποιήστε το PIN τερματισμού συνεδρίας, όχι το PIN κλειδώματος της εφαρμογής.';
 
   @override
-  String get distressCancelPinSimSkip => 'Skip (sim only)';
+  String get distressCancelPinSimSkip => 'Παράλειψη (μόνο προσομοίωση)';
 
   @override
   String get distressCancelSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+      'Η αλυσίδα κινδύνου θα ενεργοποιούνταν (5 λανθασμένα PIN)';
 
   @override
-  String get distressCancelPinBack => 'Cancel';
+  String get distressCancelPinBack => 'Άκυρο';
 
   @override
-  String get simulationPinPromptTitle => 'Enter PIN';
+  String get simulationPinPromptTitle => 'Εισαγάγετε το PIN';
 
   @override
   String get simulationPinPromptBody =>
-      'Practice entering your Session End PIN';
+      'Εξασκηθείτε στην εισαγωγή του PIN τερματισμού συνεδρίας';
 
   @override
-  String get simulationPinPromptSkip => 'Skip';
+  String get simulationPinPromptSkip => 'Παράλειψη';
 
   @override
-  String get simulationPinIncorrect => 'Incorrect PIN';
+  String get simulationPinIncorrect => 'Λανθασμένο PIN';
 
   @override
   String simulationSummaryDuration(String duration) {
-    return 'Duration: $duration';
+    return 'Διάρκεια: $duration';
   }
 
   @override
-  String get simulationSummaryTimelineHeader => 'Event timeline';
+  String get simulationSummaryTimelineHeader => 'Χρονολόγιο συμβάντων';
 
   @override
-  String get simulationSummaryShare => 'Share';
+  String get simulationSummaryShare => 'Κοινοποίηση';
 
   @override
   String simulationSummaryMissedEventsBadge(int count) {
-    return 'Missed: $count';
+    return 'Χαμένα: $count';
   }
 
   @override
   String simulationSummaryDistressBadge(int count) {
-    return 'Distress: $count';
+    return 'Κίνδυνος: $count';
   }
 
   @override
   String simulationSummaryStepsFiredBadge(int count) {
-    return 'Steps fired: $count';
+    return 'Βήματα που ενεργοποιήθηκαν: $count';
   }
 
   @override
   String get simulationSummaryShareSubject =>
-      'Guardian Angela simulation summary';
+      'Σύνοψη προσομοίωσης Guardian Angela';
 
   @override
-  String get notificationsChannelAlarm => 'Alarm escalation';
+  String get notificationsChannelAlarm => 'Κλιμάκωση συναγερμού';
 
   @override
   String get notificationsChannelAlarmDescription =>
-      'Critical alerts that bypass DND';
+      'Κρίσιμες ειδοποιήσεις που παρακάμπτουν το «Μην ενοχλείτε»';
 
   @override
-  String get notificationsChannelReminder => 'Disguised reminder';
+  String get notificationsChannelReminder => 'Μεταμφιεσμένη υπενθύμιση';
 
   @override
   String get notificationsChannelReminderDescription =>
-      'Check-in reminders during active session';
+      'Υπενθυμίσεις δήλωσης ασφάλειας κατά τη διάρκεια ενεργής συνεδρίας';
 
   @override
-  String get notificationsChannelFakeCall => 'Fake call';
+  String get notificationsChannelFakeCall => 'Ψεύτικη κλήση';
 
   @override
   String get notificationsChannelFakeCallDescription =>
-      'Full-screen incoming-call notifications';
+      'Ειδοποιήσεις εισερχόμενης κλήσης πλήρους οθόνης';
 
   @override
-  String get notificationsChannelEnabled => 'Enabled';
+  String get notificationsChannelEnabled => 'Ενεργό';
 
   @override
-  String get notificationsChannelDisabled => 'Disabled';
+  String get notificationsChannelDisabled => 'Ανενεργό';
 
   @override
-  String get notificationsChannelsHeader => 'Notification channels';
+  String get notificationsChannelsHeader => 'Κανάλια ειδοποιήσεων';
 
   @override
-  String get contactsImportFromDevice => 'Import from contacts';
+  String get contactsImportFromDevice => 'Εισαγωγή από επαφές';
 
   @override
-  String get contactsImportNotSupported => 'Not available on this platform';
+  String get contactsImportNotSupported => 'Μη διαθέσιμο σε αυτή την πλατφόρμα';
 
   @override
   String get contactsImportPermissionDenied =>
-      'Contact access denied. Enable in system settings.';
+      'Η πρόσβαση στις επαφές απορρίφθηκε. Ενεργοποιήστε την στις ρυθμίσεις συστήματος.';
 
   @override
-  String get contactsDeleteAllMenu => 'Delete all';
+  String get contactsDeleteAllMenu => 'Διαγραφή όλων';
 
   @override
-  String get contactsDeleteAllConfirmTitle => 'Delete all contacts?';
+  String get contactsDeleteAllConfirmTitle => 'Διαγραφή όλων των επαφών;';
 
   @override
   String get contactsDeleteAllConfirmBody =>
-      'This removes every emergency contact. There is no undo.';
+      'Αυτό αφαιρεί κάθε επαφή έκτακτης ανάγκης. Δεν υπάρχει αναίρεση.';
 
   @override
-  String get contactsDeleteAllTypeConfirmTitle => 'Confirm by typing';
+  String get contactsDeleteAllTypeConfirmTitle =>
+      'Επιβεβαίωση με πληκτρολόγηση';
 
   @override
-  String get contactsDeleteAllTypeConfirmHint => 'Type DELETE ALL to continue';
+  String get contactsDeleteAllTypeConfirmHint =>
+      'Πληκτρολογήστε DELETE ALL για να συνεχίσετε';
 
   @override
   String get contactsDeleteAllTypeConfirmSentinel => 'DELETE ALL';
 
   @override
-  String get contactsDeleteAllConfirmButton => 'Delete all';
+  String get contactsDeleteAllConfirmButton => 'Διαγραφή όλων';
 
   @override
-  String get modesBuiltinBadge => 'Built-in';
+  String get modesBuiltinBadge => 'Ενσωματωμένη';
 
   @override
-  String get modesBuiltinNoDelete => 'Built-in modes cannot be deleted';
+  String get modesBuiltinNoDelete =>
+      'Οι ενσωματωμένες λειτουργίες δεν μπορούν να διαγραφούν';
 
   @override
-  String get sessionCompletedSimulationBanner => 'Simulation completed';
+  String get sessionCompletedSimulationBanner => 'Η προσομοίωση ολοκληρώθηκε';
 
   @override
-  String get sessionCompletedViewEventLog => 'View event log';
+  String get sessionCompletedViewEventLog =>
+      'Προβολή αρχείου καταγραφής συμβάντων';
 
   @override
-  String get settingsGeneralHeader => 'General';
+  String get settingsGeneralHeader => 'Γενικά';
 
   @override
-  String get settingsAppHeader => 'App';
+  String get settingsAppHeader => 'Εφαρμογή';
 
   @override
-  String get settingsConfigurationHeader => 'Configuration';
+  String get settingsConfigurationHeader => 'Διαμόρφωση';
 
   @override
-  String get settingsThemeLabel => 'Theme';
+  String get settingsThemeLabel => 'Θέμα';
 
   @override
-  String get settingsLanguageLabel => 'Language';
+  String get settingsLanguageLabel => 'Γλώσσα';
 
   @override
-  String get settingsSecurityRow => 'Security';
+  String get settingsSecurityRow => 'Ασφάλεια';
 
   @override
-  String get settingsSecuritySubtitle => 'App PIN, Session End PIN, Duress PIN';
+  String get settingsSecuritySubtitle =>
+      'PIN εφαρμογής, PIN τερματισμού συνεδρίας, PIN εξαναγκασμού';
 
   @override
-  String get settingsStealthRow => 'Stealth';
+  String get settingsStealthRow => 'Κρυφή λειτουργία';
 
   @override
-  String get settingsStealthSummaryOff => 'Stealth: OFF';
+  String get settingsStealthSummaryOff => 'Κρυφή λειτουργία: ΑΝΕΝΕΡΓΗ';
 
   @override
-  String get settingsStealthSummaryOn => 'Stealth: ON';
+  String get settingsStealthSummaryOn => 'Κρυφή λειτουργία: ΕΝΕΡΓΗ';
 
   @override
-  String get settingsProfileRow => 'Profile';
+  String get settingsProfileRow => 'Προφίλ';
 
   @override
-  String get settingsModesRow => 'Modes';
+  String get settingsModesRow => 'Λειτουργίες';
 
   @override
-  String get settingsDistressModesRow => 'Distress modes';
+  String get settingsDistressModesRow => 'Λειτουργίες κινδύνου';
 
   @override
-  String get settingsBatteryAlertRow => 'Battery alert';
+  String get settingsBatteryAlertRow => 'Ειδοποίηση μπαταρίας';
 
   @override
-  String get settingsEventDefaultsRow => 'Event defaults';
+  String get settingsEventDefaultsRow => 'Προεπιλογές συμβάντων';
 
   @override
-  String get settingsGpsLoggingRow => 'GPS logging';
+  String get settingsGpsLoggingRow => 'Καταγραφή GPS';
 
   @override
-  String get settingsRemindersRow => 'Reminder templates';
+  String get settingsRemindersRow => 'Πρότυπα υπενθύμισης';
 
   @override
-  String get settingsNotificationsRow => 'Notifications';
+  String get settingsNotificationsRow => 'Ειδοποιήσεις';
 
   @override
-  String get settingsHistoryRetentionRow => 'History & retention';
+  String get settingsHistoryRetentionRow => 'Ιστορικό και διατήρηση';
 
   @override
-  String get settingsAboutRow => 'About';
+  String get settingsAboutRow => 'Σχετικά';
 
   @override
-  String get settingsFeedbackRow => 'Send feedback';
+  String get settingsFeedbackRow => 'Αποστολή σχολίων';
 
   @override
-  String get settingsBackupRow => 'Backup & restore';
+  String get settingsBackupRow => 'Αντίγραφο ασφαλείας και επαναφορά';
 
   @override
-  String get settingsOssLicenses => 'Open source licenses';
+  String get settingsOssLicenses => 'Άδειες ανοιχτού κώδικα';
 
   @override
   String get settingsImportConfirmBody =>
-      'This will overwrite all current data. Continue?';
+      'Αυτό θα αντικαταστήσει όλα τα τρέχοντα δεδομένα. Συνέχεια;';
 
   @override
-  String get securityAppPinTitle => 'App PIN';
+  String get securityAppPinTitle => 'PIN εφαρμογής';
 
   @override
-  String get securityAppPinBody => 'Locks the app each time you open it.';
+  String get securityAppPinBody =>
+      'Κλειδώνει την εφαρμογή κάθε φορά που την ανοίγετε.';
 
   @override
-  String get securitySessionEndPinTitle => 'Session End PIN';
+  String get securitySessionEndPinTitle => 'PIN τερματισμού συνεδρίας';
 
   @override
   String get securitySessionEndPinBody =>
-      'Required to disarm or end a running session.';
+      'Απαιτείται για την αποδέσμευση ή τον τερματισμό μιας ενεργής συνεδρίας.';
 
   @override
-  String get securityDuressPinTitle => 'Duress PIN';
+  String get securityDuressPinTitle => 'PIN εξαναγκασμού';
 
   @override
   String get securityDuressPinBody =>
-      'Entered at any prompt to silently fire the distress chain.';
+      'Εισάγεται σε οποιαδήποτε προτροπή για σιωπηλή ενεργοποίηση της αλυσίδας κινδύνου.';
 
   @override
-  String get securityRemovePin => 'Remove';
+  String get securityRemovePin => 'Αφαίρεση';
 
   @override
   String get securityRemovePinPrompt =>
@@ -1138,88 +1149,88 @@ class AppLocalizationsEl extends AppLocalizations {
   String get securityRemovePinIncorrect => 'Λανθασμένο PIN';
 
   @override
-  String get securityWhatIsThis => 'What is this?';
+  String get securityWhatIsThis => 'Τι είναι αυτό;';
 
   @override
   String get securityAppPinInfo =>
-      'Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.';
+      'Κλειδώνει την εφαρμογή όταν την ανοίγετε. Το πληκτρολόγιο εμφανίζεται πριν από οποιαδήποτε οθόνη. Χρήσιμο αν κάποιος κρατήσει για λίγο το ξεκλείδωτο τηλέφωνό σας.';
 
   @override
   String get securitySessionEndPinInfo =>
-      'Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.';
+      'Απαιτείται για την αποδέσμευση ή τον τερματισμό μιας ενεργής συνεδρίας ασφαλείας. Χωρίς αυτό, ένας επιτιθέμενος που παίρνει το τηλέφωνό σας δεν μπορεί να σταματήσει την αλυσίδα. Ορίστε διαφορετικό κωδικό από το PIN της εφαρμογής σας.';
 
   @override
   String get securityDuressPinInfo =>
-      'If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.';
+      'Αν εισαγάγετε ποτέ αυτό το PIN σε οποιαδήποτε προτροπή, η αλυσίδα κινδύνου εκτελείται σιωπηλά — οι επαφές σας ειδοποιούνται και ο συναγερμός προετοιμάζεται χωρίς να το αντιληφθεί ο επιτιθέμενος. Επιλέξτε κωδικό διαφορετικό από κάθε άλλο PIN.';
 
   @override
-  String get securityPinTimeoutLabel => 'PIN timeout (seconds)';
+  String get securityPinTimeoutLabel => 'Χρονικό όριο PIN (δευτερόλεπτα)';
 
   @override
   String get securityWrongPinThresholdLabel =>
-      'Wrong PIN attempts before escalation';
+      'Λανθασμένες προσπάθειες PIN πριν την κλιμάκωση';
 
   @override
   String get securityDeceptiveDialogToggle =>
-      'Show deceptive dialog on wrong PIN';
+      'Εμφάνιση παραπλανητικού διαλόγου σε λανθασμένο PIN';
 
   @override
-  String get pinSetupEnterNew => 'Enter new PIN';
+  String get pinSetupEnterNew => 'Εισαγάγετε νέο PIN';
 
   @override
-  String get pinSetupConfirmNew => 'Confirm new PIN';
+  String get pinSetupConfirmNew => 'Επιβεβαιώστε το νέο PIN';
 
   @override
-  String get pinSetupTooShort => 'PIN must be at least 4 digits.';
+  String get pinSetupTooShort => 'Το PIN πρέπει να έχει τουλάχιστον 4 ψηφία.';
 
   @override
   String get pinSetupCollision =>
-      'This PIN conflicts with another configured PIN.';
+      'Αυτό το PIN συγκρούεται με άλλο διαμορφωμένο PIN.';
 
   @override
-  String get pinSetupSaved => 'PIN saved';
+  String get pinSetupSaved => 'Το PIN αποθηκεύτηκε';
 
   @override
-  String get stealthEnabledLabel => 'Enable stealth';
+  String get stealthEnabledLabel => 'Ενεργοποίηση κρυφής λειτουργίας';
 
   @override
-  String get stealthFakeNameLabel => 'Fake app name';
+  String get stealthFakeNameLabel => 'Ψεύτικο όνομα εφαρμογής';
 
   @override
-  String get stealthFakeIconLabel => 'Fake icon';
+  String get stealthFakeIconLabel => 'Ψεύτικο εικονίδιο';
 
   @override
-  String get stealthNotificationDisguiseLabel => 'Notification disguise';
+  String get stealthNotificationDisguiseLabel => 'Μεταμφίεση ειδοποιήσεων';
 
   @override
-  String get stealthTimerDisplayLabel => 'Timer display';
+  String get stealthTimerDisplayLabel => 'Εμφάνιση χρονομέτρου';
 
   @override
-  String get stealthSessionScreenLabel => 'Session screen stealth';
+  String get stealthSessionScreenLabel => 'Κρυφή οθόνη συνεδρίας';
 
   @override
-  String get gpsLoggingEnabled => 'Log GPS during sessions';
+  String get gpsLoggingEnabled => 'Καταγραφή GPS κατά τις συνεδρίες';
 
   @override
-  String get gpsLoggingIntervalLabel => 'Interval';
+  String get gpsLoggingIntervalLabel => 'Διάστημα';
 
   @override
-  String get gpsLoggingAccuracyLabel => 'Accuracy';
+  String get gpsLoggingAccuracyLabel => 'Ακρίβεια';
 
   @override
-  String get gpsLoggingAccuracyHigh => 'High';
+  String get gpsLoggingAccuracyHigh => 'Υψηλή';
 
   @override
-  String get gpsLoggingAccuracyBalanced => 'Balanced';
+  String get gpsLoggingAccuracyBalanced => 'Ισορροπημένη';
 
   @override
-  String get gpsLoggingAccuracyLow => 'Low';
+  String get gpsLoggingAccuracyLow => 'Χαμηλή';
 
   @override
-  String get gpsLoggingFormatLabel => 'Coordinate format';
+  String get gpsLoggingFormatLabel => 'Μορφή συντεταγμένων';
 
   @override
-  String get gpsLoggingFormatDecimal => 'Decimal';
+  String get gpsLoggingFormatDecimal => 'Δεκαδική';
 
   @override
   String get gpsLoggingFormatDms => 'DMS';
@@ -1228,194 +1239,199 @@ class AppLocalizationsEl extends AppLocalizations {
   String get gpsLoggingFormatAddress => 'Plus Code';
 
   @override
-  String get gpsLoggingIncludeInSms => 'Append location to SMS';
+  String get gpsLoggingIncludeInSms => 'Προσθήκη τοποθεσίας στο SMS';
 
   @override
-  String get historyRetentionLogsLabel => 'Session log retention (days)';
+  String get historyRetentionLogsLabel =>
+      'Διατήρηση αρχείων συνεδρίας (ημέρες)';
 
   @override
   String get historyRetentionLogsHelper =>
-      'Logs older than this move into the trash.';
+      'Τα αρχεία παλαιότερα από αυτό μετακινούνται στον κάδο.';
 
   @override
-  String get historyRetentionTrashLabel => 'Trash retention (days)';
+  String get historyRetentionTrashLabel => 'Διατήρηση κάδου (ημέρες)';
 
   @override
   String get historyRetentionTrashHelper =>
-      'Trashed logs are permanently deleted after this window.';
+      'Τα αρχεία στον κάδο διαγράφονται οριστικά μετά από αυτό το διάστημα.';
 
   @override
-  String get historyRetentionUpdated => 'Retention updated';
+  String get historyRetentionUpdated => 'Η διατήρηση ενημερώθηκε';
 
   @override
-  String get historyRetentionPurgeNow => 'Purge now';
+  String get historyRetentionPurgeNow => 'Εκκαθάριση τώρα';
 
   @override
   String historyRetentionPurged(Object count) {
-    return 'Purged $count logs';
+    return 'Εκκαθαρίστηκαν $count αρχεία';
   }
 
   @override
-  String get batteryAlertEnableLabel => 'Enable battery alert';
+  String get batteryAlertEnableLabel => 'Ενεργοποίηση ειδοποίησης μπαταρίας';
 
   @override
-  String get batteryAlertThresholdLabel => 'Battery threshold (%)';
+  String get batteryAlertThresholdLabel => 'Όριο μπαταρίας (%)';
 
   @override
-  String get batteryAlertChainHeader => 'Alert chain';
+  String get batteryAlertChainHeader => 'Αλυσίδα ειδοποίησης';
 
   @override
-  String get batteryAlertResetChain => 'Reset';
+  String get batteryAlertResetChain => 'Επαναφορά';
 
   @override
-  String get eventDefaultsCheckInHeader => 'Check-in methods';
+  String get eventDefaultsCheckInHeader => 'Μέθοδοι δήλωσης ασφάλειας';
 
   @override
-  String get eventDefaultsEscalationHeader => 'Escalation steps';
+  String get eventDefaultsEscalationHeader => 'Βήματα κλιμάκωσης';
 
   @override
-  String get eventDefaultsPanicHeader => 'Panic trigger';
+  String get eventDefaultsPanicHeader => 'Σκανδάλη πανικού';
 
   @override
-  String get templatesCreate => 'Create template';
+  String get templatesCreate => 'Δημιουργία προτύπου';
 
   @override
-  String get templatesEditTitle => 'Edit template';
+  String get templatesEditTitle => 'Επεξεργασία προτύπου';
 
   @override
-  String get templatesCreateTitle => 'New template';
+  String get templatesCreateTitle => 'Νέο πρότυπο';
 
   @override
-  String get templatesNameLabel => 'Name';
+  String get templatesNameLabel => 'Όνομα';
 
   @override
-  String get templatesTitleLabel => 'Title';
+  String get templatesTitleLabel => 'Τίτλος';
 
   @override
-  String get templatesBodyLabel => 'Body';
+  String get templatesBodyLabel => 'Κείμενο';
 
   @override
-  String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
+  String get templatesBuiltinNoDelete =>
+      'Τα ενσωματωμένα πρότυπα δεν μπορούν να διαγραφούν';
 
   @override
-  String get templatesAddFromTemplate => 'From template';
+  String get templatesAddFromTemplate => 'Από πρότυπο';
 
   @override
-  String get templatesAddFromScratch => 'From scratch';
+  String get templatesAddFromScratch => 'Από την αρχή';
 
   @override
   String templatesDeleteConfirmTitle(Object name) {
-    return 'Delete \"$name\"?';
+    return 'Διαγραφή «$name»;';
   }
 
   @override
   String get templatesDeleteConfirmBody =>
-      'This template will be removed permanently.';
+      'Αυτό το πρότυπο θα αφαιρεθεί οριστικά.';
 
   @override
-  String get templatesEmptyAddFirst => 'Add your first template';
+  String get templatesEmptyAddFirst => 'Προσθέστε το πρώτο σας πρότυπο';
 
   @override
-  String get templatesPickFromBuiltinTitle => 'Pick a built-in template';
+  String get templatesPickFromBuiltinTitle =>
+      'Επιλέξτε ένα ενσωματωμένο πρότυπο';
 
   @override
-  String get templatesIconLabel => 'Icon';
+  String get templatesIconLabel => 'Εικονίδιο';
 
   @override
-  String get templatesIconCalendar => 'Calendar';
+  String get templatesIconCalendar => 'Ημερολόγιο';
 
   @override
-  String get templatesIconAppNotification => 'App notification';
+  String get templatesIconAppNotification => 'Ειδοποίηση εφαρμογής';
 
   @override
-  String get templatesIconFitness => 'Fitness';
+  String get templatesIconFitness => 'Φυσική κατάσταση';
 
   @override
-  String get templatesIconHealth => 'Health';
+  String get templatesIconHealth => 'Υγεία';
 
   @override
-  String get templatesIconFood => 'Food';
+  String get templatesIconFood => 'Φαγητό';
 
   @override
-  String get templatesIconCoffee => 'Coffee';
+  String get templatesIconCoffee => 'Καφές';
 
   @override
-  String get templatesIconBattery => 'Battery';
+  String get templatesIconBattery => 'Μπαταρία';
 
   @override
-  String get templatesIconWeather => 'Weather';
+  String get templatesIconWeather => 'Καιρός';
 
   @override
-  String get templatesPreviewHeading => 'Live preview';
+  String get templatesPreviewHeading => 'Ζωντανή προεπισκόπηση';
 
   @override
-  String get templatesDiscardChangesTitle => 'Discard changes?';
+  String get templatesDiscardChangesTitle => 'Απόρριψη αλλαγών;';
 
   @override
-  String get templatesDiscardChangesBody => 'Unsaved edits will be lost.';
+  String get templatesDiscardChangesBody =>
+      'Οι μη αποθηκευμένες αλλαγές θα χαθούν.';
 
   @override
-  String get templatesDiscardKeep => 'Keep editing';
+  String get templatesDiscardKeep => 'Συνέχιση επεξεργασίας';
 
   @override
-  String get templatesDiscardDiscard => 'Discard';
+  String get templatesDiscardDiscard => 'Απόρριψη';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'Ειδοποιήσεις';
 
   @override
-  String get notificationsStatusGranted => 'Granted';
+  String get notificationsStatusGranted => 'Παραχωρήθηκε';
 
   @override
-  String get notificationsStatusDenied => 'Denied';
+  String get notificationsStatusDenied => 'Απορρίφθηκε';
 
   @override
-  String get notificationsStatusUnknown => 'Not yet asked';
+  String get notificationsStatusUnknown => 'Δεν έχει ζητηθεί ακόμη';
 
   @override
-  String get notificationsRequest => 'Request permission';
+  String get notificationsRequest => 'Αίτημα άδειας';
 
   @override
-  String get notificationsOpenSettings => 'Open system settings';
+  String get notificationsOpenSettings => 'Άνοιγμα ρυθμίσεων συστήματος';
 
   @override
-  String get profileFieldPhone => 'Phone number';
+  String get profileFieldPhone => 'Αριθμός τηλεφώνου';
 
   @override
-  String get profileFieldDescription => 'Physical description';
+  String get profileFieldDescription => 'Σωματική περιγραφή';
 
   @override
-  String get profileFieldMedicalConditions => 'Medical conditions';
+  String get profileFieldMedicalConditions => 'Ιατρικές παθήσεις';
 
   @override
-  String get profileFieldEmergencyInstructions => 'Emergency instructions';
+  String get profileFieldEmergencyInstructions => 'Οδηγίες έκτακτης ανάγκης';
 
   @override
-  String get aboutAuthor => 'Author: Jonas Eschle';
+  String get aboutAuthor => 'Δημιουργός: Jonas Eschle';
 
   @override
   String get aboutEmail => 'guardian.angela.app@gmail.com';
 
   @override
-  String get aboutPrivacyPolicy => 'Privacy policy';
+  String get aboutPrivacyPolicy => 'Πολιτική απορρήτου';
 
   @override
-  String get aboutTermsOfService => 'Terms of service';
+  String get aboutTermsOfService => 'Όροι χρήσης';
 
   @override
-  String get aboutSourceCode => 'Source code';
+  String get aboutSourceCode => 'Πηγαίος κώδικας';
 
   @override
-  String get aboutSupport => 'Support / donate';
+  String get aboutSupport => 'Υποστήριξη / δωρεά';
 
   @override
-  String get aboutLicenses => 'Open source licenses';
+  String get aboutLicenses => 'Άδειες ανοιχτού κώδικα';
 
   @override
-  String get aboutTagline => 'Made with love for LGBTQ+ safety.';
+  String get aboutTagline =>
+      'Φτιαγμένο με αγάπη για την ασφάλεια της κοινότητας LGBTQ+.';
 
   @override
-  String get aboutTechnicalSection => 'Technical information';
+  String get aboutTechnicalSection => 'Τεχνικές πληροφορίες';
 
   @override
   String aboutBundleId(Object id) {
@@ -1424,419 +1440,432 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String aboutPlatforms(Object list) {
-    return 'Platforms: $list';
+    return 'Πλατφόρμες: $list';
   }
 
   @override
-  String get feedbackHeading => 'We\'d love to hear from you';
+  String get feedbackHeading => 'Θα θέλαμε να ακούσουμε τη γνώμη σας';
 
   @override
-  String get feedbackCategoryLabel => 'Category';
+  String get feedbackCategoryLabel => 'Κατηγορία';
 
   @override
-  String get feedbackCategoryBug => 'Bug report';
+  String get feedbackCategoryBug => 'Αναφορά σφάλματος';
 
   @override
-  String get feedbackCategoryFeature => 'Feature request';
+  String get feedbackCategoryFeature => 'Αίτημα λειτουργίας';
 
   @override
-  String get feedbackCategoryOther => 'Other';
+  String get feedbackCategoryOther => 'Άλλο';
 
   @override
-  String get feedbackEmailLabel => 'Email (optional)';
+  String get feedbackEmailLabel => 'Email (προαιρετικό)';
 
   @override
-  String get feedbackMessageLabel => 'Message';
+  String get feedbackMessageLabel => 'Μήνυμα';
 
   @override
-  String get feedbackIncludeLog => 'Include last session log';
+  String get feedbackIncludeLog => 'Συμπερίληψη αρχείου τελευταίας συνεδρίας';
 
   @override
-  String get feedbackSent => 'Thanks for your feedback!';
+  String get feedbackSent => 'Ευχαριστούμε για τα σχόλιά σας!';
 
   @override
   String get feedbackMessageRequired =>
-      'Message must be at least 10 characters.';
+      'Το μήνυμα πρέπει να έχει τουλάχιστον 10 χαρακτήρες.';
 
   @override
-  String get backupIncludeLogs => 'Include session logs';
+  String get backupIncludeLogs => 'Συμπερίληψη αρχείων συνεδρίας';
 
   @override
-  String get backupIncludeMedia => 'Include media';
+  String get backupIncludeMedia => 'Συμπερίληψη πολυμέσων';
 
   @override
-  String get backupExportButton => 'Export';
+  String get backupExportButton => 'Εξαγωγή';
 
   @override
-  String get backupImportButton => 'Import';
+  String get backupImportButton => 'Εισαγωγή';
 
   @override
-  String get backupOverwriteWarning => 'Importing overwrites all current data.';
+  String get backupOverwriteWarning =>
+      'Η εισαγωγή αντικαθιστά όλα τα τρέχοντα δεδομένα.';
 
   @override
-  String get backupImportSuccess => 'Import complete. Restart to apply.';
+  String get backupImportSuccess =>
+      'Η εισαγωγή ολοκληρώθηκε. Επανεκκινήστε για εφαρμογή.';
 
   @override
   String backupImportError(Object message) {
-    return 'Import failed: $message';
+    return 'Η εισαγωγή απέτυχε: $message';
   }
 
   @override
   String get backupActiveSessionBanner =>
-      'Backup is unavailable during an active session.';
+      'Το αντίγραφο ασφαλείας δεν είναι διαθέσιμο κατά τη διάρκεια ενεργής συνεδρίας.';
 
   @override
   String backupLastBackupAtLabel(Object when) {
-    return 'Last backup at $when';
+    return 'Τελευταίο αντίγραφο ασφαλείας στις $when';
   }
 
   @override
-  String get backupNeverExportedLabel => 'No backup yet';
+  String get backupNeverExportedLabel =>
+      'Δεν υπάρχει ακόμη αντίγραφο ασφαλείας';
 
   @override
-  String get pastEventsTitle => 'Past sessions';
+  String get pastEventsTitle => 'Προηγούμενες συνεδρίες';
 
   @override
-  String get pastEventsTabReal => 'Real';
+  String get pastEventsTabReal => 'Πραγματικές';
 
   @override
-  String get pastEventsTabSimulated => 'Simulated';
+  String get pastEventsTabSimulated => 'Προσομοιωμένες';
 
   @override
-  String get pastEventsEmpty => 'No sessions yet';
+  String get pastEventsEmpty => 'Δεν υπάρχουν ακόμη συνεδρίες';
 
   @override
-  String get pastEventsDeleteConfirm => 'Delete session log?';
+  String get pastEventsDeleteConfirm => 'Διαγραφή αρχείου συνεδρίας;';
 
   @override
-  String get pastEventsDetailShareText => 'Share as text';
+  String get pastEventsDetailShareText => 'Κοινοποίηση ως κείμενο';
 
   @override
-  String get pastEventsDetailSharePdf => 'Share as PDF';
+  String get pastEventsDetailSharePdf => 'Κοινοποίηση ως PDF';
 
   @override
-  String get pastEventsDetailDelete => 'Delete';
+  String get pastEventsDetailDelete => 'Διαγραφή';
 
   @override
-  String get pastEventsOutcomeCompleted => 'Completed';
+  String get pastEventsOutcomeCompleted => 'Ολοκληρώθηκε';
 
   @override
-  String get pastEventsOutcomeDistress => 'Distress';
+  String get pastEventsOutcomeDistress => 'Κίνδυνος';
 
   @override
-  String get pastEventsOutcomeInterrupted => 'Interrupted';
+  String get pastEventsOutcomeInterrupted => 'Διακόπηκε';
 
   @override
-  String get pastEventsTrash => 'Trash';
+  String get pastEventsTrash => 'Κάδος';
 
   @override
-  String get pastEventsUndo => 'Undo';
+  String get pastEventsUndo => 'Αναίρεση';
 
   @override
-  String get pastEventsSoftDeleted => 'Moved to trash';
+  String get pastEventsSoftDeleted => 'Μετακινήθηκε στον κάδο';
 
   @override
-  String get pastEventsDetailTitle => 'Session log';
+  String get pastEventsDetailTitle => 'Αρχείο συνεδρίας';
 
   @override
-  String get pastEventsDetailShare => 'Share';
+  String get pastEventsDetailShare => 'Κοινοποίηση';
 
   @override
-  String get contactUnsavedDiscardTitle => 'Discard unsaved changes?';
+  String get contactUnsavedDiscardTitle => 'Απόρριψη μη αποθηκευμένων αλλαγών;';
 
   @override
-  String get contactUnsavedDiscardKeep => 'Keep editing';
+  String get contactUnsavedDiscardKeep => 'Συνέχιση επεξεργασίας';
 
   @override
-  String get contactUnsavedDiscardDiscard => 'Discard';
+  String get contactUnsavedDiscardDiscard => 'Απόρριψη';
 
   @override
-  String get modesDuplicate => 'Duplicate';
+  String get modesDuplicate => 'Δημιουργία αντιγράφου';
 
   @override
-  String get modesDeleteConfirmTitle => 'Delete mode?';
+  String get modesDeleteConfirmTitle => 'Διαγραφή λειτουργίας;';
 
   @override
   String modesDeleteConfirmBody(Object name) {
-    return '$name will be permanently removed.';
+    return 'Η λειτουργία $name θα αφαιρεθεί οριστικά.';
   }
 
   @override
-  String get modesDistressDefaultBadge => 'Default';
+  String get modesDistressDefaultBadge => 'Προεπιλογή';
 
   @override
-  String get modesDistressSetDefault => 'Set as default';
+  String get modesDistressSetDefault => 'Ορισμός ως προεπιλογή';
 
   @override
   String get modesDistressCantDeleteLast =>
-      'At least one distress mode is required.';
+      'Απαιτείται τουλάχιστον μία λειτουργία κινδύνου.';
 
   @override
   String get modesDistressInUse =>
-      'This distress mode is in use by another mode.';
+      'Αυτή η λειτουργία κινδύνου χρησιμοποιείται από άλλη λειτουργία.';
 
   @override
-  String get modesDistressTitle => 'Distress modes';
+  String get modesDistressTitle => 'Λειτουργίες κινδύνου';
 
   @override
-  String get validationNameTooShort => 'Name must be at least 2 characters.';
+  String get validationNameTooShort =>
+      'Το όνομα πρέπει να έχει τουλάχιστον 2 χαρακτήρες.';
 
   @override
-  String get validationPhoneRequired => 'Phone number is required.';
+  String get validationPhoneRequired =>
+      'Ο αριθμός τηλεφώνου είναι υποχρεωτικός.';
 
   @override
-  String get validationChannelsRequired => 'Select at least one channel.';
+  String get validationChannelsRequired => 'Επιλέξτε τουλάχιστον ένα κανάλι.';
 
   @override
-  String get sessionHoldTouchToBegin => 'Touch to begin';
+  String get sessionHoldTouchToBegin => 'Αγγίξτε για έναρξη';
 
   @override
   String sessionHoldReleaseCountdown(Object seconds) {
-    return 'Countdown: ${seconds}s';
+    return 'Αντίστροφη μέτρηση: $secondsδ';
   }
 
   @override
   String sessionHoldGraceCountdown(Object seconds) {
-    return 'Grace: ${seconds}s — re-hold to stay safe';
+    return 'Περιθώριο: $secondsδ — κρατήστε ξανά για να μείνετε ασφαλείς';
   }
 
   @override
-  String get sessionHoldAgain => 'Hold again to stay safe';
+  String get sessionHoldAgain => 'Κρατήστε ξανά για να μείνετε ασφαλείς';
 
   @override
   String sessionStepNextCheckIn(Object time) {
-    return 'Next check-in in $time';
+    return 'Επόμενη δήλωση ασφάλειας σε $time';
   }
 
   @override
   String sessionStepFakeCallActive(Object caller) {
-    return 'Incoming call from $caller';
+    return 'Εισερχόμενη κλήση από $caller';
   }
 
   @override
-  String get sessionStepFakeCallOpen => 'Open call screen';
+  String get sessionStepFakeCallOpen => 'Άνοιγμα οθόνης κλήσης';
 
   @override
   String sessionStepSimBlockedSms(Object count) {
-    return '[SIM] Would send SMS to $count contacts';
+    return '[SIM] Θα στελνόταν SMS σε $count επαφές';
   }
 
   @override
-  String get sessionStepSimBlockedPhone => '[SIM] Would call emergency contact';
+  String get sessionStepSimBlockedPhone =>
+      '[SIM] Θα γινόταν κλήση στην επαφή έκτακτης ανάγκης';
 
   @override
   String get sessionStepSimBlockedEmergency =>
-      '[SIM] Would call emergency services';
+      '[SIM] Θα γινόταν κλήση στις υπηρεσίες έκτακτης ανάγκης';
 
   @override
   String get sessionStepSimBlockedAlarm =>
-      '[SIM] Alarm would have sounded at full volume';
+      '[SIM] Ο συναγερμός θα είχε ηχήσει σε πλήρη ένταση';
 
   @override
-  String get sessionStartFailedTitle => 'Cannot start session';
+  String get sessionStartFailedTitle => 'Δεν είναι δυνατή η έναρξη συνεδρίας';
 
   @override
   String get sessionStartFailedBody =>
-      'Fix the following issues before starting:';
+      'Διορθώστε τα παρακάτω ζητήματα πριν την έναρξη:';
 
   @override
-  String get sessionQuickExitTitle => 'Quick exit';
+  String get sessionQuickExitTitle => 'Γρήγορη έξοδος';
 
   @override
   String get sessionQuickExitBody =>
-      'Session data will be preserved and encrypted. Reopen the app any time to recover it.';
+      'Τα δεδομένα της συνεδρίας θα διατηρηθούν και θα κρυπτογραφηθούν. Ανοίξτε ξανά την εφαρμογή οποιαδήποτε στιγμή για να τα ανακτήσετε.';
 
   @override
-  String get sessionQuickExitConfirm => 'Exit app';
+  String get sessionQuickExitConfirm => 'Έξοδος από την εφαρμογή';
 
   @override
-  String get pastEventsRestore => 'Restore';
+  String get pastEventsRestore => 'Επαναφορά';
 
   @override
   String batteryAlertForbiddenStep(Object type) {
-    return '$type is not allowed in the battery-alert chain.';
+    return 'Το βήμα $type δεν επιτρέπεται στην αλυσίδα ειδοποίησης μπαταρίας.';
   }
 
   @override
-  String get stepEditorWait => 'Wait (s)';
+  String get stepEditorWait => 'Αναμονή (δ)';
 
   @override
-  String get stepEditorDuration => 'Duration (s)';
+  String get stepEditorDuration => 'Διάρκεια (δ)';
 
   @override
-  String get stepEditorGrace => 'Grace (s)';
+  String get stepEditorGrace => 'Περιθώριο (δ)';
 
   @override
-  String get stepEditorRetryCount => 'Retry count';
+  String get stepEditorRetryCount => 'Αριθμός επαναλήψεων';
 
   @override
-  String get stepEditorRandomize => 'Randomize timing (±20%)';
+  String get stepEditorRandomize => 'Τυχαίος χρονισμός (±20%)';
 
   @override
-  String get stepEditorRemove => 'Remove step';
+  String get stepEditorRemove => 'Αφαίρεση βήματος';
 
   @override
-  String get eventDefaultsHoldStyle => 'Hold style';
+  String get eventDefaultsHoldStyle => 'Στυλ κρατήματος';
 
   @override
-  String get eventDefaultsHoldSensitivity => 'Release sensitivity';
+  String get eventDefaultsHoldSensitivity => 'Ευαισθησία απελευθέρωσης';
 
   @override
-  String get eventDefaultsHoldVibrate => 'Vibrate on release';
+  String get eventDefaultsHoldVibrate => 'Δόνηση κατά την απελευθέρωση';
 
   @override
-  String get eventDefaultsHoldSound => 'Sound on release';
+  String get eventDefaultsHoldSound => 'Ήχος κατά την απελευθέρωση';
 
   @override
-  String get eventDefaultsBlackScreen => 'Black screen overlay';
+  String get eventDefaultsBlackScreen => 'Επικάλυψη μαύρης οθόνης';
 
   @override
-  String get eventDefaultsReminderRandomInterval => 'Randomize interval';
+  String get eventDefaultsReminderRandomInterval => 'Τυχαίο διάστημα';
 
   @override
-  String get eventDefaultsReminderRandomTemplate => 'Randomize template order';
+  String get eventDefaultsReminderRandomTemplate => 'Τυχαία σειρά προτύπων';
 
   @override
-  String get eventDefaultsReminderResetOnEarly => 'Reset on early check-in';
+  String get eventDefaultsReminderResetOnEarly =>
+      'Επαναφορά σε πρόωρη δήλωση ασφάλειας';
 
   @override
-  String get eventDefaultsCountdownStyle => 'Countdown style';
+  String get eventDefaultsCountdownStyle => 'Στυλ αντίστροφης μέτρησης';
 
   @override
-  String get eventDefaultsCountdownVibrate => 'Vibrate';
+  String get eventDefaultsCountdownVibrate => 'Δόνηση';
 
   @override
-  String get eventDefaultsCountdownSound => 'Sound';
+  String get eventDefaultsCountdownSound => 'Ήχος';
 
   @override
-  String get eventDefaultsFakeCallStyle => 'Call style';
+  String get eventDefaultsFakeCallStyle => 'Στυλ κλήσης';
 
   @override
-  String get eventDefaultsFakeCallCallerName => 'Caller name';
+  String get eventDefaultsFakeCallCallerName => 'Όνομα καλούντος';
 
   @override
-  String get eventDefaultsFakeCallRingDuration => 'Ring duration (s)';
+  String get eventDefaultsFakeCallRingDuration => 'Διάρκεια κουδουνίσματος (δ)';
 
   @override
-  String get eventDefaultsFakeCallDeclineIsSafe => 'Decline counts as safe';
+  String get eventDefaultsFakeCallDeclineIsSafe =>
+      'Η απόρριψη μετράει ως ασφάλεια';
 
   @override
-  String get eventDefaultsFakeCallVoiceOutput => 'Voice output';
+  String get eventDefaultsFakeCallVoiceOutput => 'Φωνητική έξοδος';
 
   @override
-  String get eventDefaultsSmsChannel => 'Channel';
+  String get eventDefaultsSmsChannel => 'Κανάλι';
 
   @override
-  String get eventDefaultsSmsIncludeLocation => 'Include location';
+  String get eventDefaultsSmsIncludeLocation => 'Συμπερίληψη τοποθεσίας';
 
   @override
-  String get eventDefaultsSmsIncludeMedical => 'Include medical info';
+  String get eventDefaultsSmsIncludeMedical =>
+      'Συμπερίληψη ιατρικών πληροφοριών';
 
   @override
-  String get eventDefaultsSmsAutoRecord => 'Record audio before sending';
+  String get eventDefaultsSmsAutoRecord => 'Ηχογράφηση πριν την αποστολή';
 
   @override
-  String get eventDefaultsSmsRecordDuration => 'Recording duration (s)';
+  String get eventDefaultsSmsRecordDuration => 'Διάρκεια ηχογράφησης (δ)';
 
   @override
-  String get eventDefaultsLoudAlarmVolume => 'Volume';
+  String get eventDefaultsLoudAlarmVolume => 'Ένταση';
 
   @override
-  String get eventDefaultsLoudAlarmSound => 'Sound';
+  String get eventDefaultsLoudAlarmSound => 'Ήχος';
 
   @override
-  String get eventDefaultsLoudAlarmFlashScreen => 'Flash screen';
+  String get eventDefaultsLoudAlarmFlashScreen => 'Αναβόσβησμα οθόνης';
 
   @override
-  String get eventDefaultsLoudAlarmFlashLight => 'Flash camera light';
+  String get eventDefaultsLoudAlarmFlashLight => 'Αναβόσβησμα φωτός κάμερας';
 
   @override
-  String get eventDefaultsLoudAlarmGradual => 'Gradual volume ramp';
+  String get eventDefaultsLoudAlarmGradual => 'Σταδιακή αύξηση έντασης';
 
   @override
-  String get eventDefaultsCallEmergencyNumber => 'Emergency number (override)';
+  String get eventDefaultsCallEmergencyNumber =>
+      'Αριθμός έκτακτης ανάγκης (παράκαμψη)';
 
   @override
-  String get eventDefaultsCallEmergencyConfirm => 'Show confirmation countdown';
+  String get eventDefaultsCallEmergencyConfirm =>
+      'Εμφάνιση αντίστροφης μέτρησης επιβεβαίωσης';
 
   @override
   String get eventDefaultsCallEmergencyConfirmDuration =>
-      'Confirmation seconds';
+      'Δευτερόλεπτα επιβεβαίωσης';
 
   @override
-  String get eventDefaultsCallEmergencySmsFirst => 'Send location SMS first';
+  String get eventDefaultsCallEmergencySmsFirst =>
+      'Αποστολή SMS τοποθεσίας πρώτα';
 
   @override
-  String get eventDefaultsPhonePrimaryContact => 'Primary contact (id)';
+  String get eventDefaultsPhonePrimaryContact => 'Κύρια επαφή (id)';
 
   @override
-  String get eventDefaultsHardwareButton => 'Button';
+  String get eventDefaultsHardwareButton => 'Πλήκτρο';
 
   @override
-  String get eventDefaultsHardwarePattern => 'Press pattern';
+  String get eventDefaultsHardwarePattern => 'Μοτίβο πατήματος';
 
   @override
-  String get eventDefaultsHardwarePressCount => 'Press count';
+  String get eventDefaultsHardwarePressCount => 'Αριθμός πατημάτων';
 
   @override
-  String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
+  String get eventDefaultsHardwareLongDuration =>
+      'Διάρκεια παρατεταμένου πατήματος (δ)';
 
   @override
-  String get pastEventsTrashTitle => 'Trash';
+  String get pastEventsTrashTitle => 'Κάδος';
 
   @override
-  String get pastEventsTrashEmpty => 'Trash is empty';
+  String get pastEventsTrashEmpty => 'Ο κάδος είναι άδειος';
 
   @override
-  String get pastEventsTrashEmptyAll => 'Empty trash';
+  String get pastEventsTrashEmptyAll => 'Άδειασμα κάδου';
 
   @override
-  String get pastEventsTrashEmptyAllConfirmTitle => 'Empty trash?';
+  String get pastEventsTrashEmptyAllConfirmTitle => 'Άδειασμα κάδου;';
 
   @override
   String get pastEventsTrashEmptyAllConfirmBody =>
-      'Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.';
+      'Πληκτρολογήστε EMPTY TRASH παρακάτω για επιβεβαίωση. Αυτό διαγράφει οριστικά κάθε αρχείο στον κάδο.';
 
   @override
   String pastEventsTrashEmptyAllSuccess(Object count) {
-    return 'Trash emptied ($count logs)';
+    return 'Ο κάδος άδειασε ($count αρχεία)';
   }
 
   @override
   String pastEventsTrashRetentionNote(int days) {
-    return 'Logs in the trash are permanently deleted after $days days.';
+    return 'Τα αρχεία στον κάδο διαγράφονται οριστικά μετά από $days ημέρες.';
   }
 
   @override
   String pastEventsTrashRemainingDays(int days) {
-    return '$days day(s) until permanent deletion';
+    return '$days ημέρα(ες) έως την οριστική διαγραφή';
   }
 
   @override
-  String get pastEventsTrashDeletePermanently => 'Delete permanently';
+  String get pastEventsTrashDeletePermanently => 'Οριστική διαγραφή';
 
   @override
   String get pastEventsTrashDeletePermanentlyBody =>
-      'This action cannot be undone.';
+      'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.';
 
   @override
   String sessionEmergencyConfirmTitle(String number, int seconds) {
-    return 'Calling $number in ${seconds}s';
+    return 'Κλήση $number σε $secondsδ';
   }
 
   @override
-  String get sessionEmergencyConfirmSwipe => 'Swipe to cancel';
+  String get sessionEmergencyConfirmSwipe => 'Σύρετε για ακύρωση';
 
   @override
-  String get sessionEmergencyConfirmKeep => 'Keep calling';
+  String get sessionEmergencyConfirmKeep => 'Συνέχιση κλήσης';
 
   @override
-  String get sessionEmergencyConfirmSimBadge => '[SIM] Practice mode';
+  String get sessionEmergencyConfirmSimBadge => '[SIM] Λειτουργία εξάσκησης';
 
   @override
   String get sessionEmergencyConfirmSimCancelled =>
-      'Simulated cancel — call would not have been placed';
+      'Προσομοιωμένη ακύρωση — η κλήση δεν θα είχε πραγματοποιηθεί';
 
   @override
-  String get swipeSliderSemantics => 'Swipe to confirm';
+  String get swipeSliderSemantics => 'Σύρετε για επιβεβαίωση';
 }

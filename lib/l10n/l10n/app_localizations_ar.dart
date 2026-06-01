@@ -102,7 +102,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get onboardingSkip => 'تخطي';
 
   @override
-  String get onboardingUseSimNumber => 'Use my SIM number';
+  String get onboardingUseSimNumber => 'استخدام رقم شريحة SIM الخاص بي';
 
   @override
   String onboardingUseSimNumberHint(Object number) {
@@ -110,13 +110,13 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
-  String get onboardingUseSimNumberUnsupported => 'Not available on iOS';
+  String get onboardingUseSimNumberUnsupported => 'غير متاح على نظام iOS';
 
   @override
-  String get onboardingUseSimNumberUnavailable => 'Couldn\'t read number';
+  String get onboardingUseSimNumberUnavailable => 'تعذّرت قراءة الرقم';
 
   @override
-  String get onboardingUseSimNumberPermissionDenied => 'Permission denied';
+  String get onboardingUseSimNumberPermissionDenied => 'تم رفض الإذن';
 
   @override
   String get sessionTitle => 'الجلسة';
@@ -417,38 +417,38 @@ class AppLocalizationsAr extends AppLocalizations {
   String get fakeCallBrandSignal => 'SIGNAL';
 
   @override
-  String get fakeCallBrandAndroid => 'PHONE';
+  String get fakeCallBrandAndroid => 'الهاتف';
 
   @override
-  String get fakeCallBrandIos => 'PHONE';
+  String get fakeCallBrandIos => 'الهاتف';
 
   @override
-  String get fakeCallBrandMinimal => 'CALL';
+  String get fakeCallBrandMinimal => 'مكالمة';
 
   @override
-  String get fakeCallDeclineSafeLabel => 'Decline (I\'m Safe)';
+  String get fakeCallDeclineSafeLabel => 'رفض (أنا بأمان)';
 
   @override
-  String get fakeCallDeclineUnsafeLabel => 'Decline (Stay on alert)';
+  String get fakeCallDeclineUnsafeLabel => 'رفض (البقاء في حالة تأهب)';
 
   @override
-  String get fakeCallHoldForDistress => 'Hold 5s for distress';
+  String get fakeCallHoldForDistress => 'اضغطي مطوّلاً 5 ثوانٍ للاستغاثة';
 
   @override
   String fakeCallVoicePrompt(String name) {
-    return 'TTS prompt: $name';
+    return 'رسالة صوتية: $name';
   }
 
   @override
   String fakeCallVibrationLabel(String pattern) {
-    return 'Vibration: $pattern';
+    return 'الاهتزاز: $pattern';
   }
 
   @override
-  String get fakeCallVibrationPatternDefault => 'default';
+  String get fakeCallVibrationPatternDefault => 'افتراضي';
 
   @override
-  String get fakeCallSlideToAnswerHint => 'Slide to answer';
+  String get fakeCallSlideToAnswerHint => 'اسحبي للرد';
 
   @override
   String fakeCallActiveDuration(String mm, String ss) {
@@ -511,7 +511,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get contactFormIosSmsWarning =>
-      'On iOS, SMS opens the Messages app. You must tap Send manually.';
+      'على نظام iOS، تفتح الرسائل النصية تطبيق الرسائل. عليكِ الضغط على «إرسال» يدويًا.';
 
   @override
   String get modesTitle => 'الأوضاع';
@@ -617,11 +617,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get settingsRedoOnboardingActiveSessionTooltip =>
-      'Cannot redo onboarding during an active session';
+      'لا يمكن إعادة التهيئة أثناء جلسة نشطة';
 
   @override
-  String get settingsEmergencyNumberCountryPickerTitle =>
-      'Choose emergency number';
+  String get settingsEmergencyNumberCountryPickerTitle => 'اختيار رقم الطوارئ';
 
   @override
   String get settingsRedoOnboarding => 'إعادة التهيئة';
@@ -720,407 +719,406 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stealthPresetNone => 'بدون';
 
   @override
-  String get stealthLockTaskLabel => 'Pin app during session';
+  String get stealthLockTaskLabel => 'تثبيت التطبيق أثناء الجلسة';
 
   @override
   String get stealthLockTaskSubtitle =>
-      'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
+      'يمنع مغادرة التطبيق أثناء تشغيل الجلسة. على نظام Android يفعّل هذا تثبيت الشاشة؛ وعلى الأنظمة الأخرى لا يكون له أي تأثير.';
 
   @override
-  String get homeTagline => 'Your angel\'s got your back.';
+  String get homeTagline => 'ملاكك يحرسك.';
 
   @override
-  String get onboardingWelcomeGreeting => 'Hi, I\'m Angela';
+  String get onboardingWelcomeGreeting => 'مرحبًا، أنا أنجيلا';
 
   @override
   String get onboardingWelcomeBodyFull =>
-      'I\'m your personal guardian. I walk with you, watch over your evening out, and take action if something feels wrong.';
+      'أنا حارستك الشخصية. أمشي معك، وأراقب أمسيتك بالخارج، وأتصرّف إذا شعرتُ أن شيئًا ما ليس على ما يُرام.';
 
   @override
-  String get onboardingGetStarted => 'Get started';
+  String get onboardingGetStarted => 'لنبدأ';
 
   @override
-  String get onboardingProfileNameLabel => 'Name';
+  String get onboardingProfileNameLabel => 'الاسم';
 
   @override
-  String get onboardingProfilePhoneLabel => 'Phone number';
+  String get onboardingProfilePhoneLabel => 'رقم الهاتف';
 
   @override
-  String get onboardingProfilePhoneHelper => 'Included in emergency messages.';
+  String get onboardingProfilePhoneHelper => 'يُدرَج في رسائل الطوارئ.';
 
   @override
-  String get onboardingEmergencyContactHeader => 'Emergency contact';
+  String get onboardingEmergencyContactHeader => 'جهة اتصال الطوارئ';
 
   @override
   String get onboardingEmergencyContactPrompt =>
-      'Who should we contact if something goes wrong?';
+      'بمن ينبغي أن نتصل إذا حدث خطب ما؟';
 
   @override
-  String get onboardingEmergencyContactAdd => 'Add emergency contact';
+  String get onboardingEmergencyContactAdd => 'إضافة جهة اتصال للطوارئ';
 
   @override
   String get onboardingPermissionsIntro =>
-      'These permissions keep you safe during sessions.';
+      'تحافظ هذه الأذونات على سلامتك أثناء الجلسات.';
 
   @override
-  String get onboardingPermissionsGrantAll => 'Grant all';
+  String get onboardingPermissionsGrantAll => 'منح الكل';
 
   @override
-  String get onboardingPermissionsRequired => 'REQUIRED';
+  String get onboardingPermissionsRequired => 'مطلوب';
 
   @override
-  String get onboardingPermissionsOptional => 'OPTIONAL';
+  String get onboardingPermissionsOptional => 'اختياري';
 
   @override
-  String get onboardingPermissionsMicrophone => 'Microphone';
+  String get onboardingPermissionsMicrophone => 'الميكروفون';
 
   @override
-  String get onboardingPermissionsCamera => 'Camera';
+  String get onboardingPermissionsCamera => 'الكاميرا';
 
   @override
   String get onboardingPermissionsNotificationDesc =>
-      'Required for session alerts and reminders.';
+      'مطلوب لتنبيهات الجلسة والتذكيرات.';
 
   @override
   String get onboardingPermissionsSmsDesc =>
-      'Required to send emergency text alerts.';
+      'مطلوب لإرسال تنبيهات الطوارئ النصية.';
 
   @override
   String get onboardingPermissionsPhoneDesc =>
-      'Required to make emergency and fake calls.';
+      'مطلوب لإجراء مكالمات الطوارئ والمكالمات الوهمية.';
 
   @override
   String get onboardingPermissionsLocationDesc =>
-      'Included in emergency messages when GPS logging is on.';
+      'يُدرَج في رسائل الطوارئ عند تفعيل تسجيل GPS.';
 
   @override
   String get onboardingPermissionsMicrophoneDesc =>
-      'Used for audio recording during distress.';
+      'يُستخدم لتسجيل الصوت أثناء الاستغاثة.';
 
   @override
-  String get onboardingPermissionsCameraDesc => 'Used for flash SOS signaling.';
+  String get onboardingPermissionsCameraDesc =>
+      'يُستخدم لإشارات الاستغاثة بالفلاش.';
 
   @override
-  String get sessionInterruptedTitle => 'Session interrupted';
+  String get sessionInterruptedTitle => 'تمت مقاطعة الجلسة';
 
   @override
   String get sessionInterruptedBody =>
-      'A session was running when the app stopped. The session state is gone — nothing was restored. We\'re showing this so you know.';
+      'كانت هناك جلسة قيد التشغيل عند توقّف التطبيق. لقد زالت حالة الجلسة — لم تتم استعادة أي شيء. نعرض هذا لإعلامك فقط.';
 
   @override
-  String get sessionInterruptedAcknowledge => 'Acknowledge';
+  String get sessionInterruptedAcknowledge => 'إقرار';
 
   @override
   String sessionInterruptedMode(Object name) {
-    return 'Mode: $name';
+    return 'الوضع: $name';
   }
 
   @override
   String sessionInterruptedStarted(Object time) {
-    return 'Started: $time';
+    return 'البداية: $time';
   }
 
   @override
-  String get sessionGpsDestinationTitle => 'Destination';
+  String get sessionGpsDestinationTitle => 'الوجهة';
 
   @override
   String get sessionGpsDestinationBody =>
-      'Enter the destination coordinates for the GPS arrival disarm trigger.';
+      'أدخلي إحداثيات الوجهة لمحفّز إلغاء التأهب عند الوصول عبر GPS.';
 
   @override
-  String get sessionGpsDestinationLat => 'Latitude';
+  String get sessionGpsDestinationLat => 'خط العرض';
 
   @override
-  String get sessionGpsDestinationLng => 'Longitude';
+  String get sessionGpsDestinationLng => 'خط الطول';
 
   @override
-  String get sessionGpsDestinationSkip => 'Skip for this session';
+  String get sessionGpsDestinationSkip => 'تخطّي لهذه الجلسة';
 
   @override
-  String get sessionGpsDestinationConfirm => 'Use destination';
+  String get sessionGpsDestinationConfirm => 'استخدام الوجهة';
 
   @override
-  String get sessionEndOverlayTitle => 'End session?';
+  String get sessionEndOverlayTitle => 'إنهاء الجلسة؟';
 
   @override
-  String get sessionEndOverlayBody =>
-      'Swipe to confirm you want to end the session';
+  String get sessionEndOverlayBody => 'اسحبي للتأكيد أنك تريدين إنهاء الجلسة';
 
   @override
-  String get sessionEndOverlaySwipeLabel => 'Swipe to end';
+  String get sessionEndOverlaySwipeLabel => 'اسحبي للإنهاء';
 
   @override
-  String get sessionEndOverlaySimBadge => '[SIM] Practice mode';
+  String get sessionEndOverlaySimBadge => '[SIM] وضع التدريب';
 
   @override
-  String get sessionEndPinPromptTitle => 'Enter Session End PIN';
+  String get sessionEndPinPromptTitle => 'أدخلي رمز PIN إنهاء الجلسة';
 
   @override
   String get sessionEndPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+      'استخدمي رمز PIN إنهاء الجلسة، وليس رمز قفل التطبيق.';
 
   @override
-  String get sessionEndPinIncorrect => 'Incorrect PIN';
+  String get sessionEndPinIncorrect => 'رمز PIN غير صحيح';
 
   @override
-  String get sessionEndPinSimSkip => 'Skip (sim only)';
+  String get sessionEndPinSimSkip => 'تخطّي (المحاكاة فقط)';
 
   @override
   String get sessionEndSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+      'كانت سلسلة الاستغاثة ستنطلق (5 رموز PIN خاطئة)';
 
   @override
-  String get distressConfirmTitle => 'Distress activated';
+  String get distressConfirmTitle => 'تم تفعيل الاستغاثة';
 
   @override
   String distressConfirmCountdown(int seconds) {
-    return 'Tap to cancel — you have $seconds seconds';
+    return 'اضغطي للإلغاء — لديك $seconds ثانية';
   }
 
   @override
-  String get distressConfirmCancel => 'Tap to cancel';
+  String get distressConfirmCancel => 'اضغطي للإلغاء';
 
   @override
   String get distressConfirmFooter =>
-      'If not cancelled, distress chain will begin immediately.';
+      'إذا لم يتم الإلغاء، فستبدأ سلسلة الاستغاثة فورًا.';
 
   @override
-  String get distressCancelPinPromptTitle => 'Enter Session End PIN';
+  String get distressCancelPinPromptTitle => 'أدخلي رمز PIN إنهاء الجلسة';
 
   @override
   String distressCancelPinTimeoutLabel(int seconds) {
-    return '${seconds}s remaining';
+    return 'تبقّى $seconds ث';
   }
 
   @override
-  String get distressCancelPinIncorrect => 'Incorrect PIN';
+  String get distressCancelPinIncorrect => 'رمز PIN غير صحيح';
 
   @override
   String get distressCancelPinAppPinMismatch =>
-      'Use the Session End PIN, not the app lock PIN.';
+      'استخدمي رمز PIN إنهاء الجلسة، وليس رمز قفل التطبيق.';
 
   @override
-  String get distressCancelPinSimSkip => 'Skip (sim only)';
+  String get distressCancelPinSimSkip => 'تخطّي (المحاكاة فقط)';
 
   @override
   String get distressCancelSimDistressWouldFire =>
-      'Distress chain would fire (5 wrong PINs)';
+      'كانت سلسلة الاستغاثة ستنطلق (5 رموز PIN خاطئة)';
 
   @override
-  String get distressCancelPinBack => 'Cancel';
+  String get distressCancelPinBack => 'إلغاء';
 
   @override
-  String get simulationPinPromptTitle => 'Enter PIN';
+  String get simulationPinPromptTitle => 'أدخلي رمز PIN';
 
   @override
-  String get simulationPinPromptBody =>
-      'Practice entering your Session End PIN';
+  String get simulationPinPromptBody => 'تدرّبي على إدخال رمز PIN إنهاء الجلسة';
 
   @override
-  String get simulationPinPromptSkip => 'Skip';
+  String get simulationPinPromptSkip => 'تخطّي';
 
   @override
-  String get simulationPinIncorrect => 'Incorrect PIN';
+  String get simulationPinIncorrect => 'رمز PIN غير صحيح';
 
   @override
   String simulationSummaryDuration(String duration) {
-    return 'Duration: $duration';
+    return 'المدة: $duration';
   }
 
   @override
-  String get simulationSummaryTimelineHeader => 'Event timeline';
+  String get simulationSummaryTimelineHeader => 'الجدول الزمني للأحداث';
 
   @override
-  String get simulationSummaryShare => 'Share';
+  String get simulationSummaryShare => 'مشاركة';
 
   @override
   String simulationSummaryMissedEventsBadge(int count) {
-    return 'Missed: $count';
+    return 'فائت: $count';
   }
 
   @override
   String simulationSummaryDistressBadge(int count) {
-    return 'Distress: $count';
+    return 'الاستغاثة: $count';
   }
 
   @override
   String simulationSummaryStepsFiredBadge(int count) {
-    return 'Steps fired: $count';
+    return 'الخطوات المنطلقة: $count';
   }
 
   @override
-  String get simulationSummaryShareSubject =>
-      'Guardian Angela simulation summary';
+  String get simulationSummaryShareSubject => 'ملخص محاكاة Guardian Angela';
 
   @override
-  String get notificationsChannelAlarm => 'Alarm escalation';
+  String get notificationsChannelAlarm => 'تصعيد الإنذار';
 
   @override
   String get notificationsChannelAlarmDescription =>
-      'Critical alerts that bypass DND';
+      'تنبيهات حرجة تتجاوز وضع «عدم الإزعاج»';
 
   @override
-  String get notificationsChannelReminder => 'Disguised reminder';
+  String get notificationsChannelReminder => 'تذكير مموَّه';
 
   @override
   String get notificationsChannelReminderDescription =>
-      'Check-in reminders during active session';
+      'تذكيرات تسجيل الوصول أثناء الجلسة النشطة';
 
   @override
-  String get notificationsChannelFakeCall => 'Fake call';
+  String get notificationsChannelFakeCall => 'مكالمة وهمية';
 
   @override
   String get notificationsChannelFakeCallDescription =>
-      'Full-screen incoming-call notifications';
+      'إشعارات مكالمة واردة بملء الشاشة';
 
   @override
-  String get notificationsChannelEnabled => 'Enabled';
+  String get notificationsChannelEnabled => 'مفعّل';
 
   @override
-  String get notificationsChannelDisabled => 'Disabled';
+  String get notificationsChannelDisabled => 'معطّل';
 
   @override
-  String get notificationsChannelsHeader => 'Notification channels';
+  String get notificationsChannelsHeader => 'قنوات الإشعارات';
 
   @override
-  String get contactsImportFromDevice => 'Import from contacts';
+  String get contactsImportFromDevice => 'استيراد من جهات الاتصال';
 
   @override
-  String get contactsImportNotSupported => 'Not available on this platform';
+  String get contactsImportNotSupported => 'غير متاح على هذه المنصة';
 
   @override
   String get contactsImportPermissionDenied =>
-      'Contact access denied. Enable in system settings.';
+      'تم رفض الوصول إلى جهات الاتصال. فعّليه من إعدادات النظام.';
 
   @override
-  String get contactsDeleteAllMenu => 'Delete all';
+  String get contactsDeleteAllMenu => 'حذف الكل';
 
   @override
-  String get contactsDeleteAllConfirmTitle => 'Delete all contacts?';
+  String get contactsDeleteAllConfirmTitle => 'حذف جميع جهات الاتصال؟';
 
   @override
   String get contactsDeleteAllConfirmBody =>
-      'This removes every emergency contact. There is no undo.';
+      'يؤدّي هذا إلى إزالة كل جهات اتصال الطوارئ. لا يمكن التراجع عن ذلك.';
 
   @override
-  String get contactsDeleteAllTypeConfirmTitle => 'Confirm by typing';
+  String get contactsDeleteAllTypeConfirmTitle => 'التأكيد بالكتابة';
 
   @override
-  String get contactsDeleteAllTypeConfirmHint => 'Type DELETE ALL to continue';
+  String get contactsDeleteAllTypeConfirmHint => 'اكتبي DELETE ALL للمتابعة';
 
   @override
   String get contactsDeleteAllTypeConfirmSentinel => 'DELETE ALL';
 
   @override
-  String get contactsDeleteAllConfirmButton => 'Delete all';
+  String get contactsDeleteAllConfirmButton => 'حذف الكل';
 
   @override
-  String get modesBuiltinBadge => 'Built-in';
+  String get modesBuiltinBadge => 'مضمَّن';
 
   @override
-  String get modesBuiltinNoDelete => 'Built-in modes cannot be deleted';
+  String get modesBuiltinNoDelete => 'لا يمكن حذف الأوضاع المضمَّنة';
 
   @override
-  String get sessionCompletedSimulationBanner => 'Simulation completed';
+  String get sessionCompletedSimulationBanner => 'اكتملت المحاكاة';
 
   @override
-  String get sessionCompletedViewEventLog => 'View event log';
+  String get sessionCompletedViewEventLog => 'عرض سجل الأحداث';
 
   @override
-  String get settingsGeneralHeader => 'General';
+  String get settingsGeneralHeader => 'عام';
 
   @override
-  String get settingsAppHeader => 'App';
+  String get settingsAppHeader => 'التطبيق';
 
   @override
-  String get settingsConfigurationHeader => 'Configuration';
+  String get settingsConfigurationHeader => 'الإعدادات';
 
   @override
-  String get settingsThemeLabel => 'Theme';
+  String get settingsThemeLabel => 'السمة';
 
   @override
-  String get settingsLanguageLabel => 'Language';
+  String get settingsLanguageLabel => 'اللغة';
 
   @override
-  String get settingsSecurityRow => 'Security';
+  String get settingsSecurityRow => 'الأمان';
 
   @override
-  String get settingsSecuritySubtitle => 'App PIN, Session End PIN, Duress PIN';
+  String get settingsSecuritySubtitle =>
+      'رمز PIN التطبيق، رمز PIN إنهاء الجلسة، رمز PIN الإكراه';
 
   @override
-  String get settingsStealthRow => 'Stealth';
+  String get settingsStealthRow => 'التخفّي';
 
   @override
-  String get settingsStealthSummaryOff => 'Stealth: OFF';
+  String get settingsStealthSummaryOff => 'التخفّي: مُعطَّل';
 
   @override
-  String get settingsStealthSummaryOn => 'Stealth: ON';
+  String get settingsStealthSummaryOn => 'التخفّي: مُفعَّل';
 
   @override
-  String get settingsProfileRow => 'Profile';
+  String get settingsProfileRow => 'الملف الشخصي';
 
   @override
-  String get settingsModesRow => 'Modes';
+  String get settingsModesRow => 'الأوضاع';
 
   @override
-  String get settingsDistressModesRow => 'Distress modes';
+  String get settingsDistressModesRow => 'أوضاع الاستغاثة';
 
   @override
-  String get settingsBatteryAlertRow => 'Battery alert';
+  String get settingsBatteryAlertRow => 'تنبيه البطارية';
 
   @override
-  String get settingsEventDefaultsRow => 'Event defaults';
+  String get settingsEventDefaultsRow => 'افتراضيات الخطوات';
 
   @override
-  String get settingsGpsLoggingRow => 'GPS logging';
+  String get settingsGpsLoggingRow => 'تسجيل GPS';
 
   @override
-  String get settingsRemindersRow => 'Reminder templates';
+  String get settingsRemindersRow => 'قوالب التذكير';
 
   @override
-  String get settingsNotificationsRow => 'Notifications';
+  String get settingsNotificationsRow => 'الإشعارات';
 
   @override
-  String get settingsHistoryRetentionRow => 'History & retention';
+  String get settingsHistoryRetentionRow => 'السجل والاحتفاظ';
 
   @override
-  String get settingsAboutRow => 'About';
+  String get settingsAboutRow => 'حول التطبيق';
 
   @override
-  String get settingsFeedbackRow => 'Send feedback';
+  String get settingsFeedbackRow => 'إرسال التعليقات';
 
   @override
-  String get settingsBackupRow => 'Backup & restore';
+  String get settingsBackupRow => 'النسخ الاحتياطي والاستعادة';
 
   @override
-  String get settingsOssLicenses => 'Open source licenses';
+  String get settingsOssLicenses => 'تراخيص المصادر المفتوحة';
 
   @override
   String get settingsImportConfirmBody =>
-      'This will overwrite all current data. Continue?';
+      'سيؤدّي هذا إلى الكتابة فوق جميع البيانات الحالية. هل تريدين المتابعة؟';
 
   @override
-  String get securityAppPinTitle => 'App PIN';
+  String get securityAppPinTitle => 'رمز PIN التطبيق';
 
   @override
-  String get securityAppPinBody => 'Locks the app each time you open it.';
+  String get securityAppPinBody => 'يقفل التطبيق في كل مرة تفتحينه فيها.';
 
   @override
-  String get securitySessionEndPinTitle => 'Session End PIN';
+  String get securitySessionEndPinTitle => 'رمز PIN إنهاء الجلسة';
 
   @override
   String get securitySessionEndPinBody =>
-      'Required to disarm or end a running session.';
+      'مطلوب لإلغاء تأهب جلسة قيد التشغيل أو إنهائها.';
 
   @override
-  String get securityDuressPinTitle => 'Duress PIN';
+  String get securityDuressPinTitle => 'رمز PIN الإكراه';
 
   @override
   String get securityDuressPinBody =>
-      'Entered at any prompt to silently fire the distress chain.';
+      'يُدخَل عند أي مطالبة لإطلاق سلسلة الاستغاثة بصمت.';
 
   @override
-  String get securityRemovePin => 'Remove';
+  String get securityRemovePin => 'إزالة';
 
   @override
   String get securityRemovePinPrompt => 'أدخل رمز PIN الحالي لإزالته.';
@@ -1129,705 +1127,703 @@ class AppLocalizationsAr extends AppLocalizations {
   String get securityRemovePinIncorrect => 'رمز PIN غير صحيح';
 
   @override
-  String get securityWhatIsThis => 'What is this?';
+  String get securityWhatIsThis => 'ما هذا؟';
 
   @override
   String get securityAppPinInfo =>
-      'Locks the app when you open it. The keypad appears before any screen. Useful if someone briefly handles your unlocked phone.';
+      'يقفل التطبيق عند فتحه. تظهر لوحة المفاتيح قبل أي شاشة. مفيد إذا تعامل أحدهم لفترة وجيزة مع هاتفك غير المقفل.';
 
   @override
   String get securitySessionEndPinInfo =>
-      'Required to disarm or end a running safety session. Without it, an attacker who takes your phone cannot stop the chain. Set a different code from your App PIN.';
+      'مطلوب لإلغاء تأهب جلسة أمان قيد التشغيل أو إنهائها. وبدونه، لا يستطيع مهاجم يأخذ هاتفك إيقاف السلسلة. اختاري رمزًا مختلفًا عن رمز PIN التطبيق.';
 
   @override
   String get securityDuressPinInfo =>
-      'If you ever enter this PIN at any prompt, the distress chain runs silently — your contacts get alerted and the alarm primes without the attacker noticing. Pick a code different from every other PIN.';
+      'إذا أدخلتِ هذا الرمز عند أي مطالبة، فإن سلسلة الاستغاثة تعمل بصمت — يتم تنبيه جهات اتصالك ويتهيّأ الإنذار دون أن يلاحظ المهاجم. اختاري رمزًا مختلفًا عن كل رمز PIN آخر.';
 
   @override
-  String get securityPinTimeoutLabel => 'PIN timeout (seconds)';
+  String get securityPinTimeoutLabel => 'مهلة رمز PIN (ثوانٍ)';
 
   @override
   String get securityWrongPinThresholdLabel =>
-      'Wrong PIN attempts before escalation';
+      'عدد محاولات رمز PIN الخاطئة قبل التصعيد';
 
   @override
   String get securityDeceptiveDialogToggle =>
-      'Show deceptive dialog on wrong PIN';
+      'عرض مربّع حوار خادع عند رمز PIN خاطئ';
 
   @override
-  String get pinSetupEnterNew => 'Enter new PIN';
+  String get pinSetupEnterNew => 'أدخلي رمز PIN جديدًا';
 
   @override
-  String get pinSetupConfirmNew => 'Confirm new PIN';
+  String get pinSetupConfirmNew => 'أكّدي رمز PIN الجديد';
 
   @override
-  String get pinSetupTooShort => 'PIN must be at least 4 digits.';
+  String get pinSetupTooShort => 'يجب أن يتكوّن رمز PIN من 4 أرقام على الأقل.';
 
   @override
-  String get pinSetupCollision =>
-      'This PIN conflicts with another configured PIN.';
+  String get pinSetupCollision => 'يتعارض رمز PIN هذا مع رمز PIN آخر مُكوَّن.';
 
   @override
-  String get pinSetupSaved => 'PIN saved';
+  String get pinSetupSaved => 'تم حفظ رمز PIN';
 
   @override
-  String get stealthEnabledLabel => 'Enable stealth';
+  String get stealthEnabledLabel => 'تفعيل التخفّي';
 
   @override
-  String get stealthFakeNameLabel => 'Fake app name';
+  String get stealthFakeNameLabel => 'اسم تطبيق مزيّف';
 
   @override
-  String get stealthFakeIconLabel => 'Fake icon';
+  String get stealthFakeIconLabel => 'أيقونة مزيّفة';
 
   @override
-  String get stealthNotificationDisguiseLabel => 'Notification disguise';
+  String get stealthNotificationDisguiseLabel => 'تمويه الإشعارات';
 
   @override
-  String get stealthTimerDisplayLabel => 'Timer display';
+  String get stealthTimerDisplayLabel => 'عرض المؤقّت';
 
   @override
-  String get stealthSessionScreenLabel => 'Session screen stealth';
+  String get stealthSessionScreenLabel => 'تخفّي شاشة الجلسة';
 
   @override
-  String get gpsLoggingEnabled => 'Log GPS during sessions';
+  String get gpsLoggingEnabled => 'تسجيل GPS أثناء الجلسات';
 
   @override
-  String get gpsLoggingIntervalLabel => 'Interval';
+  String get gpsLoggingIntervalLabel => 'الفاصل الزمني';
 
   @override
-  String get gpsLoggingAccuracyLabel => 'Accuracy';
+  String get gpsLoggingAccuracyLabel => 'الدقّة';
 
   @override
-  String get gpsLoggingAccuracyHigh => 'High';
+  String get gpsLoggingAccuracyHigh => 'عالية';
 
   @override
-  String get gpsLoggingAccuracyBalanced => 'Balanced';
+  String get gpsLoggingAccuracyBalanced => 'متوازنة';
 
   @override
-  String get gpsLoggingAccuracyLow => 'Low';
+  String get gpsLoggingAccuracyLow => 'منخفضة';
 
   @override
-  String get gpsLoggingFormatLabel => 'Coordinate format';
+  String get gpsLoggingFormatLabel => 'تنسيق الإحداثيات';
 
   @override
-  String get gpsLoggingFormatDecimal => 'Decimal';
+  String get gpsLoggingFormatDecimal => 'عشري';
 
   @override
-  String get gpsLoggingFormatDms => 'DMS';
+  String get gpsLoggingFormatDms => 'درجات ودقائق وثوانٍ';
 
   @override
   String get gpsLoggingFormatAddress => 'Plus Code';
 
   @override
-  String get gpsLoggingIncludeInSms => 'Append location to SMS';
+  String get gpsLoggingIncludeInSms => 'إلحاق الموقع بالرسالة النصية';
 
   @override
-  String get historyRetentionLogsLabel => 'Session log retention (days)';
+  String get historyRetentionLogsLabel => 'مدة الاحتفاظ بسجل الجلسة (أيام)';
 
   @override
   String get historyRetentionLogsHelper =>
-      'Logs older than this move into the trash.';
+      'تنتقل السجلات الأقدم من ذلك إلى سلة المهملات.';
 
   @override
-  String get historyRetentionTrashLabel => 'Trash retention (days)';
+  String get historyRetentionTrashLabel => 'مدة الاحتفاظ بسلة المهملات (أيام)';
 
   @override
   String get historyRetentionTrashHelper =>
-      'Trashed logs are permanently deleted after this window.';
+      'تُحذف السجلات الموجودة في سلة المهملات نهائيًا بعد هذه المدة.';
 
   @override
-  String get historyRetentionUpdated => 'Retention updated';
+  String get historyRetentionUpdated => 'تم تحديث مدة الاحتفاظ';
 
   @override
-  String get historyRetentionPurgeNow => 'Purge now';
+  String get historyRetentionPurgeNow => 'التطهير الآن';
 
   @override
   String historyRetentionPurged(Object count) {
-    return 'Purged $count logs';
+    return 'تم تطهير $count من السجلات';
   }
 
   @override
-  String get batteryAlertEnableLabel => 'Enable battery alert';
+  String get batteryAlertEnableLabel => 'تفعيل تنبيه البطارية';
 
   @override
-  String get batteryAlertThresholdLabel => 'Battery threshold (%)';
+  String get batteryAlertThresholdLabel => 'حدّ البطارية (%)';
 
   @override
-  String get batteryAlertChainHeader => 'Alert chain';
+  String get batteryAlertChainHeader => 'سلسلة التنبيه';
 
   @override
-  String get batteryAlertResetChain => 'Reset';
+  String get batteryAlertResetChain => 'إعادة تعيين';
 
   @override
-  String get eventDefaultsCheckInHeader => 'Check-in methods';
+  String get eventDefaultsCheckInHeader => 'طرق تسجيل الوصول';
 
   @override
-  String get eventDefaultsEscalationHeader => 'Escalation steps';
+  String get eventDefaultsEscalationHeader => 'خطوات التصعيد';
 
   @override
-  String get eventDefaultsPanicHeader => 'Panic trigger';
+  String get eventDefaultsPanicHeader => 'محفّز الذعر';
 
   @override
-  String get templatesCreate => 'Create template';
+  String get templatesCreate => 'إنشاء قالب';
 
   @override
-  String get templatesEditTitle => 'Edit template';
+  String get templatesEditTitle => 'تعديل القالب';
 
   @override
-  String get templatesCreateTitle => 'New template';
+  String get templatesCreateTitle => 'قالب جديد';
 
   @override
-  String get templatesNameLabel => 'Name';
+  String get templatesNameLabel => 'الاسم';
 
   @override
-  String get templatesTitleLabel => 'Title';
+  String get templatesTitleLabel => 'العنوان';
 
   @override
-  String get templatesBodyLabel => 'Body';
+  String get templatesBodyLabel => 'النص';
 
   @override
-  String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
+  String get templatesBuiltinNoDelete => 'لا يمكن حذف القوالب المضمَّنة';
 
   @override
-  String get templatesAddFromTemplate => 'From template';
+  String get templatesAddFromTemplate => 'من قالب';
 
   @override
-  String get templatesAddFromScratch => 'From scratch';
+  String get templatesAddFromScratch => 'من الصفر';
 
   @override
   String templatesDeleteConfirmTitle(Object name) {
-    return 'Delete \"$name\"?';
+    return 'حذف \"$name\"؟';
   }
 
   @override
-  String get templatesDeleteConfirmBody =>
-      'This template will be removed permanently.';
+  String get templatesDeleteConfirmBody => 'ستتم إزالة هذا القالب نهائيًا.';
 
   @override
-  String get templatesEmptyAddFirst => 'Add your first template';
+  String get templatesEmptyAddFirst => 'أضيفي قالبك الأول';
 
   @override
-  String get templatesPickFromBuiltinTitle => 'Pick a built-in template';
+  String get templatesPickFromBuiltinTitle => 'اختاري قالبًا مضمَّنًا';
 
   @override
-  String get templatesIconLabel => 'Icon';
+  String get templatesIconLabel => 'الأيقونة';
 
   @override
-  String get templatesIconCalendar => 'Calendar';
+  String get templatesIconCalendar => 'التقويم';
 
   @override
-  String get templatesIconAppNotification => 'App notification';
+  String get templatesIconAppNotification => 'إشعار تطبيق';
 
   @override
-  String get templatesIconFitness => 'Fitness';
+  String get templatesIconFitness => 'اللياقة';
 
   @override
-  String get templatesIconHealth => 'Health';
+  String get templatesIconHealth => 'الصحة';
 
   @override
-  String get templatesIconFood => 'Food';
+  String get templatesIconFood => 'الطعام';
 
   @override
-  String get templatesIconCoffee => 'Coffee';
+  String get templatesIconCoffee => 'قهوة';
 
   @override
-  String get templatesIconBattery => 'Battery';
+  String get templatesIconBattery => 'البطارية';
 
   @override
-  String get templatesIconWeather => 'Weather';
+  String get templatesIconWeather => 'الطقس';
 
   @override
-  String get templatesPreviewHeading => 'Live preview';
+  String get templatesPreviewHeading => 'معاينة مباشرة';
 
   @override
-  String get templatesDiscardChangesTitle => 'Discard changes?';
+  String get templatesDiscardChangesTitle => 'تجاهل التغييرات؟';
 
   @override
-  String get templatesDiscardChangesBody => 'Unsaved edits will be lost.';
+  String get templatesDiscardChangesBody => 'ستُفقد التعديلات غير المحفوظة.';
 
   @override
-  String get templatesDiscardKeep => 'Keep editing';
+  String get templatesDiscardKeep => 'متابعة التحرير';
 
   @override
-  String get templatesDiscardDiscard => 'Discard';
+  String get templatesDiscardDiscard => 'تجاهل';
 
   @override
-  String get notificationsTitle => 'Notifications';
+  String get notificationsTitle => 'الإشعارات';
 
   @override
-  String get notificationsStatusGranted => 'Granted';
+  String get notificationsStatusGranted => 'ممنوح';
 
   @override
-  String get notificationsStatusDenied => 'Denied';
+  String get notificationsStatusDenied => 'مرفوض';
 
   @override
-  String get notificationsStatusUnknown => 'Not yet asked';
+  String get notificationsStatusUnknown => 'لم يُطلب بعد';
 
   @override
-  String get notificationsRequest => 'Request permission';
+  String get notificationsRequest => 'طلب الإذن';
 
   @override
-  String get notificationsOpenSettings => 'Open system settings';
+  String get notificationsOpenSettings => 'فتح إعدادات النظام';
 
   @override
-  String get profileFieldPhone => 'Phone number';
+  String get profileFieldPhone => 'رقم الهاتف';
 
   @override
-  String get profileFieldDescription => 'Physical description';
+  String get profileFieldDescription => 'الوصف الجسدي';
 
   @override
-  String get profileFieldMedicalConditions => 'Medical conditions';
+  String get profileFieldMedicalConditions => 'الحالات الطبية';
 
   @override
-  String get profileFieldEmergencyInstructions => 'Emergency instructions';
+  String get profileFieldEmergencyInstructions => 'تعليمات الطوارئ';
 
   @override
-  String get aboutAuthor => 'Author: Jonas Eschle';
+  String get aboutAuthor => 'المؤلف: Jonas Eschle';
 
   @override
   String get aboutEmail => 'guardian.angela.app@gmail.com';
 
   @override
-  String get aboutPrivacyPolicy => 'Privacy policy';
+  String get aboutPrivacyPolicy => 'سياسة الخصوصية';
 
   @override
-  String get aboutTermsOfService => 'Terms of service';
+  String get aboutTermsOfService => 'شروط الخدمة';
 
   @override
-  String get aboutSourceCode => 'Source code';
+  String get aboutSourceCode => 'الكود المصدري';
 
   @override
-  String get aboutSupport => 'Support / donate';
+  String get aboutSupport => 'الدعم / التبرّع';
 
   @override
-  String get aboutLicenses => 'Open source licenses';
+  String get aboutLicenses => 'تراخيص المصادر المفتوحة';
 
   @override
-  String get aboutTagline => 'Made with love for LGBTQ+ safety.';
+  String get aboutTagline => 'صُنع بحب من أجل سلامة مجتمع الميم.';
 
   @override
-  String get aboutTechnicalSection => 'Technical information';
+  String get aboutTechnicalSection => 'المعلومات التقنية';
 
   @override
   String aboutBundleId(Object id) {
-    return 'Bundle ID: $id';
+    return 'معرّف الحزمة: $id';
   }
 
   @override
   String aboutPlatforms(Object list) {
-    return 'Platforms: $list';
+    return 'المنصّات: $list';
   }
 
   @override
-  String get feedbackHeading => 'We\'d love to hear from you';
+  String get feedbackHeading => 'يسعدنا أن نسمع منك';
 
   @override
-  String get feedbackCategoryLabel => 'Category';
+  String get feedbackCategoryLabel => 'الفئة';
 
   @override
-  String get feedbackCategoryBug => 'Bug report';
+  String get feedbackCategoryBug => 'بلاغ عن خلل';
 
   @override
-  String get feedbackCategoryFeature => 'Feature request';
+  String get feedbackCategoryFeature => 'طلب ميزة';
 
   @override
-  String get feedbackCategoryOther => 'Other';
+  String get feedbackCategoryOther => 'أخرى';
 
   @override
-  String get feedbackEmailLabel => 'Email (optional)';
+  String get feedbackEmailLabel => 'البريد الإلكتروني (اختياري)';
 
   @override
-  String get feedbackMessageLabel => 'Message';
+  String get feedbackMessageLabel => 'الرسالة';
 
   @override
-  String get feedbackIncludeLog => 'Include last session log';
+  String get feedbackIncludeLog => 'تضمين سجل آخر جلسة';
 
   @override
-  String get feedbackSent => 'Thanks for your feedback!';
+  String get feedbackSent => 'شكرًا لك على ملاحظاتك!';
 
   @override
   String get feedbackMessageRequired =>
-      'Message must be at least 10 characters.';
+      'يجب أن تتكوّن الرسالة من 10 أحرف على الأقل.';
 
   @override
-  String get backupIncludeLogs => 'Include session logs';
+  String get backupIncludeLogs => 'تضمين سجلات الجلسات';
 
   @override
-  String get backupIncludeMedia => 'Include media';
+  String get backupIncludeMedia => 'تضمين الوسائط';
 
   @override
-  String get backupExportButton => 'Export';
+  String get backupExportButton => 'تصدير';
 
   @override
-  String get backupImportButton => 'Import';
+  String get backupImportButton => 'استيراد';
 
   @override
-  String get backupOverwriteWarning => 'Importing overwrites all current data.';
+  String get backupOverwriteWarning =>
+      'يؤدّي الاستيراد إلى الكتابة فوق جميع البيانات الحالية.';
 
   @override
-  String get backupImportSuccess => 'Import complete. Restart to apply.';
+  String get backupImportSuccess => 'اكتمل الاستيراد. أعيدي التشغيل للتطبيق.';
 
   @override
   String backupImportError(Object message) {
-    return 'Import failed: $message';
+    return 'فشل الاستيراد: $message';
   }
 
   @override
   String get backupActiveSessionBanner =>
-      'Backup is unavailable during an active session.';
+      'النسخ الاحتياطي غير متاح أثناء جلسة نشطة.';
 
   @override
   String backupLastBackupAtLabel(Object when) {
-    return 'Last backup at $when';
+    return 'آخر نسخة احتياطية في $when';
   }
 
   @override
-  String get backupNeverExportedLabel => 'No backup yet';
+  String get backupNeverExportedLabel => 'لا توجد نسخة احتياطية بعد';
 
   @override
-  String get pastEventsTitle => 'Past sessions';
+  String get pastEventsTitle => 'الجلسات السابقة';
 
   @override
-  String get pastEventsTabReal => 'Real';
+  String get pastEventsTabReal => 'حقيقية';
 
   @override
-  String get pastEventsTabSimulated => 'Simulated';
+  String get pastEventsTabSimulated => 'محاكاة';
 
   @override
-  String get pastEventsEmpty => 'No sessions yet';
+  String get pastEventsEmpty => 'لا توجد جلسات بعد';
 
   @override
-  String get pastEventsDeleteConfirm => 'Delete session log?';
+  String get pastEventsDeleteConfirm => 'حذف سجل الجلسة؟';
 
   @override
-  String get pastEventsDetailShareText => 'Share as text';
+  String get pastEventsDetailShareText => 'مشاركة كنص';
 
   @override
-  String get pastEventsDetailSharePdf => 'Share as PDF';
+  String get pastEventsDetailSharePdf => 'مشاركة كملف PDF';
 
   @override
-  String get pastEventsDetailDelete => 'Delete';
+  String get pastEventsDetailDelete => 'حذف';
 
   @override
-  String get pastEventsOutcomeCompleted => 'Completed';
+  String get pastEventsOutcomeCompleted => 'مكتملة';
 
   @override
-  String get pastEventsOutcomeDistress => 'Distress';
+  String get pastEventsOutcomeDistress => 'استغاثة';
 
   @override
-  String get pastEventsOutcomeInterrupted => 'Interrupted';
+  String get pastEventsOutcomeInterrupted => 'متقطّعة';
 
   @override
-  String get pastEventsTrash => 'Trash';
+  String get pastEventsTrash => 'سلة المهملات';
 
   @override
-  String get pastEventsUndo => 'Undo';
+  String get pastEventsUndo => 'تراجع';
 
   @override
-  String get pastEventsSoftDeleted => 'Moved to trash';
+  String get pastEventsSoftDeleted => 'نُقل إلى سلة المهملات';
 
   @override
-  String get pastEventsDetailTitle => 'Session log';
+  String get pastEventsDetailTitle => 'سجل الجلسة';
 
   @override
-  String get pastEventsDetailShare => 'Share';
+  String get pastEventsDetailShare => 'مشاركة';
 
   @override
-  String get contactUnsavedDiscardTitle => 'Discard unsaved changes?';
+  String get contactUnsavedDiscardTitle => 'تجاهل التغييرات غير المحفوظة؟';
 
   @override
-  String get contactUnsavedDiscardKeep => 'Keep editing';
+  String get contactUnsavedDiscardKeep => 'متابعة التحرير';
 
   @override
-  String get contactUnsavedDiscardDiscard => 'Discard';
+  String get contactUnsavedDiscardDiscard => 'تجاهل';
 
   @override
-  String get modesDuplicate => 'Duplicate';
+  String get modesDuplicate => 'تكرار';
 
   @override
-  String get modesDeleteConfirmTitle => 'Delete mode?';
+  String get modesDeleteConfirmTitle => 'حذف الوضع؟';
 
   @override
   String modesDeleteConfirmBody(Object name) {
-    return '$name will be permanently removed.';
+    return 'ستتم إزالة $name نهائيًا.';
   }
 
   @override
-  String get modesDistressDefaultBadge => 'Default';
+  String get modesDistressDefaultBadge => 'افتراضي';
 
   @override
-  String get modesDistressSetDefault => 'Set as default';
+  String get modesDistressSetDefault => 'تعيين كافتراضي';
 
   @override
   String get modesDistressCantDeleteLast =>
-      'At least one distress mode is required.';
+      'يلزم وجود وضع استغاثة واحد على الأقل.';
 
   @override
-  String get modesDistressInUse =>
-      'This distress mode is in use by another mode.';
+  String get modesDistressInUse => 'وضع الاستغاثة هذا مستخدَم من قِبل وضع آخر.';
 
   @override
-  String get modesDistressTitle => 'Distress modes';
+  String get modesDistressTitle => 'أوضاع الاستغاثة';
 
   @override
-  String get validationNameTooShort => 'Name must be at least 2 characters.';
+  String get validationNameTooShort =>
+      'يجب أن يتكوّن الاسم من حرفين على الأقل.';
 
   @override
-  String get validationPhoneRequired => 'Phone number is required.';
+  String get validationPhoneRequired => 'رقم الهاتف مطلوب.';
 
   @override
-  String get validationChannelsRequired => 'Select at least one channel.';
+  String get validationChannelsRequired => 'اختاري قناة واحدة على الأقل.';
 
   @override
-  String get sessionHoldTouchToBegin => 'Touch to begin';
+  String get sessionHoldTouchToBegin => 'المسي للبدء';
 
   @override
   String sessionHoldReleaseCountdown(Object seconds) {
-    return 'Countdown: ${seconds}s';
+    return 'العد التنازلي: $seconds ث';
   }
 
   @override
   String sessionHoldGraceCountdown(Object seconds) {
-    return 'Grace: ${seconds}s — re-hold to stay safe';
+    return 'فترة السماح: $seconds ث — أعيدي الضغط المطوّل لتبقي بأمان';
   }
 
   @override
-  String get sessionHoldAgain => 'Hold again to stay safe';
+  String get sessionHoldAgain => 'اضغطي مطوّلاً مرة أخرى لتبقي بأمان';
 
   @override
   String sessionStepNextCheckIn(Object time) {
-    return 'Next check-in in $time';
+    return 'تسجيل الوصول التالي خلال $time';
   }
 
   @override
   String sessionStepFakeCallActive(Object caller) {
-    return 'Incoming call from $caller';
+    return 'مكالمة واردة من $caller';
   }
 
   @override
-  String get sessionStepFakeCallOpen => 'Open call screen';
+  String get sessionStepFakeCallOpen => 'فتح شاشة المكالمة';
 
   @override
   String sessionStepSimBlockedSms(Object count) {
-    return '[SIM] Would send SMS to $count contacts';
+    return '[SIM] كانت سترسَل رسالة نصية إلى $count من جهات الاتصال';
   }
 
   @override
-  String get sessionStepSimBlockedPhone => '[SIM] Would call emergency contact';
+  String get sessionStepSimBlockedPhone => '[SIM] كان سيتصل بجهة اتصال الطوارئ';
 
   @override
-  String get sessionStepSimBlockedEmergency =>
-      '[SIM] Would call emergency services';
+  String get sessionStepSimBlockedEmergency => '[SIM] كان سيتصل بخدمات الطوارئ';
 
   @override
   String get sessionStepSimBlockedAlarm =>
-      '[SIM] Alarm would have sounded at full volume';
+      '[SIM] كان الإنذار سيصدر صوتًا بكامل مستوى الصوت';
 
   @override
-  String get sessionStartFailedTitle => 'Cannot start session';
+  String get sessionStartFailedTitle => 'لا يمكن بدء الجلسة';
 
   @override
-  String get sessionStartFailedBody =>
-      'Fix the following issues before starting:';
+  String get sessionStartFailedBody => 'صحّحي المشكلات التالية قبل البدء:';
 
   @override
-  String get sessionQuickExitTitle => 'Quick exit';
+  String get sessionQuickExitTitle => 'خروج سريع';
 
   @override
   String get sessionQuickExitBody =>
-      'Session data will be preserved and encrypted. Reopen the app any time to recover it.';
+      'سيتم حفظ بيانات الجلسة وتشفيرها. أعيدي فتح التطبيق في أي وقت لاستعادتها.';
 
   @override
-  String get sessionQuickExitConfirm => 'Exit app';
+  String get sessionQuickExitConfirm => 'الخروج من التطبيق';
 
   @override
-  String get pastEventsRestore => 'Restore';
+  String get pastEventsRestore => 'استعادة';
 
   @override
   String batteryAlertForbiddenStep(Object type) {
-    return '$type is not allowed in the battery-alert chain.';
+    return '$type غير مسموح بها في سلسلة تنبيه البطارية.';
   }
 
   @override
-  String get stepEditorWait => 'Wait (s)';
+  String get stepEditorWait => 'الانتظار (ث)';
 
   @override
-  String get stepEditorDuration => 'Duration (s)';
+  String get stepEditorDuration => 'المدة (ث)';
 
   @override
-  String get stepEditorGrace => 'Grace (s)';
+  String get stepEditorGrace => 'فترة السماح (ث)';
 
   @override
-  String get stepEditorRetryCount => 'Retry count';
+  String get stepEditorRetryCount => 'عدد المحاولات';
 
   @override
-  String get stepEditorRandomize => 'Randomize timing (±20%)';
+  String get stepEditorRandomize => 'توقيت عشوائي (±20%)';
 
   @override
-  String get stepEditorRemove => 'Remove step';
+  String get stepEditorRemove => 'إزالة الخطوة';
 
   @override
-  String get eventDefaultsHoldStyle => 'Hold style';
+  String get eventDefaultsHoldStyle => 'نمط الضغط المطوّل';
 
   @override
-  String get eventDefaultsHoldSensitivity => 'Release sensitivity';
+  String get eventDefaultsHoldSensitivity => 'حساسية الإفلات';
 
   @override
-  String get eventDefaultsHoldVibrate => 'Vibrate on release';
+  String get eventDefaultsHoldVibrate => 'الاهتزاز عند الإفلات';
 
   @override
-  String get eventDefaultsHoldSound => 'Sound on release';
+  String get eventDefaultsHoldSound => 'صوت عند الإفلات';
 
   @override
-  String get eventDefaultsBlackScreen => 'Black screen overlay';
+  String get eventDefaultsBlackScreen => 'تراكب الشاشة السوداء';
 
   @override
-  String get eventDefaultsReminderRandomInterval => 'Randomize interval';
+  String get eventDefaultsReminderRandomInterval => 'فاصل زمني عشوائي';
 
   @override
-  String get eventDefaultsReminderRandomTemplate => 'Randomize template order';
+  String get eventDefaultsReminderRandomTemplate => 'ترتيب عشوائي للقوالب';
 
   @override
-  String get eventDefaultsReminderResetOnEarly => 'Reset on early check-in';
+  String get eventDefaultsReminderResetOnEarly =>
+      'إعادة التعيين عند تسجيل الوصول المبكر';
 
   @override
-  String get eventDefaultsCountdownStyle => 'Countdown style';
+  String get eventDefaultsCountdownStyle => 'نمط العد التنازلي';
 
   @override
-  String get eventDefaultsCountdownVibrate => 'Vibrate';
+  String get eventDefaultsCountdownVibrate => 'الاهتزاز';
 
   @override
-  String get eventDefaultsCountdownSound => 'Sound';
+  String get eventDefaultsCountdownSound => 'الصوت';
 
   @override
-  String get eventDefaultsFakeCallStyle => 'Call style';
+  String get eventDefaultsFakeCallStyle => 'نمط المكالمة';
 
   @override
-  String get eventDefaultsFakeCallCallerName => 'Caller name';
+  String get eventDefaultsFakeCallCallerName => 'اسم المتصل';
 
   @override
-  String get eventDefaultsFakeCallRingDuration => 'Ring duration (s)';
+  String get eventDefaultsFakeCallRingDuration => 'مدة الرنين (ث)';
 
   @override
-  String get eventDefaultsFakeCallDeclineIsSafe => 'Decline counts as safe';
+  String get eventDefaultsFakeCallDeclineIsSafe => 'اعتبار الرفض دليل أمان';
 
   @override
-  String get eventDefaultsFakeCallVoiceOutput => 'Voice output';
+  String get eventDefaultsFakeCallVoiceOutput => 'الإخراج الصوتي';
 
   @override
-  String get eventDefaultsSmsChannel => 'Channel';
+  String get eventDefaultsSmsChannel => 'القناة';
 
   @override
-  String get eventDefaultsSmsIncludeLocation => 'Include location';
+  String get eventDefaultsSmsIncludeLocation => 'تضمين الموقع';
 
   @override
-  String get eventDefaultsSmsIncludeMedical => 'Include medical info';
+  String get eventDefaultsSmsIncludeMedical => 'تضمين المعلومات الطبية';
 
   @override
-  String get eventDefaultsSmsAutoRecord => 'Record audio before sending';
+  String get eventDefaultsSmsAutoRecord => 'تسجيل الصوت قبل الإرسال';
 
   @override
-  String get eventDefaultsSmsRecordDuration => 'Recording duration (s)';
+  String get eventDefaultsSmsRecordDuration => 'مدة التسجيل (ث)';
 
   @override
-  String get eventDefaultsLoudAlarmVolume => 'Volume';
+  String get eventDefaultsLoudAlarmVolume => 'مستوى الصوت';
 
   @override
-  String get eventDefaultsLoudAlarmSound => 'Sound';
+  String get eventDefaultsLoudAlarmSound => 'الصوت';
 
   @override
-  String get eventDefaultsLoudAlarmFlashScreen => 'Flash screen';
+  String get eventDefaultsLoudAlarmFlashScreen => 'وميض الشاشة';
 
   @override
-  String get eventDefaultsLoudAlarmFlashLight => 'Flash camera light';
+  String get eventDefaultsLoudAlarmFlashLight => 'وميض ضوء الكاميرا';
 
   @override
-  String get eventDefaultsLoudAlarmGradual => 'Gradual volume ramp';
+  String get eventDefaultsLoudAlarmGradual => 'تصاعد تدريجي لمستوى الصوت';
 
   @override
-  String get eventDefaultsCallEmergencyNumber => 'Emergency number (override)';
+  String get eventDefaultsCallEmergencyNumber => 'رقم الطوارئ (تجاوز)';
 
   @override
-  String get eventDefaultsCallEmergencyConfirm => 'Show confirmation countdown';
+  String get eventDefaultsCallEmergencyConfirm => 'عرض العد التنازلي للتأكيد';
 
   @override
-  String get eventDefaultsCallEmergencyConfirmDuration =>
-      'Confirmation seconds';
+  String get eventDefaultsCallEmergencyConfirmDuration => 'ثوانٍ التأكيد';
 
   @override
-  String get eventDefaultsCallEmergencySmsFirst => 'Send location SMS first';
+  String get eventDefaultsCallEmergencySmsFirst => 'إرسال رسالة الموقع أولاً';
 
   @override
-  String get eventDefaultsPhonePrimaryContact => 'Primary contact (id)';
+  String get eventDefaultsPhonePrimaryContact =>
+      'جهة الاتصال الرئيسية (المعرّف)';
 
   @override
-  String get eventDefaultsHardwareButton => 'Button';
+  String get eventDefaultsHardwareButton => 'الزر';
 
   @override
-  String get eventDefaultsHardwarePattern => 'Press pattern';
+  String get eventDefaultsHardwarePattern => 'نمط الضغط';
 
   @override
-  String get eventDefaultsHardwarePressCount => 'Press count';
+  String get eventDefaultsHardwarePressCount => 'عدد الضغطات';
 
   @override
-  String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
+  String get eventDefaultsHardwareLongDuration => 'مدة الضغط المطوّل (ث)';
 
   @override
-  String get pastEventsTrashTitle => 'Trash';
+  String get pastEventsTrashTitle => 'سلة المهملات';
 
   @override
-  String get pastEventsTrashEmpty => 'Trash is empty';
+  String get pastEventsTrashEmpty => 'سلة المهملات فارغة';
 
   @override
-  String get pastEventsTrashEmptyAll => 'Empty trash';
+  String get pastEventsTrashEmptyAll => 'إفراغ سلة المهملات';
 
   @override
-  String get pastEventsTrashEmptyAllConfirmTitle => 'Empty trash?';
+  String get pastEventsTrashEmptyAllConfirmTitle => 'إفراغ سلة المهملات؟';
 
   @override
   String get pastEventsTrashEmptyAllConfirmBody =>
-      'Type EMPTY TRASH below to confirm. This deletes every trashed log permanently.';
+      'اكتبي EMPTY TRASH أدناه للتأكيد. يؤدّي هذا إلى حذف كل سجل في سلة المهملات نهائيًا.';
 
   @override
   String pastEventsTrashEmptyAllSuccess(Object count) {
-    return 'Trash emptied ($count logs)';
+    return 'تم إفراغ سلة المهملات ($count من السجلات)';
   }
 
   @override
   String pastEventsTrashRetentionNote(int days) {
-    return 'Logs in the trash are permanently deleted after $days days.';
+    return 'تُحذف السجلات الموجودة في سلة المهملات نهائيًا بعد $days يومًا.';
   }
 
   @override
   String pastEventsTrashRemainingDays(int days) {
-    return '$days day(s) until permanent deletion';
+    return '$days يوم/أيام حتى الحذف النهائي';
   }
 
   @override
-  String get pastEventsTrashDeletePermanently => 'Delete permanently';
+  String get pastEventsTrashDeletePermanently => 'حذف نهائي';
 
   @override
   String get pastEventsTrashDeletePermanentlyBody =>
-      'This action cannot be undone.';
+      'لا يمكن التراجع عن هذا الإجراء.';
 
   @override
   String sessionEmergencyConfirmTitle(String number, int seconds) {
-    return 'Calling $number in ${seconds}s';
+    return 'جارٍ الاتصال بـ $number خلال $seconds ث';
   }
 
   @override
-  String get sessionEmergencyConfirmSwipe => 'Swipe to cancel';
+  String get sessionEmergencyConfirmSwipe => 'اسحبي للإلغاء';
 
   @override
-  String get sessionEmergencyConfirmKeep => 'Keep calling';
+  String get sessionEmergencyConfirmKeep => 'متابعة الاتصال';
 
   @override
-  String get sessionEmergencyConfirmSimBadge => '[SIM] Practice mode';
+  String get sessionEmergencyConfirmSimBadge => '[SIM] وضع التدريب';
 
   @override
   String get sessionEmergencyConfirmSimCancelled =>
-      'Simulated cancel — call would not have been placed';
+      'إلغاء محاكى — لم يكن ليتم إجراء المكالمة';
 
   @override
-  String get swipeSliderSemantics => 'Swipe to confirm';
+  String get swipeSliderSemantics => 'اسحبي للتأكيد';
 }
