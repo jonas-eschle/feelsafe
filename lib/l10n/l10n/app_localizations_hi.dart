@@ -639,16 +639,17 @@ class AppLocalizationsHi extends AppLocalizations {
       'सत्र-समाप्ति PIN के लिए बायोमेट्रिक्स का उपयोग करें';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App lock';
+  String get securityAppPinBiometric =>
+      'ऐप लॉक के लिए बायोमेट्रिक्स का उपयोग करें';
 
   @override
-  String get launchPinTitle => 'Enter your App PIN';
+  String get launchPinTitle => 'अपना ऐप PIN दर्ज करें';
 
   @override
-  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+  String get launchPinBiometricReason => 'Guardian Angela अनलॉक करें';
 
   @override
-  String get launchPinIncorrect => 'Incorrect PIN';
+  String get launchPinIncorrect => 'गलत PIN';
 
   @override
   String get securitySetPin => 'PIN सेट करें';
@@ -1128,10 +1129,11 @@ class AppLocalizationsHi extends AppLocalizations {
   String get securityRemovePin => 'Remove';
 
   @override
-  String get securityRemovePinPrompt => 'Enter your current PIN to remove it.';
+  String get securityRemovePinPrompt =>
+      'इसे हटाने के लिए अपना मौजूदा PIN दर्ज करें।';
 
   @override
-  String get securityRemovePinIncorrect => 'Incorrect PIN';
+  String get securityRemovePinIncorrect => 'गलत PIN';
 
   @override
   String get securityWhatIsThis => 'What is this?';

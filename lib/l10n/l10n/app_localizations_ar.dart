@@ -634,16 +634,16 @@ class AppLocalizationsAr extends AppLocalizations {
       'استخدام القياسات الحيوية لرمز PIN إنهاء الجلسة';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App lock';
+  String get securityAppPinBiometric => 'استخدام القياسات الحيوية لقفل التطبيق';
 
   @override
-  String get launchPinTitle => 'Enter your App PIN';
+  String get launchPinTitle => 'أدخل رمز PIN الخاص بالتطبيق';
 
   @override
-  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+  String get launchPinBiometricReason => 'إلغاء قفل Guardian Angela';
 
   @override
-  String get launchPinIncorrect => 'Incorrect PIN';
+  String get launchPinIncorrect => 'رمز PIN غير صحيح';
 
   @override
   String get securitySetPin => 'تعيين رمز PIN';
@@ -1123,10 +1123,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get securityRemovePin => 'Remove';
 
   @override
-  String get securityRemovePinPrompt => 'Enter your current PIN to remove it.';
+  String get securityRemovePinPrompt => 'أدخل رمز PIN الحالي لإزالته.';
 
   @override
-  String get securityRemovePinIncorrect => 'Incorrect PIN';
+  String get securityRemovePinIncorrect => 'رمز PIN غير صحيح';
 
   @override
   String get securityWhatIsThis => 'What is this?';

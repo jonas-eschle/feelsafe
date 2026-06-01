@@ -160,6 +160,30 @@
   "fakeCallBrandSignal": "SIGNAL",
   "contactLanguageDefault": "Par défaut (langue de l'application)",
   "securitySessionEndPinBiometric": "Utiliser la biométrie pour le PIN de fin de session",
+  "securityAppPinBiometric": "Utiliser la biométrie pour le verrouillage de l’application",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN."
+  },
+  "launchPinTitle": "Saisissez le PIN de l’application",
+  "@launchPinTitle": {
+    "description": "Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set."
+  },
+  "launchPinBiometricReason": "Déverrouiller Guardian Angela",
+  "@launchPinBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate."
+  },
+  "launchPinIncorrect": "PIN incorrect",
+  "@launchPinIncorrect": {
+    "description": "Inline error shown beneath the launch-gate keypad after a wrong PIN entry."
+  },
+  "securityRemovePinPrompt": "Saisissez votre PIN actuel pour le supprimer.",
+  "@securityRemovePinPrompt": {
+    "description": "Body of the dialog shown before removing a PIN — the user must re-enter the PIN being removed to confirm their identity."
+  },
+  "securityRemovePinIncorrect": "PIN incorrect",
+  "@securityRemovePinIncorrect": {
+    "description": "Inline error beneath the keypad when the entered PIN does not match the one being removed."
+  },
   "stealthTimerDisplayNormal": "Afficher le texte complet",
   "stealthTimerDisplaySmall": "Afficher uniquement les chiffres",
   "stealthTimerDisplayNone": "Masquer le minuteur",

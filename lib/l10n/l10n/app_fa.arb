@@ -142,6 +142,30 @@
   "fakeCallBrandSignal": "SIGNAL",
   "contactLanguageDefault": "پیش‌فرض (استفاده از زبان برنامه)",
   "securitySessionEndPinBiometric": "استفاده از زیست‌سنجی برای پین پایان جلسه",
+  "securityAppPinBiometric": "استفاده از زیست‌سنجی برای قفل برنامه",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN."
+  },
+  "launchPinTitle": "پین برنامه را وارد کنید",
+  "@launchPinTitle": {
+    "description": "Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set."
+  },
+  "launchPinBiometricReason": "باز کردن قفل Guardian Angela",
+  "@launchPinBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate."
+  },
+  "launchPinIncorrect": "پین نادرست",
+  "@launchPinIncorrect": {
+    "description": "Inline error shown beneath the launch-gate keypad after a wrong PIN entry."
+  },
+  "securityRemovePinPrompt": "برای حذف، پین فعلی خود را وارد کنید.",
+  "@securityRemovePinPrompt": {
+    "description": "Body of the dialog shown before removing a PIN — the user must re-enter the PIN being removed to confirm their identity."
+  },
+  "securityRemovePinIncorrect": "پین نادرست",
+  "@securityRemovePinIncorrect": {
+    "description": "Inline error beneath the keypad when the entered PIN does not match the one being removed."
+  },
   "stealthTimerDisplayNormal": "نمایش متن کامل",
   "stealthTimerDisplaySmall": "نمایش فقط اعداد",
   "stealthTimerDisplayNone": "پنهان کردن تایمر",

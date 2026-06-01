@@ -636,16 +636,17 @@ class AppLocalizationsUk extends AppLocalizations {
       'Використовувати біометрію для PIN-коду завершення сесії';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App lock';
+  String get securityAppPinBiometric =>
+      'Використовувати біометрію для блокування застосунку';
 
   @override
-  String get launchPinTitle => 'Enter your App PIN';
+  String get launchPinTitle => 'Введіть PIN-код застосунку';
 
   @override
-  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+  String get launchPinBiometricReason => 'Розблокувати Guardian Angela';
 
   @override
-  String get launchPinIncorrect => 'Incorrect PIN';
+  String get launchPinIncorrect => 'Неправильний PIN-код';
 
   @override
   String get securitySetPin => 'Встановити PIN';
@@ -1125,10 +1126,11 @@ class AppLocalizationsUk extends AppLocalizations {
   String get securityRemovePin => 'Remove';
 
   @override
-  String get securityRemovePinPrompt => 'Enter your current PIN to remove it.';
+  String get securityRemovePinPrompt =>
+      'Введіть поточний PIN-код, щоб видалити його.';
 
   @override
-  String get securityRemovePinIncorrect => 'Incorrect PIN';
+  String get securityRemovePinIncorrect => 'Неправильний PIN-код';
 
   @override
   String get securityWhatIsThis => 'What is this?';

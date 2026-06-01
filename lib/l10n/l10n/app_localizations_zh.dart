@@ -623,16 +623,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securitySessionEndPinBiometric => '为会话结束 PIN 码启用生物识别';
 
   @override
-  String get securityAppPinBiometric => 'Use biometrics for App lock';
+  String get securityAppPinBiometric => '为应用锁启用生物识别';
 
   @override
-  String get launchPinTitle => 'Enter your App PIN';
+  String get launchPinTitle => '输入应用 PIN 码';
 
   @override
-  String get launchPinBiometricReason => 'Unlock Guardian Angela';
+  String get launchPinBiometricReason => '解锁 Guardian Angela';
 
   @override
-  String get launchPinIncorrect => 'Incorrect PIN';
+  String get launchPinIncorrect => 'PIN 码错误';
 
   @override
   String get securitySetPin => '设置 PIN 码';
@@ -1112,10 +1112,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityRemovePin => 'Remove';
 
   @override
-  String get securityRemovePinPrompt => 'Enter your current PIN to remove it.';
+  String get securityRemovePinPrompt => '请输入当前 PIN 码以将其移除。';
 
   @override
-  String get securityRemovePinIncorrect => 'Incorrect PIN';
+  String get securityRemovePinIncorrect => 'PIN 码错误';
 
   @override
   String get securityWhatIsThis => 'What is this?';
@@ -2370,6 +2370,18 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get securitySessionEndPinBiometric => '使用生物辨識解鎖結束守護 PIN';
 
   @override
+  String get securityAppPinBiometric => '為應用程式鎖定使用生物辨識';
+
+  @override
+  String get launchPinTitle => '輸入應用程式 PIN';
+
+  @override
+  String get launchPinBiometricReason => '解鎖 Guardian Angela';
+
+  @override
+  String get launchPinIncorrect => 'PIN 錯誤';
+
+  @override
   String get securitySetPin => '設定 PIN';
 
   @override
@@ -2442,4 +2454,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stealthPresetNone => '無';
+
+  @override
+  String get securityRemovePinPrompt => '請輸入目前的 PIN 以將其移除。';
+
+  @override
+  String get securityRemovePinIncorrect => 'PIN 錯誤';
 }

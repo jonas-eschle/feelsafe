@@ -142,6 +142,30 @@
   "fakeCallBrandSignal": "SIGNAL",
   "contactLanguageDefault": "डिफ़ॉल्ट (ऐप भाषा का उपयोग करें)",
   "securitySessionEndPinBiometric": "सत्र-समाप्ति PIN के लिए बायोमेट्रिक्स का उपयोग करें",
+  "securityAppPinBiometric": "ऐप लॉक के लिए बायोमेट्रिक्स का उपयोग करें",
+  "@securityAppPinBiometric": {
+    "description": "Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN."
+  },
+  "launchPinTitle": "अपना ऐप PIN दर्ज करें",
+  "@launchPinTitle": {
+    "description": "Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set."
+  },
+  "launchPinBiometricReason": "Guardian Angela अनलॉक करें",
+  "@launchPinBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate."
+  },
+  "launchPinIncorrect": "गलत PIN",
+  "@launchPinIncorrect": {
+    "description": "Inline error shown beneath the launch-gate keypad after a wrong PIN entry."
+  },
+  "securityRemovePinPrompt": "इसे हटाने के लिए अपना मौजूदा PIN दर्ज करें।",
+  "@securityRemovePinPrompt": {
+    "description": "Body of the dialog shown before removing a PIN — the user must re-enter the PIN being removed to confirm their identity."
+  },
+  "securityRemovePinIncorrect": "गलत PIN",
+  "@securityRemovePinIncorrect": {
+    "description": "Inline error beneath the keypad when the entered PIN does not match the one being removed."
+  },
   "stealthTimerDisplayNormal": "पूरा टेक्स्ट दिखाएँ",
   "stealthTimerDisplaySmall": "केवल संख्याएँ दिखाएँ",
   "stealthTimerDisplayNone": "टाइमर छिपाएँ",
