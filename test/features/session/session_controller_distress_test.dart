@@ -1,12 +1,13 @@
 /// Tests for [SessionController.startDistressSession] — the cold-start distress
 /// entry used by the App-lock launch gate (spec 06 §App PIN / §Duress PIN).
 ///
-/// Focuses on the new resolution + fail-loud logic: when no default distress
-/// mode is configured, or the referenced mode is missing, the controller must
-/// surface an error rather than silently doing nothing (global "fail loud"
-/// policy). The happy path (resolve → startSession → confirmDistress) reuses
-/// the independently-tested startSession / confirmDistress / engine paths and
-/// is exercised end-to-end by the launch-gate widget test.
+/// Covers the new resolution + fail-loud logic (no default distress mode / a
+/// missing mode must surface an error, never silently do nothing — global
+/// "fail loud" policy) AND the happy path end-to-end against a real in-memory
+/// database: the distress chain fires, and — crucially — NO interrupt marker
+/// is written, so a force-stopped cold-start distress cannot leak
+/// "Mode: Default Distress" on the next launch (the Duress-PIN stealth
+/// contract).
 library;
 
 import 'dart:io';
@@ -17,11 +18,20 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/data/repositories/session_log_repository.dart';
+import 'package:guardianangela/data/repositories/user_profile_repository.dart';
+import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/session_context.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/session_log_recorder.dart';
+import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 
 class _FakeAppSettingsRepository extends AppSettingsRepository {
   _FakeAppSettingsRepository(this._current)
@@ -38,6 +48,33 @@ class _FakeAppSettingsRepository extends AppSettingsRepository {
   @override
   Future<AppSettings> load() async => _current;
 }
+
+class _FakeUserProfileRepository extends UserProfileRepository {
+  _FakeUserProfileRepository() : super(keyProvider: _dummyKey);
+
+  static Future<String> _dummyKey() async => '00' * 32;
+
+  @override
+  Future<UserProfile> load() async => const UserProfile();
+}
+
+SessionMode _distressMode(String id) => SessionMode(
+  id: id,
+  name: 'Default Distress',
+  isDistressMode: true,
+  chainSteps: <ChainStep>[
+    ChainStep(
+      id: '$id-step-0',
+      type: ChainStepType.holdButton,
+      order: 0,
+      waitSeconds: 0,
+      durationSeconds: 10,
+      gracePeriodSeconds: 1,
+      retryCount: 0,
+      randomize: false,
+    ),
+  ],
+);
 
 ProviderContainer _container(AppSettings settings, GuardianAngelaDatabase db) {
   final container = ProviderContainer(
@@ -95,4 +132,57 @@ void main() {
     // No engine spun up — the run never reached startSession.
     check(notifier.engine).isNull();
   });
+
+  test(
+    'happy path: fires the distress chain AND writes no interrupt marker '
+    '(stealth — a killed cold-start distress must not leak on next launch)',
+    () async {
+      await db.sessionModesDao.upsert(_distressMode('dm-1'));
+      final repo = SessionLogRepository(db.sessionLogsDao);
+      final settings = const AppSettings().copyWith(
+        defaults: const AppDefaults(defaultDistressModeId: 'dm-1'),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FakeAppSettingsRepository(settings),
+          ),
+          databaseProvider.overrideWith((ref) async => db),
+          userProfileRepositoryProvider.overrideWithValue(
+            _FakeUserProfileRepository(),
+          ),
+          systemUiServiceProvider.overrideWithValue(
+            SimulationSystemUiService(),
+          ),
+          sessionLogRecorderProvider.overrideWith(
+            (ref) async =>
+                (SessionContext context) =>
+                    SimulationSessionLogRecorder(context: context, repo: repo),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startDistressSession(reason: EndReason.duressPin);
+      // Let the distressTriggered engine event propagate to the state.
+      await Future<void>.delayed(Duration.zero);
+
+      // The distress chain is running...
+      check(notifier.engine).isNotNull();
+      check(
+        container.read(sessionControllerProvider).value!.isDistressChain,
+      ).isTrue();
+      // ...but NO in-progress marker was written, so a force-stop before the
+      // chain finishes cannot surface "Mode: Default Distress" on next launch.
+      final orphans = (await repo.getAll())
+          .where((l) => l.endedAt == null)
+          .toList();
+      check(orphans).isEmpty();
+
+      // Tear down the engine's timers before the test ends.
+      await notifier.endSession();
+    },
+  );
 }

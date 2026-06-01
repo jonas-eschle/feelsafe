@@ -297,6 +297,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     required bool simulate,
     SessionMode? distressMode,
     double speedMultiplier = 1.0,
+    bool writeInterruptMarker = true,
   }) async {
     if (_engine != null) {
       throw StateError(
@@ -312,12 +313,18 @@ class SessionController extends AsyncNotifier<SessionState> {
       reminderTemplates: templates,
     );
     // Write an in-progress marker log so cold launch can detect an
-    // interrupted session (Extra 13). The marker is overwritten by the
-    // final log on clean end.
-    final repo = await ref.read(sessionLogRepositoryProvider.future);
-    final markerId = const Uuid().v4();
-    _markerLogId = markerId;
-    if (!simulate) {
+    // interrupted session (Extra 13). The marker is overwritten by the final
+    // log on clean end.
+    //
+    // Skipped when [writeInterruptMarker] is false — used by the App-lock
+    // launch gate's cold-start distress. The marker's `modeName` would be the
+    // distress mode ("Default Distress"); surfacing the interrupted-session
+    // prompt on the next launch would reveal a covert Duress-PIN distress run
+    // to an attacker who force-stopped the app, defeating the Duress PIN.
+    if (!simulate && writeInterruptMarker) {
+      final repo = await ref.read(sessionLogRepositoryProvider.future);
+      final markerId = const Uuid().v4();
+      _markerLogId = markerId;
       await repo.upsert(
         SessionLog(
           id: markerId,
@@ -479,10 +486,15 @@ class SessionController extends AsyncNotifier<SessionState> {
     // distress chain so it is flagged distress and stamped with [reason]. This
     // reuses the fully-tested startSession + confirmDistress paths rather than
     // duplicating engine bootstrap.
+    //
+    // writeInterruptMarker: false — a killed cold-start distress must NOT
+    // surface a "Mode: Default Distress" interrupted-session prompt on next
+    // launch, which would reveal the covert Duress run to an attacker.
     await startSession(
       mode: distressMode,
       simulate: false,
       distressMode: distressMode,
+      writeInterruptMarker: false,
     );
     confirmDistress(reason: reason);
   }
