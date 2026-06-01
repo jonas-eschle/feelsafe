@@ -1,10 +1,10 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-01 — **Phase 6 + pre-Phase-7 fix-pass E CLOSED.** The two pre-Phase-7 security items the prior handoff carried (App-PIN-on-launch + PIN-removal verification) are DONE, plus a discovered false-distress bug fixed. A security review (`voltagent-qa-sec:code-reviewer`) found one HIGH defect (a Duress-PIN stealth leak), which was fixed and **re-verified PASS**. Phase 7 (native channels) is next, but read §"High-priority discovered issues" first — there is a latent CI failure (i18n) to decide on.
-**HEAD:** `64cd14a` (`phase-6-fix-e7`) — the HANDOFF commit will sit on top.
-**Tests passing:** `3661/3661` (`flutter test --concurrency=6`).
+**Snapshot:** 2026-06-01 — **i18n backfill COMPLETE — issue #1 RESOLVED.** All 355 previously-missing ARB keys are now translated into all 13 non-EN locales (4,615 translations) via a 13-agent parallel campaign. CI's `l10n-parity` gate now PASSES (0 missing/locale). A latent confirm-dialog bug surfaced during validation and was fixed (trash "EMPTY TRASH" typed-token). 11 RTL/Arabic goldens regenerated (text-only reflow; layout verified intact, no overflow). **Phase 7 (native channels) is next.** The push decision is now unblocked — CI will pass on `l10n-parity` — but pushing is still the user's call.
+**HEAD:** `fdb85c7` (`phase-6-i18n-backfill`) — the HANDOFF commit will sit on top.
+**Tests passing:** `3661/3661` (`flutter test --concurrency=6`; goldens regenerated).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
-**Branch:** `main`. **NEVER pushed** (95+ commits ahead of origin — so CI has never actually run; see i18n issue). **OLD/ is INERT.**
+**Branch:** `main`. **STILL NEVER pushed** (96+ commits ahead of origin — CI has never run, but `l10n-parity` will now pass). **OLD/ is INERT.**
 
 ---
 
@@ -42,11 +42,22 @@ Start from §"High-priority discovered issues", then §"Next actions". Plan file
 | Phase 6 (screens + routing + tests + goldens) | ✅ Done | 3538 | `ee73b62..cedaecf` |
 | Phase 6 fix-pass C / D | ✅ Done | 3619 | `5bd1486..92dfd88` |
 | **Housekeeping + pre-Phase-7 fix-pass E** | ✅ **CLOSED** | **3661** | `54a1d04..64cd14a` (8 commits) |
+| **i18n backfill — 355 keys × 13 locales** | ✅ **DONE** | **3661** | `fdb85c7` (1 commit) |
 | Phase 7..11 | Pending |  |  |
 
 ---
 
-## What this session delivered (`54a1d04..64cd14a`, 8 commits)
+## What the i18n-backfill session delivered (`fdb85c7`, 1 commit)
+
+Resolved issue #1. Workflow (all artifacts in `/tmp/ga_i18n/`, throwaway):
+
+- **Source delta.** Built `source_355.json` — the 355 missing keys (identical set across all 13 locales) with EN value + extracted `{placeholder}` list + EN description as translation context.
+- **13 parallel agents** (`general-purpose`, Opus), one per locale (`ar de el es fa fr he hi pl ru uk zh zh_TW`) — truly orthogonal (disjoint output files, read-only shared source). Each read the source + its existing ARB (for terminology consistency) and wrote `out_<code>.json`. NOT direct ARB edits — that kept RTL/CJK JSON safe and gave a single deterministic merge point.
+- **Validation + merge (Python, deterministic).** Asserted per locale: valid JSON, key-set == the 355, `{placeholder}` set per value == EN, no empty values. Merged by **text-append** (load→dump would reflow the existing compact `@`-metadata, so existing bytes are preserved exactly; diff = +355 keys, the `-1` is the comma on the prior last line). All 13 → 552 plain keys == EN.
+- **Correctness fix.** `past_events_trash_screen.dart` hardcodes `expected:'EMPTY TRASH'`; de/es/fr/pl had translated that token in the confirm body → users would type a never-matching string. Swapped the token back to literal "EMPTY TRASH" (surrounding text stays localized). Contacts delete-all uses a *localized* sentinel and was consistent in all 13. See discovered-issue #4.
+- **Regen + goldens.** `flutter gen-l10n` (12 locale classes; `app_localizations.dart` + `_en.dart` regenerated identical since EN was untouched). 11 RTL/Arabic goldens reflowed (EN-fallback→translated text); verified visually (settings 13.7%, distress overlay) as text-only with intact layout, then regenerated (`flutter test --update-goldens`). No EN/LTR golden changed.
+
+## What the prior session delivered — fix-pass E (`54a1d04..64cd14a`, 8 commits)
 
 **Housekeeping (`54a1d04`).** The tree was dirty at session start (format + import-sort drift on Phase-6 files). Root cause: lefthook's `format` / `import-sorter` pre-commit commands rewrote files but never re-staged them (no `stage_fixed`), so every prior commit landed format/sort-dirty and **would fail CI's format + import gates** (`ci.yml:30`, `:48`). Fixed lefthook (`stage_fixed: true`, verified by probe), committed the accumulated normalization, and added the format + import-sort gates to the verification commands below.
 
@@ -64,9 +75,10 @@ Start from §"High-priority discovered issues", then §"Next actions". Plan file
 
 ## High-priority discovered issues (read before Phase 7)
 
-1. **🔴 i18n is 64% incomplete — and CI's `l10n-parity` job will fail HARD on first push.** Every non-EN locale has only **197 of 552** EN keys (**355 missing/locale**); the rest fall back to EN at runtime. This was masked because (a) the branch has NEVER been pushed (CI never ran), and (b) the local verification command only checked for *orphan* keys, never *missing* ones. CI's job (`ci.yml:199-212`) does `missing = en_keys - lang_keys; if missing: sys.exit(1)`. **Decision needed:** backfill the ~4615 missing translations (a dedicated language-agent campaign) before any push, OR accept EN-fallback and relax the CI gate. NOT fixable as a side-quest. My 6 new keys ARE fully translated and do not worsen the gap.
+1. **✅ RESOLVED (`fdb85c7`) — i18n backfill complete.** All 355 previously-missing keys translated into all 13 non-EN locales (4,615 strings) by a 13-agent parallel campaign; each output validated for exact key-set parity, ICU `{placeholder}` integrity, and non-empty values; merged via deterministic text-append (existing bytes untouched). `flutter gen-l10n` regenerated; the MISSING-key parity check now returns **0/locale**, so CI's `l10n-parity` job (`ci.yml:199-212`) will pass. Translations are machine-generated (not human-reviewed) — same provenance as the original 197 keys/locale; a native-speaker pass is a future nicety, not a blocker. The agents flagged minor judgment calls per locale (e.g. "Duress PIN" wording, whether to keep the "PHONE"/"CALL" fake-call badges Latin) — see the `phase-6-i18n-backfill` commit body / agent notes if refining.
 2. **🟡 Dead model fields `requireLaunchAuth` + `launchAuthBiometric`** (`AppSettings`). Superseded by `appPinHash` + `appPinBiometricEnabled` (the gate reads the latter). Only copied through in `settings_security_controller.dart`. Spec 03 marks them superseded; remove in a schema-cleanup pass (pre-alpha break-compat is fine). Verify first: `grep -rn "requireLaunchAuth\|launchAuthBiometric" lib/ test/`.
 3. **🟡 Deferred low findings from the e7 security review** (code-reviewer, all LOW): (a) duress fake-unlock waits for the full engine-bootstrap before unlocking — perceptible latency vs a normal unlock; consider firing distress + unlocking in parallel. (b) `LaunchPinScreen` / `RemovePinDialog` build their tree inline rather than extracting private stage widgets like `EndSessionOverlay` does — a CLAUDE.md style consistency nit, not a violation.
+4. **🟡 Two "type-to-confirm" dialogs use INCONSISTENT sentinel mechanisms** (found during i18n validation; both currently correct, but inconsistent UX). `contacts_screen.dart` compares typed input against the **localized** `l10n.contactsDeleteAllTypeConfirmSentinel`, so a German user types "ALLE LÖSCHEN". `past_events_trash_screen.dart:56` hardcodes `expected:'EMPTY TRASH'` (English, used as both field hint and match target), so every locale's `pastEventsTrashEmptyAllConfirmBody` MUST keep the literal "EMPTY TRASH" — which the backfill now enforces. To unify (optional, out of scope here): add a `pastEventsTrashEmptyAllSentinel` l10n key + read it in the dialog, then localize the body token + update the test that types `'EMPTY TRASH'`. Until then, do NOT let a future translation pass "fix" the English token in the trash body — it would break the confirm flow.
 
 ---
 
@@ -80,7 +92,7 @@ Start from §"High-priority discovered issues", then §"Next actions". Plan file
 
 ## Next actions (resume here)
 
-**Decide on the i18n gap (issue #1) before pushing.** Then:
+**i18n gap (issue #1) is RESOLVED** — `l10n-parity` will pass, so the branch is push-ready on that axis. Pushing the first time (96+ commits) is still the user's call; expect *other* CI jobs to surface their own first-run issues. Then:
 
 **Phase 7 — Native channels (PARALLEL: Android ∥ iOS).** Per `~/.claude/plans/rippling-weaving-puffin.md §Phase 7`:
 - **Pre-flight:** confirm `lib/services/*/native_*_bridge.dart` contracts (Phase 5 commit range). `grep -n "Phase 7" lib/services/` for intentional markers needing wiring. Note: `MainActivity.kt` is now `FlutterFragmentActivity` (e1) and AndroidManifest gained `USE_BIOMETRIC` — Phase 7 builds on these.
@@ -121,11 +133,11 @@ grep -rn "import.*['\"].*OLD/" lib/ test/ integration_test/                  # 0
 git diff-tree -r --name-only HEAD -- OLD/                                    # empty (OLD/ untouched)
 # ARB parity — ORPHAN check (extra keys in non-EN). Currently 0:
 python3 -c "import json; from pathlib import Path; en={k for k in json.loads(Path('lib/l10n/l10n/app_en.arb').read_text()) if not k.startswith('@')}; [print(arb.name,'orphan:',sorted({k for k in json.loads(arb.read_text()) if not k.startswith('@')} - en)) for arb in sorted(Path('lib/l10n/l10n').glob('app_*.arb')) if arb.name != 'app_en.arb' and ({k for k in json.loads(arb.read_text()) if not k.startswith('@')} - en)]"  # 0 orphan lines
-# ARB parity — MISSING check (this is what CI enforces, ci.yml:205). CURRENTLY FAILS: 355 missing/locale (issue #1):
+# ARB parity — MISSING check (this is what CI enforces, ci.yml:205). NOW PASSES: 0 missing/locale (issue #1 resolved):
 python3 -c "import json; from pathlib import Path; en={k for k in json.loads(Path('lib/l10n/l10n/app_en.arb').read_text()) if not k.startswith('@')}; [print(arb.name,'missing',len(en-{k for k in json.loads(arb.read_text()) if not k.startswith('@')})) for arb in sorted(Path('lib/l10n/l10n').glob('app_*.arb')) if arb.name not in ('app_en.arb',)]"
 ```
 
-All pass at HEAD `64cd14a` EXCEPT the MISSING-key check (355/locale — pre-existing, issue #1).
+All gates pass at HEAD `fdb85c7` (including the MISSING-key check — 0/locale). After re-running `flutter gen-l10n` clean, re-run `dart run import_sorter:main --no-comments` then `dart format` to normalize the freshly-generated `app_localizations_*.dart` (gen-l10n emits a different import order; lefthook does this on commit anyway).
 
 ---
 
