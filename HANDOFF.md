@@ -1,22 +1,29 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-03 — **CI IS GREEN. First fully-green run on the
-v3 tree.** This session was pure CI triage: the first-ever CI run
-(`26867384330`, on `bde5047`) failed **7 jobs**; they are now all
-fixed and verified on CI run **`26908423791`** (on `119055a`) —
-**13/13 jobs green** (`e2e` skipped by design; tag-only). Root causes
-were a missing build step plus several latent CI-script bugs that had
-never executed before, and two real iOS-build defects that surfaced
-once the Dart/codegen blockers were cleared.
-**HEAD:** `119055a` (`ci-fix: unwrap nullable plugin registrars`). In
-sync with `origin/main`.
-**Tests passing:** `3690 / 3690` (`flutter test --concurrency=6`).
-Was 3692; −2 from rewriting `loud_alarm_config_test.dart` (see below).
+**Snapshot:** 2026-06-03 — **Phase 8 (Localization) COMPLETE.** Phase 8
+was already mostly satisfied by the earlier i18n backfill (parity green,
+558 keys × 14 locales; `gen-l10n` clean). This session closed it out: a
+dead-key audit surfaced exactly **one** unused key
+(`homeChecklistAllDoneBanner`), which — **per explicit user decision** —
+was **implemented** as a one-time "all set" Safety Setup Checklist banner
+rather than deleted; and the two plan-required l10n test files were
+added. Post-phase verification cohort (spec-vs-code architect-reviewer +
+spec-vs-tests qa-expert) both returned **PASS**.
+**HEAD:** this handoff commit. **Phase-8 work is `8f82650`**
+(`phase-8: l10n parity/smoke tests + wire all-done checklist banner`).
+**Unpushed:** now **3 commits ahead of `origin/main` (`119055a`)** —
+`cb60d83` (prev handoff), `8f82650` (phase-8), + this handoff.
+**Pushing `main` needs explicit user authorization (Rule 12) — NOT yet
+pushed this session.**
+**Tests passing:** `3744 / 3744` (`flutter test --concurrency=6`). Was
+3690; **+54** (banner +2, repo-flag unit tests +8, l10n parity +28,
+locale smoke +16).
 **Analyzer:** `0 issues` (`flutter analyze --fatal-infos`).
-**Android build:** CI `build-android` **green**.
-**iOS build:** CI `build-ios` (macOS, Xcode 26.3) **green** — iOS is
-now build-verified for the first time (still NOT device-tested).
-**Branch:** `main`, pushed. CI green. **OLD/ is INERT.**
+**CI:** last GREEN run on pushed `119055a` (13/13). The phase-8 delta is
+**Dart-only** (feature + tests + spec; no `pubspec`/native changes), so
+the `build-android`/`build-ios` jobs are unaffected — CI will reconfirm
+on the next push.
+**Branch:** `main`, local ahead of origin. **OLD/ is INERT.**
 
 ---
 
@@ -26,12 +33,16 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-CI is green, so start from §"Next actions" (Phase 8 verification, then
-Phase 9). The carried follow-ups in §"Out-of-scope / carried items"
-(coverage-floor ratchet, Xcode pin, Node-20 action bump) are the other
-loose ends. Plan files in `~/.claude/plans/`
-(`make-sure-that-there-typed-tulip.md` + `rippling-weaving-puffin.md`)
-and `docs/rewrite/v3-plan.md` remain the source of truth.
+Phase 8 is done, so start from §"Next actions" — **Phase 9**
+(integration tests + spec-coverage matrix; close QA gap-4; raise the
+coverage floor). **First decide with the user: push the 3 unpushed
+commits to `main`** (Rule 12), and whether to run `/ultrareview` — the
+plan recommends it after Phase 9 (and it was also slated post-Phase 5).
+The carried follow-ups in §"Out-of-scope / carried items" (coverage-floor
+ratchet, Xcode pin, Node-20 action bump) are the other loose ends. Plan
+files in `~/.claude/plans/` (`make-sure-that-there-typed-tulip.md` +
+`rippling-weaving-puffin.md`) and `docs/rewrite/v3-plan.md` remain the
+source of truth.
 
 ---
 
@@ -80,70 +91,58 @@ and `docs/rewrite/v3-plan.md` remain the source of truth.
 | i18n backfill (355 keys × 13 locales) | ✅ Done | 3661 | `fdb85c7` |
 | Phase 7 (native channels + dispatch + widget + dep fix + CI jobs) | ✅ Done | 3692 | `b670049` |
 | Phase 7 fix (cohort fixes) | ✅ Done | 3692 | `bde5047` |
-| **CI triage — first green run on v3** | ✅ **Done** | **3690** | **`4da31b4..119055a`** |
-| Phase 8..11 | Pending |  |  |
+| CI triage — first green run on v3 | ✅ Done | 3690 | `4da31b4..119055a` |
+| **Phase 8 (l10n: dead-key audit → all-done banner + parity/smoke tests)** | ✅ **Done** | **3744** | **`8f82650`** |
+| Phase 9..11 | Pending |  |  |
 
 ---
 
-## What THIS session delivered — CI triage (`4da31b4..119055a`)
+## What THIS session delivered — Phase 8 (`8f82650`)
 
-The first CI run on v3 failed 7 jobs. All fixed:
+Phase 8 (Localization) was already mostly done by the i18n backfill.
+Confirmed up-front: parity **green** (558 `app_en.arb` keys present in
+all 13 other locales), `flutter gen-l10n` **clean** (zero
+untranslated-message warnings). Remaining work this session:
 
-### `4da31b4` — codegen in jobs + gate-script bugs (7→2 of the 7 failures)
-- **Missing `build_runner` codegen.** `*.g.dart` (Drift adapters) are
-  gitignored, but `import-sorter`/`analyze`/`test`/`build-android`/
-  `build-ios`/`e2e` ran `flutter pub get` without `build_runner build`
-  → every Dart-compiling job collapsed with "URI hasn't been
-  generated". Added a `dart run build_runner build
-  --delete-conflicting-outputs` step to each (only the dedicated
-  `build-runner` job had it, and a job's output isn't shared).
-- **NO-STUBS S-5/S-8/S-9 exit-code bug.** Trailing
-  `[ $FAILED -ne 0 ] && exit 1` returns exit 1 even on success
-  (the test returns 1 when `FAILED=0`). The job died at S-5 every run,
-  **masking S-6..S-12 which had therefore never executed.** Rewrote as
-  `if [ $FAILED -ne 0 ]; then exit 1; fi; echo OK`.
-- **Unblocking S-6..S-12 surfaced more gate bugs:** S-6 excluded the
-  stale `simulation_*_service.dart` naming (actual is
-  `lib/services/sim/*_service_sim.dart`) → excluded that dir; S-8 the
-  disabled "Redo onboarding" control lacked a `// spec:` comment →
-  added `// spec:04:1951`; S-10 matched the English word "placeholder"
-  in legit doc comments → dropped the non-plan token (S-3/S-4 still
-  cover placeholder-as-stub); S-12's regex missed typed
-  `invokeMethod<bool>('x')` so it passed **vacuously** → upgraded to
-  verify all 8 channel calls.
-- **legacy-id-grep.** `\bflashSpeed\b(?!Ms)` used a PCRE lookahead
-  invalid under `grep -E` (silently matched nothing); `\bflashSpeed\b`
-  alone already excludes `flashSpeedMs`. The working `maxVolume` check
-  flagged `loud_alarm_config_test.dart`, which named the legacy keys to
-  assert their absence → replaced those 2 per-key tests with one exact
-  `toJson` key-set assertion (strictly stronger), scrubbed the literals.
+### Dead-key audit → implement the all-done banner
+- A repo-wide audit (parse `app_en.arb`, cross-reference every message
+  key against all hand-written Dart) found **exactly one** dead key:
+  `homeChecklistAllDoneBanner` ("All set — you're protected!"),
+  translated in all 14 ARBs but referenced nowhere. Its 8 sibling
+  `homeChecklist*` keys were all wired.
+- Spec 04:513 said the checklist card simply "disappears when all items
+  checked" — the widget matched the spec, so the key was a genuinely
+  abandoned alternative design. **Surfaced the conflict to the user
+  (AskUserQuestion); user chose to IMPLEMENT the banner**, not delete.
+- Implemented: when the final Safety Setup Checklist item is checked, a
+  brief "all set" banner (`_AllDoneBanner`, `Semantics(liveRegion)`)
+  replaces the card for the rest of the visit, then auto-dismisses on
+  the next visit. New `HomeChecklistRepository` flag
+  (`home_checklist_all_done_celebrated`) gates the one-time celebration;
+  a visit-start snapshot keeps the banner up this visit while persisting
+  the flag for next. **Spec 04 §Safety Setup Checklist (Behavior)
+  amended** to document the banner + the key.
 
-### `392ef21` — import_sorter l10n + widget Swift access (2→1)
-- **import_sorter** crashed on a clean checkout (no `┗━━` summary, exit
-  1) while passing in the long-lived working dir. Reproduced in a fresh
-  `git worktree`: it mishandles the generated l10n files
-  (`lib/l10n/l10n/app_localizations*.dart`) — their relative sibling
-  imports make it emit a malformed doubled path and report a phantom
-  change. They're generated (gen-l10n) and shouldn't be sorted → added
-  `/lib/l10n/l10n/` to import_sorter's `ignored_files` (pubspec). Now
-  sorts 396 files, 0 changed.
-- **build-ios** widget: `WidgetData` was `private` but is the type of
-  the internal `GuardianAngelaEntry.data` (TimelineEntry) → made it
-  internal.
+### Plan-required Phase 8 tests
+- `test/l10n/parity_test.dart` — in-repo mirror of CI `l10n-parity`
+  (every `app_en.arb` key in all 13 locales); **stronger** — also
+  rejects orphan keys (CI only checks the one direction).
+- `test/l10n/locale_smoke_test.dart` — all **14** locales load their
+  `AppLocalizations` and render a localized screen; exercises **all 45**
+  placeholder-bearing methods per locale so a malformed translation
+  surfaces as a throw/empty. (0 ICU plurals in the set today.)
+- `test/features/home/home_checklist_repository_test.dart` — round-trip
+  + no-throw fallbacks for **all four** checklist flags (closed a
+  pre-existing gap: the real repo paths were only ever faked).
 
-### `076df73` — Xcode selection for build-ios (device_info_plus)
-- build-ios reached the plugin pods and failed compiling
-  `device_info_plus 13.1.0` (`NSProcessInfo.isiOSAppOnVision`, an iOS
-  18 SDK selector the runner's **default** Xcode lacked). Added
-  `maxim-lobanov/setup-xcode@v1` (`latest-stable`, resolved to Xcode
-  **26.3**) to the build-ios job.
-
-### `119055a` — AppDelegate nullable registrars (final build-ios fix)
-- With device_info_plus building, the Runner target compiled and
-  exposed a latent bug: `FlutterPluginRegistry.registrar(forPlugin:)`
-  is nullable, but the 3 custom registrars were used non-optionally.
-  Wrapped in a single `guard let … else { fatalError(…) }` (fail-loud,
-  not a silent dropped safety channel).
+### Verification
+- Tests **3690 → 3744** (+54). `analyze --fatal-infos` clean. Dead-key
+  audit now **zero**. Parity green, `gen-l10n` clean. Format/import-sort
+  via lefthook clean (0 changed). OLD/ untouched; no Phase-X/legacy/stub
+  regressions.
+- **Post-phase cohort (D11):** spec-vs-code (architect-reviewer) +
+  spec-vs-tests (qa-expert) both **PASS**. Only note was a doc-comment
+  imprecision on the resume semantics — applied.
 
 ---
 
@@ -192,22 +191,30 @@ The first CI run on v3 failed 7 jobs. All fixed:
 
 ## Next actions
 
-**CI is green — no triage pending.** Resume the phase plan:
+**Phase 8 is COMPLETE.** Two decisions for the user before Phase 9:
 
-**Phase 8 — Localization fan-out.** Likely **already satisfied**: i18n
-was backfilled (`fdb85c7`, 355 keys) and the widget keys translated into
-all 13 locales (`l10n-parity` green). Confirm scope vs
-`~/.claude/plans/rippling-weaving-puffin.md §Phase 8` (dead-key audit
-R-13/14/15/42; parity CI step already present). Probably a verification
-pass + the dead-key audit.
+0. **Push the 3 unpushed commits to `main`** (`cb60d83`, `8f82650`, +
+   this handoff) — Rule 12 needs explicit authorization each time. CI
+   reconfirms on push. **/ultrareview** is also worth offering (plan
+   recommends after Phase 9; was also slated post-Phase 5).
 
-Then per the plan: **Phase 9** (integration tests + spec-coverage
-matrix; close QA gap-4; this is also where to raise the coverage floor
-once real-native services get device coverage), **Phase 10** (manual
-real-device smoke — iOS is now CI-build-verified but NOT device-tested;
-verify the iOS widget + channels + the iOS-17 deep-link gap on
-hardware), **Phase 11** (cut-over / GA tag — triggers the `e2e` Patrol
-job).
+Then resume the phase plan:
+
+**Phase 9 — Integration tests + spec-coverage matrix** (the next big
+phase). Per `~/.claude/plans/rippling-weaving-puffin.md §Phase 9` +
+`docs/rewrite/v3-plan.md`: end-to-end Patrol scenarios (walk/date/
+distress/duress-PIN/quick-exit/sim-safety/GPS-disarm/battery-alert/
+Sentry-crash); finalize `test/spec_coverage_test.dart` so every R-NN +
+numbered spec section maps to ≥1 real test (CI hard-fails on an unmapped
+row); property-test cohort if needed to reach the 3000+ target. **This is
+also where to raise the coverage floor** (carried item #1) once the
+real-native services get device coverage (closes QA gap-4). Agent:
+`voltagent-qa-sec:test-automator` + `voltagent-lang:flutter-expert`.
+
+Then **Phase 10** (manual real-device smoke — iOS is CI-build-verified
+but NOT device-tested; verify the iOS widget + channels + the iOS-17
+deep-link gap on hardware), **Phase 11** (cut-over / GA tag — triggers
+the `e2e` Patrol job).
 
 ---
 
@@ -217,7 +224,7 @@ job).
 dart format --output=none --set-exit-if-changed lib/ test/ integration_test/      # 0 changed
 dart run import_sorter:main --no-comments --exit-if-changed                       # Sorted 0 (excludes OLD/ + l10n)
 flutter analyze --fatal-infos                                                     # 0 issues
-flutter test --concurrency=6                                                      # all pass (currently 3690)
+flutter test --concurrency=6                                                      # all pass (currently 3744)
 grep -rn 'package:flutter' lib/domain/ lib/services/protocols/ lib/data/          # empty (S-7)
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/                     # 0
 grep -rn "import.*OLD/" lib/ test/ integration_test/                              # 0 (S-5)
