@@ -530,6 +530,12 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
+      # device_info_plus 13.x compiles against the iOS 18 SDK — it calls
+      # NSProcessInfo.isiOSAppOnVision, which an older default Xcode's SDK
+      # does not declare. Select the newest Xcode so a recent SDK is used.
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
