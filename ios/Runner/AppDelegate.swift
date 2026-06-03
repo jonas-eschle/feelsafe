@@ -31,15 +31,23 @@ import UIKit
 
     // Obtain a binary messenger for custom channel registration.
     // Each plugin gets its own registrar to follow the plugin contract.
-    let quickExitRegistrar = registry.registrar(forPlugin: "GuardianAngelaQuickExit")
+    // registrar(forPlugin:) is nullable but returns nil only for a duplicate
+    // plugin key; these keys are unique, so non-nil is an invariant. Fail loud
+    // if it is ever violated rather than silently dropping a safety channel.
+    guard
+      let quickExitRegistrar = registry.registrar(forPlugin: "GuardianAngelaQuickExit"),
+      let callStateRegistrar = registry.registrar(forPlugin: "GuardianAngelaCallState"),
+      let systemUiRegistrar = registry.registrar(forPlugin: "GuardianAngelaSystemUi")
+    else {
+      fatalError("Guardian Angela plugin registrars must be non-nil")
+    }
+
     registerQuickExit(messenger: quickExitRegistrar.messenger())
 
-    let callStateRegistrar = registry.registrar(forPlugin: "GuardianAngelaCallState")
     let callState = CallStatePlugin(messenger: callStateRegistrar.messenger())
     callState.register()
     callStatePlugin = callState
 
-    let systemUiRegistrar = registry.registrar(forPlugin: "GuardianAngelaSystemUi")
     let systemUi = SystemUiPlugin(messenger: systemUiRegistrar.messenger())
     systemUi.register()
     systemUiPlugin = systemUi
