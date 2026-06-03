@@ -44,16 +44,20 @@ class _FakeChecklistRepository extends HomeChecklistRepository {
     bool dismissed = false,
     bool simulationDone = false,
     bool firstVisitDone = false,
+    bool allDoneCelebrated = false,
   }) : _dismissed = dismissed,
        _simulationDone = simulationDone,
-       _firstVisitDone = firstVisitDone;
+       _firstVisitDone = firstVisitDone,
+       _allDoneCelebrated = allDoneCelebrated;
 
   bool _dismissed;
   bool _simulationDone;
   bool _firstVisitDone;
+  bool _allDoneCelebrated;
   int dismissCalls = 0;
   int markSimulationDoneCalls = 0;
   int markFirstVisitDoneCalls = 0;
+  int markAllDoneCelebratedCalls = 0;
 
   @override
   Future<bool> dismissed() async => _dismissed;
@@ -80,6 +84,15 @@ class _FakeChecklistRepository extends HomeChecklistRepository {
   Future<void> markFirstVisitDone() async {
     markFirstVisitDoneCalls++;
     _firstVisitDone = true;
+  }
+
+  @override
+  Future<bool> allDoneCelebrated() async => _allDoneCelebrated;
+
+  @override
+  Future<void> markAllDoneCelebrated() async {
+    markAllDoneCelebratedCalls++;
+    _allDoneCelebrated = true;
   }
 }
 
@@ -264,23 +277,88 @@ void main() {
       await _pump(tester, repo: repo);
       expect(find.text(l10n.homeChecklistTitle), findsNothing);
     });
+  });
 
-    testWidgets('renders nothing when all 6 items are done', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        contacts: <EmergencyContact>[_contact('c0', 'Alice')],
-        modes: <SessionMode>[_mode('custom-1', 'Custom')],
-        repo: _FakeChecklistRepository(simulationDone: true),
-        settingsRepo: _FakeAppSettingsRepository(
-          initial: _settings(sessionEndPinHash: 'hash', stealthEnabled: true),
-        ),
-        permissionLookup: () async => true,
-      );
-      expect(find.text(l10n.homeChecklistTitle), findsNothing);
-    });
+  group('SafetySetupChecklist — all-done banner', () {
+    testWidgets(
+      'shows the "all set" banner when all 6 items are done (first visit)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final repo = _FakeChecklistRepository(simulationDone: true);
+        await _pump(
+          tester,
+          contacts: <EmergencyContact>[_contact('c0', 'Alice')],
+          modes: <SessionMode>[_mode('custom-1', 'Custom')],
+          repo: repo,
+          settingsRepo: _FakeAppSettingsRepository(
+            initial: _settings(sessionEndPinHash: 'hash', stealthEnabled: true),
+          ),
+          permissionLookup: () async => true,
+        );
+        // The checklist card is gone; the celebration banner takes over.
+        expect(find.text(l10n.homeChecklistTitle), findsNothing);
+        expect(find.text(l10n.homeChecklistAllDoneBanner), findsOneWidget);
+        expect(
+          find.byKey(const Key('safety-setup-all-done-banner')),
+          findsOneWidget,
+        );
+        // Flag persisted so the banner is a one-time celebration.
+        check(repo.markAllDoneCelebratedCalls).equals(1);
+      },
+    );
+
+    testWidgets(
+      'renders nothing once the banner was already shown (subsequent visit)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final repo = _FakeChecklistRepository(
+          simulationDone: true,
+          allDoneCelebrated: true,
+        );
+        await _pump(
+          tester,
+          contacts: <EmergencyContact>[_contact('c0', 'Alice')],
+          modes: <SessionMode>[_mode('custom-1', 'Custom')],
+          repo: repo,
+          settingsRepo: _FakeAppSettingsRepository(
+            initial: _settings(sessionEndPinHash: 'hash', stealthEnabled: true),
+          ),
+          permissionLookup: () async => true,
+        );
+        expect(find.text(l10n.homeChecklistTitle), findsNothing);
+        expect(find.text(l10n.homeChecklistAllDoneBanner), findsNothing);
+        // No re-persist when it was already celebrated.
+        check(repo.markAllDoneCelebratedCalls).equals(0);
+      },
+    );
+
+    testWidgets(
+      'completing the final item shows the banner and persists once',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        // 5/6 done; the notification permission is the only missing item.
+        final repo = _FakeChecklistRepository(simulationDone: true);
+        await _pump(
+          tester,
+          contacts: <EmergencyContact>[_contact('c0', 'Alice')],
+          modes: <SessionMode>[_mode('custom-1', 'Custom')],
+          repo: repo,
+          settingsRepo: _FakeAppSettingsRepository(
+            initial: _settings(sessionEndPinHash: 'hash', stealthEnabled: true),
+          ),
+          permissionLookup: () async => false,
+          permissionRequester: () async => true,
+        );
+        // Card still visible at 5/6, no celebration yet.
+        expect(find.text(l10n.homeChecklistProgress('5', '6')), findsOneWidget);
+        check(repo.markAllDoneCelebratedCalls).equals(0);
+        // Grant the final permission → completes the checklist.
+        await tester.tap(find.text(l10n.homeChecklistItem6Title));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.homeChecklistAllDoneBanner), findsOneWidget);
+        check(repo.markAllDoneCelebratedCalls).equals(1);
+      },
+    );
   });
 
   group('SafetySetupChecklist — completion sources', () {

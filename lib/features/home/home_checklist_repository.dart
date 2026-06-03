@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// Persists the "Safety Setup Checklist" UI state flags (spec 04 §Safety
 /// Setup Checklist — Behavior).
 ///
-/// The repository owns three boolean flags backed by [SharedPreferences]:
+/// The repository owns four boolean flags backed by [SharedPreferences]:
 ///
 /// * [dismissed] — true after the user explicitly closed the checklist
 ///   card; the card never reappears unless the user reinstalls or wipes
@@ -15,6 +15,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// * [firstVisitDone] — true after the home screen has rendered with the
 ///   checklist visible at least once; drives "expanded by default first
 ///   visit, collapsed on subsequent" per spec 04:511.
+/// * [allDoneCelebrated] — true once the brief "all set" banner has been
+///   shown after the final item was checked; keeps the banner to a
+///   single visit (it auto-dismisses on the next) per spec 04:513.
 ///
 /// Read paths are async because `SharedPreferences.getInstance()` is
 /// async; both reads and writes are no-throw — failures fall back to
@@ -37,6 +40,10 @@ class HomeChecklistRepository {
 
   /// SharedPreferences key for the first-card-render flag.
   static const String firstVisitDoneKey = 'home_checklist_first_visit_done';
+
+  /// SharedPreferences key for the all-items-complete celebration flag.
+  static const String allDoneCelebratedKey =
+      'home_checklist_all_done_celebrated';
 
   /// Whether the user permanently dismissed the checklist card.
   Future<bool> dismissed() async {
@@ -97,6 +104,29 @@ class HomeChecklistRepository {
     try {
       final prefs = await _prefsLoader();
       await prefs.setBool(firstVisitDoneKey, true);
+    } catch (_) {
+      // Best effort.
+    }
+  }
+
+  /// Whether the "all set" banner has already been shown on a prior
+  /// visit. When true the checklist card stays hidden once every item is
+  /// complete, so the celebration is a one-time event (spec 04:513).
+  Future<bool> allDoneCelebrated() async {
+    try {
+      final prefs = await _prefsLoader();
+      return prefs.getBool(allDoneCelebratedKey) ?? false;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  /// Persists the celebration flag (called by the widget the first time
+  /// it renders the banner) so the banner auto-dismisses next visit.
+  Future<void> markAllDoneCelebrated() async {
+    try {
+      final prefs = await _prefsLoader();
+      await prefs.setBool(allDoneCelebratedKey, true);
     } catch (_) {
       // Best effort.
     }

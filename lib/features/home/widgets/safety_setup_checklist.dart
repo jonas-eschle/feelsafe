@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,9 +31,11 @@ import 'package:guardianangela/services/service_providers.dart';
 /// 4. Notification permission: from `permission_handler`.
 /// 5. Custom mode: any [SessionMode] whose id is not a seed id.
 ///
-/// The card vanishes when all six items are complete OR after the user
-/// taps [×]. On the first render the card is expanded; subsequent
-/// renders collapse it (still toggleable).
+/// When all six items are complete the card is replaced by a brief
+/// "all set" confirmation banner for the rest of the visit; the banner
+/// auto-dismisses on the next visit (spec 04:513). The card also
+/// vanishes immediately after the user taps [×]. On the first render the
+/// card is expanded; subsequent renders collapse it (still toggleable).
 class SafetySetupChecklist extends ConsumerStatefulWidget {
   /// Creates a [SafetySetupChecklist].
   const SafetySetupChecklist({
@@ -71,6 +75,15 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
   bool _stealthDone = false;
   bool _simulationDone = false;
   bool _permissionDone = false;
+
+  /// Whether the "all set" banner was already shown on a prior visit
+  /// (snapshot taken at visit start in [_refresh]). Gates [build] so the
+  /// banner is a one-time celebration.
+  bool _allDoneCelebrated = false;
+
+  /// Transient guard so the celebration flag is persisted at most once
+  /// per visit, the first time every item is complete.
+  bool _allDonePersisted = false;
 
   HomeChecklistRepository get _repo =>
       ref.read(homeChecklistRepositoryProvider);
@@ -120,6 +133,7 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
     final dismissed = await _repo.dismissed();
     final firstVisitDone = await _repo.firstVisitDone();
     final simulationDone = await _repo.simulationDone();
+    final allDoneCelebrated = await _repo.allDoneCelebrated();
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final permissionGranted = await _checkPermission();
     if (!mounted) return;
@@ -131,9 +145,24 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
       _stealthDone = settings.defaults.stealth.enabled;
       _simulationDone = simulationDone;
       _permissionDone = permissionGranted;
+      _allDoneCelebrated = allDoneCelebrated;
     });
     if (!firstVisitDone) {
       await _repo.markFirstVisitDone();
+    }
+    _persistAllDoneIfNeeded();
+  }
+
+  /// Persists the celebration flag the first time every item is complete.
+  /// The snapshot [_allDoneCelebrated] — read at visit start and re-read
+  /// by [_refresh] (including on app-resume) — still gates [build], so
+  /// writing here keeps the banner visible until the next [_refresh]
+  /// (navigating away or resuming the app), at which point it
+  /// auto-dismisses.
+  void _persistAllDoneIfNeeded() {
+    if (_doneCount == 6 && !_allDoneCelebrated && !_allDonePersisted) {
+      _allDonePersisted = true;
+      unawaited(_repo.markAllDoneCelebrated());
     }
   }
 
@@ -151,10 +180,16 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
 
   @override
   Widget build(BuildContext context) {
-    if (_loading || _dismissed || _doneCount == 6) {
+    if (_loading || _dismissed) {
       return const SizedBox.shrink();
     }
     final l10n = AppLocalizations.of(context);
+    if (_doneCount == 6) {
+      // Every item complete: celebrate once. Show the banner this visit,
+      // then stay hidden on subsequent visits (spec 04:513).
+      if (_allDoneCelebrated) return const SizedBox.shrink();
+      return _AllDoneBanner(message: l10n.homeChecklistAllDoneBanner);
+    }
     return Card(
       key: const Key('safety-setup-checklist-card'),
       margin: const EdgeInsets.only(bottom: 12),
@@ -274,6 +309,7 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
     final granted = await _requestPermission();
     if (!mounted) return;
     setState(() => _permissionDone = granted);
+    _persistAllDoneIfNeeded();
   }
 }
 
@@ -282,6 +318,51 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
 /// exist as-is".
 bool _isSeedModeId(String id) =>
     id == SeedData.walkModeId || id == SeedData.dateModeId;
+
+/// Brief congratulations banner shown the moment the final checklist
+/// item is completed (spec 04 §Safety Setup Checklist — Behavior). It
+/// replaces the checklist card for the remainder of the visit;
+/// [_SafetySetupChecklistState] persists a flag so it auto-dismisses on
+/// the next visit. Marked as a live region so screen readers announce
+/// the confirmation as it appears.
+class _AllDoneBanner extends StatelessWidget {
+  const _AllDoneBanner({required this.message});
+
+  /// Localized confirmation text (`homeChecklistAllDoneBanner`).
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Card(
+      key: const Key('safety-setup-all-done-banner'),
+      margin: const EdgeInsets.only(bottom: 12),
+      color: cs.primaryContainer,
+      child: Semantics(
+        liveRegion: true,
+        container: true,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          child: Row(
+            children: <Widget>[
+              Icon(Icons.verified, color: cs.onPrimaryContainer),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  message,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    color: cs.onPrimaryContainer,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _Header extends StatelessWidget {
   const _Header({

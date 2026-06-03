@@ -510,8 +510,8 @@ Each row has a trailing info icon (ℹ) that opens a separate "why this matters"
 **Behavior:**
 - Card is collapsible (expanded by default on first visit, collapsed on subsequent).
 - Progress bar fills as items are checked.
-- Card disappears when all items checked, or after manual dismiss.
-- Dismissed state persisted via `SharedPreferences` (key `home_checklist_dismissed`).
+- When the final item is checked, the card is replaced by a brief "all set" confirmation banner (`homeChecklistAllDoneBanner`) for the remainder of the visit; the banner auto-dismisses on the next visit. After a manual dismiss the card disappears immediately.
+- Dismissed state persisted via `SharedPreferences` (key `home_checklist_dismissed`); the one-time all-done banner is gated by a second flag (key `home_checklist_all_done_celebrated`).
 - Items are independently completable in any order.
 - Tapping a completed (checked) row is a no-op; only unchecked rows drive navigation/tutorials.
 
