@@ -322,6 +322,17 @@ class SessionController extends AsyncNotifier<SessionState> {
     _widgetFakeCall = fakeCall;
   }
 
+  /// Returns the wall-clock elapsed duration since session start, or null when
+  /// no session is active.
+  ///
+  /// Used by [_publishWidgetStatus] callers to snapshot the elapsed time at
+  /// each session-state transition for the home-screen widget timer.
+  Duration? _elapsedSinceStart() {
+    final start = _startedAt;
+    if (start == null) return null;
+    return DateTime.now().difference(start);
+  }
+
   /// Publishes [status] to the home-screen widget via [homeWidgetServiceProvider].
   ///
   /// Fire-and-forget — widget updates must never block session transitions.
@@ -455,10 +466,15 @@ class SessionController extends AsyncNotifier<SessionState> {
       clearDistressConfirm: true,
     );
     state = AsyncData(next);
+    // Publish with elapsed=Duration.zero at session start — the widget timer
+    // will be updated on the next session-active transition. The snapshot is
+    // OS-throttled and cannot tick per-second from the app; a future
+    // enhancement can publish a start-epoch for a native live timer.
     _publishWidgetStatus(
       simulate
           ? HomeWidgetStatus.simulationActive
           : HomeWidgetStatus.sessionActive,
+      elapsed: Duration.zero,
     );
     _distressMode = distressMode;
     // Build one EventServices bundle per session. Constructed here (before
@@ -676,7 +692,10 @@ class SessionController extends AsyncNotifier<SessionState> {
   /// no session is active.
   void notifyBatteryAlert() {
     if (_engine == null) return;
-    _publishWidgetStatus(HomeWidgetStatus.batteryAlert);
+    _publishWidgetStatus(
+      HomeWidgetStatus.batteryAlert,
+      elapsed: _elapsedSinceStart(),
+    );
   }
 
   /// Quick-exit trigger. The native side performs `finishAndRemoveTask` /
@@ -966,7 +985,10 @@ class SessionController extends AsyncNotifier<SessionState> {
         );
         // Distress chain activation is a significant status transition that
         // the home-screen widget should reflect immediately.
-        _publishWidgetStatus(HomeWidgetStatus.sessionActive);
+        _publishWidgetStatus(
+          HomeWidgetStatus.sessionActive,
+          elapsed: _elapsedSinceStart(),
+        );
       case ChainEvent.distressCompleted:
         // No additional UI handling — sessionEnded will fire next.
         break;

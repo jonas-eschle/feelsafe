@@ -112,7 +112,10 @@ final goRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/session',
         name: RouteNames.session,
-        builder: (_, _) => const SessionScreen(),
+        builder: (_, GoRouterState state) {
+          final quickExit = state.uri.queryParameters['quickExit'] == 'true';
+          return SessionScreen(quickExit: quickExit);
+        },
       ),
       GoRoute(
         path: '/fake-call',

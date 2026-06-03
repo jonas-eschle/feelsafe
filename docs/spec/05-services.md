@@ -277,7 +277,7 @@ On Android, native code implements a persistent retry queue for SMS delivery bac
 
 - **Native:** `SmsWorker` extends `CoroutineWorker` in Kotlin, uses `SmsManager` directly
 - **Persistence:** WorkManager manages lifecycle; pending job metadata is mirrored into the Drift `sms_retry_jobs` table so the Dart layer can enumerate and cancel jobs (Extra-45)
-- **Constraint:** Only fires when device has `NetworkType.CONNECTED` connectivity
+- **Constraint:** `NetworkType.NOT_REQUIRED` — SMS sends over the cellular control channel and needs **no** validated data connection, so the worker MUST NOT wait for one. A cellular-but-no-data device (mobile data off, roaming, or a voice/SMS-only dead zone) must still deliver the distress SMS; the exponential backoff below covers a temporarily-unavailable radio. (Corrected post-Phase-7 review — the former `NetworkType.CONNECTED` could strand an emergency SMS indefinitely.)
 - **Backoff:** Exponential backoff starting at 30 seconds, maximum 10 retries
 - **Resilience:** Survives process death (WorkManager re-enqueues on device restart via `BootReceiver`)
 - **Enqueue:** Exposed via MethodChannel `enqueueSms(phoneNumber, message)` which returns the WorkManager job ID

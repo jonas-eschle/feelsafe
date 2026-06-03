@@ -152,8 +152,15 @@ class SmsChannel(private val context: Context) : MethodChannel.MethodCallHandler
                 .putString(SmsWorker.KEY_WORK_ID, workId)
                 .build()
 
+            // SMS dispatches over the cellular control channel and needs NO
+            // validated data connection. NetworkType.NOT_REQUIRED so WorkManager
+            // runs the worker immediately even with mobile data off, while
+            // roaming, or in a voice/SMS-only dead zone — a deferred distress
+            // SMS would defeat the app's purpose. The 30s x10 exponential
+            // backoff below already covers a temporarily-dead radio.
+            // (spec 05 §SMS Retry Queue.)
             val constraints = Constraints.Builder()
-                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .setRequiredNetworkType(NetworkType.NOT_REQUIRED)
                 .build()
 
             return OneTimeWorkRequest.Builder(SmsWorker::class.java)

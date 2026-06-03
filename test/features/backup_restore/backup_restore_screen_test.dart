@@ -48,10 +48,8 @@ import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
 import '../../helpers/widget_test_helpers.dart';
 
-// ignore: depend_on_referenced_packages
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show FileSelectorPlatform;
-
 
 // ---------------------------------------------------------------------------
 // Fake FileSelector

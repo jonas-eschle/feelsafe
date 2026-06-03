@@ -30,21 +30,44 @@ import 'package:guardianangela/services/service_providers.dart';
 /// Renders different UI per [ChainStepType], with overlays for distress
 /// confirmation, GPS destination prompts, and the interrupted-session
 /// prompt. See spec 04 §Session Screen + §Step-Specific UI.
+///
+/// When [quickExit] is true (set via `?quickExit=true` from the home-screen
+/// widget "Quick Exit" button), the screen auto-runs [_endSessionFlow] once
+/// immediately after the first frame via [WidgetsBinding.addPostFrameCallback].
+/// This reuses the existing PIN-gated / Duress / no-PIN end flow without
+/// duplicating any logic. No-op when [quickExit] is false.
 class SessionScreen extends ConsumerStatefulWidget {
   /// Creates a [SessionScreen].
-  const SessionScreen({super.key});
+  ///
+  /// [quickExit] defaults to false; pass true from the home-widget deep link
+  /// to auto-trigger the PIN-gated end flow on mount.
+  const SessionScreen({super.key, this.quickExit = false});
+
+  /// When true the end-session flow runs automatically after the first frame.
+  final bool quickExit;
 
   @override
   ConsumerState<SessionScreen> createState() => _SessionScreenState();
 }
 
 class _SessionScreenState extends ConsumerState<SessionScreen> {
+  /// Guards the one-shot post-frame quick-exit callback so it never fires
+  /// twice even if the widget rebuilds before the callback executes.
+  bool _quickExitFired = false;
+
   @override
   void initState() {
     super.initState();
     SystemChrome.setPreferredOrientations(<DeviceOrientation>[
       DeviceOrientation.portraitUp,
     ]);
+    if (widget.quickExit) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || _quickExitFired) return;
+        _quickExitFired = true;
+        _endSessionFlow(context);
+      });
+    }
   }
 
   @override

@@ -102,6 +102,7 @@ dev_dependencies:
   flutter_launcher_icons: ^0.14.4
   import_sorter: ^4.6.0
   share_plus_platform_interface: ^7.1.0
+  file_selector_platform_interface: ^2.7.0
 
 flutter:
   uses-material-design: true

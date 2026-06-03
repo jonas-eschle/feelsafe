@@ -43,10 +43,8 @@ import 'package:guardianangela/services/protocols/sentry_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
 
-// ignore: depend_on_referenced_packages
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart'
     show FileSelectorPlatform;
-
 
 // ---------------------------------------------------------------------------
 // Q8: Bootstrap ordering — sequence tracker fakes

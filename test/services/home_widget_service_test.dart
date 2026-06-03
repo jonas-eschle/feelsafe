@@ -406,5 +406,32 @@ void main() {
 
       await notifier.endSession();
     });
+
+    // FIX 2: elapsed timer must be non-null / non-empty on sessionActive.
+    test(
+      'startSession (real) publishes non-null elapsed formatted as mm:ss',
+      () async {
+        final svc = SimulationHomeWidgetService();
+        final container = _container(db, svc);
+        await container.read(sessionControllerProvider.future);
+
+        await container
+            .read(sessionControllerProvider.notifier)
+            .startSession(mode: _holdMode('m-elapsed'), simulate: false);
+        await Future<void>.delayed(Duration.zero);
+
+        // Find the sessionActive call.
+        final activeCall = svc.calls.where(
+          (c) => c['status'] == HomeWidgetStatus.sessionActive,
+        );
+        check(activeCall.isNotEmpty).isTrue();
+
+        // Elapsed must be a non-null Duration (not null = no elapsed written).
+        final elapsed = activeCall.first['elapsed'];
+        check(elapsed).isNotNull();
+
+        await container.read(sessionControllerProvider.notifier).endSession();
+      },
+    );
   });
 }

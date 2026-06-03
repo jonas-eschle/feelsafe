@@ -134,13 +134,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     if (uri.scheme != 'guardianangela') return;
     switch (uri.host) {
       case 'quick-exit':
-        // Quick Exit is PIN-gated via the existing session-end flow.
-        // Route to /session if a session is running; otherwise it is a no-op.
+        // Quick Exit is PIN-gated via the existing session-end flow in
+        // SessionScreen._endSessionFlow. We navigate to /session with
+        // quickExit=true so SessionScreen auto-triggers that flow once.
+        // No-op when no session is active (spec 04 §Home Screen Widget).
         final sessionState = ref.read(sessionControllerProvider).value;
         if (sessionState != null &&
             sessionState.phase != SessionPhase.idle &&
             sessionState.phase != SessionPhase.ended) {
-          context.pushNamed(RouteNames.session);
+          context.pushNamed(
+            RouteNames.session,
+            queryParameters: const <String, String>{'quickExit': 'true'},
+          );
         }
       case 'fake-call':
         context.pushNamed(RouteNames.fakeCall);
