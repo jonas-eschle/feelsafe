@@ -125,8 +125,13 @@ import_sorter:
   comments: false
   emojis: false
   # OLD/ is an inert archive — never touch it.
+  # lib/l10n/l10n/ holds flutter gen-l10n output (app_localizations*.dart).
+  # These are generated; import_sorter mishandles their relative sibling
+  # imports (emits a malformed doubled path) and reports a phantom change
+  # under --exit-if-changed on a clean checkout, so it is excluded.
   ignored_files:
     - '^/OLD/'
+    - '/lib/l10n/l10n/'
 
 hooks:
   user_defines:

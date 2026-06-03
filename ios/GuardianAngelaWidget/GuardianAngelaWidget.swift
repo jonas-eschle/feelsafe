@@ -8,7 +8,11 @@ import WidgetKit
 ///
 /// All keys are written by `RealHomeWidgetService.publishStatus` in Dart via
 /// the `home_widget` plugin (key contract: home-widget-contract.md §1).
-private struct WidgetData {
+///
+/// Internal (not `private`): it is the type of `GuardianAngelaEntry.data`, an
+/// internal `TimelineEntry` property, so its access level must be at least as
+/// visible as that property.
+struct WidgetData {
   let status: String
   let statusText: String
   let elapsed: String
