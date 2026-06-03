@@ -149,6 +149,7 @@ class SettingsScreen extends ConsumerWidget {
                 child: ListTile(
                   leading: const Icon(Icons.restart_alt),
                   title: Text(l10n.settingsRedoOnboarding),
+                  // spec:04:1951: disabled because a session is active
                   enabled: false,
                 ),
               )

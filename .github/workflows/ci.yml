@@ -43,6 +43,11 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored, so a fresh
+      # runner has none. import_sorter parses every .dart file and is
+      # most reliable when the tree is complete — generate before sorting.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Check import order
         # Lines: 8-14
         run: dart run import_sorter:main --no-comments --exit-if-changed
@@ -86,6 +91,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored — generate them
+      # or analyze sees hundreds of "URI hasn't been generated" errors.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Analyze
         # Lines: 23-29
         run: flutter analyze --fatal-infos
@@ -116,6 +125,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored — without them
+      # the test suite cannot compile.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Run tests with coverage
         # Lines: 30-39
         run: flutter test --coverage --concurrency=6
@@ -250,7 +263,11 @@ jobs:
           check "LoudAlarmSound.beep|whistle|scream|whoop" \
                                             -E "LoudAlarmSound\.(beep|whistle|scream|whoop)\b"
           check "SmsRecipient"              -E "\bSmsRecipient\b"
-          check "flashSpeed (bare)"         -E "\bflashSpeed\b(?!Ms)"
+          # `\b` after `flashSpeed` already excludes the canonical
+          # `flashSpeedMs` (no word boundary between `d` and `M`), so the
+          # old PCRE `(?!Ms)` lookahead was both redundant and invalid
+          # under grep -E (ERE) — it silently matched nothing.
+          check "flashSpeed (bare)"         -E "\bflashSpeed\b"
           check "maxVolume"                 -E "\bmaxVolume\b"
           check "Hive/@HiveType/@HiveField" -E "\bHive\b|@HiveType|@HiveField"
           check "PauseReason.bootRestart"   -E "PauseReason\.bootRestart\b"
@@ -329,14 +346,18 @@ jobs:
               FAILED=1
             fi
           done < <(grep -rn "kDebugMode\|kReleaseMode" lib/ 2>/dev/null || true)
-          [ $FAILED -eq 0 ] && echo "OK S-5"
-          [ $FAILED -ne 0 ] && exit 1
+          if [ $FAILED -ne 0 ]; then exit 1; fi
+          echo "OK S-5"
       - name: S-6 No Simulation/Fake services outside service_providers.dart
         # Lines: 199-210
+        # The simulation services LIVE in lib/services/sim/*_service_sim.dart;
+        # their own constructor declarations there are not "mock-in-production",
+        # so that directory is excluded. The gate still catches a Simulation*
+        # service instantiated anywhere else (features/, domain/, data/, ...).
         run: |
           if grep -rn "Simulation.*Service(\|Fake.*Repository(" lib/ 2>/dev/null \
              | grep -v "lib/services/service_providers.dart" \
-             | grep -v "lib/services/.*simulation_.*service.dart" \
+             | grep -v "lib/services/sim/" \
              | grep -v "// spec:"; then
             echo "FAIL S-6: Simulation/Fake service instantiated outside service_providers.dart"
             exit 1
@@ -365,8 +386,8 @@ jobs:
               FAILED=1
             fi
           done < <(grep -rn "enabled:\s*false\|onPressed:\s*null" lib/features/ 2>/dev/null || true)
-          [ $FAILED -eq 0 ] && echo "OK S-8"
-          [ $FAILED -ne 0 ] && exit 1
+          if [ $FAILED -ne 0 ]; then exit 1; fi
+          echo "OK S-8"
       - name: "S-9 No @skip, skip:, or trivial assertions in tests"
         # Lines: 236-250
         run: |
@@ -379,12 +400,17 @@ jobs:
             echo "FAIL S-9: Trivial expect assertion (expect(true, true) etc.) found"
             FAILED=1
           fi
-          [ $FAILED -eq 0 ] && echo "OK S-9"
-          [ $FAILED -ne 0 ] && exit 1
+          if [ $FAILED -ne 0 ]; then exit 1; fi
+          echo "OK S-9"
       - name: S-10 No doc stubs (/// TODO or mere name restatement)
         # Lines: 251-262
+        # Per the plan, S-10 targets doc STUBS (TODO/FIXME). "placeholder"
+        # was over-added and matched the English word in legitimate doc
+        # comments (template `{name}` placeholders, "placeholder card" UI).
+        # Placeholder-as-stub is still covered by S-3 (// markers) and
+        # S-4 (Text('placeholder')/Placeholder()).
         run: |
-          if grep -rn "///.*TODO\|///.*FIXME\|///.*placeholder" lib/ 2>/dev/null; then
+          if grep -rn "///.*TODO\|///.*FIXME" lib/ 2>/dev/null; then
             echo "FAIL S-10: Doc comment stubs found in lib/"
             exit 1
           fi
@@ -418,9 +444,9 @@ jobs:
           PYEOF
       - name: S-12 Native channel handlers match Dart invokeMethod calls
         # Lines: 291-320
-        # Phase 0: lib/ has no MethodChannel calls yet — this will be a real
-        # check once Phase 5+ lands. For now it verifies the check infrastructure
-        # is present and exits 0 if no calls found.
+        # The regex must tolerate a type argument, e.g. invokeMethod<bool>('x'),
+        # and whitespace after the paren — otherwise it silently matches no
+        # calls and the gate passes without verifying anything.
         run: |
           python3 - <<'PYEOF'
           import os, re, glob, sys
@@ -428,10 +454,10 @@ jobs:
           for path in glob.glob('lib/**/*.dart', recursive=True):
               with open(path) as f:
                   content = f.read()
-              for m in re.finditer(r"invokeMethod\(['\"]([^'\"]+)['\"]", content):
+              for m in re.finditer(r"invokeMethod(?:<[^>]*>)?\(\s*['\"]([^'\"]+)['\"]", content):
                   dart_calls.add((path, m.group(1)))
           if not dart_calls:
-              print("OK S-12: No MethodChannel.invokeMethod calls in lib/ yet (Phase 0)")
+              print("OK S-12: No MethodChannel.invokeMethod calls in lib/")
               sys.exit(0)
           # Phase 5+: verify each call has a native handler
           kt_files = glob.glob('android/app/src/main/kotlin/**/*.kt', recursive=True)
@@ -486,6 +512,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored — without them
+      # the Dart compile inside the APK build fails.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Build debug APK
         # Lines: 341-350
         run: flutter build apk --debug
@@ -506,6 +536,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored — without them
+      # the Dart compile inside the iOS build fails.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Build iOS (no codesign)
         # Lines: 351-360
         run: flutter build ios --no-codesign
@@ -536,6 +570,10 @@ jobs:
           channel: stable
           cache: true
       - run: flutter pub get
+      # Generated Drift adapters (*.g.dart) are gitignored — generate
+      # before the integration suite compiles.
+      - name: Generate Drift adapters (build_runner)
+        run: dart run build_runner build --delete-conflicting-outputs
       - name: Run Patrol e2e tests
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}

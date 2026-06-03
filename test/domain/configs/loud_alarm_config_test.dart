@@ -3,8 +3,8 @@
 // Verifies constructor defaults, JSON round-trip, copyWith behaviour,
 // equality / hashCode contract, and edge cases per
 // docs/spec/03-data-models.md §LoudAlarmConfig (spec 03:446-455 / Q9).
-// Asserts legacy `flashSpeed` / `maxVolume` are gone per pre-flight
-// fix G-006.
+// The G-006 schema migration is guarded by an exact toJson key-set
+// assertion (no pre-migration keys) per pre-flight fix G-006.
 //
 // ignore_for_file: avoid_redundant_argument_values
 // Tests intentionally pass default values to verify round-trip and
@@ -87,28 +87,6 @@ void main() {
     });
 
     group('legacy field schema (G-006)', () {
-      test('toJson does NOT contain legacy flashSpeed key', () {
-        // Arrange
-        const cfg = LoudAlarmConfig();
-
-        // Act
-        final json = cfg.toJson();
-
-        // Assert
-        check(json.containsKey('flashSpeed')).isFalse();
-      });
-
-      test('toJson does NOT contain legacy maxVolume key', () {
-        // Arrange
-        const cfg = LoudAlarmConfig();
-
-        // Act
-        final json = cfg.toJson();
-
-        // Assert
-        check(json.containsKey('maxVolume')).isFalse();
-      });
-
       test('toJson exposes canonical flashSpeedMs key', () {
         // Arrange
         const cfg = LoudAlarmConfig();
@@ -131,22 +109,26 @@ void main() {
         check(json.containsKey('volume')).isTrue();
       });
 
-      test('toJson exposes all expected keys', () {
+      test('toJson key-set is exactly the canonical G-006 schema', () {
         // Arrange
         const cfg = LoudAlarmConfig();
 
         // Act
         final json = cfg.toJson();
 
-        // Assert
-        check(json.containsKey('flashScreen')).isTrue();
-        check(json.containsKey('flashSpeedMs')).isTrue();
-        check(json.containsKey('volume')).isTrue();
-        check(json.containsKey('soundChoice')).isTrue();
-        check(json.containsKey('gradualVolume')).isTrue();
-        check(json.containsKey('flashLight')).isTrue();
-        check(json.containsKey('blackScreenMode')).isTrue();
-        check(json.containsKey('logGps')).isTrue();
+        // Assert — an exact key-set: a re-introduced pre-G-006 key
+        // (an extra entry) or a missing canonical key fails this.
+        // Strictly stronger than per-key presence/absence checks.
+        check(json.keys.toList()..sort()).deepEquals([
+          'blackScreenMode',
+          'flashLight',
+          'flashScreen',
+          'flashSpeedMs',
+          'gradualVolume',
+          'logGps',
+          'soundChoice',
+          'volume',
+        ]);
       });
     });
 
