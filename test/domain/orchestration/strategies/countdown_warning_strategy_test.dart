@@ -310,7 +310,7 @@ void main() {
       );
       check(
         audio.calls.first['assetPath'] as String,
-      ).equals('assets/audio/countdown_warning.ogg');
+      ).equals('assets/audio/countdown_warning.wav');
     });
 
     test('vibration is called before audio (call order)', () async {
@@ -577,7 +577,7 @@ void main() {
         );
         check(
           audio.calls.first['assetPath'] as String,
-        ).equals('assets/audio/countdown_warning.ogg');
+        ).equals('assets/audio/countdown_warning.wav');
       },
     );
 

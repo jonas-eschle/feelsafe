@@ -4,7 +4,9 @@ import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 
 /// Default asset path for the countdown warning sound.
-const _kCountdownWarningSoundAsset = 'assets/audio/countdown_warning.ogg';
+///
+/// WAV (not OGG) so the clip decodes on both Android and iOS/AVFoundation.
+const _kCountdownWarningSoundAsset = 'assets/audio/countdown_warning.wav';
 
 /// Strategy for [ChainStepType.countdownWarning] steps.
 ///

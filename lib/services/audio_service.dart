@@ -160,11 +160,12 @@ class RealAudioService implements AudioServiceProtocol {
       }
     } else {
       // Default ringtone asset — generic ringing sound bundled with the app.
-      await _player.setAsset('assets/audio/ringtone_default.ogg');
+      // WAV (not OGG): decodes on both Android and iOS/AVFoundation.
+      await _player.setAsset('assets/audio/ringtone_default.wav');
     }
 
     await _player.setLoopMode(LoopMode.all);
-    await _player.play();
+    _startPlayback();
   }
 
   @override
@@ -239,8 +240,8 @@ class RealAudioService implements AudioServiceProtocol {
     if (soundChoice == 'custom' && customSoundPath != null) {
       await _player.setFilePath(customSoundPath);
     } else {
-      // 'siren' — built-in asset.
-      await _player.setAsset('assets/audio/siren.ogg');
+      // 'siren' — built-in asset. WAV decodes on both Android and iOS.
+      await _player.setAsset('assets/audio/siren.wav');
     }
 
     await _player.setLoopMode(LoopMode.all);
@@ -249,11 +250,11 @@ class RealAudioService implements AudioServiceProtocol {
       // Gradual volume ramp: start at 0, increase linearly over rampSeconds
       // using 100ms ticks (spec 05:91-94, Q33).
       await _player.setVolume(0.0);
-      await _player.play();
+      _startPlayback();
       _startVolumeRamp(clampedVolume, clampedRamp);
     } else {
       await _player.setVolume(clampedVolume);
-      await _player.play();
+      _startPlayback();
     }
   }
 
@@ -263,7 +264,7 @@ class RealAudioService implements AudioServiceProtocol {
     await _ensurePlayer();
     await _player.setAsset(assetPath);
     await _player.setLoopMode(LoopMode.off);
-    await _player.play();
+    _startPlayback();
   }
 
   @override
@@ -317,7 +318,7 @@ class RealAudioService implements AudioServiceProtocol {
       await _player.setAsset(assetPath);
     }
 
-    await _player.play();
+    _startPlayback();
   }
 
   // ---------------------------------------------------------------------------
@@ -402,6 +403,24 @@ class RealAudioService implements AudioServiceProtocol {
         _rampTimer = null;
       }
     });
+  }
+
+  /// Starts playback fire-and-forget.
+  ///
+  /// `AudioPlayer.play()` returns a Future that only completes when playback
+  /// finishes or is paused/stopped (see just_audio docs). Awaiting it on a
+  /// looping source (alarm/ringtone) would therefore never return, and
+  /// awaiting it on a one-shot clip would needlessly block the caller for the
+  /// clip's full duration. Every "start playing X" method should return once
+  /// playback has been *initiated*. Load failures already surface
+  /// synchronously from the awaited `setAsset`; an error from `play()` itself
+  /// is logged.
+  void _startPlayback() {
+    unawaited(
+      _player.play().catchError((Object e, StackTrace st) {
+        log('playback error: $e', name: 'AudioService');
+      }),
+    );
   }
 
   /// Resets the player if it has been disposed so it is safe to use.

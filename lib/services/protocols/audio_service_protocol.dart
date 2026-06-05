@@ -55,7 +55,7 @@ abstract interface class AudioServiceProtocol {
   ///
   /// Used by [CountdownWarningStrategy] for the optional countdown sound.
   /// [assetPath] must be a Flutter asset path (e.g.,
-  /// `'assets/audio/countdown_warning.ogg'`).
+  /// `'assets/audio/countdown_warning.wav'`).
   Future<void> playSound(String assetPath);
 
   /// Stops any currently playing audio.

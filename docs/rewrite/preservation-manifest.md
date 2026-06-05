@@ -91,7 +91,7 @@ copy).
 | Per-contact SMS language enum strings, etc. | Referenced from the ARB files; no extra source | n/a | — |
 | Native Android strings (widget-only) | `android/app/src/main/res/values/strings.xml` (only the home-widget RemoteViews labels — see comment block in file) | SOURCE-OF-TRUTH | Home-widget shows "Quick Exit" / "Fake Call" on the home screen. |
 | Voice prompt audio | `assets/voice/angela_<lang>.m4a` (14 files; **silent 1-second placeholders** per `assets/voice/README.md`) + `assets/voice/README.md` | SOURCE-OF-TRUTH (the README and the asset bundle wiring); the audio is itself a placeholder so re-generation is acceptable | Asset-exists check in `AudioService.playVoiceRecording` passes for every locale. |
-| Alarm audio | `assets/audio/alarm.mp3`, `assets/audio/ringtone.wav` | SOURCE-OF-TRUTH | Plays during loud-alarm step. |
+| Alarm/ring/countdown audio | `assets/audio/ringtone_default.wav` (preserved, renamed from `ringtone.wav`); `siren.wav` + `countdown_warning.wav` (synthesized — see `tool/generate_audio_assets.py`) | SOURCE-OF-TRUTH (ringtone) + DERIVED (siren/countdown) | The former `alarm.mp3` was a 0.26 s **silent** stub and was removed; `siren.wav` replaces it. WAV (not OGG) so the clips decode on iOS/AVFoundation too. The `assets-exist` CI gate verifies every `assets/` path referenced in `lib/`. |
 
 **Translation effort warning:** The 13 non-English ARB files represent
 real translation work done by language sub-agents. Re-doing them is
@@ -296,7 +296,7 @@ seed and this test together.
 | Item | Path | Why |
 |---|---|---|
 | `dart_test.yaml` | root | Declares the `golden` tag for Alchemist. |
-| `assets/audio/alarm.mp3`, `assets/audio/ringtone.wav` | root | Required for the loud-alarm and fake-call rings. |
+| `assets/audio/siren.wav`, `ringtone_default.wav`, `countdown_warning.wav` | root | Loud-alarm siren, fake-call ring, countdown-warning beep. `siren`/`countdown` are synthesized (`tool/generate_audio_assets.py`); `ringtone_default` is preserved v2 audio (renamed from `ringtone.wav`). The old silent `alarm.mp3` was removed. |
 | Adaptive icon background color `#131118` | `pubspec.yaml` + `android/app/src/main/res/values/colors.xml` | Brand color; must stay in sync if changed. |
 | Permission strings on iOS (`NSLocationWhenInUseUsageDescription`, `NSMicrophoneUsageDescription`) | `ios/Runner/Info.plist` | App Review vets these. |
 | 14 `<uses-permission>` declarations on Android | `AndroidManifest.xml` | Loss = silent feature breakage. |

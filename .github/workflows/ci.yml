@@ -292,6 +292,37 @@ jobs:
           echo "OK: No OLD/ imports found"
 
   # ─────────────────────────────────────────────────────────────────────────────
+  # 9b. Asset-existence gate — every assets/ path referenced in lib/ must exist
+  #     on disk. Catches the "code names an asset that was never shipped" class
+  #     of bug (e.g. a strategy referencing a sound file that is absent → the
+  #     feature is silently dead at runtime while unit tests still pass).
+  # ─────────────────────────────────────────────────────────────────────────────
+  assets-exist:
+    name: Referenced assets exist
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Every assets/ path referenced in lib/ must exist on disk
+        run: |
+          # Match `assets/<path>.<ext>` string literals. The character class
+          # excludes `$`, `<`, etc., so interpolated paths and `<lang>`-style
+          # doc placeholders are skipped (they cannot be checked statically).
+          refs=$(grep -rhoE "assets/[A-Za-z0-9_/.-]+\.[A-Za-z0-9]+" lib/ 2>/dev/null | sort -u)
+          missing=0
+          for ref in $refs; do
+            if [ ! -f "$ref" ]; then
+              echo "FAIL: lib/ references an asset that does not exist: $ref"
+              missing=1
+            fi
+          done
+          if [ "$missing" -ne 0 ]; then
+            echo "Asset-existence gate failed — add the file(s) or fix the path(s)."
+            exit 1
+          fi
+          echo "OK: every assets/ path referenced in lib/ exists on disk"
+          echo "$refs" | sed 's/^/  - /'
+
+  # ─────────────────────────────────────────────────────────────────────────────
   # 10. NO-STUBS CI gate (S-1 through S-12, ALL hard-fail per D13)
   # ─────────────────────────────────────────────────────────────────────────────
   no-stubs:
