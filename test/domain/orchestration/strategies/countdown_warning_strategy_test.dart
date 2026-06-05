@@ -101,6 +101,20 @@ final class _OrderAudioService implements AudioServiceProtocol {
   }
 
   @override
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  }) async {
+    _log.add('audio');
+    await _delegate.playVoiceRecording(
+      filePath,
+      useSpeaker: useSpeaker,
+      isSimulation: isSimulation,
+    );
+  }
+
+  @override
   Future<void> stop() async {
     _log.add('audio');
     await _delegate.stop();

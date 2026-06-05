@@ -62,6 +62,20 @@ final class FakeAudioService implements AudioServiceProtocol {
   }
 
   @override
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  }) async {
+    calls.add({
+      'method': 'playVoiceRecording',
+      'filePath': filePath,
+      'useSpeaker': useSpeaker,
+      'isSimulation': isSimulation,
+    });
+  }
+
+  @override
   Future<void> stop() async {
     calls.add({'method': 'stop'});
   }

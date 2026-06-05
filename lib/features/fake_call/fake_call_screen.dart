@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
+import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/features/fake_call/fake_call_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -41,6 +42,10 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
   Timer? _activeTicker;
   DateTime? _holdStart;
   Timer? _holdTicker;
+
+  /// Guards [_onSlideUpdate] so the voice clip is requested exactly once when
+  /// the call is answered.
+  bool _answered = false;
 
   @override
   void initState() {
@@ -100,8 +105,21 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
 
   void _onSlideUpdate(double value) {
     _controller.updateSlide(value);
-    if (_controller.value.phase == FakeCallPhase.active) {
+    if (_controller.value.phase == FakeCallPhase.active && !_answered) {
+      _answered = true;
       _startActiveTicker();
+      // Answer: stop the ringtone and play the voice clip. The engine timer
+      // keeps running (Pivot 2). See spec 02 §fakeCall Voice Recording.
+      final useSpeaker =
+          widget.config.voiceOutputMode == VoiceOutputMode.speaker;
+      unawaited(
+        ref
+            .read(sessionControllerProvider.notifier)
+            .answerFakeCall(
+              voiceRecordingPath: widget.config.voiceRecordingPath,
+              useSpeaker: useSpeaker,
+            ),
+      );
     }
   }
 
@@ -109,12 +127,20 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
 
   void _hangUp() {
     _activeTicker?.cancel();
+    // Hang-up after answering disarms (reset to step 0); engine keeps running
+    // until then (Pivot 2). See spec 02 §fakeCall Answer / Hang-up Semantics.
+    ref.read(sessionControllerProvider.notifier).hangUpFakeCall();
     context.pop();
   }
 
   void _decline() {
     _activeTicker?.cancel();
     _holdTicker?.cancel();
+    // Decline: disarm when declineIsSafe (default), otherwise count a miss and
+    // re-ring (spec 02 §fakeCall Decline).
+    ref
+        .read(sessionControllerProvider.notifier)
+        .declineFakeCall(declineIsSafe: widget.config.declineIsSafe);
     context.pop();
   }
 

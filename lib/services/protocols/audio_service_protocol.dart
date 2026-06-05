@@ -58,6 +58,19 @@ abstract interface class AudioServiceProtocol {
   /// `'assets/audio/countdown_warning.wav'`).
   Future<void> playSound(String assetPath);
 
+  /// Plays the fake-call voice recording once.
+  ///
+  /// [filePath] is a user-recorded clip, or `null` to fall back to the
+  /// built-in language-specific recording. [useSpeaker] routes playback through
+  /// the speaker instead of the earpiece. [isSimulation] suppresses playback at
+  /// the service level (Layer 3). Used by the fake-call answer flow when the
+  /// user accepts the call (spec 05:99-151, spec 02 §fakeCall Voice Recording).
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  });
+
   /// Stops any currently playing audio.
   ///
   /// Safe to call multiple times. Used by [LoudAlarmStrategy] cleanup

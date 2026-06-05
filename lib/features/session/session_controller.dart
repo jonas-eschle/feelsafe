@@ -83,6 +83,7 @@ class SessionState {
     this.lastError,
     this.needsGpsDestinationPrompt = false,
     this.stealthEnabled = false,
+    this.fakeCallShowNonce = 0,
   });
 
   /// The clean starting state used before the engine is wired.
@@ -164,6 +165,13 @@ class SessionState {
   /// `false` on `endSession`. Spec 04 §Stealth Mode UI.
   final bool stealthEnabled;
 
+  /// Monotonic counter that increments each time a `fakeCall` step starts
+  /// (including retries). The session screen listens for changes and pushes
+  /// the full-screen [FakeCallScreen] — the fake call "auto-appears like a real
+  /// incoming call" (spec 02 §fakeCall, 04 §Fake Call Screen). A nonce (rather
+  /// than a bool) so a retry of the same step index still triggers a re-show.
+  final int fakeCallShowNonce;
+
   /// The currently executing [ChainStep], or null if no step is active.
   ChainStep? get currentStep {
     if (currentStepIndex < 0 || currentStepIndex >= activeChain.length) {
@@ -197,6 +205,7 @@ class SessionState {
     bool clearError = false,
     bool? needsGpsDestinationPrompt,
     bool? stealthEnabled,
+    int? fakeCallShowNonce,
   }) => SessionState(
     isSimulation: isSimulation ?? this.isSimulation,
     elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -223,6 +232,7 @@ class SessionState {
     needsGpsDestinationPrompt:
         needsGpsDestinationPrompt ?? this.needsGpsDestinationPrompt,
     stealthEnabled: stealthEnabled ?? this.stealthEnabled,
+    fakeCallShowNonce: fakeCallShowNonce ?? this.fakeCallShowNonce,
   );
 }
 
@@ -534,6 +544,51 @@ class SessionController extends AsyncNotifier<SessionState> {
   /// Restart the current step after the user dismisses a fake call etc.
   void restartCurrentStep() {
     _engine?.restartCurrentStep();
+  }
+
+  /// Called when the user answers the fake call (slide-to-answer completes).
+  ///
+  /// Stops the ringtone and plays the configured voice recording (or the
+  /// built-in default). The engine timer keeps running — fakeCall is an event,
+  /// not a pause (Pivot 2 / R-1); [SessionEngine.answerFakeCall] is a no-op at
+  /// the engine level, so the audio is owned here. No-op if no session is
+  /// active. [useSpeaker] routes the clip to the speaker (vs the earpiece).
+  Future<void> answerFakeCall({
+    String? voiceRecordingPath,
+    bool useSpeaker = false,
+  }) async {
+    _engine?.answerFakeCall();
+    final services = _eventServices;
+    if (services == null) return;
+    await services.audio.stop();
+    await services.audio.playVoiceRecording(
+      voiceRecordingPath,
+      useSpeaker: useSpeaker,
+      isSimulation: services.isSimulation,
+    );
+  }
+
+  /// Called when the user hangs up after answering the fake call.
+  ///
+  /// Stops the voice clip and disarms (resets the chain to step 0) per the
+  /// fake-call hang-up semantics (spec 02 §fakeCall, Pivot 2).
+  void hangUpFakeCall() {
+    unawaited(_eventServices?.audio.stop() ?? Future<void>.value());
+    _engine?.hangUp();
+  }
+
+  /// Called when the user declines the incoming fake call (brief tap).
+  ///
+  /// Stops the ringtone, then either disarms (when [declineIsSafe] — the user
+  /// signalled they are safe) or counts a miss and re-rings via
+  /// [restartCurrentStep] (spec 02 §fakeCall Decline).
+  void declineFakeCall({required bool declineIsSafe}) {
+    unawaited(_eventServices?.audio.stop() ?? Future<void>.value());
+    if (declineIsSafe) {
+      _engine?.disarm();
+    } else {
+      _engine?.restartCurrentStep();
+    }
   }
 
   /// Called when the user confirms a distress trigger inside the 5s window.
@@ -931,6 +986,9 @@ class SessionController extends AsyncNotifier<SessionState> {
       case ChainEvent.stepStarted:
         final engine = _engine;
         final isHold = event.stepType == ChainStepType.holdButton;
+        // Bump the fake-call show signal so the session screen auto-pushes the
+        // full-screen call UI (including on a retry of the same step index).
+        final isFakeCall = event.stepType == ChainStepType.fakeCall;
         state = AsyncData(
           s.copyWith(
             currentStepIndex: event.stepIndex ?? s.currentStepIndex,
@@ -938,6 +996,9 @@ class SessionController extends AsyncNotifier<SessionState> {
             isHolding: engine?.isHolding ?? false,
             missCount: 0,
             clearError: true,
+            fakeCallShowNonce: isFakeCall
+                ? s.fakeCallShowNonce + 1
+                : s.fakeCallShowNonce,
           ),
         );
         // Dispatch the real action for every step type except disguisedReminder.

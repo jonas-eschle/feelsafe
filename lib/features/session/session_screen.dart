@@ -55,6 +55,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   /// twice even if the widget rebuilds before the callback executes.
   bool _quickExitFired = false;
 
+  /// True while the full-screen [FakeCallScreen] route is on top, so a retry
+  /// of the same fake-call step does not stack a second call screen.
+  bool _fakeCallRouteOpen = false;
+
+  /// Last seen [SessionState.fakeCallShowNonce]; a higher value means a new
+  /// fake-call ring should auto-appear.
+  int _lastFakeCallNonce = 0;
+
   @override
   void initState() {
     super.initState();
@@ -80,6 +88,16 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final stateAsync = ref.watch(sessionControllerProvider);
+    // Auto-appear: when a fakeCall step starts (or retries), push the
+    // full-screen call UI "like a real incoming call" (spec 02 §fakeCall).
+    ref.listen<AsyncValue<SessionState>>(sessionControllerProvider, (_, next) {
+      final s = next.value;
+      if (s == null) return;
+      if (s.fakeCallShowNonce > _lastFakeCallNonce) {
+        _lastFakeCallNonce = s.fakeCallShowNonce;
+        unawaited(_maybeShowFakeCall(s));
+      }
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.sessionTitle),
@@ -102,6 +120,19 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
         data: (SessionState s) => _SessionRoot(state: s),
       ),
     );
+  }
+
+  /// Pushes the full-screen fake-call route with the current step's config,
+  /// unless a call screen is already showing. The `await` completes when the
+  /// route is popped (answer/hang-up/decline), clearing the open flag so a
+  /// later retry can re-appear.
+  Future<void> _maybeShowFakeCall(SessionState s) async {
+    if (_fakeCallRouteOpen || !mounted) return;
+    final config = s.currentStep?.config;
+    if (config is! FakeCallConfig) return;
+    _fakeCallRouteOpen = true;
+    await context.pushNamed(RouteNames.fakeCall, extra: config);
+    if (mounted) _fakeCallRouteOpen = false;
   }
 
   Future<void> _endSessionFlow(BuildContext context) async {
@@ -1462,7 +1493,11 @@ class _FakeCallStepUi extends ConsumerWidget {
         FilledButton.icon(
           icon: const Icon(Icons.open_in_new),
           label: Text(l10n.sessionStepFakeCallOpen),
-          onPressed: () => context.pushNamed(RouteNames.fakeCall),
+          // Manual re-open fallback (the call also auto-appears). Pass the
+          // step's config so callerName / declineIsSafe / voice are honoured
+          // — without `extra` the screen would fall back to defaults.
+          onPressed: () =>
+              context.pushNamed(RouteNames.fakeCall, extra: step.config),
         ),
       ],
     );

@@ -293,6 +293,7 @@ class RealAudioService implements AudioServiceProtocol {
   ///
   /// Missing asset files cause [PlayerException] which propagates to the
   /// caller per spec 05 §AudioService §Voice Recordings.
+  @override
   Future<void> playVoiceRecording(
     String? filePath, {
     bool useSpeaker = false,

@@ -62,4 +62,18 @@ void main() {
     expectDecoded(player, 'countdown_warning.wav');
     await service.stop();
   });
+
+  // #17: the fake-call answer flow plays the built-in voice clip via
+  // playVoiceRecording(null), which resolves the bundled locale asset
+  // (assets/voice/angela_<lang>.m4a). Proves the M4A voice asset decodes
+  // on-device, so the answered fake call is not silent.
+  testWidgets('built-in voice clip decodes through playVoiceRecording(null)', (
+    tester,
+  ) async {
+    final player = AudioPlayer();
+    final service = RealAudioService(player: player);
+    await service.playVoiceRecording(null);
+    expectDecoded(player, 'built-in voice');
+    await service.stop();
+  });
 }

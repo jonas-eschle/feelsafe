@@ -919,6 +919,15 @@ final class _OrderLoggingAudioService implements AudioServiceProtocol {
   }
 
   @override
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  }) async {
+    calls.add({'method': 'playVoiceRecording', 'filePath': filePath});
+  }
+
+  @override
   Future<void> stop() async {
     calls.add({'method': 'stop'});
   }

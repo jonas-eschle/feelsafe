@@ -114,6 +114,7 @@ class SimulationAudioService implements AudioServiceProtocol {
 
   /// Records a [playVoiceRecording] invocation. Layer-3 guard applies when
   /// [isSimulation] is `true`.
+  @override
   Future<void> playVoiceRecording(
     String? filePath, {
     bool useSpeaker = false,

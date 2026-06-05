@@ -8,6 +8,8 @@
 ///     crashing the session.
 ///   - disguisedReminder is NOT dispatched on stepStarted (deferred to
 ///     reminderFired which fires after the wait interval).
+///   - #17 fakeCall interaction: the fakeCallShowNonce auto-appear signal, and
+///     answerFakeCall / hangUpFakeCall / declineFakeCall wiring to audio + engine.
 library;
 
 import 'dart:io';
@@ -95,6 +97,18 @@ final class _RecordingAudioService implements AudioServiceProtocol {
       calls.add({'method': 'playSound'});
 
   @override
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  }) async => calls.add({
+    'method': 'playVoiceRecording',
+    'filePath': filePath,
+    'useSpeaker': useSpeaker,
+    'isSimulation': isSimulation,
+  });
+
+  @override
   Future<void> stop() async => calls.add({'method': 'stop'});
 }
 
@@ -119,6 +133,13 @@ final class _ThrowingAudioService implements AudioServiceProtocol {
 
   @override
   Future<void> playSound(String assetPath) async {}
+
+  @override
+  Future<void> playVoiceRecording(
+    String? filePath, {
+    bool useSpeaker = false,
+    bool isSimulation = false,
+  }) async {}
 
   @override
   Future<void> stop() async {}
@@ -212,6 +233,24 @@ SessionMode _disguisedReminderMode() => SessionMode(
       durationSeconds: 30,
       gracePeriodSeconds: 5,
       retryCount: 0,
+      randomize: false,
+    ),
+  ],
+);
+
+/// Single-step fakeCall mode used by the #17 interaction tests.
+SessionMode _fakeCallMode() => SessionMode(
+  id: 'mode-fc',
+  name: 'FakeCall Test',
+  chainSteps: <ChainStep>[
+    ChainStep(
+      id: 'step-fc-0',
+      type: ChainStepType.fakeCall,
+      order: 0,
+      waitSeconds: 0,
+      durationSeconds: 30,
+      gracePeriodSeconds: 5,
+      retryCount: 1,
       randomize: false,
     ),
   ],
@@ -385,4 +424,108 @@ void main() {
       await container.read(sessionControllerProvider.notifier).endSession();
     },
   );
+
+  // ─── #17 fakeCall interaction (auto-appear + answer/hang-up/decline) ────────
+  group('fakeCall interaction (#17)', () {
+    test('fakeCallShowNonce bumps when a fakeCall step starts', () async {
+      final container = _container(db);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+
+      final state = container.read(sessionControllerProvider).value;
+      // Signal that drives the session screen's auto-push of FakeCallScreen.
+      check(state!.fakeCallShowNonce).isGreaterThan(0);
+
+      await notifier.endSession();
+    });
+
+    test('answerFakeCall stops the ring and plays the voice clip routed to '
+        'the requested output', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(db, audio: audio);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear(); // drop the ring/escalation from the step firing
+
+      await notifier.answerFakeCall(
+        voiceRecordingPath: '/voice/a.aac',
+        useSpeaker: true,
+      );
+
+      check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      final voice = audio.calls.firstWhere(
+        (c) => c['method'] == 'playVoiceRecording',
+      );
+      check(voice['filePath']).equals('/voice/a.aac');
+      check(voice['useSpeaker']).equals(true);
+      check(voice['isSimulation']).equals(false);
+
+      await notifier.endSession();
+    });
+
+    test('hangUpFakeCall stops audio and disarms (reset to step 0)', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(db, audio: audio);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear();
+
+      notifier.hangUpFakeCall();
+      await Future<void>.delayed(Duration.zero);
+
+      check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      final state = container.read(sessionControllerProvider).value;
+      check(state!.currentStepIndex).equals(0);
+
+      await notifier.endSession();
+    });
+
+    test(
+      'declineFakeCall(declineIsSafe: true) stops audio and disarms',
+      () async {
+        final audio = _RecordingAudioService();
+        final container = _container(db, audio: audio);
+        await container.read(sessionControllerProvider.future);
+        final notifier = container.read(sessionControllerProvider.notifier);
+        await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+        await Future<void>.delayed(Duration.zero);
+        audio.calls.clear();
+
+        notifier.declineFakeCall(declineIsSafe: true);
+        await Future<void>.delayed(Duration.zero);
+
+        check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+        final state = container.read(sessionControllerProvider).value;
+        check(state!.currentStepIndex).equals(0);
+
+        await notifier.endSession();
+      },
+    );
+
+    test('declineFakeCall(declineIsSafe: false) stops audio and re-rings '
+        '(session stays active, not disarmed)', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(db, audio: audio);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear();
+
+      notifier.declineFakeCall(declineIsSafe: false);
+      await Future<void>.delayed(Duration.zero);
+
+      check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      // restartCurrentStep keeps the engine running (re-rings after grace).
+      check(notifier.engine).isNotNull();
+
+      await notifier.endSession();
+    });
+  });
 }
