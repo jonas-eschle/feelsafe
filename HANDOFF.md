@@ -1,21 +1,31 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-06 — **M0 COMPLETE (4/4). All committed, UNPUSHED.**
-#21, #17, #19, **and now #18** are done, verified, and committed.
-**Next milestone is M1** (see the plan doc §4).
+**Snapshot:** 2026-06-06 — **M0 COMPLETE + VERIFIED. M1 in progress (1/3:
+#11 done).** All committed, UNPUSHED.
 
-**HEAD:** `764a3ed` (#18) + this handoff commit → **7 commits ahead of
-`origin/main`, all UNPUSHED** (audit handoff + 2 m0-handoff + the 4 M0 fix
-commits). **Tests: 3795 pass**
-(was 3753; +42 net new for #18). **Analyzer:** `--fatal-infos` clean.
-**Tree:** clean. **Branch:** `main`. **Push needs your explicit
-authorization** (rule 12) — nothing has been pushed.
+**HEAD:** `79dea7b` (#11) → **9 commits ahead of `origin/main`, all
+UNPUSHED**. **Tests: 3809 pass** (M0 baseline 3795 → +5 m0-verify → 3800
+→ +9 #11 → 3809). **Analyzer:** `--fatal-infos` clean. **Tree:** clean.
+**Branch:** `main`. **Push needs your explicit authorization** (rule 12).
 
-**The big lesson held again:** "green means works." #18's emulator test ran
-all four confirmation interactions through the real Android engine; building
-it surfaced a real robustness gap unit tests missed — the full-screen route
-auto-popped during the controller's brief `AsyncLoading` frame on mount
-(fixed: only auto-pop once the controller has *resolved*).
+This session:
+- **M0 verifier cohort ran** (was deferred). architect-reviewer
+  (spec-vs-code) = **PASS** all 4 M0 fixes; qa-expert (spec-vs-tests) =
+  **FIX_REQUIRED** (test strength only — code was correct). Closed the
+  real gaps in **`6740ed3` (m0-verify)**: the single-step `_fakeCallMode`
+  made the decline/hang-up tests' `currentStepIndex==0` trivially true
+  (didn't prove disarm) → now assert `ChainEvent.userDisarmed` via the
+  engine stream; decline-unsafe asserts `EnginePhase.grace` (miss, not
+  disarm); added earpiece + earlyCheckIn(reset=false) + nonce auto-PUSH
+  widget tests.
+- **M1 #11 done** — `79dea7b`. See the shipped table.
+
+**The big lesson held again:** "green means works." Verifying M0 myself
+(not trusting the audit) found the disarm tests were trivially green, and
+building #11 surfaced that a real call must **pause** the engine even on a
+fakeCall step — fakeCall defaults to `retryCount=0` (B3), so without the
+pause it times out mid-call and **escalates to the next step** during the
+real call.
 
 ---
 
@@ -25,19 +35,26 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**First action: start M1** (Safety subsystems live). Optionally run the M0
-**verifier cohort** first (spec-vs-code architect-reviewer + spec-vs-tests
-qa-expert over the 4 M0 commits) — it was deferred under time pressure;
-re-engage on `FIX_REQUIRED`. Then the 5 M0 commits can be pushed once you
+**First action: continue M1 with #22** (GPS logging start/stop +
+battery-alert firing — spec 06:208-233,549-569). Then **#12 background
+clamp** (fold in — `setBackgroundClamp`, spec 01:700-703, sim-only/🟡).
+M0 is verified + #11 is done. The 9 commits can be pushed once you
 authorize.
 
-**M1 — #11 real incoming-call detection** (pause/resume, fakeCall cancel,
-hold pause), **#22 GPS logging start/stop + battery-alert firing**, **#12
-background clamp** (fold in). All are SessionController lifecycle wiring;
-keep them serial. **Verify each gap yourself first** — the #18 one-liner
-again undersold the work (it was a whole feature: selection algorithm +
-4 confirmation widgets + a new full-screen route + `templateIds` config
-field, not just "wire earlyCheckIn").
+**M1 status:** #11 ✓ (`79dea7b`). Remaining: **#22**, **#12**. All
+SessionController lifecycle wiring; keep them serial. **Verify each gap
+yourself first** — every audit one-liner so far undersold the work (#11
+"unwired callStateServiceProvider" was: pause/resume A2 + holdButton
+Extra-30/31 + fakeCall cancel Extra-24/25 + a `pauseReason` field + a
+`fakeCallCancelNonce` dismissal signal + a localized badge + the
+user-pause-not-clobbered edge).
+
+**Deferred to M5 (device e2e):** a real `adb emu gsm call` device E2E for
+#11. Per the recipe, #11 is *pure wiring* → host tests (real
+controller+engine) are the proof; the native `CallStateChannel` input is
+contract-tested in `call_state_service_test.dart`. A true gsm test needs
+`READ_PHONE_STATE` granted + host/test timing orchestration → belongs in
+M5's "device e2e flows" pass, not a flaky per-fix test.
 
 **Per-fix recipe (unchanged):** verify gap yourself → implement (serial)
 → prove with an emulator integration test (host widget/controller tests
@@ -46,6 +63,13 @@ language agent if you add user-facing strings) → gate suite → commit.
 Re-engage the verifier cohort on `FIX_REQUIRED`.
 
 ---
+
+## What shipped THIS SESSION (M0-verify + M1 #11)
+
+| Commit | Fix | What it really was |
+|---|---|---|
+| `79dea7b` | **#11 real incoming-call detection** (M1, 1/3) | `callStateServiceProvider` had no consumer. SessionController now subscribes for the session lifetime (non-sim). (1) Real call **always pauses** the engine first (prevents escalation during the call — fakeCall has `retryCount=0` so it would otherwise advance mid-call). (2) Non-fakeCall → `pause(incomingCall)` + resume on idle (A2 / holdButton Extra-30/31). (3) fakeCall → stop ring + dismiss screen (new `SessionState.fakeCallCancelNonce` → `FakeCallScreen` pops itself) + auto-disarm (resume+disarm) on call end (Extra-24/25). (4) New `SessionState.pauseReason` → localized **"Paused — incoming call"** badge (14 locales). (5) Edges: user-pause not clobbered (`_pausedByRealCall`); ringing→offhook no double-fire; teardown in both dispose paths. 9 host tests (6 controller dispatch + FakeCallScreen dismissal + 2 badge). Fixed 3 session-running test containers that lacked the `callStateServiceProvider` sim override (dispatch/distress/home-widget). `FakeCallScreen` dismiss uses the cancel nonce, NOT engine phase (Pivot-2 keeps fakeCall in `duration` while answered). |
+| `6740ed3` | **M0-verify test hardening** | Deferred verifier cohort ran: architect=PASS (code correct), qa=FIX_REQUIRED (tests). Single-step `_fakeCallMode` made `currentStepIndex==0` trivially true → decline-safe/unsafe + hang-up now assert `userDisarmed` (engine stream) / `EnginePhase.grace`. Added earpiece (useSpeaker:false), earlyCheckIn(reset=false) controller test, and the nonce auto-PUSH widget tests (FakeCallScreen + DisguisedReminderScreen + subtle-stays-inline) the cohort flagged WEAK. Test-only; +5 tests. |
 
 ## What shipped (M0: 4/4 — COMPLETE)
 
@@ -153,7 +177,7 @@ hang).
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3753 pass
+flutter test --concurrency=6                                    # 3809 pass
 dart format --output=none --set-exit-if-changed <changed .dart files>
 dart run import_sorter:main --no-comments --exit-if-changed
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
@@ -169,8 +193,9 @@ for r in $(grep -rhoE "assets/[A-Za-z0-9_/.-]+\.[A-Za-z0-9]+" lib/ | sort -u); d
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (corrected status
   §1, gap inventory §2 = tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Task journal** (TaskList): **M0 done — #21✓ #17✓ #19✓ #18✓.** Next:
-  **M1** (#11 real-call, #22 GPS/battery, #12 clamp), then M2 (config UIs
+- **Task journal** (TaskList): **M0 done+verified — #21✓ #17✓ #19✓ #18✓
+  + m0-verify✓. M1: #11✓.** Next: **#22 GPS/battery, #12 clamp** (rest of
+  M1), then M2 (config UIs
   #13/#14/#23/#20 — #13's StepConfigPanel is where the new `templateIds`
   field gets its editor), M3 (#15 stealth), M4 (#10/#9/#8/#16 + Tier-F
   decisions), M5 (Phase-9 proper: INT scenarios, device e2e, spec-coverage
