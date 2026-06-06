@@ -16,12 +16,14 @@ import 'dart:io';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_test/flutter_test.dart' hide EnginePhase;
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
+import 'package:guardianangela/domain/engine/chain_event.dart';
+import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
@@ -49,6 +51,10 @@ import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 import 'package:guardianangela/services/sim/vibration_service_sim.dart';
+
+// Hide the framework's rendering-pipeline EnginePhase — this test uses the
+// domain engine's EnginePhase from engine_state.dart.
+
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -231,22 +237,24 @@ SessionMode _loudAlarmMode() => SessionMode(
 /// [ChainEvent.reminderFired] only fires after a 30-second real Timer.
 /// This separation lets us assert that nothing reached the service immediately
 /// after start (i.e. dispatch was NOT on stepStarted).
-SessionMode _disguisedReminderMode() => SessionMode(
-  id: 'mode-dr',
-  name: 'DisguisedReminder Test',
-  chainSteps: <ChainStep>[
-    ChainStep(
-      id: 'step-dr-0',
-      type: ChainStepType.disguisedReminder,
-      order: 0,
-      waitSeconds: 30,
-      durationSeconds: 30,
-      gracePeriodSeconds: 5,
-      retryCount: 0,
-      randomize: false,
-    ),
-  ],
-);
+SessionMode _disguisedReminderMode({DisguisedReminderConfig? config}) =>
+    SessionMode(
+      id: 'mode-dr',
+      name: 'DisguisedReminder Test',
+      chainSteps: <ChainStep>[
+        ChainStep(
+          id: 'step-dr-0',
+          type: ChainStepType.disguisedReminder,
+          order: 0,
+          waitSeconds: 30,
+          durationSeconds: 30,
+          gracePeriodSeconds: 5,
+          retryCount: 0,
+          randomize: false,
+          config: config,
+        ),
+      ],
+    );
 
 /// A reminder template used as the mode-local pool for the selection tests.
 ReminderTemplate _calendarTemplate() => ReminderTemplate(
@@ -502,8 +510,8 @@ void main() {
       await container.read(sessionControllerProvider.notifier).endSession();
     });
 
-    test('earlyCheckIn during the wait phase delegates to the engine '
-        'without crashing the session', () async {
+    test('earlyCheckIn during the wait phase (resetOnEarlyCheckIn=true) '
+        'disarms and re-arms at step 0', () async {
       final container = _container(db);
       await container.read(sessionControllerProvider.future);
       final notifier = container.read(sessionControllerProvider.notifier);
@@ -515,15 +523,50 @@ void main() {
       );
       await Future<void>.delayed(Duration.zero);
 
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
+
       notifier.earlyCheckIn();
       await Future<void>.delayed(Duration.zero);
 
-      // Default resetOnEarlyCheckIn=true → the engine disarms and re-arms at
-      // step 0; the session stays alive and at step 0.
+      // Default resetOnEarlyCheckIn=true → the engine disarms (userDisarmed)
+      // and re-arms at step 0; the session stays alive.
+      check(events).contains(ChainEvent.userDisarmed);
       final state = container.read(sessionControllerProvider).value;
-      check(notifier.engine).isNotNull();
       check(state!.currentStepIndex).equals(0);
 
+      await sub.cancel();
+      await notifier.endSession();
+    });
+
+    test('earlyCheckIn with resetOnEarlyCheckIn=false is a deliberate no-op '
+        '(strict verification — reminder still fires on schedule)', () async {
+      final container = _container(db);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startSession(
+        mode: _disguisedReminderMode(
+          config: const DisguisedReminderConfig(resetOnEarlyCheckIn: false),
+        ),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
+
+      notifier.earlyCheckIn();
+      await Future<void>.delayed(Duration.zero);
+
+      // Strict mode (spec 02 §Early Check-in D4): the early tap is ignored —
+      // no disarm, and the reminder stays pending in the wait phase.
+      check(events.where((e) => e == ChainEvent.userDisarmed)).isEmpty();
+      final snapshot = notifier.engine!.snapshot;
+      check(snapshot).isA<EngineRunning>();
+      check((snapshot as EngineRunning).phase).equals(EnginePhase.wait);
+
+      await sub.cancel();
       await notifier.endSession();
     });
   });
@@ -570,7 +613,8 @@ void main() {
       await notifier.endSession();
     });
 
-    test('hangUpFakeCall stops audio and disarms (reset to step 0)', () async {
+    test('answerFakeCall routes the voice clip to the earpiece by default '
+        '(useSpeaker: false — spec 02 §fakeCall Voice Recording)', () async {
       final audio = _RecordingAudioService();
       final container = _container(db, audio: audio);
       await container.read(sessionControllerProvider.future);
@@ -578,41 +622,47 @@ void main() {
       await notifier.startSession(mode: _fakeCallMode(), simulate: false);
       await Future<void>.delayed(Duration.zero);
       audio.calls.clear();
+
+      // No useSpeaker argument → controller default (earpiece) must win.
+      await notifier.answerFakeCall(voiceRecordingPath: '/voice/a.aac');
+
+      final voice = audio.calls.firstWhere(
+        (c) => c['method'] == 'playVoiceRecording',
+      );
+      check(voice['useSpeaker']).equals(false);
+
+      await notifier.endSession();
+    });
+
+    test('hangUpFakeCall stops audio and disarms (userDisarmed fires; '
+        'chain resets to step 0)', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(db, audio: audio);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear();
+
+      // _fakeCallMode is single-step, so currentStepIndex is 0 regardless;
+      // assert the disarm *event* fired to prove hang-up actually disarmed.
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
 
       notifier.hangUpFakeCall();
       await Future<void>.delayed(Duration.zero);
 
       check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      check(events).contains(ChainEvent.userDisarmed);
       final state = container.read(sessionControllerProvider).value;
       check(state!.currentStepIndex).equals(0);
 
+      await sub.cancel();
       await notifier.endSession();
     });
 
-    test(
-      'declineFakeCall(declineIsSafe: true) stops audio and disarms',
-      () async {
-        final audio = _RecordingAudioService();
-        final container = _container(db, audio: audio);
-        await container.read(sessionControllerProvider.future);
-        final notifier = container.read(sessionControllerProvider.notifier);
-        await notifier.startSession(mode: _fakeCallMode(), simulate: false);
-        await Future<void>.delayed(Duration.zero);
-        audio.calls.clear();
-
-        notifier.declineFakeCall(declineIsSafe: true);
-        await Future<void>.delayed(Duration.zero);
-
-        check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
-        final state = container.read(sessionControllerProvider).value;
-        check(state!.currentStepIndex).equals(0);
-
-        await notifier.endSession();
-      },
-    );
-
-    test('declineFakeCall(declineIsSafe: false) stops audio and re-rings '
-        '(session stays active, not disarmed)', () async {
+    test('declineFakeCall(declineIsSafe: true) stops audio and disarms '
+        '(userDisarmed fires)', () async {
       final audio = _RecordingAudioService();
       final container = _container(db, audio: audio);
       await container.read(sessionControllerProvider.future);
@@ -621,13 +671,46 @@ void main() {
       await Future<void>.delayed(Duration.zero);
       audio.calls.clear();
 
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
+
+      notifier.declineFakeCall(declineIsSafe: true);
+      await Future<void>.delayed(Duration.zero);
+
+      check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      check(events).contains(ChainEvent.userDisarmed);
+      final state = container.read(sessionControllerProvider).value;
+      check(state!.currentStepIndex).equals(0);
+
+      await sub.cancel();
+      await notifier.endSession();
+    });
+
+    test('declineFakeCall(declineIsSafe: false) stops audio and re-rings via '
+        'the grace phase (counts as a miss — does NOT disarm)', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(db, audio: audio);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear();
+
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
+
       notifier.declineFakeCall(declineIsSafe: false);
       await Future<void>.delayed(Duration.zero);
 
       check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
-      // restartCurrentStep keeps the engine running (re-rings after grace).
-      check(notifier.engine).isNotNull();
+      // Miss, not disarm: no userDisarmed, and the engine sits in the grace
+      // phase before re-ringing (spec 02 §fakeCall Decline, declineIsSafe=false).
+      check(events.where((e) => e == ChainEvent.userDisarmed)).isEmpty();
+      final snapshot = notifier.engine!.snapshot;
+      check(snapshot).isA<EngineRunning>();
+      check((snapshot as EngineRunning).phase).equals(EnginePhase.grace);
 
+      await sub.cancel();
       await notifier.endSession();
     });
   });

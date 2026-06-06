@@ -80,6 +80,10 @@ class _FakeSessionController extends SessionController {
   @override
   Future<SessionState> build() async => _initial;
 
+  /// Test hook: pushes a new [SessionState] so the widget-under-test's
+  /// `ref.listen` callbacks fire (used to drive nonce-based auto-appear).
+  void emit(SessionState next) => state = AsyncData(next);
+
   @override
   Future<void> endSession({EndReason reason = EndReason.userQuit}) async {
     endSessionCalls++;
@@ -249,6 +253,19 @@ final ReminderTemplate _tapButtonTemplate = ReminderTemplate(
   isGlobal: true,
 );
 
+/// A fullScreen disguise used by the auto-appear (#18) route-push test.
+final ReminderTemplate _fullScreenTemplate = ReminderTemplate(
+  id: 'test_fullscreen',
+  name: 'Full Screen Reminder',
+  title: 'You have an appointment',
+  body: 'Meeting with Alex at 3 PM',
+  confirmationType: ConfirmationType.tapButton,
+  buttonLabel: 'Acknowledge',
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.fullScreen,
+  isGlobal: true,
+);
+
 /// Base [SessionState] for a running session at step index 0.
 SessionState _runningState({
   ChainStepType type = ChainStepType.holdButton,
@@ -348,6 +365,18 @@ Future<void> _pumpWithRouter(
         name: RouteNames.home,
         builder: (_, state) => const _Blank(),
       ),
+      // Keyed stub destinations so the auto-appear (#17/#18) tests can assert
+      // that SessionScreen pushed the named route on a nonce bump.
+      GoRoute(
+        path: '/fake-call',
+        name: RouteNames.fakeCall,
+        builder: (_, state) => const _Blank(key: Key('stub-fakecall')),
+      ),
+      GoRoute(
+        path: '/disguised-reminder',
+        name: RouteNames.disguisedReminder,
+        builder: (_, state) => const _Blank(key: Key('stub-reminder')),
+      ),
     ],
   );
   await tester.pumpWidget(
@@ -381,7 +410,7 @@ Future<void> _pumpWithRouter(
 }
 
 class _Blank extends StatelessWidget {
-  const _Blank();
+  const _Blank({super.key});
 
   @override
   Widget build(BuildContext context) => const SizedBox.shrink();
@@ -2080,6 +2109,72 @@ void main() {
         check(
           fake.lastConfirmDistressReason,
         ).equals(EndReason.wrongPinExhausted);
+      },
+    );
+  });
+
+  group('SessionScreen — auto-appear on nonce bump (#17/#18)', () {
+    testWidgets(
+      'fakeCallShowNonce bump pushes the full-screen FakeCallScreen route',
+      (tester) async {
+        final initial = _runningState(
+          type: ChainStepType.fakeCall,
+          config: const FakeCallConfig(),
+          phase: SessionPhase.duration,
+        );
+        final fake = _FakeSessionController(initial);
+        await _pumpWithRouter(tester, fake);
+
+        // Nothing pushed on load (nonce starts at 0).
+        check(find.byKey(const Key('stub-fakecall')).evaluate()).isEmpty();
+
+        // The engine bumping the nonce must drive the screen to auto-appear —
+        // the same wire whose absence was the original #17 bug.
+        fake.emit(initial.copyWith(fakeCallShowNonce: 1));
+        await tester.pumpAndSettle();
+
+        check(find.byKey(const Key('stub-fakecall')).evaluate()).isNotEmpty();
+      },
+    );
+
+    testWidgets(
+      'reminderShowNonce bump pushes DisguisedReminderScreen for a fullScreen '
+      'template',
+      (tester) async {
+        final initial = _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.duration,
+          activeReminderTemplate: _fullScreenTemplate,
+        );
+        final fake = _FakeSessionController(initial);
+        await _pumpWithRouter(tester, fake);
+
+        check(find.byKey(const Key('stub-reminder')).evaluate()).isEmpty();
+
+        fake.emit(initial.copyWith(reminderShowNonce: 1));
+        await tester.pumpAndSettle();
+
+        check(find.byKey(const Key('stub-reminder')).evaluate()).isNotEmpty();
+      },
+    );
+
+    testWidgets(
+      'reminderShowNonce bump does NOT push a route for a subtle template '
+      '(it renders inline instead)',
+      (tester) async {
+        final initial = _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.duration,
+          activeReminderTemplate: _tapButtonTemplate,
+        );
+        final fake = _FakeSessionController(initial);
+        await _pumpWithRouter(tester, fake);
+
+        fake.emit(initial.copyWith(reminderShowNonce: 1));
+        await tester.pumpAndSettle();
+
+        // subtle disguises stay inline; no full-screen route is pushed.
+        check(find.byKey(const Key('stub-reminder')).evaluate()).isEmpty();
       },
     );
   });
