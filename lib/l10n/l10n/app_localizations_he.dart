@@ -295,6 +295,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionPausedBadge => 'מושהה';
 
   @override
+  String get sessionPausedIncomingCall => 'מושהה — שיחה נכנסת';
+
+  @override
   String get sessionPhaseEnded => 'המושב הסתיים';
 
   @override

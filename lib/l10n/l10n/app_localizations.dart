@@ -631,6 +631,12 @@ abstract class AppLocalizations {
   /// **'Paused'**
   String get sessionPausedBadge;
 
+  /// Badge shown when the session auto-paused for a real incoming phone call (spec 01 A2).
+  ///
+  /// In en, this message translates to:
+  /// **'Paused — incoming call'**
+  String get sessionPausedIncomingCall;
+
   /// Label shown when session finished.
   ///
   /// In en, this message translates to:

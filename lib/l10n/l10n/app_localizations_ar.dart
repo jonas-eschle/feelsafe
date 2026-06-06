@@ -295,6 +295,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionPausedBadge => 'متوقف مؤقتًا';
 
   @override
+  String get sessionPausedIncomingCall => 'متوقف مؤقتًا — مكالمة واردة';
+
+  @override
   String get sessionPhaseEnded => 'انتهت الجلسة';
 
   @override

@@ -17,6 +17,7 @@ import 'package:flutter/material.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
@@ -24,6 +25,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
 import 'package:guardianangela/features/fake_call/fake_call_controller.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
@@ -66,11 +68,13 @@ GoRouter _buildRouter({FakeCallConfig config = const FakeCallConfig()}) =>
 Future<void> _pumpWithRouter(
   WidgetTester tester, {
   required GoRouter router,
+  List<Override> overrides = const <Override>[],
   Locale locale = const Locale('en'),
   ThemeMode themeMode = ThemeMode.light,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
+      overrides: overrides,
       child: MaterialApp.router(
         routerConfig: router,
         locale: locale,
@@ -97,6 +101,20 @@ Future<void> _pumpWithRouter(
     ),
   );
   await tester.pumpAndSettle();
+}
+
+/// A [SessionController] whose state the test can push, to drive the
+/// [SessionState.fakeCallCancelNonce] that dismisses the screen when a real
+/// call cancels the fake call (spec 01 §Real Phone Call During Fake Call).
+class _NonceController extends SessionController {
+  _NonceController(this._initial);
+
+  final SessionState _initial;
+
+  @override
+  Future<SessionState> build() async => _initial;
+
+  void emit(SessionState next) => state = AsyncData(next);
 }
 
 // ---------------------------------------------------------------------------
@@ -335,6 +353,33 @@ void main() {
       expect(find.text(l10n.fakeCallDeclineSafeLabel), findsOneWidget);
       await tester.tap(find.text(l10n.fakeCallDeclineSafeLabel));
       await tester.pumpAndSettle();
+      expect(find.text('Home'), findsOneWidget);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  group('FakeCallScreen — real-call cancel (#11 / Extra-24/25)', () {
+    testWidgets('dismisses itself when a real incoming call bumps '
+        'fakeCallCancelNonce', (WidgetTester tester) async {
+      final fake = _NonceController(const SessionState.initial());
+      final router = _buildRouter();
+      await _pumpWithRouter(
+        tester,
+        router: router,
+        overrides: <Override>[
+          sessionControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      unawaited(router.push<void>('/fake-call'));
+      await tester.pumpAndSettle();
+      // Shown, and NOT dismissed on mount (baseline nonce captured).
+      expect(find.byType(FakeCallScreen), findsOneWidget);
+
+      // A real call cancels the fake call → the controller bumps the nonce.
+      fake.emit(const SessionState.initial().copyWith(fakeCallCancelNonce: 1));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FakeCallScreen), findsNothing);
       expect(find.text('Home'), findsOneWidget);
     });
   });

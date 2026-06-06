@@ -25,6 +25,7 @@
   "sessionStepLabel": "Крок {index} з {total}",
   "sessionMissCount": "Пропущено: {count}",
   "sessionPausedBadge": "Призупинено",
+  "sessionPausedIncomingCall": "Призупинено — вхідний дзвінок",
   "sessionPhaseEnded": "Сесію завершено",
   "sessionSimulationBanner": "Симуляція",
   "sessionCompletedTitle": "Сесію завершено",

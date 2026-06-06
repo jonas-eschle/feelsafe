@@ -25,6 +25,7 @@
   "sessionStepLabel": "步驟 {index} / {total}",
   "sessionMissCount": "錯過次數:{count}",
   "sessionPausedBadge": "已暫停",
+  "sessionPausedIncomingCall": "已暫停 — 來電",
   "sessionPhaseEnded": "守護已結束",
   "sessionSimulationBanner": "模擬",
   "sessionCompletedTitle": "守護完成",

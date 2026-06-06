@@ -32,6 +32,7 @@ import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
 import 'package:guardianangela/services/sim/home_widget_service_sim.dart';
@@ -112,6 +113,7 @@ ProviderContainer _container(AppSettings settings, GuardianAngelaDatabase db) {
         SimulationNotificationService(),
       ),
       phoneServiceProvider.overrideWithValue(SimulationPhoneService()),
+      callStateServiceProvider.overrideWithValue(SimulationCallStateService()),
       messagingServiceProvider.overrideWithValue(SimulationMessagingService()),
       contactServiceProvider.overrideWith(
         (_) async => SimulationContactService(),
@@ -208,6 +210,9 @@ void main() {
             SimulationNotificationService(),
           ),
           phoneServiceProvider.overrideWithValue(SimulationPhoneService()),
+          callStateServiceProvider.overrideWithValue(
+            SimulationCallStateService(),
+          ),
           messagingServiceProvider.overrideWithValue(
             SimulationMessagingService(),
           ),

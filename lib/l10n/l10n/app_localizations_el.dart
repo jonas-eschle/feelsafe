@@ -299,6 +299,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionPausedBadge => 'Σε παύση';
 
   @override
+  String get sessionPausedIncomingCall => 'Σε παύση — εισερχόμενη κλήση';
+
+  @override
   String get sessionPhaseEnded => 'Η συνεδρία τερματίστηκε';
 
   @override

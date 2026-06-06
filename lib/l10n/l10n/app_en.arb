@@ -360,6 +360,10 @@
   "@sessionPausedBadge": {
     "description": "Label shown when session is paused."
   },
+  "sessionPausedIncomingCall": "Paused — incoming call",
+  "@sessionPausedIncomingCall": {
+    "description": "Badge shown when the session auto-paused for a real incoming phone call (spec 01 A2)."
+  },
   "sessionPhaseEnded": "Session ended",
   "@sessionPhaseEnded": {
     "description": "Label shown when session finished."

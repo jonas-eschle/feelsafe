@@ -299,6 +299,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionPausedBadge => 'En pause';
 
   @override
+  String get sessionPausedIncomingCall => 'En pause — appel entrant';
+
+  @override
   String get sessionPhaseEnded => 'Session terminée';
 
   @override

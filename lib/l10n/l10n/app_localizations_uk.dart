@@ -296,6 +296,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionPausedBadge => 'Призупинено';
 
   @override
+  String get sessionPausedIncomingCall => 'Призупинено — вхідний дзвінок';
+
+  @override
   String get sessionPhaseEnded => 'Сесію завершено';
 
   @override

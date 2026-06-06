@@ -47,10 +47,20 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
   /// the call is answered.
   bool _answered = false;
 
+  /// Baseline [SessionState.fakeCallCancelNonce] at mount. A higher value later
+  /// means a real incoming call cancelled this fake call, so the screen
+  /// dismisses itself (spec 01 §Real Phone Call During Fake Call, Extra-24/25).
+  int _lastCancelNonce = 0;
+
+  /// Guards [_dismissForRealCall] so the route pops at most once.
+  bool _dismissedForRealCall = false;
+
   @override
   void initState() {
     super.initState();
     _controller = FakeCallController(widget.config);
+    _lastCancelNonce =
+        ref.read(sessionControllerProvider).value?.fakeCallCancelNonce ?? 0;
     SystemChrome.setPreferredOrientations(<DeviceOrientation>[
       DeviceOrientation.portraitUp,
     ]);
@@ -144,6 +154,18 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
     context.pop();
   }
 
+  /// Dismisses the fake call because a real incoming call arrived and the
+  /// controller cancelled it (spec 01 §Real Phone Call During Fake Call,
+  /// Extra-24/25). The controller has already stopped the ringtone and will
+  /// auto-disarm when the real call ends, so the screen only needs to pop.
+  void _dismissForRealCall() {
+    if (_dismissedForRealCall || !mounted) return;
+    _dismissedForRealCall = true;
+    _activeTicker?.cancel();
+    _holdTicker?.cancel();
+    if (context.canPop()) context.pop();
+  }
+
   CallStyle _resolvedStyle() {
     final raw = widget.config.callStyle;
     if (raw != CallStyle.platformNative) return raw;
@@ -154,6 +176,16 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
   @override
   Widget build(BuildContext context) {
     final style = _resolvedStyle();
+    // A real incoming call cancels the fake call: the controller bumps
+    // fakeCallCancelNonce and we dismiss (spec 01 §Real Phone Call During Fake
+    // Call, Extra-24/25).
+    ref.listen<AsyncValue<SessionState>>(sessionControllerProvider, (_, next) {
+      final nonce = next.value?.fakeCallCancelNonce ?? 0;
+      if (nonce > _lastCancelNonce) {
+        _lastCancelNonce = nonce;
+        _dismissForRealCall();
+      }
+    });
     return PopScope(
       canPop: false,
       child: ValueListenableBuilder<FakeCallState>(

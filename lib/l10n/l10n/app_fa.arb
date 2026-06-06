@@ -25,6 +25,7 @@
   "sessionStepLabel": "گام {index} از {total}",
   "sessionMissCount": "از دست رفته: {count}",
   "sessionPausedBadge": "متوقف شده",
+  "sessionPausedIncomingCall": "متوقف شده — تماس ورودی",
   "sessionPhaseEnded": "جلسه پایان یافت",
   "sessionSimulationBanner": "شبیه‌سازی",
   "sessionCompletedTitle": "جلسه کامل شد",

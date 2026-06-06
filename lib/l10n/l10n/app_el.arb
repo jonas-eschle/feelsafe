@@ -25,6 +25,7 @@
   "sessionStepLabel": "Βήμα {index} από {total}",
   "sessionMissCount": "Χαμένα: {count}",
   "sessionPausedBadge": "Σε παύση",
+  "sessionPausedIncomingCall": "Σε παύση — εισερχόμενη κλήση",
   "sessionPhaseEnded": "Η συνεδρία τερματίστηκε",
   "sessionSimulationBanner": "Προσομοίωση",
   "sessionCompletedTitle": "Η συνεδρία ολοκληρώθηκε",

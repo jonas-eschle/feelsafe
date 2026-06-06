@@ -293,6 +293,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionPausedBadge => '已暂停';
 
   @override
+  String get sessionPausedIncomingCall => '已暂停 — 来电';
+
+  @override
   String get sessionPhaseEnded => '会话已结束';
 
   @override
@@ -2095,6 +2098,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionPausedBadge => '已暫停';
+
+  @override
+  String get sessionPausedIncomingCall => '已暫停 — 來電';
 
   @override
   String get sessionPhaseEnded => '守護已結束';

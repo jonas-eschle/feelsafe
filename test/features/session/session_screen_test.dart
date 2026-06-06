@@ -29,6 +29,7 @@ import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
@@ -2177,6 +2178,35 @@ void main() {
         check(find.byKey(const Key('stub-reminder')).evaluate()).isEmpty();
       },
     );
+  });
+
+  group('SessionScreen — paused badge reason (#11)', () {
+    testWidgets('shows the incoming-call label when pauseReason is '
+        'incomingCall', (WidgetTester tester) async {
+      final fake = _FakeSessionController(
+        _runningState().copyWith(
+          isPaused: true,
+          pauseReason: PauseReason.incomingCall,
+        ),
+      );
+      await _pump(tester, fake);
+
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.sessionPausedIncomingCall), findsOneWidget);
+      expect(find.text(l10n.sessionPausedBadge), findsNothing);
+    });
+
+    testWidgets('shows the generic Paused label for a user-requested pause', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState().copyWith(isPaused: true),
+      );
+      await _pump(tester, fake);
+
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.sessionPausedBadge), findsOneWidget);
+    });
   });
 }
 

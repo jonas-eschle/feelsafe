@@ -25,6 +25,7 @@
   "sessionStepLabel": "Paso {index} de {total}",
   "sessionMissCount": "Omitidos: {count}",
   "sessionPausedBadge": "En pausa",
+  "sessionPausedIncomingCall": "En pausa: llamada entrante",
   "sessionPhaseEnded": "Sesión finalizada",
   "sessionSimulationBanner": "Simulación",
   "sessionCompletedTitle": "Sesión completada",

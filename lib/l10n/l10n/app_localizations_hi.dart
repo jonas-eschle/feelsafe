@@ -297,6 +297,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionPausedBadge => 'रुका हुआ';
 
   @override
+  String get sessionPausedIncomingCall => 'रुका हुआ — इनकमिंग कॉल';
+
+  @override
   String get sessionPhaseEnded => 'सत्र समाप्त';
 
   @override

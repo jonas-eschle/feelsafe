@@ -25,6 +25,7 @@
   "sessionStepLabel": "Шаг {index} из {total}",
   "sessionMissCount": "Пропущено: {count}",
   "sessionPausedBadge": "Пауза",
+  "sessionPausedIncomingCall": "Пауза — входящий вызов",
   "sessionPhaseEnded": "Сессия завершена",
   "sessionSimulationBanner": "Симуляция",
   "sessionCompletedTitle": "Сессия завершена",

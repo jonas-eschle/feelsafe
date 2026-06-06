@@ -298,6 +298,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionPausedBadge => 'Пауза';
 
   @override
+  String get sessionPausedIncomingCall => 'Пауза — входящий вызов';
+
+  @override
   String get sessionPhaseEnded => 'Сессия завершена';
 
   @override

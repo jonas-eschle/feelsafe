@@ -24,8 +24,10 @@ import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
+import 'package:guardianangela/domain/enums/call_state.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -36,10 +38,12 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
+import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
 import 'package:guardianangela/services/sim/home_widget_service_sim.dart';
@@ -51,10 +55,6 @@ import 'package:guardianangela/services/sim/recording_service_sim.dart';
 import 'package:guardianangela/services/sim/screen_flash_service_sim.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
 import 'package:guardianangela/services/sim/vibration_service_sim.dart';
-
-// Hide the framework's rendering-pipeline EnginePhase — this test uses the
-// domain engine's EnginePhase from engine_state.dart.
-
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -318,6 +318,7 @@ ProviderContainer _container(
   GuardianAngelaDatabase db, {
   AudioServiceProtocol? audio,
   NotificationServiceProtocol? notification,
+  CallStateServiceProtocol? callState,
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -353,6 +354,9 @@ ProviderContainer _container(
       audioServiceProvider.overrideWithValue(audio ?? SimulationAudioService()),
       notificationServiceProvider.overrideWithValue(
         notification ?? SimulationNotificationService(),
+      ),
+      callStateServiceProvider.overrideWithValue(
+        callState ?? SimulationCallStateService(),
       ),
     ],
   );
@@ -711,6 +715,171 @@ void main() {
       check((snapshot as EngineRunning).phase).equals(EnginePhase.grace);
 
       await sub.cancel();
+      await notifier.endSession();
+    });
+  });
+
+  // ─── #11 real incoming-call detection (pause/resume + fakeCall cancel) ───────
+  group('real incoming-call detection (#11)', () {
+    test('startSession starts call detection; endSession stops it', () async {
+      final calls = SimulationCallStateService();
+      final container = _container(db, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+      check(calls.isStarted).isTrue();
+
+      await notifier.endSession();
+      check(calls.isStarted).isFalse();
+    });
+
+    test('a simulation session does NOT start real call detection', () async {
+      final calls = SimulationCallStateService();
+      final container = _container(db, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: true,
+      );
+      await Future<void>.delayed(Duration.zero);
+      check(calls.isStarted).isFalse();
+
+      await notifier.endSession();
+    });
+
+    test('real call on a non-fakeCall step pauses with incomingCall, then '
+        'resumes on idle (A2 / Extra-30/31)', () async {
+      final calls = SimulationCallStateService();
+      final container = _container(db, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      calls.setState(CallState.ringing);
+      await Future<void>.delayed(Duration.zero);
+
+      check(notifier.engine!.snapshot).isA<EnginePaused>();
+      var s = container.read(sessionControllerProvider).value;
+      check(s!.isPaused).isTrue();
+      check(s.pauseReason).equals(PauseReason.incomingCall);
+
+      calls.setState(CallState.idle);
+      await Future<void>.delayed(Duration.zero);
+
+      check(notifier.engine!.snapshot).isA<EngineRunning>();
+      s = container.read(sessionControllerProvider).value;
+      check(s!.isPaused).isFalse();
+
+      await notifier.endSession();
+    });
+
+    test('ringing→offhook (answering the real call) does not double-fire the '
+        'pause; one idle resumes', () async {
+      final calls = SimulationCallStateService();
+      final container = _container(db, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      calls.setState(CallState.ringing);
+      await Future<void>.delayed(Duration.zero);
+      calls.setState(CallState.offhook); // same call answered — still active
+      await Future<void>.delayed(Duration.zero);
+      check(notifier.engine!.snapshot).isA<EnginePaused>();
+
+      calls.setState(CallState.idle);
+      await Future<void>.delayed(Duration.zero);
+      check(notifier.engine!.snapshot).isA<EngineRunning>();
+
+      await notifier.endSession();
+    });
+
+    test('real call during a fakeCall step cancels it (stop audio + cancel '
+        'nonce + pause), then auto-disarms on idle (Extra-24/25)', () async {
+      final audio = _RecordingAudioService();
+      final calls = SimulationCallStateService();
+      final container = _container(db, audio: audio, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(mode: _fakeCallMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      audio.calls.clear();
+      final nonce0 = container
+          .read(sessionControllerProvider)
+          .value!
+          .fakeCallCancelNonce;
+
+      final events = <ChainEvent>[];
+      final sub = notifier.engine!.events.listen((e) => events.add(e.event));
+
+      calls.setState(CallState.ringing);
+      await Future<void>.delayed(Duration.zero);
+
+      // Cancelled now: ring stopped + screen dismissed via the nonce; the
+      // session is paused but not yet disarmed.
+      check(audio.calls.any((c) => c['method'] == 'stop')).isTrue();
+      check(
+        container.read(sessionControllerProvider).value!.fakeCallCancelNonce,
+      ).isGreaterThan(nonce0);
+      check(events.where((e) => e == ChainEvent.userDisarmed)).isEmpty();
+      check(notifier.engine!.snapshot).isA<EnginePaused>();
+
+      calls.setState(CallState.idle);
+      await Future<void>.delayed(Duration.zero);
+
+      // Real call ended → auto-disarm (resume then reset to step 0).
+      check(events).contains(ChainEvent.userDisarmed);
+      check(notifier.engine!.snapshot).isA<EngineRunning>();
+
+      await sub.cancel();
+      await notifier.endSession();
+    });
+
+    test('a real call does not clobber a user-requested pause', () async {
+      final calls = SimulationCallStateService();
+      final container = _container(db, callState: calls);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      notifier.pause(); // user pause (reason: userRequested)
+      await Future<void>.delayed(Duration.zero);
+      var s = container.read(sessionControllerProvider).value;
+      check(s!.isPaused).isTrue();
+      check(s.pauseReason).equals(PauseReason.userRequested);
+
+      calls.setState(CallState.ringing);
+      await Future<void>.delayed(Duration.zero);
+      // Already paused — the call neither re-pauses nor changes the reason.
+      s = container.read(sessionControllerProvider).value;
+      check(s!.pauseReason).equals(PauseReason.userRequested);
+
+      calls.setState(CallState.idle);
+      await Future<void>.delayed(Duration.zero);
+      // The call ending must NOT resume the user's deliberate pause.
+      check(notifier.engine!.snapshot).isA<EnginePaused>();
+      s = container.read(sessionControllerProvider).value;
+      check(s!.isPaused).isTrue();
+
       await notifier.endSession();
     });
   });

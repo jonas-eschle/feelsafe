@@ -297,6 +297,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionPausedBadge => 'Wstrzymano';
 
   @override
+  String get sessionPausedIncomingCall =>
+      'Wstrzymano — połączenie przychodzące';
+
+  @override
   String get sessionPhaseEnded => 'Sesja zakończona';
 
   @override

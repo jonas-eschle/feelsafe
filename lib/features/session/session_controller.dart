@@ -11,6 +11,7 @@ import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
 import 'package:guardianangela/domain/engine/triggers.dart';
+import 'package:guardianangela/domain/enums/call_state.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
@@ -25,6 +26,7 @@ import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
+import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 
@@ -89,6 +91,8 @@ class SessionState {
     this.fakeCallShowNonce = 0,
     this.activeReminderTemplate,
     this.reminderShowNonce = 0,
+    this.pauseReason,
+    this.fakeCallCancelNonce = 0,
   });
 
   /// The clean starting state used before the engine is wired.
@@ -194,6 +198,18 @@ class SessionState {
   /// the same step still triggers a re-show (mirrors [fakeCallShowNonce]).
   final int reminderShowNonce;
 
+  /// Why the engine is paused, when [isPaused] is true. Lets the session
+  /// screen show a specific badge — e.g. "incoming call" for an auto-pause
+  /// triggered by a real phone call (spec 01 §Real Phone Call Detection, A2).
+  /// Null when not paused, or paused for the generic user-requested reason.
+  final PauseReason? pauseReason;
+
+  /// Monotonic counter that increments when an active `fakeCall` is cancelled
+  /// by a real incoming call (spec 01 §Real Phone Call During Fake Call,
+  /// Extra-24/25). [FakeCallScreen] listens and dismisses itself; the session
+  /// then auto-disarms when the real call ends.
+  final int fakeCallCancelNonce;
+
   /// The currently executing [ChainStep], or null if no step is active.
   ChainStep? get currentStep {
     if (currentStepIndex < 0 || currentStepIndex >= activeChain.length) {
@@ -231,6 +247,9 @@ class SessionState {
     ReminderTemplate? activeReminderTemplate,
     bool clearReminderTemplate = false,
     int? reminderShowNonce,
+    PauseReason? pauseReason,
+    bool clearPauseReason = false,
+    int? fakeCallCancelNonce,
   }) => SessionState(
     isSimulation: isSimulation ?? this.isSimulation,
     elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -262,6 +281,8 @@ class SessionState {
         ? null
         : (activeReminderTemplate ?? this.activeReminderTemplate),
     reminderShowNonce: reminderShowNonce ?? this.reminderShowNonce,
+    pauseReason: clearPauseReason ? null : (pauseReason ?? this.pauseReason),
+    fakeCallCancelNonce: fakeCallCancelNonce ?? this.fakeCallCancelNonce,
   );
 }
 
@@ -279,6 +300,28 @@ class SessionController extends AsyncNotifier<SessionState> {
   EventServices? _eventServices;
   DateTime? _startedAt;
   String? _markerLogId;
+
+  /// Subscription to [CallStateServiceProtocol.callState] for real
+  /// incoming-call detection; non-null only while a session is running.
+  StreamSubscription<CallState>? _callStateSub;
+
+  /// The call-state service started for the current session, retained so it can
+  /// be stopped on teardown without re-reading the provider.
+  CallStateServiceProtocol? _callStateService;
+
+  /// True between a real call becoming active (ringing/offhook) and returning
+  /// to idle. Edge-tracked so a single call's ringing→offhook transition fires
+  /// the handler exactly once (spec 01 §Real Phone Call Detection).
+  bool _realCallActive = false;
+
+  /// True when this controller paused the engine for a real call, so call-end
+  /// resume does not clobber a separate user-requested pause.
+  bool _pausedByRealCall = false;
+
+  /// True when a real call cancelled an active fakeCall; the session disarms
+  /// when that call ends (spec 01 §Real Phone Call During Fake Call,
+  /// Extra-24/25).
+  bool _disarmOnRealCallEnd = false;
 
   /// Merged pool of reminder templates (global + mode-local) resolved once at
   /// [startSession] and read by [_selectReminderTemplate]. Empty outside a
@@ -578,6 +621,19 @@ class SessionController extends AsyncNotifier<SessionState> {
     }
     engine.start();
     _tick = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
+
+    // Wire real incoming-call detection (spec 01 §Real Phone Call Detection).
+    // Subscribe before start() so no early telephony event is missed. Skipped
+    // in simulation — there is no real telephony to observe.
+    if (!simulate) {
+      final callStateService = ref.read(callStateServiceProvider);
+      _callStateService = callStateService;
+      _realCallActive = false;
+      _pausedByRealCall = false;
+      _disarmOnRealCallEnd = false;
+      _callStateSub = callStateService.callState.listen(_onCallStateChanged);
+      await callStateService.start();
+    }
   }
 
   SessionMode? _distressMode;
@@ -839,6 +895,71 @@ class SessionController extends AsyncNotifier<SessionState> {
     _engine?.resume();
   }
 
+  /// Handles a telephony state change from [CallStateServiceProtocol].
+  ///
+  /// Edge-tracks the transition idle→active (ringing/offhook) and active→idle
+  /// so a single call's ringing→offhook change does not double-fire. See
+  /// spec 01 §Real Phone Call Detection.
+  void _onCallStateChanged(CallState callState) {
+    if (_engine == null) return;
+    final active = callState != CallState.idle;
+    if (active && !_realCallActive) {
+      _realCallActive = true;
+      _onRealCallStarted();
+    } else if (!active && _realCallActive) {
+      _realCallActive = false;
+      _onRealCallEnded();
+    }
+  }
+
+  /// A real call started while a session is active.
+  ///
+  /// The chain is always paused so it cannot escalate during the call (a
+  /// `fakeCall` step has `retryCount=0` by default and would otherwise advance
+  /// to the next step). On a `fakeCall` step the fake call is additionally
+  /// cancelled — ringtone stopped and the screen dismissed — and flagged to
+  /// auto-disarm when the call ends (spec 01 §Real Phone Call During Fake Call,
+  /// Extra-24/25; §Real Phone Call Detection, A2 / Extra-30/31).
+  void _onRealCallStarted() {
+    final engine = _engine;
+    if (engine == null) return;
+    final isFakeCall = engine.currentStep?.type == ChainStepType.fakeCall;
+    if (!engine.isPaused) {
+      engine.pause(reason: PauseReason.incomingCall);
+      _pausedByRealCall = true;
+    }
+    if (isFakeCall) {
+      unawaited(_eventServices?.audio.stop() ?? Future<void>.value());
+      _disarmOnRealCallEnd = true;
+      final s = state.value;
+      if (s != null) {
+        state = AsyncData(
+          s.copyWith(fakeCallCancelNonce: s.fakeCallCancelNonce + 1),
+        );
+      }
+    }
+  }
+
+  /// The real call ended.
+  ///
+  /// Resumes a session this controller paused for the call, then — when the
+  /// call had cancelled a fake call — disarms (resets to step 0). The resume
+  /// only restarts the saved phase timer; the immediately-following disarm
+  /// cancels it, so the fake call never re-rings (spec 01 §Real Phone Call
+  /// During Fake Call, Extra-24/25).
+  void _onRealCallEnded() {
+    final engine = _engine;
+    if (engine == null) return;
+    if (_pausedByRealCall) {
+      _pausedByRealCall = false;
+      engine.resume();
+    }
+    if (_disarmOnRealCallEnd) {
+      _disarmOnRealCallEnd = false;
+      engine.disarm();
+    }
+  }
+
   /// Toggle the simulation silent-mode flag.
   void setSimulationSilent(bool value) {
     final current = state.value;
@@ -969,9 +1090,21 @@ class SessionController extends AsyncNotifier<SessionState> {
     _distressCountdownTimer = null;
     await _eventsSub?.cancel();
     _eventsSub = null;
+    _teardownCallState();
     _engine = null;
     _eventServices = null;
     _resetReminderState();
+  }
+
+  /// Stops real incoming-call detection and clears its session-scoped state.
+  void _teardownCallState() {
+    unawaited(_callStateSub?.cancel() ?? Future<void>.value());
+    _callStateSub = null;
+    unawaited(_callStateService?.stop() ?? Future<void>.value());
+    _callStateService = null;
+    _realCallActive = false;
+    _pausedByRealCall = false;
+    _disarmOnRealCallEnd = false;
   }
 
   /// Clears the session-scoped reminder selection state (pool, last-shown
@@ -986,6 +1119,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     _tick?.cancel();
     _distressCountdownTimer?.cancel();
     _eventsSub?.cancel();
+    _teardownCallState();
     final engine = _engine;
     if (engine != null && !engine.isEnded) {
       engine.endSession();
@@ -1177,11 +1311,24 @@ class SessionController extends AsyncNotifier<SessionState> {
         // No additional UI handling — sessionEnded will fire next.
         break;
       case ChainEvent.sessionPaused:
-        state = AsyncData(s.copyWith(isPaused: true));
+        final reasonName = event.metadata['reason'] as String?;
+        final reason = reasonName == null
+            ? null
+            : PauseReason.values.firstWhere(
+                (PauseReason r) => r.name == reasonName,
+                orElse: () => PauseReason.userRequested,
+              );
+        state = AsyncData(
+          s.copyWith(
+            isPaused: true,
+            pauseReason: reason,
+            clearPauseReason: reason == null,
+          ),
+        );
       case ChainEvent.sessionResumed:
-        state = AsyncData(s.copyWith(isPaused: false));
+        state = AsyncData(s.copyWith(isPaused: false, clearPauseReason: true));
       case ChainEvent.pauseExpired:
-        state = AsyncData(s.copyWith(isPaused: false));
+        state = AsyncData(s.copyWith(isPaused: false, clearPauseReason: true));
       case ChainEvent.sessionEnded:
         final reasonName = event.metadata['reason'] as String?;
         final reason = reasonName == null

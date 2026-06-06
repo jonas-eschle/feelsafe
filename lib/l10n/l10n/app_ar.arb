@@ -25,6 +25,7 @@
   "sessionStepLabel": "الخطوة {index} من {total}",
   "sessionMissCount": "فائت: {count}",
   "sessionPausedBadge": "متوقف مؤقتًا",
+  "sessionPausedIncomingCall": "متوقف مؤقتًا — مكالمة واردة",
   "sessionPhaseEnded": "انتهت الجلسة",
   "sessionSimulationBanner": "محاكاة",
   "sessionCompletedTitle": "اكتملت الجلسة",

@@ -296,6 +296,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionPausedBadge => 'متوقف شده';
 
   @override
+  String get sessionPausedIncomingCall => 'متوقف شده — تماس ورودی';
+
+  @override
   String get sessionPhaseEnded => 'جلسه پایان یافت';
 
   @override

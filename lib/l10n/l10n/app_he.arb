@@ -25,6 +25,7 @@
   "sessionStepLabel": "שלב {index} מתוך {total}",
   "sessionMissCount": "החמצות: {count}",
   "sessionPausedBadge": "מושהה",
+  "sessionPausedIncomingCall": "מושהה — שיחה נכנסת",
   "sessionPhaseEnded": "המושב הסתיים",
   "sessionSimulationBanner": "סימולציה",
   "sessionCompletedTitle": "המושב הושלם",

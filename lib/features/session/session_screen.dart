@@ -16,6 +16,7 @@ import 'package:guardianangela/core/widgets/swipe_slider.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -416,7 +417,13 @@ class _SessionHeader extends StatelessWidget {
           ),
         if (state.isPaused) ...<Widget>[
           const SizedBox(width: 8),
-          Chip(label: Text(l10n.sessionPausedBadge)),
+          Chip(
+            label: Text(
+              state.pauseReason == PauseReason.incomingCall
+                  ? l10n.sessionPausedIncomingCall
+                  : l10n.sessionPausedBadge,
+            ),
+          ),
         ],
         if (state.missCount > 0) ...<Widget>[
           const SizedBox(width: 8),

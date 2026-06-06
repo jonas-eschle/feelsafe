@@ -25,6 +25,7 @@
   "sessionStepLabel": "第 {index} 步，共 {total} 步",
   "sessionMissCount": "错过次数：{count}",
   "sessionPausedBadge": "已暂停",
+  "sessionPausedIncomingCall": "已暂停 — 来电",
   "sessionPhaseEnded": "会话已结束",
   "sessionSimulationBanner": "模拟",
   "sessionCompletedTitle": "会话已完成",

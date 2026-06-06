@@ -25,6 +25,7 @@
   "sessionStepLabel": "चरण {index} / {total}",
   "sessionMissCount": "छूटे: {count}",
   "sessionPausedBadge": "रुका हुआ",
+  "sessionPausedIncomingCall": "रुका हुआ — इनकमिंग कॉल",
   "sessionPhaseEnded": "सत्र समाप्त",
   "sessionSimulationBanner": "सिमुलेशन",
   "sessionCompletedTitle": "सत्र पूर्ण",
