@@ -1,32 +1,20 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-04 — **Phase 9 ran its spec-coverage audit and
-uncovered a systemic problem: the app's core is built + unit-tested but
-largely NOT WIRED UP.** ~13 GA-blocking integration gaps — core safety
-features broken or dead at runtime despite **3744 passing unit tests**.
-A 6-agent completeness audit (one per feature spec doc) found them; I
-spot-verified the 4 most severe myself. **A corrected-status +
-remediation plan is written at `docs/rewrite/ga-wiring-remediation.md`
-and is AWAITING YOUR APPROVAL.** Per your decisions this session:
-**plan-first, then execute serially** (me + verifier cohorts, each fix
-proven by an emulator integration test).
+**Snapshot:** 2026-06-06 — **Remediation plan APPROVED; executing M0.**
+3 of 4 M0 fixes are **done, verified, and committed** (#21, #17, #19).
+**#18 is the only M0 item left.** Then M1–M5 (see the plan doc).
 
-**NO PRODUCTION CODE CHANGED THIS SESSION.** Only two new files (the
-plan doc + an emulator smoke test) — committed alongside this handoff.
-**HEAD before this session:** `eed8667`. **Tests:** still **3744**
-(unchanged; analyzer clean). **Branch:** `main`, **0 commits ahead of
-`origin/main`** before this handoff (Phase 8 was already pushed; the
-handoff snapshot that said "3 unpushed" was stale).
+**HEAD:** `3ec5b1c`. **4 commits ahead of `origin/main`, all UNPUSHED**
+(`808a83f` audit handoff + the 3 M0 commits below). **Tests: 3753 pass**
+(was 3744 at plan time; +9 net new). **Analyzer:** `--fatal-infos` clean.
+**Tree:** clean. **Branch:** `main`. **Push needs your explicit
+authorization** (rule 12) — nothing has been pushed.
 
-**The headline:** the `SessionEngine`, all 9 strategies, the data
-layer, models/enums, and service *protocol impls* are genuinely solid
-and tested. But **screens → controllers → services wiring is
-pervasively incomplete**: methods exist and nobody calls them, settings
-are stored and nothing consumes them, 3 audio assets don't exist on
-disk. Unit tests pass because they test units in isolation; no test
-drove a *wired* flow. This is your documented v2 postmortem
-(wiring-failures) reproduced one layer up — see
-[[feedback_rewrite_process]].
+**The big lesson this session held up:** the emulator integration test is
+worth its weight. It caught two things unit tests *structurally could
+not* — the missing audio assets AND a latent `just_audio.play()` hang that
+only manifests with a real player on a looping source. "Green" now means
+"works."
 
 ---
 
@@ -36,159 +24,146 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**First action: read `docs/rewrite/ga-wiring-remediation.md` and get
-the user to approve/adjust the plan** (they chose "plan first, then
-execute"). It has: the corrected project status (§1), the full
-GA-blocker inventory (§2, = tasks #8–#23), the serial execution method
-(§3), 6 milestones safety-critical-first (§4), and 3 open questions for
-the user (§6: approve order? Tier-F descopes? R-8 data sourcing?).
+**First action: do M0 #18** (the last M0 fix), then run the M0 **verifier
+cohort** (per the plan's method), then this session's commits + #18 can be
+pushed once you authorize.
 
-**On approval, execute milestone M0 first** (restores the app's reason
-to exist — it can make noise and disarm):
-1. #21 audio assets (siren/ringtone_default/countdown_warning `.ogg`
-   are referenced but absent → alarm/ring/countdown are SILENT). Add
-   the assets (or repoint to existing) + a CI asset-existence gate.
-2. #17 fakeCall hang-up/decline/voice wiring (currently `context.pop()`
-   only → fake call never disarms).
-3. #19 loudAlarm gradual-volume + DND-override gating.
-4. #18 disguisedReminder template rendering + confirmation types +
-   `earlyCheckIn`.
+**#18 — disguisedReminder template rendering + confirmation types +
+`earlyCheckIn` (spec 02:89-135, task #4).** The audit found: renders no
+template/disguise/confirmation-types; the check-in prompt is hard-coded
+"Check in now"; `engine.earlyCheckIn()` is never called. **Verify the gap
+yourself first** (the audit one-liners undersold #17 and #19 — both hid
+extra bugs). Likely touches: the disguised-reminder screen/notification,
+the 8 seed reminder templates (`lib/data/seed_data.dart`), confirmation
+types, and wiring `earlyCheckIn`. Watch for the same pattern as #17: a
+config that isn't passed, or a setting that isn't consumed.
 
-Each fix: verify the gap yourself → implement (serial) → **prove with
-an emulator integration test driving the wired flow** → l10n deltas →
-gate suite → verifier cohort → commit. Milestones M1–M5 follow (M5 IS
-the original Phase 9: INT scenarios, device e2e, finalize the
-spec-coverage matrix, coverage floor).
+**Per-fix recipe (unchanged):** verify gap yourself → implement (serial)
+→ prove with an emulator integration test (host widget/controller tests
+for pure wiring; emulator for native playback) → l10n deltas (spawn the
+language agent if you add user-facing strings) → gate suite → commit.
+Re-engage the verifier cohort on `FIX_REQUIRED`.
 
 ---
 
-## Emulator (validated — this is the new verification standard)
+## What shipped this session (M0: 3/4)
 
-A headless Android emulator works here with KVM acceleration and
-**collects on-device coverage including the real native services**
-(closes QA gap-4). Proven by `integration_test/app_boot_smoke_test.dart`
-(passes; built+installed the APK; lcov captured `call_state_service`,
-`hardware_button_service`, `flash_service`, etc.).
+| Commit | Fix | What it really was (bigger than the audit one-liner) |
+|---|---|---|
+| `6c65a96` | **#21 audio assets** | 3 referenced `.ogg` didn't exist → alarm/ring/countdown SILENT. Shipped cross-platform **WAV** (OGG doesn't decode on iOS). Found `alarm.mp3` was a **0.26 s silent stub** mislabeled "source-of-truth" → removed it, kept the real `ringtone.wav` (renamed `ringtone_default.wav`), synthesized `siren.wav`+`countdown_warning.wav` (`tool/generate_audio_assets.py`). New CI **`assets-exist`** gate. **Fixed a latent `play()` fire-and-forget hang** (awaiting `play()` on a looping source never returns — `_startPlayback()` now used at all 5 sites). Fixed the drifted preservation-manifest. |
+| `168d67c` | **#17 fakeCall** | Buttons only `context.pop()`'d. Wired answer→stop-ring+play-voice, hang-up→`engine.hangUp()`→disarm, decline→disarm(safe)/`restartCurrentStep`(unsafe). **You chose to include full-screen auto-appear** → `SessionState.fakeCallShowNonce` bumps on each fakeCall `stepStarted`; session screen pushes `FakeCallScreen` (guarded, re-appears on retry). Fixed 2 latent bugs: nav pushed without the step config; strategy played `voiceRecordingPath` AS the ringtone. Added `playVoiceRecording` to `AudioServiceProtocol` (+Real/Sim `@override`, +5 test fakes). Corrected a test that *encoded* the ringtone bug. |
+| `3ec5b1c` | **#19 loudAlarm gradual/DND** | Strategy never passed `rampSeconds`/`alarmDndOverride` → service defaults won: alarm **always** ramped (5 s) and DND-override was **always on** (inverse of the Q19 opt-in). AppSettings already had the right values; threaded them via `EventServices` → `LoudAlarmStrategy` (ramp needs BOTH global `alarmGradualVolume` AND per-step `gradualVolume`; DND from `alarmDndOverride`). |
 
-```bash
-export ANDROID_HOME=/home/jonas/Android/Sdk
-export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
-# Boot headless (cold). AVD 'Pixel_9_Pro' (Android 16 / API 36) pre-exists.
-emulator -avd Pixel_9_Pro -no-window -no-audio -no-boot-anim \
-  -gpu swiftshader_indirect -no-snapshot &
-# Wait for full boot:
-until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; \
-  do sleep 3; done; adb shell input keyevent 82
-# Run an integration test WITH coverage:
-flutter test integration_test/app_boot_smoke_test.dart -d emulator-5554 --coverage
-```
-First Gradle build ~75s; boot ~1–2 min cold. (An emulator may still be
-running from this session — `adb devices` to check.)
+**Verification standard met for each:** full `flutter analyze
+--fatal-infos`, full `flutter test` (3753), emulator integration test
+(`integration_test/audio_assets_test.dart` — 4 tests: siren / ringtone /
+countdown / built-in voice all decode on `Pixel_9_Pro`), format +
+import_sorter + S-NN + Phase-X + OLD greps + the asset gate.
+
+---
+
+## Discovered but DEFERRED (note for the right milestone)
+
+- **Background fakeCall full-screen launch-to-route** (notification
+  full-screen-intent → routes to FakeCallScreen when device is locked).
+  Separate from #17 (which did foreground auto-appear). A
+  notification-deeplink concern. → likely with #11/M1 or a nav pass.
+- **iOS `critical_alert.wav`** notification sound is referenced in
+  `notification_service.dart` (`DarwinNotificationDetails(sound:)`) but
+  doesn't exist in the iOS bundle → iOS alarm notification falls back to
+  the default critical-alert sound. Minor iOS polish. → fold into **#20**
+  (iOS strings/notification, M2). The *core* loud alarm is the
+  `AudioService` siren (now real), not the notification sound.
+- **`docs/review/remaining-gaps.md`** is a **stale v2-era artifact**
+  (dated 2026-04-10, references `lib/services/implementations/…` paths
+  that don't exist in v3). GAP-66/67 there describe v2 audio code — do
+  NOT action them against v3. Left as-is.
+
+---
+
+## Decisions made (all via AskUserQuestion)
+
+1. **Approve the remediation plan + milestone order; start M0 now.**
+2. **Tier-F descope → decide at M4** (deferred; do not cut yet).
+3. **R-8 emergency-number data → source from a citable public reference
+   (ITU/Wikipedia) + flag for user review** (an M4 item).
+4. **#17 scope → include full-screen auto-appear** (not just the 3
+   buttons).
 
 ---
 
 ## Hard rules (unchanged — apply every stage)
 
 1. **OLD/ is INERT.** Never read/list/glob/grep/import under `OLD/`.
-   Restore with `git checkout HEAD -- OLD/` if a tool dirties it.
-2. **NO STUBS at GA.** All 12 S-NN categories in
-   `~/.claude/plans/make-sure-that-there-typed-tulip.md §NO-STUBS` are
-   CI hard fails. (The wiring gaps this audit found are exactly the
-   "missing functionality" these rules exist to prevent.)
-3. **NO INVENTED DEFERRALS.** "Phase X" comments only if that phase's
-   plan scopes the work. Grep `lib/features/` before every commit.
-4. **DO NOT guess.** `AskUserQuestion` for spec ambiguity / values
-   decisions. (Used heavily this session — all decisions logged below.)
-5. **Pre-alpha = break compatibility freely.** [[project_prealpha_break_compat]]
-6. **Verify after EVERY fix or stage.** Analyzer + tests + (now)
-   emulator integration test + grep gates. Re-engage the verifier on
-   `FIX_REQUIRED`.
+   `git checkout HEAD -- OLD/` if a tool dirties it.
+2. **NO STUBS at GA** (S-1..S-12 in `~/.claude/plans/make-sure-that-there-typed-tulip.md §NO-STUBS`). The wiring gaps are exactly what these prevent.
+3. **NO INVENTED DEFERRALS.** Grep `lib/features/` for `Phase X` before every commit.
+4. **DO NOT guess.** `AskUserQuestion` for spec ambiguity / value decisions.
+5. **Pre-alpha = break compatibility freely.** Tests follow code; update tests that encoded a bug (did this twice this session).
+6. **Verify after EVERY fix.** analyzer + full tests + emulator + grep gates. Re-engage the verifier on `FIX_REQUIRED`.
 7. **Write/update HANDOFF.md before the session ends.**
-8. **Serial default; parallel only when truly orthogonal.** The user
-   reconfirmed this session: connected fixes (real-call, mode editor,
-   stealth, fakeCall, reminder) stay serial; only disjoint self-
-   contained fixes (audio assets, emergency-number map, iOS strings)
-   may fan out. Read-only audits MAY run parallel.
+8. **Serial default; parallel only when truly orthogonal.** Connected fixes stay serial.
 9. **Co-Authored-By footer:** `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
 10. **Pure Dart in `lib/domain/`, `lib/services/protocols/`, `lib/data/`.**
-11. **lefthook re-stages auto-fixes; OLD/-safe. NEVER run `dart format .`
-    or `import_sorter` REPO-WIDE** — scope to changed files. Note: the
-    build regenerates `lib/l10n/l10n/app_localizations*.dart` with
-    blank-line drift; `git checkout -- lib/l10n/l10n/` to discard it.
+11. **lefthook re-stages auto-fixes. NEVER `dart format .` / `import_sorter` REPO-WIDE** — scope to changed files. The emulator build regenerates `lib/l10n/l10n/app_localizations*.dart` with blank-line drift → `git checkout -- lib/l10n/l10n/` to discard (done every commit this session).
 12. **Pushing to `main` needs explicit user authorization each time.**
 
 ---
 
-## Decisions made this session (all via AskUserQuestion)
+## Emulator (the verification standard — validated again this session)
 
-1. **Start Phase 9 now** (don't run `/ultrareview` first).
-2. **Coverage:** get a real emulator running for true device coverage
-   if feasible (it is) — else fall back to exclude-generated + floor 1.
-3. On discovering the first 3 gaps (R-8/R-29/R-32): **fix all 3 now**
-   **+ run a full spec-vs-impl completeness audit** to find others.
-4. On the audit finding ~13 GA-blockers: **plan first, then execute**
-   (corrected-status doc + remediation plan for review).
-5. **Serial execution + verifier cohorts**; parallel only for truly
-   disjoint fixes.
-
----
-
-## Gap inventory (full detail in the plan doc §2 + tasks #8–#23)
-
-**🔴 GA-blockers:** audio assets silent (#21✓); fakeCall doesn't disarm
-(#17✓); disguisedReminder no template/disguise (#18); loudAlarm
-gradual/DND unwired+inverted (#19); real incoming-call detection
-unwired (#11); battery alert never fires + GPS never tracks (#22✓);
-mode-editor can't configure steps/triggers/safety-options (#13);
-SMS-contact grid missing (#14); alarm settings missing (#23); stealth
-session UI + 5 granular fields unconsumed (#15). **🟠:** R-8 emergency
-numbers (#10), R-32+session-end biometric (#9/#23), notification-perm
-re-ask (#16), iOS warnings/channel-validation/SMS-template (#20).
-**🟡 known/descope:** R-29 button (#8), background clamp (#12), system-
-volume-override / AlarmManager-watchdog / call-style-ringtones /
-`requireLaunchAuth` / optional feedback prompt (Tier F — confirm cuts).
-(✓ = I spot-verified the absence.)
-
-**Solid + tested (do NOT re-litigate):** engine state machine, 9
-strategies, Drift/data layer, models/enums/sealed types, service
-protocol impls, routing, PIN ladder, simulation swap, l10n.
-
----
-
-## Spec-coverage matrix status (deferred to M5)
-
-`test/spec_coverage_test.dart` is still the Phase-0 skeleton (assertions
-commented out). This session **re-mapped all 45 R-NN** against the REAL
-`docs/rewrite/spec-audit.md` definitions (the file's inline `//`
-comments are DRIFTED/wrong — e.g. its "R-44 stealth aliases" is really
-"notificationDisguise bool"; do not trust them). Most R-NN are COVERED;
-the behavioral-gaps are exactly the items now in tasks #8–#23. The
-matrix gets finalized in **M5** once features land + tests exist (can't
-honestly assert "every row → passing test" while features are missing).
-Pure-doc R-NN (R-19, R-39, R-43) need a DOC-ONLY treatment (sentinel
-string, not a test path).
+```bash
+export ANDROID_HOME=/home/jonas/Android/Sdk
+export PATH="$ANDROID_HOME/emulator:$ANDROID_HOME/platform-tools:$PATH"
+adb devices    # an emulator-5554 may still be up from this session
+# If not booted, cold-boot headless (AVD Pixel_9_Pro / API 36 pre-exists):
+emulator -avd Pixel_9_Pro -no-window -no-audio -no-boot-anim \
+  -gpu swiftshader_indirect -no-snapshot &
+until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]; \
+  do sleep 3; done; adb shell input keyevent 82
+# Run an integration test (wrap in `timeout` — a hung test won't self-kill):
+timeout 480 flutter test integration_test/audio_assets_test.dart -d emulator-5554
+```
+First Gradle build ~30–75 s (incremental builds are fast — the APK is
+cached). **Gotcha:** Gradle can transiently fail to fetch
+`androidx.test.espresso` metadata from Maven — it's cached, so a retry
+succeeds. **Don't** pipe a long `flutter test` through `| tail` when
+backgrounding (tail buffers → empty output until exit; you can't see a
+hang).
 
 ---
 
 ## Quick verification commands
 
 ```bash
-dart format --output=none --set-exit-if-changed lib/ test/ integration_test/
+flutter analyze --fatal-infos                                   # 0 issues
+flutter test --concurrency=6                                    # 3753 pass
+dart format --output=none --set-exit-if-changed <changed .dart files>
 dart run import_sorter:main --no-comments --exit-if-changed
-flutter analyze --fatal-infos                                    # 0 issues
-flutter test --concurrency=6                                     # 3744 pass
-grep -rn 'package:flutter' lib/domain/ lib/services/protocols/ lib/data/   # empty (S-7)
-grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/    # 0
-git status --porcelain -- OLD/                                   # empty
-git checkout -- lib/l10n/l10n/   # discard generated blank-line drift if build ran
+grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
+git status --porcelain -- OLD/                                  # empty
+git checkout -- lib/l10n/l10n/   # discard generated blank-line drift if a build ran
+# asset-existence gate (now in CI as job `assets-exist`):
+for r in $(grep -rhoE "assets/[A-Za-z0-9_/.-]+\.[A-Za-z0-9]+" lib/ | sort -u); do [ -f "$r" ] || echo "MISSING $r"; done
 ```
+
+---
+
+## The plan + task journal
+
+- **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (corrected status
+  §1, gap inventory §2 = tasks #8–#23, method §3, milestones M0–M5 §4).
+- **Task journal** (TaskList): #21✓ #17✓ #19✓ done; **#18 pending** is the
+  last M0 item. Then M1 (#11 real-call, #22 GPS/battery, #12 clamp), M2
+  (config UIs #13/#14/#23/#20), M3 (#15 stealth), M4 (#10/#9/#8/#16 +
+  Tier-F decisions), M5 (Phase-9 proper: INT scenarios, device e2e,
+  spec-coverage matrix, coverage floor).
 
 ---
 
 ## End-of-session ritual (every session)
 
-1. **Update HANDOFF.md** — snapshot (date, HEAD, tests, what changed,
-   decisions), gap/status, next actions, emulator command.
+1. **Update HANDOFF.md** (this file) — snapshot, what changed, decisions, next action, emulator cmd.
 2. **Commit HANDOFF.md** (`…-handoff: …` + Co-Authored-By footer).
 3. **Tell the user the resume prompt** exactly: `Continue from HANDOFF.md`.
 
@@ -196,5 +171,5 @@ Don't skip it because "the session went short."
 
 ---
 
-End of hand-off. The plan at `docs/rewrite/ga-wiring-remediation.md`
-needs your approval before execution. Resume from §"How to resume".
+End of hand-off. M0 is 3/4 done and committed (unpushed). Resume with
+**#18**, then the M0 verifier cohort, then ask about pushing.
