@@ -509,6 +509,10 @@ class SessionController extends AsyncNotifier<SessionState> {
       userDescription: profile.physicalDescription,
       userMedicalInfo: profile.medicalConditions,
       emergencyNumberDefault: settings.emergencyCallNumber,
+      alarmDndOverride: settings.alarmDndOverride,
+      alarmGradualVolume: settings.alarmGradualVolume,
+      alarmGradualVolumeDurationSeconds:
+          settings.alarmGradualVolumeDurationSeconds,
       isCancelled: () {
         final e = _engine;
         return e == null || e.isEnded;

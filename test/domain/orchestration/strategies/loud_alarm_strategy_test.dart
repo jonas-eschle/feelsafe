@@ -388,51 +388,98 @@ void main() {
     });
   });
 
-  // ─── 4. gradualVolume — audio call parameters are unchanged ───────────────
-  group(
-    'executeReal — gradualVolume does not change audio call parameters',
-    () {
-      test(
-        'gradualVolume=true has identical audio params to gradualVolume=false',
-        () async {
-          final audioTrue = FakeAudioService();
-          final audioFalse = FakeAudioService();
+  // ─── 4. gradualVolume — suppressed when the global toggle is off ───────────
+  group('executeReal — gradualVolume suppressed when global toggle is off', () {
+    test('per-step gradualVolume=true does NOT ramp when global gradual is off '
+        '(rampSeconds=0, identical to gradualVolume=false)', () async {
+      final audioTrue = FakeAudioService();
+      final audioFalse = FakeAudioService();
 
-          await const LoudAlarmStrategy().executeReal(
-            _step(config: const LoudAlarmConfig(gradualVolume: true)),
-            buildServices(audio: audioTrue),
-          );
-          await const LoudAlarmStrategy().executeReal(
-            _step(config: const LoudAlarmConfig()),
-            buildServices(audio: audioFalse),
-          );
-
-          expect(
-            audioTrue.calls.first['soundChoice'],
-            equals(audioFalse.calls.first['soundChoice']),
-          );
-          expect(
-            audioTrue.calls.first['volume'],
-            equals(audioFalse.calls.first['volume']),
-          );
-          expect(
-            audioTrue.calls.first['isSimulation'],
-            equals(audioFalse.calls.first['isSimulation']),
-          );
-        },
+      // buildServices defaults alarmGradualVolume=false (global off).
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig(gradualVolume: true)),
+        buildServices(audio: audioTrue),
+      );
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        buildServices(audio: audioFalse),
       );
 
-      test('gradualVolume=true audio call has isSimulation=false', () async {
+      // Global off ⇒ per-step true is suppressed ⇒ no ramp on either.
+      expect(audioTrue.calls.first['rampSeconds'], equals(0));
+      expect(audioFalse.calls.first['rampSeconds'], equals(0));
+      expect(
+        audioTrue.calls.first['soundChoice'],
+        equals(audioFalse.calls.first['soundChoice']),
+      );
+      expect(
+        audioTrue.calls.first['volume'],
+        equals(audioFalse.calls.first['volume']),
+      );
+    });
+
+    test('gradualVolume=true audio call has isSimulation=false', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(audio: audio);
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig(gradualVolume: true)),
+        services,
+      );
+      expect(audio.calls.first['isSimulation'], isFalse);
+    });
+  });
+
+  // ─── 4b. #19 gradual-volume + DND-override are plumbed from settings ────────
+  group('executeReal — gradual/DND plumbed from settings (#19)', () {
+    test('ramp fires with the global duration when BOTH global and per-step '
+        'gradual are on', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(
+        audio: audio,
+        alarmGradualVolume: true,
+        alarmGradualVolumeDurationSeconds: 12,
+      );
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig(gradualVolume: true)),
+        services,
+      );
+      expect(audio.calls.first['rampSeconds'], equals(12));
+    });
+
+    test(
+      'global gradual on but per-step off ⇒ no ramp (rampSeconds=0)',
+      () async {
         final audio = FakeAudioService();
-        final services = buildServices(audio: audio);
+        final services = buildServices(audio: audio, alarmGradualVolume: true);
         await const LoudAlarmStrategy().executeReal(
-          _step(config: const LoudAlarmConfig(gradualVolume: true)),
+          _step(config: const LoudAlarmConfig()),
           services,
         );
-        expect(audio.calls.first['isSimulation'], isFalse);
-      });
-    },
-  );
+        expect(audio.calls.first['rampSeconds'], equals(0));
+      },
+    );
+
+    test('alarmDndOverride is forwarded from settings (true)', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(audio: audio, alarmDndOverride: true);
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        services,
+      );
+      expect(audio.calls.first['alarmDndOverride'], isTrue);
+    });
+
+    test('alarmDndOverride defaults to false (opt-in per Q19) and is '
+        'forwarded, not the service default of true', () async {
+      final audio = FakeAudioService();
+      final services = buildServices(audio: audio); // default false
+      await const LoudAlarmStrategy().executeReal(
+        _step(config: const LoudAlarmConfig()),
+        services,
+      );
+      expect(audio.calls.first['alarmDndOverride'], isFalse);
+    });
+  });
 
   // ─── 5. flashLight — conditional camera flash ──────────────────────────────
   group('executeReal — flashLight conditional behavior', () {

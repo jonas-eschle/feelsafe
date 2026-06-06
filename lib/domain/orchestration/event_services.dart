@@ -38,6 +38,9 @@ final class EventServices {
     this.userDescription,
     this.userMedicalInfo,
     this.emergencyNumberDefault,
+    this.alarmDndOverride = false,
+    this.alarmGradualVolume = false,
+    this.alarmGradualVolumeDurationSeconds = 5,
     this.isCancelled,
   });
 
@@ -112,6 +115,27 @@ final class EventServices {
   /// configured (throws [StateError] in the strategy if the step also
   /// has no override).
   final String? emergencyNumberDefault;
+
+  /// Whether the loud alarm may override silent/DND (spec 06 §Override Silent).
+  ///
+  /// Mirrors [AppSettings.alarmDndOverride] (default `false`, opt-in per Q19).
+  /// [LoudAlarmStrategy] plumbs this into
+  /// [AudioServiceProtocol.playAlarmWithConfig] so STREAM_ALARM only bypasses
+  /// silent/DND when the user opted in.
+  final bool alarmDndOverride;
+
+  /// App-wide gradual-volume master toggle (spec 06 §Gradual Volume Increase).
+  ///
+  /// Mirrors [AppSettings.alarmGradualVolume] (default `false`). The volume
+  /// ramp fires only when this AND the per-step [LoudAlarmConfig.gradualVolume]
+  /// are both `true` (spec 02 §loudAlarm).
+  final bool alarmGradualVolume;
+
+  /// Gradual-volume ramp duration in seconds (spec 06 §Gradual Volume Duration).
+  ///
+  /// Mirrors [AppSettings.alarmGradualVolumeDurationSeconds] (default 5).
+  /// Applied only when the ramp is active.
+  final int alarmGradualVolumeDurationSeconds;
 
   /// Cooperative cancellation poll for long-running operations.
   ///

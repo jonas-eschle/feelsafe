@@ -62,10 +62,17 @@ final class LoudAlarmStrategy implements EventStrategy {
       'volume=${config.volume} isSimulation=${services.isSimulation}',
       name: 'LoudAlarmStrategy',
     );
+    // Gradual volume ramps only when BOTH the global master toggle and the
+    // per-step flag are on; the duration is the global setting. Otherwise the
+    // alarm jumps straight to full volume (rampSeconds: 0). DND override is the
+    // global opt-in (default false) — spec 02 §loudAlarm, 06 §Alarm Settings.
+    final gradual = services.alarmGradualVolume && config.gradualVolume;
     await services.audio.playAlarmWithConfig(
       soundChoice: config.soundChoice.name,
       volume: config.volume,
       isSimulation: services.isSimulation,
+      rampSeconds: gradual ? services.alarmGradualVolumeDurationSeconds : 0,
+      alarmDndOverride: services.alarmDndOverride,
     );
 
     // Alarm escalation notification: surfaces the alarm on the lock screen

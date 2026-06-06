@@ -430,6 +430,9 @@ EventServices buildServices({
   ScreenFlashServiceProtocol? screenFlash,
   ContactServiceProtocol? contactsService,
   NotificationServiceProtocol? notification,
+  bool alarmDndOverride = false,
+  bool alarmGradualVolume = false,
+  int alarmGradualVolumeDurationSeconds = 5,
   bool Function()? isCancelled,
 }) => EventServices(
   audio: audio ?? FakeAudioService(),
@@ -452,5 +455,8 @@ EventServices buildServices({
   userDescription: userDescription,
   userMedicalInfo: userMedicalInfo,
   emergencyNumberDefault: emergencyNumberDefault,
+  alarmDndOverride: alarmDndOverride,
+  alarmGradualVolume: alarmGradualVolume,
+  alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
   isCancelled: isCancelled,
 );
