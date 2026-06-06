@@ -1,20 +1,21 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-06 — **Remediation plan APPROVED; executing M0.**
-3 of 4 M0 fixes are **done, verified, and committed** (#21, #17, #19).
-**#18 is the only M0 item left.** Then M1–M5 (see the plan doc).
+**Snapshot:** 2026-06-06 — **M0 COMPLETE (4/4). All committed, UNPUSHED.**
+#21, #17, #19, **and now #18** are done, verified, and committed.
+**Next milestone is M1** (see the plan doc §4).
 
-**HEAD:** `3ec5b1c`. **4 commits ahead of `origin/main`, all UNPUSHED**
-(`808a83f` audit handoff + the 3 M0 commits below). **Tests: 3753 pass**
-(was 3744 at plan time; +9 net new). **Analyzer:** `--fatal-infos` clean.
+**HEAD:** `764a3ed` (#18) + this handoff commit → **7 commits ahead of
+`origin/main`, all UNPUSHED** (audit handoff + 2 m0-handoff + the 4 M0 fix
+commits). **Tests: 3795 pass**
+(was 3753; +42 net new for #18). **Analyzer:** `--fatal-infos` clean.
 **Tree:** clean. **Branch:** `main`. **Push needs your explicit
 authorization** (rule 12) — nothing has been pushed.
 
-**The big lesson this session held up:** the emulator integration test is
-worth its weight. It caught two things unit tests *structurally could
-not* — the missing audio assets AND a latent `just_audio.play()` hang that
-only manifests with a real player on a looping source. "Green" now means
-"works."
+**The big lesson held again:** "green means works." #18's emulator test ran
+all four confirmation interactions through the real Android engine; building
+it surfaced a real robustness gap unit tests missed — the full-screen route
+auto-popped during the controller's brief `AsyncLoading` frame on mount
+(fixed: only auto-pop once the controller has *resolved*).
 
 ---
 
@@ -24,19 +25,19 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**First action: do M0 #18** (the last M0 fix), then run the M0 **verifier
-cohort** (per the plan's method), then this session's commits + #18 can be
-pushed once you authorize.
+**First action: start M1** (Safety subsystems live). Optionally run the M0
+**verifier cohort** first (spec-vs-code architect-reviewer + spec-vs-tests
+qa-expert over the 4 M0 commits) — it was deferred under time pressure;
+re-engage on `FIX_REQUIRED`. Then the 5 M0 commits can be pushed once you
+authorize.
 
-**#18 — disguisedReminder template rendering + confirmation types +
-`earlyCheckIn` (spec 02:89-135, task #4).** The audit found: renders no
-template/disguise/confirmation-types; the check-in prompt is hard-coded
-"Check in now"; `engine.earlyCheckIn()` is never called. **Verify the gap
-yourself first** (the audit one-liners undersold #17 and #19 — both hid
-extra bugs). Likely touches: the disguised-reminder screen/notification,
-the 8 seed reminder templates (`lib/data/seed_data.dart`), confirmation
-types, and wiring `earlyCheckIn`. Watch for the same pattern as #17: a
-config that isn't passed, or a setting that isn't consumed.
+**M1 — #11 real incoming-call detection** (pause/resume, fakeCall cancel,
+hold pause), **#22 GPS logging start/stop + battery-alert firing**, **#12
+background clamp** (fold in). All are SessionController lifecycle wiring;
+keep them serial. **Verify each gap yourself first** — the #18 one-liner
+again undersold the work (it was a whole feature: selection algorithm +
+4 confirmation widgets + a new full-screen route + `templateIds` config
+field, not just "wire earlyCheckIn").
 
 **Per-fix recipe (unchanged):** verify gap yourself → implement (serial)
 → prove with an emulator integration test (host widget/controller tests
@@ -46,28 +47,40 @@ Re-engage the verifier cohort on `FIX_REQUIRED`.
 
 ---
 
-## What shipped this session (M0: 3/4)
+## What shipped (M0: 4/4 — COMPLETE)
 
 | Commit | Fix | What it really was (bigger than the audit one-liner) |
 |---|---|---|
+| `764a3ed` | **#18 disguisedReminder** | Was a whole feature, not a wiring tweak. (1) New pure selection algorithm `reminder_template_selector.dart` (spec 02:89-99: templateIds filter, randomize via injected `nowMillis`, avoid-last-shown C4). (2) Added the **missing `templateIds` field** to `DisguisedReminderConfig` (spec required it; editor is #13/M2). (3) Merged mode-local templates into the pool at `startSession` (was global-only). (4) Controller selects on `reminderFired` → `SessionState.activeReminderTemplate` + `reminderShowNonce`; passes the pick to the strategy via `EventServices.copyWith`. (5) Strategy notification now uses the template title/body (was hard-coded "Check in now"). (6) **Wired `earlyCheckIn`** (was dead) — wait-phase tap → `controller.earlyCheckIn()` honoring `resetOnEarlyCheckIn`. (7) New shared `ReminderConfirmation`/`ReminderDisguiseContent` rendering all 4 confirmation types (tapButton/tapWord-with-decoys/swipe/dismiss). (8) New **full-screen `DisguisedReminderScreen` route** for `fullScreen` templates (your AskUserQuestion choice), auto-pushed via the nonce like #17's fakeCall, auto-pops when the engine moves on. Fixed a latent loading-frame premature-pop. 5 new l10n keys × 14 locales. |
 | `6c65a96` | **#21 audio assets** | 3 referenced `.ogg` didn't exist → alarm/ring/countdown SILENT. Shipped cross-platform **WAV** (OGG doesn't decode on iOS). Found `alarm.mp3` was a **0.26 s silent stub** mislabeled "source-of-truth" → removed it, kept the real `ringtone.wav` (renamed `ringtone_default.wav`), synthesized `siren.wav`+`countdown_warning.wav` (`tool/generate_audio_assets.py`). New CI **`assets-exist`** gate. **Fixed a latent `play()` fire-and-forget hang** (awaiting `play()` on a looping source never returns — `_startPlayback()` now used at all 5 sites). Fixed the drifted preservation-manifest. |
 | `168d67c` | **#17 fakeCall** | Buttons only `context.pop()`'d. Wired answer→stop-ring+play-voice, hang-up→`engine.hangUp()`→disarm, decline→disarm(safe)/`restartCurrentStep`(unsafe). **You chose to include full-screen auto-appear** → `SessionState.fakeCallShowNonce` bumps on each fakeCall `stepStarted`; session screen pushes `FakeCallScreen` (guarded, re-appears on retry). Fixed 2 latent bugs: nav pushed without the step config; strategy played `voiceRecordingPath` AS the ringtone. Added `playVoiceRecording` to `AudioServiceProtocol` (+Real/Sim `@override`, +5 test fakes). Corrected a test that *encoded* the ringtone bug. |
 | `3ec5b1c` | **#19 loudAlarm gradual/DND** | Strategy never passed `rampSeconds`/`alarmDndOverride` → service defaults won: alarm **always** ramped (5 s) and DND-override was **always on** (inverse of the Q19 opt-in). AppSettings already had the right values; threaded them via `EventServices` → `LoudAlarmStrategy` (ramp needs BOTH global `alarmGradualVolume` AND per-step `gradualVolume`; DND from `alarmDndOverride`). |
 
 **Verification standard met for each:** full `flutter analyze
---fatal-infos`, full `flutter test` (3753), emulator integration test
-(`integration_test/audio_assets_test.dart` — 4 tests: siren / ringtone /
-countdown / built-in voice all decode on `Pixel_9_Pro`), format +
-import_sorter + S-NN + Phase-X + OLD greps + the asset gate.
+--fatal-infos`, full `flutter test` (now 3795), emulator integration test,
+format + import_sorter + S-NN + Phase-X + OLD greps + the asset gate.
+Emulator tests: `integration_test/audio_assets_test.dart` (#21 audio
+decode) and `integration_test/disguised_reminder_test.dart` (#18 — all 4
+confirmation interactions render + confirm through the real Android engine
+on `emulator-5554`).
 
 ---
 
 ## Discovered but DEFERRED (note for the right milestone)
 
-- **Background fakeCall full-screen launch-to-route** (notification
-  full-screen-intent → routes to FakeCallScreen when device is locked).
-  Separate from #17 (which did foreground auto-appear). A
-  notification-deeplink concern. → likely with #11/M1 or a nav pass.
+- **Background full-screen launch-to-route** (notification
+  full-screen-intent → routes to FakeCallScreen / DisguisedReminderScreen
+  when device is locked). Both #17 and #18 do *foreground* auto-appear; the
+  backgrounded path relies on the notification. This now covers the
+  disguisedReminder too, **plus its confirmation-type-specific notification
+  text + tap-to-check-in deeplink** (spec 02:121-125 — tapWord "tap to check
+  in" / swipe "swipe to dismiss"; the #18 notification currently shows the
+  plain disguise title/body, which is correct but inert when tapped). →
+  notification-deeplink pass, likely with #11/M1 or a nav pass.
+- **#18 polish (minor):** tapWord decoy words are a fixed English-ish set
+  (`reminder_word_choices.dart`), not localized; the disguise icon is a
+  neutral Material icon (template `iconAsset`/`imagePath` not yet rendered).
+  Both are cosmetic — fold into a later stealth/templates polish (near #15).
 - **iOS `critical_alert.wav`** notification sound is referenced in
   `notification_service.dart` (`DarwinNotificationDetails(sound:)`) but
   doesn't exist in the iOS bundle → iOS alarm notification falls back to
@@ -89,6 +102,9 @@ import_sorter + S-NN + Phase-X + OLD greps + the asset gate.
    (ITU/Wikipedia) + flag for user review** (an M4 item).
 4. **#17 scope → include full-screen auto-appear** (not just the 3
    buttons).
+5. **#18 fullScreen display style → pushed full-screen route** (new
+   `DisguisedReminderScreen`, hides chrome), mirroring #17. `subtle` stays
+   an inline card.
 
 ---
 
@@ -153,11 +169,13 @@ for r in $(grep -rhoE "assets/[A-Za-z0-9_/.-]+\.[A-Za-z0-9]+" lib/ | sort -u); d
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (corrected status
   §1, gap inventory §2 = tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Task journal** (TaskList): #21✓ #17✓ #19✓ done; **#18 pending** is the
-  last M0 item. Then M1 (#11 real-call, #22 GPS/battery, #12 clamp), M2
-  (config UIs #13/#14/#23/#20), M3 (#15 stealth), M4 (#10/#9/#8/#16 +
-  Tier-F decisions), M5 (Phase-9 proper: INT scenarios, device e2e,
-  spec-coverage matrix, coverage floor).
+- **Task journal** (TaskList): **M0 done — #21✓ #17✓ #19✓ #18✓.** Next:
+  **M1** (#11 real-call, #22 GPS/battery, #12 clamp), then M2 (config UIs
+  #13/#14/#23/#20 — #13's StepConfigPanel is where the new `templateIds`
+  field gets its editor), M3 (#15 stealth), M4 (#10/#9/#8/#16 + Tier-F
+  decisions), M5 (Phase-9 proper: INT scenarios, device e2e, spec-coverage
+  matrix, coverage floor). The in-memory TaskList is cleared on `/clear` —
+  this bullet is the durable journal.
 
 ---
 
