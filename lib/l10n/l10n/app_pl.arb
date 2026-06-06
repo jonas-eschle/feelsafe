@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "Następna eskalacja uruchomi się po zakończeniu odliczania. Przesuń poniżej „Jestem bezpieczny/a”, aby rozbroić.",
   "sessionStepDisguisedDefaultTitle": "Przypomnienie",
   "sessionStepDisguisedDefaultBody": "Dotknij „Jestem zameldowany/a”, aby potwierdzić, że jesteś bezpieczny/a.",
+  "sessionReminderEarlyCheckInHint": "Dotknij, aby zameldować się teraz",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Dotknij, aby kontynuować",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Przesuń, aby zamknąć",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Zamknij",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Wysyłanie wiadomości do kontaktów…",
   "sessionStepPhoneCallStatus": "Dzwonienie do kontaktu alarmowego…",
   "sessionStepLoudAlarmTitle": "Alarm odtwarzany",

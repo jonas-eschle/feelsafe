@@ -156,6 +156,26 @@
   "@sessionStepDisguisedDefaultBody": {
     "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
   },
+  "sessionReminderEarlyCheckInHint": "Toca para registrarte ahora",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Toca para continuar",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Desliza para cerrar",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Cerrar",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Enviando mensaje a contactos…",
   "@sessionStepSmsStatus": {
     "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."

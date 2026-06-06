@@ -10,6 +10,7 @@ import 'package:guardianangela/features/backup_restore/backup_restore_screen.dar
 import 'package:guardianangela/features/battery_alert/battery_alert_screen.dart';
 import 'package:guardianangela/features/contact_form/contact_form_screen.dart';
 import 'package:guardianangela/features/contacts/contacts_screen.dart';
+import 'package:guardianangela/features/disguised_reminder/disguised_reminder_screen.dart';
 import 'package:guardianangela/features/distress_modes/distress_modes_screen.dart';
 import 'package:guardianangela/features/event_defaults/event_defaults_screen.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
@@ -127,6 +128,11 @@ final goRouterProvider = Provider<GoRouter>((ref) {
               : const FakeCallConfig();
           return FakeCallScreen(config: config);
         },
+      ),
+      GoRoute(
+        path: '/disguised-reminder',
+        name: RouteNames.disguisedReminder,
+        builder: (_, _) => const DisguisedReminderScreen(),
       ),
       GoRoute(
         path: '/session/completed',

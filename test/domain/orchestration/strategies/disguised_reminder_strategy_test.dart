@@ -13,7 +13,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/orchestration/strategies/disguised_reminder_strategy.dart';
 import '../_test_fakes.dart';
 
@@ -128,6 +131,51 @@ void main() {
         check(call['id']).equals(105);
       },
     );
+  });
+
+  // ─── Group 2b: notification uses the selected template disguise ─────────────
+  group('executeReal — notification disguise comes from the template', () {
+    final template = ReminderTemplate(
+      id: 'tmpl_weather',
+      name: 'Weather Alert',
+      title: 'Rainy tomorrow',
+      body: 'Bring an umbrella',
+      confirmationType: ConfirmationType.dismiss,
+      isCustom: false,
+      displayStyle: ReminderDisplayStyle.subtle,
+      isGlobal: true,
+    );
+
+    test('title and body match the selected template', () async {
+      final notification = FakeNotificationService();
+      final services = buildServices(
+        notification: notification,
+        selectedReminderTemplate: template,
+      );
+      await const DisguisedReminderStrategy().executeReal(
+        _step(config: const DisguisedReminderConfig()),
+        services,
+      );
+      final call = notification.calls.firstWhere(
+        (c) => c['method'] == 'showDisguisedReminder',
+      );
+      check(call['title']).equals('Rainy tomorrow');
+      check(call['body']).equals('Bring an umbrella');
+    });
+
+    test('falls back to defaults when no template is attached', () async {
+      final notification = FakeNotificationService();
+      final services = buildServices(notification: notification);
+      await const DisguisedReminderStrategy().executeReal(
+        _step(config: const DisguisedReminderConfig()),
+        services,
+      );
+      final call = notification.calls.firstWhere(
+        (c) => c['method'] == 'showDisguisedReminder',
+      );
+      check(call['title']).equals('Guardian Angela');
+      check(call['body']).equals('Check in now.');
+    });
   });
 
   // ─── Group 3: services not involved remain empty ─────────────────────────────

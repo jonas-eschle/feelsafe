@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "उल्टी गिनती समाप्त होने पर अगला एस्कलेशन सक्रिय होगा। निरस्त्र करने के लिए नीचे 'मैं सुरक्षित हूँ' स्वाइप करें।",
   "sessionStepDisguisedDefaultTitle": "रिमाइंडर",
   "sessionStepDisguisedDefaultBody": "सुरक्षित होने की पुष्टि के लिए 'मैं चेक-इन हूँ' टैप करें।",
+  "sessionReminderEarlyCheckInHint": "अभी चेक-इन के लिए टैप करें",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "ठीक है",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "जारी रखने के लिए टैप करें",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "बंद करने के लिए स्वाइप करें",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "बंद करें",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "संपर्कों को संदेश भेजा जा रहा है…",
   "sessionStepPhoneCallStatus": "आपातकालीन संपर्क को कॉल किया जा रहा है…",
   "sessionStepLoudAlarmTitle": "अलार्म बज रहा है",

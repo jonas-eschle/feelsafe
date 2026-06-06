@@ -46,9 +46,17 @@ final class DisguisedReminderStrategy implements EventStrategy {
     // Notification: fires in real and simulation mode so out-of-app delivery
     // works. The notification layer does not need a [SIM] suffix here — the
     // overlay drives the primary UX; the notification is supplemental.
+    //
+    // Title/body come from the template the controller selected for this fire
+    // (spec 02 §disguisedReminder template selection) so the notification
+    // shows the same disguise as the in-app overlay. The fallbacks only apply
+    // defensively when no template was attached (e.g. an empty pool).
     final notificationId = _kReminderNotificationIdBase + step.order;
-    final title = config.blackScreenMode ? 'Reminder' : 'Guardian Angela';
-    const body = 'Check in now.';
+    final template = services.selectedReminderTemplate;
+    final title =
+        template?.title ??
+        (config.blackScreenMode ? 'Reminder' : 'Guardian Angela');
+    final body = template?.body ?? 'Check in now.';
 
     log(
       'DisguisedReminderStrategy: firing notification id=$notificationId '

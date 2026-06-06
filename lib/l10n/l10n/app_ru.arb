@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "Следующая эскалация сработает по окончании отсчёта. Проведите по «Я в безопасности» ниже, чтобы отключить.",
   "sessionStepDisguisedDefaultTitle": "Напоминание",
   "sessionStepDisguisedDefaultBody": "Нажмите «Я отметился», чтобы подтвердить, что вы в безопасности.",
+  "sessionReminderEarlyCheckInHint": "Нажмите, чтобы отметиться сейчас",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Нажмите для продолжения",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Проведите, чтобы закрыть",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Закрыть",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Отправка сообщения контактам…",
   "sessionStepPhoneCallStatus": "Звонок экстренному контакту…",
   "sessionStepLoudAlarmTitle": "Тревога активна",

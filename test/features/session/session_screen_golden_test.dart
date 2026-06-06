@@ -25,8 +25,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -134,6 +137,7 @@ SessionState _state({
   bool isPaused = false,
   int elapsedSeconds = 42,
   int remainingSeconds = 15,
+  ReminderTemplate? activeReminderTemplate,
 }) => SessionState(
   isSimulation: isSimulation,
   elapsedSeconds: elapsedSeconds,
@@ -145,6 +149,20 @@ SessionState _state({
   isPaused: isPaused,
   isDistressChain: false,
   remainingSeconds: remainingSeconds,
+  activeReminderTemplate: activeReminderTemplate,
+);
+
+/// A subtle tapButton disguise used by the disguised-reminder golden.
+final ReminderTemplate _goldenReminderTemplate = ReminderTemplate(
+  id: 'golden_calendar',
+  name: 'Calendar Event',
+  title: 'You have an appointment',
+  body: 'Meeting with Alex at 3 PM',
+  confirmationType: ConfirmationType.tapButton,
+  buttonLabel: 'Acknowledge',
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.subtle,
+  isGlobal: true,
 );
 
 // ---------------------------------------------------------------------------
@@ -318,6 +336,7 @@ void main() {
             type: ChainStepType.disguisedReminder,
             config: const DisguisedReminderConfig(),
             phase: SessionPhase.duration,
+            activeReminderTemplate: _goldenReminderTemplate,
           ),
         ),
       ),

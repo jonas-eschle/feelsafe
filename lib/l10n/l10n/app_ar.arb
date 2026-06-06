@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "سيبدأ التصعيد التالي عند انتهاء العد التنازلي. اسحب «أنا بأمان» في الأسفل لإنهاء التأهب.",
   "sessionStepDisguisedDefaultTitle": "تذكير",
   "sessionStepDisguisedDefaultBody": "اضغط على «أنا بأمان» لتأكيد سلامتك.",
+  "sessionReminderEarlyCheckInHint": "اضغط للتسجيل الآن",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "موافق",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "اضغط للمتابعة",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "اسحب للإغلاق",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "إغلاق",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "جارٍ إرسال الرسالة إلى جهات الاتصال…",
   "sessionStepPhoneCallStatus": "جارٍ الاتصال بجهة اتصال الطوارئ…",
   "sessionStepLoudAlarmTitle": "الإنذار يعمل",

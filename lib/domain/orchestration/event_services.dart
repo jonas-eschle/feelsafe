@@ -1,3 +1,4 @@
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
 import 'package:guardianangela/services/protocols/flash_service_protocol.dart';
@@ -41,6 +42,7 @@ final class EventServices {
     this.alarmDndOverride = false,
     this.alarmGradualVolume = false,
     this.alarmGradualVolumeDurationSeconds = 5,
+    this.selectedReminderTemplate,
     this.isCancelled,
   });
 
@@ -137,6 +139,15 @@ final class EventServices {
   /// Applied only when the ramp is active.
   final int alarmGradualVolumeDurationSeconds;
 
+  /// The reminder template selected for the current `disguisedReminder` fire.
+  ///
+  /// Set per-dispatch by the [SessionController] (which owns template
+  /// selection and avoidance state) so [DisguisedReminderStrategy] shows the
+  /// matching disguise in the out-of-app notification. `null` for every other
+  /// step type and as a defensive fallback (spec 02 §disguisedReminder
+  /// template selection).
+  final ReminderTemplate? selectedReminderTemplate;
+
   /// Cooperative cancellation poll for long-running operations.
   ///
   /// Pure-Dart callback (`bool Function()?`) — not Flutter's `VoidCallback`.
@@ -148,4 +159,34 @@ final class EventServices {
   /// should stop as soon as possible.
   // ignore: avoid_returning_null_for_void (this is intentionally a bool poll)
   final bool Function()? isCancelled;
+
+  /// Returns a copy with the supplied fields replaced.
+  ///
+  /// Used by the [SessionController] to attach the per-dispatch
+  /// [selectedReminderTemplate] to the otherwise session-constant bundle
+  /// without rebuilding the service protocols.
+  EventServices copyWith({ReminderTemplate? selectedReminderTemplate}) =>
+      EventServices(
+        audio: audio,
+        vibration: vibration,
+        messaging: messaging,
+        phone: phone,
+        location: location,
+        recording: recording,
+        flash: flash,
+        screenFlash: screenFlash,
+        contacts: contacts,
+        notification: notification,
+        isSimulation: isSimulation,
+        userName: userName,
+        userDescription: userDescription,
+        userMedicalInfo: userMedicalInfo,
+        emergencyNumberDefault: emergencyNumberDefault,
+        alarmDndOverride: alarmDndOverride,
+        alarmGradualVolume: alarmGradualVolume,
+        alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
+        selectedReminderTemplate:
+            selectedReminderTemplate ?? this.selectedReminderTemplate,
+        isCancelled: isCancelled,
+      );
 }

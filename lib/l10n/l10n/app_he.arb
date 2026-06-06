@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "ההסלמה הבאה תופעל בסיום הספירה לאחור. החלק/י „אני בטוח/ה” למטה כדי לנטרל.",
   "sessionStepDisguisedDefaultTitle": "תזכורת",
   "sessionStepDisguisedDefaultBody": "הקש/י על „ביצעתי צ'ק-אין” כדי לאשר שאת/ה בטוח/ה.",
+  "sessionReminderEarlyCheckInHint": "הקש/י לצ'ק-אין עכשיו",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "אישור",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "הקש/י להמשך",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "החלק/י לסגירה",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "סגור",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "שולח הודעה לאנשי קשר…",
   "sessionStepPhoneCallStatus": "מתקשר לאיש קשר חירום…",
   "sessionStepLoudAlarmTitle": "האזעקה פועלת",

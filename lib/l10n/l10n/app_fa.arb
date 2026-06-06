@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "با پایان شمارش معکوس، تشدید بعدی فعال می‌شود. برای غیرفعال‌سازی، «من در امانم» را در پایین بکشید.",
   "sessionStepDisguisedDefaultTitle": "یادآور",
   "sessionStepDisguisedDefaultBody": "برای تأیید ایمنی خود روی «من حاضرم» بزنید.",
+  "sessionReminderEarlyCheckInHint": "برای حضور الان بزنید",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "باشه",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "برای ادامه بزنید",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "بکشید تا بسته شود",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "بستن",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "ارسال پیام به مخاطبین…",
   "sessionStepPhoneCallStatus": "در حال تماس با مخاطب اضطراری…",
   "sessionStepLoudAlarmTitle": "آژیر در حال پخش",

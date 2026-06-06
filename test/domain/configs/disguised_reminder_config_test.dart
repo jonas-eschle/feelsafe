@@ -35,6 +35,11 @@ void main() {
       check(cfg.blackScreenMode).isFalse();
     });
 
+    test('default templateIds is empty (all templates eligible)', () {
+      const cfg = DisguisedReminderConfig();
+      check(cfg.templateIds).isEmpty();
+    });
+
     test('constructor is const (compile-time constant)', () {
       // ignore: prefer_const_constructors
       const a = DisguisedReminderConfig();
@@ -44,15 +49,30 @@ void main() {
   });
 
   group('DisguisedReminderConfig — JSON round-trip', () {
-    test('toJson emits all four keys', () {
+    test('toJson emits all keys', () {
       const cfg = DisguisedReminderConfig();
       final json = cfg.toJson();
       check(json.keys.toSet()).deepEquals({
+        'templateIds',
         'randomizeInterval',
         'randomizeTemplateOrder',
         'resetOnEarlyCheckIn',
         'blackScreenMode',
       });
+    });
+
+    test('round-trip preserves a non-empty templateIds list', () {
+      const original = DisguisedReminderConfig(
+        templateIds: ['tmpl_a', 'tmpl_b'],
+      );
+      final restored = StepConfig.fromJson(
+        ChainStepType.disguisedReminder,
+        original.toJson(),
+      );
+      check(restored).equals(original);
+      check(
+        (restored as DisguisedReminderConfig).templateIds,
+      ).deepEquals(const ['tmpl_a', 'tmpl_b']);
     });
 
     test('round-trip preserves default values', () {
@@ -137,6 +157,13 @@ void main() {
       check(updated.blackScreenMode).isTrue();
     });
 
+    test('copyWith replaces templateIds', () {
+      const cfg = DisguisedReminderConfig();
+      final updated = cfg.copyWith(templateIds: ['only_this']);
+      check(updated.templateIds).deepEquals(const ['only_this']);
+      check(updated.randomizeInterval).equals(cfg.randomizeInterval);
+    });
+
     test('copyWith with all fields swaps every value', () {
       const cfg = DisguisedReminderConfig();
       final updated = cfg.copyWith(
@@ -208,6 +235,25 @@ void main() {
       const a = DisguisedReminderConfig();
       const b = DisguisedReminderConfig(blackScreenMode: true);
       check(a == b).isFalse();
+    });
+
+    test('inequality on templateIds contents', () {
+      const a = DisguisedReminderConfig(templateIds: ['a']);
+      const b = DisguisedReminderConfig(templateIds: ['b']);
+      check(a == b).isFalse();
+    });
+
+    test('inequality on templateIds length', () {
+      const a = DisguisedReminderConfig(templateIds: ['a']);
+      const b = DisguisedReminderConfig(templateIds: ['a', 'b']);
+      check(a == b).isFalse();
+    });
+
+    test('equal templateIds lists have equal hashCodes', () {
+      const a = DisguisedReminderConfig(templateIds: ['a', 'b']);
+      const b = DisguisedReminderConfig(templateIds: ['a', 'b']);
+      check(a).equals(b);
+      check(a.hashCode).equals(b.hashCode);
     });
   });
 }

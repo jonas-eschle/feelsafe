@@ -27,10 +27,13 @@ import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
 import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
@@ -51,6 +54,7 @@ class _FakeSessionController extends SessionController {
 
   int endSessionCalls = 0;
   int disarmCalls = 0;
+  int earlyCheckInCalls = 0;
   int cancelDistressCalls = 0;
   int confirmDistressCalls = 0;
   EndReason? lastConfirmDistressReason;
@@ -85,6 +89,9 @@ class _FakeSessionController extends SessionController {
 
   @override
   void disarm() => disarmCalls++;
+
+  @override
+  void earlyCheckIn() => earlyCheckInCalls++;
 
   @override
   void cancelDistress() {
@@ -229,6 +236,19 @@ ChainStep _step(
   config: config,
 );
 
+/// A subtle tapButton disguise used by the disguised-reminder UI tests.
+final ReminderTemplate _tapButtonTemplate = ReminderTemplate(
+  id: 'test_calendar',
+  name: 'Calendar Event',
+  title: 'You have an appointment',
+  body: 'Meeting with Alex at 3 PM',
+  confirmationType: ConfirmationType.tapButton,
+  buttonLabel: 'Acknowledge',
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.subtle,
+  isGlobal: true,
+);
+
 /// Base [SessionState] for a running session at step index 0.
 SessionState _runningState({
   ChainStepType type = ChainStepType.holdButton,
@@ -245,6 +265,7 @@ SessionState _runningState({
   int missCount = 0,
   int elapsedSeconds = 42,
   bool stealthEnabled = false,
+  ReminderTemplate? activeReminderTemplate,
 }) {
   final step = _step(type, config: config);
   return SessionState(
@@ -265,6 +286,7 @@ SessionState _runningState({
     lastError: lastError,
     needsGpsDestinationPrompt: needsGpsDestinationPrompt,
     stealthEnabled: stealthEnabled,
+    activeReminderTemplate: activeReminderTemplate,
   );
 }
 
@@ -549,6 +571,65 @@ void main() {
       );
       await _pump(tester, fake);
       expect(find.text(l10n.sessionCheckIn), findsOneWidget);
+    });
+
+    testWidgets('wait phase shows the early-check-in hint', (tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.wait,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionReminderEarlyCheckInHint), findsOneWidget);
+    });
+
+    testWidgets('tapping the waiting reminder calls earlyCheckIn', (
+      tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.wait,
+        ),
+      );
+      await _pump(tester, fake);
+      await tester.tap(find.byIcon(Icons.shield_outlined));
+      await tester.pump();
+      expect(fake.earlyCheckInCalls, 1);
+    });
+
+    testWidgets('duration phase renders the selected template disguise', (
+      tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.duration,
+          activeReminderTemplate: _tapButtonTemplate,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.text('You have an appointment'), findsOneWidget);
+      expect(find.text('Meeting with Alex at 3 PM'), findsOneWidget);
+      expect(find.text('Acknowledge'), findsOneWidget);
+    });
+
+    testWidgets('tapping the template confirmation button checks in', (
+      tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.duration,
+          activeReminderTemplate: _tapButtonTemplate,
+        ),
+      );
+      await _pump(tester, fake);
+      await tester.tap(find.text('Acknowledge'));
+      await tester.pump();
+      expect(fake.disarmCalls, 1);
     });
   });
 

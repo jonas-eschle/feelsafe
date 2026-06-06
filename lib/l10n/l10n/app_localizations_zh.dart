@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -314,6 +312,21 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get sessionStepDisguisedDefaultBody => '点击“我已签到”以确认安全。';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => '点击立即签到';
+
+  @override
+  String get sessionReminderDefaultButton => '好';
+
+  @override
+  String get sessionReminderTapWordHint => '点击继续';
+
+  @override
+  String get sessionReminderSwipeLabel => '滑动关闭';
+
+  @override
+  String get sessionReminderDismissLabel => '关闭';
 
   @override
   String get sessionStepSmsStatus => '正在向联系人发送消息……';
@@ -2103,6 +2116,21 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionStepDisguisedDefaultBody => '請點按「我已報平安」以確認你安全無虞。';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => '點按立即報到';
+
+  @override
+  String get sessionReminderDefaultButton => '好';
+
+  @override
+  String get sessionReminderTapWordHint => '點按繼續';
+
+  @override
+  String get sessionReminderSwipeLabel => '滑動關閉';
+
+  @override
+  String get sessionReminderDismissLabel => '關閉';
 
   @override
   String get sessionStepSmsStatus => '正在傳送訊息給聯絡人…';

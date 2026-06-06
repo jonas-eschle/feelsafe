@@ -156,6 +156,26 @@
   "@sessionStepDisguisedDefaultBody": {
     "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
   },
+  "sessionReminderEarlyCheckInHint": "Торкніться, щоб зареєструватися зараз",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Торкніться для продовження",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Проведіть, щоб закрити",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Закрити",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Надсилання повідомлення контактам…",
   "@sessionStepSmsStatus": {
     "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."

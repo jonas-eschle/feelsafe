@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -319,6 +317,21 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'برای تأیید ایمنی خود روی «من حاضرم» بزنید.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => 'برای حضور الان بزنید';
+
+  @override
+  String get sessionReminderDefaultButton => 'باشه';
+
+  @override
+  String get sessionReminderTapWordHint => 'برای ادامه بزنید';
+
+  @override
+  String get sessionReminderSwipeLabel => 'بکشید تا بسته شود';
+
+  @override
+  String get sessionReminderDismissLabel => 'بستن';
 
   @override
   String get sessionStepSmsStatus => 'ارسال پیام به مخاطبین…';

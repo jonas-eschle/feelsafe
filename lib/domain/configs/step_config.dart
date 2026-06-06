@@ -145,9 +145,11 @@ final class HoldButtonConfig extends StepConfig {
 final class DisguisedReminderConfig extends StepConfig {
   /// Creates a disguised-reminder config with the given values.
   ///
-  /// Defaults: [randomizeInterval] = true, [randomizeTemplateOrder] = true,
+  /// Defaults: [templateIds] = empty (all templates eligible),
+  /// [randomizeInterval] = true, [randomizeTemplateOrder] = true,
   /// [resetOnEarlyCheckIn] = true, [blackScreenMode] = false.
   const DisguisedReminderConfig({
+    this.templateIds = const [],
     this.randomizeInterval = true,
     this.randomizeTemplateOrder = true,
     this.resetOnEarlyCheckIn = true,
@@ -157,12 +159,24 @@ final class DisguisedReminderConfig extends StepConfig {
   /// Deserialises from a JSON map produced by [toJson].
   factory DisguisedReminderConfig.fromJson(Map<String, dynamic> json) =>
       DisguisedReminderConfig(
+        templateIds:
+            (json['templateIds'] as List<dynamic>?)
+                ?.map((e) => e as String)
+                .toList() ??
+            const [],
         randomizeInterval: (json['randomizeInterval'] as bool?) ?? true,
         randomizeTemplateOrder:
             (json['randomizeTemplateOrder'] as bool?) ?? true,
         resetOnEarlyCheckIn: (json['resetOnEarlyCheckIn'] as bool?) ?? true,
         blackScreenMode: (json['blackScreenMode'] as bool?) ?? false,
       );
+
+  /// IDs of the reminder templates eligible for this step.
+  ///
+  /// Empty (the default) means every template in the session pool is
+  /// eligible. When non-empty, selection filters the pool to these IDs
+  /// (spec 02 §disguisedReminder template selection, step 1).
+  final List<String> templateIds;
 
   /// Whether to apply ±20% jitter to the reminder interval.
   final bool randomizeInterval;
@@ -178,11 +192,13 @@ final class DisguisedReminderConfig extends StepConfig {
 
   /// Returns a copy with the specified fields replaced.
   DisguisedReminderConfig copyWith({
+    List<String>? templateIds,
     bool? randomizeInterval,
     bool? randomizeTemplateOrder,
     bool? resetOnEarlyCheckIn,
     bool? blackScreenMode,
   }) => DisguisedReminderConfig(
+    templateIds: templateIds ?? this.templateIds,
     randomizeInterval: randomizeInterval ?? this.randomizeInterval,
     randomizeTemplateOrder:
         randomizeTemplateOrder ?? this.randomizeTemplateOrder,
@@ -192,6 +208,7 @@ final class DisguisedReminderConfig extends StepConfig {
 
   @override
   Map<String, dynamic> toJson() => {
+    'templateIds': templateIds,
     'randomizeInterval': randomizeInterval,
     'randomizeTemplateOrder': randomizeTemplateOrder,
     'resetOnEarlyCheckIn': resetOnEarlyCheckIn,
@@ -199,16 +216,30 @@ final class DisguisedReminderConfig extends StepConfig {
   };
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is DisguisedReminderConfig &&
-          randomizeInterval == other.randomizeInterval &&
-          randomizeTemplateOrder == other.randomizeTemplateOrder &&
-          resetOnEarlyCheckIn == other.resetOnEarlyCheckIn &&
-          blackScreenMode == other.blackScreenMode);
+  bool operator ==(Object other) {
+    if (identical(this, other)) {
+      return true;
+    }
+    if (other is! DisguisedReminderConfig) {
+      return false;
+    }
+    if (templateIds.length != other.templateIds.length) {
+      return false;
+    }
+    for (var i = 0; i < templateIds.length; i++) {
+      if (templateIds[i] != other.templateIds[i]) {
+        return false;
+      }
+    }
+    return randomizeInterval == other.randomizeInterval &&
+        randomizeTemplateOrder == other.randomizeTemplateOrder &&
+        resetOnEarlyCheckIn == other.resetOnEarlyCheckIn &&
+        blackScreenMode == other.blackScreenMode;
+  }
 
   @override
   int get hashCode => Object.hash(
+    Object.hashAll(templateIds),
     randomizeInterval,
     randomizeTemplateOrder,
     resetOnEarlyCheckIn,

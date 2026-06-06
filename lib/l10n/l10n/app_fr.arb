@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "La prochaine escalade se déclenche à la fin du compte à rebours. Faites glisser « Je suis en sécurité » ci-dessous pour désactiver.",
   "sessionStepDisguisedDefaultTitle": "Rappel",
   "sessionStepDisguisedDefaultBody": "Appuyez sur « Je suis en sécurité » pour confirmer que tout va bien.",
+  "sessionReminderEarlyCheckInHint": "Appuyer pour s'enregistrer maintenant",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Appuyer pour continuer",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Glisser pour fermer",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Fermer",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Envoi du message aux contacts…",
   "sessionStepPhoneCallStatus": "Appel du contact d'urgence…",
   "sessionStepLoudAlarmTitle": "Alarme en cours",

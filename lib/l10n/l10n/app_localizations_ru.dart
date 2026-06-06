@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -321,6 +319,22 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'Нажмите «Я отметился», чтобы подтвердить, что вы в безопасности.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint =>
+      'Нажмите, чтобы отметиться сейчас';
+
+  @override
+  String get sessionReminderDefaultButton => 'OK';
+
+  @override
+  String get sessionReminderTapWordHint => 'Нажмите для продолжения';
+
+  @override
+  String get sessionReminderSwipeLabel => 'Проведите, чтобы закрыть';
+
+  @override
+  String get sessionReminderDismissLabel => 'Закрыть';
 
   @override
   String get sessionStepSmsStatus => 'Отправка сообщения контактам…';

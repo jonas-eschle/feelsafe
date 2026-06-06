@@ -156,6 +156,26 @@
   "@sessionStepDisguisedDefaultBody": {
     "description": "Fallback body shown on a disguisedReminder step when no template body is resolved."
   },
+  "sessionReminderEarlyCheckInHint": "点击立即签到",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "好",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "点击继续",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "滑动关闭",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "关闭",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "正在向联系人发送消息……",
   "@sessionStepSmsStatus": {
     "description": "Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available."

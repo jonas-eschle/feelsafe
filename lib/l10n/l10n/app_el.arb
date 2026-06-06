@@ -120,6 +120,26 @@
   "sessionStepCountdownBody": "Η επόμενη κλιμάκωση ενεργοποιείται όταν λήξει η αντίστροφη μέτρηση. Σύρετε «Είμαι ασφαλής» παρακάτω για αποδέσμευση.",
   "sessionStepDisguisedDefaultTitle": "Υπενθύμιση",
   "sessionStepDisguisedDefaultBody": "Πατήστε «Είμαι σε ασφάλεια» για να επιβεβαιώσετε ότι είστε ασφαλείς.",
+  "sessionReminderEarlyCheckInHint": "Πατήστε για σύνδεση τώρα",
+  "@sessionReminderEarlyCheckInHint": {
+    "description": "Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4)."
+  },
+  "sessionReminderDefaultButton": "OK",
+  "@sessionReminderDefaultButton": {
+    "description": "Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel."
+  },
+  "sessionReminderTapWordHint": "Πατήστε για συνέχεια",
+  "@sessionReminderTapWordHint": {
+    "description": "Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word."
+  },
+  "sessionReminderSwipeLabel": "Σύρτε για απόρριψη",
+  "@sessionReminderSwipeLabel": {
+    "description": "Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation."
+  },
+  "sessionReminderDismissLabel": "Απόρριψη",
+  "@sessionReminderDismissLabel": {
+    "description": "Button label for a dismiss-type disguisedReminder confirmation."
+  },
   "sessionStepSmsStatus": "Αποστολή μηνύματος στις επαφές…",
   "sessionStepPhoneCallStatus": "Κλήση επαφής έκτακτης ανάγκης…",
   "sessionStepLoudAlarmTitle": "Ηχεί συναγερμός",

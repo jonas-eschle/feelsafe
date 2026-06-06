@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -322,6 +320,21 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'Tippen Sie auf „Ich bin eingecheckt“, um zu bestätigen, dass Sie sicher sind.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => 'Zum Einchecken tippen';
+
+  @override
+  String get sessionReminderDefaultButton => 'OK';
+
+  @override
+  String get sessionReminderTapWordHint => 'Zum Fortfahren tippen';
+
+  @override
+  String get sessionReminderSwipeLabel => 'Zum Schließen wischen';
+
+  @override
+  String get sessionReminderDismissLabel => 'Schließen';
 
   @override
   String get sessionStepSmsStatus => 'Nachricht wird an Kontakte gesendet …';

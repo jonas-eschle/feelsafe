@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/engine/session_engine.dart';
@@ -16,11 +17,13 @@ import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
+import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
@@ -84,6 +87,8 @@ class SessionState {
     this.needsGpsDestinationPrompt = false,
     this.stealthEnabled = false,
     this.fakeCallShowNonce = 0,
+    this.activeReminderTemplate,
+    this.reminderShowNonce = 0,
   });
 
   /// The clean starting state used before the engine is wired.
@@ -172,6 +177,23 @@ class SessionState {
   /// than a bool) so a retry of the same step index still triggers a re-show.
   final int fakeCallShowNonce;
 
+  /// The reminder template selected for the currently firing
+  /// `disguisedReminder` step, or null when no reminder is on-screen.
+  ///
+  /// Selected by the controller on each `reminderFired` event (spec 02
+  /// §disguisedReminder template selection) and consumed by the in-app
+  /// reminder UI ([_DisguisedReminderStepUi] and the full-screen
+  /// `DisguisedReminderScreen`) to render the disguise and its confirmation
+  /// interaction.
+  final ReminderTemplate? activeReminderTemplate;
+
+  /// Monotonic counter that increments each time a `disguisedReminder` fires
+  /// (including retries). The session screen pushes the full-screen
+  /// `DisguisedReminderScreen` when the bump corresponds to a `fullScreen`
+  /// [activeReminderTemplate]. A nonce (rather than a bool) so a re-fire of
+  /// the same step still triggers a re-show (mirrors [fakeCallShowNonce]).
+  final int reminderShowNonce;
+
   /// The currently executing [ChainStep], or null if no step is active.
   ChainStep? get currentStep {
     if (currentStepIndex < 0 || currentStepIndex >= activeChain.length) {
@@ -206,6 +228,9 @@ class SessionState {
     bool? needsGpsDestinationPrompt,
     bool? stealthEnabled,
     int? fakeCallShowNonce,
+    ReminderTemplate? activeReminderTemplate,
+    bool clearReminderTemplate = false,
+    int? reminderShowNonce,
   }) => SessionState(
     isSimulation: isSimulation ?? this.isSimulation,
     elapsedSeconds: elapsedSeconds ?? this.elapsedSeconds,
@@ -233,6 +258,10 @@ class SessionState {
         needsGpsDestinationPrompt ?? this.needsGpsDestinationPrompt,
     stealthEnabled: stealthEnabled ?? this.stealthEnabled,
     fakeCallShowNonce: fakeCallShowNonce ?? this.fakeCallShowNonce,
+    activeReminderTemplate: clearReminderTemplate
+        ? null
+        : (activeReminderTemplate ?? this.activeReminderTemplate),
+    reminderShowNonce: reminderShowNonce ?? this.reminderShowNonce,
   );
 }
 
@@ -250,6 +279,21 @@ class SessionController extends AsyncNotifier<SessionState> {
   EventServices? _eventServices;
   DateTime? _startedAt;
   String? _markerLogId;
+
+  /// Merged pool of reminder templates (global + mode-local) resolved once at
+  /// [startSession] and read by [_selectReminderTemplate]. Empty outside a
+  /// session.
+  List<ReminderTemplate> _reminderTemplatePool = const [];
+
+  /// The template chosen for the current `disguisedReminder` fire. Mirrors
+  /// [SessionState.activeReminderTemplate] but is read by [_dispatchStep] to
+  /// attach the disguise to the out-of-app notification. Null between fires.
+  ReminderTemplate? _activeReminderTemplate;
+
+  /// ID of the previously shown reminder template, so [_selectReminderTemplate]
+  /// can avoid showing the same disguise twice in a row (C4). Reset to null on
+  /// [startSession]; the strategy itself stays stateless.
+  String? _lastShownReminderTemplateId;
 
   // Pre-localised labels for the home-screen widget. Callers (HomeScreen)
   // supply these before calling startSession via [configureWidgetLabels] so
@@ -394,7 +438,15 @@ class SessionController extends AsyncNotifier<SessionState> {
     }
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final profile = await ref.read(userProfileRepositoryProvider).load();
-    final templates = settings.defaults.templates;
+    // Merge global templates with this mode's local templates — the effective
+    // pool a disguisedReminder draws from (spec 02:91, mode_overrides.dart:10).
+    final templates = <ReminderTemplate>[
+      ...settings.defaults.templates,
+      ...?mode.overrides?.localTemplates,
+    ];
+    _reminderTemplatePool = templates;
+    _lastShownReminderTemplateId = null;
+    _activeReminderTemplate = null;
     final context = SessionContext(
       mode: mode,
       profile: profile,
@@ -543,6 +595,20 @@ class SessionController extends AsyncNotifier<SessionState> {
   /// Called when the user disarms (taps "I'm safe" / completes the slider).
   void disarm() {
     _engine?.disarm();
+  }
+
+  /// Called when the user taps a disguised reminder during its wait phase —
+  /// before it fires — to check in early (spec 02 §Early Check-in, D4).
+  ///
+  /// Reads the step's [DisguisedReminderConfig.resetOnEarlyCheckIn]: when
+  /// `false`, the engine deliberately ignores the early tap and the reminder
+  /// still fires on schedule (stricter verification). The engine no-ops
+  /// outside a disguisedReminder wait phase.
+  void earlyCheckIn() {
+    final config = _engine?.currentStep?.config;
+    final reset =
+        config is! DisguisedReminderConfig || config.resetOnEarlyCheckIn;
+    _engine?.earlyCheckIn(resetOnEarlyCheckIn: reset);
   }
 
   /// Restart the current step after the user dismisses a fake call etc.
@@ -893,6 +959,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     }
     _recorder = null;
     _eventServices = null;
+    _resetReminderState();
   }
 
   Future<void> _disposeRunOnly() async {
@@ -904,6 +971,15 @@ class SessionController extends AsyncNotifier<SessionState> {
     _eventsSub = null;
     _engine = null;
     _eventServices = null;
+    _resetReminderState();
+  }
+
+  /// Clears the session-scoped reminder selection state (pool, last-shown
+  /// avoidance id, and active disguise) when a session ends or is torn down.
+  void _resetReminderState() {
+    _reminderTemplatePool = const [];
+    _activeReminderTemplate = null;
+    _lastShownReminderTemplateId = null;
   }
 
   void _disposeAll() {
@@ -970,13 +1046,40 @@ class SessionController extends AsyncNotifier<SessionState> {
     final step = engine.currentStep;
     if (step == null) return;
     final index = engine.currentStepIndex;
+    // Attach the selected disguise so the reminder notification shows the
+    // template's title/body rather than a generic string (spec 02
+    // §disguisedReminder). Other step types use the session-constant bundle.
+    final dispatchServices = step.type == ChainStepType.disguisedReminder
+        ? services.copyWith(selectedReminderTemplate: _activeReminderTemplate)
+        : services;
     try {
       await const EventStrategyRegistry()
           .forStep(step)
-          .executeReal(step, services);
+          .executeReal(step, dispatchServices);
     } catch (error) {
       engine.notifyStepExecutionFailed(index, error);
     }
+  }
+
+  /// Selects the disguise for the current `disguisedReminder` fire using the
+  /// pure [selectReminderTemplate] algorithm, honouring the step's
+  /// `templateIds` / `randomizeTemplateOrder` config and avoiding a repeat of
+  /// the previously shown template (C4). The clock is read here (not in the
+  /// pure helper) so the helper stays deterministic.
+  ReminderTemplate _selectReminderTemplate() {
+    final config = _engine?.currentStep?.config;
+    final templateIds = config is DisguisedReminderConfig
+        ? config.templateIds
+        : const <String>[];
+    final randomize =
+        config is! DisguisedReminderConfig || config.randomizeTemplateOrder;
+    return selectReminderTemplate(
+      pool: _reminderTemplatePool,
+      templateIds: templateIds,
+      randomizeTemplateOrder: randomize,
+      nowMillis: DateTime.now().millisecondsSinceEpoch,
+      avoidId: _lastShownReminderTemplateId,
+    );
   }
 
   void _onEngineEvent(ChainEventData event) {
@@ -1014,11 +1117,20 @@ class SessionController extends AsyncNotifier<SessionState> {
           unawaited(_dispatchStep());
         }
       case ChainEvent.reminderFired:
-        state = AsyncData(s.copyWith(phase: SessionPhase.duration));
-        // disguisedReminder actions fire here: the engine has already waited
-        // the full waitSeconds and any retry interval before emitting this
-        // event, so the notification is timed correctly (spec 02
-        // §disguisedReminder §reminderFired).
+        // Select the disguise for this fire BEFORE dispatching, so both the
+        // in-app overlay (via state) and the out-of-app notification (via
+        // _dispatchStep) show the same template (spec 02 §disguisedReminder
+        // template selection). The nonce bump drives the full-screen route.
+        final template = _selectReminderTemplate();
+        _activeReminderTemplate = template;
+        _lastShownReminderTemplateId = template.id;
+        state = AsyncData(
+          s.copyWith(
+            phase: SessionPhase.duration,
+            activeReminderTemplate: template,
+            reminderShowNonce: s.reminderShowNonce + 1,
+          ),
+        );
         unawaited(_dispatchStep());
       case ChainEvent.graceExpired:
         final missCount =
@@ -1028,14 +1140,21 @@ class SessionController extends AsyncNotifier<SessionState> {
         // Already reflected via missCount in the graceExpired branch.
         break;
       case ChainEvent.stepAdvancing:
-        state = AsyncData(s.copyWith(phase: SessionPhase.wait));
+        // The reminder (if any) is over — clear the disguise so the
+        // full-screen route auto-pops and no stale card lingers.
+        _activeReminderTemplate = null;
+        state = AsyncData(
+          s.copyWith(phase: SessionPhase.wait, clearReminderTemplate: true),
+        );
       case ChainEvent.userDisarmed:
+        _activeReminderTemplate = null;
         state = AsyncData(
           s.copyWith(
             currentStepIndex: 0,
             missCount: 0,
             phase: SessionPhase.wait,
             isHolding: false,
+            clearReminderTemplate: true,
           ),
         );
       case ChainEvent.distressTriggered:

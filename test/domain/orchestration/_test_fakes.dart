@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/location_point.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
@@ -433,6 +434,7 @@ EventServices buildServices({
   bool alarmDndOverride = false,
   bool alarmGradualVolume = false,
   int alarmGradualVolumeDurationSeconds = 5,
+  ReminderTemplate? selectedReminderTemplate,
   bool Function()? isCancelled,
 }) => EventServices(
   audio: audio ?? FakeAudioService(),
@@ -458,5 +460,6 @@ EventServices buildServices({
   alarmDndOverride: alarmDndOverride,
   alarmGradualVolume: alarmGradualVolume,
   alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
+  selectedReminderTemplate: selectedReminderTemplate,
   isCancelled: isCancelled,
 );

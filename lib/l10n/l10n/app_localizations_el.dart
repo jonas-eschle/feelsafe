@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -322,6 +320,21 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'Πατήστε «Είμαι σε ασφάλεια» για να επιβεβαιώσετε ότι είστε ασφαλείς.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => 'Πατήστε για σύνδεση τώρα';
+
+  @override
+  String get sessionReminderDefaultButton => 'OK';
+
+  @override
+  String get sessionReminderTapWordHint => 'Πατήστε για συνέχεια';
+
+  @override
+  String get sessionReminderSwipeLabel => 'Σύρτε για απόρριψη';
+
+  @override
+  String get sessionReminderDismissLabel => 'Απόρριψη';
 
   @override
   String get sessionStepSmsStatus => 'Αποστολή μηνύματος στις επαφές…';

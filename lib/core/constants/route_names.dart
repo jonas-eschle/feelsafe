@@ -31,6 +31,9 @@ final class RouteNames {
   /// Modal fake-call screen.
   static const String fakeCall = 'fake_call';
 
+  /// Full-screen disguised-reminder screen (fullScreen display style).
+  static const String disguisedReminder = 'disguised_reminder';
+
   /// Post-completion summary for real sessions.
   static const String sessionCompleted = 'session_completed';
 

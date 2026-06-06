@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
@@ -673,6 +672,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap \'I\'m checked in\' to confirm you\'re safe.'**
   String get sessionStepDisguisedDefaultBody;
+
+  /// Hint shown during a disguisedReminder wait phase; tapping checks in early (spec 02 Early Check-in D4).
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to check in now'**
+  String get sessionReminderEarlyCheckInHint;
+
+  /// Fallback button label for a tapButton disguisedReminder confirmation when the template defines no buttonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'OK'**
+  String get sessionReminderDefaultButton;
+
+  /// Discreet prompt above the tapWord choices on a disguisedReminder; must not reveal the correct word.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to continue'**
+  String get sessionReminderTapWordHint;
+
+  /// Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Swipe to dismiss'**
+  String get sessionReminderSwipeLabel;
+
+  /// Button label for a dismiss-type disguisedReminder confirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismiss'**
+  String get sessionReminderDismissLabel;
 
   /// Status text shown during an smsContact step while messages are being sent. Updates with delivery status when available.
   ///

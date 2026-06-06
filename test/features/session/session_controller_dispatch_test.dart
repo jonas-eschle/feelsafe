@@ -21,9 +21,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/mode_overrides.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
@@ -156,7 +161,12 @@ final class _RecordingNotificationService
     required int id,
     required String title,
     required String body,
-  }) async => calls.add({'method': 'showDisguisedReminder', 'id': id});
+  }) async => calls.add({
+    'method': 'showDisguisedReminder',
+    'id': id,
+    'title': title,
+    'body': body,
+  });
 
   @override
   Future<void> showSmsRetryExhaustedNotification({
@@ -236,6 +246,44 @@ SessionMode _disguisedReminderMode() => SessionMode(
       randomize: false,
     ),
   ],
+);
+
+/// A reminder template used as the mode-local pool for the selection tests.
+ReminderTemplate _calendarTemplate() => ReminderTemplate(
+  id: 'tmpl-calendar',
+  name: 'Calendar Event',
+  title: 'You have an appointment',
+  body: 'Meeting with Alex at 3 PM',
+  confirmationType: ConfirmationType.tapButton,
+  buttonLabel: 'Acknowledge',
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.subtle,
+  isGlobal: false,
+);
+
+/// disguisedReminder mode with [waitSeconds] = 0 so `reminderFired` is emitted
+/// (nearly) immediately after `start()`, and a mode-local template pool so the
+/// controller has a known disguise to select. retryCount is high and the
+/// duration long enough that the reminder stays on-screen through the test.
+SessionMode _reminderFiresImmediatelyMode() => SessionMode(
+  id: 'mode-dr0',
+  name: 'DisguisedReminder Immediate',
+  chainSteps: <ChainStep>[
+    ChainStep(
+      id: 'step-dr0-0',
+      type: ChainStepType.disguisedReminder,
+      order: 0,
+      waitSeconds: 0,
+      durationSeconds: 60,
+      gracePeriodSeconds: 5,
+      retryCount: 3,
+      randomize: false,
+      config: const DisguisedReminderConfig(),
+    ),
+  ],
+  overrides: ModeOverrides(
+    localTemplates: <ReminderTemplate>[_calendarTemplate()],
+  ),
 );
 
 /// Single-step fakeCall mode used by the #17 interaction tests.
@@ -424,6 +472,61 @@ void main() {
       await container.read(sessionControllerProvider.notifier).endSession();
     },
   );
+
+  // ─── #18 disguisedReminder selection + earlyCheckIn ─────────────────────────
+  group('disguisedReminder selection (#18)', () {
+    test('reminderFired selects a template, sets state + bumps the nonce '
+        'and the notification uses the disguise', () async {
+      final notification = _RecordingNotificationService();
+      final container = _container(db, notification: notification);
+      await container.read(sessionControllerProvider.future);
+
+      // waitSeconds=0 → reminderFired is emitted right after start().
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(mode: _reminderFiresImmediatelyMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final state = container.read(sessionControllerProvider).value;
+      check(state!.activeReminderTemplate).isNotNull();
+      check(state.activeReminderTemplate!.id).equals('tmpl-calendar');
+      check(state.reminderShowNonce).isGreaterThan(0);
+
+      final reminderCall = notification.calls.firstWhere(
+        (c) => c['method'] == 'showDisguisedReminder',
+      );
+      check(reminderCall['title']).equals('You have an appointment');
+      check(reminderCall['body']).equals('Meeting with Alex at 3 PM');
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+
+    test('earlyCheckIn during the wait phase delegates to the engine '
+        'without crashing the session', () async {
+      final container = _container(db);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      // waitSeconds=30 → the step sits in the wait phase after start.
+      await notifier.startSession(
+        mode: _disguisedReminderMode(),
+        simulate: false,
+      );
+      await Future<void>.delayed(Duration.zero);
+
+      notifier.earlyCheckIn();
+      await Future<void>.delayed(Duration.zero);
+
+      // Default resetOnEarlyCheckIn=true → the engine disarms and re-arms at
+      // step 0; the session stays alive and at step 0.
+      final state = container.read(sessionControllerProvider).value;
+      check(notifier.engine).isNotNull();
+      check(state!.currentStepIndex).equals(0);
+
+      await notifier.endSession();
+    });
+  });
 
   // ─── #17 fakeCall interaction (auto-appear + answer/hang-up/decline) ────────
   group('fakeCall interaction (#17)', () {

@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -320,6 +318,22 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'Dotknij „Jestem zameldowany/a”, aby potwierdzić, że jesteś bezpieczny/a.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint =>
+      'Dotknij, aby zameldować się teraz';
+
+  @override
+  String get sessionReminderDefaultButton => 'OK';
+
+  @override
+  String get sessionReminderTapWordHint => 'Dotknij, aby kontynuować';
+
+  @override
+  String get sessionReminderSwipeLabel => 'Przesuń, aby zamknąć';
+
+  @override
+  String get sessionReminderDismissLabel => 'Zamknij';
 
   @override
   String get sessionStepSmsStatus => 'Wysyłanie wiadomości do kontaktów…';

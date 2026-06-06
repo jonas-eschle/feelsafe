@@ -16,8 +16,11 @@ import 'package:guardianangela/core/widgets/swipe_slider.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
+import 'package:guardianangela/features/disguised_reminder/reminder_confirmation.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/emergency_confirm_overlay.dart';
 import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
@@ -63,6 +66,14 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   /// fake-call ring should auto-appear.
   int _lastFakeCallNonce = 0;
 
+  /// True while the full-screen [DisguisedReminderScreen] route is on top, so
+  /// a re-fire of the same reminder step does not stack a second screen.
+  bool _reminderRouteOpen = false;
+
+  /// Last seen [SessionState.reminderShowNonce]; a higher value means a new
+  /// `fullScreen` reminder should auto-appear.
+  int _lastReminderNonce = 0;
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +107,10 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       if (s.fakeCallShowNonce > _lastFakeCallNonce) {
         _lastFakeCallNonce = s.fakeCallShowNonce;
         unawaited(_maybeShowFakeCall(s));
+      }
+      if (s.reminderShowNonce > _lastReminderNonce) {
+        _lastReminderNonce = s.reminderShowNonce;
+        unawaited(_maybeShowReminder(s));
       }
     });
     return Scaffold(
@@ -133,6 +148,23 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
     _fakeCallRouteOpen = true;
     await context.pushNamed(RouteNames.fakeCall, extra: config);
     if (mounted) _fakeCallRouteOpen = false;
+  }
+
+  /// Pushes the full-screen [DisguisedReminderScreen] when the just-fired
+  /// reminder uses the `fullScreen` display style, unless one is already
+  /// showing. `subtle` reminders render inline ([_DisguisedReminderStepUi]),
+  /// so they are skipped here. The `await` completes when the route pops
+  /// (confirm, or the engine moving on), clearing the flag so a re-fire can
+  /// re-appear (spec 02 §disguisedReminder Display Styles).
+  Future<void> _maybeShowReminder(SessionState s) async {
+    if (_reminderRouteOpen || !mounted) return;
+    if (s.activeReminderTemplate?.displayStyle !=
+        ReminderDisplayStyle.fullScreen) {
+      return;
+    }
+    _reminderRouteOpen = true;
+    await context.pushNamed(RouteNames.disguisedReminder);
+    if (mounted) _reminderRouteOpen = false;
   }
 
   Future<void> _endSessionFlow(BuildContext context) async {
@@ -1383,56 +1415,107 @@ class _DisguisedReminderStepUi extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (state.phase == SessionPhase.duration) {
+      return _DisguisedReminderFired(template: state.activeReminderTemplate);
+    }
+    return _DisguisedReminderWaiting(state: state, step: step);
+  }
+}
+
+/// The reminder is on-screen (duration phase): render the selected disguise
+/// and its confirmation interaction, falling back to a generic card when no
+/// template was resolved. `subtle` templates show here; `fullScreen` ones are
+/// covered by the [DisguisedReminderScreen] route pushed over this surface.
+class _DisguisedReminderFired extends ConsumerWidget {
+  const _DisguisedReminderFired({required this.template});
+
+  final ReminderTemplate? template;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    if (state.phase == SessionPhase.duration) {
-      return Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Icon(
-            Icons.notifications_active,
-            size: 64,
-            color: Theme.of(context).colorScheme.primary,
-          ),
-          const SizedBox(height: 12),
-          Text(
-            l10n.sessionStepDisguisedDefaultTitle,
-            style: textTheme.titleLarge,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            l10n.sessionStepDisguisedDefaultBody,
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 16),
-          FilledButton(
-            onPressed: () =>
-                ref.read(sessionControllerProvider.notifier).disarm(),
-            child: Text(l10n.sessionCheckIn),
-          ),
-        ],
-      );
-    }
+    void checkIn() => ref.read(sessionControllerProvider.notifier).disarm();
+
+    final resolved = template;
+    final content = resolved != null
+        ? ReminderDisguiseContent(template: resolved, onConfirm: checkIn)
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Icon(
+                Icons.notifications_active,
+                size: 48,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.sessionStepDisguisedDefaultTitle,
+                style: textTheme.titleLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                l10n.sessionStepDisguisedDefaultBody,
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 16),
+              FilledButton(
+                onPressed: checkIn,
+                child: Text(l10n.sessionCheckIn),
+              ),
+            ],
+          );
+    return Card(
+      child: Padding(padding: const EdgeInsets.all(24), child: content),
+    );
+  }
+}
+
+/// The wait phase between reminders: shows the time to the next check-in and
+/// lets the user check in early by tapping (spec 02 §Early Check-in, D4). The
+/// engine ignores the tap when the step's `resetOnEarlyCheckIn` is false.
+class _DisguisedReminderWaiting extends ConsumerWidget {
+  const _DisguisedReminderWaiting({required this.state, required this.step});
+
+  final SessionState state;
+  final ChainStep step;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
     final remaining = state.remainingSeconds ?? step.waitSeconds;
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Icon(
-          Icons.shield_outlined,
-          size: 64,
-          color: Theme.of(context).colorScheme.primary,
+    return InkWell(
+      onTap: () => ref.read(sessionControllerProvider.notifier).earlyCheckIn(),
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(
+              Icons.shield_outlined,
+              size: 64,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.sessionStepNextCheckIn(_formatDuration(remaining)),
+              style: textTheme.titleMedium,
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.sessionReminderEarlyCheckInHint,
+              style: textTheme.bodySmall,
+            ),
+            if (state.missCount > 0)
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: Text(l10n.sessionMissCount(state.missCount.toString())),
+              ),
+          ],
         ),
-        const SizedBox(height: 16),
-        Text(
-          l10n.sessionStepNextCheckIn(_formatDuration(remaining)),
-          style: textTheme.titleMedium,
-        ),
-        if (state.missCount > 0)
-          Padding(
-            padding: const EdgeInsets.only(top: 8),
-            child: Text(l10n.sessionMissCount(state.missCount.toString())),
-          ),
-      ],
+      ),
     );
   }
 }

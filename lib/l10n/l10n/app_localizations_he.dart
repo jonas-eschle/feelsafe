@@ -1,7 +1,5 @@
 // ignore: unused_import
-
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -318,6 +316,21 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get sessionStepDisguisedDefaultBody =>
       'הקש/י על „ביצעתי צ\'ק-אין” כדי לאשר שאת/ה בטוח/ה.';
+
+  @override
+  String get sessionReminderEarlyCheckInHint => 'הקש/י לצ\'ק-אין עכשיו';
+
+  @override
+  String get sessionReminderDefaultButton => 'אישור';
+
+  @override
+  String get sessionReminderTapWordHint => 'הקש/י להמשך';
+
+  @override
+  String get sessionReminderSwipeLabel => 'החלק/י לסגירה';
+
+  @override
+  String get sessionReminderDismissLabel => 'סגור';
 
   @override
   String get sessionStepSmsStatus => 'שולח הודעה לאנשי קשר…';
