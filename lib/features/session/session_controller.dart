@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 
+import 'package:flutter/widgets.dart';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
@@ -293,7 +294,8 @@ class SessionState {
 /// Methods drive engine state transitions; [build] detects an
 /// interrupted prior session and seeds the Session-Interrupted Prompt
 /// (Extra 13). Engine streams update [state] as events arrive.
-class SessionController extends AsyncNotifier<SessionState> {
+class SessionController extends AsyncNotifier<SessionState>
+    with WidgetsBindingObserver {
   SessionEngine? _engine;
   StreamSubscription<ChainEventData>? _eventsSub;
   Timer? _tick;
@@ -329,6 +331,12 @@ class SessionController extends AsyncNotifier<SessionState> {
   /// when that call ends (spec 01 §Real Phone Call During Fake Call,
   /// Extra-24/25).
   bool _disarmOnRealCallEnd = false;
+
+  /// True while this controller is registered as a [WidgetsBindingObserver]
+  /// for the active session (G-013 background clamp). Lets
+  /// [_teardownLifecycleObserver] remove the observer exactly once across the
+  /// two dispose paths.
+  bool _lifecycleObserverRegistered = false;
 
   /// Merged pool of reminder templates (global + mode-local) resolved once at
   /// [startSession] and read by [_selectReminderTemplate]. Empty outside a
@@ -625,6 +633,14 @@ class SessionController extends AsyncNotifier<SessionState> {
     engine.start();
     _tick = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
 
+    // Observe app-lifecycle so the engine's background speed clamp (G-013)
+    // engages while the app is backgrounded (spec 01 §setBackgroundClamp).
+    // Wired unconditionally — the clamp is a runtime no-op for real sessions
+    // (wall-clock timers), so registering for every session keeps teardown
+    // symmetric across both dispose paths.
+    WidgetsBinding.instance.addObserver(this);
+    _lifecycleObserverRegistered = true;
+
     // Wire real incoming-call detection (spec 01 §Real Phone Call Detection).
     // Subscribe before start() so no early telephony event is missed. Skipped
     // in simulation — there is no real telephony to observe.
@@ -904,6 +920,31 @@ class SessionController extends AsyncNotifier<SessionState> {
     _engine?.resume();
   }
 
+  /// Engages or releases the engine's background speed clamp (G-013) as the OS
+  /// moves the app between foreground and background.
+  ///
+  /// On [AppLifecycleState.paused] / [AppLifecycleState.hidden] the app is
+  /// backgrounded, where OS timer throttling can desync a fast simulation, so
+  /// the effective speed is capped at 60× via
+  /// [SessionEngine.setBackgroundClamp]. [AppLifecycleState.resumed]
+  /// (foreground) releases the cap. `inactive` and `detached` leave the clamp
+  /// unchanged — `inactive` is a transient, still-visible state (e.g. the app
+  /// switcher) that must not clamp (spec 01 §setBackgroundClamp). No-op for
+  /// real sessions, where the engine method has no runtime effect.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.paused:
+      case AppLifecycleState.hidden:
+        _engine?.setBackgroundClamp(true);
+      case AppLifecycleState.resumed:
+        _engine?.setBackgroundClamp(false);
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.detached:
+        break;
+    }
+  }
+
   /// Handles a telephony state change from [CallStateServiceProtocol].
   ///
   /// Edge-tracks the transition idle→active (ringing/offhook) and active→idle
@@ -1101,6 +1142,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     _eventsSub = null;
     _teardownCallState();
     _teardownGpsLogging();
+    _teardownLifecycleObserver();
     _engine = null;
     _eventServices = null;
     _resetReminderState();
@@ -1126,6 +1168,15 @@ class SessionController extends AsyncNotifier<SessionState> {
     _disarmOnRealCallEnd = false;
   }
 
+  /// Removes the app-lifecycle observer registered in [startSession] (G-013).
+  /// Idempotent across the two dispose paths via [_lifecycleObserverRegistered]
+  /// so a second teardown after [endSession] is a no-op.
+  void _teardownLifecycleObserver() {
+    if (!_lifecycleObserverRegistered) return;
+    _lifecycleObserverRegistered = false;
+    WidgetsBinding.instance.removeObserver(this);
+  }
+
   /// Clears the session-scoped reminder selection state (pool, last-shown
   /// avoidance id, and active disguise) when a session ends or is torn down.
   void _resetReminderState() {
@@ -1140,6 +1191,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     _eventsSub?.cancel();
     _teardownCallState();
     _teardownGpsLogging();
+    _teardownLifecycleObserver();
     final engine = _engine;
     if (engine != null && !engine.isEnded) {
       engine.endSession();

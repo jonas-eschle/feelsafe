@@ -367,6 +367,10 @@ ProviderContainer _container(
 // ─── Tests ────────────────────────────────────────────────────────────────────
 
 void main() {
+  // startSession registers a WidgetsBindingObserver (G-013 background clamp),
+  // which needs an initialised binding.
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late GuardianAngelaDatabase db;
 
   setUp(() {
