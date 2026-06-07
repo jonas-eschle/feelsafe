@@ -3,13 +3,12 @@
 **Snapshot:** 2026-06-07 — **M0 COMPLETE+VERIFIED+PUSHED. M1 in progress
 (2/3: #11 done+pushed; #22 done, UNPUSHED).**
 
-**M0 + M0-verify + #11 are PUSHED to `origin/main` (`cbe27a4`).** **Two
-commits are UNPUSHED** — the #22 commit at `HEAD` (folds in this handoff
-update) and the prior session's `4f09cc1` handoff commit — awaiting user
-authorization to push. Tree clean. **Tests: 3694 pass** (−115: battery-alert
-feature removed).
-Analyzer `--fatal-infos` clean. l10n parity 556×14. app_boot_smoke green.
-Branch: `main`.
+**M0 + M0-verify + #11 are PUSHED to `origin/main` (`cbe27a4`).** **Three
+commits are UNPUSHED, awaiting push authorization:** this handoff commit
+(`HEAD`), the #22 commit (`a379738`), and the prior session's `4f09cc1`
+handoff commit. Tree clean. **Tests: 3694 pass** (−115: battery-alert feature
+removed). Analyzer `--fatal-infos` clean. l10n parity 556×14. app_boot_smoke
+green. Branch: `main`.
 
 **Next action: M1 #12** (background clamp) — the last M1 item. See "How to
 resume."
@@ -83,7 +82,7 @@ locales) and `SessionState.fakeCallCancelNonce`. Edge: a user-requested
 pause is never clobbered (`_pausedByRealCall`). 9 host tests drive the real
 controller+engine; app_boot_smoke green on emulator.
 
-**M1 `#22`** (UNPUSHED): two parts.
+**M1 `#22`** (`a379738`, UNPUSHED): two parts.
 - **GPS logging wired (the GA-blocker that stays).** `SessionController`
   now starts `LocationService` breadcrumb tracking in `startSession` (real
   sessions only, when the resolved `GpsLoggingConfig.enabled`;
@@ -136,6 +135,13 @@ controller+engine; app_boot_smoke green on emulator.
   but missing from the iOS bundle → iOS alarm notification falls back to
   the default critical-alert sound. → fold into #20 (M2). The core loud
   alarm is the `AudioService` siren (real), not the notification sound.
+- **GPS accuracy not plumbed (#22 refinement).** `GpsLoggingConfig.accuracy`
+  (high/balanced/low) is resolved at `startSession` but not applied — the
+  protocol `LocationServiceProtocol.startTracking({Duration interval})` has no
+  accuracy param and `RealLocationService` hardcodes `LocationAccuracy.high`.
+  Default config is `high`, so no discrepancy for the default; only a mode
+  that overrides accuracy to balanced/low is unhonoured. → extend the
+  protocol + Real impl + sim if/when a non-high accuracy is actually wanted.
 - **`docs/review/remaining-gaps.md`** is a STALE v2-era artifact
   (2026-04-10; references `lib/services/implementations/…` paths absent in
   v3). GAP-66/67 there describe v2 audio — do NOT action against v3.
@@ -244,5 +250,6 @@ Don't skip it because "the session went short."
 
 ---
 
-End of hand-off. M0 is verified + pushed; M1 #11 is done + pushed. Resume
-with **#22** (GPS logging + battery-alert firing), then #12.
+End of hand-off. M0 verified + pushed; M1 #11 done + pushed; #22 done (GPS
+wired, battery-alert removed) — UNPUSHED. Resume with **#12** (background
+clamp), the last M1 task.
