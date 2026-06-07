@@ -2134,4 +2134,34 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Llamada falsa';
+
+  @override
+  String get settingsAlarmHeader => 'Alarma';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'La alarma anula el modo silencio/vibración';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Advertencia: la alarma será silenciosa si tu teléfono está en modo silencio.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Cuando se activa, la alarma fuerte suena al máximo volumen aunque el teléfono esté en silencio o vibración. En Android usa el canal de audio de alarma para saltarse el modo No molestar. La alarma es el único evento que puede anular los ajustes de sonido de tu teléfono.';
+
+  @override
+  String get settingsAlarmGradualLabel =>
+      'Aumentar el volumen de la alarma gradualmente';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Inicia la alarma en voz baja y la sube hasta el volumen máximo. Este es el interruptor principal de toda la app; cada paso de alarma también tiene su propia opción de volumen gradual, y ambos deben estar activados para que se aplique el aumento.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Duración del aumento';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Cuánto tarda la alarma en alcanzar el volumen máximo desde cero, subiendo de forma uniforme durante este tiempo. No tiene efecto cuando el volumen gradual está desactivado.';
 }

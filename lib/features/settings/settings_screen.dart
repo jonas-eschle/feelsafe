@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/widgets/info_icon_button.dart';
 import 'package:guardianangela/core/widgets/settings_tile.dart';
+import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
@@ -115,6 +117,9 @@ class SettingsScreen extends ConsumerWidget {
               title: l10n.settingsNotificationsRow,
               onTap: () => context.pushNamed(RouteNames.settingsNotifications),
             ),
+            const Divider(),
+            _SectionHeader(text: l10n.settingsAlarmHeader),
+            _AlarmSection(state: state),
             const Divider(),
             _SectionHeader(text: l10n.settingsAppHeader),
             SettingsTile(
@@ -296,6 +301,98 @@ class SettingsScreen extends ConsumerWidget {
     await ref.read(settingsControllerProvider.notifier).resetOnboarding();
     if (!context.mounted) return;
     context.goNamed(RouteNames.onboarding);
+  }
+}
+
+/// App-wide alarm behavior controls (spec 06 §Alarm Section).
+///
+/// Exposes the three global loudAlarm settings: DND/silent override,
+/// the gradual-volume master, and the ramp duration (revealed only when
+/// gradual volume is on). All three persist to `AppSettings` via
+/// [SettingsController]; the loudAlarm strategy reads them at runtime.
+class _AlarmSection extends ConsumerWidget {
+  const _AlarmSection({required this.state});
+
+  final SettingsHubState state;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final notifier = ref.read(settingsControllerProvider.notifier);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        SwitchListTile(
+          secondary: const Icon(Icons.notifications_off_outlined),
+          title: Text(l10n.settingsAlarmDndOverrideLabel),
+          value: state.alarmDndOverride,
+          onChanged: notifier.setAlarmDndOverride,
+        ),
+        Padding(
+          padding: const EdgeInsets.only(left: 16, right: 4),
+          child: Row(
+            children: <Widget>[
+              Expanded(
+                child: state.alarmDndOverride
+                    ? const SizedBox.shrink()
+                    : Text(
+                        l10n.settingsAlarmDndOverrideWarning,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Theme.of(context).colorScheme.error,
+                        ),
+                      ),
+              ),
+              InfoIconButton(
+                title: l10n.settingsAlarmDndOverrideLabel,
+                body: l10n.settingsAlarmDndOverrideInfo,
+              ),
+            ],
+          ),
+        ),
+        SwitchListTile(
+          secondary: const Icon(Icons.volume_up_outlined),
+          title: Text(l10n.settingsAlarmGradualLabel),
+          value: state.alarmGradualVolume,
+          onChanged: notifier.setAlarmGradualVolume,
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerEnd,
+          child: InfoIconButton(
+            title: l10n.settingsAlarmGradualLabel,
+            body: l10n.settingsAlarmGradualInfo,
+          ),
+        ),
+        if (state.alarmGradualVolume)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 4, 8),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        l10n.settingsAlarmRampLabel,
+                        style: Theme.of(context).textTheme.labelLarge,
+                      ),
+                    ),
+                    InfoIconButton(
+                      title: l10n.settingsAlarmRampLabel,
+                      body: l10n.settingsAlarmRampInfo,
+                    ),
+                  ],
+                ),
+                TimingSlider(
+                  valueSeconds: state.alarmGradualVolumeDurationSeconds,
+                  minSeconds: 1,
+                  maxSeconds: 60,
+                  onChanged: notifier.setAlarmGradualVolumeDurationSeconds,
+                ),
+              ],
+            ),
+          ),
+      ],
+    );
   }
 }
 

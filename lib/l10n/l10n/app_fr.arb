@@ -824,5 +824,13 @@
   "validationHardwareTrigger": "Le déclencheur de panique matériel est incomplet — vérifiez le nombre d’appuis ou la durée de maintien.",
   "validationDistressNoActionTitle": "Aucune étape d’alerte sortante",
   "validationDistressNoActionBody": "Ce mode de détresse n’a aucune étape SMS ou appel ; il ne laisse donc aucune trace sortante. Enregistrer quand même ?",
-  "validationSaveAnyway": "Enregistrer quand même"
+  "validationSaveAnyway": "Enregistrer quand même",
+  "settingsAlarmHeader": "Alarme",
+  "settingsAlarmDndOverrideLabel": "L'alarme ignore le mode silencieux/vibreur",
+  "settingsAlarmDndOverrideWarning": "Attention : l'alarme sera silencieuse si votre téléphone est en mode silencieux.",
+  "settingsAlarmDndOverrideInfo": "Lorsqu'elle est activée, l'alarme sonore retentit au volume maximal même si votre téléphone est en mode silencieux ou vibreur. Sous Android, elle utilise le canal audio d'alarme pour contourner le mode Ne pas déranger. L'alarme est le seul événement qui peut ignorer les réglages sonores de votre téléphone.",
+  "settingsAlarmGradualLabel": "Augmenter progressivement le volume de l'alarme",
+  "settingsAlarmGradualInfo": "Démarre l'alarme en douceur et la monte jusqu'au volume maximal. C'est l'interrupteur principal de toute l'application ; chaque étape d'alarme possède aussi sa propre option de volume progressif, et les deux doivent être activés pour que la montée s'applique.",
+  "settingsAlarmRampLabel": "Durée de la montée",
+  "settingsAlarmRampInfo": "Le temps que met l'alarme pour atteindre le volume maximal à partir de zéro, en montant régulièrement pendant cette durée. Sans effet lorsque le volume progressif est désactivé."
 }

@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable state for the settings hub.
@@ -13,6 +14,9 @@ class SettingsHubState {
     required this.languageCode,
     required this.stealthEnabled,
     required this.emergencyCallNumber,
+    required this.alarmDndOverride,
+    required this.alarmGradualVolume,
+    required this.alarmGradualVolumeDurationSeconds,
   });
 
   /// Selected theme mode.
@@ -26,6 +30,24 @@ class SettingsHubState {
 
   /// Active emergency-call number (default `'112'`).
   final String emergencyCallNumber;
+
+  /// Whether loud-alarm steps may override silent / Do Not Disturb.
+  ///
+  /// Mirrors [AppSettings.alarmDndOverride] (default `false`, opt-in).
+  final bool alarmDndOverride;
+
+  /// Whether the alarm volume ramps from zero to the configured level.
+  ///
+  /// Mirrors [AppSettings.alarmGradualVolume] (default `false`). Acts as
+  /// the app-wide master gate; a loudAlarm step ramps only when this and
+  /// the step's `LoudAlarmConfig.gradualVolume` are both on.
+  final bool alarmGradualVolume;
+
+  /// Ramp duration in seconds when [alarmGradualVolume] is on.
+  ///
+  /// Mirrors [AppSettings.alarmGradualVolumeDurationSeconds] (default 5,
+  /// range 1–60).
+  final int alarmGradualVolumeDurationSeconds;
 }
 
 /// Controller for the settings hub.
@@ -38,6 +60,10 @@ class SettingsController extends AsyncNotifier<SettingsHubState> {
       languageCode: settings.languageCode,
       stealthEnabled: settings.defaults.stealth.enabled,
       emergencyCallNumber: settings.emergencyCallNumber,
+      alarmDndOverride: settings.alarmDndOverride,
+      alarmGradualVolume: settings.alarmGradualVolume,
+      alarmGradualVolumeDurationSeconds:
+          settings.alarmGradualVolumeDurationSeconds,
     );
   }
 
@@ -46,6 +72,38 @@ class SettingsController extends AsyncNotifier<SettingsHubState> {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
     await repo.save(settings.copyWith(emergencyCallNumber: number));
+    ref.invalidateSelf();
+  }
+
+  /// Toggles whether loud-alarm steps may override silent / DND and
+  /// persists. Spec 06 §Alarm — Override Silent Mode / Do Not Disturb.
+  Future<void> setAlarmDndOverride(bool enabled) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(settings.copyWith(alarmDndOverride: enabled));
+    ref.invalidateSelf();
+  }
+
+  /// Toggles the app-wide gradual-volume master and persists. Spec 06
+  /// §Alarm — Gradual Volume Increase (Q33).
+  Future<void> setAlarmGradualVolume(bool enabled) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(settings.copyWith(alarmGradualVolume: enabled));
+    ref.invalidateSelf();
+  }
+
+  /// Updates the alarm ramp duration (seconds) and persists. Spec 06
+  /// §Alarm — Gradual Volume Duration. Value is clamped to the valid
+  /// 1–60s range before saving (the model asserts this range).
+  Future<void> setAlarmGradualVolumeDurationSeconds(int seconds) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(
+      settings.copyWith(
+        alarmGradualVolumeDurationSeconds: seconds.clamp(1, 60),
+      ),
+    );
     ref.invalidateSelf();
   }
 

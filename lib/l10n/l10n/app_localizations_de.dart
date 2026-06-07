@@ -2125,4 +2125,34 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Fake-Anruf';
+
+  @override
+  String get settingsAlarmHeader => 'Alarm';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Alarm überschreibt Lautlos-/Vibrationsmodus';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Achtung: Der Alarm bleibt stumm, wenn dein Telefon auf lautlos gestellt ist.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Wenn aktiviert, ertönt der laute Alarm in voller Lautstärke, auch wenn dein Telefon auf lautlos oder Vibration steht. Unter Android wird der Alarm-Audiokanal genutzt, um „Nicht stören“ zu umgehen. Der Alarm ist das einzige Ereignis, das die Toneinstellungen deines Telefons überschreiben kann.';
+
+  @override
+  String get settingsAlarmGradualLabel =>
+      'Alarmlautstärke schrittweise erhöhen';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Der Alarm beginnt leise und steigert sich bis zur vollen Lautstärke. Dies ist der app-weite Hauptschalter; jeder Alarmschritt hat zusätzlich seine eigene Option für ansteigende Lautstärke, und beide müssen aktiviert sein, damit der Anstieg greift.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Anstiegsdauer';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Wie lange der Alarm braucht, um von null auf volle Lautstärke anzusteigen, gleichmäßig über diese Zeit. Hat keine Wirkung, wenn die schrittweise Erhöhung aus ist.';
 }

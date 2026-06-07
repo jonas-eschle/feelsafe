@@ -3916,6 +3916,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Fake Call'**
   String get homeWidgetFakeCall;
+
+  /// Section header for the app-wide alarm settings (spec 06 Alarm Section).
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm'**
+  String get settingsAlarmHeader;
+
+  /// Toggle label for AppSettings.alarmDndOverride.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm overrides silent/vibrate mode'**
+  String get settingsAlarmDndOverrideLabel;
+
+  /// Warning shown beneath the DND-override toggle when it is OFF.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning: the alarm will be silent if your phone is on silent mode.'**
+  String get settingsAlarmDndOverrideWarning;
+
+  /// Info-sheet body explaining the DND-override toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'When enabled, the loud alarm plays at full volume even if your phone is on silent or vibrate. On Android it uses the alarm audio stream to bypass Do Not Disturb. The alarm is the only event that can override your phone\'s sound settings.'**
+  String get settingsAlarmDndOverrideInfo;
+
+  /// Toggle label for AppSettings.alarmGradualVolume (app-wide master).
+  ///
+  /// In en, this message translates to:
+  /// **'Gradually increase alarm volume'**
+  String get settingsAlarmGradualLabel;
+
+  /// Info-sheet body explaining the gradual-volume master toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts the alarm quietly and ramps it up to full volume. This is the app-wide master switch; each alarm step also has its own gradual-volume option, and both must be on for the ramp to apply.'**
+  String get settingsAlarmGradualInfo;
+
+  /// Label for the alarm gradual-volume ramp-duration slider (1-60s).
+  ///
+  /// In en, this message translates to:
+  /// **'Ramp duration'**
+  String get settingsAlarmRampLabel;
+
+  /// Info-sheet body explaining the ramp-duration slider.
+  ///
+  /// In en, this message translates to:
+  /// **'How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.'**
+  String get settingsAlarmRampInfo;
 }
 
 class _AppLocalizationsDelegate

@@ -50,6 +50,10 @@ class _FakeSettingsController extends SettingsController {
         languageCode: _initial.languageCode,
         stealthEnabled: _initial.stealthEnabled,
         emergencyCallNumber: _initial.emergencyCallNumber,
+        alarmDndOverride: _initial.alarmDndOverride,
+        alarmGradualVolume: _initial.alarmGradualVolume,
+        alarmGradualVolumeDurationSeconds:
+            _initial.alarmGradualVolumeDurationSeconds,
       ),
     );
   }
@@ -64,6 +68,10 @@ class _FakeSettingsController extends SettingsController {
         languageCode: code,
         stealthEnabled: _initial.stealthEnabled,
         emergencyCallNumber: _initial.emergencyCallNumber,
+        alarmDndOverride: _initial.alarmDndOverride,
+        alarmGradualVolume: _initial.alarmGradualVolume,
+        alarmGradualVolumeDurationSeconds:
+            _initial.alarmGradualVolumeDurationSeconds,
       ),
     );
   }
@@ -83,11 +91,17 @@ SettingsHubState _defaultState({
   String languageCode = 'en',
   bool stealthEnabled = false,
   String emergencyCallNumber = '112',
+  bool alarmDndOverride = false,
+  bool alarmGradualVolume = false,
+  int alarmGradualVolumeDurationSeconds = 5,
 }) => SettingsHubState(
   themeMode: themeMode,
   languageCode: languageCode,
   stealthEnabled: stealthEnabled,
   emergencyCallNumber: emergencyCallNumber,
+  alarmDndOverride: alarmDndOverride,
+  alarmGradualVolume: alarmGradualVolume,
+  alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
 );
 
 // ---------------------------------------------------------------------------

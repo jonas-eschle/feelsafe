@@ -102,11 +102,17 @@ SettingsHubState _state({
   String languageCode = 'en',
   bool stealthEnabled = false,
   String emergencyCallNumber = '112',
+  bool alarmDndOverride = false,
+  bool alarmGradualVolume = false,
+  int alarmGradualVolumeDurationSeconds = 5,
 }) => SettingsHubState(
   themeMode: themeMode,
   languageCode: languageCode,
   stealthEnabled: stealthEnabled,
   emergencyCallNumber: emergencyCallNumber,
+  alarmDndOverride: alarmDndOverride,
+  alarmGradualVolume: alarmGradualVolume,
+  alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
 );
 
 // ---------------------------------------------------------------------------

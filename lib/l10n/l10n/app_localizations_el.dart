@@ -2145,4 +2145,33 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Ψεύτικη κλήση';
+
+  @override
+  String get settingsAlarmHeader => 'Συναγερμός';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Ο συναγερμός παρακάμπτει τη σίγαση/δόνηση';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Προειδοποίηση: ο συναγερμός θα είναι αθόρυβος αν το τηλέφωνό σας είναι σε σίγαση.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Όταν ενεργοποιηθεί, ο δυνατός συναγερμός ηχεί στη μέγιστη ένταση ακόμη κι αν το τηλέφωνο είναι σε σίγαση ή δόνηση. Στο Android χρησιμοποιεί το κανάλι ήχου συναγερμού για να παρακάμψει τη λειτουργία «Μην ενοχλείτε». Ο συναγερμός είναι το μόνο συμβάν που μπορεί να παρακάμψει τις ρυθμίσεις ήχου του τηλεφώνου σας.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'Σταδιακή αύξηση έντασης συναγερμού';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Ξεκινά τον συναγερμό σιγά και τον ανεβάζει σταδιακά στη μέγιστη ένταση. Αυτός είναι ο κεντρικός διακόπτης για όλη την εφαρμογή· κάθε βήμα συναγερμού έχει επίσης τη δική του επιλογή σταδιακής έντασης, και πρέπει να είναι ενεργά και τα δύο για να εφαρμοστεί η σταδιακή αύξηση.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Διάρκεια ανόδου';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Πόσο χρόνο χρειάζεται ο συναγερμός για να φτάσει στη μέγιστη ένταση από το μηδέν, ανεβαίνοντας ομοιόμορφα σε αυτό το διάστημα. Δεν έχει καμία επίδραση όταν η σταδιακή ένταση είναι ανενεργή.';
 }

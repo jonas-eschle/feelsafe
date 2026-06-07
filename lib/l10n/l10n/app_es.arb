@@ -935,5 +935,13 @@
   "validationHardwareTrigger": "El activador de pánico de hardware está incompleto: revisa el número de pulsaciones o la duración de la pulsación.",
   "validationDistressNoActionTitle": "Sin paso de alerta saliente",
   "validationDistressNoActionBody": "Este modo de emergencia no tiene ningún paso de SMS o llamada, por lo que no deja rastro saliente. ¿Guardar de todos modos?",
-  "validationSaveAnyway": "Guardar de todos modos"
+  "validationSaveAnyway": "Guardar de todos modos",
+  "settingsAlarmHeader": "Alarma",
+  "settingsAlarmDndOverrideLabel": "La alarma anula el modo silencio/vibración",
+  "settingsAlarmDndOverrideWarning": "Advertencia: la alarma será silenciosa si tu teléfono está en modo silencio.",
+  "settingsAlarmDndOverrideInfo": "Cuando se activa, la alarma fuerte suena al máximo volumen aunque el teléfono esté en silencio o vibración. En Android usa el canal de audio de alarma para saltarse el modo No molestar. La alarma es el único evento que puede anular los ajustes de sonido de tu teléfono.",
+  "settingsAlarmGradualLabel": "Aumentar el volumen de la alarma gradualmente",
+  "settingsAlarmGradualInfo": "Inicia la alarma en voz baja y la sube hasta el volumen máximo. Este es el interruptor principal de toda la app; cada paso de alarma también tiene su propia opción de volumen gradual, y ambos deben estar activados para que se aplique el aumento.",
+  "settingsAlarmRampLabel": "Duración del aumento",
+  "settingsAlarmRampInfo": "Cuánto tarda la alarma en alcanzar el volumen máximo desde cero, subiendo de forma uniforme durante este tiempo. No tiene efecto cuando el volumen gradual está desactivado."
 }

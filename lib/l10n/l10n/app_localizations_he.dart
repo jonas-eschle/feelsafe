@@ -2081,4 +2081,32 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'שיחה מזויפת';
+
+  @override
+  String get settingsAlarmHeader => 'התרעה';
+
+  @override
+  String get settingsAlarmDndOverrideLabel => 'ההתרעה עוקפת מצב שקט/רטט';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'אזהרה: ההתרעה תהיה שקטה אם הטלפון שלך במצב שקט.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'כשמופעל, ההתרעה הרועשת תושמע בעוצמה מלאה גם אם הטלפון במצב שקט או רטט. ב-Android נעשה שימוש בערוץ השמע של ההתרעה כדי לעקוף את מצב «נא לא להפריע». ההתרעה היא האירוע היחיד שיכול לעקוף את הגדרות הצליל של הטלפון שלך.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'הגברת עוצמת ההתרעה בהדרגה';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'מתחיל את ההתרעה בשקט ומעלה אותה עד לעוצמה מלאה. זהו המתג הראשי לכל האפליקציה; לכל שלב התרעה יש גם אפשרות עוצמה הדרגתית משלו, ושניהם חייבים להיות מופעלים כדי שההגברה תחול.';
+
+  @override
+  String get settingsAlarmRampLabel => 'משך ההגברה';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'כמה זמן לוקח להתרעה להגיע לעוצמה מלאה מאפס, בעלייה אחידה לאורך זמן זה. אין לכך השפעה כשהעוצמה ההדרגתית כבויה.';
 }

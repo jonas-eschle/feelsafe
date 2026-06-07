@@ -806,5 +806,13 @@
   "validationHardwareTrigger": "טריגר המצוקה החומרתי אינו שלם — בדוק את מספר הלחיצות או את משך הלחיצה הארוכה.",
   "validationDistressNoActionTitle": "אין שלב התראה יוצא",
   "validationDistressNoActionBody": "למצב מצוקה זה אין שלב SMS או שיחה, ולכן הוא אינו מותיר עקבות יוצאים. לשמור בכל זאת?",
-  "validationSaveAnyway": "שמור בכל זאת"
+  "validationSaveAnyway": "שמור בכל זאת",
+  "settingsAlarmHeader": "התרעה",
+  "settingsAlarmDndOverrideLabel": "ההתרעה עוקפת מצב שקט/רטט",
+  "settingsAlarmDndOverrideWarning": "אזהרה: ההתרעה תהיה שקטה אם הטלפון שלך במצב שקט.",
+  "settingsAlarmDndOverrideInfo": "כשמופעל, ההתרעה הרועשת תושמע בעוצמה מלאה גם אם הטלפון במצב שקט או רטט. ב-Android נעשה שימוש בערוץ השמע של ההתרעה כדי לעקוף את מצב «נא לא להפריע». ההתרעה היא האירוע היחיד שיכול לעקוף את הגדרות הצליל של הטלפון שלך.",
+  "settingsAlarmGradualLabel": "הגברת עוצמת ההתרעה בהדרגה",
+  "settingsAlarmGradualInfo": "מתחיל את ההתרעה בשקט ומעלה אותה עד לעוצמה מלאה. זהו המתג הראשי לכל האפליקציה; לכל שלב התרעה יש גם אפשרות עוצמה הדרגתית משלו, ושניהם חייבים להיות מופעלים כדי שההגברה תחול.",
+  "settingsAlarmRampLabel": "משך ההגברה",
+  "settingsAlarmRampInfo": "כמה זמן לוקח להתרעה להגיע לעוצמה מלאה מאפס, בעלייה אחידה לאורך זמן זה. אין לכך השפעה כשהעוצמה ההדרגתית כבויה."
 }

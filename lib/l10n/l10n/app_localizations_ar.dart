@@ -2094,4 +2094,33 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'مكالمة وهمية';
+
+  @override
+  String get settingsAlarmHeader => 'الإنذار';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'يتجاوز الإنذار وضع الصامت/الاهتزاز';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'تحذير: سيكون الإنذار صامتًا إذا كان هاتفك في الوضع الصامت.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'عند التفعيل، يُشغَّل الإنذار العالي بأقصى مستوى صوت حتى لو كان هاتفك في الوضع الصامت أو الاهتزاز. على أندرويد يستخدم مجرى صوت الإنذار لتجاوز وضع عدم الإزعاج. الإنذار هو الحدث الوحيد الذي يمكنه تجاوز إعدادات صوت هاتفك.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'زيادة مستوى صوت الإنذار تدريجيًا';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'يبدأ الإنذار منخفضًا ثم يتصاعد إلى أقصى مستوى صوت. هذا هو المفتاح الرئيسي على مستوى التطبيق؛ ولكل خطوة إنذار خيارها الخاص للتصاعد التدريجي، ويجب تفعيل كليهما حتى يُطبَّق التصاعد.';
+
+  @override
+  String get settingsAlarmRampLabel => 'مدة التصاعد';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'المدة التي يستغرقها الإنذار للوصول إلى أقصى مستوى صوت بدءًا من الصفر، متصاعدًا بانتظام خلال هذا الوقت. لا تأثير لها عند إيقاف التصاعد التدريجي.';
 }

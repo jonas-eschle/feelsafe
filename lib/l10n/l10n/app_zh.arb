@@ -935,5 +935,13 @@
   "validationHardwareTrigger": "硬件求救触发器不完整——请检查按压次数或长按时长。",
   "validationDistressNoActionTitle": "没有对外报警步骤",
   "validationDistressNoActionBody": "此求救模式没有短信或通话步骤，因此不会留下任何对外痕迹。仍要保存吗？",
-  "validationSaveAnyway": "仍然保存"
+  "validationSaveAnyway": "仍然保存",
+  "settingsAlarmHeader": "警报",
+  "settingsAlarmDndOverrideLabel": "警报覆盖静音/振动模式",
+  "settingsAlarmDndOverrideWarning": "警告：如果手机处于静音模式，警报将不会发声。",
+  "settingsAlarmDndOverrideInfo": "启用后，即使手机处于静音或振动模式，高音警报也会以最大音量播放。在 Android 上，它使用警报音频通道来绕过勿扰模式。警报是唯一可以覆盖手机声音设置的事件。",
+  "settingsAlarmGradualLabel": "逐渐增大警报音量",
+  "settingsAlarmGradualInfo": "警报从低音量开始，逐渐增大到最大音量。这是整个应用的总开关；每个警报步骤也有各自的渐进音量选项，两者都开启时渐强才会生效。",
+  "settingsAlarmRampLabel": "渐强时长",
+  "settingsAlarmRampInfo": "警报从零达到最大音量所需的时间，在此时间内均匀增大。关闭渐进音量时无效。"
 }

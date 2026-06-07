@@ -2036,6 +2036,32 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => '模拟来电';
+
+  @override
+  String get settingsAlarmHeader => '警报';
+
+  @override
+  String get settingsAlarmDndOverrideLabel => '警报覆盖静音/振动模式';
+
+  @override
+  String get settingsAlarmDndOverrideWarning => '警告：如果手机处于静音模式，警报将不会发声。';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      '启用后，即使手机处于静音或振动模式，高音警报也会以最大音量播放。在 Android 上，它使用警报音频通道来绕过勿扰模式。警报是唯一可以覆盖手机声音设置的事件。';
+
+  @override
+  String get settingsAlarmGradualLabel => '逐渐增大警报音量';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      '警报从低音量开始，逐渐增大到最大音量。这是整个应用的总开关；每个警报步骤也有各自的渐进音量选项，两者都开启时渐强才会生效。';
+
+  @override
+  String get settingsAlarmRampLabel => '渐强时长';
+
+  @override
+  String get settingsAlarmRampInfo => '警报从零达到最大音量所需的时间，在此时间内均匀增大。关闭渐进音量时无效。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4070,4 +4096,30 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get homeWidgetFakeCall => '模擬來電';
+
+  @override
+  String get settingsAlarmHeader => '警報';
+
+  @override
+  String get settingsAlarmDndOverrideLabel => '警報覆蓋靜音/震動模式';
+
+  @override
+  String get settingsAlarmDndOverrideWarning => '警告：如果手機處於靜音模式，警報將不會發聲。';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      '啟用後，即使手機處於靜音或震動模式，高音警報也會以最大音量播放。在 Android 上，它使用警報音訊通道來繞過勿擾模式。警報是唯一可以覆蓋手機聲音設定的事件。';
+
+  @override
+  String get settingsAlarmGradualLabel => '逐漸增大警報音量';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      '警報從低音量開始，逐漸增大到最大音量。這是整個應用程式的總開關；每個警報步驟也有各自的漸進音量選項，兩者都開啟時漸強才會生效。';
+
+  @override
+  String get settingsAlarmRampLabel => '漸強時長';
+
+  @override
+  String get settingsAlarmRampInfo => '警報從零達到最大音量所需的時間，在此期間均勻增大。關閉漸進音量時無效。';
 }

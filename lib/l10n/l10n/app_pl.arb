@@ -806,5 +806,13 @@
   "validationHardwareTrigger": "Sprzętowy wyzwalacz alarmu jest niekompletny — sprawdź liczbę naciśnięć lub czas przytrzymania.",
   "validationDistressNoActionTitle": "Brak kroku alertu wychodzącego",
   "validationDistressNoActionBody": "Ten tryb alarmowy nie ma kroku SMS ani połączenia, więc nie pozostawia śladu wychodzącego. Zapisać mimo to?",
-  "validationSaveAnyway": "Zapisz mimo to"
+  "validationSaveAnyway": "Zapisz mimo to",
+  "settingsAlarmHeader": "Alarm",
+  "settingsAlarmDndOverrideLabel": "Alarm pomija tryb cichy/wibracje",
+  "settingsAlarmDndOverrideWarning": "Ostrzeżenie: alarm będzie cichy, jeśli telefon jest w trybie cichym.",
+  "settingsAlarmDndOverrideInfo": "Po włączeniu głośny alarm odtwarza się z pełną głośnością, nawet gdy telefon jest wyciszony lub na wibracjach. W systemie Android używa kanału audio alarmu, aby ominąć tryb Nie przeszkadzać. Alarm to jedyne zdarzenie, które może pominąć ustawienia dźwięku telefonu.",
+  "settingsAlarmGradualLabel": "Stopniowo zwiększaj głośność alarmu",
+  "settingsAlarmGradualInfo": "Rozpoczyna alarm cicho i zwiększa go do pełnej głośności. To główny przełącznik dla całej aplikacji; każdy krok alarmu ma też własną opcję stopniowej głośności, a oba muszą być włączone, aby narastanie zadziałało.",
+  "settingsAlarmRampLabel": "Czas narastania",
+  "settingsAlarmRampInfo": "Jak długo alarm dochodzi do pełnej głośności od zera, narastając równomiernie w tym czasie. Nie działa, gdy stopniowa głośność jest wyłączona."
 }

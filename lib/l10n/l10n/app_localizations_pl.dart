@@ -2121,4 +2121,33 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Fałszywe połączenie';
+
+  @override
+  String get settingsAlarmHeader => 'Alarm';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Alarm pomija tryb cichy/wibracje';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Ostrzeżenie: alarm będzie cichy, jeśli telefon jest w trybie cichym.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Po włączeniu głośny alarm odtwarza się z pełną głośnością, nawet gdy telefon jest wyciszony lub na wibracjach. W systemie Android używa kanału audio alarmu, aby ominąć tryb Nie przeszkadzać. Alarm to jedyne zdarzenie, które może pominąć ustawienia dźwięku telefonu.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'Stopniowo zwiększaj głośność alarmu';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Rozpoczyna alarm cicho i zwiększa go do pełnej głośności. To główny przełącznik dla całej aplikacji; każdy krok alarmu ma też własną opcję stopniowej głośności, a oba muszą być włączone, aby narastanie zadziałało.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Czas narastania';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Jak długo alarm dochodzi do pełnej głośności od zera, narastając równomiernie w tym czasie. Nie działa, gdy stopniowa głośność jest wyłączona.';
 }

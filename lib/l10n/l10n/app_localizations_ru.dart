@@ -2128,4 +2128,34 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Ложный вызов';
+
+  @override
+  String get settingsAlarmHeader => 'Сигнал тревоги';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Сигнал игнорирует беззвучный режим/вибрацию';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Внимание: сигнал будет беззвучным, если телефон в беззвучном режиме.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Когда включено, громкий сигнал звучит на максимальной громкости, даже если телефон в беззвучном режиме или на вибрации. На Android используется аудиоканал сигнала тревоги, чтобы обойти режим «Не беспокоить». Сигнал — единственное событие, которое может переопределить настройки звука телефона.';
+
+  @override
+  String get settingsAlarmGradualLabel =>
+      'Постепенно увеличивать громкость сигнала';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Запускает сигнал тихо и наращивает до полной громкости. Это главный переключатель для всего приложения; у каждого шага сигнала есть собственная опция постепенной громкости, и оба должны быть включены, чтобы нарастание сработало.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Длительность нарастания';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Сколько времени нужно сигналу, чтобы достичь полной громкости с нуля, равномерно нарастая за это время. Не действует, когда постепенная громкость отключена.';
 }

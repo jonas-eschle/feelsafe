@@ -2099,4 +2099,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Fake Call';
+
+  @override
+  String get settingsAlarmHeader => 'Alarm';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Alarm overrides silent/vibrate mode';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Warning: the alarm will be silent if your phone is on silent mode.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'When enabled, the loud alarm plays at full volume even if your phone is on silent or vibrate. On Android it uses the alarm audio stream to bypass Do Not Disturb. The alarm is the only event that can override your phone\'s sound settings.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'Gradually increase alarm volume';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Starts the alarm quietly and ramps it up to full volume. This is the app-wide master switch; each alarm step also has its own gradual-volume option, and both must be on for the ramp to apply.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Ramp duration';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.';
 }

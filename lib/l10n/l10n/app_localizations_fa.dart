@@ -2106,4 +2106,33 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'تماس ساختگی';
+
+  @override
+  String get settingsAlarmHeader => 'هشدار';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'هشدار حالت بی‌صدا/لرزش را نادیده می‌گیرد';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'هشدار: اگر گوشی شما در حالت بی‌صدا باشد، آژیر بی‌صدا خواهد بود.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'وقتی فعال باشد، آژیر بلند با حداکثر صدا پخش می‌شود حتی اگر گوشی در حالت بی‌صدا یا لرزش باشد. در اندروید از مسیر صدای هشدار برای دور زدن حالت مزاحم نشوید استفاده می‌کند. آژیر تنها رویدادی است که می‌تواند تنظیمات صدای گوشی شما را نادیده بگیرد.';
+
+  @override
+  String get settingsAlarmGradualLabel => 'افزایش تدریجی صدای آژیر';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'آژیر را آرام شروع می‌کند و تا حداکثر صدا بالا می‌برد. این کلید اصلی در سطح کل برنامه است؛ هر مرحلهٔ آژیر هم گزینهٔ افزایش تدریجی خود را دارد و برای اعمال افزایش، هر دو باید روشن باشند.';
+
+  @override
+  String get settingsAlarmRampLabel => 'مدت افزایش';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'مدت‌زمانی که طول می‌کشد آژیر از صفر به حداکثر صدا برسد و در این مدت به‌طور یکنواخت بالا می‌رود. وقتی افزایش تدریجی خاموش باشد هیچ تأثیری ندارد.';
 }

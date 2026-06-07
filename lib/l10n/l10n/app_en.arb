@@ -2714,5 +2714,37 @@
   "homeWidgetFakeCall": "Fake Call",
   "@homeWidgetFakeCall": {
     "description": "Home-screen widget button label for Fake Call (deep-links to /fake-call)."
+  },
+  "settingsAlarmHeader": "Alarm",
+  "@settingsAlarmHeader": {
+    "description": "Section header for the app-wide alarm settings (spec 06 Alarm Section)."
+  },
+  "settingsAlarmDndOverrideLabel": "Alarm overrides silent/vibrate mode",
+  "@settingsAlarmDndOverrideLabel": {
+    "description": "Toggle label for AppSettings.alarmDndOverride."
+  },
+  "settingsAlarmDndOverrideWarning": "Warning: the alarm will be silent if your phone is on silent mode.",
+  "@settingsAlarmDndOverrideWarning": {
+    "description": "Warning shown beneath the DND-override toggle when it is OFF."
+  },
+  "settingsAlarmDndOverrideInfo": "When enabled, the loud alarm plays at full volume even if your phone is on silent or vibrate. On Android it uses the alarm audio stream to bypass Do Not Disturb. The alarm is the only event that can override your phone's sound settings.",
+  "@settingsAlarmDndOverrideInfo": {
+    "description": "Info-sheet body explaining the DND-override toggle."
+  },
+  "settingsAlarmGradualLabel": "Gradually increase alarm volume",
+  "@settingsAlarmGradualLabel": {
+    "description": "Toggle label for AppSettings.alarmGradualVolume (app-wide master)."
+  },
+  "settingsAlarmGradualInfo": "Starts the alarm quietly and ramps it up to full volume. This is the app-wide master switch; each alarm step also has its own gradual-volume option, and both must be on for the ramp to apply.",
+  "@settingsAlarmGradualInfo": {
+    "description": "Info-sheet body explaining the gradual-volume master toggle."
+  },
+  "settingsAlarmRampLabel": "Ramp duration",
+  "@settingsAlarmRampLabel": {
+    "description": "Label for the alarm gradual-volume ramp-duration slider (1-60s)."
+  },
+  "settingsAlarmRampInfo": "How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.",
+  "@settingsAlarmRampInfo": {
+    "description": "Info-sheet body explaining the ramp-duration slider."
   }
 }

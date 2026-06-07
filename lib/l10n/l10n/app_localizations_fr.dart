@@ -2142,4 +2142,34 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Faux appel';
+
+  @override
+  String get settingsAlarmHeader => 'Alarme';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'L\'alarme ignore le mode silencieux/vibreur';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Attention : l\'alarme sera silencieuse si votre téléphone est en mode silencieux.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Lorsqu\'elle est activée, l\'alarme sonore retentit au volume maximal même si votre téléphone est en mode silencieux ou vibreur. Sous Android, elle utilise le canal audio d\'alarme pour contourner le mode Ne pas déranger. L\'alarme est le seul événement qui peut ignorer les réglages sonores de votre téléphone.';
+
+  @override
+  String get settingsAlarmGradualLabel =>
+      'Augmenter progressivement le volume de l\'alarme';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Démarre l\'alarme en douceur et la monte jusqu\'au volume maximal. C\'est l\'interrupteur principal de toute l\'application ; chaque étape d\'alarme possède aussi sa propre option de volume progressif, et les deux doivent être activés pour que la montée s\'applique.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Durée de la montée';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Le temps que met l\'alarme pour atteindre le volume maximal à partir de zéro, en montant régulièrement pendant cette durée. Sans effet lorsque le volume progressif est désactivé.';
 }

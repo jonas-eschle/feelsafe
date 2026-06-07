@@ -2110,4 +2110,33 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'नकली कॉल';
+
+  @override
+  String get settingsAlarmHeader => 'अलार्म';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'अलार्म साइलेंट/वाइब्रेट मोड को ओवरराइड करता है';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'चेतावनी: यदि आपका फ़ोन साइलेंट मोड पर है तो अलार्म मूक रहेगा।';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'सक्षम होने पर, तेज़ अलार्म पूरी आवाज़ में बजता है, भले ही आपका फ़ोन साइलेंट या वाइब्रेट पर हो। Android पर यह डू नॉट डिस्टर्ब को दरकिनार करने के लिए अलार्म ऑडियो स्ट्रीम का उपयोग करता है। अलार्म एकमात्र ऐसी घटना है जो आपके फ़ोन की ध्वनि सेटिंग्स को ओवरराइड कर सकती है।';
+
+  @override
+  String get settingsAlarmGradualLabel => 'अलार्म की आवाज़ धीरे-धीरे बढ़ाएँ';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'अलार्म को धीमे से शुरू करता है और पूरी आवाज़ तक बढ़ाता है। यह पूरे ऐप का मुख्य स्विच है; प्रत्येक अलार्म चरण का अपना क्रमिक-आवाज़ विकल्प भी होता है, और बढ़ोतरी लागू होने के लिए दोनों चालू होने चाहिए।';
+
+  @override
+  String get settingsAlarmRampLabel => 'बढ़ने की अवधि';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'अलार्म को शून्य से पूरी आवाज़ तक पहुँचने में कितना समय लगता है, इस अवधि में समान रूप से बढ़ते हुए। क्रमिक आवाज़ बंद होने पर इसका कोई प्रभाव नहीं पड़ता।';
 }

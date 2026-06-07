@@ -2,8 +2,9 @@
 
 **Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
 PROGRESS: #13a + #13b + #14 + #13c (COMPLETE + cohort-VERIFIED PASS at
-`d54b986`+`81f131f`) + #13d (save + trigger save-validation, just-completed)
-done + committed (UNPUSHED). Next: #23, #20 → M2 cohort → push.**
+`d54b986`+`81f131f`) + #13d COMPLETE + cohort-VERIFIED (PASS) at `0788c52` +
+#23 (alarm settings section, just-completed) done + committed (UNPUSHED).
+Next: #20 → M2 cohort → push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -16,15 +17,18 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `f40baba` m2-handoff (prior session boundary)
 - `d54b986` m2-#13c — Mode Editor Safety Options
 - `81f131f` m2-#13c-fix — cohort findings (local-template Add + test gaps)
-- `<this>`   m2-#13d — save + trigger save-validation
+- `0788c52` m2-#13d — save + trigger save-validation
+- `<this>`   m2-#23 — alarm settings section
 - (+ this handoff commit)
 
-**Tests: 3768 pass** (3740 prior + 28 net-new #13d tests: 21 pure-Dart
-`validateModeDraft` unit tests + 7 widget tests driving the REAL `_save()`).
-Analyzer `--fatal-infos` clean. l10n parity green (6 new #13d keys × 14 locales,
-on top of the #13c keys). Tree clean. Branch: `main`. (Pure-Dart UI+validation
-+ tests — no native path touched, so host/widget tests are the proof; emulator
-boot-smoke not required and not run.)
+**Tests: 3788 pass** (3768 prior + 20 net-new #23 tests: 13 widget tests
+driving the REAL `SettingsScreen` alarm section → fake controller, + 7
+controller tests driving the REAL `SettingsController` through a round-tripping
+in-memory `AppSettingsRepository`). Analyzer `--fatal-infos` clean. l10n parity
+green (8 new #23 keys × 14 locales). Settings golden corpus unchanged (the
+Alarm section sits below the 390×844 fold). Tree clean. Branch: `main`.
+(Pure-Dart UI + controller + l10n — no model/strategy/native change, so
+host/widget tests are the proof; emulator boot-smoke not required and not run.)
 
 **#13c cohort loop:** #13c (`d54b986`) was reviewed by the verification
 cohort → **FIX_REQUIRED**, now **FIXED** in `<this>`. Findings addressed:
@@ -43,20 +47,17 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: continue M2 — #23 (Alarm settings section, spec 06:271-296),
-then #20, then the M2 cohort + push.** Per-fix recipe (unchanged): verify the
-gap yourself → implement (serial) → prove (host/widget tests driving the REAL
-controller; emulator for native) → l10n deltas → language agent for 13
-locales → gate suite → commit → **ask before pushing**.
+**Next action: continue M2 — #20 (channel-validation-on-save; SMS
+messageTemplate editor; iOS SMS+callEmergency warnings; missing iOS
+`critical_alert.wav`), then the M2 cohort + push.** Per-fix recipe
+(unchanged): verify the gap yourself → implement (serial) → prove (host/widget
+tests driving the REAL controller; emulator for native) → l10n deltas →
+language agent for 13 locales → gate suite → commit → **ask before pushing**.
 
-**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c AND #13d — are
-done):**
+**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c AND #13d AND #23
+— are done):**
 
-1. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
-   / ramp toggles. Verify the gap vs the loudAlarm `EventSpecificConfig`
-   (built in #13a) and M0 #19 (gradual + DND already wired in the strategy);
-   this is the Settings-level section (06), distinct from per-step config.
-2. **#20** — channel-validation-on-save; SMS message-template editor (the
+1. **#20** — channel-validation-on-save; SMS message-template editor (the
    `messageTemplate` field is in `SmsContactConfig` but has no editor yet);
    iOS SMS+callEmergency warning strings; the missing iOS `critical_alert.wav`.
 
@@ -140,6 +141,36 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   pre-existing distress-mode-save tests updated to dismiss the new non-blocking
   warning (tests follow code). Pure-Dart UI+validation — no native path, so
   emulator boot-smoke not required (not run).
+- **#23** (`<this>`): **GA-blocker #23 — Settings-level Alarm section** (spec
+  06 §Alarm Section, 240-265 in `06-settings.md`; the task's "06:271-296" is
+  the older line range). **GAP found:** the three `AppSettings` fields
+  (`alarmDndOverride` / `alarmGradualVolume` /
+  `alarmGradualVolumeDurationSeconds`) ALREADY existed (defaults false/false/5,
+  JSON ser/deser, copyWith, ==, hashCode, + a `[1,60]` assert) and the runtime
+  resolution was ALREADY fully wired by M0 #19 (`loud_alarm_strategy.dart:69-76`
+  ANDs the global gradual master with per-step `config.gradualVolume`, uses the
+  global duration as ramp seconds, passes `alarmDndOverride` through;
+  `event_services.dart:123-187` mirrors them; `session_controller.dart:618-621`
+  feeds them in). The per-step `_LoudAlarmForm` (#13a) exposes only the per-step
+  `gradualVolume` toggle. **What was genuinely missing = the Settings-level UI
+  only** (zero alarm matches in `settings_screen.dart`) + the controller
+  setters to persist it. **Implemented:** extended `SettingsHubState` + `build()`
+  with the 3 fields and added `setAlarmDndOverride` / `setAlarmGradualVolume` /
+  `setAlarmGradualVolumeDurationSeconds` (load→copyWith→save→invalidateSelf,
+  the GPS-logging-controller pattern; the duration setter `.clamp(1,60)` as a
+  release-mode backstop to the model assert) in `settings_controller.dart`; a
+  new private `_AlarmSection` `ConsumerWidget` in `settings_screen.dart`
+  (own `_SectionHeader` between Configuration and App) — DND `SwitchListTile`
+  + an error-coloured silent-mode warning shown only when OFF (spec 06:251) +
+  `InfoIconButton`; gradual `SwitchListTile` + info; ramp `TimingSlider`
+  (min 1, max 60s) revealed only when gradual is ON (spec 06:260) + info.
+  8 l10n keys × 14 locales. 20 net-new tests (13 widget driving the REAL
+  screen→controller, incl. warning-visibility-by-state, conditional ramp
+  reveal, slider bounds, RTL/dark; 7 controller tests driving the REAL
+  `SettingsController` through a round-tripping in-memory repo — persist +
+  read-back + clamp-below/above + sibling-field preservation). Pure-Dart
+  UI+controller — no model/strategy/native change, so emulator not required
+  (not run). Settings goldens unchanged (Alarm section below the 844px fold).
 
 ---
 
@@ -233,6 +264,10 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
 
 ## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
 
+- **`kMinRepeatPressCount = 2` is a validator-introduced floor with no explicit
+  spec line** (04:1589 lists "press count" as a field only) — defensible
+  (single press ≈ accidental tap), self-documented; revisit if a future spec
+  allows pressCount=1. (Flagged by the #13d cohort.)
 - **Mode-local templates support add + remove but NOT in-place edit;** spec
   04:1613 mandates only `[+ Add Template]`, so the current impl is spec-faithful
   — revisit if in-place edit of a staged local template is wanted. (Flagged by
@@ -345,7 +380,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3708 pass
+flutter test --concurrency=6                                    # 3788 pass
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -363,9 +398,9 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
-  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ done (UNPUSHED); remaining **#23 (alarm
-  settings) → #20 (channel validation / SMS template / iOS warnings) → M2
-  cohort → push.** Then M3 (#15 stealth), M4
+  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ done (UNPUSHED); remaining **#20
+  (channel validation / SMS template / iOS warnings) → M2 cohort → push.**
+  Then M3 (#15 stealth), M4
   (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
   #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
   The in-memory TaskList is cleared on `/clear` — this bullet is the durable
@@ -385,5 +420,5 @@ Don't skip it because "the session went short."
 
 End of hand-off. M0+M1 verified+pushed; **M2 config-UI in progress** — #13a +
 #13b (per-step config) + #14 (SMS contact grid) + #13c (Safety Options) + #13d
-(save + trigger save-validation) committed, UNPUSHED. Resume by **building #23
-(alarm settings) → #20 → M2 cohort → push.**
+(save + trigger save-validation) + #23 (alarm settings section) committed,
+UNPUSHED. Resume by **building #20 → M2 cohort → push.**

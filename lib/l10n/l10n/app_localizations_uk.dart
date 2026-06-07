@@ -2119,4 +2119,34 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get homeWidgetFakeCall => 'Несправжній дзвінок';
+
+  @override
+  String get settingsAlarmHeader => 'Сигнал тривоги';
+
+  @override
+  String get settingsAlarmDndOverrideLabel =>
+      'Сигнал ігнорує беззвучний режим/вібрацію';
+
+  @override
+  String get settingsAlarmDndOverrideWarning =>
+      'Увага: сигнал буде беззвучним, якщо телефон у беззвучному режимі.';
+
+  @override
+  String get settingsAlarmDndOverrideInfo =>
+      'Коли увімкнено, гучний сигнал лунає на максимальній гучності, навіть якщо телефон у беззвучному режимі чи на вібрації. На Android використовується аудіоканал сигналу тривоги, щоб обійти режим «Не турбувати». Сигнал — єдина подія, яка може перевизначити налаштування звуку телефона.';
+
+  @override
+  String get settingsAlarmGradualLabel =>
+      'Поступово збільшувати гучність сигналу';
+
+  @override
+  String get settingsAlarmGradualInfo =>
+      'Запускає сигнал тихо й нарощує до повної гучності. Це головний перемикач для всього застосунку; кожен крок сигналу також має власну опцію поступової гучності, і обидва мають бути ввімкнені, щоб наростання спрацювало.';
+
+  @override
+  String get settingsAlarmRampLabel => 'Тривалість наростання';
+
+  @override
+  String get settingsAlarmRampInfo =>
+      'Скільки часу потрібно сигналу, щоб досягти повної гучності з нуля, рівномірно наростаючи за цей час. Не діє, коли поступова гучність вимкнена.';
 }
