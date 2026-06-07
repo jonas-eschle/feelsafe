@@ -589,6 +589,36 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'زمان‌بندی';
+
+  @override
+  String get stepConfigEventHeader => 'پیکربندی رویداد';
+
+  @override
+  String get stepConfigAdvancedHeader => 'تلاش مجدد و پیشرفته';
+
+  @override
+  String get stepFieldWait => 'انتظار پیش از اجرا (ثانیه)';
+
+  @override
+  String get stepFieldDuration => 'مدت فعال بودن (ثانیه)';
+
+  @override
+  String get stepFieldGrace => 'مهلت اضافه (ثانیه)';
+
+  @override
+  String get stepFieldRetryCount => 'تلاش‌های مجدد';
+
+  @override
+  String get stepFieldRandomize => 'تصادفی‌سازی زمان‌بندی (±20%)';
+
+  @override
+  String get stepDuplicate => 'تکثیر گام';
+
+  @override
+  String get stepResetDefaults => 'بازنشانی به پیش‌فرض‌ها';
+
+  @override
   String get distressModesEmpty => 'هنوز هیچ حالت اضطراری وجود ندارد.';
 
   @override

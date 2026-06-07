@@ -752,6 +752,46 @@
       "grace": {}
     }
   },
+  "stepConfigTimingHeader": "Timing",
+  "@stepConfigTimingHeader": {
+    "description": "Header of the timing subsection in a step's config panel."
+  },
+  "stepConfigEventHeader": "Event configuration",
+  "@stepConfigEventHeader": {
+    "description": "Header of the type-specific configuration subsection in a step's config panel."
+  },
+  "stepConfigAdvancedHeader": "Retry & advanced",
+  "@stepConfigAdvancedHeader": {
+    "description": "Header of the retry/advanced subsection in a step's config panel."
+  },
+  "stepFieldWait": "Wait before firing (seconds)",
+  "@stepFieldWait": {
+    "description": "Label for the wait-phase duration field of a chain step."
+  },
+  "stepFieldDuration": "Active duration (seconds)",
+  "@stepFieldDuration": {
+    "description": "Label for the active-phase duration field of a chain step."
+  },
+  "stepFieldGrace": "Grace period (seconds)",
+  "@stepFieldGrace": {
+    "description": "Label for the grace-period field of a chain step."
+  },
+  "stepFieldRetryCount": "Retries",
+  "@stepFieldRetryCount": {
+    "description": "Label for the retry-count field of a chain step."
+  },
+  "stepFieldRandomize": "Randomise timing (±20%)",
+  "@stepFieldRandomize": {
+    "description": "Label for the per-step timing randomisation toggle."
+  },
+  "stepDuplicate": "Duplicate step",
+  "@stepDuplicate": {
+    "description": "Action to duplicate the current chain step."
+  },
+  "stepResetDefaults": "Reset to defaults",
+  "@stepResetDefaults": {
+    "description": "Action to reset a step's configuration to the global defaults."
+  },
   "distressModesEmpty": "No distress modes yet.",
   "@distressModesEmpty": {
     "description": "Empty state on distress modes."

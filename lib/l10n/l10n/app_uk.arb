@@ -104,6 +104,16 @@
   "modeUnsavedDiscard": "Скасувати",
   "modeUnsavedKeep": "Продовжити",
   "stepTimingSummary": "очікування {wait}с / тривалість {duration}с / пільговий {grace}с",
+  "stepConfigTimingHeader": "Тайминг",
+  "stepConfigEventHeader": "Налаштування події",
+  "stepConfigAdvancedHeader": "Повтори та додатково",
+  "stepFieldWait": "Очікування перед запуском (секунди)",
+  "stepFieldDuration": "Тривалість активності (секунди)",
+  "stepFieldGrace": "Пільговий період (секунди)",
+  "stepFieldRetryCount": "Повтори",
+  "stepFieldRandomize": "Випадковий тайминг (±20%)",
+  "stepDuplicate": "Дублювати крок",
+  "stepResetDefaults": "Скинути до типових значень",
   "angelaDialogTitle": "Введено старий PIN-код",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."

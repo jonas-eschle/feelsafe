@@ -591,6 +591,36 @@ class AppLocalizationsEs extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Temporización';
+
+  @override
+  String get stepConfigEventHeader => 'Configuración del evento';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Reintentos y avanzado';
+
+  @override
+  String get stepFieldWait => 'Espera antes de activarse (segundos)';
+
+  @override
+  String get stepFieldDuration => 'Duración activa (segundos)';
+
+  @override
+  String get stepFieldGrace => 'Periodo de gracia (segundos)';
+
+  @override
+  String get stepFieldRetryCount => 'Reintentos';
+
+  @override
+  String get stepFieldRandomize => 'Aleatorizar tiempos (±20%)';
+
+  @override
+  String get stepDuplicate => 'Duplicar paso';
+
+  @override
+  String get stepResetDefaults => 'Restablecer valores predeterminados';
+
+  @override
   String get distressModesEmpty => 'Aún no hay modos de auxilio.';
 
   @override

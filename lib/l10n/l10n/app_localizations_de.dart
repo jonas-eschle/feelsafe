@@ -593,6 +593,36 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Timing';
+
+  @override
+  String get stepConfigEventHeader => 'Ereigniskonfiguration';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Wiederholung & Erweitert';
+
+  @override
+  String get stepFieldWait => 'Warten vor Auslösung (Sekunden)';
+
+  @override
+  String get stepFieldDuration => 'Aktive Dauer (Sekunden)';
+
+  @override
+  String get stepFieldGrace => 'Karenzzeit (Sekunden)';
+
+  @override
+  String get stepFieldRetryCount => 'Wiederholungen';
+
+  @override
+  String get stepFieldRandomize => 'Timing zufällig variieren (±20%)';
+
+  @override
+  String get stepDuplicate => 'Schritt duplizieren';
+
+  @override
+  String get stepResetDefaults => 'Auf Standardwerte zurücksetzen';
+
+  @override
   String get distressModesEmpty => 'Noch keine Notfallmodi.';
 
   @override

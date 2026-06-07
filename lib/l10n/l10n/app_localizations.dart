@@ -1157,6 +1157,66 @@ abstract class AppLocalizations {
   /// **'wait {wait}s / duration {duration}s / grace {grace}s'**
   String stepTimingSummary(Object wait, Object duration, Object grace);
 
+  /// Header of the timing subsection in a step's config panel.
+  ///
+  /// In en, this message translates to:
+  /// **'Timing'**
+  String get stepConfigTimingHeader;
+
+  /// Header of the type-specific configuration subsection in a step's config panel.
+  ///
+  /// In en, this message translates to:
+  /// **'Event configuration'**
+  String get stepConfigEventHeader;
+
+  /// Header of the retry/advanced subsection in a step's config panel.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry & advanced'**
+  String get stepConfigAdvancedHeader;
+
+  /// Label for the wait-phase duration field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait before firing (seconds)'**
+  String get stepFieldWait;
+
+  /// Label for the active-phase duration field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Active duration (seconds)'**
+  String get stepFieldDuration;
+
+  /// Label for the grace-period field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Grace period (seconds)'**
+  String get stepFieldGrace;
+
+  /// Label for the retry-count field of a chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Retries'**
+  String get stepFieldRetryCount;
+
+  /// Label for the per-step timing randomisation toggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Randomise timing (±20%)'**
+  String get stepFieldRandomize;
+
+  /// Action to duplicate the current chain step.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate step'**
+  String get stepDuplicate;
+
+  /// Action to reset a step's configuration to the global defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset to defaults'**
+  String get stepResetDefaults;
+
   /// Empty state on distress modes.
   ///
   /// In en, this message translates to:

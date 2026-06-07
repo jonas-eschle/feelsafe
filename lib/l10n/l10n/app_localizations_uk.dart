@@ -590,6 +590,36 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Тайминг';
+
+  @override
+  String get stepConfigEventHeader => 'Налаштування події';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Повтори та додатково';
+
+  @override
+  String get stepFieldWait => 'Очікування перед запуском (секунди)';
+
+  @override
+  String get stepFieldDuration => 'Тривалість активності (секунди)';
+
+  @override
+  String get stepFieldGrace => 'Пільговий період (секунди)';
+
+  @override
+  String get stepFieldRetryCount => 'Повтори';
+
+  @override
+  String get stepFieldRandomize => 'Випадковий тайминг (±20%)';
+
+  @override
+  String get stepDuplicate => 'Дублювати крок';
+
+  @override
+  String get stepResetDefaults => 'Скинути до типових значень';
+
+  @override
   String get distressModesEmpty => 'Ще немає режимів тривоги.';
 
   @override

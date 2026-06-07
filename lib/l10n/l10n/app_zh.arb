@@ -104,6 +104,16 @@
   "modeUnsavedDiscard": "放弃",
   "modeUnsavedKeep": "继续编辑",
   "stepTimingSummary": "等待 {wait}秒 / 时长 {duration}秒 / 宽限 {grace}秒",
+  "stepConfigTimingHeader": "计时",
+  "stepConfigEventHeader": "事件配置",
+  "stepConfigAdvancedHeader": "重试与高级",
+  "stepFieldWait": "触发前等待（秒）",
+  "stepFieldDuration": "活动时长（秒）",
+  "stepFieldGrace": "宽限期（秒）",
+  "stepFieldRetryCount": "重试次数",
+  "stepFieldRandomize": "随机化计时（±20%）",
+  "stepDuplicate": "复制步骤",
+  "stepResetDefaults": "重置为默认值",
   "angelaDialogTitle": "已输入旧 PIN 码",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."

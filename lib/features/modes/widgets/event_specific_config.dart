@@ -9,6 +9,7 @@ import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
+import 'package:guardianangela/features/modes/widgets/config_fields.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Renders the type-specific configuration form for a [StepConfig].
@@ -83,14 +84,14 @@ class _HoldButtonForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _EnumDropdown<HoldStyle>(
+        EnumDropdownField<HoldStyle>(
           label: l10n.eventDefaultsHoldStyle,
           values: HoldStyle.values,
           value: config.holdStyle,
           labelFor: (HoldStyle v) => v.name,
           onChanged: (HoldStyle v) => onChanged(config.copyWith(holdStyle: v)),
         ),
-        _DoubleSlider(
+        DoubleSliderField(
           label: l10n.eventDefaultsHoldSensitivity,
           value: config.releaseSensitivity,
           min: 0.3,
@@ -174,7 +175,7 @@ class _CountdownWarningForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _EnumDropdown<CountdownStyle>(
+        EnumDropdownField<CountdownStyle>(
           label: l10n.eventDefaultsCountdownStyle,
           values: CountdownStyle.values,
           value: config.style,
@@ -214,20 +215,20 @@ class _FakeCallForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _EnumDropdown<CallStyle>(
+        EnumDropdownField<CallStyle>(
           label: l10n.eventDefaultsFakeCallStyle,
           values: CallStyle.values,
           value: config.callStyle,
           labelFor: (CallStyle v) => v.name,
           onChanged: (CallStyle v) => onChanged(config.copyWith(callStyle: v)),
         ),
-        _TextField(
+        LabeledTextField(
           label: l10n.eventDefaultsFakeCallCallerName,
           value: config.callerName,
           onChanged: (String v) =>
               onChanged(config.copyWith(callerName: v.isEmpty ? 'Angela' : v)),
         ),
-        _IntSpinner(
+        IntSpinnerField(
           label: l10n.eventDefaultsFakeCallRingDuration,
           value: config.ringDurationSeconds,
           min: 5,
@@ -235,7 +236,7 @@ class _FakeCallForm extends StatelessWidget {
           onChanged: (int v) =>
               onChanged(config.copyWith(ringDurationSeconds: v)),
         ),
-        _EnumDropdown<VoiceOutputMode>(
+        EnumDropdownField<VoiceOutputMode>(
           label: l10n.eventDefaultsFakeCallVoiceOutput,
           values: VoiceOutputMode.values,
           value: config.voiceOutputMode,
@@ -270,7 +271,7 @@ class _SmsContactForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _EnumDropdown<MessageChannel>(
+        EnumDropdownField<MessageChannel>(
           label: l10n.eventDefaultsSmsChannel,
           values: MessageChannel.values,
           value: config.channel,
@@ -298,7 +299,7 @@ class _SmsContactForm extends StatelessWidget {
           onChanged: (bool v) => onChanged(config.copyWith(autoRecordAudio: v)),
         ),
         if (config.autoRecordAudio)
-          _IntSpinner(
+          IntSpinnerField(
             label: l10n.eventDefaultsSmsRecordDuration,
             value: config.recordDurationSeconds,
             min: 5,
@@ -327,7 +328,7 @@ class _PhoneCallContactForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _TextField(
+        LabeledTextField(
           label: l10n.eventDefaultsPhonePrimaryContact,
           value: config.contactId ?? '',
           onChanged: (String v) =>
@@ -354,14 +355,14 @@ class _LoudAlarmForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _DoubleSlider(
+        DoubleSliderField(
           label: l10n.eventDefaultsLoudAlarmVolume,
           value: config.volume,
           min: 0,
           max: 1,
           onChanged: (double v) => onChanged(config.copyWith(volume: v)),
         ),
-        _EnumDropdown<LoudAlarmSound>(
+        EnumDropdownField<LoudAlarmSound>(
           label: l10n.eventDefaultsLoudAlarmSound,
           values: LoudAlarmSound.values,
           value: config.soundChoice,
@@ -408,7 +409,7 @@ class _CallEmergencyForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _TextField(
+        LabeledTextField(
           label: l10n.eventDefaultsCallEmergencyNumber,
           value: config.emergencyNumber ?? '',
           onChanged: (String v) =>
@@ -429,7 +430,7 @@ class _CallEmergencyForm extends StatelessWidget {
               onChanged(config.copyWith(showConfirmation: v)),
         ),
         if (config.showConfirmation)
-          _IntSpinner(
+          IntSpinnerField(
             label: l10n.eventDefaultsCallEmergencyConfirmDuration,
             value: config.confirmationDurationSeconds,
             max: 30,
@@ -458,7 +459,7 @@ class _HardwareButtonForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _EnumDropdown<ButtonType>(
+        EnumDropdownField<ButtonType>(
           label: l10n.eventDefaultsHardwareButton,
           values: ButtonType.values,
           value: config.buttonType,
@@ -466,7 +467,7 @@ class _HardwareButtonForm extends StatelessWidget {
           onChanged: (ButtonType v) =>
               onChanged(config.copyWith(buttonType: v)),
         ),
-        _EnumDropdown<PressPattern>(
+        EnumDropdownField<PressPattern>(
           label: l10n.eventDefaultsHardwarePattern,
           values: PressPattern.values,
           value: config.pressPattern,
@@ -475,7 +476,7 @@ class _HardwareButtonForm extends StatelessWidget {
               onChanged(config.copyWith(pressPattern: v)),
         ),
         if (isRepeat)
-          _IntSpinner(
+          IntSpinnerField(
             label: l10n.eventDefaultsHardwarePressCount,
             value: config.pressCount,
             min: 2,
@@ -483,7 +484,7 @@ class _HardwareButtonForm extends StatelessWidget {
             onChanged: (int v) => onChanged(config.copyWith(pressCount: v)),
           )
         else
-          _DoubleSlider(
+          DoubleSliderField(
             label: l10n.eventDefaultsHardwareLongDuration,
             value: config.longPressDurationSeconds,
             min: 0.5,
@@ -500,7 +501,7 @@ class _HardwareButtonForm extends StatelessWidget {
   }
 }
 
-// ─── Shared editor widgets ────────────────────────────────────────────────
+// ─── Black-screen toggle (shared across all step types) ────────────────────
 
 class _BlackScreenSwitch extends StatelessWidget {
   const _BlackScreenSwitch({required this.value, required this.onChanged});
@@ -516,169 +517,6 @@ class _BlackScreenSwitch extends StatelessWidget {
       title: Text(l10n.eventDefaultsBlackScreen),
       value: value,
       onChanged: onChanged,
-    );
-  }
-}
-
-class _EnumDropdown<T> extends StatelessWidget {
-  const _EnumDropdown({
-    required this.label,
-    required this.values,
-    required this.value,
-    required this.labelFor,
-    required this.onChanged,
-  });
-
-  final String label;
-  final List<T> values;
-  final T value;
-  final String Function(T) labelFor;
-  final ValueChanged<T> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: InputDecorator(
-        decoration: InputDecoration(labelText: label),
-        child: DropdownButtonHideUnderline(
-          child: DropdownButton<T>(
-            isExpanded: true,
-            value: value,
-            items: <DropdownMenuItem<T>>[
-              for (final v in values)
-                DropdownMenuItem<T>(value: v, child: Text(labelFor(v))),
-            ],
-            onChanged: (T? v) {
-              if (v != null) onChanged(v);
-            },
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _DoubleSlider extends StatelessWidget {
-  const _DoubleSlider({
-    required this.label,
-    required this.value,
-    required this.min,
-    required this.max,
-    required this.onChanged,
-  });
-
-  final String label;
-  final double value;
-  final double min;
-  final double max;
-  final ValueChanged<double> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text('$label: ${value.toStringAsFixed(2)}'),
-          Slider(
-            value: value.clamp(min, max),
-            min: min,
-            max: max,
-            onChanged: onChanged,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _IntSpinner extends StatelessWidget {
-  const _IntSpinner({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-    this.min = 0,
-    required this.max,
-  });
-
-  final String label;
-  final int value;
-  final ValueChanged<int> onChanged;
-  final int min;
-  final int max;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Row(
-        children: <Widget>[
-          Expanded(child: Text(label)),
-          IconButton(
-            icon: const Icon(Icons.remove_circle_outline),
-            onPressed: value <= min ? null : () => onChanged(value - 1),
-          ),
-          Text(value.toString()),
-          IconButton(
-            icon: const Icon(Icons.add_circle_outline),
-            onPressed: value >= max ? null : () => onChanged(value + 1),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TextField extends StatefulWidget {
-  const _TextField({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final String label;
-  final String value;
-  final ValueChanged<String> onChanged;
-
-  @override
-  State<_TextField> createState() => _TextFieldState();
-}
-
-class _TextFieldState extends State<_TextField> {
-  late final TextEditingController _ctl;
-
-  @override
-  void initState() {
-    super.initState();
-    _ctl = TextEditingController(text: widget.value);
-  }
-
-  @override
-  void didUpdateWidget(covariant _TextField oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.value != widget.value && widget.value != _ctl.text) {
-      _ctl.text = widget.value;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ctl.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: TextField(
-        controller: _ctl,
-        decoration: InputDecoration(labelText: widget.label),
-        onSubmitted: widget.onChanged,
-        onEditingComplete: () => widget.onChanged(_ctl.text),
-      ),
     );
   }
 }

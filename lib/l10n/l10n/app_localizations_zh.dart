@@ -576,6 +576,36 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => '计时';
+
+  @override
+  String get stepConfigEventHeader => '事件配置';
+
+  @override
+  String get stepConfigAdvancedHeader => '重试与高级';
+
+  @override
+  String get stepFieldWait => '触发前等待（秒）';
+
+  @override
+  String get stepFieldDuration => '活动时长（秒）';
+
+  @override
+  String get stepFieldGrace => '宽限期（秒）';
+
+  @override
+  String get stepFieldRetryCount => '重试次数';
+
+  @override
+  String get stepFieldRandomize => '随机化计时（±20%）';
+
+  @override
+  String get stepDuplicate => '复制步骤';
+
+  @override
+  String get stepResetDefaults => '重置为默认值';
+
+  @override
   String get distressModesEmpty => '尚无求救模式。';
 
   @override
@@ -2355,6 +2385,36 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String stepTimingSummary(Object wait, Object duration, Object grace) {
     return '等待 $wait 秒 / 時長 $duration 秒 / 寬限 $grace 秒';
   }
+
+  @override
+  String get stepConfigTimingHeader => '計時';
+
+  @override
+  String get stepConfigEventHeader => '事件設定';
+
+  @override
+  String get stepConfigAdvancedHeader => '重試與進階';
+
+  @override
+  String get stepFieldWait => '觸發前等待（秒）';
+
+  @override
+  String get stepFieldDuration => '活動時長（秒）';
+
+  @override
+  String get stepFieldGrace => '寬限期（秒）';
+
+  @override
+  String get stepFieldRetryCount => '重試次數';
+
+  @override
+  String get stepFieldRandomize => '隨機化計時（±20%）';
+
+  @override
+  String get stepDuplicate => '複製步驟';
+
+  @override
+  String get stepResetDefaults => '重設為預設值';
 
   @override
   String get distressModesEmpty => '尚未建立求救模式。';

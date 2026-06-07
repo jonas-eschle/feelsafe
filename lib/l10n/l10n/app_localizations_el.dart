@@ -594,6 +594,36 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Χρονισμός';
+
+  @override
+  String get stepConfigEventHeader => 'Ρύθμιση συμβάντος';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Επανάληψη & σύνθετα';
+
+  @override
+  String get stepFieldWait => 'Αναμονή πριν την ενεργοποίηση (δευτερόλεπτα)';
+
+  @override
+  String get stepFieldDuration => 'Διάρκεια ενεργοποίησης (δευτερόλεπτα)';
+
+  @override
+  String get stepFieldGrace => 'Περίοδος χάριτος (δευτερόλεπτα)';
+
+  @override
+  String get stepFieldRetryCount => 'Επαναλήψεις';
+
+  @override
+  String get stepFieldRandomize => 'Τυχαιοποίηση χρονισμού (±20%)';
+
+  @override
+  String get stepDuplicate => 'Διπλασιασμός βήματος';
+
+  @override
+  String get stepResetDefaults => 'Επαναφορά στις προεπιλογές';
+
+  @override
   String get distressModesEmpty => 'Δεν υπάρχουν ακόμη λειτουργίες κινδύνου.';
 
   @override

@@ -594,6 +594,36 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Minutage';
+
+  @override
+  String get stepConfigEventHeader => 'Configuration de l\'événement';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Nouvelles tentatives et avancé';
+
+  @override
+  String get stepFieldWait => 'Attente avant déclenchement (secondes)';
+
+  @override
+  String get stepFieldDuration => 'Durée active (secondes)';
+
+  @override
+  String get stepFieldGrace => 'Délai de grâce (secondes)';
+
+  @override
+  String get stepFieldRetryCount => 'Tentatives';
+
+  @override
+  String get stepFieldRandomize => 'Rendre le minutage aléatoire (±20%)';
+
+  @override
+  String get stepDuplicate => 'Dupliquer l\'étape';
+
+  @override
+  String get stepResetDefaults => 'Réinitialiser aux valeurs par défaut';
+
+  @override
   String get distressModesEmpty => 'Aucun mode de détresse pour le moment.';
 
   @override

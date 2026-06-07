@@ -4,10 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
+import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
+import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -18,6 +22,11 @@ import 'package:guardianangela/services/service_providers.dart';
 /// - changes the title
 /// - sets `SessionMode.isDistressMode = true` on save
 /// - hides the distress-mode picker in the safety options.
+///
+/// The chain is a reorderable list of [ExpansionTile]s; each tile expands
+/// inline to a [StepConfigPanel] that edits the step's timing, type-specific
+/// config, and retry/advanced settings. A step with a null config displays
+/// the resolved `AppDefaults.eventDefaults` values until the user edits one.
 class ModeEditorScreen extends ConsumerStatefulWidget {
   /// Creates a [ModeEditorScreen].
   const ModeEditorScreen({super.key, this.modeId, required this.isDistress});
@@ -37,6 +46,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   bool _dirty = false;
   bool _loading = true;
   SessionMode? _draft;
+  EventDefaults _defaults = const EventDefaults();
 
   @override
   void initState() {
@@ -46,6 +56,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
 
   Future<void> _load() async {
     final db = await ref.read(databaseProvider.future);
+    final settings = await ref.read(appSettingsRepositoryProvider).load();
     final service = ModeEditorService(db);
     final mode = widget.modeId == null
         ? service.blankMode(isDistress: widget.isDistress)
@@ -54,6 +65,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     _nameCtl.text = mode.name;
     setState(() {
       _draft = mode;
+      _defaults = settings.defaults.eventDefaults;
       _loading = false;
     });
   }
@@ -64,33 +76,63 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     super.dispose();
   }
 
-  void _addStep(ChainStep step) {
+  /// Re-assigns sequential [ChainStep.order] values matching list position.
+  List<ChainStep> _reindexed(List<ChainStep> steps) => <ChainStep>[
+    for (int i = 0; i < steps.length; i++) steps[i].copyWith(order: i),
+  ];
+
+  void _mutateSteps(List<ChainStep> Function(List<ChainStep>) transform) {
     final current = _draft;
     if (current == null) return;
     setState(() {
       _draft = current.copyWith(
-        chainSteps: <ChainStep>[
-          ...current.chainSteps,
-          step.copyWith(order: current.chainSteps.length),
-        ],
+        chainSteps: _reindexed(transform(<ChainStep>[...current.chainSteps])),
       );
       _dirty = true;
     });
   }
 
+  void _updateStep(int index, ChainStep updated) =>
+      _mutateSteps((List<ChainStep> list) => list..[index] = updated);
+
+  void _addStep(ChainStepType type) => _mutateSteps(
+    (List<ChainStep> list) => list
+      ..add(
+        ChainStep(
+          id: const Uuid().v4(),
+          type: type,
+          order: list.length,
+          waitSeconds: 0,
+          durationSeconds: 10,
+          gracePeriodSeconds: 5,
+          retryCount: 0,
+          randomize: false,
+        ),
+      ),
+  );
+
+  void _duplicateStep(int index) => _mutateSteps((List<ChainStep> list) {
+    final ChainStep copy = list[index].copyWith(id: const Uuid().v4());
+    return list..insert(index + 1, copy);
+  });
+
+  void _resetStep(int index) => _mutateSteps((List<ChainStep> list) {
+    final ChainStep step = list[index];
+    return list..[index] = step.copyWith(config: _defaults.forType(step.type));
+  });
+
   void _removeStep(int index) {
     final current = _draft;
-    if (current == null) return;
-    if (current.chainSteps.length <= 1) return;
-    final list = <ChainStep>[...current.chainSteps]..removeAt(index);
-    for (int i = 0; i < list.length; i++) {
-      list[i] = list[i].copyWith(order: i);
-    }
-    setState(() {
-      _draft = current.copyWith(chainSteps: list);
-      _dirty = true;
-    });
+    if (current == null || current.chainSteps.length <= 1) return;
+    _mutateSteps((List<ChainStep> list) => list..removeAt(index));
   }
+
+  void _reorder(int oldIndex, int newIndex) =>
+      _mutateSteps((List<ChainStep> list) {
+        final int target = newIndex > oldIndex ? newIndex - 1 : newIndex;
+        final ChainStep moved = list.removeAt(oldIndex);
+        return list..insert(target, moved);
+      });
 
   Future<void> _save() async {
     final current = _draft;
@@ -129,36 +171,13 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     return ok ?? false;
   }
 
-  Future<void> _addStepSheet(BuildContext context) async {
-    final selected = await showModalBottomSheet<ChainStepType>(
+  Future<void> _addStepSheet() async {
+    final l10n = AppLocalizations.of(context);
+    final ChainStepType? selected = await showModalBottomSheet<ChainStepType>(
       context: context,
-      builder: (BuildContext ctx) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            for (final t in ChainStepType.values)
-              ListTile(
-                title: Text(t.name),
-                onTap: () => Navigator.of(ctx).pop(t),
-              ),
-          ],
-        ),
-      ),
+      builder: (BuildContext ctx) => _AddStepSheet(l10n: l10n),
     );
-    if (selected != null) {
-      _addStep(
-        ChainStep(
-          id: const Uuid().v4(),
-          type: selected,
-          order: 0,
-          waitSeconds: 0,
-          durationSeconds: 10,
-          gracePeriodSeconds: 5,
-          retryCount: 0,
-          randomize: false,
-        ),
-      );
-    }
+    if (selected != null) _addStep(selected);
   }
 
   @override
@@ -191,42 +210,60 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         body: _loading || draft == null
             ? const Center(child: CircularProgressIndicator())
             : SafeArea(
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: <Widget>[
-                    TextField(
-                      controller: _nameCtl,
-                      onChanged: (_) {
-                        if (!_dirty) setState(() => _dirty = true);
-                      },
-                      decoration: InputDecoration(
-                        labelText: l10n.modeFieldName,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(l10n.modeChainHeader),
-                    for (int i = 0; i < draft.chainSteps.length; i++)
-                      Card(
-                        child: ListTile(
-                          leading: CircleAvatar(child: Text('${i + 1}')),
-                          title: Text(draft.chainSteps[i].type.name),
-                          subtitle: Text(
-                            l10n.stepTimingSummary(
-                              draft.chainSteps[i].waitSeconds.toString(),
-                              draft.chainSteps[i].durationSeconds.toString(),
-                              draft.chainSteps[i].gracePeriodSeconds.toString(),
+                child: CustomScrollView(
+                  slivers: <Widget>[
+                    SliverPadding(
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                      sliver: SliverList(
+                        delegate: SliverChildListDelegate(<Widget>[
+                          TextField(
+                            controller: _nameCtl,
+                            onChanged: (_) {
+                              if (!_dirty) setState(() => _dirty = true);
+                            },
+                            decoration: InputDecoration(
+                              labelText: l10n.modeFieldName,
                             ),
                           ),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => _removeStep(i),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.modeChainHeader,
+                            style: Theme.of(context).textTheme.titleMedium,
                           ),
+                          const SizedBox(height: 8),
+                        ]),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      sliver: SliverReorderableList(
+                        itemCount: draft.chainSteps.length,
+                        onReorder: _reorder,
+                        itemBuilder: (BuildContext ctx, int index) {
+                          final ChainStep step = draft.chainSteps[index];
+                          return _StepTile(
+                            key: ValueKey<String>(step.id),
+                            index: index,
+                            step: step,
+                            defaultConfig: _defaults.forType(step.type),
+                            canDelete: draft.chainSteps.length > 1,
+                            onChanged: (ChainStep s) => _updateStep(index, s),
+                            onDuplicate: () => _duplicateStep(index),
+                            onReset: () => _resetStep(index),
+                            onDelete: () => _removeStep(index),
+                          );
+                        },
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverToBoxAdapter(
+                        child: OutlinedButton.icon(
+                          icon: const Icon(Icons.add),
+                          label: Text(l10n.modeChainAddStep),
+                          onPressed: _addStepSheet,
                         ),
                       ),
-                    OutlinedButton.icon(
-                      icon: const Icon(Icons.add),
-                      label: Text(l10n.modeChainAddStep),
-                      onPressed: () => _addStepSheet(context),
                     ),
                   ],
                 ),
@@ -234,4 +271,127 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       ),
     );
   }
+}
+
+/// One reorderable, expandable step tile in the chain list.
+class _StepTile extends StatelessWidget {
+  const _StepTile({
+    super.key,
+    required this.index,
+    required this.step,
+    required this.defaultConfig,
+    required this.canDelete,
+    required this.onChanged,
+    required this.onDuplicate,
+    required this.onReset,
+    required this.onDelete,
+  });
+
+  final int index;
+  final ChainStep step;
+  final StepConfig defaultConfig;
+  final bool canDelete;
+  final ValueChanged<ChainStep> onChanged;
+  final VoidCallback onDuplicate;
+  final VoidCallback onReset;
+  final VoidCallback onDelete;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Card(
+      child: ExpansionTile(
+        leading: ReorderableDragStartListener(
+          index: index,
+          child: const Icon(Icons.drag_handle),
+        ),
+        title: Row(
+          children: <Widget>[
+            Text('${index + 1}.'),
+            const SizedBox(width: 8),
+            Icon(stepIcon(step.type), size: 20),
+            const SizedBox(width: 8),
+            Expanded(child: Text(stepName(l10n, step.type))),
+          ],
+        ),
+        subtitle: Text(
+          l10n.stepTimingSummary(
+            step.waitSeconds.toString(),
+            step.durationSeconds.toString(),
+            step.gracePeriodSeconds.toString(),
+          ),
+        ),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        children: <Widget>[
+          StepConfigPanel(
+            step: step,
+            defaultConfig: defaultConfig,
+            canDelete: canDelete,
+            onChanged: onChanged,
+            onDuplicate: onDuplicate,
+            onReset: onReset,
+            onDelete: onDelete,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Categorised bottom-sheet picker for adding a step (spec 04 §Add Step).
+class _AddStepSheet extends StatelessWidget {
+  const _AddStepSheet({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  static const List<ChainStepType> _checkIn = <ChainStepType>[
+    ChainStepType.holdButton,
+    ChainStepType.disguisedReminder,
+  ];
+  static const List<ChainStepType> _escalation = <ChainStepType>[
+    ChainStepType.countdownWarning,
+    ChainStepType.fakeCall,
+    ChainStepType.smsContact,
+    ChainStepType.phoneCallContact,
+    ChainStepType.loudAlarm,
+    ChainStepType.callEmergency,
+  ];
+  static const List<ChainStepType> _panic = <ChainStepType>[
+    ChainStepType.hardwareButton,
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          _SheetHeader(text: l10n.eventDefaultsCheckInHeader),
+          for (final ChainStepType t in _checkIn) _stepRow(context, t),
+          _SheetHeader(text: l10n.eventDefaultsEscalationHeader),
+          for (final ChainStepType t in _escalation) _stepRow(context, t),
+          _SheetHeader(text: l10n.eventDefaultsPanicHeader),
+          for (final ChainStepType t in _panic) _stepRow(context, t),
+        ],
+      ),
+    );
+  }
+
+  Widget _stepRow(BuildContext context, ChainStepType type) => ListTile(
+    leading: Icon(stepIcon(type)),
+    title: Text(stepName(l10n, type)),
+    onTap: () => Navigator.of(context).pop(type),
+  );
+}
+
+class _SheetHeader extends StatelessWidget {
+  const _SheetHeader({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+    child: Text(text, style: Theme.of(context).textTheme.titleSmall),
+  );
 }

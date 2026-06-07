@@ -9,6 +9,20 @@ library;
 import 'package:flutter/material.dart';
 
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+
+/// Returns the localized, user-facing name of [type] for a step tile title.
+String stepName(AppLocalizations l10n, ChainStepType type) => switch (type) {
+  ChainStepType.holdButton => l10n.chainStepNameHoldButton,
+  ChainStepType.disguisedReminder => l10n.chainStepNameDisguisedReminder,
+  ChainStepType.countdownWarning => l10n.chainStepNameCountdownWarning,
+  ChainStepType.fakeCall => l10n.chainStepNameFakeCall,
+  ChainStepType.smsContact => l10n.chainStepNameSmsContact,
+  ChainStepType.phoneCallContact => l10n.chainStepNamePhoneCallContact,
+  ChainStepType.loudAlarm => l10n.chainStepNameLoudAlarm,
+  ChainStepType.callEmergency => l10n.chainStepNameCallEmergency,
+  ChainStepType.hardwareButton => l10n.chainStepNameHardwareButton,
+};
 
 /// Returns the Material icon representing [type].
 IconData stepIcon(ChainStepType type) => switch (type) {

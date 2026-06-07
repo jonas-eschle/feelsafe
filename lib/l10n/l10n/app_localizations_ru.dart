@@ -593,6 +593,36 @@ class AppLocalizationsRu extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Тайминг';
+
+  @override
+  String get stepConfigEventHeader => 'Настройка события';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Повторы и дополнительно';
+
+  @override
+  String get stepFieldWait => 'Ожидание перед запуском (секунды)';
+
+  @override
+  String get stepFieldDuration => 'Длительность активности (секунды)';
+
+  @override
+  String get stepFieldGrace => 'Льготный период (секунды)';
+
+  @override
+  String get stepFieldRetryCount => 'Повторы';
+
+  @override
+  String get stepFieldRandomize => 'Случайный тайминг (±20%)';
+
+  @override
+  String get stepDuplicate => 'Дублировать шаг';
+
+  @override
+  String get stepResetDefaults => 'Сбросить к значениям по умолчанию';
+
+  @override
   String get distressModesEmpty => 'Режимов тревоги пока нет.';
 
   @override

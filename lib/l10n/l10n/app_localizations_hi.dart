@@ -592,6 +592,36 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'समय निर्धारण';
+
+  @override
+  String get stepConfigEventHeader => 'इवेंट कॉन्फ़िगरेशन';
+
+  @override
+  String get stepConfigAdvancedHeader => 'पुनःप्रयास और उन्नत';
+
+  @override
+  String get stepFieldWait => 'सक्रिय होने से पहले प्रतीक्षा (सेकंड)';
+
+  @override
+  String get stepFieldDuration => 'सक्रिय अवधि (सेकंड)';
+
+  @override
+  String get stepFieldGrace => 'छूट अवधि (सेकंड)';
+
+  @override
+  String get stepFieldRetryCount => 'पुनःप्रयास';
+
+  @override
+  String get stepFieldRandomize => 'समय यादृच्छिक करें (±20%)';
+
+  @override
+  String get stepDuplicate => 'चरण की प्रतिलिपि बनाएँ';
+
+  @override
+  String get stepResetDefaults => 'डिफ़ॉल्ट पर रीसेट करें';
+
+  @override
   String get distressModesEmpty => 'अभी तक कोई संकट मोड नहीं।';
 
   @override

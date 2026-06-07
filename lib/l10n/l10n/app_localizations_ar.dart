@@ -587,6 +587,36 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'التوقيت';
+
+  @override
+  String get stepConfigEventHeader => 'إعدادات الحدث';
+
+  @override
+  String get stepConfigAdvancedHeader => 'إعادة المحاولة والإعدادات المتقدمة';
+
+  @override
+  String get stepFieldWait => 'الانتظار قبل التشغيل (بالثواني)';
+
+  @override
+  String get stepFieldDuration => 'مدة النشاط (بالثواني)';
+
+  @override
+  String get stepFieldGrace => 'فترة السماح (بالثواني)';
+
+  @override
+  String get stepFieldRetryCount => 'المحاولات';
+
+  @override
+  String get stepFieldRandomize => 'عشوائية التوقيت (±20%)';
+
+  @override
+  String get stepDuplicate => 'تكرار الخطوة';
+
+  @override
+  String get stepResetDefaults => 'إعادة التعيين إلى الافتراضيات';
+
+  @override
   String get distressModesEmpty => 'لا توجد أوضاع استغاثة بعد.';
 
   @override

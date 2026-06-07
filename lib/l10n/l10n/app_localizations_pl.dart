@@ -592,6 +592,36 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'Czas';
+
+  @override
+  String get stepConfigEventHeader => 'Konfiguracja zdarzenia';
+
+  @override
+  String get stepConfigAdvancedHeader => 'Ponawianie i zaawansowane';
+
+  @override
+  String get stepFieldWait => 'Oczekiwanie przed uruchomieniem (sekundy)';
+
+  @override
+  String get stepFieldDuration => 'Czas aktywności (sekundy)';
+
+  @override
+  String get stepFieldGrace => 'Okres karencji (sekundy)';
+
+  @override
+  String get stepFieldRetryCount => 'Powtórzenia';
+
+  @override
+  String get stepFieldRandomize => 'Losowy czas (±20%)';
+
+  @override
+  String get stepDuplicate => 'Duplikuj krok';
+
+  @override
+  String get stepResetDefaults => 'Przywróć domyślne';
+
+  @override
   String get distressModesEmpty => 'Brak trybów alarmowych.';
 
   @override

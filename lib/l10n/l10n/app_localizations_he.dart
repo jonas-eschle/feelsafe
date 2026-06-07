@@ -585,6 +585,36 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get stepConfigTimingHeader => 'תזמון';
+
+  @override
+  String get stepConfigEventHeader => 'הגדרות אירוע';
+
+  @override
+  String get stepConfigAdvancedHeader => 'ניסיונות חוזרים ומתקדם';
+
+  @override
+  String get stepFieldWait => 'המתנה לפני הפעלה (שניות)';
+
+  @override
+  String get stepFieldDuration => 'משך פעילות (שניות)';
+
+  @override
+  String get stepFieldGrace => 'תקופת חסד (שניות)';
+
+  @override
+  String get stepFieldRetryCount => 'ניסיונות חוזרים';
+
+  @override
+  String get stepFieldRandomize => 'אקראיות בתזמון (±20%)';
+
+  @override
+  String get stepDuplicate => 'שכפול שלב';
+
+  @override
+  String get stepResetDefaults => 'איפוס לברירות המחדל';
+
+  @override
   String get distressModesEmpty => 'אין מצבי מצוקה עדיין.';
 
   @override

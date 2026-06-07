@@ -104,6 +104,16 @@
   "modeUnsavedDiscard": "Descartar",
   "modeUnsavedKeep": "Seguir editando",
   "stepTimingSummary": "espera {wait}s / duración {duration}s / gracia {grace}s",
+  "stepConfigTimingHeader": "Temporización",
+  "stepConfigEventHeader": "Configuración del evento",
+  "stepConfigAdvancedHeader": "Reintentos y avanzado",
+  "stepFieldWait": "Espera antes de activarse (segundos)",
+  "stepFieldDuration": "Duración activa (segundos)",
+  "stepFieldGrace": "Periodo de gracia (segundos)",
+  "stepFieldRetryCount": "Reintentos",
+  "stepFieldRandomize": "Aleatorizar tiempos (±20%)",
+  "stepDuplicate": "Duplicar paso",
+  "stepResetDefaults": "Restablecer valores predeterminados",
   "angelaDialogTitle": "PIN antiguo introducido",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."
