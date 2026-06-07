@@ -70,7 +70,7 @@ Tracked as tasks #8–#23. Severity: 🔴 GA-blocker · 🟠 important ·
 |---|---|---|---|
 | 11 | **Real incoming-call detection unwired** — `callStateServiceProvider` has no consumer; `PauseReason.incomingCall` dead. A2 (pause/resume), Extra-24/25 (cancel fakeCall), Extra-30/31 (hold pause) | 01:407-432,651-655 | 🔴 |
 | 22 | **GPS logging never tracks** (`startTracking` no caller) ✓ — wired in session lifecycle. (Battery-alert half DESCOPED 2026-06-07: feature removed entirely per user — low battery is out of scope.) | 06:549-569 | 🔴 |
-| 12 | Background speed-clamp lifecycle (`setBackgroundClamp` never called) — sim-only | 01:700-703 | 🟡 |
+| 12 | Background speed-clamp lifecycle (`setBackgroundClamp` never called) — sim-only ✓ — wired 2026-06-07: `SessionController` observes `AppLifecycleState` (`WidgetsBindingObserver`), clamps on `paused`/`hidden`, releases on `resumed`; observer torn down from both dispose paths | 01:700-703 | 🟡 |
 
 ### Tier C — Can't configure the app
 | # | Gap | Spec | Sev |
