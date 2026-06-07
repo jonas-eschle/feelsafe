@@ -1,22 +1,22 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-07 — **M0 COMPLETE+VERIFIED+PUSHED. M1 COMPLETE +
-VERIFIED (cohort PASS); #11 ✓ + #22 ✓ PUSHED; #12 ✓ done, UNPUSHED —
-push pending authorization.**
+**Snapshot:** 2026-06-07 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
+PROGRESS: #13a + #13b + #14 done + committed (UNPUSHED). Next: #13c, #13d,
+#23, #20 → M2 cohort → push.**
 
-Everything through the prior handoff (`9f11ef8`) is on `origin/main`. **Two
-commits are UNPUSHED, awaiting push authorization:** the #12 commit
-(`2d968b4`) and this handoff commit (`HEAD`). Tree clean. **Tests: 3702
-pass** (+8: #12 clamp host tests). Analyzer `--fatal-infos` clean. l10n
-parity unchanged (no new strings). app_boot_smoke green on emulator.
-Branch: `main`.
+The M1 stack was already pushed before this session (the previous handoff was
+written pre-push; `origin/main` = `b62ba2b`). This session built the spine of
+M2. **Three commits are UNPUSHED on local `main`**, by design — M2 pushes as
+one milestone after the verifier cohort (rule 12 + plan §3.7):
 
-**M1 is complete AND verified — the M1 cohort (architect-reviewer
-spec-vs-code + qa-expert spec-vs-tests, both `opus`) returned PASS, high
-confidence, both reviewers; every M1 test would fail if its wiring were
-removed. Next: push the 2-commit M1 stack (awaiting user authorization),
-then start M2.** Cohort nits are recorded under DEFERRED — none block the
-push. See "How to resume."
+- `8f74423` m2-#13a — extract shared `EventSpecificConfig` + `step_helpers`
+- `b557f98` m2-#13b — rebuild Mode Editor chain (per-step `StepConfigPanel`)
+- `11473ba` m2-#14 — SMS contact-selection grid
+- (+ this handoff commit)
+
+**Tests: 3708 pass.** Analyzer `--fatal-infos` clean. l10n parity green (16
+new keys × 14 locales: 10 for #13b, 6 for #14). app_boot_smoke green on the
+emulator after the #13b rebuild. Tree clean. Branch: `main`.
 
 ---
 
@@ -26,178 +26,150 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Recommended first action: push the M1 stack, then M2.** Two sub-steps:
+**Next action: continue M2 — #13c (Safety Options), then #13d, #23, #20,
+then the M2 cohort + push.** Per-fix recipe (unchanged): verify the gap
+yourself → implement (serial) → prove (host/widget tests driving the REAL
+controller; emulator for native) → l10n deltas → language agent for 13
+locales → gate suite → commit → **ask before pushing**.
 
-1. **M1 is already verified (cohort PASS, 2026-06-07).** Both reviewers
-   PASS, high confidence; each M1 test fails if its wiring is removed. If the
-   stack is not yet pushed, **ask the user to push** `2d968b4` (#12) + the
-   handoff commit (rule 12) before M2. Cohort nits are under DEFERRED; none
-   block the push.
+**M2 remaining chunks (the spine — #13a/#13b/#14 — is done):**
 
-2. **M2 — Configuration UIs** (the big build). Entry point **#13**:
-   mode-editor per-step config — `StepConfigPanel` / `EventSpecificConfig`
-   is the spine, and it's where the `disguisedReminder` `templateIds` field
-   (added in M0 #18) gets its editor. Then #14 (SMS contact grid), #23
-   (alarm settings), #20 (channel-validation-on-save + SMS template editor +
-   iOS warnings + the missing iOS `critical_alert.wav`). **Verify each gap
-   yourself first** — M2 is UI, so the proof is widget tests + the emulator,
-   not just host controller tests.
+1. **#13c — Mode Editor Safety Options** (the next big build). Collapsible
+   "Safety Options" section at the bottom of the editor (spec 04:1601-1614,
+   1646-1652): distress-mode picker (writes `distressModeId`; **hidden in the
+   distress variant**) + "Manage distress modes →" link; distress-triggers
+   list; disarm-triggers (GPS-arrival toggle+radius+destination-source; timer
+   toggle+duration); GPS-logging tri-state (Inherit/Custom/Off) with inline
+   `GpsLoggingConfig`; stealth tri-state with inline `StealthConfig`; local
+   templates; event-defaults tri-state; **`allowDisarmAsDistress` toggle
+   (distress variant only, G-014)**. **Also fold in the distress-variant step
+   tweaks** the spine deferred: hide check-in steps (holdButton /
+   disguisedReminder) for distress modes (spec 04:1649). Info buttons
+   throughout (`InfoIconButton` exists at `lib/core/widgets/`).
+2. **#13d — save validation + trigger save-validation** (spec 04:1595-1599,
+   1656-1659): name required min 2 chars; chain ≥1 step; distress variant
+   non-blocking warn if no SMS/call step; GPS-arrival `fixed` source requires
+   lat/lng; hardware-button trigger pattern/pressCount/duration consistency.
+3. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
+   / ramp toggles. Verify the gap vs the loudAlarm `EventSpecificConfig`
+   (built in #13a) and M0 #19 (gradual + DND already wired in the strategy);
+   this is the Settings-level section (06), distinct from per-step config.
+4. **#20** — channel-validation-on-save; SMS message-template editor (the
+   `messageTemplate` field is in `SmsContactConfig` but has no editor yet);
+   iOS SMS+callEmergency warning strings; the missing iOS `critical_alert.wav`.
 
-**Per-fix recipe:** verify the gap yourself → implement (serial) → prove
-(host/widget tests driving the REAL controller+engine; emulator for native)
-→ l10n deltas if any new user-facing string (spawn the language agent for
-the 13 non-English locales) → gate suite → commit → **ask before pushing**.
-
----
-
-## What's done (M0/M0-verify/#11/#22 PUSHED; #12 UNPUSHED)
-
-**M0 — core escalation actually works** (4/4): `#21` audio assets (real
-WAV siren/ring/countdown + CI asset gate + fixed a looping-source `play()`
-hang). `#17` fakeCall answer/hang-up/decline wired to engine + full-screen
-auto-appear. `#19` loudAlarm gradual-volume + DND-override gating (default
-was inverted). `#18` disguisedReminder template selection + 4 confirmation
-types + `earlyCheckIn` + full-screen route + the `templateIds` config field.
-**M0-verify** (`6740ed3`): architect-reviewer PASS; qa-expert FIX_REQUIRED
-on test *strength* (code was correct) — disarm tests now assert via the
-engine stream + `EnginePhase`, added earpiece / `earlyCheckIn(reset=false)`
-/ nonce auto-PUSH widget tests.
-
-**M1 — Safety subsystems live** (SessionController lifecycle wiring) —
-**COMPLETE**:
-
-- **`#11`** (`79dea7b`, pushed): real incoming-call detection. A real call
-  `pause(incomingCall)`s the engine (must pause even on a fakeCall step —
-  `retryCount=0` would otherwise time out mid-call); non-fakeCall resumes on
-  call-end; a fakeCall is cancelled (ring stopped + `fakeCallCancelNonce` →
-  `FakeCallScreen` pops) and auto-disarms on call-end. `SessionState.pauseReason`
-  → "Paused — incoming call" badge (14 locales). A user-requested pause is
-  never clobbered (`_pausedByRealCall`). 9 host tests.
-- **`#22`** (`a379738`, pushed): GPS logging wired in `startSession` (real
-  sessions, when resolved `GpsLoggingConfig.enabled`); torn down via
-  `_teardownGpsLogging()` from both dispose paths. Before this, `startTracking`
-  had no caller, so `{location}` placeholders resolved to "Location
-  unavailable". **Battery-alert feature REMOVED entirely** (user decision —
-  out of scope): service+config+screen+route+widget-status+`battery_plus`
-  dep + specs + 14 ARB locales + tests. Kept (different features): the
-  "Battery Warning" disguised-reminder template/icon, battery-optimization
-  whitelist warnings, 08's "ignore battery" note. 4 host tests.
-- **`#12`** (`2d968b4`, **UNPUSHED**): background speed-clamp lifecycle
-  (G-013) — the last M1 gap. Before this, `SessionEngine.setBackgroundClamp`
-  had no caller, so the 60× effective-speed cap never engaged; a fast
-  simulation pushed to the background could desync against OS-throttled
-  timers. `SessionController` now mixes in `WidgetsBindingObserver`:
-  `startSession` registers it with `WidgetsBinding` (unconditionally — a
-  runtime no-op for real wall-clock sessions, so teardown stays symmetric);
-  `didChangeAppLifecycleState` maps `paused`/`hidden` → `setBackgroundClamp(true)`,
-  `resumed` → `(false)`, `inactive`/`detached` → no-op (exhaustive switch →
-  a future `AppLifecycleState` is a compile error);
-  `_teardownLifecycleObserver` removes it from BOTH dispose paths
-  (`_disposeRunOnly` + `_disposeAll`), idempotent via a registered-guard.
-  **Followed the canonical spec (01:700-712): `paused`/`hidden`, NOT the old
-  handoff note's "inactive"** — `hidden` is the proper backgrounded
-  precursor; `inactive` is a transient, still-visible state (app switcher)
-  that must not clamp. 8 host tests (`session_controller_clamp_test.dart`)
-  drive the REAL controller+engine: direct `didChangeAppLifecycleState`
-  mapping for all 5 states, the 60× `effectiveSpeedMultiplier` cap,
-  post-`endSession` no-op, **plus a real `flutter/lifecycle` platform
-  message** proving the observer is actually registered with `WidgetsBinding`
-  and re-registers for a 2nd session. `startSession` now needs an initialised
-  binding → added `TestWidgetsFlutterBinding.ensureInitialized()` to the
-  gps/dispatch/distress controller tests.
+Then: **M2 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
 
 ---
 
-## Discovered / DEFERRED (note for the right milestone)
+## What's done this session (M2 spine — UNPUSHED)
 
-- **#12 clamp device-E2E → M5.** Actually backgrounding the app and
-  observing timer-throttle behaviour is a device integration test, like
-  #11's `adb emu gsm call`. The host tests (incl. the real `flutter/lifecycle`
-  platform message) are the proof for the pure wiring; a true
-  background-throttle E2E belongs in M5 "device e2e flows."
-- **import_sorter + multi-line `show` flutter imports DON'T MIX (tooling
-  gotcha, hit during #12).** A wrapped
-  `import 'package:flutter/widgets.dart' show A, B, C;` gets misplaced by
-  `import_sorter` (dumped in the bottom group) AND oscillates with
-  `dart format` on blank lines — and the pre-commit hook runs format THEN
-  import_sorter, so the commit lands format-dirty (CI `format` job would
-  fail). **Fix: use a BARE `import 'package:flutter/foo.dart';`** (its own
-  top group, like every other file) — it's a fixed point of both tools. A
-  bare flutter import can make a separate `package:meta/meta.dart` import
-  redundant (flutter re-exports `@immutable`/`@visibleForTesting`) → remove
-  it (analyzer flags `unnecessary_import`).
-- **#11 device E2E → M5.** A real `adb emu gsm call` end-to-end needs
-  `READ_PHONE_STATE` + host/test timing orchestration → M5, not a flaky
-  per-fix test. The native `CallStateChannel` input is contract-tested in
-  `call_state_service_test.dart`.
-- **Background full-screen launch-to-route.** Notification
-  full-screen-intent → FakeCallScreen / DisguisedReminderScreen when the
-  device is locked. #17/#18 do *foreground* auto-appear only. Also covers
-  confirmation-type-specific notification text + tap-to-check-in deeplink
-  (spec 02:121-125). → a notification-deeplink nav pass.
-- **#18 polish (cosmetic):** tapWord decoy words are a fixed English-ish set
-  (`reminder_word_choices.dart`), not localized; the disguise icon is a
-  neutral Material icon (template `iconAsset`/`imagePath` not rendered). →
-  fold near #15.
-- **iOS `critical_alert.wav`** referenced in `notification_service.dart` but
-  missing from the iOS bundle → iOS alarm notification falls back to the
-  default critical-alert sound. → fold into #20 (M2). Core loud alarm is the
-  `AudioService` siren (real), not the notification sound.
-- **GPS accuracy not plumbed (#22 refinement).** `GpsLoggingConfig.accuracy`
-  is resolved at `startSession` but not applied — `LocationServiceProtocol.startTracking({Duration interval})`
-  has no accuracy param and `RealLocationService` hardcodes
-  `LocationAccuracy.high`. Default config is `high`, so no discrepancy for
-  the default; only a mode overriding accuracy to balanced/low is unhonoured.
-  → extend protocol + Real impl + sim if/when a non-high accuracy is wanted.
-- **#22 `GpsLoggingConfig` fields unconsumed (M1 cohort finding,
-  important).** `includeInSms`, `format` (decimal/dms/address) and
-  `historyRetentionDays` are resolved + persisted (the settings screen reads
-  them) but never consumed at runtime: SMS location is gated *solely* by the
-  per-step `SmsContactConfig.includeLocation` (so global `includeInSms` is a
-  no-op), coordinates always render decimal, and history retention is
-  unenforced. Pre-existing, outside #22's breadcrumb→`{location}` scope
-  (which the cohort confirmed correct). → M2 / spec-cleanup: honour them at
-  runtime OR drop them from spec+model.
-- **M1 cohort nits (optional polish, non-blocking).** (a) #11 treats
-  `CallState.offhook` as active, so an *outgoing* call also pauses the
-  session — a safe superset (prevents false escalation during any call); add
-  a one-line clarifying comment. (b) #11 pause/resume tests drive a
-  disguisedReminder wait-phase step, not a `holdButton` step (Extra-30/31's
-  headline) — the pause path is type-agnostic so coverage is real; an
-  explicit holdButton case would mirror the spec verbatim. (c) #22 doesn't
-  assert the configured interval is forwarded to `startTracking` (the sim
-  ignores it). (d) **#12 `removeObserver` detachment is NOT behaviorally
-  testable** — post-`endSession` `_engine` is null, so a *leaked* observer's
-  `_engine?.setBackgroundClamp` is a no-op indistinguishable from a *removed*
-  one. Do NOT add a "post-end lifecycle message" test for it (it would be
-  trivially green — the exact anti-pattern the cohort guards against); the
-  cross-session re-register test + the `_lifecycleObserverRegistered`
-  idempotency guard are the real coverage.
-- **`docs/review/remaining-gaps.md`** is a STALE v2-era artifact
-  (2026-04-10; references `lib/services/implementations/…` absent in v3).
-  GAP-66/67 there describe v2 audio — do NOT action against v3.
+- **#13a** (`8f74423`): pure refactor — moved the 9 per-type `StepConfig`
+  forms + shared field editors out of `event_defaults_screen.dart` into a
+  reusable public `EventSpecificConfig`
+  (`lib/features/modes/widgets/event_specific_config.dart`) + added
+  `step_helpers.dart` (`stepIcon`/`stepDescription`/`stepName`).
+  EventDefaultsScreen consumes both. 58 event_defaults tests unchanged-green.
+- **#13b** (`b557f98`): **per-step-config half of GA-blocker #13.** Mode
+  Editor chain is now a `SliverReorderableList` of expandable step tiles;
+  each expands inline to `StepConfigPanel` (3 collapsible groups: Timing /
+  Event configuration via `EventSpecificConfig` / Retry & Advanced). A null
+  config displays resolved `AppDefaults.eventDefaults` and materialises on
+  first edit (spec 04:1541). Per-step Reset/Duplicate/Delete (Delete disabled
+  at 1 step); drag-to-reorder re-indexes `order`; categorised Add-Step picker
+  with localized names. New shared `config_fields.dart`
+  (Int/Double/Enum/Text editors). 31 mode-editor widget tests (drive the real
+  screen→draft→DB flow incl. a reorder-drag test). Emulator boot-smoke green.
+- **#14** (`11473ba`): **GA-blocker #14.** smsContact config renders an
+  `SmsContactGrid` (one FilterChip per contact) — Mode Editor context only
+  (`EventSpecificConfig.contacts != null`; null in Event Defaults).
+  Channel-incapable contacts greyed/unselectable. Toggle re-infers selection;
+  **all-capable selected → `allContacts` with `contactIds = null`** (a
+  non-null id list under `allContacts` is read as *specific IDs* by the
+  runtime resolver — see KEY FINDINGS). Empty repo → deep-link to `/contacts`.
+  8 grid tests (incl. the null-contactIds inference) + a mode-editor
+  integration test.
 
 ---
 
-## Decisions made (all via AskUserQuestion)
+## KEY FINDINGS (carry into the next session)
 
-1. Approve the remediation plan + milestone order; M0 first.
-2. Tier-F descope → decide at M4 (deferred; do not cut yet).
-3. R-8 emergency-number data → source from a citable public reference
-   (ITU/Wikipedia) + flag for user review (an M4 item).
-4. #17 → include full-screen auto-appear (not just the 3 buttons).
-5. #18 fullScreen display style → pushed full-screen route
-   (`DisguisedReminderScreen`); `subtle` stays an inline card.
-6. Verify M0 (run the cohort) before M1; push the verified stack before
-   continuing. **(Same gate now applies at the M1→M2 boundary: verify M1,
-   then push, before M2.)**
-7. **#22 battery-alert half DESCOPED → feature removed entirely** (user:
-   "a low battery is beyond the scope of this app… remove it from specs as
-   well"). #22 is now GPS-logging-only.
+- **Contact channel field is `channels`** (not `messageChannels` as some spec
+  prose says). SMS-capable = `contact.channels.contains(config.channel)`.
+- **`allContacts` + non-empty `contactIds` ⇒ treated as SPECIFIC IDs** by
+  `sms_contact_strategy.dart:135` (legacy back-compat). So true "all" MUST
+  null `contactIds`. `SmsContactConfig.copyWith` (and `ChainStep.copyWith`)
+  CANNOT null a field (`x ?? this.x`) — construct the object directly to clear.
+- **`EventSpecificConfig` is shared** (Mode Editor + Event Defaults). It keeps
+  the existing `eventDefaults*` l10n keys (context-neutral). The smsContact
+  grid only shows when `contacts != null`.
+- **Mode-editor widget-test harness:** override `databaseProvider` (real
+  in-memory `GuardianAngelaDatabase.memory`) + `appSettingsRepositoryProvider`
+  (`_FakeAppSettingsRepository` returning `const AppSettings()`). Seed
+  contacts via `db.contactsDao.upsert(...)`.
+- **`flutter gen-l10n` after ARB edits** regenerates `app_localizations*.dart`
+  (zh_TW is folded into `app_localizations_zh.dart` as `AppLocalizationsZhTw`).
+  This session's regen diffs were additions-only (no blank-line drift). Keep
+  them.
 
-*(Note: #12's `paused`/`hidden` vs the old note's "inactive" was a
-spec-driven implementation choice — spec 01 is canonical — not a user
-decision, so it is recorded under "What's done", not here.)*
+---
+
+## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
+
+- **Per-field info-icon buttons + preview cards** (fakeCall/smsContact/
+  loudAlarm), spec 04:1538. Batch all the explanation strings into ONE
+  language-agent run. → a #13 polish pass (or alongside #13c info buttons).
+- **Localized one-sentence step descriptions.** `step_helpers.stepDescription`
+  is still English; `event_defaults_screen` still uses `type.name` titles +
+  English descriptions. Localize `stepDescription` (add `chainStepDesc*` keys)
+  and switch event_defaults to `stepName(l10n,…)` titles — **update the
+  event_defaults test's `_tileName` accordingly.**
+- **Mode icon selector** (spec 04:1487). `SessionMode.iconName` is unwired;
+  needs a name↔IconData map (tree-shake-safe, no `Icons` reflection).
+- **"Reset to defaults" resets config only, not timing** — no per-type
+  timing-default source in `EventDefaults`; the spec's "Config Defaults" para
+  is config-scoped, so this is defensible. Revisit if a timing-reset is wanted.
+- **Per-type collapsed-header summary** ("30s ring, 5s grace"; "To: Alice,
+  Bob") — the tile subtitle currently shows the generic `stepTimingSummary`.
+- **`blackScreenMode` placement:** lives in the Event-config group
+  (inside `EventSpecificConfig`), not Retry & Advanced as spec 04:1539/1561
+  lists. Moving it generically needs a `StepConfig.copyWithBlackScreen` or a
+  per-type switch — deferred to avoid model surgery. Minor.
+- **Grid summary "+N more" truncation** — currently lists all selected names.
+
+---
+
+## DEFERRED — earlier milestones (unchanged from prior handoffs)
+
+- **#11/#12 device E2E → M5** (adb-gsm call; background-throttle). Host tests
+  + the real `flutter/lifecycle` platform message are the proof for the wiring.
+- **#22 GPS:** `GpsLoggingConfig.accuracy` resolved but not applied
+  (protocol has no accuracy param; Real hardcodes high — default is high, so
+  no discrepancy). `includeInSms`/`format`/`historyRetentionDays` resolved +
+  persisted but unconsumed at runtime → M2 spec-cleanup OR honour at runtime.
+- **Background full-screen launch-to-route** (notification full-screen-intent →
+  FakeCall/DisguisedReminder when locked) → a notification-deeplink nav pass.
+- **#18 polish:** tapWord decoy words not localized; disguise icon is a neutral
+  Material icon (template `iconAsset`/`imagePath` not rendered). → near #15.
+- **iOS `critical_alert.wav`** missing from the iOS bundle → fold into #20.
+- **`docs/review/remaining-gaps.md`** is a STALE v2-era artifact — do NOT
+  action against v3.
+
+---
+
+## Decisions made (all via AskUserQuestion, prior sessions)
+
+1. Approve remediation plan + milestone order; M0 first.
+2. Tier-F descope → decide at M4.
+3. R-8 emergency-number data → citable public reference + user review (M4).
+4. #17 → full-screen auto-appear. 5. #18 fullScreen → pushed route.
+6. Verify each milestone (cohort) + push the verified stack before the next.
+7. #22 battery-alert DESCOPED → feature removed entirely (GPS-logging-only).
+
+*(M2 spine implementation choices — three-group panel, grid inference,
+sharing EventSpecificConfig, the deferred-polish list — were spec-driven, not
+user decisions, so they live under "What's done" / "DEFERRED".)*
 
 ---
 
@@ -205,16 +177,23 @@ decision, so it is recorded under "What's done", not here.)*
 
 1. **OLD/ is INERT.** Never read/list/glob/grep/import under `OLD/`.
    `git checkout HEAD -- OLD/` if a tool dirties it.
-2. **NO STUBS at GA** (S-1..S-12 in `~/.claude/plans/make-sure-that-there-typed-tulip.md §NO-STUBS`). The wiring gaps are exactly what these prevent.
+2. **NO STUBS at GA** (S-1..S-12 in `~/.claude/plans/make-sure-that-there-typed-tulip.md §NO-STUBS`).
 3. **NO INVENTED DEFERRALS.** Grep `lib/features/` for `Phase X` before every commit.
 4. **DO NOT guess.** `AskUserQuestion` for spec ambiguity / value decisions.
-5. **Pre-alpha = break compatibility freely.** Tests follow code; update tests that encoded a bug.
-6. **Verify after EVERY fix.** analyzer + full tests + host controller/widget tests driving the REAL controller+engine (the proof for pure wiring); emulator for native playback. Re-engage the verifier cohort per milestone / on `FIX_REQUIRED`.
+5. **Pre-alpha = break compatibility freely.** Tests follow code.
+6. **Verify after EVERY fix.** analyzer + full tests + host widget tests
+   driving the REAL controller/engine; emulator for native. Cohort per
+   milestone / on `FIX_REQUIRED`.
 7. **Write/update HANDOFF.md before the session ends.**
-8. **Serial default; parallel only when truly orthogonal.** Connected fixes stay serial.
+8. **Serial default; parallel only when truly orthogonal.** (Language-agent
+   ARB translation is the one safe parallel task.)
 9. **Co-Authored-By footer:** `Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>`.
 10. **Pure Dart in `lib/domain/`, `lib/services/protocols/`, `lib/data/`.**
-11. **lefthook re-stages auto-fixes. NEVER `dart format .` / `import_sorter` REPO-WIDE** — scope to changed files. import_sorter strips inline import comments (don't rely on them). **A multi-line `show` flutter import oscillates with format + gets misplaced — use a bare `import 'package:flutter/x.dart';` (see DEFERRED).** A build run regenerates `lib/l10n/l10n/app_localizations*.dart` with blank-line drift → `git checkout -- lib/l10n/l10n/` to discard *only when no l10n source changed*; when you added a key, keep the regenerated files (verify the diff is just the new getter).
+11. **lefthook re-stages auto-fixes. NEVER `dart format .` / `import_sorter`
+    REPO-WIDE** — scope to changed files. A multi-line `show` flutter import
+    oscillates with format — use a bare `import 'package:flutter/x.dart';`.
+    After `gen-l10n`, KEEP the regenerated `app_localizations*.dart` when you
+    added a key (verify the diff is additions-only).
 12. **Pushing to `main` needs explicit user authorization each time.**
 
 ---
@@ -233,10 +212,9 @@ until [ "$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r')" = 1 ]
 # Run an integration test (wrap in `timeout` — a hung test won't self-kill):
 timeout 480 flutter test integration_test/app_boot_smoke_test.dart -d emulator-5554
 ```
-First Gradle build ~30–75 s (incremental is fast — APK cached). **Gotcha:**
-Gradle can transiently fail to fetch `androidx.test.espresso` metadata —
-cached, so a retry succeeds. **Don't** pipe a long backgrounded
-`flutter test` through `| tail` (tail buffers → no output until exit).
+First Gradle build ~30–75 s (incremental is fast). **Don't** pipe a long
+backgrounded `flutter test` through `| tail` (buffers → no output until exit);
+redirect to a file with `>` instead.
 
 ---
 
@@ -244,15 +222,15 @@ cached, so a retry succeeds. **Don't** pipe a long backgrounded
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3702 pass
-dart format <changed .dart files>                              # scope to changed files only
+flutter test --concurrency=6                                    # 3708 pass
+dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
 flutter gen-l10n                                                # after any ARB change
-# asset-existence gate (CI job `assets-exist`):
-for r in $(grep -rhoE "assets/[A-Za-z0-9_/.-]+\.[A-Za-z0-9]+" lib/ | sort -u); do [ -f "$r" ] || echo "MISSING $r"; done
+# l10n parity spot-check (each new key in all 14 ARBs):
+for k in <newKey>; do echo "$k: $(grep -l "\"$k\"" lib/l10n/l10n/app_*.arb | wc -l)/14"; done
 ```
-lefthook pre-commit runs `dart format` + `import_sorter` and re-stages;
+lefthook pre-commit runs `dart format` + `import_sorter` (re-stages);
 pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 ---
@@ -260,15 +238,15 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 ## The plan + task journal
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
-  tasks #8–#23, method §3, milestones M0–M5 §4). #12 row marked wired.
-- **Milestones:** **M0 ✓ (verified, pushed). M1 ✓ COMPLETE** — #11 ✓ +
-  #22 ✓ pushed, **#12 ✓ done (UNPUSHED)**. Next: **verify M1 (cohort) →
-  push → M2** (config UIs #13/#14/#23/#20 — #13's `StepConfigPanel` is where
-  the new `templateIds` field gets its editor), then M3 (#15 stealth), M4
-  (#10/#9/#8/#16 + Tier-F decisions), M5 (Phase-9 proper: INT scenarios,
-  device e2e incl. #11 adb-gsm + #12 background-throttle, spec-coverage
-  matrix, coverage floor). The in-memory TaskList is cleared on `/clear` —
-  this bullet is the durable journal.
+  tasks #8–#23, method §3, milestones M0–M5 §4).
+- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
+  #13b ✓ + #14 ✓ done (UNPUSHED); remaining **#13c (Safety Options) → #13d
+  (save validation) → #23 (alarm settings) → #20 (channel validation / SMS
+  template / iOS warnings) → M2 cohort → push.** Then M3 (#15 stealth), M4
+  (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
+  #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
+  The in-memory TaskList is cleared on `/clear` — this bullet is the durable
+  journal.
 
 ---
 
@@ -282,7 +260,6 @@ Don't skip it because "the session went short."
 
 ---
 
-End of hand-off. M0 verified + pushed; **M1 COMPLETE + VERIFIED (cohort
-PASS)** — #11 + #22 pushed, #12 done (background clamp wired) UNPUSHED.
-Resume by **pushing the M1 stack (awaiting auth) → starting M2 (#13
-mode-editor config)**.
+End of hand-off. M0+M1 verified+pushed; **M2 spine done** — #13a + #13b
+(per-step config) + #14 (SMS contact grid) committed, UNPUSHED. Resume by
+**building #13c (Safety Options) → #13d → #23 → #20 → M2 cohort → push.**
