@@ -27,6 +27,7 @@ import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart
 import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
+import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 
@@ -309,6 +310,12 @@ class SessionController extends AsyncNotifier<SessionState> {
   /// be stopped on teardown without re-reading the provider.
   CallStateServiceProtocol? _callStateService;
 
+  /// The location service tracking GPS breadcrumbs for the current session,
+  /// retained so tracking can be stopped on teardown without re-reading the
+  /// provider. Non-null only while a session with GPS logging enabled is
+  /// running (spec 06 §GPS Logging).
+  LocationServiceProtocol? _locationService;
+
   /// True between a real call becoming active (ringing/offhook) and returning
   /// to idle. Edge-tracked so a single call's ringing→offhook transition fires
   /// the handler exactly once (spec 01 §Real Phone Call Detection).
@@ -345,7 +352,6 @@ class SessionController extends AsyncNotifier<SessionState> {
   String _widgetStatusIdle = 'Idle';
   String _widgetStatusSession = 'Session active';
   String _widgetStatusSim = 'Simulation active';
-  String _widgetStatusBattery = 'Battery alert';
   String _widgetQuickExit = 'Quick Exit';
   String _widgetFakeCall = 'Fake Call';
 
@@ -407,14 +413,12 @@ class SessionController extends AsyncNotifier<SessionState> {
     required String statusIdle,
     required String statusSession,
     required String statusSim,
-    required String statusBattery,
     required String quickExit,
     required String fakeCall,
   }) {
     _widgetStatusIdle = statusIdle;
     _widgetStatusSession = statusSession;
     _widgetStatusSim = statusSim;
-    _widgetStatusBattery = statusBattery;
     _widgetQuickExit = quickExit;
     _widgetFakeCall = fakeCall;
   }
@@ -439,7 +443,6 @@ class SessionController extends AsyncNotifier<SessionState> {
       HomeWidgetStatus.idle => _widgetStatusIdle,
       HomeWidgetStatus.sessionActive => _widgetStatusSession,
       HomeWidgetStatus.simulationActive => _widgetStatusSim,
-      HomeWidgetStatus.batteryAlert => _widgetStatusBattery,
     };
     unawaited(
       ref
@@ -633,6 +636,26 @@ class SessionController extends AsyncNotifier<SessionState> {
       _disarmOnRealCallEnd = false;
       _callStateSub = callStateService.callState.listen(_onCallStateChanged);
       await callStateService.start();
+    }
+
+    // Start GPS breadcrumb logging so emergency messages can include the
+    // user's location (spec 06 §GPS Logging). Resolves the mode override
+    // first, else the global default. Skipped in simulation — geolocator is
+    // real hardware. The same locationServiceProvider instance backs
+    // _eventServices.location, so tracked breadcrumbs feed the {location}
+    // placeholder in the smsContact / callEmergency strategies. The configured
+    // interval is honoured; accuracy stays at the service default (high).
+    if (!simulate) {
+      final gpsLogging =
+          mode.overrides?.gpsLogging ?? settings.defaults.gpsLogging;
+      if (gpsLogging.enabled) {
+        final location = ref.read(locationServiceProvider);
+        _locationService = location;
+        await location.requestPermission();
+        await location.startTracking(
+          interval: Duration(seconds: gpsLogging.intervalSeconds),
+        );
+      }
     }
   }
 
@@ -865,20 +888,6 @@ class SessionController extends AsyncNotifier<SessionState> {
     state = AsyncData(s.copyWith(clearDistressConfirm: true));
   }
 
-  /// Notifies the home-screen widget that a battery alert has fired.
-  ///
-  /// Called by [SessionScreen] when [BatteryMonitorService] fires a low-battery
-  /// alert during an active session. The widget switches to the batteryAlert
-  /// status until the session ends (spec 04 §Home Screen Widget). No-op when
-  /// no session is active.
-  void notifyBatteryAlert() {
-    if (_engine == null) return;
-    _publishWidgetStatus(
-      HomeWidgetStatus.batteryAlert,
-      elapsed: _elapsedSinceStart(),
-    );
-  }
-
   /// Quick-exit trigger. The native side performs `finishAndRemoveTask` /
   /// `exit(0)`; here we finalise the log so encrypted data survives.
   Future<void> triggerQuickExit() async {
@@ -1091,9 +1100,19 @@ class SessionController extends AsyncNotifier<SessionState> {
     await _eventsSub?.cancel();
     _eventsSub = null;
     _teardownCallState();
+    _teardownGpsLogging();
     _engine = null;
     _eventServices = null;
     _resetReminderState();
+  }
+
+  /// Stops GPS breadcrumb logging and clears the session's tracked points so
+  /// no prior-session location leaks into the next session (spec 06 §GPS
+  /// Logging). No-op when GPS logging was not started (simulation / disabled).
+  void _teardownGpsLogging() {
+    _locationService?.stopTracking();
+    _locationService?.clearHistory();
+    _locationService = null;
   }
 
   /// Stops real incoming-call detection and clears its session-scoped state.
@@ -1120,6 +1139,7 @@ class SessionController extends AsyncNotifier<SessionState> {
     _distressCountdownTimer?.cancel();
     _eventsSub?.cancel();
     _teardownCallState();
+    _teardownGpsLogging();
     final engine = _engine;
     if (engine != null && !engine.isEnded) {
       engine.endSession();

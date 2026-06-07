@@ -25,7 +25,7 @@ Drift provides typed, code-generated SQL access on top of an encrypted SQLite da
 
 ### JSON-backed Singleton/List Repositories
 
-A small number of singleton blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) and lightweight collections live in `JsonSingletonRepository` / `JsonListRepository` rather than Drift. Each blob serializes to a JSON string keyed by id under the app's encrypted document directory. Hand-rolled `toJson` / `fromJson` on each model under `lib/domain/models/` keep the JSON layer schema-stable without code generation.
+A small number of singleton blobs (`AppSettings`, `UserProfile`) and lightweight collections live in `JsonSingletonRepository` / `JsonListRepository` rather than Drift. Each blob serializes to a JSON string keyed by id under the app's encrypted document directory. Hand-rolled `toJson` / `fromJson` on each model under `lib/domain/models/` keep the JSON layer schema-stable without code generation.
 
 ### Encryption: Always-On
 
@@ -149,7 +149,6 @@ Each model is persisted in one of two places: a Drift table (relational data wit
 | SessionLog | Drift table `session_logs` | mode, timestamps, events, isSimulation, hadMedicalInfo |
 | SessionLogEvent | — | part of `SessionLog.events`; serialized as JSON in the parent row |
 | AppDefaults | (in `AppSettings`) | gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId |
-| BatteryAlertConfig | JSON singleton (`battery_alert.json`) | low-battery alert config (enabled, thresholdPercent, chain: List<ChainStep>) |
 
 The former `DistressChain` model and its dedicated Drift table are gone. Distress modes are stored alongside regular modes in the `session_modes` table and discriminated via `isDistressMode = true`.
 
@@ -1183,39 +1182,6 @@ enum StealthTimerDisplay { normal, small, none }
 
 ---
 
-### BatteryAlertConfig
-
-```dart
-final class BatteryAlertConfig {
-  final bool enabled;                  // default: false (Q22 — opt-in)
-  final int thresholdPercent;          // default: 10
-  final List<ChainStep> chain;         // configurable chain
-                                       // (default: empty)
-}
-```
-
-`enabled` defaults to `false` (Q22): a safety app must not surprise users with new automatic alerts. `thresholdPercent` defaults to **10** so the alert fires close to a real emergency rather than spamming the user.
-
-**Purpose:** A one-shot side-action that fires once per session when battery drops below threshold during an active session. Does not interrupt the main session chain. Disabled by default (`enabled: false`).
-
-**ITEM 8 — Chain-based model:**
-- The alert carries a **configurable chain** (`List<ChainStep>`). The chain can include `smsContact`, `phoneCallContact`, `callEmergency`, `loudAlarm`, `countdownWarning`, and `fakeCall` steps. Interactive types (`holdButton`, `disguisedReminder`, `hardwareButton`) are forbidden — the alert is OS-triggered, not user-driven.
-- Seed default: `[smsContact]` with `includeLocation: true` to all contacts.
-- Validation: `BatteryAlertConfig.validateChain()` rejects any chain that contains a forbidden step type. The mode editor and battery-alert screen filter the step picker to the allowed list, so the rule is enforced both at save time and in the UI.
-
-`sendSms` is **not** a field. The legacy boolean and the
-`fromJson` synthesis that derived it have been removed per the
-pre-alpha "no migrations" policy. The battery-monitor service
-drives the full chain directly through the session engine.
-
-**Behavior:**
-- Only fires if enabled AND battery reaches the threshold during an active session
-- Fires exactly once per session (no repeats)
-- Runs the configured chain (or no-ops if chain is empty) — main session continues uninterrupted
-- Chain steps execute through the same strategies the main session uses
-
----
-
 ## Seed Data
 
 Seed data is installed on first app launch (or after schema migration) via `lib/data/seed_data.dart`.
@@ -1399,7 +1365,7 @@ This generates `*.drift.dart` files with:
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-JSON-backed models are hand-serialized — no code generation step. Field changes to `AppSettings`, `UserProfile`, or `BatteryAlertConfig` only require updating their `toJson` / `fromJson` methods (and bumping `currentSchemaVersion` to trigger the wipe-and-reseed path on next launch).
+JSON-backed models are hand-serialized — no code generation step. Field changes to `AppSettings` or `UserProfile` only require updating their `toJson` / `fromJson` methods (and bumping `currentSchemaVersion` to trigger the wipe-and-reseed path on next launch).
 
 ---
 

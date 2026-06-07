@@ -91,9 +91,6 @@ final class RouteNames {
   /// History & retention sliders.
   static const String settingsHistoryRetention = 'settings_history_retention';
 
-  /// Battery alert configuration.
-  static const String settingsBatteryAlert = 'settings_battery_alert';
-
   /// User profile editor.
   static const String profile = 'profile';
 

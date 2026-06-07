@@ -703,9 +703,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stealthPresetClock => 'الساعة';
 
   @override
-  String get batteryAlertTitle => 'تنبيه البطارية';
-
-  @override
   String get eventDefaultsTitle => 'افتراضيات الخطوات';
 
   @override
@@ -1080,9 +1077,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsDistressModesRow => 'أوضاع الاستغاثة';
 
   @override
-  String get settingsBatteryAlertRow => 'تنبيه البطارية';
-
-  @override
   String get settingsEventDefaultsRow => 'افتراضيات الخطوات';
 
   @override
@@ -1258,18 +1252,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'تم تطهير $count من السجلات';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'تفعيل تنبيه البطارية';
-
-  @override
-  String get batteryAlertThresholdLabel => 'حدّ البطارية (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'سلسلة التنبيه';
-
-  @override
-  String get batteryAlertResetChain => 'إعادة تعيين';
 
   @override
   String get eventDefaultsCheckInHeader => 'طرق تسجيل الوصول';
@@ -1655,11 +1637,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get pastEventsRestore => 'استعادة';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type غير مسموح بها في سلسلة تنبيه البطارية.';
-  }
-
-  @override
   String get stepEditorWait => 'الانتظار (ث)';
 
   @override
@@ -1851,9 +1828,6 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'محاكاة نشطة';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'تنبيه البطارية';
 
   @override
   String get homeWidgetQuickExit => 'خروج سريع';

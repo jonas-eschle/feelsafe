@@ -485,7 +485,7 @@ The ramp duration is **not** on `LoudAlarmConfig` — it lives globally on `AppS
 
 ## Distress Chain & Condition-Triggered Chains
 
-Condition-triggered actions. The distress chain **replaces** the main chain (stops and discards it permanently — no return). Battery alert is a one-shot side-action that does not interrupt the main chain.
+Condition-triggered actions. The distress chain **replaces** the main chain (stops and discards it permanently — no return).
 
 ### Distress Chain
 
@@ -512,16 +512,6 @@ All three condition-triggered distress mechanisms fire the **same selected distr
    - Configurable number of consecutive wrong PIN attempts trigger the chain
    - User is not aware that attempts are being tracked
    - Provides automatic escalation if attacker is guessing the PIN
-
-### Low Battery Alert
-
-- Fires when OS battery level drops below `BatteryAlertConfig.thresholdPercent`
-- Optional, off by default (`BatteryAlertConfig.enabled`)
-- One-shot alert: fires once per session, does NOT repeat
-- **Runs a chain** — `BatteryAlertConfig.chain: List<ChainStep>` is executed through the same engine/orchestrator used for session chains
-- Default seed chain is a single `smsContact` step that contacts the user's emergency contacts. Users can edit the chain in `/settings/battery-alert`
-- Main session continues uninterrupted
-- Logged in session history for reference
 
 ---
 

@@ -6,7 +6,6 @@ import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
-import 'package:guardianangela/domain/models/battery_alert_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
@@ -38,19 +37,16 @@ final class SeedData {
   /// Stable id prefix for chain steps inside built-in modes.
   static const String _stepIdPrefix = 'step_seed_';
 
-  /// Step id for the single step in the default battery-alert chain.
-  static const String batteryAlertStepId = '${_stepIdPrefix}battery_alert_sms';
-
   // ─── Public seed entry points ───────────────────────────────────────
 
   /// Populates [db] with the full seed (modes, templates, settings,
-  /// profile, battery alert).
+  /// profile).
   ///
   /// Called from [GuardianAngelaDatabase] migration callbacks on
   /// `onCreate` and after every nuke-and-reseed `onUpgrade`. The JSON
-  /// singletons (app settings, user profile, battery alert) are not
-  /// touched here — the Phase 5 startup flow seeds them via their
-  /// respective repositories using the helpers below.
+  /// singletons (app settings, user profile) are not touched here — the
+  /// Phase 5 startup flow seeds them via their respective repositories
+  /// using the helpers below.
   static Future<void> seedInto(GuardianAngelaDatabase db) async {
     await db.transaction(() async {
       // 1. Seed distress mode FIRST so its id is stable and referenced by
@@ -356,25 +352,4 @@ final class SeedData {
 
   /// Default empty [UserProfile].
   static UserProfile defaultUserProfile() => const UserProfile();
-
-  /// Default battery-alert config: disabled by default (Q22), threshold
-  /// 10 %, chain = single `smsContact` step targeting all contacts with
-  /// location attached.
-  ///
-  /// See spec 03 §BatteryAlertConfig.
-  static BatteryAlertConfig defaultBatteryAlertConfig() => BatteryAlertConfig(
-    chain: [
-      ChainStep(
-        id: batteryAlertStepId,
-        type: ChainStepType.smsContact,
-        order: 0,
-        waitSeconds: 0,
-        durationSeconds: 15,
-        gracePeriodSeconds: 0,
-        retryCount: 0,
-        randomize: false,
-        config: const SmsContactConfig(),
-      ),
-    ],
-  );
 }

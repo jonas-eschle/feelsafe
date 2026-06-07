@@ -14,8 +14,6 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 
-import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart'; // accepted for interface consistency
-
 /// Current schema version emitted in [exportToJson].
 ///
 /// [importFromJson] rejects payloads whose `_schemaVersion` is strictly
@@ -39,17 +37,11 @@ const int _kSchemaVersion = 1;
 /// appear outside `lib/services/service_providers.dart` (CI grep enforces).
 class RealBackupService implements BackupServiceProtocol {
   /// Creates a [RealBackupService].
-  ///
-  /// [batteryAlertConfig] is accepted for interface consistency but is not
-  /// used directly — battery alert config is embedded inside [AppSettings]
-  /// and written via [appSettings] during import.
   const RealBackupService({
     required GuardianAngelaDatabase db,
     required ContactsRepository contacts,
     required AppSettingsRepository appSettings,
     required UserProfileRepository userProfile,
-    // ignore: avoid_unused_constructor_parameters
-    required BatteryAlertConfigRepository batteryAlertConfig,
     required SessionLogRepository sessionLogs,
   }) : _db = db,
        _contacts = contacts,
@@ -216,10 +208,6 @@ class RealBackupService implements BackupServiceProtocol {
     if (profileRaw is Map<String, dynamic>) {
       await _userProfile.save(UserProfile.fromJson(profileRaw));
     }
-
-    // BatteryAlertConfig is embedded inside AppSettings.defaults in the
-    // export schema; the separate repository is not used during import
-    // (it is part of AppSettings).
 
     log('importFromJson: complete', name: 'BackupService');
   }

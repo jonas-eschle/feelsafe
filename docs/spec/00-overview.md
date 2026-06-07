@@ -274,7 +274,6 @@ The engine supports condition-triggered chains. A **distress mode** is a regular
 - **Distress chain (hardware panic / duress PIN / wrong PIN):** When triggered, enters a 5-second configurable confirmation window. If the user has a PIN configured for cancellation, a PIN prompt is shown; entering the wrong PIN shows a shake but does not cancel. After confirmation completes or the window expires, the engine calls `replaceWithDistressChain(steps, triggerReason: ...)` — the main chain is discarded permanently and the distress mode's chain runs from step 0. When it exhausts, the session ends with the matching `EndReason` (`hardwarePanic` / `duressPin` / `wrongPinExhausted`). The duress-PIN path also shows a fake "Session ended" to the attacker.
 - **Triggers (parallel to chain):** Distress and disarm triggers operate independently alongside the main chain, not as chain steps. Per-mode configuration via `distressTriggers` and `disarmTriggers`. Distress triggers: `HardwareButtonDistressTrigger` (≥5 presses). Disarm triggers: `GpsArrivalDisarmTrigger` (geofence arrival), `TimerDisarmTrigger` (explicit expiration). All triggers require confirmation before execution.
 - **Disarm during distress is configurable per mode (G-014):** When a distress mode runs (i.e., the engine entered it via `replaceWithDistressChain`), the engine consults `SessionMode.allowDisarmAsDistress` (default `true`) to decide whether `disarmTriggers` still fire. Default `true` honours the user's configured escape conditions (GPS arrival, timer). Setting `false` on a distress mode locks disarm — only chain exhaustion or app/device shutdown stops the session. The trade is recovery convenience vs. coercion resistance. This supersedes the earlier "Disarm during duress: hard-coded IGNORE" invariant.
-- **Low battery alert (G-020):** Optionally triggered at configurable battery threshold (e.g., 15%). Fires once per session as a **one-shot side-action** — does NOT pause or interrupt the main chain. Runs on a **separate `SessionEngine` instance** with its own `BatteryAlertController`; both engines register with the **same `SessionLogRecorder`** so the timeline stays unified. Sends alert to emergency contacts while the main chain continues running. Configured via `BatteryAlertConfig` (enabled toggle + thresholdPercent + chain).
 
 ### 10. Session End & Quick Exit
 
@@ -292,7 +291,7 @@ Session data is **never deleted** when ending a session early — it remains enc
 
 Shipped scope:
 - Fake Call button (deep-links to `/fake-call` via GoRouter)
-- Current session status (`Idle`, `Session active`, `Simulation active`, `Battery alert` plus `mm:ss` timer)
+- Current session status (`Idle`, `Session active`, `Simulation active` plus `mm:ss` timer)
 - Quick Exit button — PIN-gated via the Session End PIN; Duress PIN still fires the distress chain.
 
 Implementation: `home_widget` package (0.9.x) + Android `AppWidgetProvider` (`GuardianAngelaAppWidget.kt`) + iOS WidgetKit extension (`ios/GuardianAngelaWidget/`). On iOS 17+ the buttons use `AppIntent`; on iOS 16 and below the buttons fall back to deep-link URLs. Dart integration lives in `lib/services/implementations/home_widget_service.dart`. See `docs/spec/10-platform-matrix.md` → "Home widget interactivity" for the per-platform capability matrix.
@@ -435,7 +434,7 @@ The app works completely offline:
   - Always-encrypted via `sqlite3mc` (AES-256, key from `flutter_secure_storage`)
   - Drift data classes generated via `build_runner` (`@DataClassName('Name')` → `*.drift.dart`)
   - Schema versioning handled by Drift's `MigrationStrategy`; pre-alpha policy wipes and re-seeds on mismatch (see 03-data-models.md)
-- **JSON-backed singleton/list repositories** — for small blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) outside the relational store; same AES-256 envelope
+- **JSON-backed singleton/list repositories** — for small blobs (`AppSettings`, `UserProfile`) outside the relational store; same AES-256 envelope
 
 ### Encryption & Security
 
@@ -558,7 +557,6 @@ lib/
 | `SessionLog` | Persisted record of completed sessions; `hadMedicalInfo` flag stamped at session start. |
 | `AppDefaults` | Master defaults: gpsLogging, stealth, templates, eventDefaults, `defaultDistressModeId`. |
 | `AppSettings` | Three PIN hashes, pinTimeoutSeconds, theme, language, emergencyNumber, alarmDndOverride, biometric / launch-auth / telemetry toggles, alarm gradual-volume settings, AppDefaults. |
-| `BatteryAlertConfig` | Low-battery one-shot alert config (enabled toggle + thresholdPercent + chain). |
 | `UserProfile` | Identity (name, age, phoneNumber, photoPath, physicalDescription) + free-form medical fields (each `String?`). |
 | `WalkSession` | Ephemeral session state (not persisted). Named ctors: `startingReal`, `startingSimulation`. |
 

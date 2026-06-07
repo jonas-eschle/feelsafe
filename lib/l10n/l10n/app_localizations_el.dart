@@ -712,9 +712,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stealthPresetClock => 'Ρολόι';
 
   @override
-  String get batteryAlertTitle => 'Ειδοποίηση μπαταρίας';
-
-  @override
   String get eventDefaultsTitle => 'Προεπιλογές βημάτων';
 
   @override
@@ -1100,9 +1097,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get settingsDistressModesRow => 'Λειτουργίες κινδύνου';
 
   @override
-  String get settingsBatteryAlertRow => 'Ειδοποίηση μπαταρίας';
-
-  @override
   String get settingsEventDefaultsRow => 'Προεπιλογές συμβάντων';
 
   @override
@@ -1282,18 +1276,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'Εκκαθαρίστηκαν $count αρχεία';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'Ενεργοποίηση ειδοποίησης μπαταρίας';
-
-  @override
-  String get batteryAlertThresholdLabel => 'Όριο μπαταρίας (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'Αλυσίδα ειδοποίησης';
-
-  @override
-  String get batteryAlertResetChain => 'Επαναφορά';
 
   @override
   String get eventDefaultsCheckInHeader => 'Μέθοδοι δήλωσης ασφάλειας';
@@ -1691,11 +1673,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get pastEventsRestore => 'Επαναφορά';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return 'Το βήμα $type δεν επιτρέπεται στην αλυσίδα ειδοποίησης μπαταρίας.';
-  }
-
-  @override
   String get stepEditorWait => 'Αναμονή (δ)';
 
   @override
@@ -1893,9 +1870,6 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'Ενεργή προσομοίωση';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'Ειδοποίηση μπαταρίας';
 
   @override
   String get homeWidgetQuickExit => 'Γρήγορη έξοδος';

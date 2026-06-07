@@ -959,9 +959,8 @@ The session screen SHOULD show a network status indicator (signal strength icon 
 ### Pre-Session Checks
 
 Before starting any session:
-1. **Battery warning:** If battery < 20%, show warning: "Low battery. Session may be interrupted if phone dies."
-2. **Permission audit:** Verify all permissions required by the mode's chain steps are still granted. If any revoked, show dialog with specific issues and action buttons.
-3. **Network check:** If no cellular signal, warn: "No signal. SMS and calls may not work."
+1. **Permission audit:** Verify all permissions required by the mode's chain steps are still granted. If any revoked, show dialog with specific issues and action buttons.
+2. **Network check:** If no cellular signal, warn: "No signal. SMS and calls may not work."
 
 ### Simulation Safety Guards
 
@@ -1020,10 +1019,6 @@ After a distress trigger fires, a **5-second configurable confirmation window** 
 **Biometric branch (`distressCancelBiometricEnabled = true`):** The cancel prompt accepts either PIN or biometric (Q18). Biometric is shown first; failure or cancel falls through to PIN entry within the same 15s timeout window. The biometric path is opt-in and has no effect when the flag is `false`.
 
 **Rationale**: Prevents false positives from accidental volume button presses while maintaining rapid escalation in real emergencies.
-
-### Battery Alert (One-Shot Side Action)
-
-**Not** a chain replacement. When battery drops below threshold: fire a one-shot notification and optional SMS alert. The main chain continues uninterrupted. Default: OFF.
 
 ### Distress Chain Mechanics
 

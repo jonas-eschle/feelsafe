@@ -75,7 +75,6 @@ These step types let the user disarm the chain by responding. Any step type can 
 | **Mode Overrides** | Per-mode optional override of any AppDefaults field. null field = inherit from AppDefaults. `localTemplates` appended to global templates. | `ModeOverrides` (inline in SessionMode) | SessionMode.overrides | Override stealth for Walk Mode only |
 | **GPS Logging Config** | Structured GPS logging settings: enabled, intervalSeconds, accuracy, format, includeInSms, historyRetentionDays. | `GpsLoggingConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.gpsLogging, ModeOverrides.gpsLogging | interval=30s, format=decimal, includeInSms=true |
 | **Stealth Config** | Structured stealth settings: enabled, fakeName, fakeIcon, notificationDisguise, timerDisplay, sessionScreenStealth. | `StealthConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.stealth, ModeOverrides.stealth | fakeName="Music App", timerDisplay=none |
-| **Battery Alert Config** | Low-battery one-shot alert: enabled (bool), thresholdPercent (int, default 10), chain (List<ChainStep>). Default `enabled=false` (opt-in, Q22). Seed chain is a single `smsContact` step targeting all contacts. | `BatteryAlertConfig` | battery_alert.json | enabled=false, thresholdPercent=10, chain=[smsContact] |
 
 ---
 
@@ -213,7 +212,7 @@ These step types let the user disarm the chain by responding. Any step type can 
 | **Riverpod Provider** | Reactive dependency injection for services and controllers. | `Provider<T>`, `NotifierProvider` | State management | `audioServiceProvider`, `sessionControllerProvider` |
 | **GoRouter** | Declarative routing with deep linking support. | `GoRouter`, `GoRoute` | Navigation | `/modes/edit?id=123` → ModeEditorScreen with ID |
 | **Drift Table** | Typed SQL table with code-generated Dart data class via `@DataClassName('Name')`. Canonical persistence layer for relational data. | `@DataClassName('SessionMode')`, `appDatabase.sessionModesDao` | Data persistence | All session modes stored in the `session_modes` table |
-| **JSON-backed Singleton/List Repository** | Encrypted JSON blob stored under the app documents directory; used for small singletons (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) and lightweight lists. | `JsonSingletonRepository`, `JsonListRepository` | Data persistence | `AppSettings` lives in `app_settings.json` |
+| **JSON-backed Singleton/List Repository** | Encrypted JSON blob stored under the app documents directory; used for small singletons (`AppSettings`, `UserProfile`) and lightweight lists. | `JsonSingletonRepository`, `JsonListRepository` | Data persistence | `AppSettings` lives in `app_settings.json` |
 | **Feature-First Architecture** | Code organized by feature (session, home, settings) not by type (models, views). | `lib/features/` folder | Project structure | `lib/features/session/`, `lib/features/home/`, etc. |
 
 ---

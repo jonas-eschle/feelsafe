@@ -709,9 +709,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get stealthPresetClock => 'Zegar';
 
   @override
-  String get batteryAlertTitle => 'Alarm baterii';
-
-  @override
   String get eventDefaultsTitle => 'Domyślne kroki';
 
   @override
@@ -1091,9 +1088,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get settingsDistressModesRow => 'Tryby alarmowe';
 
   @override
-  String get settingsBatteryAlertRow => 'Alarm baterii';
-
-  @override
   String get settingsEventDefaultsRow => 'Domyślne kroki';
 
   @override
@@ -1272,18 +1266,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'Wyczyszczono $count dzienników';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'Włącz alarm baterii';
-
-  @override
-  String get batteryAlertThresholdLabel => 'Próg baterii (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'Łańcuch alertu';
-
-  @override
-  String get batteryAlertResetChain => 'Resetuj';
 
   @override
   String get eventDefaultsCheckInHeader => 'Metody zameldowania';
@@ -1677,11 +1659,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get pastEventsRestore => 'Przywróć';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type nie jest dozwolony w łańcuchu alarmu baterii.';
-  }
-
-  @override
   String get stepEditorWait => 'Oczekiwanie (s)';
 
   @override
@@ -1876,9 +1853,6 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'Symulacja aktywna';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'Alarm baterii';
 
   @override
   String get homeWidgetQuickExit => 'Szybkie wyjście';

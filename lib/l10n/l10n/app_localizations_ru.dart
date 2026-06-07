@@ -711,9 +711,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get stealthPresetClock => 'Часы';
 
   @override
-  String get batteryAlertTitle => 'Оповещение о батарее';
-
-  @override
   String get eventDefaultsTitle => 'Шаги по умолчанию';
 
   @override
@@ -1092,9 +1089,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settingsDistressModesRow => 'Режимы тревоги';
 
   @override
-  String get settingsBatteryAlertRow => 'Оповещение о батарее';
-
-  @override
   String get settingsEventDefaultsRow => 'Шаги по умолчанию';
 
   @override
@@ -1272,18 +1266,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'Удалено журналов: $count';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'Включить оповещение о батарее';
-
-  @override
-  String get batteryAlertThresholdLabel => 'Порог заряда батареи (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'Цепочка оповещения';
-
-  @override
-  String get batteryAlertResetChain => 'Сбросить';
 
   @override
   String get eventDefaultsCheckInHeader => 'Способы отметки';
@@ -1677,11 +1659,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get pastEventsRestore => 'Восстановить';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return 'Шаг «$type» недопустим в цепочке оповещения о батарее.';
-  }
-
-  @override
   String get stepEditorWait => 'Ожидание (с)';
 
   @override
@@ -1880,9 +1857,6 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'Симуляция активна';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'Оповещение о батарее';
 
   @override
   String get homeWidgetQuickExit => 'Быстрый выход';

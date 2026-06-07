@@ -6,7 +6,7 @@
 // service_providers.dart` must be empty).
 //
 // Phase 5A foundation. Stage 5B.1 adds 7 leaf service triplets.
-// Stage 5B.2 adds: location, batteryMonitor, notification, hardwareButton,
+// Stage 5B.2 adds: location, notification, hardwareButton,
 //   callState, systemUi.
 // Stage 5B.3 adds: phone, messaging, backgroundSession, sentry,
 //   sessionLogRecorder.
@@ -21,7 +21,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
-import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/feedback_history_repository.dart';
 import 'package:guardianangela/data/repositories/json_singleton_repository.dart';
@@ -32,7 +31,6 @@ import 'package:guardianangela/features/home/home_checklist_repository.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/background_session_service.dart';
 import 'package:guardianangela/services/backup_service.dart';
-import 'package:guardianangela/services/battery_monitor_service.dart';
 import 'package:guardianangela/services/biometric_service.dart';
 import 'package:guardianangela/services/call_state_service.dart';
 import 'package:guardianangela/services/contact_service.dart';
@@ -49,7 +47,6 @@ import 'package:guardianangela/services/phone_service.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
-import 'package:guardianangela/services/protocols/battery_monitor_service_protocol.dart';
 import 'package:guardianangela/services/protocols/biometric_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/contact_service_protocol.dart';
@@ -141,14 +138,6 @@ final appSettingsRepositoryProvider = Provider<AppSettingsRepository>((ref) {
 final userProfileRepositoryProvider = Provider<UserProfileRepository>((ref) {
   return UserProfileRepository(keyProvider: ref.read(keyProviderProvider));
 });
-
-/// [BatteryAlertConfigRepository] wired to [keyProviderProvider].
-final batteryAlertConfigRepositoryProvider =
-    Provider<BatteryAlertConfigRepository>((ref) {
-      return BatteryAlertConfigRepository(
-        keyProvider: ref.read(keyProviderProvider),
-      );
-    });
 
 /// [HomeChecklistRepository] backing the Safety Setup Checklist's
 /// dismissed / simulation-done / first-visit-done flags.
@@ -270,19 +259,6 @@ final audioServiceProvider = Provider<AudioServiceProtocol>((ref) {
 /// from `lib/services/sim/location_service_sim.dart`.
 final locationServiceProvider = Provider<LocationServiceProtocol>((ref) {
   return RealLocationService();
-});
-
-/// [BatteryMonitorServiceProtocol] backed by `package:battery_plus`.
-///
-/// Polls battery level at 60-second intervals and on state-change events.
-/// Fires a one-shot low-battery alert per session when level drops below
-/// the configured threshold. Tests override with
-/// [SimulationBatteryMonitorService] from
-/// `lib/services/sim/battery_monitor_service_sim.dart`.
-final batteryMonitorServiceProvider = Provider<BatteryMonitorServiceProtocol>((
-  ref,
-) {
-  return RealBatteryMonitorService();
 });
 
 /// [NotificationServiceProtocol] backed by `package:flutter_local_notifications`.
@@ -527,7 +503,6 @@ final backupServiceProvider = FutureProvider<BackupServiceProtocol>((
     contacts: ContactsRepository(db.contactsDao),
     appSettings: ref.read(appSettingsRepositoryProvider),
     userProfile: ref.read(userProfileRepositoryProvider),
-    batteryAlertConfig: ref.read(batteryAlertConfigRepositoryProvider),
     sessionLogs: sessionLogRepo,
   );
 });

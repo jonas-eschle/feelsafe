@@ -1385,12 +1385,6 @@ abstract class AppLocalizations {
   /// **'Clock'**
   String get stealthPresetClock;
 
-  /// Title of battery alert screen.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery alert'**
-  String get batteryAlertTitle;
-
   /// Title of event defaults screen.
   ///
   /// In en, this message translates to:
@@ -2057,12 +2051,6 @@ abstract class AppLocalizations {
   /// **'Distress modes'**
   String get settingsDistressModesRow;
 
-  /// Battery alert row label.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery alert'**
-  String get settingsBatteryAlertRow;
-
   /// Event defaults row label.
   ///
   /// In en, this message translates to:
@@ -2392,30 +2380,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Purged {count} logs'**
   String historyRetentionPurged(Object count);
-
-  /// Battery alert enable toggle.
-  ///
-  /// In en, this message translates to:
-  /// **'Enable battery alert'**
-  String get batteryAlertEnableLabel;
-
-  /// Battery threshold slider label.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery threshold (%)'**
-  String get batteryAlertThresholdLabel;
-
-  /// Section header for the battery alert chain.
-  ///
-  /// In en, this message translates to:
-  /// **'Alert chain'**
-  String get batteryAlertChainHeader;
-
-  /// Reset chain button.
-  ///
-  /// In en, this message translates to:
-  /// **'Reset'**
-  String get batteryAlertResetChain;
 
   /// Section header for check-in methods.
   ///
@@ -3125,12 +3089,6 @@ abstract class AppLocalizations {
   /// **'Restore'**
   String get pastEventsRestore;
 
-  /// Error snack shown when the user tries to add an interactive step to a battery-alert chain.
-  ///
-  /// In en, this message translates to:
-  /// **'{type} is not allowed in the battery-alert chain.'**
-  String batteryAlertForbiddenStep(Object type);
-
   /// Label for the wait-seconds field of a chain step.
   ///
   /// In en, this message translates to:
@@ -3490,12 +3448,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Simulation active'**
   String get homeWidgetStatusSim;
-
-  /// Home-screen widget status text shown when a low-battery alert fires during a session.
-  ///
-  /// In en, this message translates to:
-  /// **'Battery alert'**
-  String get homeWidgetStatusBatteryAlert;
 
   /// Home-screen widget button label for Quick Exit (ends session, PIN-gated).
   ///

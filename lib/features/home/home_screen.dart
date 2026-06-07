@@ -94,7 +94,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           statusIdle: l10n.homeWidgetStatusIdle,
           statusSession: l10n.homeWidgetStatusSession,
           statusSim: l10n.homeWidgetStatusSim,
-          statusBattery: l10n.homeWidgetStatusBatteryAlert,
           quickExit: l10n.homeWidgetQuickExit,
           fakeCall: l10n.homeWidgetFakeCall,
         );

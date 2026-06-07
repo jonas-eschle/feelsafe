@@ -64,7 +64,6 @@ class _FakeSessionController extends SessionController {
     required String statusIdle,
     required String statusSession,
     required String statusSim,
-    required String statusBattery,
     required String quickExit,
     required String fakeCall,
   }) {}

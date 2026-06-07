@@ -92,10 +92,6 @@ Design rationale for Guardian Angela. Documents the reasoning behind key archite
   PIN, wrong PIN threshold) fire the same resolved distress mode's chain. No per-trigger
   customization.
 
-### Battery Alert (One-Shot Only)
-- **BatteryAlertConfig**: Chain-based alert: threshold + editable chain (matching the mode-editor pattern). One-shot mechanism. `enabled` defaults to false; `thresholdPercent` defaults to 10.
-- **Rationale**: Opt-in by design (Q22) — a safety app must not surprise users with new automatic alerts.
-
 ### Design Rationale
 - **Why a Mode?** Distress chains needed exactly the editing affordances modes already had (timing, retry, jitter, full per-step config). Adding `isDistressMode` was cheaper than maintaining a parallel `DistressChain` aggregate, repository, and editor screen.
 - **Why one chain per mode?**: Simplifies the trigger system — one consistent response regardless of what triggered distress.
@@ -753,7 +749,7 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 ### Backwards Compatibility
 - **Pre-alpha stance**: OK to break backwards compatibility during pre-alpha
 - **Drift schema**: Schema version managed via Drift's `MigrationStrategy.onUpgrade` (pre-alpha policy wipes and re-seeds on mismatch — no migration scripts)
-- **Persistence**: Relational data lives in the Drift database (`sqlite3mc`-encrypted); singleton blobs (`AppSettings`, `UserProfile`, `BatteryAlertConfig`) use `JsonSingletonRepository` / `JsonListRepository`. Models live in `lib/domain/models/` with hand-rolled `toJson` / `fromJson`.
+- **Persistence**: Relational data lives in the Drift database (`sqlite3mc`-encrypted); singleton blobs (`AppSettings`, `UserProfile`) use `JsonSingletonRepository` / `JsonListRepository`. Models live in `lib/domain/models/` with hand-rolled `toJson` / `fromJson`.
 
 ---
 
@@ -782,8 +778,6 @@ There is NO auto-advance, NO auto-hold, NO auto-answer, and NO auto-dismiss in s
 
 ### Low Battery
 - **No power-saving mode**: Chain continues at normal speed
-- **One-shot alert**: Battery alert sends SMS once per session (no chain interruption)
-- **Detection**: Checked at step start (not continuous monitoring)
 
 ### Real Incoming Call
 - **Timer pause**: Session timer pauses during real incoming call
@@ -1067,7 +1061,6 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 | Q19 | `alarmDndOverride` default | `false` (opt-in). |
 | Q20 | `StealthConfig` defaults | `fakeName = 'Music'`, `fakeIcon = StealthIconPreset.music`. |
 | Q21 | `GpsLoggingConfig` defaults | `intervalSeconds = 30`, `accuracy = high`, `format = decimal`. |
-| Q22 | `BatteryAlertConfig.enabled` default | `false` (opt-in). |
 | Q23/24/25 | Services exist + wired | `RecordingService`, `FlashService`, `ScreenFlashService`, `BackgroundSessionService` all implemented under `lib/services/implementations/`. |
 | Q26 | Onboarding p2 contact form | Uses the full `ContactFormScreen` (not a stripped form). |
 | Q27 | `EmergencyConfirmScreen` | Wired into `CallEmergencyStrategy` via the `emergencyConfirmationRequests` stream. |

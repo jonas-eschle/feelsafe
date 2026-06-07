@@ -288,17 +288,6 @@ void main() {
       check(mock.lastSavedData[kWidgetKeyStatus]).equals('simulationActive');
     });
 
-    test('batteryAlert slug is written correctly', () async {
-      final svc = RealHomeWidgetService();
-      await svc.publishStatus(
-        status: HomeWidgetStatus.batteryAlert,
-        statusText: 'Battery alert',
-        quickExitLabel: 'Quick Exit',
-        fakeCallLabel: 'Fake Call',
-      );
-      check(mock.lastSavedData[kWidgetKeyStatus]).equals('batteryAlert');
-    });
-
     test('elapsed formatting: 0s → 00:00', () async {
       final svc = RealHomeWidgetService();
       await svc.publishStatus(
@@ -386,27 +375,6 @@ void main() {
       ).isTrue();
 
       await container.read(sessionControllerProvider.notifier).endSession();
-    });
-
-    test('notifyBatteryAlert publishes batteryAlert', () async {
-      final svc = SimulationHomeWidgetService();
-      final container = _container(db, svc);
-      await container.read(sessionControllerProvider.future);
-
-      await container
-          .read(sessionControllerProvider.notifier)
-          .startSession(mode: _holdMode('m3'), simulate: false);
-      await Future<void>.delayed(Duration.zero);
-
-      final notifier = container.read(sessionControllerProvider.notifier);
-      notifier.notifyBatteryAlert();
-      await Future<void>.delayed(Duration.zero);
-
-      check(
-        svc.calls.any((c) => c['status'] == HomeWidgetStatus.batteryAlert),
-      ).isTrue();
-
-      await notifier.endSession();
     });
 
     // FIX 2: elapsed timer must be non-null / non-empty on sessionActive.

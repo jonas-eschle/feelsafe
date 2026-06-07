@@ -690,9 +690,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stealthPresetClock => '时钟';
 
   @override
-  String get batteryAlertTitle => '电量警报';
-
-  @override
   String get eventDefaultsTitle => '步骤默认值';
 
   @override
@@ -1047,9 +1044,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsDistressModesRow => '求救模式';
 
   @override
-  String get settingsBatteryAlertRow => '电量警报';
-
-  @override
   String get settingsEventDefaultsRow => '步骤默认值';
 
   @override
@@ -1218,18 +1212,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return '已清除 $count 条日志';
   }
-
-  @override
-  String get batteryAlertEnableLabel => '启用电量警报';
-
-  @override
-  String get batteryAlertThresholdLabel => '电量阈值（%）';
-
-  @override
-  String get batteryAlertChainHeader => '警报链路';
-
-  @override
-  String get batteryAlertResetChain => '重置';
 
   @override
   String get eventDefaultsCheckInHeader => '签到方式';
@@ -1608,11 +1590,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get pastEventsRestore => '恢复';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type 不允许出现在电量警报链路中。';
-  }
-
-  @override
   String get stepEditorWait => '等待（秒）';
 
   @override
@@ -1800,9 +1777,6 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => '模拟进行中';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => '电量警报';
 
   @override
   String get homeWidgetQuickExit => '快速退出';
@@ -2497,9 +2471,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get stealthPresetClock => '時鐘';
 
   @override
-  String get batteryAlertTitle => '電量警示';
-
-  @override
   String get eventDefaultsTitle => '步驟預設值';
 
   @override
@@ -2854,9 +2825,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get settingsDistressModesRow => '求救模式';
 
   @override
-  String get settingsBatteryAlertRow => '電量警示';
-
-  @override
   String get settingsEventDefaultsRow => '步驟預設值';
 
   @override
@@ -3025,18 +2993,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String historyRetentionPurged(Object count) {
     return '已清除 $count 筆紀錄';
   }
-
-  @override
-  String get batteryAlertEnableLabel => '啟用電量警示';
-
-  @override
-  String get batteryAlertThresholdLabel => '電量門檻(%)';
-
-  @override
-  String get batteryAlertChainHeader => '警示鏈路';
-
-  @override
-  String get batteryAlertResetChain => '重設';
 
   @override
   String get eventDefaultsCheckInHeader => '報平安方式';
@@ -3415,11 +3371,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get pastEventsRestore => '還原';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '電量警示鏈路不允許使用 $type。';
-  }
-
-  @override
   String get stepEditorWait => '等待(秒)';
 
   @override
@@ -3607,9 +3558,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get homeWidgetStatusSim => '模擬中';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => '電量警示';
 
   @override
   String get homeWidgetQuickExit => '快速離開';

@@ -95,11 +95,6 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.pushNamed(RouteNames.distressModes),
             ),
             SettingsTile(
-              icon: Icons.battery_alert_outlined,
-              title: l10n.settingsBatteryAlertRow,
-              onTap: () => context.pushNamed(RouteNames.settingsBatteryAlert),
-            ),
-            SettingsTile(
               icon: Icons.tune,
               title: l10n.settingsEventDefaultsRow,
               onTap: () => context.pushNamed(RouteNames.settingsEventDefaults),

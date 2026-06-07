@@ -94,6 +94,19 @@ SettingsHubState _defaultState({
 // Tests
 // ---------------------------------------------------------------------------
 
+/// Gives the test a viewport tall enough for the whole settings list to render
+/// without scrolling, so rows near the bottom (e.g. "Redo onboarding") are
+/// fully on-screen and hit-testable by `tap()`. The default 800×600 surface
+/// leaves the last rows clipped at the scroll edge, where `scrollUntilVisible`
+/// stops as soon as a row attaches (often only partly visible). Reset on
+/// teardown.
+void _useTallViewport(WidgetTester tester) {
+  tester.view.physicalSize = const Size(800, 2400);
+  tester.view.devicePixelRatio = 1.0;
+  addTearDown(tester.view.resetPhysicalSize);
+  addTearDown(tester.view.resetDevicePixelRatio);
+}
+
 void main() {
   // ── AppBar ────────────────────────────────────────────────────────────────
 
@@ -431,7 +444,6 @@ void main() {
         l10n.settingsProfileRow,
         l10n.settingsModesRow,
         l10n.settingsDistressModesRow,
-        l10n.settingsBatteryAlertRow,
         l10n.settingsEventDefaultsRow,
         l10n.settingsGpsLoggingRow,
         l10n.settingsRemindersRow,
@@ -619,6 +631,7 @@ void main() {
     testWidgets('tapping Redo Onboarding shows confirmation dialog', (
       WidgetTester tester,
     ) async {
+      _useTallViewport(tester);
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
         tester,
@@ -642,6 +655,7 @@ void main() {
     testWidgets('confirmation dialog shows Confirm and Cancel buttons', (
       WidgetTester tester,
     ) async {
+      _useTallViewport(tester);
       final l10n = await loadL10n(const Locale('en'));
       await pumpScreen(
         tester,
@@ -686,6 +700,7 @@ void main() {
     testWidgets(
       'cancelling Redo Onboarding dialog does not call resetOnboarding',
       (WidgetTester tester) async {
+        _useTallViewport(tester);
         final l10n = await loadL10n(const Locale('en'));
         final fake = _FakeSettingsController(_defaultState());
         await pumpScreen(

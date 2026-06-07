@@ -69,7 +69,7 @@ Tracked as tasks #8–#23. Severity: 🔴 GA-blocker · 🟠 important ·
 | # | Gap | Spec | Sev |
 |---|---|---|---|
 | 11 | **Real incoming-call detection unwired** — `callStateServiceProvider` has no consumer; `PauseReason.incomingCall` dead. A2 (pause/resume), Extra-24/25 (cancel fakeCall), Extra-30/31 (hold pause) | 01:407-432,651-655 | 🔴 |
-| 22 | **Battery alert never fires** (`startMonitoring` no caller) ✓ **+ GPS logging never tracks** (`startTracking` no caller) ✓ | 06:208-233,549-569 | 🔴 |
+| 22 | **GPS logging never tracks** (`startTracking` no caller) ✓ — wired in session lifecycle. (Battery-alert half DESCOPED 2026-06-07: feature removed entirely per user — low battery is out of scope.) | 06:549-569 | 🔴 |
 | 12 | Background speed-clamp lifecycle (`setBackgroundClamp` never called) — sim-only | 01:700-703 | 🟡 |
 
 ### Tier C — Can't configure the app
@@ -138,7 +138,7 @@ mostly self-contained)
 **M1 — Safety subsystems live** (SessionController lifecycle wiring)
 - #11 real incoming-call detection (pause/resume, fakeCall cancel,
   hold pause)
-- #22 GPS logging start/stop + battery-alert firing
+- #22 GPS logging start/stop (battery-alert firing descoped — feature removed)
 - #12 background clamp (fold in)
 
 **M2 — Configuration UIs** (the big build; `StepConfigPanel` /

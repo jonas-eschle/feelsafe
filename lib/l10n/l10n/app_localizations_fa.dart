@@ -706,9 +706,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get stealthPresetClock => 'ساعت';
 
   @override
-  String get batteryAlertTitle => 'هشدار باتری';
-
-  @override
   String get eventDefaultsTitle => 'پیش‌فرض‌های گام';
 
   @override
@@ -1087,9 +1084,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get settingsDistressModesRow => 'حالت‌های اضطرار';
 
   @override
-  String get settingsBatteryAlertRow => 'هشدار باتری';
-
-  @override
   String get settingsEventDefaultsRow => 'پیش‌فرض‌های گام';
 
   @override
@@ -1266,18 +1260,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return '$count گزارش پاک‌سازی شد';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'فعال‌سازی هشدار باتری';
-
-  @override
-  String get batteryAlertThresholdLabel => 'آستانهٔ باتری (٪)';
-
-  @override
-  String get batteryAlertChainHeader => 'زنجیرهٔ هشدار';
-
-  @override
-  String get batteryAlertResetChain => 'بازنشانی';
 
   @override
   String get eventDefaultsCheckInHeader => 'روش‌های اعلام حضور';
@@ -1665,11 +1647,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get pastEventsRestore => 'بازگردانی';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type در زنجیرهٔ هشدار باتری مجاز نیست.';
-  }
-
-  @override
   String get stepEditorWait => 'انتظار (ث)';
 
   @override
@@ -1862,9 +1839,6 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'شبیه‌سازی فعال';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'هشدار باتری';
 
   @override
   String get homeWidgetQuickExit => 'خروج سریع';

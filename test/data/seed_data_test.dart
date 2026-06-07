@@ -330,31 +330,4 @@ void main() {
       check(profile.hasMedicalInfo).isFalse();
     });
   });
-
-  group('SeedData.defaultBatteryAlertConfig', () {
-    final config = SeedData.defaultBatteryAlertConfig();
-
-    test('is disabled by default (Q22)', () {
-      check(config.enabled).isFalse();
-    });
-
-    test('uses 10% threshold per spec', () {
-      check(config.thresholdPercent).equals(10);
-    });
-
-    test('chain contains a single smsContact step', () {
-      check(config.chain.length).equals(1);
-      check(config.chain.single.type).equals(ChainStepType.smsContact);
-    });
-
-    test('default chain step opts in to includeLocation per spec', () {
-      // Spec 03 §BatteryAlertConfig (line ~1204):
-      // "Seed default: [smsContact] with includeLocation: true to all
-      //  contacts."
-      final step = config.chain.single;
-      check(step.config).isA<SmsContactConfig>();
-      final sc = step.config! as SmsContactConfig;
-      check(sc.includeLocation).isTrue();
-    });
-  });
 }

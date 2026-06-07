@@ -710,9 +710,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get stealthPresetClock => 'घड़ी';
 
   @override
-  String get batteryAlertTitle => 'बैटरी चेतावनी';
-
-  @override
   String get eventDefaultsTitle => 'चरण डिफ़ॉल्ट';
 
   @override
@@ -1091,9 +1088,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get settingsDistressModesRow => 'संकट मोड';
 
   @override
-  String get settingsBatteryAlertRow => 'बैटरी चेतावनी';
-
-  @override
   String get settingsEventDefaultsRow => 'चरण डिफ़ॉल्ट';
 
   @override
@@ -1270,18 +1264,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return '$count लॉग साफ़ किए गए';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'बैटरी चेतावनी सक्षम करें';
-
-  @override
-  String get batteryAlertThresholdLabel => 'बैटरी सीमा (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'चेतावनी चेन';
-
-  @override
-  String get batteryAlertResetChain => 'रीसेट करें';
 
   @override
   String get eventDefaultsCheckInHeader => 'चेक-इन विधियाँ';
@@ -1670,11 +1652,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get pastEventsRestore => 'पुनर्स्थापित करें';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type बैटरी-चेतावनी चेन में अनुमत नहीं है।';
-  }
-
-  @override
   String get stepEditorWait => 'प्रतीक्षा (से)';
 
   @override
@@ -1866,9 +1843,6 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'सिमुलेशन सक्रिय';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'बैटरी चेतावनी';
 
   @override
   String get homeWidgetQuickExit => 'त्वरित निकास';

@@ -111,14 +111,13 @@ Complete list of all routes with full paths and query parameters:
 /settings/templates/edit?id=...        Template Editor
 /settings/notifications                Notification permission re-ask
 /settings/history-retention            Session-log retention settings
-/settings/battery-alert                Battery Alert config
 /profile                               Profile Editor
 /settings/about                        About Screen
 /settings/feedback                     Feedback Form
 /settings/backup                       Backup & Restore
 
 # REMOVED routes (replaced):
-#   /settings/modes-and-chains (replaced by direct links to /modes, /distress-modes, /settings/battery-alert)
+#   /settings/modes-and-chains (replaced by direct links to /modes, /distress-modes)
 #   /settings/distress-chain   (replaced by /distress-modes list + /distress-modes/edit editor; the editor is ModeEditorScreen with isDistress=true)
 #   /distress-chains, /distress-chains/edit (Pivot 3 — distress is a Mode; superseded by /distress-modes routes above)
 #   /settings/defaults          (replaced by individual dedicated screens per category)
@@ -1664,8 +1663,8 @@ All other behavior — step list, drag-to-reorder, expansion tiles, dirty-flag g
 ## SMS Contact Selection (shared step-editor widget)
 
 Used inside any `smsContact` step config panel — i.e. in the Mode
-Editor, the Distress Mode Editor, and the Battery Alert chain
-editor. Replaces the former "All / First only / Specific" dropdown
+Editor and the Distress Mode Editor. Replaces the former
+"All / First only / Specific" dropdown
 with an **always-visible grid of one button per emergency contact**.
 This puts the full list of contacts one tap away and makes the
 current selection readable at a glance.
@@ -1725,60 +1724,6 @@ dedicated `SinglePhoneContactPicker` widget (primary + alternative
 contact ids in `PhoneCallContactConfig`) rather than this grid.
 Each multi-contact step type passes its channel filter into the
 shared grid widget.
-
----
-
-## Battery Alert (`/settings/battery-alert`)
-
-Configure the low-battery side-action. ITEM 8: the alert is now a
-**configurable chain**, not a single SMS toggle. The screen is a thin
-wrapper around a chain editor identical in look-and-feel to the mode
-editor's step list.
-
-**Layout:**
-```
-┌──────────────────────────────┐
-│  [Back] Battery Alert        │
-├──────────────────────────────┤
-│  ☐ Enable battery alert      │ (SwitchListTile)
-│                              │
-│  Battery threshold           │
-│  [slider 5% ────────── 50%]  │ (int percent)
-│                              │
-│  Alert chain          [Reset]│ (header)
-│  "Runs when battery drops    │
-│   below the threshold.       │
-│   Fires once per session."   │
-│                              │
-│  [1] [Msg] SMS Contacts   ▼  │ (ExpansionTile)
-│      wait 0s • dur 15s       │
-│  ┌────────────────────────┐  │
-│  │ Timing                 │  │
-│  │ Event configuration    │  │
-│  │ Retry & Advanced       │  │
-│  └────────────────────────┘  │
-│                              │
-│  [+] Add Step                │ (bottom sheet — action steps only)
-└──────────────────────────────┘
-```
-
-**Allowed step types:** only action steps
-(`smsContact`, `phoneCallContact`, `callEmergency`, `loudAlarm`,
-`countdownWarning`, `fakeCall`). Interactive step types (`holdButton`,
-`disguisedReminder`, `hardwareButton`) are not offered — the alert
-is triggered by an OS battery event, not by user interaction.
-
-**Chain editor:** reuses `StepConfigPanel` (same widget as the mode
-editor) so timing, event-specific fields, and advanced options are
-identical to normal mode steps.
-
-**Reset button:** restores the chain to the seed default (single
-`smsContact` step to all contacts).
-
-**Semantics:** the chain runs exactly once per session. Main session
-continues uninterrupted. See `lib/domain/models/battery_alert_config.dart`.
-
-**Implementation contract (G-020):** `BatteryMonitorService` instantiates its **own dedicated `SessionEngine` instance** (separate from the main session engine) when the OS battery hits `BatteryAlertConfig.thresholdPercent` during an active session. The battery engine consumes `BatteryAlertConfig.chain` as its `chainSteps` and runs end-to-end exactly once per session; the main `SessionEngine` continues uninterrupted on its own timer. Both engines register with the same `SessionLogRecorder`, so the alert's events are appended to the active session log under a `batteryAlert` event kind. There is no legacy `sendSms` shortcut — the dedicated battery engine drives every chain step through the standard strategy registry.
 
 ---
 
@@ -1909,7 +1854,6 @@ Central hub for app configuration.
 │  │ > Profile                ││ (→ /profile)
 │  │ > Modes                  ││ (→ /modes)
 │  │ > Distress modes         ││ (→ /distress-modes)
-│  │ > Battery alert          ││ (→ /settings/battery-alert)
 │  │ > Event defaults         ││ (→ /settings/event-defaults)
 │  │ > GPS logging            ││ (→ /settings/gps-logging)
 │  │ > Reminder templates     ││ (→ /settings/reminder-templates)
@@ -1943,7 +1887,7 @@ Central hub for app configuration.
 - **Theme:** Auto-saves on selection
 - **Language:** Auto-saves, rebuilds localization. **Blocked during active session:** If user tries to change language while a session is running, show prompt: "End your session first."
 - **Security:** → `/settings/security` (Security submenu: App PIN, Session End PIN, Duress PIN)
-- **Modes / Distress modes / Battery alert:** direct rows under Configuration — see Route Names appendix at the end of this doc.
+- **Modes / Distress modes:** direct rows under Configuration — see Route Names appendix at the end of this doc.
 - **Defaults (GPS logging / Event defaults / Reminder templates / Stealth):** each lives on its own dedicated screen (no second-level hub).
 - **Navigation items:** Tap → navigate to sub-screen
 - **Export:** → JSON backup file. **Blocked during active session:** Show prompt: "End your session first."
@@ -2608,7 +2552,7 @@ class TimingSlider extends StatefulWidget {
 - `onChanged` fires on slider release and on numeric submit (no live-fire during drag).
 - Accessibility: every snap-stop has a Semantics label ("30 seconds", "5 minutes", …).
 
-**Used by:** `step_config_form.dart` (waitSeconds / durationSeconds / gracePeriodSeconds), `gps_logging_settings.dart` (tracking interval), `battery_alert_settings.dart` (threshold-percent slider uses a related but separate widget — `PercentSlider` — not this one), `alarm_settings.dart` (gradual-volume duration).
+**Used by:** `step_config_form.dart` (waitSeconds / durationSeconds / gracePeriodSeconds), `gps_logging_settings.dart` (tracking interval), `alarm_settings.dart` (gradual-volume duration).
 
 ### MoreSettingsPanel (`lib/features/modes/widgets/more_settings_panel.dart`)
 
@@ -2641,7 +2585,7 @@ class MoreSettingsPanel extends StatefulWidget {
 Promoted from prior DE-5 ("Home Screen Widget"). Shipped on both Android and iOS at v3 GA.
 
 **Surface (cross-platform):**
-- **Current session status:** one of `Idle`, `Session active`, `Simulation active`, `Battery alert` plus an `mm:ss` elapsed timer when applicable.
+- **Current session status:** one of `Idle`, `Session active`, `Simulation active` plus an `mm:ss` elapsed timer when applicable.
 - **Quick Exit button:** ends the active session. **PIN-gated via the Session End PIN** (if configured); Duress PIN still fires the distress chain when entered at the gate. When no Session End PIN is configured, the button ends the session immediately.
 - **Fake Call button:** deep-links to `/fake-call` via GoRouter.
 
@@ -2650,7 +2594,7 @@ Promoted from prior DE-5 ("Home Screen Widget"). Shipped on both Android and iOS
 - Widget metadata: `android/app/src/main/res/xml/guardian_angela_widget_info.xml`.
 - Layout: `android/app/src/main/res/layout/guardian_angela_widget.xml`.
 - Quick Exit broadcasts an intent to a Dart interactivity callback registered by `HomeScreen`; Fake Call broadcasts a deep-link URI.
-- `SessionController` calls `HomeWidgetService.publishStatus(...)` on every session transition (start, stop, escalation, simulation toggle, battery alert).
+- `SessionController` calls `HomeWidgetService.publishStatus(...)` on every session transition (start, stop, escalation, simulation toggle).
 
 **iOS (DE-5 iOS — added at v3 GA per D14):**
 - SwiftUI WidgetKit extension at `ios/GuardianAngelaWidget/` with `WidgetBundle`, `Widget`, `TimelineProvider`, `IntentConfiguration`, and an App Group (`group.com.guardianangela.shared`) for shared state with the host app.
@@ -2827,7 +2771,6 @@ settings_reminder_templates
 template_editor
 settings_notifications
 settings_history_retention
-settings_battery_alert
 profile
 settings_about
 settings_feedback

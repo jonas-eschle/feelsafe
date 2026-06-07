@@ -1,14 +1,18 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-07 — **M0 COMPLETE + VERIFIED + PUSHED. M1 in
-progress (1/3: #11 done + pushed).**
+**Snapshot:** 2026-06-07 — **M0 COMPLETE+VERIFIED+PUSHED. M1 in progress
+(2/3: #11 done+pushed; #22 done, UNPUSHED).**
 
-**All feature work (M0 + M0-verify + M1 #11) is PUSHED to `origin/main`
-(`cbe27a4`).** Only this handoff commit may be unpushed. Tree clean.
-**Tests: 3809 pass.** Analyzer `--fatal-infos` clean. Branch: `main`.
+**M0 + M0-verify + #11 are PUSHED to `origin/main` (`cbe27a4`).** **Two
+commits are UNPUSHED** — the #22 commit at `HEAD` (folds in this handoff
+update) and the prior session's `4f09cc1` handoff commit — awaiting user
+authorization to push. Tree clean. **Tests: 3694 pass** (−115: battery-alert
+feature removed).
+Analyzer `--fatal-infos` clean. l10n parity 556×14. app_boot_smoke green.
+Branch: `main`.
 
-**Next action: M1 #22** (GPS logging + battery-alert firing), then #12
-(background clamp). See "How to resume."
+**Next action: M1 #12** (background clamp) — the last M1 item. See "How to
+resume."
 
 ---
 
@@ -18,23 +22,24 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**First action: #22 — GPS logging start/stop + battery-alert firing**
-(🔴 GA-blocker). Audit: `LocationService.startTracking` has no caller (GPS
-breadcrumbs are never recorded) and battery monitoring's `startMonitoring`
-has no caller (the battery-alert chain never fires). Spec **06:208-233**
-(battery alert) and **06:549-569** (GPS logging). This is
-**SessionController lifecycle wiring** — start at `startSession`, tear down
-in `_disposeRunOnly` + `_disposeAll`.
+**First action: #12 — background speed-clamp lifecycle** (🟡 sim-only).
+Audit: `SessionEngine.setBackgroundClamp` is never called, so G-013's
+background timer clamp (cap effective speed at 60× when the app is
+backgrounded) never engages. Spec **01:700-703**. This is **SessionController
+lifecycle wiring** driven by an app-lifecycle observer
+(`WidgetsBindingObserver.didChangeAppLifecycleState`): clamp on
+`paused`/`inactive`, release on `resumed`. The engine method already exists
+(`session_engine.dart` `setBackgroundClamp`, `effectiveSpeedMultiplier`,
+`isBackgroundClamped`) — only the caller is missing.
 
-**The #11 wiring is your template** (`lib/features/session/session_controller.dart`):
-a service started/subscribed in `startSession` (guard with `!simulate`
-where it touches real hardware), handled by a private `_on…` method, and
-torn down via a `_teardown…()` helper called from BOTH dispose paths. When
-you wire a new service into `startSession`, **add its sim-provider override
-to every session-running test container** — #11 needed it in
-dispatch/distress/home-widget tests; grep for containers overriding
-`phoneServiceProvider` that lack the new provider, or they'll hit the real
-platform-channel service and fail.
+**The #11/#22 wiring is your template** (`lib/features/session/session_controller.dart`):
+work started in `startSession` and torn down via a `_teardown…()` helper
+called from BOTH dispose paths (`_disposeRunOnly` + `_disposeAll`). When you
+wire a new service into `startSession`, **add its sim-provider override to
+every session-running test container** — grep for containers overriding
+`phoneServiceProvider`/`locationServiceProvider` that lack the new provider,
+or they'll hit the real platform-channel service and fail. (For #12 the
+lifecycle observer is host-testable directly.)
 
 **Per-fix recipe:** verify the gap yourself first → implement (serial) →
 prove with host controller/widget tests that drive the **real**
@@ -42,12 +47,11 @@ controller+engine (that is the proof for pure wiring — see rule 6) → l10n
 deltas if any new user-facing string (spawn the language agent for the 13
 non-English locales) → gate suite → commit → **ask before pushing**.
 
-**M1 remaining:** #22, then **#12 background clamp** (`setBackgroundClamp`
-never called; spec 01:700-703; 🟡 sim-only — fold in).
+**M1 remaining:** just **#12 background clamp** — then M1 is complete.
 
 ---
 
-## What's done (all PUSHED to origin/main)
+## What's done (M0/M0-verify/#11 PUSHED; #22 UNPUSHED)
 
 **M0 — core escalation actually works** (4/4):
 - `#21` audio assets — real WAV siren/ring/countdown + CI asset-exist gate
@@ -78,6 +82,35 @@ New `SessionState.pauseReason` → "Paused — incoming call" badge (14
 locales) and `SessionState.fakeCallCancelNonce`. Edge: a user-requested
 pause is never clobbered (`_pausedByRealCall`). 9 host tests drive the real
 controller+engine; app_boot_smoke green on emulator.
+
+**M1 `#22`** (UNPUSHED): two parts.
+- **GPS logging wired (the GA-blocker that stays).** `SessionController`
+  now starts `LocationService` breadcrumb tracking in `startSession` (real
+  sessions only, when the resolved `GpsLoggingConfig.enabled`;
+  `mode.overrides?.gpsLogging ?? settings.defaults.gpsLogging`) and tears it
+  down via `_teardownGpsLogging()` (stop + `clearHistory`) from BOTH dispose
+  paths. **Impact:** before this, `startTracking` had no caller, so
+  `_history` was always empty and every `smsContact`/`callEmergency`
+  `{location}` placeholder resolved to "Location unavailable"
+  (strategies read `getLastLocationUrl()` ← history). Honours the configured
+  interval; accuracy stays at the service default (high) — protocol's
+  `startTracking({Duration interval})` can't carry accuracy (deferred
+  refinement). 4 host tests drive the real controller+engine
+  (`session_controller_gps_test.dart`).
+- **Battery-alert feature REMOVED entirely** (user decision via
+  AskUserQuestion: "a low battery is beyond the scope of this app").
+  Deleted `BatteryMonitorService` (+sim+protocol), `BatteryAlertConfig`
+  (+repo+seed default), `BatteryAlertController` + `/settings/battery-alert`
+  screen+route+settings row, the home-widget `batteryAlert` status,
+  `notifyBatteryAlert()`, the backup field, the `battery_plus` dependency,
+  and all battery-alert tests. Stripped from canonical specs
+  (00,01,02,03,04,05,06,08,09,10 + the pre-session low-battery warning in 01),
+  the remediation plan #22, `wiring-map.md`, the feature-coverage matrix, and
+  all 14 ARB locales. **Kept** (different features): the "Battery Warning"
+  disguised-reminder template + battery disguise icon; "battery optimization"
+  whitelist warnings; 08's "Low Battery → no power-saving" note (documents we
+  ignore battery). `settings_screen_test` got a tall-viewport helper so
+  bottom rows stay tappable after the tile removal shifted the list.
 
 ---
 
@@ -120,6 +153,13 @@ controller+engine; app_boot_smoke green on emulator.
    (`DisguisedReminderScreen`); `subtle` stays an inline card.
 6. Verify M0 (run the cohort) before M1; push the verified M0 + #11 stack
    before continuing to #22.
+7. **#22 battery-alert half DESCOPED → feature removed entirely** (not just
+   the firing). User: "a low battery is beyond the scope of this app… remove
+   it from specs as well." Confirmed full-footprint removal (code + specs +
+   l10n + tests + `battery_plus` dep) vs. the narrow "drop the banner" read.
+   #22 is now GPS-logging-only. If the user later wants the "Battery Warning"
+   disguise template/icon gone too, that's a trivial follow-up (kept for now
+   — it's a disguisedReminder option, not a battery feature).
 
 ---
 
@@ -166,7 +206,7 @@ cached, so a retry succeeds. **Don't** pipe a long backgrounded
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3809 pass
+flutter test --concurrency=6                                    # 3694 pass
 dart format <changed .dart files>                              # scope to changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -183,8 +223,9 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Milestones:** **M0 ✓ (verified, pushed). M1: #11 ✓** — remaining **#22
-  GPS/battery, #12 clamp.** Then M2 (config UIs #13/#14/#23/#20 — #13's
+- **Milestones:** **M0 ✓ (verified, pushed). M1: #11 ✓ (pushed), #22 ✓
+  (GPS wired; battery-alert removed — UNPUSHED)** — remaining **#12 clamp**,
+  then M1 complete. Then M2 (config UIs #13/#14/#23/#20 — #13's
   `StepConfigPanel` is where the new `templateIds` field gets its editor),
   M3 (#15 stealth), M4 (#10/#9/#8/#16 + Tier-F decisions), M5 (Phase-9
   proper: INT scenarios, **device e2e incl. #11 adb-gsm**, spec-coverage

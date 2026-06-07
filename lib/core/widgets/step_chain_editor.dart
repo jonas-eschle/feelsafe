@@ -7,15 +7,13 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
-/// Reusable list-of-steps editor used by both the mode editor and the
-/// battery alert chain editor.
+/// Reusable list-of-steps editor used by the mode editor.
 ///
 /// Owners pass the current ordered [steps] and an [onChanged] callback;
 /// the widget renders a list with per-step expandable timing controls,
 /// delete buttons, reorderable handles, and a sheet-driven "Add step"
-/// button. Allowed step types are filtered via [allowedTypes] so the
-/// battery alert chain can exclude interactive steps (spec 04
-/// §Battery Alert).
+/// button. Allowed step types can be filtered via [allowedTypes] so a
+/// caller can restrict which step types may be added.
 class StepChainEditor extends StatelessWidget {
   /// Creates a [StepChainEditor].
   const StepChainEditor({
@@ -33,9 +31,6 @@ class StepChainEditor extends StatelessWidget {
   final ValueChanged<List<ChainStep>> onChanged;
 
   /// When non-null, restricts the add-sheet to these types.
-  ///
-  /// Used by the battery-alert editor to exclude interactive step types
-  /// per [BatteryAlertConfig.forbiddenStepTypes].
   final Set<ChainStepType>? allowedTypes;
 
   /// Minimum number of steps that must remain in the chain.

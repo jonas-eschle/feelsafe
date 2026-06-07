@@ -59,7 +59,6 @@ List<String> _allParameterizedStrings(AppLocalizations l) => <String>[
   l.sessionStepNextCheckIn('12:30'),
   l.sessionStepFakeCallActive('Alex'),
   l.sessionStepSimBlockedSms(2),
-  l.batteryAlertForbiddenStep('SMS'),
   l.pastEventsTrashEmptyAllSuccess(5),
   l.pastEventsTrashRetentionNote(30),
   l.pastEventsTrashRemainingDays(7),

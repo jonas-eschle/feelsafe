@@ -8,7 +8,7 @@
 // Phase 5A coverage: EncryptionService + all three JSON repos.
 // Stage 5B.1 adds: vibration, wakelock, flash, screenFlash, recording,
 //   contact, audio.
-// Stage 5B.2 adds: location, batteryMonitor, notification,
+// Stage 5B.2 adds: location, notification,
 //   hardwareButton, callState, systemUi.
 // Stage 5B.3 adds: phone, messaging, backgroundSession,
 //   sentry, sessionLogRecorder.
@@ -28,7 +28,6 @@ import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
 import 'package:guardianangela/services/sim/background_session_service_sim.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
-import 'package:guardianangela/services/sim/battery_monitor_service_sim.dart';
 import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/encryption_service_sim.dart';
@@ -107,12 +106,6 @@ void main() {
         check(repo.runtimeType.toString()).equals('UserProfileRepository');
       },
     );
-
-    test('batteryAlertConfigRepositoryProvider resolves to a '
-        'BatteryAlertConfigRepository', () {
-      final repo = container.read(batteryAlertConfigRepositoryProvider);
-      check(repo.runtimeType.toString()).equals('BatteryAlertConfigRepository');
-    });
   });
 
   group('Simulation swap — invariant: no Real*Service outside override', () {
@@ -352,35 +345,6 @@ void main() {
       final s =
           container.read(locationServiceProvider) as SimulationLocationService;
       check(s.isTracking).isFalse();
-    });
-  });
-
-  group('Simulation swap — BatteryMonitorService', () {
-    late ProviderContainer container;
-    late SimulationBatteryMonitorService sim;
-
-    setUp(() {
-      sim = SimulationBatteryMonitorService();
-      container = ProviderContainer(
-        overrides: [batteryMonitorServiceProvider.overrideWithValue(sim)],
-      );
-    });
-
-    tearDown(() {
-      container.dispose();
-      sim.dispose();
-    });
-
-    test('overridden container returns SimulationBatteryMonitorService', () {
-      final s = container.read(batteryMonitorServiceProvider);
-      check(s).isA<SimulationBatteryMonitorService>();
-    });
-
-    test('simulation battery monitor starts not monitoring', () {
-      final s =
-          container.read(batteryMonitorServiceProvider)
-              as SimulationBatteryMonitorService;
-      check(s.isMonitoring).isFalse();
     });
   });
 

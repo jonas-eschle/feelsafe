@@ -1075,45 +1075,6 @@ Optional toggle to include media (audio recordings, photos) in the export. Defau
 
 ---
 
-## BatteryMonitorService
-
-Monitors battery level during active sessions and fires a one-shot low-battery alert.
-
-```dart
-class BatteryMonitorService {
-  Future<void> startMonitoring({
-    int threshold = 10,  // Default: 10%
-  });
-  Future<void> stopMonitoring();
-  Stream<int> get batteryLevel;
-}
-```
-
-### Monitoring
-
-**`startMonitoring(threshold)`**
-
-Polls battery level at regular intervals. When battery drops below the threshold (default 10%),
-fires a one-shot battery alert configured in `BatteryAlertConfig`. The main chain is NOT paused
-or interrupted — battery alert is a side action only.
-
-### Low Battery Alert (One-Shot)
-
-1. Shows a notification to the user: "Battery low — [X]% remaining"
-2. Runs `BatteryAlertConfig.chain` on a **separate `SessionEngine` instance** with its **own `BatteryAlertController`** (a thin Riverpod controller wrapping the engine). The main session's `SessionEngine` is NOT reused (instances cannot run two chains concurrently). Both engines register with the **same `SessionLogRecorder`** so the timeline stays unified — the main session's events and the battery alert's events end up interleaved in one `SessionLog` for that session (G-020).
-3. Fires ONCE per session only (subsequent drops below threshold are ignored).
-4. Main chain continues uninterrupted; the battery-alert engine runs to completion independently of the main engine's state (it does not pause when the main engine pauses, and ending the main session does not auto-cancel a running battery-alert chain — the battery chain finishes its remaining steps and then terminates).
-
-### Configuration
-
-Optional feature, off by default. Enabled in settings with a configurable threshold (1-50%).
-
-### Implementation
-
-Uses `battery_plus` package to monitor battery state changes.
-
----
-
 ## SessionLogRecorder
 
 Persists session timeline events emitted by the engine into a
@@ -1227,7 +1188,7 @@ Issues include action buttons to resolve them:
 
 - **isValid = true** — All critical checks passed; session can start
 - **errors** — Critical issues that prevent session start
-- **warnings** — Non-critical but important (e.g., low battery, no contacts)
+- **warnings** — Non-critical but important (e.g., no contacts, app not whitelisted from battery optimization)
 
 UI shows errors and blocks session start, shows warnings but allows user to proceed.
 

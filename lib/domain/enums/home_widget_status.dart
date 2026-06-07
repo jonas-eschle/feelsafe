@@ -12,7 +12,4 @@ enum HomeWidgetStatus {
 
   /// A simulation session is active (timer shown on widget).
   simulationActive,
-
-  /// A battery-level alert has fired during an active session.
-  batteryAlert,
 }

@@ -904,10 +904,6 @@
   "@stealthPresetClock": {
     "description": "Stealth preset: Clock."
   },
-  "batteryAlertTitle": "Battery alert",
-  "@batteryAlertTitle": {
-    "description": "Title of battery alert screen."
-  },
   "eventDefaultsTitle": "Event defaults",
   "@eventDefaultsTitle": {
     "description": "Title of event defaults screen."
@@ -1391,10 +1387,6 @@
   "@settingsDistressModesRow": {
     "description": "Distress modes row label."
   },
-  "settingsBatteryAlertRow": "Battery alert",
-  "@settingsBatteryAlertRow": {
-    "description": "Battery alert row label."
-  },
   "settingsEventDefaultsRow": "Event defaults",
   "@settingsEventDefaultsRow": {
     "description": "Event defaults row label."
@@ -1617,22 +1609,6 @@
     "placeholders": {
       "count": {}
     }
-  },
-  "batteryAlertEnableLabel": "Enable battery alert",
-  "@batteryAlertEnableLabel": {
-    "description": "Battery alert enable toggle."
-  },
-  "batteryAlertThresholdLabel": "Battery threshold (%)",
-  "@batteryAlertThresholdLabel": {
-    "description": "Battery threshold slider label."
-  },
-  "batteryAlertChainHeader": "Alert chain",
-  "@batteryAlertChainHeader": {
-    "description": "Section header for the battery alert chain."
-  },
-  "batteryAlertResetChain": "Reset",
-  "@batteryAlertResetChain": {
-    "description": "Reset chain button."
   },
   "eventDefaultsCheckInHeader": "Check-in methods",
   "@eventDefaultsCheckInHeader": {
@@ -2139,13 +2115,6 @@
   "@pastEventsRestore": {
     "description": "Restore action shown on the past-events SnackBar (undo soft delete)."
   },
-  "batteryAlertForbiddenStep": "{type} is not allowed in the battery-alert chain.",
-  "@batteryAlertForbiddenStep": {
-    "description": "Error snack shown when the user tries to add an interactive step to a battery-alert chain.",
-    "placeholders": {
-      "type": {}
-    }
-  },
   "stepEditorWait": "Wait (s)",
   "@stepEditorWait": {
     "description": "Label for the wait-seconds field of a chain step."
@@ -2406,10 +2375,6 @@
   "homeWidgetStatusSim": "Simulation active",
   "@homeWidgetStatusSim": {
     "description": "Home-screen widget status text shown while a simulation session is active."
-  },
-  "homeWidgetStatusBatteryAlert": "Battery alert",
-  "@homeWidgetStatusBatteryAlert": {
-    "description": "Home-screen widget status text shown when a low-battery alert fires during a session."
   },
   "homeWidgetQuickExit": "Quick Exit",
   "@homeWidgetQuickExit": {

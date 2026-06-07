@@ -711,9 +711,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get stealthPresetClock => 'Uhr';
 
   @override
-  String get batteryAlertTitle => 'Akku-Warnung';
-
-  @override
   String get eventDefaultsTitle => 'Schritt-Standardwerte';
 
   @override
@@ -1095,9 +1092,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get settingsDistressModesRow => 'Notfallmodi';
 
   @override
-  String get settingsBatteryAlertRow => 'Akku-Warnung';
-
-  @override
   String get settingsEventDefaultsRow => 'Schritt-Standardwerte';
 
   @override
@@ -1276,18 +1270,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return '$count Protokolle bereinigt';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'Akku-Warnung aktivieren';
-
-  @override
-  String get batteryAlertThresholdLabel => 'Akku-Schwellenwert (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'Warnkette';
-
-  @override
-  String get batteryAlertResetChain => 'Zurücksetzen';
 
   @override
   String get eventDefaultsCheckInHeader => 'Check-in-Methoden';
@@ -1680,11 +1662,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get pastEventsRestore => 'Wiederherstellen';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type ist in der Akku-Warnkette nicht erlaubt.';
-  }
-
-  @override
   String get stepEditorWait => 'Warten (s)';
 
   @override
@@ -1880,9 +1857,6 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'Simulation aktiv';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'Akku-Warnung';
 
   @override
   String get homeWidgetQuickExit => 'Schnell beenden';

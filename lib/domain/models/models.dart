@@ -18,7 +18,6 @@ export 'package:guardianangela/domain/triggers/distress_trigger.dart';
 // Models
 export 'package:guardianangela/domain/models/app_defaults.dart';
 export 'package:guardianangela/domain/models/app_settings.dart';
-export 'package:guardianangela/domain/models/battery_alert_config.dart';
 export 'package:guardianangela/domain/models/chain_step.dart';
 export 'package:guardianangela/domain/models/emergency_contact.dart';
 export 'package:guardianangela/domain/models/event_defaults.dart';

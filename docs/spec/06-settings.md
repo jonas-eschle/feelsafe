@@ -18,7 +18,6 @@ The old two-level "Defaults" and "Modes & Chains" hubs have been removed (Pivot 
 |---------|-------------|-------|
 | Session | Modes | `/modes` |
 | Session | Distress modes | `/distress-modes` |
-| Session | Battery alert | `/settings/battery-alert` |
 | Security | Security (PIN, biometric, thresholds) | `/settings/security` |
 | Security | Stealth | `/settings/stealth` |
 | Defaults | Event defaults | `/settings/event-defaults` |
@@ -202,35 +201,6 @@ Both the duress PIN and wrong-PIN threshold fire the mode's selected distress mo
 - **Engine event:** Each invocation emits `ChainEvent.deceptiveOldPinShown` (spec 01 §Events Emitted) with `metadata['attemptCount']` = post-increment counter value, so the session log records the misdirection for forensics.
 - **Interaction with wrong-PIN escalation:** Both "Cancel" and "Continue" increment the wrong-PIN counter exactly once. The dialog does NOT replace or short-circuit the escalation rules above — when the counter hits the configured threshold the distress chain still fires silently.
 - **Why:** Without this, a wrong-PIN response that says "incorrect" tells an attacker their guess was wrong, which lets them eliminate that PIN from their search. The deceptive wording instead tells them the PIN was once valid (so they keep trying earlier-PIN-like guesses) while the silent counter ticks toward distress.
-
----
-
-### Battery Alert Section (`/settings/battery-alert`)
-
-Optional low-battery one-shot alert. Battery alert is a one-shot SMS alert that does not pause the main session.
-
-#### Enable Battery Alert
-- **Label:** "Send alert if battery is low" ℹ
-- **Info:** "When battery drops below the threshold during a session, sends a one-shot SMS to your emergency contacts. Fires once per session and does not pause the session."
-- **Control:** Toggle switch
-- **Default:** OFF
-- **Persistence:** `BatteryAlertConfig.enabled`
-
-#### Battery Threshold (If Enabled)
-- **Label:** "Battery level for alert" ℹ
-- **Control:** Slider with percentage display
-- **Range:** 5–50% (default 10%)
-- **Real-time display:** "10%"
-- **Persistence:** `BatteryAlertConfig.thresholdPercent`
-- **Behavior:** If battery drops below threshold during an active session, fires once per session.
-
-#### Configure chain (If Enabled)
-- **Label:** "Battery alert chain" ℹ
-- **Info:** "The chain that fires when the battery drops below the threshold. Edited with the same step-tile UI used by the mode editor."
-- **Control:** Inline reorderable chain editor (add / remove / reorder / edit steps) with a "Reset to default" action. Only action step types are offered (interactive types like holdButton/disguisedReminder are excluded — battery alert is triggered, not held).
-- **Default:** Single `smsContact` step targeting all emergency contacts (see seed data).
-- **Persistence:** `BatteryAlertConfig.chain: List<ChainStep>`
-- **Screen:** Embedded in `/settings/battery-alert` (see `battery_alert_screen.dart`).
 
 ---
 
@@ -455,7 +425,7 @@ The event defaults screen shows all 9 step types in a list or tabbed interface. 
 - Info icon on includeLocation explains that this creates a shareable maps link
 - Info icon on autoRecordAudio: "Check local recording laws before enabling"
 - Legal warning box: "Recording laws vary by jurisdiction. You are responsible for compliance."
-- **Contact selection (per-step):** Inside any `smsContact` step config (in the Mode editor, Distress Mode editor, or Battery Alert editor) the former "All / First only / Specific" dropdown is replaced by a **grid of one clickable button per emergency contact**. Contacts whose `messageChannels` include SMS are enabled and default to ON for a new step; contacts without SMS as a channel render disabled and grayed out (cannot be toggled). At save time, an all-enabled selection maps to `SmsContactSelection.allContacts`; a strict subset maps to `SmsContactSelection.specificIds`. See **`04-screens-navigation.md` → SMS Contact Selection** for the full widget spec, and **`03-data-models.md`** for the model-level save-time inference contract.
+- **Contact selection (per-step):** Inside any `smsContact` step config (in the Mode editor or Distress Mode editor) the former "All / First only / Specific" dropdown is replaced by a **grid of one clickable button per emergency contact**. Contacts whose `messageChannels` include SMS are enabled and default to ON for a new step; contacts without SMS as a channel render disabled and grayed out (cannot be toggled). At save time, an all-enabled selection maps to `SmsContactSelection.allContacts`; a strict subset maps to `SmsContactSelection.specificIds`. See **`04-screens-navigation.md` → SMS Contact Selection** for the full widget spec, and **`03-data-models.md`** for the model-level save-time inference contract.
 
 ### phoneCallContact Defaults
 
@@ -629,7 +599,6 @@ Every non-obvious config option displays an (i) icon. Tapping shows tooltip text
 | Stealth mode | Hides all safety indicators so the app is invisible to others. Notification appears disguised. No end screen shown. |
 | Override silent mode | When enabled, alarm plays at full volume even if phone is on silent or vibrate. Alarm is the only event that can override. |
 | Gradual volume | Volume increases gradually from zero instead of starting at maximum. Less startling but slower to reach full alertness. |
-| Battery threshold | When battery drops below this percentage during a session, send alert to emergency contacts and record location. Helps rescuers find you. |
 | Wrong PIN attempts | Number of incorrect PIN attempts before triggering a safety escalation. Prevents attackers from repeatedly guessing your PIN. |
 | Duress PIN | A secret PIN that appears to end the session but actually triggers escalation. Used if forced to unlock phone. |
 

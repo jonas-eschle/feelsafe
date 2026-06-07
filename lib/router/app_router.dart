@@ -7,7 +7,6 @@ import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
-import 'package:guardianangela/features/battery_alert/battery_alert_screen.dart';
 import 'package:guardianangela/features/contact_form/contact_form_screen.dart';
 import 'package:guardianangela/features/contacts/contacts_screen.dart';
 import 'package:guardianangela/features/disguised_reminder/disguised_reminder_screen.dart';
@@ -261,11 +260,6 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         path: '/settings/history-retention',
         name: RouteNames.settingsHistoryRetention,
         builder: (_, _) => const HistoryRetentionScreen(),
-      ),
-      GoRoute(
-        path: '/settings/battery-alert',
-        name: RouteNames.settingsBatteryAlert,
-        builder: (_, _) => const BatteryAlertScreen(),
       ),
       GoRoute(
         path: '/profile',

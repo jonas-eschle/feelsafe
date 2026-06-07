@@ -79,11 +79,6 @@ const List<_FeatureStatus> _features = [
     implemented: true,
     tested: true,
   ),
-  _FeatureStatus(
-    id: 'F-015',
-    description: 'Low-battery alert chain (separate engine)',
-    phase: 5,
-  ),
   _FeatureStatus(id: 'F-016', description: 'Distress mode CRUD UI', phase: 6),
 
   // ── Screens (F-017..F-044) ───────────────────────────────────────
@@ -105,7 +100,6 @@ const List<_FeatureStatus> _features = [
   _FeatureStatus(id: 'F-032', description: 'EventDefaultsScreen', phase: 6),
   _FeatureStatus(id: 'F-033', description: 'GpsLoggingScreen', phase: 6),
   _FeatureStatus(id: 'F-034', description: 'ReminderTemplatesScreen', phase: 6),
-  _FeatureStatus(id: 'F-035', description: 'BatteryAlertScreen', phase: 6),
   _FeatureStatus(id: 'F-036', description: 'HistoryRetentionScreen', phase: 6),
   _FeatureStatus(id: 'F-037', description: 'NotificationsScreen', phase: 6),
   _FeatureStatus(id: 'F-038', description: 'ProfileScreen', phase: 6),
@@ -468,8 +462,8 @@ const List<_FeatureStatus> _features = [
 
 void main() {
   group('Feature coverage matrix (Phase 0 skeleton)', () {
-    test('Feature list has ≥ 150 entries', () {
-      expect(_features.length, greaterThanOrEqualTo(150));
+    test('Feature list has ≥ 148 entries', () {
+      expect(_features.length, greaterThanOrEqualTo(148));
     });
 
     test('Every feature has a non-empty id and description', () {

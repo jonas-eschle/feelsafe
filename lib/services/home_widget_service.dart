@@ -14,7 +14,7 @@ import 'package:guardianangela/services/protocols/home_widget_service_protocol.d
 // Key              Type      Meaning
 // ──────────────── ──────── ────────────────────────────────────────────────
 // ga_status        String   Status slug: "idle"|"sessionActive"|
-//                            "simulationActive"|"batteryAlert"
+//                            "simulationActive"
 // ga_status_text   String   Pre-localised status label (e.g. "Session active")
 // ga_elapsed       String   Elapsed mm:ss string, or "" when no session
 // ga_quick_exit    String   Pre-localised "Quick Exit" button label

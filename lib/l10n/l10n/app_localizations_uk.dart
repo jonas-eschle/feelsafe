@@ -708,9 +708,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get stealthPresetClock => 'Годинник';
 
   @override
-  String get batteryAlertTitle => 'Сповіщення про батарею';
-
-  @override
   String get eventDefaultsTitle => 'Типові значення кроків';
 
   @override
@@ -1090,9 +1087,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get settingsDistressModesRow => 'Режими тривоги';
 
   @override
-  String get settingsBatteryAlertRow => 'Сповіщення про батарею';
-
-  @override
   String get settingsEventDefaultsRow => 'Типові значення кроків';
 
   @override
@@ -1271,18 +1265,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'Очищено журналів: $count';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'Увімкнути сповіщення про батарею';
-
-  @override
-  String get batteryAlertThresholdLabel => 'Поріг батареї (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'Ланцюг сповіщень';
-
-  @override
-  String get batteryAlertResetChain => 'Скинути';
 
   @override
   String get eventDefaultsCheckInHeader => 'Методи реєстрації';
@@ -1671,11 +1653,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get pastEventsRestore => 'Відновити';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type не дозволено в ланцюзі сповіщень про батарею.';
-  }
-
-  @override
   String get stepEditorWait => 'Очікування (с)';
 
   @override
@@ -1872,9 +1849,6 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'Симуляція активна';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'Сповіщення про батарею';
 
   @override
   String get homeWidgetQuickExit => 'Швидкий вихід';

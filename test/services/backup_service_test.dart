@@ -13,7 +13,6 @@ import 'package:test/test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
-import 'package:guardianangela/data/repositories/battery_alert_config_repository.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
@@ -68,10 +67,6 @@ _make() async {
     keyProvider: _fakeKey,
     resolveDir: _tempResolver(tmp),
   );
-  final batteryAlertConfig = BatteryAlertConfigRepository(
-    keyProvider: _fakeKey,
-    resolveDir: _tempResolver(tmp),
-  );
   final sessionLogs = SessionLogRepository(db.sessionLogsDao);
 
   final service = RealBackupService(
@@ -79,7 +74,6 @@ _make() async {
     contacts: ContactsRepository(db.contactsDao),
     appSettings: appSettings,
     userProfile: userProfile,
-    batteryAlertConfig: batteryAlertConfig,
     sessionLogs: sessionLogs,
   );
 

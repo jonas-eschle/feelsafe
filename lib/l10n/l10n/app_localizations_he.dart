@@ -701,9 +701,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stealthPresetClock => 'שעון';
 
   @override
-  String get batteryAlertTitle => 'התראת סוללה';
-
-  @override
   String get eventDefaultsTitle => 'ברירות מחדל לשלבים';
 
   @override
@@ -1076,9 +1073,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsDistressModesRow => 'מצבי מצוקה';
 
   @override
-  String get settingsBatteryAlertRow => 'התראת סוללה';
-
-  @override
   String get settingsEventDefaultsRow => 'ברירות מחדל לשלבים';
 
   @override
@@ -1250,18 +1244,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String historyRetentionPurged(Object count) {
     return 'נוקו $count יומנים';
   }
-
-  @override
-  String get batteryAlertEnableLabel => 'אפשרי התראת סוללה';
-
-  @override
-  String get batteryAlertThresholdLabel => 'סף סוללה (%)';
-
-  @override
-  String get batteryAlertChainHeader => 'שרשרת התראה';
-
-  @override
-  String get batteryAlertResetChain => 'אפס';
 
   @override
   String get eventDefaultsCheckInHeader => 'שיטות צ\'ק-אין';
@@ -1645,11 +1627,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get pastEventsRestore => 'שחזרי';
 
   @override
-  String batteryAlertForbiddenStep(Object type) {
-    return '$type אינו מותר בשרשרת התראת הסוללה.';
-  }
-
-  @override
   String get stepEditorWait => 'המתנה (ש\')';
 
   @override
@@ -1838,9 +1815,6 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get homeWidgetStatusSim => 'סימולציה פעילה';
-
-  @override
-  String get homeWidgetStatusBatteryAlert => 'התראת סוללה';
 
   @override
   String get homeWidgetQuickExit => 'יציאה מהירה';
