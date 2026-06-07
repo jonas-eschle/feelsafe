@@ -792,6 +792,33 @@
   "@stepResetDefaults": {
     "description": "Action to reset a step's configuration to the global defaults."
   },
+  "smsContactRecipientsHeader": "Contacts to message",
+  "@smsContactRecipientsHeader": {
+    "description": "Header above the SMS-contact recipient grid in a step config."
+  },
+  "smsContactSummaryAll": "To: all enabled contacts",
+  "@smsContactSummaryAll": {
+    "description": "Recipient summary when every channel-capable contact is selected."
+  },
+  "smsContactSummaryNone": "No recipients selected",
+  "@smsContactSummaryNone": {
+    "description": "Recipient summary when no contacts are selected."
+  },
+  "smsContactSummaryTo": "To: {names}",
+  "@smsContactSummaryTo": {
+    "description": "Recipient summary listing the selected contact names.",
+    "placeholders": {
+      "names": {}
+    }
+  },
+  "smsContactChannelDisabledTooltip": "Not enabled for this contact — edit the contact to add this channel.",
+  "@smsContactChannelDisabledTooltip": {
+    "description": "Tooltip on a greyed contact chip whose channel the contact lacks."
+  },
+  "smsContactEmptyAddPrompt": "No contacts yet — add one in Contacts",
+  "@smsContactEmptyAddPrompt": {
+    "description": "Empty-state row shown when there are no emergency contacts; deep-links to Contacts."
+  },
   "distressModesEmpty": "No distress modes yet.",
   "@distressModesEmpty": {
     "description": "Empty state on distress modes."

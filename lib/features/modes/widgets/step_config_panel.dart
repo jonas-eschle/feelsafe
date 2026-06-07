@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/features/modes/widgets/config_fields.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -31,6 +32,8 @@ class StepConfigPanel extends StatelessWidget {
     required this.onReset,
     required this.onDelete,
     this.canDelete = true,
+    this.contacts,
+    this.onManageContacts,
   });
 
   /// The step being edited.
@@ -42,6 +45,12 @@ class StepConfigPanel extends StatelessWidget {
 
   /// Called with the updated step whenever a field changes.
   final ValueChanged<ChainStep> onChanged;
+
+  /// All emergency contacts, for an `smsContact` step's recipient grid.
+  final List<EmergencyContact>? contacts;
+
+  /// Called when the user wants to manage contacts (empty-state deep link).
+  final VoidCallback? onManageContacts;
 
   /// Called when the user taps Duplicate.
   final VoidCallback onDuplicate;
@@ -92,6 +101,8 @@ class StepConfigPanel extends StatelessWidget {
             EventSpecificConfig(
               config: effective,
               onChanged: (StepConfig c) => onChanged(step.copyWith(config: c)),
+              contacts: contacts,
+              onManageContacts: onManageContacts,
             ),
           ],
         ),

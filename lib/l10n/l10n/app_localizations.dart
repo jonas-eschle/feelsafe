@@ -1217,6 +1217,42 @@ abstract class AppLocalizations {
   /// **'Reset to defaults'**
   String get stepResetDefaults;
 
+  /// Header above the SMS-contact recipient grid in a step config.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts to message'**
+  String get smsContactRecipientsHeader;
+
+  /// Recipient summary when every channel-capable contact is selected.
+  ///
+  /// In en, this message translates to:
+  /// **'To: all enabled contacts'**
+  String get smsContactSummaryAll;
+
+  /// Recipient summary when no contacts are selected.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipients selected'**
+  String get smsContactSummaryNone;
+
+  /// Recipient summary listing the selected contact names.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {names}'**
+  String smsContactSummaryTo(Object names);
+
+  /// Tooltip on a greyed contact chip whose channel the contact lacks.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enabled for this contact — edit the contact to add this channel.'**
+  String get smsContactChannelDisabledTooltip;
+
+  /// Empty-state row shown when there are no emergency contacts; deep-links to Contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts yet — add one in Contacts'**
+  String get smsContactEmptyAddPrompt;
+
   /// Empty state on distress modes.
   ///
   /// In en, this message translates to:

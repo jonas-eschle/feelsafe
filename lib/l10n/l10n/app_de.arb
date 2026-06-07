@@ -114,6 +114,12 @@
   "stepFieldRandomize": "Timing zufällig variieren (±20%)",
   "stepDuplicate": "Schritt duplizieren",
   "stepResetDefaults": "Auf Standardwerte zurücksetzen",
+  "smsContactRecipientsHeader": "Zu benachrichtigende Kontakte",
+  "smsContactSummaryAll": "An: alle aktivierten Kontakte",
+  "smsContactSummaryNone": "Keine Empfänger ausgewählt",
+  "smsContactSummaryTo": "An: {names}",
+  "smsContactChannelDisabledTooltip": "Für diesen Kontakt nicht aktiviert — bearbeite den Kontakt, um diesen Kanal hinzuzufügen.",
+  "smsContactEmptyAddPrompt": "Noch keine Kontakte — füge einen unter Kontakte hinzu",
   "angelaDialogTitle": "Alte PIN eingegeben",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."

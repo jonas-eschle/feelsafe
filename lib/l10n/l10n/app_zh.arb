@@ -114,6 +114,12 @@
   "stepFieldRandomize": "随机化计时（±20%）",
   "stepDuplicate": "复制步骤",
   "stepResetDefaults": "重置为默认值",
+  "smsContactRecipientsHeader": "要通知的联系人",
+  "smsContactSummaryAll": "收件人：所有已启用的联系人",
+  "smsContactSummaryNone": "未选择收件人",
+  "smsContactSummaryTo": "收件人：{names}",
+  "smsContactChannelDisabledTooltip": "此联系人未启用此渠道——编辑联系人以添加此渠道。",
+  "smsContactEmptyAddPrompt": "尚无联系人——在“联系人”中添加一位",
   "angelaDialogTitle": "已输入旧 PIN 码",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."

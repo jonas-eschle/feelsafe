@@ -606,6 +606,26 @@ class AppLocalizationsZh extends AppLocalizations {
   String get stepResetDefaults => '重置为默认值';
 
   @override
+  String get smsContactRecipientsHeader => '要通知的联系人';
+
+  @override
+  String get smsContactSummaryAll => '收件人：所有已启用的联系人';
+
+  @override
+  String get smsContactSummaryNone => '未选择收件人';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return '收件人：$names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip => '此联系人未启用此渠道——编辑联系人以添加此渠道。';
+
+  @override
+  String get smsContactEmptyAddPrompt => '尚无联系人——在“联系人”中添加一位';
+
+  @override
   String get distressModesEmpty => '尚无求救模式。';
 
   @override
@@ -2415,6 +2435,26 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stepResetDefaults => '重設為預設值';
+
+  @override
+  String get smsContactRecipientsHeader => '要通知的聯絡人';
+
+  @override
+  String get smsContactSummaryAll => '收件人：所有已啟用的聯絡人';
+
+  @override
+  String get smsContactSummaryNone => '未選擇收件人';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return '收件人：$names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip => '此聯絡人未啟用此管道——編輯聯絡人以新增此管道。';
+
+  @override
+  String get smsContactEmptyAddPrompt => '尚未新增聯絡人——在「聯絡人」中新增一位';
 
   @override
   String get distressModesEmpty => '尚未建立求救模式。';

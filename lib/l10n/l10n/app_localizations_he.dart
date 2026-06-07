@@ -615,6 +615,28 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stepResetDefaults => 'איפוס לברירות המחדל';
 
   @override
+  String get smsContactRecipientsHeader => 'אנשי קשר לשליחת הודעה';
+
+  @override
+  String get smsContactSummaryAll => 'אל: כל אנשי הקשר המופעלים';
+
+  @override
+  String get smsContactSummaryNone => 'לא נבחרו נמענים';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'אל: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'לא מופעל עבור איש קשר זה — ערכו את איש הקשר כדי להוסיף ערוץ זה.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'אין אנשי קשר עדיין — הוסיפו אחד באנשי קשר';
+
+  @override
   String get distressModesEmpty => 'אין מצבי מצוקה עדיין.';
 
   @override

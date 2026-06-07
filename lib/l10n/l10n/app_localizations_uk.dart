@@ -620,6 +620,28 @@ class AppLocalizationsUk extends AppLocalizations {
   String get stepResetDefaults => 'Скинути до типових значень';
 
   @override
+  String get smsContactRecipientsHeader => 'Контакти для сповіщення';
+
+  @override
+  String get smsContactSummaryAll => 'Кому: усі ввімкнені контакти';
+
+  @override
+  String get smsContactSummaryNone => 'Одержувачів не вибрано';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'Кому: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'Не ввімкнено для цього контакту — відредагуйте контакт, щоб додати цей канал.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'Ще немає контактів — додайте один у Контактах';
+
+  @override
   String get distressModesEmpty => 'Ще немає режимів тривоги.';
 
   @override

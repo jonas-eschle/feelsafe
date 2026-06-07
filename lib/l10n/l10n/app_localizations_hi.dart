@@ -622,6 +622,28 @@ class AppLocalizationsHi extends AppLocalizations {
   String get stepResetDefaults => 'डिफ़ॉल्ट पर रीसेट करें';
 
   @override
+  String get smsContactRecipientsHeader => 'संदेश भेजने के लिए संपर्क';
+
+  @override
+  String get smsContactSummaryAll => 'प्रति: सभी सक्षम संपर्क';
+
+  @override
+  String get smsContactSummaryNone => 'कोई प्राप्तकर्ता चयनित नहीं';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'प्रति: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'इस संपर्क के लिए सक्षम नहीं — यह चैनल जोड़ने के लिए संपर्क संपादित करें।';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'अभी तक कोई संपर्क नहीं — संपर्क में एक जोड़ें';
+
+  @override
   String get distressModesEmpty => 'अभी तक कोई संकट मोड नहीं।';
 
   @override

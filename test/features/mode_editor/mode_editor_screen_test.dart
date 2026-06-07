@@ -28,6 +28,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -655,6 +656,37 @@ void main() {
       await tester.tap(find.text(l10n.chainStepNameFakeCall).last);
       await tester.pumpAndSettle();
       expect(find.byIcon(Icons.drag_handle), findsNWidgets(2));
+    });
+  });
+
+  group('ModeEditorScreen — smsContact recipient grid', () {
+    testWidgets('an smsContact step shows the recipient grid with contacts', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await db.contactsDao.upsert(
+        EmergencyContact(
+          id: 'a',
+          name: 'Alice',
+          phoneNumber: '+15550001',
+          sortOrder: 0,
+        ),
+      );
+      final mode = await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s1', type: ChainStepType.smsContact)]),
+      );
+      await pumpScreen(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        overrides: _overrides(db),
+      );
+      await _expandStep(tester, l10n.chainStepNameSmsContact);
+      await _scrollTo(tester, find.text(l10n.smsContactRecipientsHeader));
+      expect(find.text(l10n.smsContactRecipientsHeader), findsOneWidget);
+      expect(find.widgetWithText(FilterChip, 'Alice'), findsOneWidget);
     });
   });
 

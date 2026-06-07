@@ -624,6 +624,28 @@ class AppLocalizationsEl extends AppLocalizations {
   String get stepResetDefaults => 'Επαναφορά στις προεπιλογές';
 
   @override
+  String get smsContactRecipientsHeader => 'Επαφές προς ειδοποίηση';
+
+  @override
+  String get smsContactSummaryAll => 'Προς: όλες τις ενεργοποιημένες επαφές';
+
+  @override
+  String get smsContactSummaryNone => 'Δεν επιλέχθηκαν παραλήπτες';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'Προς: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'Δεν είναι ενεργοποιημένο για αυτή την επαφή — επεξεργαστείτε την επαφή για να προσθέσετε αυτό το κανάλι.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'Δεν υπάρχουν ακόμη επαφές — προσθέστε μία στις Επαφές';
+
+  @override
   String get distressModesEmpty => 'Δεν υπάρχουν ακόμη λειτουργίες κινδύνου.';
 
   @override

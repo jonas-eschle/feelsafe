@@ -619,6 +619,28 @@ class AppLocalizationsFa extends AppLocalizations {
   String get stepResetDefaults => 'بازنشانی به پیش‌فرض‌ها';
 
   @override
+  String get smsContactRecipientsHeader => 'مخاطبینی که پیام دریافت می‌کنند';
+
+  @override
+  String get smsContactSummaryAll => 'به: همه مخاطبین فعال';
+
+  @override
+  String get smsContactSummaryNone => 'هیچ گیرنده‌ای انتخاب نشده';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'به: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'برای این مخاطب فعال نیست — مخاطب را ویرایش کنید تا این کانال افزوده شود.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'هنوز مخاطبی وجود ندارد — یکی در مخاطبین اضافه کنید';
+
+  @override
   String get distressModesEmpty => 'هنوز هیچ حالت اضطراری وجود ندارد.';
 
   @override

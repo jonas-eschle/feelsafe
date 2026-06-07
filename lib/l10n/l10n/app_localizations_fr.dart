@@ -624,6 +624,28 @@ class AppLocalizationsFr extends AppLocalizations {
   String get stepResetDefaults => 'Réinitialiser aux valeurs par défaut';
 
   @override
+  String get smsContactRecipientsHeader => 'Contacts à prévenir';
+
+  @override
+  String get smsContactSummaryAll => 'À : tous les contacts activés';
+
+  @override
+  String get smsContactSummaryNone => 'Aucun destinataire sélectionné';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'À : $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'Non activé pour ce contact — modifiez le contact pour ajouter ce canal.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'Aucun contact pour le moment — ajoutez-en un dans Contacts';
+
+  @override
   String get distressModesEmpty => 'Aucun mode de détresse pour le moment.';
 
   @override

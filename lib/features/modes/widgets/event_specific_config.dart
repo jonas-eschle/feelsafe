@@ -9,7 +9,9 @@ import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/features/modes/widgets/config_fields.dart';
+import 'package:guardianangela/features/modes/widgets/sms_contact_grid.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Renders the type-specific configuration form for a [StepConfig].
@@ -21,12 +23,18 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// config; the caller decides whether to persist immediately (Event
 /// Defaults) or stage the change in a draft (Mode Editor). See spec 04
 /// §Event configuration.
+///
+/// [contacts] is non-null only in the Mode Editor context, where an
+/// `smsContact` step renders the [SmsContactGrid] recipient picker; in Event
+/// Defaults it is null (a global default has no specific recipients).
 class EventSpecificConfig extends StatelessWidget {
   /// Creates an [EventSpecificConfig] for [config].
   const EventSpecificConfig({
     super.key,
     required this.config,
     required this.onChanged,
+    this.contacts,
+    this.onManageContacts,
   });
 
   /// The current per-step config to edit.
@@ -34,6 +42,13 @@ class EventSpecificConfig extends StatelessWidget {
 
   /// Called with an updated config whenever a field changes.
   final ValueChanged<StepConfig> onChanged;
+
+  /// All emergency contacts, for the `smsContact` recipient grid. Null in the
+  /// Event Defaults context (no grid shown).
+  final List<EmergencyContact>? contacts;
+
+  /// Called when the user wants to manage contacts (empty-state deep link).
+  final VoidCallback? onManageContacts;
 
   @override
   Widget build(BuildContext context) => switch (config) {
@@ -53,6 +68,8 @@ class EventSpecificConfig extends StatelessWidget {
     final SmsContactConfig c => _SmsContactForm(
       config: c,
       onChanged: onChanged,
+      contacts: contacts,
+      onManageContacts: onManageContacts,
     ),
     final PhoneCallContactConfig c => _PhoneCallContactForm(
       config: c,
@@ -260,14 +277,22 @@ class _FakeCallForm extends StatelessWidget {
 }
 
 class _SmsContactForm extends StatelessWidget {
-  const _SmsContactForm({required this.config, required this.onChanged});
+  const _SmsContactForm({
+    required this.config,
+    required this.onChanged,
+    this.contacts,
+    this.onManageContacts,
+  });
 
   final SmsContactConfig config;
   final ValueChanged<SmsContactConfig> onChanged;
+  final List<EmergencyContact>? contacts;
+  final VoidCallback? onManageContacts;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final List<EmergencyContact>? contacts = this.contacts;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -279,6 +304,16 @@ class _SmsContactForm extends StatelessWidget {
           onChanged: (MessageChannel v) =>
               onChanged(config.copyWith(channel: v)),
         ),
+        if (contacts != null) ...<Widget>[
+          const SizedBox(height: 8),
+          Text(l10n.smsContactRecipientsHeader),
+          SmsContactGrid(
+            contacts: contacts,
+            config: config,
+            onChanged: onChanged,
+            onManageContacts: onManageContacts ?? () {},
+          ),
+        ],
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.eventDefaultsSmsIncludeLocation),

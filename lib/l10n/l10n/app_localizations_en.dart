@@ -617,6 +617,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get stepResetDefaults => 'Reset to defaults';
 
   @override
+  String get smsContactRecipientsHeader => 'Contacts to message';
+
+  @override
+  String get smsContactSummaryAll => 'To: all enabled contacts';
+
+  @override
+  String get smsContactSummaryNone => 'No recipients selected';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'To: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'Not enabled for this contact — edit the contact to add this channel.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'No contacts yet — add one in Contacts';
+
+  @override
   String get distressModesEmpty => 'No distress modes yet.';
 
   @override

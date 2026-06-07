@@ -617,6 +617,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String get stepResetDefaults => 'إعادة التعيين إلى الافتراضيات';
 
   @override
+  String get smsContactRecipientsHeader => 'جهات الاتصال المرسل إليها';
+
+  @override
+  String get smsContactSummaryAll => 'إلى: جميع جهات الاتصال المفعّلة';
+
+  @override
+  String get smsContactSummaryNone => 'لم يتم تحديد أي مستلِم';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'إلى: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'غير مفعّل لجهة الاتصال هذه — عدّل جهة الاتصال لإضافة هذه القناة.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'لا توجد جهات اتصال بعد — أضف واحدة في جهات الاتصال';
+
+  @override
   String get distressModesEmpty => 'لا توجد أوضاع استغاثة بعد.';
 
   @override

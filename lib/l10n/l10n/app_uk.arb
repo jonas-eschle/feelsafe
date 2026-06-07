@@ -114,6 +114,12 @@
   "stepFieldRandomize": "Випадковий тайминг (±20%)",
   "stepDuplicate": "Дублювати крок",
   "stepResetDefaults": "Скинути до типових значень",
+  "smsContactRecipientsHeader": "Контакти для сповіщення",
+  "smsContactSummaryAll": "Кому: усі ввімкнені контакти",
+  "smsContactSummaryNone": "Одержувачів не вибрано",
+  "smsContactSummaryTo": "Кому: {names}",
+  "smsContactChannelDisabledTooltip": "Не ввімкнено для цього контакту — відредагуйте контакт, щоб додати цей канал.",
+  "smsContactEmptyAddPrompt": "Ще немає контактів — додайте один у Контактах",
   "angelaDialogTitle": "Введено старий PIN-код",
   "@angelaDialogTitle": {
     "description": "Deceptive Angela dialog title (after wrong-PIN threshold)."

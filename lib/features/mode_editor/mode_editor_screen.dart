@@ -4,9 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
@@ -47,6 +49,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   bool _loading = true;
   SessionMode? _draft;
   EventDefaults _defaults = const EventDefaults();
+  List<EmergencyContact> _contacts = const <EmergencyContact>[];
 
   @override
   void initState() {
@@ -57,6 +60,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   Future<void> _load() async {
     final db = await ref.read(databaseProvider.future);
     final settings = await ref.read(appSettingsRepositoryProvider).load();
+    final contacts = await db.contactsDao.getAll();
     final service = ModeEditorService(db);
     final mode = widget.modeId == null
         ? service.blankMode(isDistress: widget.isDistress)
@@ -66,9 +70,12 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     setState(() {
       _draft = mode;
       _defaults = settings.defaults.eventDefaults;
+      _contacts = contacts;
       _loading = false;
     });
   }
+
+  void _manageContacts() => context.pushNamed(RouteNames.contacts);
 
   @override
   void dispose() {
@@ -247,6 +254,8 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                             step: step,
                             defaultConfig: _defaults.forType(step.type),
                             canDelete: draft.chainSteps.length > 1,
+                            contacts: _contacts,
+                            onManageContacts: _manageContacts,
                             onChanged: (ChainStep s) => _updateStep(index, s),
                             onDuplicate: () => _duplicateStep(index),
                             onReset: () => _resetStep(index),
@@ -281,6 +290,8 @@ class _StepTile extends StatelessWidget {
     required this.step,
     required this.defaultConfig,
     required this.canDelete,
+    required this.contacts,
+    required this.onManageContacts,
     required this.onChanged,
     required this.onDuplicate,
     required this.onReset,
@@ -291,6 +302,8 @@ class _StepTile extends StatelessWidget {
   final ChainStep step;
   final StepConfig defaultConfig;
   final bool canDelete;
+  final List<EmergencyContact> contacts;
+  final VoidCallback onManageContacts;
   final ValueChanged<ChainStep> onChanged;
   final VoidCallback onDuplicate;
   final VoidCallback onReset;
@@ -327,6 +340,8 @@ class _StepTile extends StatelessWidget {
             step: step,
             defaultConfig: defaultConfig,
             canDelete: canDelete,
+            contacts: contacts,
+            onManageContacts: onManageContacts,
             onChanged: onChanged,
             onDuplicate: onDuplicate,
             onReset: onReset,

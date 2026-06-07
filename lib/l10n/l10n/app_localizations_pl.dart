@@ -622,6 +622,28 @@ class AppLocalizationsPl extends AppLocalizations {
   String get stepResetDefaults => 'Przywróć domyślne';
 
   @override
+  String get smsContactRecipientsHeader => 'Kontakty do powiadomienia';
+
+  @override
+  String get smsContactSummaryAll => 'Do: wszystkie włączone kontakty';
+
+  @override
+  String get smsContactSummaryNone => 'Nie wybrano odbiorców';
+
+  @override
+  String smsContactSummaryTo(Object names) {
+    return 'Do: $names';
+  }
+
+  @override
+  String get smsContactChannelDisabledTooltip =>
+      'Niewłączone dla tego kontaktu — edytuj kontakt, aby dodać ten kanał.';
+
+  @override
+  String get smsContactEmptyAddPrompt =>
+      'Brak kontaktów — dodaj jeden w Kontaktach';
+
+  @override
   String get distressModesEmpty => 'Brak trybów alarmowych.';
 
   @override
