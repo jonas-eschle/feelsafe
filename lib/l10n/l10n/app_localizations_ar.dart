@@ -40,6 +40,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonEdit => 'تعديل';
 
   @override
+  String get commonGotIt => 'حسنًا';
+
+  @override
   String get commonClose => 'إغلاق';
 
   @override
@@ -637,6 +640,187 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'لا توجد جهات اتصال بعد — أضف واحدة في جهات الاتصال';
+
+  @override
+  String get safetyOptionsHeader => 'خيارات الأمان';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'وضع الاستغاثة';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'استخدام وضع الاستغاثة الافتراضي';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'استخدام الافتراضي ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'عند تشغيل مُحفِّز استغاثة (رمز PIN تحت الإكراه أو الذعر عبر الزر المادي أو تجاوز عدد محاولات PIN الخاطئة)، تُستبدل سلسلة هذا الوضع بسلسلة وضع الاستغاثة المُختار. اترك الإعداد على الافتراضي لاستخدام وضع الاستغاثة العام للتطبيق.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'إدارة أوضاع الاستغاثة';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'مُحفِّزات الاستغاثة';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'تُشغِّل مُحفِّزات الاستغاثة سلسلة الاستغاثة فورًا بالتوازي مع السلسلة الرئيسية. يراقب زر الذعر المادي زرًا فعليًا وفق نمط الضغط المُهيَّأ.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'لا توجد مُحفِّزات استغاثة';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'إضافة زر ذعر مادي';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: ضغط $count×';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: استمرار الضغط $seconds ث';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'رفع الصوت';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'خفض الصوت';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'نمط الضغط';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'ضغط متكرر';
+
+  @override
+  String get safetyOptionsPatternLong => 'ضغط مطوّل';
+
+  @override
+  String get safetyOptionsTriggerButton => 'الزر';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'عدد الضغطات';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'مدة الاستمرار بالضغط (ثوانٍ)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'مُحفِّزات الإلغاء';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'الإلغاء عند الوصول عبر GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'تنتهي الجلسة تلقائيًا عند وصولك ضمن النطاق المُهيَّأ من وجهتك. تحدِّد الوجهة عند بدء الجلسة.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'نطاق الوصول';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters م';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km كم';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'الوجهة';
+
+  @override
+  String get safetyOptionsDestinationPrompt => 'تحديد الوجهة عند بدء الجلسة';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'إحداثيات ثابتة';
+
+  @override
+  String get safetyOptionsLatitude => 'خط العرض';
+
+  @override
+  String get safetyOptionsLongitude => 'خط الطول';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'الإلغاء بالمؤقّت';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'تنتهي الجلسة تلقائيًا بعد الوقت المُهيَّأ، بغضّ النظر عن بدء التصعيد من عدمه.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'المدة';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes د';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours س $minutes د';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'تسجيل GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'اختر ما إذا كان هذا الوضع يسجّل موقعك أثناء الجلسة. يستخدم «التوريث» إعدادات GPS العامة؛ ويتجاوزها «مخصّص» لهذا الوضع؛ ويعطّل «إيقاف» التسجيل تمامًا.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'التخفّي';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'اختر ما إذا كان هذا الوضع يموّه التطبيق أثناء الجلسة. يستخدم «التوريث» إعدادات التخفّي العامة؛ ويتجاوزها «مخصّص» لهذا الوضع؛ ويعطّل «إيقاف» التخفّي تمامًا.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'توريث';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'مخصّص';
+
+  @override
+  String get safetyOptionsTriStateOff => 'إيقاف';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'القوالب المحلية';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'تُضاف القوالب المحلية إلى مجموعة قوالب التذكير العامة لهذا الوضع فقط. استخدمها لخطوات التذكير المُموَّه الخاصة بهذا الوضع.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'لا توجد قوالب محلية';
+
+  @override
+  String get safetyOptionsManageTemplates => 'إدارة قوالب التذكير';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'الإعدادات الافتراضية للأحداث';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'تحدِّد الإعدادات الافتراضية للأحداث التهيئة الأولية لكل نوع خطوة. يستخدم «التوريث» إعداداتك الافتراضية العامة؛ ويتجاوزها «مخصّص» لخطوات هذا الوضع التي لا تملك تهيئة خاصة بها.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'توريث';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'السماح بالإلغاء أثناء التشغيل كاستغاثة';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'عند التفعيل يمكنك إيقاف التنبيه بالوصول إلى مكان آمن أو بانتهاء المؤقّت. وعند التعطيل لا يوقف التنبيه سوى اكتمال السلسلة أو إغلاق التطبيق — أقوى ضد الإكراه.';
 
   @override
   String get distressModesEmpty => 'لا توجد أوضاع استغاثة بعد.';

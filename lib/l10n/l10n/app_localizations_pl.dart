@@ -40,6 +40,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get commonEdit => 'Edytuj';
 
   @override
+  String get commonGotIt => 'Rozumiem';
+
+  @override
   String get commonClose => 'Zamknij';
 
   @override
@@ -642,6 +645,187 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Brak kontaktów — dodaj jeden w Kontaktach';
+
+  @override
+  String get safetyOptionsHeader => 'Opcje bezpieczeństwa';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Tryb alarmowy';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Użyj domyślnego trybu alarmowego';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Użyj domyślnego ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'Gdy zostanie uruchomiony wyzwalacz alarmowy (PIN pod przymusem, panika sprzętowa lub zbyt wiele błędnych PIN-ów), łańcuch tego trybu zostaje zastąpiony łańcuchem wybranego trybu alarmowego. Pozostaw wartość domyślną, aby użyć ogólnego trybu alarmowego aplikacji.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'Zarządzaj trybami alarmowymi';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Wyzwalacze alarmowe';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Wyzwalacze alarmowe natychmiast uruchamiają łańcuch alarmowy równolegle z łańcuchem głównym. Sprzętowy przycisk paniki monitoruje fizyczny przycisk według skonfigurowanego wzorca naciśnięć.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'Brak wyzwalaczy alarmowych';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'Dodaj sprzętowy przycisk paniki';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× naciśnięcie';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: przytrzymaj ${seconds}s';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Głośność +';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Głośność −';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Wzorzec naciśnięć';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Powtarzane naciśnięcia';
+
+  @override
+  String get safetyOptionsPatternLong => 'Długie naciśnięcie';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Przycisk';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Liczba naciśnięć';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'Czas przytrzymania (sekundy)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'Wyzwalacze rozbrojenia';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'Rozbrojenie po przybyciu GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Sesja kończy się automatycznie, gdy znajdziesz się w skonfigurowanym promieniu od celu. Cel ustawiasz przy rozpoczęciu sesji.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Promień przybycia';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters m';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Cel';
+
+  @override
+  String get safetyOptionsDestinationPrompt => 'Ustaw cel na początku sesji';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Stałe współrzędne';
+
+  @override
+  String get safetyOptionsLatitude => 'Szerokość geograficzna';
+
+  @override
+  String get safetyOptionsLongitude => 'Długość geograficzna';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Rozbrojenie czasowe';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Sesja kończy się automatycznie po skonfigurowanym czasie, niezależnie od tego, czy rozpoczęła się eskalacja.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Czas trwania';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours godz. $minutes min';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'Rejestrowanie GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Wybierz, czy ten tryb rejestruje Twoją lokalizację podczas sesji. „Dziedzicz” używa globalnych ustawień GPS; „Niestandardowe” zastępuje je dla tego trybu; „Wył.” całkowicie wyłącza rejestrowanie.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Tryb ukryty';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Wybierz, czy ten tryb maskuje aplikację podczas sesji. „Dziedzicz” używa globalnych ustawień ukrycia; „Niestandardowe” zastępuje je dla tego trybu; „Wył.” całkowicie wyłącza ukrycie.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Dziedzicz';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Niestandardowe';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Wył.';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Szablony lokalne';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Szablony lokalne są dodawane do globalnej puli szablonów przypomnień tylko dla tego trybu. Używaj ich do kroków zamaskowanych przypomnień właściwych dla tego trybu.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Brak szablonów lokalnych';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Zarządzaj szablonami przypomnień';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Domyślne ustawienia zdarzeń';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Domyślne ustawienia zdarzeń określają początkową konfigurację każdego typu kroku. „Dziedzicz” używa globalnych wartości; „Niestandardowe” zastępuje je dla kroków w tym trybie bez własnej konfiguracji.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Dziedzicz';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Zezwól na rozbrojenie podczas aktywnego alarmu';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Po włączeniu możesz zatrzymać alarm, docierając w bezpieczne miejsce lub czekając na upływ czasomierza. Po wyłączeniu alarm zatrzymuje tylko ukończenie łańcucha lub zamknięcie aplikacji — mocniejsza ochrona przed przymusem.';
 
   @override
   String get distressModesEmpty => 'Brak trybów alarmowych.';

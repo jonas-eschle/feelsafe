@@ -40,6 +40,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get commonEdit => 'ویرایش';
 
   @override
+  String get commonGotIt => 'متوجه شدم';
+
+  @override
   String get commonClose => 'بستن';
 
   @override
@@ -639,6 +642,188 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'هنوز مخاطبی وجود ندارد — یکی در مخاطبین اضافه کنید';
+
+  @override
+  String get safetyOptionsHeader => 'گزینه‌های ایمنی';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'حالت اضطرار';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'استفاده از حالت اضطرار پیش‌فرض';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'استفاده از پیش‌فرض ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'هنگامی که یک محرک اضطرار فعال شود (پین اجباری، پنیک سخت‌افزاری یا تجاوز از تعداد پین‌های نادرست)، زنجیرهٔ این حالت با زنجیرهٔ حالت اضطرار انتخاب‌شده جایگزین می‌شود. برای استفاده از حالت اضطرار سراسری برنامه، روی پیش‌فرض بگذارید.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'مدیریت حالت‌های اضطرار';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'محرک‌های اضطرار';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'محرک‌های اضطرار زنجیرهٔ اضطرار را بلافاصله و به‌موازات زنجیرهٔ اصلی اجرا می‌کنند. دکمهٔ پنیک سخت‌افزاری یک دکمهٔ فیزیکی را بر اساس الگوی فشار پیکربندی‌شده پایش می‌کند.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty =>
+      'هیچ محرک اضطراری وجود ندارد';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'افزودن دکمهٔ پنیک سخت‌افزاری';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× فشار';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: نگه‌داشتن $seconds ثانیه';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'افزایش صدا';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'کاهش صدا';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'الگوی فشار';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'فشار تکراری';
+
+  @override
+  String get safetyOptionsPatternLong => 'فشار طولانی';
+
+  @override
+  String get safetyOptionsTriggerButton => 'دکمه';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'تعداد فشار';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'مدت نگه‌داشتن (ثانیه)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'محرک‌های غیرفعال‌سازی';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'غیرفعال‌سازی هنگام رسیدن با GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'جلسه به‌طور خودکار پایان می‌یابد وقتی در شعاع پیکربندی‌شدهٔ مقصد خود قرار بگیرید. مقصد را هنگام شروع جلسه تعیین می‌کنید.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'شعاع رسیدن';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters متر';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km کیلومتر';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'مقصد';
+
+  @override
+  String get safetyOptionsDestinationPrompt => 'تعیین مقصد هنگام شروع جلسه';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'مختصات ثابت';
+
+  @override
+  String get safetyOptionsLatitude => 'عرض جغرافیایی';
+
+  @override
+  String get safetyOptionsLongitude => 'طول جغرافیایی';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'غیرفعال‌سازی با تایمر';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'جلسه به‌طور خودکار پس از زمان پیکربندی‌شده پایان می‌یابد، صرف‌نظر از اینکه تشدید آغاز شده باشد یا نه.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'مدت';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes دقیقه';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours ساعت $minutes دقیقه';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'ثبت GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'انتخاب کنید که آیا این حالت موقعیت شما را در طول جلسه ثبت کند. «ارث‌بری» از تنظیمات سراسری GPS شما استفاده می‌کند؛ «سفارشی» آن‌ها را برای این حالت بازنویسی می‌کند؛ «خاموش» ثبت را کاملاً غیرفعال می‌کند.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'حالت مخفی';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'انتخاب کنید که آیا این حالت برنامه را در طول جلسه استتار کند. «ارث‌بری» از تنظیمات سراسری مخفی شما استفاده می‌کند؛ «سفارشی» آن‌ها را برای این حالت بازنویسی می‌کند؛ «خاموش» حالت مخفی را کاملاً غیرفعال می‌کند.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'ارث‌بری';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'سفارشی';
+
+  @override
+  String get safetyOptionsTriStateOff => 'خاموش';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'الگوهای محلی';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'الگوهای محلی فقط برای این حالت به مجموعهٔ سراسری الگوهای یادآوری افزوده می‌شوند. از آن‌ها برای مراحل یادآوری استتارشدهٔ مختص این حالت استفاده کنید.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'هیچ الگوی محلی‌ای وجود ندارد';
+
+  @override
+  String get safetyOptionsManageTemplates => 'مدیریت الگوهای یادآوری';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'پیش‌فرض‌های رویداد';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'پیش‌فرض‌های رویداد پیکربندی اولیهٔ هر نوع مرحله را تعیین می‌کنند. «ارث‌بری» از پیش‌فرض‌های سراسری شما استفاده می‌کند؛ «سفارشی» آن‌ها را برای مراحل این حالت که پیکربندی خاص خود را ندارند بازنویسی می‌کند.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'ارث‌بری';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'اجازهٔ غیرفعال‌سازی هنگام فعال بودن به‌عنوان اضطرار';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'با فعال‌سازی می‌توانید هشدار را با رسیدن به مکان امن یا با پایان یافتن تایمر متوقف کنید. با غیرفعال‌سازی، تنها تکمیل زنجیره یا بستن برنامه هشدار را متوقف می‌کند — مقاوم‌تر در برابر اجبار.';
 
   @override
   String get distressModesEmpty => 'هنوز هیچ حالت اضطراری وجود ندارد.';

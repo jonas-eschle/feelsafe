@@ -40,6 +40,10 @@
   "@commonEdit": {
     "description": "Generic edit action."
   },
+  "commonGotIt": "Got it",
+  "@commonGotIt": {
+    "description": "Generic dismiss action acknowledging an informational message."
+  },
   "commonClose": "Close",
   "@commonClose": {
     "description": "Generic close action."
@@ -818,6 +822,238 @@
   "smsContactEmptyAddPrompt": "No contacts yet — add one in Contacts",
   "@smsContactEmptyAddPrompt": {
     "description": "Empty-state row shown when there are no emergency contacts; deep-links to Contacts."
+  },
+  "safetyOptionsHeader": "Safety options",
+  "@safetyOptionsHeader": {
+    "description": "Header of the collapsible Safety Options section at the bottom of the mode editor."
+  },
+  "safetyOptionsDistressModeTitle": "Distress mode",
+  "@safetyOptionsDistressModeTitle": {
+    "description": "Label for the distress-mode picker in Safety Options."
+  },
+  "safetyOptionsDistressModeUseDefault": "Use default distress mode",
+  "@safetyOptionsDistressModeUseDefault": {
+    "description": "Dropdown option meaning the mode inherits the app-wide default distress mode."
+  },
+  "safetyOptionsDistressModeUseDefaultNamed": "Use default ({name})",
+  "@safetyOptionsDistressModeUseDefaultNamed": {
+    "description": "Dropdown option for inheriting the app-wide default distress mode, naming which mode that resolves to.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "safetyOptionsDistressModeInfo": "When a distress trigger fires (duress PIN, hardware panic, or a wrong-PIN threshold), this mode's chain is replaced by the chosen distress mode's chain. Leave on the default to use the app-wide distress mode.",
+  "@safetyOptionsDistressModeInfo": {
+    "description": "Info-sheet body explaining what the distress mode does."
+  },
+  "safetyOptionsManageDistressModes": "Manage distress modes",
+  "@safetyOptionsManageDistressModes": {
+    "description": "Link below the distress-mode picker that opens the distress-modes screen."
+  },
+  "safetyOptionsDistressTriggersTitle": "Distress triggers",
+  "@safetyOptionsDistressTriggersTitle": {
+    "description": "Subsection header for the list of distress triggers."
+  },
+  "safetyOptionsDistressTriggersInfo": "Distress triggers fire the distress chain immediately, in parallel with the main chain. The hardware panic button watches a physical button for the configured press pattern.",
+  "@safetyOptionsDistressTriggersInfo": {
+    "description": "Info-sheet body explaining distress triggers."
+  },
+  "safetyOptionsDistressTriggersEmpty": "No distress triggers",
+  "@safetyOptionsDistressTriggersEmpty": {
+    "description": "Empty state when a mode has no distress triggers configured."
+  },
+  "safetyOptionsAddHardwarePanic": "Add hardware panic button",
+  "@safetyOptionsAddHardwarePanic": {
+    "description": "Action to add a hardware-button distress trigger."
+  },
+  "safetyOptionsTriggerHardwareRepeat": "{button}: {count}× press",
+  "@safetyOptionsTriggerHardwareRepeat": {
+    "description": "Summary of a repeat-press hardware panic trigger.",
+    "placeholders": {
+      "button": {},
+      "count": {}
+    }
+  },
+  "safetyOptionsTriggerHardwareLong": "{button}: hold {seconds}s",
+  "@safetyOptionsTriggerHardwareLong": {
+    "description": "Summary of a long-press hardware panic trigger.",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
+  },
+  "safetyOptionsButtonVolumeUp": "Volume up",
+  "@safetyOptionsButtonVolumeUp": {
+    "description": "Label for the volume-up hardware button."
+  },
+  "safetyOptionsButtonVolumeDown": "Volume down",
+  "@safetyOptionsButtonVolumeDown": {
+    "description": "Label for the volume-down hardware button."
+  },
+  "safetyOptionsTriggerPattern": "Press pattern",
+  "@safetyOptionsTriggerPattern": {
+    "description": "Label for the hardware-button press-pattern selector."
+  },
+  "safetyOptionsPatternRepeat": "Repeat press",
+  "@safetyOptionsPatternRepeat": {
+    "description": "Press-pattern option: rapid repeated presses."
+  },
+  "safetyOptionsPatternLong": "Long press",
+  "@safetyOptionsPatternLong": {
+    "description": "Press-pattern option: a single sustained hold."
+  },
+  "safetyOptionsTriggerButton": "Button",
+  "@safetyOptionsTriggerButton": {
+    "description": "Label for the hardware-button selector in a distress trigger."
+  },
+  "safetyOptionsTriggerPressCount": "Press count",
+  "@safetyOptionsTriggerPressCount": {
+    "description": "Label for the press-count field of a repeat-press trigger."
+  },
+  "safetyOptionsTriggerHoldDuration": "Hold duration (seconds)",
+  "@safetyOptionsTriggerHoldDuration": {
+    "description": "Label for the hold-duration field of a long-press trigger."
+  },
+  "safetyOptionsDisarmTriggersTitle": "Disarm triggers",
+  "@safetyOptionsDisarmTriggersTitle": {
+    "description": "Subsection header for automatic disarm conditions."
+  },
+  "safetyOptionsGpsArrivalTitle": "GPS arrival disarm",
+  "@safetyOptionsGpsArrivalTitle": {
+    "description": "Toggle label for the GPS-arrival disarm trigger."
+  },
+  "safetyOptionsGpsArrivalInfo": "Session ends automatically when you arrive within the configured radius of your destination. You set the destination when starting a session.",
+  "@safetyOptionsGpsArrivalInfo": {
+    "description": "Info-sheet body explaining GPS-arrival disarm."
+  },
+  "safetyOptionsGpsArrivalRadius": "Arrival radius",
+  "@safetyOptionsGpsArrivalRadius": {
+    "description": "Label for the GPS-arrival radius slider."
+  },
+  "safetyOptionsRadiusMeters": "{meters} m",
+  "@safetyOptionsRadiusMeters": {
+    "description": "Formats a radius in metres.",
+    "placeholders": {
+      "meters": {}
+    }
+  },
+  "safetyOptionsRadiusKilometers": "{km} km",
+  "@safetyOptionsRadiusKilometers": {
+    "description": "Formats a radius in kilometres.",
+    "placeholders": {
+      "km": {}
+    }
+  },
+  "safetyOptionsDestinationSource": "Destination",
+  "@safetyOptionsDestinationSource": {
+    "description": "Label for the GPS-arrival destination-source selector."
+  },
+  "safetyOptionsDestinationPrompt": "Set destination at session start",
+  "@safetyOptionsDestinationPrompt": {
+    "description": "Destination-source option: prompt the user when a session starts."
+  },
+  "safetyOptionsDestinationFixed": "Fixed coordinates",
+  "@safetyOptionsDestinationFixed": {
+    "description": "Destination-source option: a stored latitude/longitude."
+  },
+  "safetyOptionsLatitude": "Latitude",
+  "@safetyOptionsLatitude": {
+    "description": "Label for the fixed-destination latitude field."
+  },
+  "safetyOptionsLongitude": "Longitude",
+  "@safetyOptionsLongitude": {
+    "description": "Label for the fixed-destination longitude field."
+  },
+  "safetyOptionsTimerDisarmTitle": "Timer disarm",
+  "@safetyOptionsTimerDisarmTitle": {
+    "description": "Toggle label for the timer disarm trigger."
+  },
+  "safetyOptionsTimerDisarmInfo": "Session ends automatically after the configured time, regardless of whether escalation has started.",
+  "@safetyOptionsTimerDisarmInfo": {
+    "description": "Info-sheet body explaining timer disarm."
+  },
+  "safetyOptionsTimerDuration": "Duration",
+  "@safetyOptionsTimerDuration": {
+    "description": "Label for the timer-disarm duration slider."
+  },
+  "safetyOptionsDurationMinutes": "{minutes} min",
+  "@safetyOptionsDurationMinutes": {
+    "description": "Formats a duration in minutes.",
+    "placeholders": {
+      "minutes": {}
+    }
+  },
+  "safetyOptionsDurationHoursMinutes": "{hours} h {minutes} min",
+  "@safetyOptionsDurationHoursMinutes": {
+    "description": "Formats a duration in hours and minutes.",
+    "placeholders": {
+      "hours": {},
+      "minutes": {}
+    }
+  },
+  "safetyOptionsGpsLoggingTitle": "GPS logging",
+  "@safetyOptionsGpsLoggingTitle": {
+    "description": "Subsection header for the GPS-logging tri-state selector."
+  },
+  "safetyOptionsGpsLoggingInfo": "Choose whether this mode records your location during a session. Inherit uses your global GPS-logging settings; Custom overrides them for this mode; Off disables logging entirely.",
+  "@safetyOptionsGpsLoggingInfo": {
+    "description": "Info-sheet body explaining the GPS-logging tri-state."
+  },
+  "safetyOptionsStealthTitle": "Stealth",
+  "@safetyOptionsStealthTitle": {
+    "description": "Subsection header for the stealth tri-state selector."
+  },
+  "safetyOptionsStealthInfo": "Choose whether this mode disguises the app during a session. Inherit uses your global stealth settings; Custom overrides them for this mode; Off disables stealth entirely.",
+  "@safetyOptionsStealthInfo": {
+    "description": "Info-sheet body explaining the stealth tri-state."
+  },
+  "safetyOptionsTriStateInherit": "Inherit",
+  "@safetyOptionsTriStateInherit": {
+    "description": "Tri-state option: inherit the global default."
+  },
+  "safetyOptionsTriStateCustom": "Custom",
+  "@safetyOptionsTriStateCustom": {
+    "description": "Tri-state option: override with custom values."
+  },
+  "safetyOptionsTriStateOff": "Off",
+  "@safetyOptionsTriStateOff": {
+    "description": "Tri-state option: disable the feature for this mode."
+  },
+  "safetyOptionsLocalTemplatesTitle": "Local templates",
+  "@safetyOptionsLocalTemplatesTitle": {
+    "description": "Subsection header for mode-local reminder templates."
+  },
+  "safetyOptionsLocalTemplatesInfo": "Local templates are added to the global reminder-template pool for this mode only. Use them for disguised-reminder steps specific to this mode.",
+  "@safetyOptionsLocalTemplatesInfo": {
+    "description": "Info-sheet body explaining mode-local templates."
+  },
+  "safetyOptionsLocalTemplatesEmpty": "No local templates",
+  "@safetyOptionsLocalTemplatesEmpty": {
+    "description": "Empty state when a mode has no local templates."
+  },
+  "safetyOptionsManageTemplates": "Manage reminder templates",
+  "@safetyOptionsManageTemplates": {
+    "description": "Link that opens the global reminder-templates screen."
+  },
+  "safetyOptionsEventDefaultsTitle": "Event defaults",
+  "@safetyOptionsEventDefaultsTitle": {
+    "description": "Subsection header for the per-mode event-defaults tri-state."
+  },
+  "safetyOptionsEventDefaultsInfo": "Event defaults set the starting configuration for each step type. Inherit uses your global event defaults; Custom overrides them for steps in this mode that have no explicit configuration.",
+  "@safetyOptionsEventDefaultsInfo": {
+    "description": "Info-sheet body explaining the per-mode event-defaults tri-state."
+  },
+  "safetyOptionsEventDefaultsTwoStateInherit": "Inherit",
+  "@safetyOptionsEventDefaultsTwoStateInherit": {
+    "description": "Two-state event-defaults option: inherit the global defaults."
+  },
+  "safetyOptionsAllowDisarmAsDistressTitle": "Allow disarm while active as distress",
+  "@safetyOptionsAllowDisarmAsDistressTitle": {
+    "description": "Toggle label for allowDisarmAsDistress (distress modes only)."
+  },
+  "safetyOptionsAllowDisarmAsDistressInfo": "Enabling allows you to stop the alert by reaching safety or letting a timer expire. Disabling means only chain completion or shutting down the app stops the alert — stronger against coercion.",
+  "@safetyOptionsAllowDisarmAsDistressInfo": {
+    "description": "Info-sheet body explaining the allowDisarmAsDistress trade-off."
   },
   "distressModesEmpty": "No distress modes yet.",
   "@distressModesEmpty": {

@@ -39,6 +39,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get commonEdit => '编辑';
 
   @override
+  String get commonGotIt => '知道了';
+
+  @override
   String get commonClose => '关闭';
 
   @override
@@ -624,6 +627,184 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get smsContactEmptyAddPrompt => '尚无联系人——在“联系人”中添加一位';
+
+  @override
+  String get safetyOptionsHeader => '安全选项';
+
+  @override
+  String get safetyOptionsDistressModeTitle => '求救模式';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault => '使用默认求救模式';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return '使用默认（$name）';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      '当求救触发器触发时（胁迫 PIN、硬件紧急按键或错误 PIN 次数超限），此模式的链条会被所选求救模式的链条替换。保持默认即可使用应用全局的求救模式。';
+
+  @override
+  String get safetyOptionsManageDistressModes => '管理求救模式';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => '求救触发器';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      '求救触发器会立即启动求救链条，与主链条并行运行。硬件紧急按键会按照所配置的按键模式监视实体按键。';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => '暂无求救触发器';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => '添加硬件紧急按键';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button：按 $count 次';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button：长按 $seconds 秒';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => '音量加';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => '音量减';
+
+  @override
+  String get safetyOptionsTriggerPattern => '按键模式';
+
+  @override
+  String get safetyOptionsPatternRepeat => '重复按压';
+
+  @override
+  String get safetyOptionsPatternLong => '长按';
+
+  @override
+  String get safetyOptionsTriggerButton => '按键';
+
+  @override
+  String get safetyOptionsTriggerPressCount => '按压次数';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => '长按时长（秒）';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => '解除触发器';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'GPS 到达解除';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      '当你到达目的地所配置半径范围内时，会话会自动结束。目的地在开始会话时设置。';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => '到达半径';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters 米';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km 公里';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => '目的地';
+
+  @override
+  String get safetyOptionsDestinationPrompt => '在会话开始时设置目的地';
+
+  @override
+  String get safetyOptionsDestinationFixed => '固定坐标';
+
+  @override
+  String get safetyOptionsLatitude => '纬度';
+
+  @override
+  String get safetyOptionsLongitude => '经度';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => '计时器解除';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo => '无论是否已开始升级，会话都会在所配置的时间后自动结束。';
+
+  @override
+  String get safetyOptionsTimerDuration => '时长';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes 分钟';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours 小时 $minutes 分钟';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'GPS 记录';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      '选择此模式是否在会话期间记录你的位置。“继承”使用你的全局 GPS 设置；“自定义”为此模式覆盖这些设置；“关闭”完全禁用记录。';
+
+  @override
+  String get safetyOptionsStealthTitle => '隐身';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      '选择此模式是否在会话期间伪装应用。“继承”使用你的全局隐身设置；“自定义”为此模式覆盖这些设置；“关闭”完全禁用隐身。';
+
+  @override
+  String get safetyOptionsTriStateInherit => '继承';
+
+  @override
+  String get safetyOptionsTriStateCustom => '自定义';
+
+  @override
+  String get safetyOptionsTriStateOff => '关闭';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => '本地模板';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      '本地模板仅为此模式添加到全局提醒模板池中。可用于此模式专属的伪装提醒步骤。';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => '暂无本地模板';
+
+  @override
+  String get safetyOptionsManageTemplates => '管理提醒模板';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => '事件默认值';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      '事件默认值设置每种步骤类型的初始配置。“继承”使用你的全局默认值；“自定义”为此模式中没有自身配置的步骤覆盖这些默认值。';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => '继承';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle => '在求救激活期间允许解除';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      '启用后，你可以通过到达安全地点或让计时器到期来停止警报。禁用后，只有完成链条或关闭应用才能停止警报——对胁迫的防护更强。';
 
   @override
   String get distressModesEmpty => '尚无求救模式。';
@@ -1870,6 +2051,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get commonEdit => '編輯';
 
   @override
+  String get commonGotIt => '知道了';
+
+  @override
   String get commonClose => '關閉';
 
   @override
@@ -2455,6 +2639,184 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get smsContactEmptyAddPrompt => '尚未新增聯絡人——在「聯絡人」中新增一位';
+
+  @override
+  String get safetyOptionsHeader => '安全選項';
+
+  @override
+  String get safetyOptionsDistressModeTitle => '求救模式';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault => '使用預設求救模式';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return '使用預設（$name）';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      '當求救觸發器觸發時（脅迫 PIN、硬體緊急按鍵或錯誤 PIN 次數超限），此模式的鏈條會被所選求救模式的鏈條取代。保持預設即可使用應用程式全域的求救模式。';
+
+  @override
+  String get safetyOptionsManageDistressModes => '管理求救模式';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => '求救觸發器';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      '求救觸發器會立即啟動求救鏈條，與主鏈條並行執行。硬體緊急按鍵會依照所設定的按鍵模式監看實體按鍵。';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => '尚無求救觸發器';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => '新增硬體緊急按鍵';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button：按 $count 次';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button：長按 $seconds 秒';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => '音量加';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => '音量減';
+
+  @override
+  String get safetyOptionsTriggerPattern => '按鍵模式';
+
+  @override
+  String get safetyOptionsPatternRepeat => '重複按壓';
+
+  @override
+  String get safetyOptionsPatternLong => '長按';
+
+  @override
+  String get safetyOptionsTriggerButton => '按鍵';
+
+  @override
+  String get safetyOptionsTriggerPressCount => '按壓次數';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => '長按時長（秒）';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => '解除觸發器';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'GPS 抵達解除';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      '當你抵達目的地所設定的半徑範圍內時，工作階段會自動結束。目的地在開始工作階段時設定。';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => '抵達半徑';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters 公尺';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km 公里';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => '目的地';
+
+  @override
+  String get safetyOptionsDestinationPrompt => '在工作階段開始時設定目的地';
+
+  @override
+  String get safetyOptionsDestinationFixed => '固定座標';
+
+  @override
+  String get safetyOptionsLatitude => '緯度';
+
+  @override
+  String get safetyOptionsLongitude => '經度';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => '計時器解除';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo => '無論是否已開始升級，工作階段都會在所設定的時間後自動結束。';
+
+  @override
+  String get safetyOptionsTimerDuration => '時長';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes 分鐘';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours 小時 $minutes 分鐘';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'GPS 記錄';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      '選擇此模式是否在工作階段期間記錄你的位置。「繼承」使用你的全域 GPS 設定；「自訂」會為此模式覆寫這些設定；「關閉」會完全停用記錄。';
+
+  @override
+  String get safetyOptionsStealthTitle => '隱身';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      '選擇此模式是否在工作階段期間偽裝應用程式。「繼承」使用你的全域隱身設定；「自訂」會為此模式覆寫這些設定；「關閉」會完全停用隱身。';
+
+  @override
+  String get safetyOptionsTriStateInherit => '繼承';
+
+  @override
+  String get safetyOptionsTriStateCustom => '自訂';
+
+  @override
+  String get safetyOptionsTriStateOff => '關閉';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => '本機範本';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      '本機範本僅為此模式新增至全域提醒範本集合中。可用於此模式專屬的偽裝提醒步驟。';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => '尚無本機範本';
+
+  @override
+  String get safetyOptionsManageTemplates => '管理提醒範本';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => '事件預設值';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      '事件預設值設定每種步驟類型的初始設定。「繼承」使用你的全域預設值；「自訂」會為此模式中沒有自身設定的步驟覆寫這些預設值。';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => '繼承';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle => '在求救啟用期間允許解除';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      '啟用後，你可以透過抵達安全地點或讓計時器到期來停止警報。停用後，只有完成鏈條或關閉應用程式才能停止警報——對脅迫的防護更強。';
 
   @override
   String get distressModesEmpty => '尚未建立求救模式。';

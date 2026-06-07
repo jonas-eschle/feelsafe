@@ -40,6 +40,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get commonEdit => 'Editar';
 
   @override
+  String get commonGotIt => 'Entendido';
+
+  @override
   String get commonClose => 'Cerrar';
 
   @override
@@ -641,6 +644,195 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Aún no hay contactos: añade uno en Contactos';
+
+  @override
+  String get safetyOptionsHeader => 'Opciones de seguridad';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Modo de emergencia';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Usar el modo de emergencia predeterminado';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Usar el predeterminado ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'Cuando se activa un disparador de emergencia (PIN de coacción, pánico por hardware o demasiados PIN incorrectos), la cadena de este modo se sustituye por la del modo de emergencia elegido. Déjalo en el predeterminado para usar el modo de emergencia general de la app.';
+
+  @override
+  String get safetyOptionsManageDistressModes =>
+      'Gestionar modos de emergencia';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Disparadores de emergencia';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Los disparadores de emergencia activan la cadena de emergencia de inmediato, en paralelo con la cadena principal. El botón de pánico por hardware vigila un botón físico según el patrón de pulsación configurado.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty =>
+      'Sin disparadores de emergencia';
+
+  @override
+  String get safetyOptionsAddHardwarePanic =>
+      'Añadir botón de pánico por hardware';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× pulsación';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: mantener ${seconds}s';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Subir volumen';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Bajar volumen';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Patrón de pulsación';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Pulsación repetida';
+
+  @override
+  String get safetyOptionsPatternLong => 'Pulsación larga';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Botón';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Número de pulsaciones';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration =>
+      'Duración de la pulsación (segundos)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle =>
+      'Disparadores de desactivación';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'Desactivación al llegar por GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'La sesión termina automáticamente cuando llegas dentro del radio configurado de tu destino. El destino se establece al iniciar una sesión.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Radio de llegada';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters m';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Destino';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Establecer el destino al iniciar la sesión';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Coordenadas fijas';
+
+  @override
+  String get safetyOptionsLatitude => 'Latitud';
+
+  @override
+  String get safetyOptionsLongitude => 'Longitud';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Desactivación por temporizador';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'La sesión termina automáticamente después del tiempo configurado, independientemente de si ha comenzado la escalada.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Duración';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'Registro de GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Elige si este modo registra tu ubicación durante una sesión. «Heredar» usa tu configuración global de GPS; «Personalizado» la anula para este modo; «Desactivado» desactiva el registro por completo.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Modo sigiloso';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Elige si este modo disfraza la app durante una sesión. «Heredar» usa tu configuración global de sigilo; «Personalizado» la anula para este modo; «Desactivado» desactiva el sigilo por completo.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Heredar';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Personalizado';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Desactivado';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Plantillas locales';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Las plantillas locales se añaden al conjunto global de plantillas de recordatorio solo para este modo. Úsalas para pasos de recordatorio disfrazado específicos de este modo.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Sin plantillas locales';
+
+  @override
+  String get safetyOptionsManageTemplates =>
+      'Gestionar plantillas de recordatorio';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle =>
+      'Valores predeterminados de eventos';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Los valores predeterminados de eventos definen la configuración inicial de cada tipo de paso. «Heredar» usa tus valores globales; «Personalizado» los anula para los pasos de este modo que no tengan configuración propia.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Heredar';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Permitir desactivar mientras está activo como emergencia';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Al activarlo, puedes detener la alerta llegando a un lugar seguro o dejando que expire un temporizador. Al desactivarlo, solo se detiene al completar la cadena o cerrar la app: más resistente a la coacción.';
 
   @override
   String get distressModesEmpty => 'Aún no hay modos de auxilio.';

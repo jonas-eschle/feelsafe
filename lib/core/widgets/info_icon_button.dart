@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+
 /// Small ℹ button that opens a bottom sheet with a plain-language
 /// explanation. Used for every non-trivial settings field per spec 06.
 class InfoIconButton extends StatelessWidget {
@@ -31,7 +33,7 @@ class InfoIconButton extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Got it'),
+                  child: Text(AppLocalizations.of(context).commonGotIt),
                 ),
               ),
             ],

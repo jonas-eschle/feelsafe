@@ -40,6 +40,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get commonEdit => 'Bearbeiten';
 
   @override
+  String get commonGotIt => 'Verstanden';
+
+  @override
   String get commonClose => 'Schließen';
 
   @override
@@ -643,6 +646,188 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Noch keine Kontakte — füge einen unter Kontakte hinzu';
+
+  @override
+  String get safetyOptionsHeader => 'Sicherheitsoptionen';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Notfallmodus';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Standard-Notfallmodus verwenden';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Standard verwenden ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'Wenn ein Notfall-Auslöser ausgelöst wird (Zwangs-PIN, Hardware-Panik oder zu viele falsche PIN-Eingaben), wird die Kette dieses Modus durch die Kette des gewählten Notfallmodus ersetzt. Bei „Standard“ wird der app-weite Notfallmodus verwendet.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'Notfallmodi verwalten';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Notfall-Auslöser';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Notfall-Auslöser starten die Notfallkette sofort, parallel zur Hauptkette. Die Hardware-Paniktaste überwacht eine physische Taste auf das eingestellte Tastenmuster.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'Keine Notfall-Auslöser';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'Hardware-Paniktaste hinzufügen';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× drücken';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: ${seconds}s halten';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Lauter-Taste';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Leiser-Taste';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Tastenmuster';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Wiederholtes Drücken';
+
+  @override
+  String get safetyOptionsPatternLong => 'Langes Drücken';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Taste';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Anzahl der Drücke';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'Haltedauer (Sekunden)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'Deaktivierungs-Auslöser';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'Deaktivierung bei GPS-Ankunft';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Die Sitzung endet automatisch, sobald du dich innerhalb des eingestellten Radius deines Ziels befindest. Das Ziel legst du beim Start einer Sitzung fest.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Ankunftsradius';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters m';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Ziel';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Ziel beim Sitzungsstart festlegen';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Feste Koordinaten';
+
+  @override
+  String get safetyOptionsLatitude => 'Breitengrad';
+
+  @override
+  String get safetyOptionsLongitude => 'Längengrad';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Timer-Deaktivierung';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Die Sitzung endet automatisch nach der eingestellten Zeit, unabhängig davon, ob die Eskalation begonnen hat.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Dauer';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes Min.';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours Std. $minutes Min.';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'GPS-Protokollierung';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Lege fest, ob dieser Modus während einer Sitzung deinen Standort aufzeichnet. „Erben“ verwendet deine globalen GPS-Einstellungen; „Benutzerdefiniert“ überschreibt sie für diesen Modus; „Aus“ deaktiviert die Protokollierung vollständig.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Tarnung';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Lege fest, ob dieser Modus die App während einer Sitzung tarnt. „Erben“ verwendet deine globalen Tarn-Einstellungen; „Benutzerdefiniert“ überschreibt sie für diesen Modus; „Aus“ deaktiviert die Tarnung vollständig.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Erben';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Benutzerdefiniert';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Aus';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Lokale Vorlagen';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Lokale Vorlagen werden nur für diesen Modus zum globalen Vorlagenpool für Erinnerungen hinzugefügt. Verwende sie für getarnte Erinnerungsschritte, die nur für diesen Modus gelten.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Keine lokalen Vorlagen';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Erinnerungsvorlagen verwalten';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Ereignis-Standardwerte';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Ereignis-Standardwerte legen die Ausgangskonfiguration für jeden Schritttyp fest. „Erben“ verwendet deine globalen Standardwerte; „Benutzerdefiniert“ überschreibt sie für Schritte in diesem Modus ohne eigene Konfiguration.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Erben';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Deaktivierung im aktiven Notfall zulassen';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Aktiviert kannst du den Alarm stoppen, indem du einen sicheren Ort erreichst oder einen Timer ablaufen lässt. Deaktiviert stoppt nur das Abschließen der Kette oder das Beenden der App den Alarm – stärker gegen Nötigung.';
 
   @override
   String get distressModesEmpty => 'Noch keine Notfallmodi.';

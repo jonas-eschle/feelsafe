@@ -40,6 +40,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get commonEdit => 'ערוך';
 
   @override
+  String get commonGotIt => 'הבנתי';
+
+  @override
   String get commonClose => 'סגור';
 
   @override
@@ -635,6 +638,187 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'אין אנשי קשר עדיין — הוסיפו אחד באנשי קשר';
+
+  @override
+  String get safetyOptionsHeader => 'אפשרויות בטיחות';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'מצב מצוקה';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'השתמש במצב המצוקה כברירת מחדל';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'השתמש בברירת המחדל ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'כאשר מופעל טריגר מצוקה (קוד PIN בכפייה, פאניקה בלחצן פיזי או חריגה ממספר ניסיונות PIN שגויים), שרשרת המצב הזה מוחלפת בשרשרת מצב המצוקה שנבחר. השאר על ברירת המחדל כדי להשתמש במצב המצוקה הכלל-יישומי.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'ניהול מצבי מצוקה';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'טריגרים של מצוקה';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'טריגרים של מצוקה מפעילים את שרשרת המצוקה מיד, במקביל לשרשרת הראשית. לחצן הפאניקה הפיזי עוקב אחר לחצן פיזי לפי תבנית הלחיצה שהוגדרה.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'אין טריגרים של מצוקה';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'הוסף לחצן פאניקה פיזי';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× לחיצה';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: החזקה $seconds שנ׳';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'הגברת עוצמה';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'הנמכת עוצמה';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'תבנית לחיצה';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'לחיצה חוזרת';
+
+  @override
+  String get safetyOptionsPatternLong => 'לחיצה ארוכה';
+
+  @override
+  String get safetyOptionsTriggerButton => 'לחצן';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'מספר לחיצות';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'משך החזקה (שניות)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'טריגרים לכיבוי';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'כיבוי בהגעה לפי GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'הסשן מסתיים אוטומטית כשאתה מגיע אל תוך הרדיוס שהוגדר סביב היעד שלך. אתה מגדיר את היעד בתחילת הסשן.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'רדיוס הגעה';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters מ׳';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km ק״מ';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'יעד';
+
+  @override
+  String get safetyOptionsDestinationPrompt => 'הגדר יעד בתחילת הסשן';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'קואורדינטות קבועות';
+
+  @override
+  String get safetyOptionsLatitude => 'קו רוחב';
+
+  @override
+  String get safetyOptionsLongitude => 'קו אורך';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'כיבוי בטיימר';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'הסשן מסתיים אוטומטית לאחר הזמן שהוגדר, ללא קשר לכך אם ההסלמה החלה.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'משך';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes דק׳';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours שע׳ $minutes דק׳';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'תיעוד GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'בחר אם מצב זה מתעד את מיקומך במהלך סשן. ‏‘ירושה’ משתמשת בהגדרות ה-GPS הגלובליות שלך; ‘מותאם אישית’ דורס אותן עבור מצב זה; ‘כבוי’ משבית את התיעוד לחלוטין.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'מצב חשאי';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'בחר אם מצב זה מסווה את האפליקציה במהלך סשן. ‏‘ירושה’ משתמשת בהגדרות החשאיות הגלובליות שלך; ‘מותאם אישית’ דורס אותן עבור מצב זה; ‘כבוי’ משבית את המצב החשאי לחלוטין.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'ירושה';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'מותאם אישית';
+
+  @override
+  String get safetyOptionsTriStateOff => 'כבוי';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'תבניות מקומיות';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'תבניות מקומיות מתווספות למאגר תבניות התזכורת הגלובלי עבור מצב זה בלבד. השתמש בהן לשלבי תזכורת מוסווית הייחודיים למצב זה.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'אין תבניות מקומיות';
+
+  @override
+  String get safetyOptionsManageTemplates => 'ניהול תבניות תזכורת';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'ברירות מחדל לאירועים';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'ברירות המחדל לאירועים קובעות את התצורה ההתחלתית לכל סוג שלב. ‏‘ירושה’ משתמשת בברירות המחדל הגלובליות שלך; ‘מותאם אישית’ דורס אותן עבור שלבים במצב זה ללא תצורה משלהם.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'ירושה';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'אפשר כיבוי בזמן פעולה כמצוקה';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'כשמופעל, ניתן לעצור את ההתראה בהגעה למקום בטוח או בהמתנה לפקיעת טיימר. כשמושבת, רק השלמת השרשרת או סגירת האפליקציה עוצרות את ההתראה — חזק יותר מול כפייה.';
 
   @override
   String get distressModesEmpty => 'אין מצבי מצוקה עדיין.';

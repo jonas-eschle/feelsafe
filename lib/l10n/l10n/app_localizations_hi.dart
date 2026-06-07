@@ -40,6 +40,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get commonEdit => 'संपादित करें';
 
   @override
+  String get commonGotIt => 'समझ गया';
+
+  @override
   String get commonClose => 'बंद करें';
 
   @override
@@ -642,6 +645,188 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'अभी तक कोई संपर्क नहीं — संपर्क में एक जोड़ें';
+
+  @override
+  String get safetyOptionsHeader => 'सुरक्षा विकल्प';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'संकट मोड';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'डिफ़ॉल्ट संकट मोड का उपयोग करें';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'डिफ़ॉल्ट का उपयोग करें ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'जब कोई संकट ट्रिगर सक्रिय होता है (दबाव वाला PIN, हार्डवेयर पैनिक, या बहुत अधिक गलत PIN), तो इस मोड की शृंखला चुने गए संकट मोड की शृंखला से बदल जाती है. ऐप-व्यापी संकट मोड का उपयोग करने के लिए डिफ़ॉल्ट पर छोड़ दें.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'संकट मोड प्रबंधित करें';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'संकट ट्रिगर';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'संकट ट्रिगर मुख्य शृंखला के समानांतर तुरंत संकट शृंखला शुरू कर देते हैं. हार्डवेयर पैनिक बटन कॉन्फ़िगर किए गए दबाने के पैटर्न के लिए एक भौतिक बटन पर नज़र रखता है.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'कोई संकट ट्रिगर नहीं';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'हार्डवेयर पैनिक बटन जोड़ें';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× दबाएँ';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: $seconds से दबाए रखें';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'वॉल्यूम ऊपर';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'वॉल्यूम नीचे';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'दबाने का पैटर्न';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'बार-बार दबाना';
+
+  @override
+  String get safetyOptionsPatternLong => 'देर तक दबाना';
+
+  @override
+  String get safetyOptionsTriggerButton => 'बटन';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'दबाने की संख्या';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'दबाए रखने की अवधि (सेकंड)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'निष्क्रिय करने वाले ट्रिगर';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'GPS आगमन पर निष्क्रियण';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'जब आप अपने गंतव्य के कॉन्फ़िगर किए गए दायरे के भीतर पहुँचते हैं तो सत्र स्वतः समाप्त हो जाता है. आप सत्र शुरू करते समय गंतव्य निर्धारित करते हैं.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'आगमन दायरा';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters मी';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km किमी';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'गंतव्य';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'सत्र आरंभ पर गंतव्य निर्धारित करें';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'स्थिर निर्देशांक';
+
+  @override
+  String get safetyOptionsLatitude => 'अक्षांश';
+
+  @override
+  String get safetyOptionsLongitude => 'देशांतर';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'टाइमर निष्क्रियण';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'एस्केलेशन शुरू हुआ है या नहीं, इसकी परवाह किए बिना, सत्र कॉन्फ़िगर किए गए समय के बाद स्वतः समाप्त हो जाता है.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'अवधि';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes मिनट';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours घंटे $minutes मिनट';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'GPS लॉगिंग';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'चुनें कि यह मोड सत्र के दौरान आपका स्थान रिकॉर्ड करता है या नहीं. ‘इनहेरिट’ आपकी वैश्विक GPS सेटिंग्स का उपयोग करता है; ‘कस्टम’ इस मोड के लिए उन्हें ओवरराइड करता है; ‘बंद’ लॉगिंग को पूरी तरह अक्षम कर देता है.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'गुप्त मोड';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'चुनें कि यह मोड सत्र के दौरान ऐप का भेस बदलता है या नहीं. ‘इनहेरिट’ आपकी वैश्विक गुप्त सेटिंग्स का उपयोग करता है; ‘कस्टम’ इस मोड के लिए उन्हें ओवरराइड करता है; ‘बंद’ गुप्त मोड को पूरी तरह अक्षम कर देता है.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'इनहेरिट';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'कस्टम';
+
+  @override
+  String get safetyOptionsTriStateOff => 'बंद';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'स्थानीय टेम्पलेट';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'स्थानीय टेम्पलेट केवल इस मोड के लिए वैश्विक रिमाइंडर-टेम्पलेट पूल में जोड़े जाते हैं. इस मोड के लिए विशिष्ट छद्म-रिमाइंडर चरणों के लिए उनका उपयोग करें.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'कोई स्थानीय टेम्पलेट नहीं';
+
+  @override
+  String get safetyOptionsManageTemplates => 'रिमाइंडर टेम्पलेट प्रबंधित करें';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'इवेंट डिफ़ॉल्ट';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'इवेंट डिफ़ॉल्ट प्रत्येक चरण प्रकार के लिए प्रारंभिक कॉन्फ़िगरेशन सेट करते हैं. ‘इनहेरिट’ आपके वैश्विक डिफ़ॉल्ट का उपयोग करता है; ‘कस्टम’ इस मोड में बिना अपने कॉन्फ़िगरेशन वाले चरणों के लिए उन्हें ओवरराइड करता है.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'इनहेरिट';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'संकट के रूप में सक्रिय रहते हुए निष्क्रियण की अनुमति दें';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'सक्षम करने पर आप सुरक्षित स्थान पर पहुँचकर या टाइमर समाप्त होने देकर अलार्म रोक सकते हैं. अक्षम करने पर केवल शृंखला पूरी होने या ऐप बंद करने पर ही अलार्म रुकता है — दबाव के विरुद्ध अधिक मज़बूत.';
 
   @override
   String get distressModesEmpty => 'अभी तक कोई संकट मोड नहीं।';

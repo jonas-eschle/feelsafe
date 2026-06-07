@@ -12,6 +12,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
+import 'package:guardianangela/features/modes/widgets/safety_options_section.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
 import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -50,6 +51,8 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   SessionMode? _draft;
   EventDefaults _defaults = const EventDefaults();
   List<EmergencyContact> _contacts = const <EmergencyContact>[];
+  List<SessionMode> _distressModes = const <SessionMode>[];
+  String? _defaultDistressModeId;
 
   @override
   void initState() {
@@ -61,6 +64,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final db = await ref.read(databaseProvider.future);
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final contacts = await db.contactsDao.getAll();
+    final distressModes = await db.sessionModesDao.getDistressModes();
     final service = ModeEditorService(db);
     final mode = widget.modeId == null
         ? service.blankMode(isDistress: widget.isDistress)
@@ -71,11 +75,30 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       _draft = mode;
       _defaults = settings.defaults.eventDefaults;
       _contacts = contacts;
+      // A distress mode never references itself in the picker.
+      _distressModes = <SessionMode>[
+        for (final SessionMode m in distressModes)
+          if (m.id != mode.id) m,
+      ];
+      _defaultDistressModeId = settings.defaults.defaultDistressModeId;
       _loading = false;
     });
   }
 
   void _manageContacts() => context.pushNamed(RouteNames.contacts);
+
+  void _manageDistressModes() => context.pushNamed(RouteNames.distressModes);
+
+  void _manageTemplates() =>
+      context.pushNamed(RouteNames.settingsReminderTemplates);
+
+  /// Stages a whole-draft mutation (used by the Safety Options section).
+  void _updateDraft(SessionMode updated) {
+    setState(() {
+      _draft = updated;
+      _dirty = true;
+    });
+  }
 
   @override
   void dispose() {
@@ -182,7 +205,8 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final l10n = AppLocalizations.of(context);
     final ChainStepType? selected = await showModalBottomSheet<ChainStepType>(
       context: context,
-      builder: (BuildContext ctx) => _AddStepSheet(l10n: l10n),
+      builder: (BuildContext ctx) =>
+          _AddStepSheet(l10n: l10n, isDistress: widget.isDistress),
     );
     if (selected != null) _addStep(selected);
   }
@@ -265,12 +289,26 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                       ),
                     ),
                     SliverPadding(
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
                       sliver: SliverToBoxAdapter(
                         child: OutlinedButton.icon(
                           icon: const Icon(Icons.add),
                           label: Text(l10n.modeChainAddStep),
                           onPressed: _addStepSheet,
+                        ),
+                      ),
+                    ),
+                    SliverPadding(
+                      padding: const EdgeInsets.all(16),
+                      sliver: SliverToBoxAdapter(
+                        child: SafetyOptionsSection(
+                          mode: draft,
+                          onChanged: _updateDraft,
+                          isDistress: widget.isDistress,
+                          distressModes: _distressModes,
+                          defaultDistressModeId: _defaultDistressModeId,
+                          onManageDistressModes: _manageDistressModes,
+                          onManageTemplates: _manageTemplates,
                         ),
                       ),
                     ),
@@ -354,10 +392,15 @@ class _StepTile extends StatelessWidget {
 }
 
 /// Categorised bottom-sheet picker for adding a step (spec 04 §Add Step).
+///
+/// In the distress variant the check-in category (holdButton /
+/// disguisedReminder) is omitted — distress chains start with an action step
+/// (spec 04:1649).
 class _AddStepSheet extends StatelessWidget {
-  const _AddStepSheet({required this.l10n});
+  const _AddStepSheet({required this.l10n, required this.isDistress});
 
   final AppLocalizations l10n;
+  final bool isDistress;
 
   static const List<ChainStepType> _checkIn = <ChainStepType>[
     ChainStepType.holdButton,
@@ -381,8 +424,10 @@ class _AddStepSheet extends StatelessWidget {
       child: ListView(
         shrinkWrap: true,
         children: <Widget>[
-          _SheetHeader(text: l10n.eventDefaultsCheckInHeader),
-          for (final ChainStepType t in _checkIn) _stepRow(context, t),
+          if (!isDistress) ...<Widget>[
+            _SheetHeader(text: l10n.eventDefaultsCheckInHeader),
+            for (final ChainStepType t in _checkIn) _stepRow(context, t),
+          ],
           _SheetHeader(text: l10n.eventDefaultsEscalationHeader),
           for (final ChainStepType t in _escalation) _stepRow(context, t),
           _SheetHeader(text: l10n.eventDefaultsPanicHeader),

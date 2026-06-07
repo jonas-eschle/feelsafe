@@ -1,22 +1,25 @@
 # Guardian Angela v3 — Session Hand-off
 
 **Snapshot:** 2026-06-07 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
-PROGRESS: #13a + #13b + #14 done + committed (UNPUSHED). Next: #13c, #13d,
+PROGRESS: #13a + #13b + #14 + #13c done + committed (UNPUSHED). Next: #13d,
 #23, #20 → M2 cohort → push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
-written pre-push; `origin/main` = `b62ba2b`). This session built the spine of
-M2. **Three commits are UNPUSHED on local `main`**, by design — M2 pushes as
+written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
+**The M2 commits are UNPUSHED on local `main`**, by design — M2 pushes as
 one milestone after the verifier cohort (rule 12 + plan §3.7):
 
 - `8f74423` m2-#13a — extract shared `EventSpecificConfig` + `step_helpers`
 - `b557f98` m2-#13b — rebuild Mode Editor chain (per-step `StepConfigPanel`)
 - `11473ba` m2-#14 — SMS contact-selection grid
+- `f40baba` m2-handoff (prior session boundary)
+- `<this>`   m2-#13c — Mode Editor Safety Options
 - (+ this handoff commit)
 
-**Tests: 3708 pass.** Analyzer `--fatal-infos` clean. l10n parity green (16
-new keys × 14 locales: 10 for #13b, 6 for #14). app_boot_smoke green on the
-emulator after the #13b rebuild. Tree clean. Branch: `main`.
+**Tests: 3728 pass** (3708 baseline + 20 net new #13c tests). Analyzer
+`--fatal-infos` clean. l10n parity green (53 new keys × 14 locales for #13c:
+52 + `safetyOptionsDistressModeUseDefaultNamed`). app_boot_smoke green on the
+emulator after the #13c wiring. Tree clean. Branch: `main`.
 
 ---
 
@@ -26,35 +29,31 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: continue M2 — #13c (Safety Options), then #13d, #23, #20,
+**Next action: continue M2 — #13d (save validation), then #23, #20,
 then the M2 cohort + push.** Per-fix recipe (unchanged): verify the gap
 yourself → implement (serial) → prove (host/widget tests driving the REAL
 controller; emulator for native) → l10n deltas → language agent for 13
 locales → gate suite → commit → **ask before pushing**.
 
-**M2 remaining chunks (the spine — #13a/#13b/#14 — is done):**
+**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c — are done):**
 
-1. **#13c — Mode Editor Safety Options** (the next big build). Collapsible
-   "Safety Options" section at the bottom of the editor (spec 04:1601-1614,
-   1646-1652): distress-mode picker (writes `distressModeId`; **hidden in the
-   distress variant**) + "Manage distress modes →" link; distress-triggers
-   list; disarm-triggers (GPS-arrival toggle+radius+destination-source; timer
-   toggle+duration); GPS-logging tri-state (Inherit/Custom/Off) with inline
-   `GpsLoggingConfig`; stealth tri-state with inline `StealthConfig`; local
-   templates; event-defaults tri-state; **`allowDisarmAsDistress` toggle
-   (distress variant only, G-014)**. **Also fold in the distress-variant step
-   tweaks** the spine deferred: hide check-in steps (holdButton /
-   disguisedReminder) for distress modes (spec 04:1649). Info buttons
-   throughout (`InfoIconButton` exists at `lib/core/widgets/`).
-2. **#13d — save validation + trigger save-validation** (spec 04:1595-1599,
+1. **#13d — save validation + trigger save-validation** (spec 04:1595-1599,
    1656-1659): name required min 2 chars; chain ≥1 step; distress variant
    non-blocking warn if no SMS/call step; GPS-arrival `fixed` source requires
    lat/lng; hardware-button trigger pattern/pressCount/duration consistency.
-3. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
+   **#13c context:** the editor's `_save()` currently saves unconditionally
+   (no validation, no `_AddStepSheet`-style blocking). The Safety Options
+   fields #13c added are the targets of trigger save-validation — GPS-arrival
+   `fixed` lat/lng (UI lets you leave them blank → `lat/lng = null`), and the
+   hardware-button distress trigger (pattern↔pressCount/duration is already
+   normalised on edit by `_triggerWithPattern`, but a defensive save-time
+   check matches spec). Validate `_draft` in `_save()`; surface name/chain
+   errors as blocking, the distress no-action-step warning as non-blocking.
+2. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
    / ramp toggles. Verify the gap vs the loudAlarm `EventSpecificConfig`
    (built in #13a) and M0 #19 (gradual + DND already wired in the strategy);
    this is the Settings-level section (06), distinct from per-step config.
-4. **#20** — channel-validation-on-save; SMS message-template editor (the
+3. **#20** — channel-validation-on-save; SMS message-template editor (the
    `messageTemplate` field is in `SmsContactConfig` but has no editor yet);
    iOS SMS+callEmergency warning strings; the missing iOS `critical_alert.wav`.
 
@@ -90,6 +89,28 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   runtime resolver — see KEY FINDINGS). Empty repo → deep-link to `/contacts`.
   8 grid tests (incl. the null-contactIds inference) + a mode-editor
   integration test.
+- **#13c** (`<this>`): **Safety Options half of GA-blocker #13.** Collapsible
+  "Safety options" `ExpansionTile` at the bottom of the editor
+  (`lib/features/modes/widgets/safety_options_section.dart`), wired to the
+  editor's in-memory `_draft` via a new `_updateDraft(SessionMode)` mutator.
+  Sub-parts, all driving `_draft`→DB on Save: distress-mode picker (writes
+  `distressModeId`; hidden in distress variant; "Use default" names the
+  resolved default mode) + "Manage distress modes" link; distress-triggers
+  list (add/edit/remove `HardwareButtonDistressTrigger`, pattern↔count/dur
+  normalised on edit); disarm-triggers (GPS-arrival toggle+radius slider
+  50m–5km+destination-source+fixed lat/lng; timer toggle+5min–8h slider);
+  GPS-logging tri-state (Inherit/Custom/Off) with inline `GpsLoggingFields`;
+  stealth tri-state with inline `StealthConfigFields`; mode-local templates
+  list (remove + "Manage reminder templates" link); event-defaults tri-state
+  (Inherit/Custom) with inline `ModeEventDefaults`; `allowDisarmAsDistress`
+  toggle (distress variant only, G-014). Distress variant's `_AddStepSheet`
+  omits the check-in category (spec 04:1649). `InfoIconButton`s throughout
+  (now localized — `commonGotIt`). New controller-free field widgets
+  `gps_logging_fields.dart` / `stealth_config_fields.dart` /
+  `mode_event_defaults.dart` mirror the standalone screens. 20 widget tests
+  (real screen→draft→DB, incl. override-clearing round-trip, fixed-source
+  lat/lng, RTL-expanded render). 53 new l10n keys × 14 locales. Emulator
+  boot-smoke green.
 
 ---
 
@@ -112,14 +133,42 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   (zh_TW is folded into `app_localizations_zh.dart` as `AppLocalizationsZhTw`).
   This session's regen diffs were additions-only (no blank-line drift). Keep
   them.
+- **`copyWith` cannot null applies to `SessionMode.overrides` ITSELF, not just
+  inner fields.** `_modeWithOverrides` must DIRECT-CONSTRUCT the SessionMode to
+  set `overrides = null` — `mode.copyWith(overrides: _normalised(...))` silently
+  KEEPS the stale overrides when `_normalised` returns null (the Inherit-clears
+  path). A widget test (`Custom then Inherit clears the override`) caught this
+  live; same trap as `distressModeId`. Likewise `ModeOverrides.copyWith` can't
+  null an inner field → build `ModeOverrides(...)` directly + a `_normalised`
+  helper that returns null when all four override slots are empty (so an
+  all-inherit mode persists `overrides = null`, not an empty object).
+- **Tri-state ⇄ override mapping:** Inherit = override field null; Custom = a
+  config (force `enabled: true` so a previously-Off config flips on); Off =
+  config with `enabled: false`. Event-defaults is two-state only (Inherit =
+  null / Custom = `const EventDefaults()`).
+- **Translation ARB edits must be TEXT-INSERTED, not `json.load`/`json.dump`.**
+  Re-serialising reflows the existing collapsed `@`-metadata `placeholders`
+  blocks → dozens of spurious deletions (violates additions-only). Insert the
+  new `"k": "v",` lines before the file's final `}` and add a trailing comma to
+  the prior last entry (the only existing line that changes: `-1 +N+1` per
+  file). Placeholder tokens (`{button}`, `{count}`, `{km}`, …) stay inline; no
+  `@`-metadata needed in the 13 translation ARBs (only `app_en.arb` carries it).
+- **`InfoIconButton` is now localized** (`commonGotIt`) and needs
+  `AppLocalizations.of(context)` — it had a hard-coded English "Got it".
+- **Dropdown-open in widget tests:** tap the dropdown's CURRENT VALUE text (e.g.
+  `safetyOptionsDestinationPrompt`), not the `InputDecorator` label — the label
+  doesn't open the menu. Then tap the target item `.last` (overlay copy).
 
 ---
 
 ## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
 
-- **Per-field info-icon buttons + preview cards** (fakeCall/smsContact/
-  loudAlarm), spec 04:1538. Batch all the explanation strings into ONE
-  language-agent run. → a #13 polish pass (or alongside #13c info buttons).
+- **Per-field info-icon buttons + preview cards on `EventSpecificConfig`**
+  (fakeCall/smsContact/loudAlarm), spec 04:1538. STILL deferred — #13c added
+  info buttons to the Safety-Options SECTIONS (distress/disarm/GPS/stealth/
+  templates/event-defaults), not to the individual per-step event-config
+  FIELDS inside `EventSpecificConfig`, nor the 3 preview cards. Batch all the
+  per-field explanation strings into ONE language-agent run → a #13 polish pass.
 - **Localized one-sentence step descriptions.** `step_helpers.stepDescription`
   is still English; `event_defaults_screen` still uses `type.name` titles +
   English descriptions. Localize `stepDescription` (add `chainStepDesc*` keys)
@@ -240,9 +289,9 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
-  #13b ✓ + #14 ✓ done (UNPUSHED); remaining **#13c (Safety Options) → #13d
-  (save validation) → #23 (alarm settings) → #20 (channel validation / SMS
-  template / iOS warnings) → M2 cohort → push.** Then M3 (#15 stealth), M4
+  #13b ✓ + #14 ✓ + #13c ✓ done (UNPUSHED); remaining **#13d (save validation)
+  → #23 (alarm settings) → #20 (channel validation / SMS template / iOS
+  warnings) → M2 cohort → push.** Then M3 (#15 stealth), M4
   (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
   #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
   The in-memory TaskList is cleared on `/clear` — this bullet is the durable
@@ -260,6 +309,7 @@ Don't skip it because "the session went short."
 
 ---
 
-End of hand-off. M0+M1 verified+pushed; **M2 spine done** — #13a + #13b
-(per-step config) + #14 (SMS contact grid) committed, UNPUSHED. Resume by
-**building #13c (Safety Options) → #13d → #23 → #20 → M2 cohort → push.**
+End of hand-off. M0+M1 verified+pushed; **M2 config-UI in progress** — #13a +
+#13b (per-step config) + #14 (SMS contact grid) + #13c (Safety Options)
+committed, UNPUSHED. Resume by **building #13d (save validation) → #23 → #20
+→ M2 cohort → push.**

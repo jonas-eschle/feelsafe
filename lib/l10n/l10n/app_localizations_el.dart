@@ -40,6 +40,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get commonEdit => 'Επεξεργασία';
 
   @override
+  String get commonGotIt => 'Το κατάλαβα';
+
+  @override
   String get commonClose => 'Κλείσιμο';
 
   @override
@@ -644,6 +647,194 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Δεν υπάρχουν ακόμη επαφές — προσθέστε μία στις Επαφές';
+
+  @override
+  String get safetyOptionsHeader => 'Επιλογές ασφάλειας';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Λειτουργία κινδύνου';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Χρήση προεπιλεγμένης λειτουργίας κινδύνου';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Χρήση προεπιλογής ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'Όταν ενεργοποιηθεί ένας ενεργοποιητής κινδύνου (PIN υπό εξαναγκασμό, πανικός υλικού ή υπέρβαση λανθασμένων PIN), η αλυσίδα αυτής της λειτουργίας αντικαθίσταται από την αλυσίδα της επιλεγμένης λειτουργίας κινδύνου. Αφήστε την προεπιλογή για να χρησιμοποιηθεί η καθολική λειτουργία κινδύνου της εφαρμογής.';
+
+  @override
+  String get safetyOptionsManageDistressModes =>
+      'Διαχείριση λειτουργιών κινδύνου';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Ενεργοποιητές κινδύνου';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Οι ενεργοποιητές κινδύνου εκκινούν αμέσως την αλυσίδα κινδύνου, παράλληλα με την κύρια αλυσίδα. Το κουμπί πανικού υλικού παρακολουθεί ένα φυσικό κουμπί σύμφωνα με το ρυθμισμένο μοτίβο πατημάτων.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty =>
+      'Δεν υπάρχουν ενεργοποιητές κινδύνου';
+
+  @override
+  String get safetyOptionsAddHardwarePanic =>
+      'Προσθήκη κουμπιού πανικού υλικού';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× πάτημα';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: κράτημα ${seconds}s';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Αύξηση έντασης';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Μείωση έντασης';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Μοτίβο πατήματος';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Επαναλαμβανόμενο πάτημα';
+
+  @override
+  String get safetyOptionsPatternLong => 'Παρατεταμένο πάτημα';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Κουμπί';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Αριθμός πατημάτων';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration =>
+      'Διάρκεια κρατήματος (δευτερόλεπτα)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle =>
+      'Ενεργοποιητές απενεργοποίησης';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle =>
+      'Απενεργοποίηση κατά την άφιξη GPS';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Η συνεδρία τερματίζεται αυτόματα όταν φτάσετε εντός της ρυθμισμένης ακτίνας από τον προορισμό σας. Ορίζετε τον προορισμό κατά την έναρξη μιας συνεδρίας.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Ακτίνα άφιξης';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters m';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Προορισμός';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Ορισμός προορισμού στην έναρξη της συνεδρίας';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Σταθερές συντεταγμένες';
+
+  @override
+  String get safetyOptionsLatitude => 'Γεωγραφικό πλάτος';
+
+  @override
+  String get safetyOptionsLongitude => 'Γεωγραφικό μήκος';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Απενεργοποίηση με χρονόμετρο';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Η συνεδρία τερματίζεται αυτόματα μετά τον ρυθμισμένο χρόνο, ανεξάρτητα από το αν έχει ξεκινήσει η κλιμάκωση.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Διάρκεια';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes λεπτά';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours ώρες $minutes λεπτά';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'Καταγραφή GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Επιλέξτε αν αυτή η λειτουργία καταγράφει την τοποθεσία σας κατά τη διάρκεια μιας συνεδρίας. Η «Κληρονόμηση» χρησιμοποιεί τις καθολικές ρυθμίσεις GPS· το «Προσαρμοσμένο» τις αντικαθιστά για αυτή τη λειτουργία· το «Ανενεργό» απενεργοποιεί εντελώς την καταγραφή.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Κρυφή λειτουργία';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Επιλέξτε αν αυτή η λειτουργία μεταμφιέζει την εφαρμογή κατά τη διάρκεια μιας συνεδρίας. Η «Κληρονόμηση» χρησιμοποιεί τις καθολικές ρυθμίσεις κρυφής λειτουργίας· το «Προσαρμοσμένο» τις αντικαθιστά για αυτή τη λειτουργία· το «Ανενεργό» την απενεργοποιεί εντελώς.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Κληρονόμηση';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Προσαρμοσμένο';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Ανενεργό';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Τοπικά πρότυπα';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Τα τοπικά πρότυπα προστίθενται στο καθολικό σύνολο προτύπων υπενθύμισης μόνο για αυτή τη λειτουργία. Χρησιμοποιήστε τα για βήματα μεταμφιεσμένης υπενθύμισης ειδικά για αυτή τη λειτουργία.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Δεν υπάρχουν τοπικά πρότυπα';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Διαχείριση προτύπων υπενθύμισης';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Προεπιλογές συμβάντων';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Οι προεπιλογές συμβάντων ορίζουν την αρχική διαμόρφωση για κάθε τύπο βήματος. Η «Κληρονόμηση» χρησιμοποιεί τις καθολικές προεπιλογές· το «Προσαρμοσμένο» τις αντικαθιστά για βήματα αυτής της λειτουργίας χωρίς δική τους διαμόρφωση.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Κληρονόμηση';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Να επιτρέπεται η απενεργοποίηση κατά τον ενεργό κίνδυνο';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Όταν είναι ενεργό, μπορείτε να σταματήσετε τον συναγερμό φτάνοντας σε ασφαλές μέρος ή αφήνοντας ένα χρονόμετρο να λήξει. Όταν είναι ανενεργό, μόνο η ολοκλήρωση της αλυσίδας ή το κλείσιμο της εφαρμογής σταματά τον συναγερμό — ισχυρότερη προστασία έναντι εξαναγκασμού.';
 
   @override
   String get distressModesEmpty => 'Δεν υπάρχουν ακόμη λειτουργίες κινδύνου.';

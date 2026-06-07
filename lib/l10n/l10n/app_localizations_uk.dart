@@ -40,6 +40,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get commonEdit => 'Редагувати';
 
   @override
+  String get commonGotIt => 'Зрозуміло';
+
+  @override
   String get commonClose => 'Закрити';
 
   @override
@@ -640,6 +643,189 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Ще немає контактів — додайте один у Контактах';
+
+  @override
+  String get safetyOptionsHeader => 'Параметри безпеки';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Режим тривоги';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Використовувати режим тривоги за замовчуванням';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Використовувати за замовчуванням ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'Коли спрацьовує тригер тривоги (PIN під примусом, апаратна паніка або перевищення кількості невірних PIN), ланцюжок цього режиму замінюється ланцюжком обраного режиму тривоги. Залиште значення за замовчуванням, щоб використовувати загальний режим тривоги застосунку.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'Керування режимами тривоги';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Тригери тривоги';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Тригери тривоги негайно запускають ланцюжок тривоги паралельно з основним ланцюжком. Апаратна кнопка паніки відстежує фізичну кнопку за заданим шаблоном натискань.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'Немає тригерів тривоги';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'Додати апаратну кнопку паніки';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: натискань $count×';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: утримання $seconds с';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Гучність +';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Гучність −';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Шаблон натискань';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Повторні натискання';
+
+  @override
+  String get safetyOptionsPatternLong => 'Довге натискання';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Кнопка';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Кількість натискань';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration =>
+      'Тривалість утримання (секунди)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'Тригери вимкнення';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'Вимкнення після GPS-прибуття';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Сесія завершується автоматично, коли ви опиняєтеся в межах заданого радіуса від пункту призначення. Пункт призначення задається під час запуску сесії.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Радіус прибуття';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters м';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km км';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Пункт призначення';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Задавати пункт призначення під час запуску сесії';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Фіксовані координати';
+
+  @override
+  String get safetyOptionsLatitude => 'Широта';
+
+  @override
+  String get safetyOptionsLongitude => 'Довгота';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Вимкнення за таймером';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Сесія завершується автоматично після заданого часу, незалежно від того, чи почалася ескалація.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Тривалість';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes хв';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours год $minutes хв';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'Запис GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Виберіть, чи записує цей режим ваше місцезнаходження під час сесії. «Успадкувати» використовує глобальні налаштування GPS; «Власні» перевизначають їх для цього режиму; «Вимк.» повністю вимикає запис.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Прихований режим';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Виберіть, чи маскує цей режим застосунок під час сесії. «Успадкувати» використовує глобальні налаштування прихованості; «Власні» перевизначають їх для цього режиму; «Вимк.» повністю вимикає прихованість.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Успадкувати';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Власні';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Вимк.';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Локальні шаблони';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Локальні шаблони додаються до глобального набору шаблонів нагадувань лише для цього режиму. Використовуйте їх для кроків замаскованих нагадувань, специфічних для цього режиму.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Немає локальних шаблонів';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Керування шаблонами нагадувань';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Типові значення подій';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Типові значення подій задають початкову конфігурацію для кожного типу кроку. «Успадкувати» використовує глобальні значення; «Власні» перевизначають їх для кроків цього режиму без власної конфігурації.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Успадкувати';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Дозволити вимкнення під час активної тривоги';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Якщо ввімкнено, ви можете зупинити сигнал, діставшись безпечного місця або дочекавшись завершення таймера. Якщо вимкнено, сигнал зупиняє лише завершення ланцюжка або закриття застосунку — надійніше проти примусу.';
 
   @override
   String get distressModesEmpty => 'Ще немає режимів тривоги.';

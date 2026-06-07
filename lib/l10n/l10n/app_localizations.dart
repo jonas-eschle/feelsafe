@@ -181,6 +181,12 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get commonEdit;
 
+  /// Generic dismiss action acknowledging an informational message.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get commonGotIt;
+
   /// Generic close action.
   ///
   /// In en, this message translates to:
@@ -1252,6 +1258,318 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No contacts yet — add one in Contacts'**
   String get smsContactEmptyAddPrompt;
+
+  /// Header of the collapsible Safety Options section at the bottom of the mode editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety options'**
+  String get safetyOptionsHeader;
+
+  /// Label for the distress-mode picker in Safety Options.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress mode'**
+  String get safetyOptionsDistressModeTitle;
+
+  /// Dropdown option meaning the mode inherits the app-wide default distress mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use default distress mode'**
+  String get safetyOptionsDistressModeUseDefault;
+
+  /// Dropdown option for inheriting the app-wide default distress mode, naming which mode that resolves to.
+  ///
+  /// In en, this message translates to:
+  /// **'Use default ({name})'**
+  String safetyOptionsDistressModeUseDefaultNamed(Object name);
+
+  /// Info-sheet body explaining what the distress mode does.
+  ///
+  /// In en, this message translates to:
+  /// **'When a distress trigger fires (duress PIN, hardware panic, or a wrong-PIN threshold), this mode\'s chain is replaced by the chosen distress mode\'s chain. Leave on the default to use the app-wide distress mode.'**
+  String get safetyOptionsDistressModeInfo;
+
+  /// Link below the distress-mode picker that opens the distress-modes screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage distress modes'**
+  String get safetyOptionsManageDistressModes;
+
+  /// Subsection header for the list of distress triggers.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress triggers'**
+  String get safetyOptionsDistressTriggersTitle;
+
+  /// Info-sheet body explaining distress triggers.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress triggers fire the distress chain immediately, in parallel with the main chain. The hardware panic button watches a physical button for the configured press pattern.'**
+  String get safetyOptionsDistressTriggersInfo;
+
+  /// Empty state when a mode has no distress triggers configured.
+  ///
+  /// In en, this message translates to:
+  /// **'No distress triggers'**
+  String get safetyOptionsDistressTriggersEmpty;
+
+  /// Action to add a hardware-button distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Add hardware panic button'**
+  String get safetyOptionsAddHardwarePanic;
+
+  /// Summary of a repeat-press hardware panic trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'{button}: {count}× press'**
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count);
+
+  /// Summary of a long-press hardware panic trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'{button}: hold {seconds}s'**
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds);
+
+  /// Label for the volume-up hardware button.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume up'**
+  String get safetyOptionsButtonVolumeUp;
+
+  /// Label for the volume-down hardware button.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume down'**
+  String get safetyOptionsButtonVolumeDown;
+
+  /// Label for the hardware-button press-pattern selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Press pattern'**
+  String get safetyOptionsTriggerPattern;
+
+  /// Press-pattern option: rapid repeated presses.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat press'**
+  String get safetyOptionsPatternRepeat;
+
+  /// Press-pattern option: a single sustained hold.
+  ///
+  /// In en, this message translates to:
+  /// **'Long press'**
+  String get safetyOptionsPatternLong;
+
+  /// Label for the hardware-button selector in a distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Button'**
+  String get safetyOptionsTriggerButton;
+
+  /// Label for the press-count field of a repeat-press trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Press count'**
+  String get safetyOptionsTriggerPressCount;
+
+  /// Label for the hold-duration field of a long-press trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold duration (seconds)'**
+  String get safetyOptionsTriggerHoldDuration;
+
+  /// Subsection header for automatic disarm conditions.
+  ///
+  /// In en, this message translates to:
+  /// **'Disarm triggers'**
+  String get safetyOptionsDisarmTriggersTitle;
+
+  /// Toggle label for the GPS-arrival disarm trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS arrival disarm'**
+  String get safetyOptionsGpsArrivalTitle;
+
+  /// Info-sheet body explaining GPS-arrival disarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Session ends automatically when you arrive within the configured radius of your destination. You set the destination when starting a session.'**
+  String get safetyOptionsGpsArrivalInfo;
+
+  /// Label for the GPS-arrival radius slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival radius'**
+  String get safetyOptionsGpsArrivalRadius;
+
+  /// Formats a radius in metres.
+  ///
+  /// In en, this message translates to:
+  /// **'{meters} m'**
+  String safetyOptionsRadiusMeters(Object meters);
+
+  /// Formats a radius in kilometres.
+  ///
+  /// In en, this message translates to:
+  /// **'{km} km'**
+  String safetyOptionsRadiusKilometers(Object km);
+
+  /// Label for the GPS-arrival destination-source selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Destination'**
+  String get safetyOptionsDestinationSource;
+
+  /// Destination-source option: prompt the user when a session starts.
+  ///
+  /// In en, this message translates to:
+  /// **'Set destination at session start'**
+  String get safetyOptionsDestinationPrompt;
+
+  /// Destination-source option: a stored latitude/longitude.
+  ///
+  /// In en, this message translates to:
+  /// **'Fixed coordinates'**
+  String get safetyOptionsDestinationFixed;
+
+  /// Label for the fixed-destination latitude field.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get safetyOptionsLatitude;
+
+  /// Label for the fixed-destination longitude field.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get safetyOptionsLongitude;
+
+  /// Toggle label for the timer disarm trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Timer disarm'**
+  String get safetyOptionsTimerDisarmTitle;
+
+  /// Info-sheet body explaining timer disarm.
+  ///
+  /// In en, this message translates to:
+  /// **'Session ends automatically after the configured time, regardless of whether escalation has started.'**
+  String get safetyOptionsTimerDisarmInfo;
+
+  /// Label for the timer-disarm duration slider.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get safetyOptionsTimerDuration;
+
+  /// Formats a duration in minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min'**
+  String safetyOptionsDurationMinutes(Object minutes);
+
+  /// Formats a duration in hours and minutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h {minutes} min'**
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes);
+
+  /// Subsection header for the GPS-logging tri-state selector.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS logging'**
+  String get safetyOptionsGpsLoggingTitle;
+
+  /// Info-sheet body explaining the GPS-logging tri-state.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether this mode records your location during a session. Inherit uses your global GPS-logging settings; Custom overrides them for this mode; Off disables logging entirely.'**
+  String get safetyOptionsGpsLoggingInfo;
+
+  /// Subsection header for the stealth tri-state selector.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth'**
+  String get safetyOptionsStealthTitle;
+
+  /// Info-sheet body explaining the stealth tri-state.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose whether this mode disguises the app during a session. Inherit uses your global stealth settings; Custom overrides them for this mode; Off disables stealth entirely.'**
+  String get safetyOptionsStealthInfo;
+
+  /// Tri-state option: inherit the global default.
+  ///
+  /// In en, this message translates to:
+  /// **'Inherit'**
+  String get safetyOptionsTriStateInherit;
+
+  /// Tri-state option: override with custom values.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom'**
+  String get safetyOptionsTriStateCustom;
+
+  /// Tri-state option: disable the feature for this mode.
+  ///
+  /// In en, this message translates to:
+  /// **'Off'**
+  String get safetyOptionsTriStateOff;
+
+  /// Subsection header for mode-local reminder templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Local templates'**
+  String get safetyOptionsLocalTemplatesTitle;
+
+  /// Info-sheet body explaining mode-local templates.
+  ///
+  /// In en, this message translates to:
+  /// **'Local templates are added to the global reminder-template pool for this mode only. Use them for disguised-reminder steps specific to this mode.'**
+  String get safetyOptionsLocalTemplatesInfo;
+
+  /// Empty state when a mode has no local templates.
+  ///
+  /// In en, this message translates to:
+  /// **'No local templates'**
+  String get safetyOptionsLocalTemplatesEmpty;
+
+  /// Link that opens the global reminder-templates screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage reminder templates'**
+  String get safetyOptionsManageTemplates;
+
+  /// Subsection header for the per-mode event-defaults tri-state.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults'**
+  String get safetyOptionsEventDefaultsTitle;
+
+  /// Info-sheet body explaining the per-mode event-defaults tri-state.
+  ///
+  /// In en, this message translates to:
+  /// **'Event defaults set the starting configuration for each step type. Inherit uses your global event defaults; Custom overrides them for steps in this mode that have no explicit configuration.'**
+  String get safetyOptionsEventDefaultsInfo;
+
+  /// Two-state event-defaults option: inherit the global defaults.
+  ///
+  /// In en, this message translates to:
+  /// **'Inherit'**
+  String get safetyOptionsEventDefaultsTwoStateInherit;
+
+  /// Toggle label for allowDisarmAsDistress (distress modes only).
+  ///
+  /// In en, this message translates to:
+  /// **'Allow disarm while active as distress'**
+  String get safetyOptionsAllowDisarmAsDistressTitle;
+
+  /// Info-sheet body explaining the allowDisarmAsDistress trade-off.
+  ///
+  /// In en, this message translates to:
+  /// **'Enabling allows you to stop the alert by reaching safety or letting a timer expire. Disabling means only chain completion or shutting down the app stops the alert — stronger against coercion.'**
+  String get safetyOptionsAllowDisarmAsDistressInfo;
 
   /// Empty state on distress modes.
   ///

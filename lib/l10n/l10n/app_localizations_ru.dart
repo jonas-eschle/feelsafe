@@ -40,6 +40,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get commonEdit => 'Изменить';
 
   @override
+  String get commonGotIt => 'Понятно';
+
+  @override
   String get commonClose => 'Закрыть';
 
   @override
@@ -643,6 +646,190 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'Контактов пока нет — добавьте один в разделе Контакты';
+
+  @override
+  String get safetyOptionsHeader => 'Параметры безопасности';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Режим тревоги';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault =>
+      'Использовать режим тревоги по умолчанию';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Использовать по умолчанию ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'При срабатывании триггера тревоги (PIN под принуждением, аппаратная паника или превышение числа неверных PIN) цепочка этого режима заменяется цепочкой выбранного режима тревоги. Оставьте значение по умолчанию, чтобы использовать общий режим тревоги приложения.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'Управление режимами тревоги';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Триггеры тревоги';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Триггеры тревоги немедленно запускают цепочку тревоги параллельно с основной цепочкой. Аппаратная кнопка паники отслеживает физическую кнопку по заданному шаблону нажатий.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'Нет триггеров тревоги';
+
+  @override
+  String get safetyOptionsAddHardwarePanic =>
+      'Добавить аппаратную кнопку паники';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: нажатий $count×';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: удержание $seconds с';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Громкость +';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Громкость −';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Шаблон нажатий';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Повторные нажатия';
+
+  @override
+  String get safetyOptionsPatternLong => 'Долгое нажатие';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Кнопка';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Количество нажатий';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration =>
+      'Длительность удержания (секунды)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'Триггеры отключения';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'Отключение при GPS-прибытии';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Сессия завершается автоматически, когда вы оказываетесь в заданном радиусе от пункта назначения. Пункт назначения задаётся при запуске сессии.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Радиус прибытия';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters м';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km км';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Пункт назначения';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Задавать пункт назначения при запуске сессии';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Фиксированные координаты';
+
+  @override
+  String get safetyOptionsLatitude => 'Широта';
+
+  @override
+  String get safetyOptionsLongitude => 'Долгота';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Отключение по таймеру';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Сессия завершается автоматически по истечении заданного времени, независимо от того, началась ли эскалация.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Длительность';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes мин';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours ч $minutes мин';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'Запись GPS';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Выберите, записывает ли этот режим ваше местоположение во время сессии. «Наследовать» использует глобальные настройки GPS; «Свои» переопределяют их для этого режима; «Выкл.» полностью отключает запись.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Скрытность';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Выберите, маскирует ли этот режим приложение во время сессии. «Наследовать» использует глобальные настройки скрытности; «Свои» переопределяют их для этого режима; «Выкл.» полностью отключает скрытность.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Наследовать';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Свои';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Выкл.';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Локальные шаблоны';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Локальные шаблоны добавляются к глобальному набору шаблонов напоминаний только для этого режима. Используйте их для шагов замаскированных напоминаний, относящихся только к этому режиму.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'Нет локальных шаблонов';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Управление шаблонами напоминаний';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Значения событий по умолчанию';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Значения событий по умолчанию задают начальную конфигурацию для каждого типа шага. «Наследовать» использует глобальные значения; «Свои» переопределяют их для шагов этого режима без собственной конфигурации.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Наследовать';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Разрешить отключение во время активной тревоги';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Если включено, вы можете остановить тревогу, добравшись до безопасного места или дождавшись истечения таймера. Если выключено, тревогу останавливает только завершение цепочки или закрытие приложения — надёжнее против принуждения.';
 
   @override
   String get distressModesEmpty => 'Режимов тревоги пока нет.';

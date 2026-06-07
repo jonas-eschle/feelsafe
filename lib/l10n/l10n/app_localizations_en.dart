@@ -40,6 +40,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get commonEdit => 'Edit';
 
   @override
+  String get commonGotIt => 'Got it';
+
+  @override
   String get commonClose => 'Close';
 
   @override
@@ -637,6 +640,187 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get smsContactEmptyAddPrompt =>
       'No contacts yet — add one in Contacts';
+
+  @override
+  String get safetyOptionsHeader => 'Safety options';
+
+  @override
+  String get safetyOptionsDistressModeTitle => 'Distress mode';
+
+  @override
+  String get safetyOptionsDistressModeUseDefault => 'Use default distress mode';
+
+  @override
+  String safetyOptionsDistressModeUseDefaultNamed(Object name) {
+    return 'Use default ($name)';
+  }
+
+  @override
+  String get safetyOptionsDistressModeInfo =>
+      'When a distress trigger fires (duress PIN, hardware panic, or a wrong-PIN threshold), this mode\'s chain is replaced by the chosen distress mode\'s chain. Leave on the default to use the app-wide distress mode.';
+
+  @override
+  String get safetyOptionsManageDistressModes => 'Manage distress modes';
+
+  @override
+  String get safetyOptionsDistressTriggersTitle => 'Distress triggers';
+
+  @override
+  String get safetyOptionsDistressTriggersInfo =>
+      'Distress triggers fire the distress chain immediately, in parallel with the main chain. The hardware panic button watches a physical button for the configured press pattern.';
+
+  @override
+  String get safetyOptionsDistressTriggersEmpty => 'No distress triggers';
+
+  @override
+  String get safetyOptionsAddHardwarePanic => 'Add hardware panic button';
+
+  @override
+  String safetyOptionsTriggerHardwareRepeat(Object button, Object count) {
+    return '$button: $count× press';
+  }
+
+  @override
+  String safetyOptionsTriggerHardwareLong(Object button, Object seconds) {
+    return '$button: hold ${seconds}s';
+  }
+
+  @override
+  String get safetyOptionsButtonVolumeUp => 'Volume up';
+
+  @override
+  String get safetyOptionsButtonVolumeDown => 'Volume down';
+
+  @override
+  String get safetyOptionsTriggerPattern => 'Press pattern';
+
+  @override
+  String get safetyOptionsPatternRepeat => 'Repeat press';
+
+  @override
+  String get safetyOptionsPatternLong => 'Long press';
+
+  @override
+  String get safetyOptionsTriggerButton => 'Button';
+
+  @override
+  String get safetyOptionsTriggerPressCount => 'Press count';
+
+  @override
+  String get safetyOptionsTriggerHoldDuration => 'Hold duration (seconds)';
+
+  @override
+  String get safetyOptionsDisarmTriggersTitle => 'Disarm triggers';
+
+  @override
+  String get safetyOptionsGpsArrivalTitle => 'GPS arrival disarm';
+
+  @override
+  String get safetyOptionsGpsArrivalInfo =>
+      'Session ends automatically when you arrive within the configured radius of your destination. You set the destination when starting a session.';
+
+  @override
+  String get safetyOptionsGpsArrivalRadius => 'Arrival radius';
+
+  @override
+  String safetyOptionsRadiusMeters(Object meters) {
+    return '$meters m';
+  }
+
+  @override
+  String safetyOptionsRadiusKilometers(Object km) {
+    return '$km km';
+  }
+
+  @override
+  String get safetyOptionsDestinationSource => 'Destination';
+
+  @override
+  String get safetyOptionsDestinationPrompt =>
+      'Set destination at session start';
+
+  @override
+  String get safetyOptionsDestinationFixed => 'Fixed coordinates';
+
+  @override
+  String get safetyOptionsLatitude => 'Latitude';
+
+  @override
+  String get safetyOptionsLongitude => 'Longitude';
+
+  @override
+  String get safetyOptionsTimerDisarmTitle => 'Timer disarm';
+
+  @override
+  String get safetyOptionsTimerDisarmInfo =>
+      'Session ends automatically after the configured time, regardless of whether escalation has started.';
+
+  @override
+  String get safetyOptionsTimerDuration => 'Duration';
+
+  @override
+  String safetyOptionsDurationMinutes(Object minutes) {
+    return '$minutes min';
+  }
+
+  @override
+  String safetyOptionsDurationHoursMinutes(Object hours, Object minutes) {
+    return '$hours h $minutes min';
+  }
+
+  @override
+  String get safetyOptionsGpsLoggingTitle => 'GPS logging';
+
+  @override
+  String get safetyOptionsGpsLoggingInfo =>
+      'Choose whether this mode records your location during a session. Inherit uses your global GPS-logging settings; Custom overrides them for this mode; Off disables logging entirely.';
+
+  @override
+  String get safetyOptionsStealthTitle => 'Stealth';
+
+  @override
+  String get safetyOptionsStealthInfo =>
+      'Choose whether this mode disguises the app during a session. Inherit uses your global stealth settings; Custom overrides them for this mode; Off disables stealth entirely.';
+
+  @override
+  String get safetyOptionsTriStateInherit => 'Inherit';
+
+  @override
+  String get safetyOptionsTriStateCustom => 'Custom';
+
+  @override
+  String get safetyOptionsTriStateOff => 'Off';
+
+  @override
+  String get safetyOptionsLocalTemplatesTitle => 'Local templates';
+
+  @override
+  String get safetyOptionsLocalTemplatesInfo =>
+      'Local templates are added to the global reminder-template pool for this mode only. Use them for disguised-reminder steps specific to this mode.';
+
+  @override
+  String get safetyOptionsLocalTemplatesEmpty => 'No local templates';
+
+  @override
+  String get safetyOptionsManageTemplates => 'Manage reminder templates';
+
+  @override
+  String get safetyOptionsEventDefaultsTitle => 'Event defaults';
+
+  @override
+  String get safetyOptionsEventDefaultsInfo =>
+      'Event defaults set the starting configuration for each step type. Inherit uses your global event defaults; Custom overrides them for steps in this mode that have no explicit configuration.';
+
+  @override
+  String get safetyOptionsEventDefaultsTwoStateInherit => 'Inherit';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressTitle =>
+      'Allow disarm while active as distress';
+
+  @override
+  String get safetyOptionsAllowDisarmAsDistressInfo =>
+      'Enabling allows you to stop the alert by reaching safety or letting a timer expire. Disabling means only chain completion or shutting down the app stops the alert — stronger against coercion.';
 
   @override
   String get distressModesEmpty => 'No distress modes yet.';
