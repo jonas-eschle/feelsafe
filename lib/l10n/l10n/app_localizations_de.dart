@@ -1838,6 +1838,28 @@ class AppLocalizationsDe extends AppLocalizations {
   String get validationChannelsRequired => 'Wähle mindestens einen Kanal aus.';
 
   @override
+  String get validationChainEmpty =>
+      'Füge mindestens einen Schritt hinzu, bevor du speicherst.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Lege für das feste Ankunftsziel sowohl Breiten- als auch Längengrad fest.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Hardware-Panikauslöser ist unvollständig – prüfe die Anzahl der Tastendrücke oder die Haltedauer.';
+
+  @override
+  String get validationDistressNoActionTitle => 'Kein ausgehender Alarmschritt';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'Dieser Notfallmodus hat keinen SMS- oder Anrufschritt und hinterlässt daher keine ausgehende Spur. Trotzdem speichern?';
+
+  @override
+  String get validationSaveAnyway => 'Trotzdem speichern';
+
+  @override
   String get sessionHoldTouchToBegin => 'Zum Starten berühren';
 
   @override

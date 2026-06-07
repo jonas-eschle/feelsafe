@@ -1829,6 +1829,29 @@ class AppLocalizationsUk extends AppLocalizations {
   String get validationChannelsRequired => 'Виберіть щонайменше один канал.';
 
   @override
+  String get validationChainEmpty =>
+      'Додайте принаймні один крок перед збереженням.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Вкажіть широту й довготу для фіксованого місця прибуття.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Апаратний тригер тривоги налаштовано не повністю — перевірте кількість натискань або тривалість утримання.';
+
+  @override
+  String get validationDistressNoActionTitle =>
+      'Немає вихідного кроку сповіщення';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'У цьому режимі тривоги немає кроку з SMS чи дзвінком, тож він не залишає вихідного сліду. Усе одно зберегти?';
+
+  @override
+  String get validationSaveAnyway => 'Усе одно зберегти';
+
+  @override
   String get sessionHoldTouchToBegin => 'Торкніться, щоб почати';
 
   @override

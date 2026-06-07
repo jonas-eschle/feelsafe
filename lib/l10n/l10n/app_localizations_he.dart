@@ -1801,6 +1801,27 @@ class AppLocalizationsHe extends AppLocalizations {
   String get validationChannelsRequired => 'בחרי לפחות ערוץ אחד.';
 
   @override
+  String get validationChainEmpty => 'הוסף לפחות שלב אחד לפני השמירה.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'הגדר קו רוחב וקו אורך עבור יעד ההגעה הקבוע.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'טריגר המצוקה החומרתי אינו שלם — בדוק את מספר הלחיצות או את משך הלחיצה הארוכה.';
+
+  @override
+  String get validationDistressNoActionTitle => 'אין שלב התראה יוצא';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'למצב מצוקה זה אין שלב SMS או שיחה, ולכן הוא אינו מותיר עקבות יוצאים. לשמור בכל זאת?';
+
+  @override
+  String get validationSaveAnyway => 'שמור בכל זאת';
+
+  @override
   String get sessionHoldTouchToBegin => 'געי כדי להתחיל';
 
   @override

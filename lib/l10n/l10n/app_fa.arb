@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "ارث‌بری",
   "safetyOptionsAllowDisarmAsDistressTitle": "اجازهٔ غیرفعال‌سازی هنگام فعال بودن به‌عنوان اضطرار",
   "safetyOptionsAllowDisarmAsDistressInfo": "با فعال‌سازی می‌توانید هشدار را با رسیدن به مکان امن یا با پایان یافتن تایمر متوقف کنید. با غیرفعال‌سازی، تنها تکمیل زنجیره یا بستن برنامه هشدار را متوقف می‌کند — مقاوم‌تر در برابر اجبار.",
-  "safetyOptionsDistressModeUseDefaultNamed": "استفاده از پیش‌فرض ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "استفاده از پیش‌فرض ({name})",
+  "validationChainEmpty": "پیش از ذخیره، دست‌کم یک گام اضافه کنید.",
+  "validationGpsFixedCoords": "برای مقصد ثابت رسیدن، هم عرض جغرافیایی و هم طول جغرافیایی را تعیین کنید.",
+  "validationHardwareTrigger": "ماشه اضطراری سخت‌افزاری ناقص است — تعداد فشارها یا مدت نگه‌داشتن را بررسی کنید.",
+  "validationDistressNoActionTitle": "بدون گام هشدار خروجی",
+  "validationDistressNoActionBody": "این حالت اضطراری هیچ گام پیامک یا تماسی ندارد، بنابراین هیچ ردّ خروجی به‌جا نمی‌گذارد. به‌هرحال ذخیره شود؟",
+  "validationSaveAnyway": "به‌هرحال ذخیره کن"
 }

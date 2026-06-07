@@ -1822,6 +1822,27 @@ class AppLocalizationsFa extends AppLocalizations {
   String get validationChannelsRequired => 'حداقل یک کانال انتخاب کنید.';
 
   @override
+  String get validationChainEmpty => 'پیش از ذخیره، دست‌کم یک گام اضافه کنید.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'برای مقصد ثابت رسیدن، هم عرض جغرافیایی و هم طول جغرافیایی را تعیین کنید.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'ماشه اضطراری سخت‌افزاری ناقص است — تعداد فشارها یا مدت نگه‌داشتن را بررسی کنید.';
+
+  @override
+  String get validationDistressNoActionTitle => 'بدون گام هشدار خروجی';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'این حالت اضطراری هیچ گام پیامک یا تماسی ندارد، بنابراین هیچ ردّ خروجی به‌جا نمی‌گذارد. به‌هرحال ذخیره شود؟';
+
+  @override
+  String get validationSaveAnyway => 'به‌هرحال ذخیره کن';
+
+  @override
   String get sessionHoldTouchToBegin => 'برای شروع لمس کنید';
 
   @override

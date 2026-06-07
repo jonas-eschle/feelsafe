@@ -818,5 +818,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Hériter",
   "safetyOptionsAllowDisarmAsDistressTitle": "Autoriser le désarmement pendant la détresse active",
   "safetyOptionsAllowDisarmAsDistressInfo": "Activé, vous pouvez arrêter l’alerte en atteignant un lieu sûr ou en laissant un minuteur expirer. Désactivé, seule la fin de la chaîne ou la fermeture de l’application arrête l’alerte — plus résistant à la contrainte.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Utiliser le mode par défaut ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Utiliser le mode par défaut ({name})",
+  "validationChainEmpty": "Ajoutez au moins une étape avant d’enregistrer.",
+  "validationGpsFixedCoords": "Indiquez la latitude et la longitude de la destination d’arrivée fixe.",
+  "validationHardwareTrigger": "Le déclencheur de panique matériel est incomplet — vérifiez le nombre d’appuis ou la durée de maintien.",
+  "validationDistressNoActionTitle": "Aucune étape d’alerte sortante",
+  "validationDistressNoActionBody": "Ce mode de détresse n’a aucune étape SMS ou appel ; il ne laisse donc aucune trace sortante. Enregistrer quand même ?",
+  "validationSaveAnyway": "Enregistrer quand même"
 }

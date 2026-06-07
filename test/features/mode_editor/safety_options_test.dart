@@ -205,6 +205,16 @@ Future<void> _openSafetyOptions(
 Future<void> _tapSave(WidgetTester tester, AppLocalizations l10n) async {
   await tester.tap(find.text(l10n.commonSave));
   await tester.pumpAndSettle();
+  // A distress mode without an SMS/call step raises a non-blocking warning
+  // (spec 04:1659). These tests assert other fields, so proceed past it.
+  final Finder saveAnyway = find.widgetWithText(
+    FilledButton,
+    l10n.validationSaveAnyway,
+  );
+  if (saveAnyway.evaluate().isNotEmpty) {
+    await tester.tap(saveAnyway);
+    await tester.pumpAndSettle();
+  }
 }
 
 // ---------------------------------------------------------------------------

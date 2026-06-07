@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Dziedzicz",
   "safetyOptionsAllowDisarmAsDistressTitle": "Zezwól na rozbrojenie podczas aktywnego alarmu",
   "safetyOptionsAllowDisarmAsDistressInfo": "Po włączeniu możesz zatrzymać alarm, docierając w bezpieczne miejsce lub czekając na upływ czasomierza. Po wyłączeniu alarm zatrzymuje tylko ukończenie łańcucha lub zamknięcie aplikacji — mocniejsza ochrona przed przymusem.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Użyj domyślnego ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Użyj domyślnego ({name})",
+  "validationChainEmpty": "Dodaj co najmniej jeden krok przed zapisaniem.",
+  "validationGpsFixedCoords": "Podaj szerokość i długość geograficzną stałego celu przybycia.",
+  "validationHardwareTrigger": "Sprzętowy wyzwalacz alarmu jest niekompletny — sprawdź liczbę naciśnięć lub czas przytrzymania.",
+  "validationDistressNoActionTitle": "Brak kroku alertu wychodzącego",
+  "validationDistressNoActionBody": "Ten tryb alarmowy nie ma kroku SMS ani połączenia, więc nie pozostawia śladu wychodzącego. Zapisać mimo to?",
+  "validationSaveAnyway": "Zapisz mimo to"
 }

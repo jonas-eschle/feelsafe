@@ -929,5 +929,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "继承",
   "safetyOptionsAllowDisarmAsDistressTitle": "在求救激活期间允许解除",
   "safetyOptionsAllowDisarmAsDistressInfo": "启用后，你可以通过到达安全地点或让计时器到期来停止警报。禁用后，只有完成链条或关闭应用才能停止警报——对胁迫的防护更强。",
-  "safetyOptionsDistressModeUseDefaultNamed": "使用默认（{name}）"
+  "safetyOptionsDistressModeUseDefaultNamed": "使用默认（{name}）",
+  "validationChainEmpty": "保存前请至少添加一个步骤。",
+  "validationGpsFixedCoords": "请为固定到达目的地同时设置纬度和经度。",
+  "validationHardwareTrigger": "硬件求救触发器不完整——请检查按压次数或长按时长。",
+  "validationDistressNoActionTitle": "没有对外报警步骤",
+  "validationDistressNoActionBody": "此求救模式没有短信或通话步骤，因此不会留下任何对外痕迹。仍要保存吗？",
+  "validationSaveAnyway": "仍然保存"
 }

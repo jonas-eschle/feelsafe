@@ -11,6 +11,7 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/validation/mode_draft_validator.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
 import 'package:guardianangela/features/modes/widgets/safety_options_section.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
@@ -164,11 +165,35 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
         return list..insert(target, moved);
       });
 
+  /// Validates [_draft] and persists it (spec 04:1595-1599, 1656-1659).
+  ///
+  /// Blocking issues abort with a SnackBar; non-blocking warnings prompt a
+  /// confirm-to-proceed dialog. The name is taken from the live text field.
   Future<void> _save() async {
     final current = _draft;
     if (current == null) return;
+    final l10n = AppLocalizations.of(context);
+    final String name = _nameCtl.text.trim();
+    final List<ModeValidationIssue> issues = validateModeDraft(
+      current,
+      name: name,
+    );
+
+    final ModeValidationIssue? blocker = issues
+        .where((ModeValidationIssue i) => i.blocking)
+        .firstOrNull;
+    if (blocker != null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(_issueMessage(l10n, blocker.code))),
+      );
+      return;
+    }
+
+    final bool hasWarning = issues.any((ModeValidationIssue i) => !i.blocking);
+    if (hasWarning && !await _confirmSaveWithWarning(l10n)) return;
+
     final updated = current.copyWith(
-      name: _nameCtl.text.trim().isEmpty ? current.name : _nameCtl.text.trim(),
+      name: name,
       isDistressMode: widget.isDistress,
     );
     final db = await ref.read(databaseProvider.future);
@@ -176,6 +201,44 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     if (!mounted) return;
     _dirty = false;
     context.pop();
+  }
+
+  /// Maps a blocking [ModeValidationCode] to its localized SnackBar message.
+  String _issueMessage(AppLocalizations l10n, ModeValidationCode code) =>
+      switch (code) {
+        ModeValidationCode.nameTooShort => l10n.validationNameTooShort,
+        ModeValidationCode.chainEmpty => l10n.validationChainEmpty,
+        ModeValidationCode.gpsFixedMissingCoords =>
+          l10n.validationGpsFixedCoords,
+        ModeValidationCode.hardwareTriggerInconsistent =>
+          l10n.validationHardwareTrigger,
+        // Non-blocking; handled by [_confirmSaveWithWarning].
+        ModeValidationCode.distressNoActionStep =>
+          l10n.validationDistressNoActionBody,
+      };
+
+  /// Shows the non-blocking "no outbound action step" warning (spec 04:1659).
+  ///
+  /// Returns true if the user chose to save anyway.
+  Future<bool> _confirmSaveWithWarning(AppLocalizations l10n) async {
+    final bool? ok = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(l10n.validationDistressNoActionTitle),
+        content: Text(l10n.validationDistressNoActionBody),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.commonCancel),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.validationSaveAnyway),
+          ),
+        ],
+      ),
+    );
+    return ok ?? false;
   }
 
   Future<bool> _confirmLeave() async {

@@ -1827,6 +1827,27 @@ class AppLocalizationsHi extends AppLocalizations {
   String get validationChannelsRequired => 'कम से कम एक चैनल चुनें।';
 
   @override
+  String get validationChainEmpty => 'सहेजने से पहले कम से कम एक चरण जोड़ें.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'स्थिर आगमन गंतव्य के लिए अक्षांश और देशांतर दोनों सेट करें.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'हार्डवेयर पैनिक ट्रिगर अधूरा है — इसकी प्रेस संख्या या होल्ड अवधि जाँचें.';
+
+  @override
+  String get validationDistressNoActionTitle => 'कोई आउटगोइंग अलर्ट चरण नहीं';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'इस संकट मोड में कोई SMS या कॉल चरण नहीं है, इसलिए यह कोई आउटगोइंग निशान नहीं छोड़ता. फिर भी सहेजें?';
+
+  @override
+  String get validationSaveAnyway => 'फिर भी सहेजें';
+
+  @override
   String get sessionHoldTouchToBegin => 'शुरू करने के लिए स्पर्श करें';
 
   @override

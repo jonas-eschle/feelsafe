@@ -1813,6 +1813,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get validationChannelsRequired => 'اختاري قناة واحدة على الأقل.';
 
   @override
+  String get validationChainEmpty => 'أضف خطوة واحدة على الأقل قبل الحفظ.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'حدّد خط العرض وخط الطول لوجهة الوصول الثابتة.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'مُشغّل الطوارئ بالجهاز غير مكتمل — تحقّق من عدد الضغطات أو مدة الضغط المطوّل.';
+
+  @override
+  String get validationDistressNoActionTitle => 'لا توجد خطوة تنبيه صادرة';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'لا يحتوي وضع الطوارئ هذا على خطوة رسالة نصية أو مكالمة، لذا لا يترك أي أثر صادر. هل تريد الحفظ على أي حال؟';
+
+  @override
+  String get validationSaveAnyway => 'احفظ على أي حال';
+
+  @override
   String get sessionHoldTouchToBegin => 'المسي للبدء';
 
   @override

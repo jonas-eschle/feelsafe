@@ -1834,6 +1834,29 @@ class AppLocalizationsRu extends AppLocalizations {
   String get validationChannelsRequired => 'Выберите хотя бы один канал.';
 
   @override
+  String get validationChainEmpty =>
+      'Добавьте хотя бы один шаг перед сохранением.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Укажите широту и долготу для фиксированного места прибытия.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Аппаратный триггер тревоги настроен не полностью — проверьте число нажатий или длительность удержания.';
+
+  @override
+  String get validationDistressNoActionTitle =>
+      'Нет исходящего шага оповещения';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'В этом режиме тревоги нет шага с SMS или звонком, поэтому он не оставляет исходящего следа. Всё равно сохранить?';
+
+  @override
+  String get validationSaveAnyway => 'Всё равно сохранить';
+
+  @override
   String get sessionHoldTouchToBegin => 'Коснитесь, чтобы начать';
 
   @override

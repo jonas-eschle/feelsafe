@@ -1832,6 +1832,29 @@ class AppLocalizationsPl extends AppLocalizations {
   String get validationChannelsRequired => 'Wybierz co najmniej jeden kanał.';
 
   @override
+  String get validationChainEmpty =>
+      'Dodaj co najmniej jeden krok przed zapisaniem.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Podaj szerokość i długość geograficzną stałego celu przybycia.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Sprzętowy wyzwalacz alarmu jest niekompletny — sprawdź liczbę naciśnięć lub czas przytrzymania.';
+
+  @override
+  String get validationDistressNoActionTitle =>
+      'Brak kroku alertu wychodzącego';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'Ten tryb alarmowy nie ma kroku SMS ani połączenia, więc nie pozostawia śladu wychodzącego. Zapisać mimo to?';
+
+  @override
+  String get validationSaveAnyway => 'Zapisz mimo to';
+
+  @override
   String get sessionHoldTouchToBegin => 'Dotknij, aby rozpocząć';
 
   @override

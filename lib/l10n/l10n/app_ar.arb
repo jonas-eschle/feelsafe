@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "توريث",
   "safetyOptionsAllowDisarmAsDistressTitle": "السماح بالإلغاء أثناء التشغيل كاستغاثة",
   "safetyOptionsAllowDisarmAsDistressInfo": "عند التفعيل يمكنك إيقاف التنبيه بالوصول إلى مكان آمن أو بانتهاء المؤقّت. وعند التعطيل لا يوقف التنبيه سوى اكتمال السلسلة أو إغلاق التطبيق — أقوى ضد الإكراه.",
-  "safetyOptionsDistressModeUseDefaultNamed": "استخدام الافتراضي ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "استخدام الافتراضي ({name})",
+  "validationChainEmpty": "أضف خطوة واحدة على الأقل قبل الحفظ.",
+  "validationGpsFixedCoords": "حدّد خط العرض وخط الطول لوجهة الوصول الثابتة.",
+  "validationHardwareTrigger": "مُشغّل الطوارئ بالجهاز غير مكتمل — تحقّق من عدد الضغطات أو مدة الضغط المطوّل.",
+  "validationDistressNoActionTitle": "لا توجد خطوة تنبيه صادرة",
+  "validationDistressNoActionBody": "لا يحتوي وضع الطوارئ هذا على خطوة رسالة نصية أو مكالمة، لذا لا يترك أي أثر صادر. هل تريد الحفظ على أي حال؟",
+  "validationSaveAnyway": "احفظ على أي حال"
 }

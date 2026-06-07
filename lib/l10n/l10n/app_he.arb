@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "ירושה",
   "safetyOptionsAllowDisarmAsDistressTitle": "אפשר כיבוי בזמן פעולה כמצוקה",
   "safetyOptionsAllowDisarmAsDistressInfo": "כשמופעל, ניתן לעצור את ההתראה בהגעה למקום בטוח או בהמתנה לפקיעת טיימר. כשמושבת, רק השלמת השרשרת או סגירת האפליקציה עוצרות את ההתראה — חזק יותר מול כפייה.",
-  "safetyOptionsDistressModeUseDefaultNamed": "השתמש בברירת המחדל ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "השתמש בברירת המחדל ({name})",
+  "validationChainEmpty": "הוסף לפחות שלב אחד לפני השמירה.",
+  "validationGpsFixedCoords": "הגדר קו רוחב וקו אורך עבור יעד ההגעה הקבוע.",
+  "validationHardwareTrigger": "טריגר המצוקה החומרתי אינו שלם — בדוק את מספר הלחיצות או את משך הלחיצה הארוכה.",
+  "validationDistressNoActionTitle": "אין שלב התראה יוצא",
+  "validationDistressNoActionBody": "למצב מצוקה זה אין שלב SMS או שיחה, ולכן הוא אינו מותיר עקבות יוצאים. לשמור בכל זאת?",
+  "validationSaveAnyway": "שמור בכל זאת"
 }

@@ -26,10 +26,14 @@ import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
+import 'package:guardianangela/domain/triggers/distress_trigger.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -774,6 +778,12 @@ void main() {
       await tester.pump();
       await tester.tap(find.text(l10n.commonSave));
       await tester.pumpAndSettle();
+      // A blank distress mode has only a holdButton step (no SMS/call), so the
+      // non-blocking no-action warning appears; proceed to save (spec 04:1659).
+      await tester.tap(
+        find.widgetWithText(FilledButton, l10n.validationSaveAnyway),
+      );
+      await tester.pumpAndSettle();
 
       final allModes = await db.sessionModesDao.getAll();
       final saved = allModes.firstWhere((m) => m.name == 'Panic Mode');
@@ -866,6 +876,238 @@ void main() {
         themeMode: ThemeMode.dark,
       );
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Save validation (spec 04:1595-1599, 1656-1659) — drives the real _save().
+  // -------------------------------------------------------------------------
+
+  group('ModeEditorScreen — save validation', () {
+    testWidgets('blocks save with a too-short name and shows an error', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        _overrides(db),
+      );
+      await tester.enterText(find.byType(TextField).first, 'A');
+      await tester.pump();
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // Error surfaced, save blocked: nothing written to the DB.
+      expect(find.text(l10n.validationNameTooShort), findsOneWidget);
+      check(await db.sessionModesDao.getAll()).isEmpty();
+    });
+
+    testWidgets('blocks save when a fixed GPS trigger is missing coords', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // Seed a mode whose persisted GPS-arrival trigger uses a fixed
+      // destination but has no lat/lng (the UI lets the fields be blank).
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[
+            GpsArrivalDisarmTrigger(
+              destinationSource: GpsDestinationSource.fixed,
+            ),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // Blocking SnackBar shown and the editor did not pop (Save still here).
+      expect(find.text(l10n.validationGpsFixedCoords), findsOneWidget);
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
+    });
+
+    testWidgets('saves once the fixed GPS trigger has both coordinates', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[
+            GpsArrivalDisarmTrigger(
+              destinationSource: GpsDestinationSource.fixed,
+              lat: 47.3769,
+              lng: 8.5417,
+            ),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.validationGpsFixedCoords), findsNothing);
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved).isNotNull();
+      check(saved!.disarmTriggers).length.equals(1);
+    });
+
+    testWidgets('blocks save when a long-press hardware trigger has no '
+        'duration', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // A directly-constructed long-press trigger with a null duration is
+      // internally inconsistent; the editor's normaliser never produces this,
+      // but a seeded / hand-edited mode can.
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Panic',
+          isDistressMode: true,
+          chainSteps: <ChainStep>[_step('s0', type: ChainStepType.smsContact)],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(pattern: PressPattern.longPress),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: true),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.validationHardwareTrigger), findsOneWidget);
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
+    });
+
+    testWidgets('distress mode without an action step warns but allows save', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // A distress mode whose only step is a countdown — no outbound trail.
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Silent panic',
+          isDistressMode: true,
+          chainSteps: <ChainStep>[
+            _step('s0', type: ChainStepType.countdownWarning),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: true),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // A non-blocking warning dialog appears (does NOT block).
+      expect(find.text(l10n.validationDistressNoActionTitle), findsOneWidget);
+      // Proceed anyway → the mode persists.
+      await tester.tap(
+        find.widgetWithText(FilledButton, l10n.validationSaveAnyway),
+      );
+      await tester.pumpAndSettle();
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved).isNotNull();
+      check(saved!.isDistressMode).isTrue();
+    });
+
+    testWidgets('distress no-action warning can be cancelled (not saved)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Silent panic',
+          isDistressMode: true,
+          chainSteps: <ChainStep>[
+            _step('s0', type: ChainStepType.countdownWarning),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: true),
+        _overrides(db),
+      );
+      // Rename so the save would otherwise persist a visible change.
+      await tester.enterText(find.byType(TextField).first, 'Renamed panic');
+      await tester.pump();
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+      // Cancel the warning dialog.
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      // Still on the editor; the rename was not persisted.
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.name).equals('Silent panic');
+    });
+
+    testWidgets('a distress mode WITH an sms step saves without a warning', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Loud panic',
+          isDistressMode: true,
+          chainSteps: <ChainStep>[_step('s0', type: ChainStepType.smsContact)],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: true),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // No warning dialog; saved straight away.
+      expect(find.text(l10n.validationDistressNoActionTitle), findsNothing);
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved).isNotNull();
     });
   });
 }

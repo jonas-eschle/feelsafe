@@ -1817,6 +1817,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get validationChannelsRequired => 'Select at least one channel.';
 
   @override
+  String get validationChainEmpty => 'Add at least one step before saving.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Set both latitude and longitude for the fixed arrival destination.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Hardware panic trigger is incomplete — check its press count or hold duration.';
+
+  @override
+  String get validationDistressNoActionTitle => 'No outbound alert step';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'This distress mode has no SMS or call step, so it leaves no outbound trail. Save it anyway?';
+
+  @override
+  String get validationSaveAnyway => 'Save anyway';
+
+  @override
   String get sessionHoldTouchToBegin => 'Touch to begin';
 
   @override

@@ -1843,6 +1843,27 @@ class AppLocalizationsEs extends AppLocalizations {
   String get validationChannelsRequired => 'Selecciona al menos un canal.';
 
   @override
+  String get validationChainEmpty => 'Añade al menos un paso antes de guardar.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Indica la latitud y la longitud del destino de llegada fijo.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'El activador de pánico de hardware está incompleto: revisa el número de pulsaciones o la duración de la pulsación.';
+
+  @override
+  String get validationDistressNoActionTitle => 'Sin paso de alerta saliente';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'Este modo de emergencia no tiene ningún paso de SMS o llamada, por lo que no deja rastro saliente. ¿Guardar de todos modos?';
+
+  @override
+  String get validationSaveAnyway => 'Guardar de todos modos';
+
+  @override
   String get sessionHoldTouchToBegin => 'Toca para empezar';
 
   @override

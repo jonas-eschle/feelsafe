@@ -1763,6 +1763,25 @@ class AppLocalizationsZh extends AppLocalizations {
   String get validationChannelsRequired => '请至少选择一个渠道。';
 
   @override
+  String get validationChainEmpty => '保存前请至少添加一个步骤。';
+
+  @override
+  String get validationGpsFixedCoords => '请为固定到达目的地同时设置纬度和经度。';
+
+  @override
+  String get validationHardwareTrigger => '硬件求救触发器不完整——请检查按压次数或长按时长。';
+
+  @override
+  String get validationDistressNoActionTitle => '没有对外报警步骤';
+
+  @override
+  String get validationDistressNoActionBody =>
+      '此求救模式没有短信或通话步骤，因此不会留下任何对外痕迹。仍要保存吗？';
+
+  @override
+  String get validationSaveAnyway => '仍然保存';
+
+  @override
   String get sessionHoldTouchToBegin => '触摸以开始';
 
   @override
@@ -3776,6 +3795,25 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get validationChannelsRequired => '請至少選擇一個通訊管道。';
+
+  @override
+  String get validationChainEmpty => '儲存前請至少新增一個步驟。';
+
+  @override
+  String get validationGpsFixedCoords => '請為固定抵達目的地同時設定緯度和經度。';
+
+  @override
+  String get validationHardwareTrigger => '硬體求救觸發器不完整——請檢查按壓次數或長按時長。';
+
+  @override
+  String get validationDistressNoActionTitle => '沒有對外警報步驟';
+
+  @override
+  String get validationDistressNoActionBody =>
+      '此求救模式沒有簡訊或通話步驟，因此不會留下任何對外痕跡。仍要儲存嗎？';
+
+  @override
+  String get validationSaveAnyway => '仍然儲存';
 
   @override
   String get sessionHoldTouchToBegin => '觸碰以開始';

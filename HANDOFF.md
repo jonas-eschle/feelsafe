@@ -1,8 +1,9 @@
 # Guardian Angela v3 — Session Hand-off
 
 **Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
-PROGRESS: #13a + #13b + #14 + #13c (+ #13c-fix cohort loop) done +
-committed (UNPUSHED). Next: #13d, #23, #20 → M2 cohort → push.**
+PROGRESS: #13a + #13b + #14 + #13c (COMPLETE + cohort-VERIFIED PASS at
+`d54b986`+`81f131f`) + #13d (save + trigger save-validation, just-completed)
+done + committed (UNPUSHED). Next: #23, #20 → M2 cohort → push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -14,14 +15,16 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `11473ba` m2-#14 — SMS contact-selection grid
 - `f40baba` m2-handoff (prior session boundary)
 - `d54b986` m2-#13c — Mode Editor Safety Options
-- `<this>`   m2-#13c-fix — cohort findings (local-template Add + test gaps)
+- `81f131f` m2-#13c-fix — cohort findings (local-template Add + test gaps)
+- `<this>`   m2-#13d — save + trigger save-validation
 - (+ this handoff commit)
 
-**Tests: 3740 pass** (3728 prior + 12 net-new #13c-fix behavioral tests).
-Analyzer `--fatal-infos` clean. l10n parity green (54 #13c keys × 14 locales:
-the 53 from #13c + `safetyOptionsAddTemplate` from #13c-fix). Tree clean.
-Branch: `main`. (Pure-Dart UI+tests fix — no native path touched, so
-host/widget tests are the proof; emulator boot-smoke not re-run.)
+**Tests: 3768 pass** (3740 prior + 28 net-new #13d tests: 21 pure-Dart
+`validateModeDraft` unit tests + 7 widget tests driving the REAL `_save()`).
+Analyzer `--fatal-infos` clean. l10n parity green (6 new #13d keys × 14 locales,
+on top of the #13c keys). Tree clean. Branch: `main`. (Pure-Dart UI+validation
++ tests — no native path touched, so host/widget tests are the proof; emulator
+boot-smoke not required and not run.)
 
 **#13c cohort loop:** #13c (`d54b986`) was reviewed by the verification
 cohort → **FIX_REQUIRED**, now **FIXED** in `<this>`. Findings addressed:
@@ -40,31 +43,20 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: continue M2 — #13d (save validation), then #23, #20,
-then the M2 cohort + push.** Per-fix recipe (unchanged): verify the gap
-yourself → implement (serial) → prove (host/widget tests driving the REAL
+**Next action: continue M2 — #23 (Alarm settings section, spec 06:271-296),
+then #20, then the M2 cohort + push.** Per-fix recipe (unchanged): verify the
+gap yourself → implement (serial) → prove (host/widget tests driving the REAL
 controller; emulator for native) → l10n deltas → language agent for 13
 locales → gate suite → commit → **ask before pushing**.
 
-**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c — are done):**
+**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c AND #13d — are
+done):**
 
-1. **#13d — save validation + trigger save-validation** (spec 04:1595-1599,
-   1656-1659): name required min 2 chars; chain ≥1 step; distress variant
-   non-blocking warn if no SMS/call step; GPS-arrival `fixed` source requires
-   lat/lng; hardware-button trigger pattern/pressCount/duration consistency.
-   **#13c context:** the editor's `_save()` currently saves unconditionally
-   (no validation, no `_AddStepSheet`-style blocking). The Safety Options
-   fields #13c added are the targets of trigger save-validation — GPS-arrival
-   `fixed` lat/lng (UI lets you leave them blank → `lat/lng = null`), and the
-   hardware-button distress trigger (pattern↔pressCount/duration is already
-   normalised on edit by `_triggerWithPattern`, but a defensive save-time
-   check matches spec). Validate `_draft` in `_save()`; surface name/chain
-   errors as blocking, the distress no-action-step warning as non-blocking.
-2. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
+1. **#23 — Alarm settings section** (spec 06:271-296): DND-override / gradual
    / ramp toggles. Verify the gap vs the loudAlarm `EventSpecificConfig`
    (built in #13a) and M0 #19 (gradual + DND already wired in the strategy);
    this is the Settings-level section (06), distinct from per-step config.
-3. **#20** — channel-validation-on-save; SMS message-template editor (the
+2. **#20** — channel-validation-on-save; SMS message-template editor (the
    `messageTemplate` field is in `SmsContactConfig` but has no editor yet);
    iOS SMS+callEmergency warning strings; the missing iOS `critical_alert.wav`.
 
@@ -122,10 +114,59 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   (real screen→draft→DB, incl. override-clearing round-trip, fixed-source
   lat/lng, RTL-expanded render). 53 new l10n keys × 14 locales. Emulator
   boot-smoke green.
+- **#13d** (`<this>`): **save + trigger save-validation** (the last piece of
+  GA-blocker #13). New pure-Dart, Flutter-free `validateModeDraft(SessionMode,
+  {name})` → `List<ModeValidationIssue>` (each carries a `ModeValidationCode`
+  + `blocking` flag) in `lib/domain/validation/mode_draft_validator.dart`,
+  reusing the errors/warnings (blocking/non-blocking) split that
+  `ValidationResult`/`SessionStartValidator` already established. The editor's
+  `_save()` (previously UNCONDITIONAL) now consumes it: first **blocking**
+  issue → localized SnackBar + early return (mirrors `contact_form._save()`);
+  any **non-blocking** warning → a "Save anyway?" confirm dialog; then persist
+  with the trimmed name. Rules: (1) name <2 chars → BLOCK (reuses existing
+  `validationNameTooShort`); (2) chain empty → BLOCK (release-mode defense —
+  `SessionMode` asserts non-empty + the editor's delete-guard make it
+  unreachable in debug, documented as such); (3) distress mode w/o
+  smsContact/phoneCallContact/callEmergency → **WARN, non-blocking** (spec
+  04:1659, app philosophy = don't over-block); (4) GPS-arrival `fixed`
+  destination missing lat/lng → BLOCK (the validation deferred from #13c);
+  (5) hardware-button distress trigger internally inconsistent (longPress w/o
+  positive duration, or repeatPress w/ stray duration / pressCount<2) → BLOCK,
+  a backstop to `_triggerWithPattern`'s on-edit normalisation. 6 new l10n keys
+  × 14 locales. 28 net-new tests (21 pure-Dart validator + 7 widget tests
+  driving the REAL `_save()`: too-short name blocked+error, fixed-GPS-no-coords
+  blocked, valid-GPS saves, inconsistent-hardware blocked, distress-no-action
+  warns-then-saves, warn-cancel-not-saved, distress-with-sms saves clean). Two
+  pre-existing distress-mode-save tests updated to dismiss the new non-blocking
+  warning (tests follow code). Pure-Dart UI+validation — no native path, so
+  emulator boot-smoke not required (not run).
 
 ---
 
 ## KEY FINDINGS (carry into the next session)
+
+- **`HardwareButtonDistressTrigger.pressCount` is NON-nullable `int`**
+  (default 5) — the doc says it "MUST be null for longPress" but the field
+  can't actually be null. So the only representable hardware-trigger
+  inconsistencies are: longPress with `durationSeconds == null/≤0`, or
+  repeatPress carrying a non-null `durationSeconds` / a `pressCount < 2`
+  (UI spinner floors at 2). The save-validator (#13d) checks exactly these.
+- **"Chain ≥ 1 step" is structurally unreachable as a save-blocker.**
+  `SessionMode`'s constructor `assert(chainSteps.isNotEmpty)` fires under
+  `flutter test` (asserts ON — verified empirically), and the editor's
+  `_removeStep` no-ops at `length <= 1` + the Delete button is disabled at 1
+  step. So an empty chain can't reach `_save()` in debug or via the UI. The
+  `chainEmpty` validator rule is kept purely as a release-mode (asserts-off)
+  defense and documented; its true-branch is intentionally untestable via a
+  real `SessionMode`. If a future cohort flags it as a "dead branch," this is
+  the rationale — it's defense-in-depth, not a stub.
+- **`validateModeDraft` returns CODES, not strings** (the domain layer is
+  Flutter-free). `ValidationResult`/`SessionStartValidator` carry hard-coded
+  ENGLISH strings (they're services), but UI save-validation must be localized
+  — so #13d's validator emits `ModeValidationCode`s and the screen maps each to
+  an l10n key (`_issueMessage`). The `distressNoActionStep` arm in that switch
+  is required only for enum exhaustiveness (it's non-blocking, so never passed
+  to `_issueMessage` in practice).
 
 - **`ModeOverrides.localTemplates` is LIVE, not legacy.**
   `session_controller.dart:495-500` merges `...?mode.overrides?.localTemplates`
@@ -192,6 +233,10 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
 
 ## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
 
+- **Mode-local templates support add + remove but NOT in-place edit;** spec
+  04:1613 mandates only `[+ Add Template]`, so the current impl is spec-faithful
+  — revisit if in-place edit of a staged local template is wanted. (Flagged by
+  the #13c re-cohort.)
 - **Per-field info-icon buttons + preview cards on `EventSpecificConfig`**
   (fakeCall/smsContact/loudAlarm), spec 04:1538. STILL deferred — #13c added
   info buttons to the Safety-Options SECTIONS (distress/disarm/GPS/stealth/
@@ -318,9 +363,9 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
-  #13b ✓ + #14 ✓ + #13c ✓ done (UNPUSHED); remaining **#13d (save validation)
-  → #23 (alarm settings) → #20 (channel validation / SMS template / iOS
-  warnings) → M2 cohort → push.** Then M3 (#15 stealth), M4
+  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ done (UNPUSHED); remaining **#23 (alarm
+  settings) → #20 (channel validation / SMS template / iOS warnings) → M2
+  cohort → push.** Then M3 (#15 stealth), M4
   (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
   #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
   The in-memory TaskList is cleared on `/clear` — this bullet is the durable
@@ -339,6 +384,6 @@ Don't skip it because "the session went short."
 ---
 
 End of hand-off. M0+M1 verified+pushed; **M2 config-UI in progress** — #13a +
-#13b (per-step config) + #14 (SMS contact grid) + #13c (Safety Options)
-committed, UNPUSHED. Resume by **building #13d (save validation) → #23 → #20
-→ M2 cohort → push.**
+#13b (per-step config) + #14 (SMS contact grid) + #13c (Safety Options) + #13d
+(save + trigger save-validation) committed, UNPUSHED. Resume by **building #23
+(alarm settings) → #20 → M2 cohort → push.**

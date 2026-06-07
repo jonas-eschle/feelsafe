@@ -929,5 +929,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Успадкувати",
   "safetyOptionsAllowDisarmAsDistressTitle": "Дозволити вимкнення під час активної тривоги",
   "safetyOptionsAllowDisarmAsDistressInfo": "Якщо ввімкнено, ви можете зупинити сигнал, діставшись безпечного місця або дочекавшись завершення таймера. Якщо вимкнено, сигнал зупиняє лише завершення ланцюжка або закриття застосунку — надійніше проти примусу.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Використовувати за замовчуванням ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Використовувати за замовчуванням ({name})",
+  "validationChainEmpty": "Додайте принаймні один крок перед збереженням.",
+  "validationGpsFixedCoords": "Вкажіть широту й довготу для фіксованого місця прибуття.",
+  "validationHardwareTrigger": "Апаратний тригер тривоги налаштовано не повністю — перевірте кількість натискань або тривалість утримання.",
+  "validationDistressNoActionTitle": "Немає вихідного кроку сповіщення",
+  "validationDistressNoActionBody": "У цьому режимі тривоги немає кроку з SMS чи дзвінком, тож він не залишає вихідного сліду. Усе одно зберегти?",
+  "validationSaveAnyway": "Усе одно зберегти"
 }

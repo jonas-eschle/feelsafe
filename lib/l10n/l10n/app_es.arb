@@ -929,5 +929,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Heredar",
   "safetyOptionsAllowDisarmAsDistressTitle": "Permitir desactivar mientras está activo como emergencia",
   "safetyOptionsAllowDisarmAsDistressInfo": "Al activarlo, puedes detener la alerta llegando a un lugar seguro o dejando que expire un temporizador. Al desactivarlo, solo se detiene al completar la cadena o cerrar la app: más resistente a la coacción.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Usar el predeterminado ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Usar el predeterminado ({name})",
+  "validationChainEmpty": "Añade al menos un paso antes de guardar.",
+  "validationGpsFixedCoords": "Indica la latitud y la longitud del destino de llegada fijo.",
+  "validationHardwareTrigger": "El activador de pánico de hardware está incompleto: revisa el número de pulsaciones o la duración de la pulsación.",
+  "validationDistressNoActionTitle": "Sin paso de alerta saliente",
+  "validationDistressNoActionBody": "Este modo de emergencia no tiene ningún paso de SMS o llamada, por lo que no deja rastro saliente. ¿Guardar de todos modos?",
+  "validationSaveAnyway": "Guardar de todos modos"
 }

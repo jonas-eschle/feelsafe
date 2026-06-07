@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Наследовать",
   "safetyOptionsAllowDisarmAsDistressTitle": "Разрешить отключение во время активной тревоги",
   "safetyOptionsAllowDisarmAsDistressInfo": "Если включено, вы можете остановить тревогу, добравшись до безопасного места или дождавшись истечения таймера. Если выключено, тревогу останавливает только завершение цепочки или закрытие приложения — надёжнее против принуждения.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Использовать по умолчанию ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Использовать по умолчанию ({name})",
+  "validationChainEmpty": "Добавьте хотя бы один шаг перед сохранением.",
+  "validationGpsFixedCoords": "Укажите широту и долготу для фиксированного места прибытия.",
+  "validationHardwareTrigger": "Аппаратный триггер тревоги настроен не полностью — проверьте число нажатий или длительность удержания.",
+  "validationDistressNoActionTitle": "Нет исходящего шага оповещения",
+  "validationDistressNoActionBody": "В этом режиме тревоги нет шага с SMS или звонком, поэтому он не оставляет исходящего следа. Всё равно сохранить?",
+  "validationSaveAnyway": "Всё равно сохранить"
 }

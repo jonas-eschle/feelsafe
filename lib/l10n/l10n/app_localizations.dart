@@ -3407,6 +3407,42 @@ abstract class AppLocalizations {
   /// **'Select at least one channel.'**
   String get validationChannelsRequired;
 
+  /// Mode-editor save validation: the escalation chain must have at least one step (spec 04:1598).
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one step before saving.'**
+  String get validationChainEmpty;
+
+  /// Mode-editor save validation: a GPS-arrival disarm trigger with a fixed destination needs both coordinates (spec 03 GpsArrivalDisarmTrigger).
+  ///
+  /// In en, this message translates to:
+  /// **'Set both latitude and longitude for the fixed arrival destination.'**
+  String get validationGpsFixedCoords;
+
+  /// Mode-editor save validation: a hardware-button distress trigger is internally inconsistent (spec 03 DistressTrigger).
+  ///
+  /// In en, this message translates to:
+  /// **'Hardware panic trigger is incomplete — check its press count or hold duration.'**
+  String get validationHardwareTrigger;
+
+  /// Title of the non-blocking warning dialog shown when a distress mode has no SMS or call step (spec 04:1659).
+  ///
+  /// In en, this message translates to:
+  /// **'No outbound alert step'**
+  String get validationDistressNoActionTitle;
+
+  /// Body of the non-blocking warning dialog shown when a distress mode has no SMS or call action step (spec 04:1659).
+  ///
+  /// In en, this message translates to:
+  /// **'This distress mode has no SMS or call step, so it leaves no outbound trail. Save it anyway?'**
+  String get validationDistressNoActionBody;
+
+  /// Confirm button on the non-blocking save-validation warning dialog; proceeds with the save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save anyway'**
+  String get validationSaveAnyway;
+
   /// Hold-button step prompt before the first press.
   ///
   /// In en, this message translates to:

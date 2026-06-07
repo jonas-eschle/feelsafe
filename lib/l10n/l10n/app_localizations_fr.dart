@@ -1847,6 +1847,29 @@ class AppLocalizationsFr extends AppLocalizations {
   String get validationChannelsRequired => 'Sélectionnez au moins un canal.';
 
   @override
+  String get validationChainEmpty =>
+      'Ajoutez au moins une étape avant d’enregistrer.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Indiquez la latitude et la longitude de la destination d’arrivée fixe.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Le déclencheur de panique matériel est incomplet — vérifiez le nombre d’appuis ou la durée de maintien.';
+
+  @override
+  String get validationDistressNoActionTitle =>
+      'Aucune étape d’alerte sortante';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'Ce mode de détresse n’a aucune étape SMS ou appel ; il ne laisse donc aucune trace sortante. Enregistrer quand même ?';
+
+  @override
+  String get validationSaveAnyway => 'Enregistrer quand même';
+
+  @override
   String get sessionHoldTouchToBegin => 'Touchez pour commencer';
 
   @override

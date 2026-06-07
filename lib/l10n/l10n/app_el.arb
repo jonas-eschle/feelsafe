@@ -800,5 +800,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Κληρονόμηση",
   "safetyOptionsAllowDisarmAsDistressTitle": "Να επιτρέπεται η απενεργοποίηση κατά τον ενεργό κίνδυνο",
   "safetyOptionsAllowDisarmAsDistressInfo": "Όταν είναι ενεργό, μπορείτε να σταματήσετε τον συναγερμό φτάνοντας σε ασφαλές μέρος ή αφήνοντας ένα χρονόμετρο να λήξει. Όταν είναι ανενεργό, μόνο η ολοκλήρωση της αλυσίδας ή το κλείσιμο της εφαρμογής σταματά τον συναγερμό — ισχυρότερη προστασία έναντι εξαναγκασμού.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Χρήση προεπιλογής ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Χρήση προεπιλογής ({name})",
+  "validationChainEmpty": "Προσθέστε τουλάχιστον ένα βήμα πριν την αποθήκευση.",
+  "validationGpsFixedCoords": "Ορίστε γεωγραφικό πλάτος και μήκος για τον σταθερό προορισμό άφιξης.",
+  "validationHardwareTrigger": "Ο ενεργοποιητής πανικού υλικού είναι ελλιπής — ελέγξτε τον αριθμό πατημάτων ή τη διάρκεια κρατήματος.",
+  "validationDistressNoActionTitle": "Κανένα εξερχόμενο βήμα ειδοποίησης",
+  "validationDistressNoActionBody": "Αυτή η λειτουργία κινδύνου δεν έχει βήμα SMS ή κλήσης, επομένως δεν αφήνει εξερχόμενο ίχνος. Αποθήκευση ούτως ή άλλως;",
+  "validationSaveAnyway": "Αποθήκευση ούτως ή άλλως"
 }

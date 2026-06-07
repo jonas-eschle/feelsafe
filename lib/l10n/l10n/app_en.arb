@@ -2339,6 +2339,30 @@
   "@validationChannelsRequired": {
     "description": "Validation: at least one channel required."
   },
+  "validationChainEmpty": "Add at least one step before saving.",
+  "@validationChainEmpty": {
+    "description": "Mode-editor save validation: the escalation chain must have at least one step (spec 04:1598)."
+  },
+  "validationGpsFixedCoords": "Set both latitude and longitude for the fixed arrival destination.",
+  "@validationGpsFixedCoords": {
+    "description": "Mode-editor save validation: a GPS-arrival disarm trigger with a fixed destination needs both coordinates (spec 03 GpsArrivalDisarmTrigger)."
+  },
+  "validationHardwareTrigger": "Hardware panic trigger is incomplete — check its press count or hold duration.",
+  "@validationHardwareTrigger": {
+    "description": "Mode-editor save validation: a hardware-button distress trigger is internally inconsistent (spec 03 DistressTrigger)."
+  },
+  "validationDistressNoActionTitle": "No outbound alert step",
+  "@validationDistressNoActionTitle": {
+    "description": "Title of the non-blocking warning dialog shown when a distress mode has no SMS or call step (spec 04:1659)."
+  },
+  "validationDistressNoActionBody": "This distress mode has no SMS or call step, so it leaves no outbound trail. Save it anyway?",
+  "@validationDistressNoActionBody": {
+    "description": "Body of the non-blocking warning dialog shown when a distress mode has no SMS or call action step (spec 04:1659)."
+  },
+  "validationSaveAnyway": "Save anyway",
+  "@validationSaveAnyway": {
+    "description": "Confirm button on the non-blocking save-validation warning dialog; proceeds with the save."
+  },
   "sessionHoldTouchToBegin": "Touch to begin",
   "@sessionHoldTouchToBegin": {
     "description": "Hold-button step prompt before the first press."

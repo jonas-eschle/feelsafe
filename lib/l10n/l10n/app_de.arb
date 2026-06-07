@@ -929,5 +929,11 @@
   "safetyOptionsEventDefaultsTwoStateInherit": "Erben",
   "safetyOptionsAllowDisarmAsDistressTitle": "Deaktivierung im aktiven Notfall zulassen",
   "safetyOptionsAllowDisarmAsDistressInfo": "Aktiviert kannst du den Alarm stoppen, indem du einen sicheren Ort erreichst oder einen Timer ablaufen lässt. Deaktiviert stoppt nur das Abschließen der Kette oder das Beenden der App den Alarm – stärker gegen Nötigung.",
-  "safetyOptionsDistressModeUseDefaultNamed": "Standard verwenden ({name})"
+  "safetyOptionsDistressModeUseDefaultNamed": "Standard verwenden ({name})",
+  "validationChainEmpty": "Füge mindestens einen Schritt hinzu, bevor du speicherst.",
+  "validationGpsFixedCoords": "Lege für das feste Ankunftsziel sowohl Breiten- als auch Längengrad fest.",
+  "validationHardwareTrigger": "Hardware-Panikauslöser ist unvollständig – prüfe die Anzahl der Tastendrücke oder die Haltedauer.",
+  "validationDistressNoActionTitle": "Kein ausgehender Alarmschritt",
+  "validationDistressNoActionBody": "Dieser Notfallmodus hat keinen SMS- oder Anrufschritt und hinterlässt daher keine ausgehende Spur. Trotzdem speichern?",
+  "validationSaveAnyway": "Trotzdem speichern"
 }

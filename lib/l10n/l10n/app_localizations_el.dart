@@ -1853,6 +1853,29 @@ class AppLocalizationsEl extends AppLocalizations {
   String get validationChannelsRequired => 'Επιλέξτε τουλάχιστον ένα κανάλι.';
 
   @override
+  String get validationChainEmpty =>
+      'Προσθέστε τουλάχιστον ένα βήμα πριν την αποθήκευση.';
+
+  @override
+  String get validationGpsFixedCoords =>
+      'Ορίστε γεωγραφικό πλάτος και μήκος για τον σταθερό προορισμό άφιξης.';
+
+  @override
+  String get validationHardwareTrigger =>
+      'Ο ενεργοποιητής πανικού υλικού είναι ελλιπής — ελέγξτε τον αριθμό πατημάτων ή τη διάρκεια κρατήματος.';
+
+  @override
+  String get validationDistressNoActionTitle =>
+      'Κανένα εξερχόμενο βήμα ειδοποίησης';
+
+  @override
+  String get validationDistressNoActionBody =>
+      'Αυτή η λειτουργία κινδύνου δεν έχει βήμα SMS ή κλήσης, επομένως δεν αφήνει εξερχόμενο ίχνος. Αποθήκευση ούτως ή άλλως;';
+
+  @override
+  String get validationSaveAnyway => 'Αποθήκευση ούτως ή άλλως';
+
+  @override
   String get sessionHoldTouchToBegin => 'Αγγίξτε για έναρξη';
 
   @override
