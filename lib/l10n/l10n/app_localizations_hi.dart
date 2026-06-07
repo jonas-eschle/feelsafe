@@ -1838,6 +1838,10 @@ class AppLocalizationsHi extends AppLocalizations {
       'हार्डवेयर पैनिक ट्रिगर अधूरा है — इसकी प्रेस संख्या या होल्ड अवधि जाँचें.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'चुने गए किसी भी संपर्क को इस चरण के चैनल पर संदेश नहीं मिल सकता। कोई अन्य चैनल चुनें या इसे किसी संपर्क में जोड़ें।';
+
+  @override
   String get validationDistressNoActionTitle => 'कोई आउटगोइंग अलर्ट चरण नहीं';
 
   @override
@@ -1996,6 +2000,17 @@ class AppLocalizationsHi extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'रिकॉर्डिंग अवधि (से)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'संदेश टेम्पलेट';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'डिफ़ॉल्ट अलर्ट उपयोग करने के लिए खाली छोड़ें। डालने के लिए किसी प्लेसहोल्डर पर टैप करें।';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'iPhone पर, SMS के लिए आपको Messages ऐप में स्वयं Send दबाना होगा। यदि आप अपना फ़ोन नहीं चला सकते, तो संदेश नहीं भेजा जाएगा। इसके बजाय WhatsApp या Telegram उपयोग करने पर विचार करें।';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'वॉल्यूम';
 
   @override
@@ -2021,6 +2036,10 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => 'पहले स्थान SMS भेजें';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'iPhone पर, डायल करने से पहले एक पुष्टि संवाद दिखेगा। जल्दी से ‘Call’ पर टैप करें।';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'प्राथमिक संपर्क (id)';

@@ -1,6 +1,10 @@
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
+import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
@@ -47,6 +51,11 @@ enum ModeValidationCode {
   /// a stray duration / sub-minimum press count (blocking, spec 03
   /// §DistressTrigger; the enum doc mandates a save-time check).
   hardwareTriggerInconsistent,
+
+  /// An `smsContact` step targets one or more contacts, but none of those
+  /// targeted contacts has the step's send channel enabled — so the step
+  /// would message nobody at runtime (blocking, spec 02:319 / 03:319).
+  smsChannelNotOnContacts,
 }
 
 /// Minimum number of characters required for a mode name (spec 04:1597).
@@ -78,9 +87,15 @@ const Set<ChainStepType> _actionStepTypes = <ChainStepType>{
 ///
 /// [name] is the trimmed, current name from the editor's text field (the
 /// draft's persisted name may still be the placeholder until save).
+///
+/// [contacts] is the full emergency-contact list, used to validate that each
+/// `smsContact` step's send channel is enabled on at least one targeted
+/// contact (spec 02:319). Defaults to an empty list — pass the real contacts
+/// from the editor so the channel check can run.
 List<ModeValidationIssue> validateModeDraft(
   SessionMode mode, {
   required String name,
+  List<EmergencyContact> contacts = const <EmergencyContact>[],
 }) {
   final issues = <ModeValidationIssue>[];
 
@@ -134,7 +149,85 @@ List<ModeValidationIssue> validateModeDraft(
     }
   }
 
+  for (final ChainStep step in mode.chainSteps) {
+    final StepConfig? config = step.config;
+    if (config is SmsContactConfig &&
+        _smsStepTargetsContactsWithoutChannel(config, contacts)) {
+      issues.add(
+        const ModeValidationIssue(
+          ModeValidationCode.smsChannelNotOnContacts,
+          blocking: true,
+        ),
+      );
+    }
+  }
+
   return issues;
+}
+
+/// Whether an `smsContact` [config] targets at least one contact yet none of
+/// those targeted contacts has [SmsContactConfig.channel] enabled.
+///
+/// Mirrors the runtime resolver (`sms_contact_strategy._resolveContacts` +
+/// the `channels.contains` filter): the step's selected recipients are
+/// resolved first, then filtered by channel. A step that targets nobody
+/// (empty repo, `specificIds` with no ids) is NOT flagged here — an empty
+/// recipient set is the no-contacts concern handled (as a warning, not a
+/// block) by `SessionStartValidator`, and blocking it would be a false
+/// positive while the user is still building the mode. Only a genuine
+/// misconfiguration — recipients chosen, but the chosen channel is on none
+/// of them — blocks the save (spec 02:319).
+bool _smsStepTargetsContactsWithoutChannel(
+  SmsContactConfig config,
+  List<EmergencyContact> contacts,
+) {
+  final List<EmergencyContact> targeted = _resolveSmsTargets(config, contacts);
+  if (targeted.isEmpty) return false;
+  return !targeted.any((c) => c.channels.contains(config.channel));
+}
+
+/// Resolves the contacts an `smsContact` [config] targets, before the
+/// channel filter, mirroring `sms_contact_strategy._resolveContacts`.
+List<EmergencyContact> _resolveSmsTargets(
+  SmsContactConfig config,
+  List<EmergencyContact> contacts,
+) {
+  // Legacy back-compat: allContacts + explicit contactIds → specific IDs.
+  final List<String>? ids = config.contactIds;
+  if (config.contactSelection == SmsContactSelection.allContacts &&
+      ids != null &&
+      ids.isNotEmpty) {
+    return _contactsByIds(ids, contacts);
+  }
+  return switch (config.contactSelection) {
+    SmsContactSelection.allContacts => contacts,
+    SmsContactSelection.firstContact =>
+      contacts.isEmpty
+          ? const <EmergencyContact>[]
+          : <EmergencyContact>[
+              (List<EmergencyContact>.from(
+                contacts,
+              )..sort((a, b) => a.sortOrder.compareTo(b.sortOrder))).first,
+            ],
+    SmsContactSelection.specificIds =>
+      (ids == null || ids.isEmpty)
+          ? const <EmergencyContact>[]
+          : _contactsByIds(ids, contacts),
+  };
+}
+
+/// The contacts in [contacts] whose id appears in [ids] (order preserved).
+List<EmergencyContact> _contactsByIds(
+  List<String> ids,
+  List<EmergencyContact> contacts,
+) {
+  final Map<String, EmergencyContact> byId = <String, EmergencyContact>{
+    for (final EmergencyContact c in contacts) c.id: c,
+  };
+  return <EmergencyContact>[
+    for (final String id in ids)
+      if (byId[id] case final EmergencyContact c) c,
+  ];
 }
 
 /// Whether [trigger] satisfies its pattern's field-consistency contract.

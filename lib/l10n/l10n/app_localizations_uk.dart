@@ -1841,6 +1841,10 @@ class AppLocalizationsUk extends AppLocalizations {
       'Апаратний тригер тривоги налаштовано не повністю — перевірте кількість натискань або тривалість утримання.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Жоден з вибраних контактів не може отримати повідомлення каналом цього кроку. Виберіть інший канал або додайте його контакту.';
+
+  @override
   String get validationDistressNoActionTitle =>
       'Немає вихідного кроку сповіщення';
 
@@ -2000,6 +2004,17 @@ class AppLocalizationsUk extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Тривалість запису (с)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Шаблон повідомлення';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Залиште порожнім, щоб використати типове сповіщення. Торкніться заповнювача, щоб вставити його.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'На iPhone для надсилання SMS потрібно вручну натиснути «Надіслати» в застосунку «Повідомлення». Якщо ви не можете користуватися телефоном, повідомлення не буде надіслано. Розгляньте WhatsApp або Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Гучність';
 
   @override
@@ -2029,6 +2044,10 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Спочатку надіслати SMS з місцезнаходженням';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'На iPhone перед набором з’явиться вікно підтвердження. Швидко натисніть «Подзвонити».';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Основний контакт (id)';

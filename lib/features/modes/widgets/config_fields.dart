@@ -218,6 +218,125 @@ class _LabeledTextFieldState extends State<LabeledTextField> {
   }
 }
 
+/// A multi-line message-template editor with placeholder-insert chips.
+///
+/// Edits a nullable template string (spec 02 §smsContact Message Template):
+/// an empty field commits as `null`, meaning "use the seeded default
+/// template"; any non-empty text overrides it. Each chip in [placeholders]
+/// inserts its token (e.g. `{name}`, `{location}`) at the caret and commits
+/// immediately, mirroring the spec's "insert placeholder buttons" (02:304).
+class MessageTemplateField extends StatefulWidget {
+  /// Creates a [MessageTemplateField].
+  const MessageTemplateField({
+    super.key,
+    required this.label,
+    required this.hint,
+    required this.value,
+    required this.placeholders,
+    required this.onChanged,
+  });
+
+  /// Field label.
+  final String label;
+
+  /// Hint shown when the field is empty (describes the default behaviour).
+  final String hint;
+
+  /// Current template, or null to use the seeded default.
+  final String? value;
+
+  /// The placeholder tokens offered as insert chips, in display order.
+  final List<String> placeholders;
+
+  /// Called with the new template when editing completes; null = use default.
+  final ValueChanged<String?> onChanged;
+
+  @override
+  State<MessageTemplateField> createState() => _MessageTemplateFieldState();
+}
+
+class _MessageTemplateFieldState extends State<MessageTemplateField> {
+  late final TextEditingController _ctl;
+
+  @override
+  void initState() {
+    super.initState();
+    _ctl = TextEditingController(text: widget.value ?? '');
+  }
+
+  @override
+  void didUpdateWidget(covariant MessageTemplateField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    final String incoming = widget.value ?? '';
+    if (oldWidget.value != widget.value && incoming != _ctl.text) {
+      _ctl.text = incoming;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ctl.dispose();
+    super.dispose();
+  }
+
+  /// Commits the current text: blank → null (use default), else the text.
+  void _commit() {
+    final String text = _ctl.text;
+    widget.onChanged(text.trim().isEmpty ? null : text);
+  }
+
+  /// Inserts [token] at the caret (or appends), then commits.
+  void _insert(String token) {
+    final TextSelection sel = _ctl.selection;
+    final String text = _ctl.text;
+    final int start = sel.start < 0 ? text.length : sel.start;
+    final int end = sel.end < 0 ? text.length : sel.end;
+    final String next = text.replaceRange(start, end, token);
+    _ctl.value = TextEditingValue(
+      text: next,
+      selection: TextSelection.collapsed(offset: start + token.length),
+    );
+    _commit();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          TextField(
+            controller: _ctl,
+            minLines: 3,
+            maxLines: 6,
+            keyboardType: TextInputType.multiline,
+            decoration: InputDecoration(
+              labelText: widget.label,
+              hintText: widget.hint,
+              alignLabelWithHint: true,
+            ),
+            onEditingComplete: _commit,
+            onTapOutside: (_) {
+              FocusManager.instance.primaryFocus?.unfocus();
+              _commit();
+            },
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 8,
+            runSpacing: 4,
+            children: <Widget>[
+              for (final String token in widget.placeholders)
+                ActionChip(label: Text(token), onPressed: () => _insert(token)),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// A labelled integer text field, min-clamped to [min].
 ///
 /// Suited to wide ranges (the wait/duration/grace timing values) where a

@@ -177,6 +177,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final List<ModeValidationIssue> issues = validateModeDraft(
       current,
       name: name,
+      contacts: _contacts,
     );
 
     final ModeValidationIssue? blocker = issues
@@ -212,6 +213,8 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
           l10n.validationGpsFixedCoords,
         ModeValidationCode.hardwareTriggerInconsistent =>
           l10n.validationHardwareTrigger,
+        ModeValidationCode.smsChannelNotOnContacts =>
+          l10n.validationSmsChannelNotOnContacts,
         // Non-blocking; handled by [_confirmSaveWithWarning].
         ModeValidationCode.distressNoActionStep =>
           l10n.validationDistressNoActionBody,

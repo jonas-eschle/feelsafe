@@ -1850,6 +1850,10 @@ class AppLocalizationsDe extends AppLocalizations {
       'Hardware-Panikauslöser ist unvollständig – prüfe die Anzahl der Tastendrücke oder die Haltedauer.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Keiner der gewählten Kontakte kann über den Kanal dieses Schritts empfangen. Wähle einen anderen Kanal oder füge ihn einem Kontakt hinzu.';
+
+  @override
   String get validationDistressNoActionTitle => 'Kein ausgehender Alarmschritt';
 
   @override
@@ -2008,6 +2012,17 @@ class AppLocalizationsDe extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Aufnahmedauer (s)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Nachrichtenvorlage';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Leer lassen, um den Standardalarm zu verwenden. Tippe auf einen Platzhalter, um ihn einzufügen.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'Auf dem iPhone musst du bei SMS in der Nachrichten-App manuell auf Senden tippen. Wenn du dein Telefon nicht bedienen kannst, wird die Nachricht nicht gesendet. Erwäge stattdessen WhatsApp oder Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Lautstärke';
 
   @override
@@ -2035,6 +2050,10 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => 'Zuerst Standort-SMS senden';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'Auf dem iPhone erscheint vor dem Wählen ein Bestätigungsdialog. Tippe schnell auf „Anrufen“.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Hauptkontakt (ID)';

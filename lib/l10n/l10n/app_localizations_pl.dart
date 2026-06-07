@@ -1844,6 +1844,10 @@ class AppLocalizationsPl extends AppLocalizations {
       'Sprzętowy wyzwalacz alarmu jest niekompletny — sprawdź liczbę naciśnięć lub czas przytrzymania.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Żaden z wybranych kontaktów nie może odbierać kanałem tego kroku. Wybierz inny kanał lub dodaj go do kontaktu.';
+
+  @override
   String get validationDistressNoActionTitle =>
       'Brak kroku alertu wychodzącego';
 
@@ -2004,6 +2008,17 @@ class AppLocalizationsPl extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Czas nagrywania (s)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Szablon wiadomości';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Pozostaw puste, aby użyć domyślnego alertu. Dotknij symbolu zastępczego, aby go wstawić.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'Na iPhonie SMS wymaga ręcznego naciśnięcia Wyślij w aplikacji Wiadomości. Jeśli nie możesz obsługiwać telefonu, wiadomość nie zostanie wysłana. Rozważ użycie WhatsApp lub Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Głośność';
 
   @override
@@ -2032,6 +2047,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Najpierw wyślij SMS z lokalizacją';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'Na iPhonie przed wybraniem numeru pojawi się okno potwierdzenia. Szybko dotknij „Połącz”.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Kontakt główny (id)';

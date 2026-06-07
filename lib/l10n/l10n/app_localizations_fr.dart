@@ -1859,6 +1859,10 @@ class AppLocalizationsFr extends AppLocalizations {
       'Le déclencheur de panique matériel est incomplet — vérifiez le nombre d’appuis ou la durée de maintien.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Aucun des contacts choisis ne peut recevoir via le canal de cette étape. Choisissez un autre canal ou ajoutez-le à un contact.';
+
+  @override
   String get validationDistressNoActionTitle =>
       'Aucune étape d’alerte sortante';
 
@@ -2023,6 +2027,17 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Durée d\'enregistrement (s)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Modèle de message';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Laissez vide pour utiliser l’alerte par défaut. Touchez un espace réservé pour l’insérer.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'Sur iPhone, l’envoi de SMS exige d’appuyer manuellement sur Envoyer dans l’app Messages. Si vous ne pouvez pas utiliser votre téléphone, le message ne sera pas envoyé. Préférez WhatsApp ou Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Volume';
 
   @override
@@ -2053,6 +2068,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Envoyer d\'abord un SMS de position';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'Sur iPhone, une boîte de confirmation apparaît avant l’appel. Touchez « Appeler » rapidement.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Contact principal (id)';

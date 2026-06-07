@@ -1833,6 +1833,10 @@ class AppLocalizationsFa extends AppLocalizations {
       'ماشه اضطراری سخت‌افزاری ناقص است — تعداد فشارها یا مدت نگه‌داشتن را بررسی کنید.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'هیچ‌یک از مخاطبان انتخاب‌شده نمی‌توانند از طریق کانال این مرحله پیام دریافت کنند. کانال دیگری انتخاب کنید یا آن را به یک مخاطب بیفزایید.';
+
+  @override
   String get validationDistressNoActionTitle => 'بدون گام هشدار خروجی';
 
   @override
@@ -1991,6 +1995,17 @@ class AppLocalizationsFa extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'مدت ضبط (ث)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'الگوی پیام';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'برای استفاده از هشدار پیش‌فرض خالی بگذارید. برای درج، روی یک جانگهدار ضربه بزنید.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'در آیفون، ارسال پیامک نیازمند آن است که در برنامهٔ Messages به‌صورت دستی روی «ارسال» بزنید. اگر نتوانید با تلفن خود کار کنید، پیام ارسال نخواهد شد. به‌جای آن WhatsApp یا Telegram را در نظر بگیرید.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'بلندی صدا';
 
   @override
@@ -2017,6 +2032,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'ارسال پیامک موقعیت در ابتدا';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'در آیفون، پیش از شماره‌گیری یک کادر تأیید نمایش داده می‌شود. به‌سرعت روی «تماس» بزنید.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'مخاطب اصلی (شناسه)';

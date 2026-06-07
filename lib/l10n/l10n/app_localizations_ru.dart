@@ -1846,6 +1846,10 @@ class AppLocalizationsRu extends AppLocalizations {
       'Аппаратный триггер тревоги настроен не полностью — проверьте число нажатий или длительность удержания.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Ни один из выбранных контактов не может принять сообщение по каналу этого шага. Выберите другой канал или добавьте его контакту.';
+
+  @override
   String get validationDistressNoActionTitle =>
       'Нет исходящего шага оповещения';
 
@@ -2008,6 +2012,17 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Длительность записи (с)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Шаблон сообщения';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Оставьте пустым, чтобы использовать оповещение по умолчанию. Коснитесь заполнителя, чтобы вставить его.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'На iPhone для отправки SMS нужно вручную нажать «Отправить» в приложении «Сообщения». Если вы не можете пользоваться телефоном, сообщение не будет отправлено. Рассмотрите WhatsApp или Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Громкость';
 
   @override
@@ -2038,6 +2053,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Сначала отправить SMS с местоположением';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'На iPhone перед набором появится окно подтверждения. Быстро нажмите «Позвонить».';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Основной контакт (id)';

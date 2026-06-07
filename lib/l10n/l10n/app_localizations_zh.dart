@@ -1772,6 +1772,10 @@ class AppLocalizationsZh extends AppLocalizations {
   String get validationHardwareTrigger => '硬件求救触发器不完整——请检查按压次数或长按时长。';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      '所选联系人都无法通过此步骤的渠道接收。请选择其他渠道，或为联系人添加该渠道。';
+
+  @override
   String get validationDistressNoActionTitle => '没有对外报警步骤';
 
   @override
@@ -1924,6 +1928,16 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => '录音时长（秒）';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => '消息模板';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint => '留空则使用默认警报。点按占位符即可插入。';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      '在 iPhone 上，发送短信需要你在“信息”应用中手动点按“发送”。如果你无法操作手机，消息将不会发出。建议改用 WhatsApp 或 Telegram。';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => '音量';
 
   @override
@@ -1949,6 +1963,10 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => '先发送位置短信';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      '在 iPhone 上，拨号前会出现确认对话框。请快速点按“呼叫”。';
 
   @override
   String get eventDefaultsPhonePrimaryContact => '主要联系人（id）';
@@ -3832,6 +3850,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get validationHardwareTrigger => '硬體求救觸發器不完整——請檢查按壓次數或長按時長。';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      '所選聯絡人都無法透過此步驟的管道接收。請選擇其他管道，或為聯絡人新增該管道。';
+
+  @override
   String get validationDistressNoActionTitle => '沒有對外警報步驟';
 
   @override
@@ -3984,6 +4006,16 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get eventDefaultsSmsRecordDuration => '錄音時長(秒)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => '訊息範本';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint => '留空則使用預設警報。點按佔位符即可插入。';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      '在 iPhone 上，傳送簡訊需要你在「訊息」App 中手動點按「傳送」。如果你無法操作手機，訊息將不會送出。建議改用 WhatsApp 或 Telegram。';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => '音量';
 
   @override
@@ -4009,6 +4041,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => '先傳送位置簡訊';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      '在 iPhone 上，撥號前會出現確認對話框。請快速點按「通話」。';
 
   @override
   String get eventDefaultsPhonePrimaryContact => '主要聯絡人(id)';

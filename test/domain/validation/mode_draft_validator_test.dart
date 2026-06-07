@@ -10,27 +10,48 @@ library;
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
 import 'package:guardianangela/domain/validation/mode_draft_validator.dart';
 
-ChainStep _step(ChainStepType type, {String id = 's', int order = 0}) =>
-    ChainStep(
-      id: id,
-      type: type,
-      order: order,
-      waitSeconds: 0,
-      durationSeconds: 10,
-      gracePeriodSeconds: 5,
-      retryCount: 0,
-      randomize: false,
-    );
+ChainStep _step(
+  ChainStepType type, {
+  String id = 's',
+  int order = 0,
+  StepConfig? config,
+}) => ChainStep(
+  id: id,
+  type: type,
+  order: order,
+  waitSeconds: 0,
+  durationSeconds: 10,
+  gracePeriodSeconds: 5,
+  retryCount: 0,
+  randomize: false,
+  config: config,
+);
+
+EmergencyContact _contact(
+  String id, {
+  int sortOrder = 0,
+  List<MessageChannel> channels = const <MessageChannel>[MessageChannel.sms],
+}) => EmergencyContact(
+  id: id,
+  name: id,
+  phoneNumber: '+1555000$id',
+  sortOrder: sortOrder,
+  channels: channels,
+);
 
 SessionMode _mode({
   String name = 'Walk',
@@ -301,6 +322,155 @@ void main() {
       check(
         _blocking(issues),
       ).contains(ModeValidationCode.hardwareTriggerInconsistent);
+    });
+  });
+
+  group('validateModeDraft — sms channel on contacts (rule 6, blocking)', () {
+    SessionMode smsMode(SmsContactConfig config) => _mode(
+      steps: <ChainStep>[_step(ChainStepType.smsContact, config: config)],
+    );
+
+    test('allContacts + sms channel + an SMS-capable contact passes', () {
+      final issues = validateModeDraft(
+        smsMode(const SmsContactConfig()),
+        name: 'Walk',
+        contacts: <EmergencyContact>[_contact('a')],
+      );
+      check(issues).isEmpty();
+    });
+
+    test('whatsapp channel with only SMS-capable contacts is blocked', () {
+      final issues = validateModeDraft(
+        smsMode(const SmsContactConfig(channel: MessageChannel.whatsapp)),
+        name: 'Walk',
+        contacts: <EmergencyContact>[
+          _contact('a'),
+          _contact('b', sortOrder: 1),
+        ],
+      );
+      check(
+        _blocking(issues),
+      ).contains(ModeValidationCode.smsChannelNotOnContacts);
+    });
+
+    test('whatsapp channel passes when one contact has whatsapp', () {
+      final issues = validateModeDraft(
+        smsMode(const SmsContactConfig(channel: MessageChannel.whatsapp)),
+        name: 'Walk',
+        contacts: <EmergencyContact>[
+          _contact('a'),
+          _contact(
+            'b',
+            sortOrder: 1,
+            channels: const <MessageChannel>[MessageChannel.whatsapp],
+          ),
+        ],
+      );
+      check(issues).isEmpty();
+    });
+
+    test('specificIds targeting only an SMS contact, whatsapp channel, '
+        'is blocked', () {
+      final issues = validateModeDraft(
+        smsMode(
+          const SmsContactConfig(
+            channel: MessageChannel.whatsapp,
+            contactSelection: SmsContactSelection.specificIds,
+            contactIds: <String>['a'],
+          ),
+        ),
+        name: 'Walk',
+        contacts: <EmergencyContact>[
+          _contact('a'),
+          _contact(
+            'b',
+            sortOrder: 1,
+            channels: const <MessageChannel>[MessageChannel.whatsapp],
+          ),
+        ],
+      );
+      // Only 'a' is targeted; it lacks whatsapp → block (even though 'b' has
+      // whatsapp, it is not selected).
+      check(
+        _blocking(issues),
+      ).contains(ModeValidationCode.smsChannelNotOnContacts);
+    });
+
+    test(
+      'specificIds with an empty id list does NOT block (targets nobody)',
+      () {
+        final issues = validateModeDraft(
+          smsMode(
+            const SmsContactConfig(
+              channel: MessageChannel.whatsapp,
+              contactSelection: SmsContactSelection.specificIds,
+              contactIds: <String>[],
+            ),
+          ),
+          name: 'Walk',
+          contacts: <EmergencyContact>[_contact('a')],
+        );
+        check(issues).isEmpty();
+      },
+    );
+
+    test('firstContact targeting an SMS-only contact, whatsapp channel, '
+        'is blocked', () {
+      final issues = validateModeDraft(
+        smsMode(
+          const SmsContactConfig(
+            channel: MessageChannel.whatsapp,
+            contactSelection: SmsContactSelection.firstContact,
+          ),
+        ),
+        name: 'Walk',
+        contacts: <EmergencyContact>[
+          // Lowest sortOrder ('a') is SMS-only and is the firstContact target.
+          _contact('a'),
+          _contact(
+            'b',
+            sortOrder: 1,
+            channels: const <MessageChannel>[MessageChannel.whatsapp],
+          ),
+        ],
+      );
+      check(
+        _blocking(issues),
+      ).contains(ModeValidationCode.smsChannelNotOnContacts);
+    });
+
+    test('legacy allContacts + explicit ids is resolved as specific ids', () {
+      // allContacts + non-empty contactIds → treated as specific IDs (the
+      // runtime legacy back-compat). Only 'a' is targeted; lacks whatsapp.
+      final issues = validateModeDraft(
+        smsMode(
+          const SmsContactConfig(
+            channel: MessageChannel.whatsapp,
+            contactIds: <String>['a'],
+          ),
+        ),
+        name: 'Walk',
+        contacts: <EmergencyContact>[
+          _contact('a'),
+          _contact(
+            'b',
+            sortOrder: 1,
+            channels: const <MessageChannel>[MessageChannel.whatsapp],
+          ),
+        ],
+      );
+      check(
+        _blocking(issues),
+      ).contains(ModeValidationCode.smsChannelNotOnContacts);
+    });
+
+    test('default empty contacts param keeps the check inert', () {
+      // Omitting `contacts:` must not crash or block (back-compat default).
+      final issues = validateModeDraft(
+        smsMode(const SmsContactConfig(channel: MessageChannel.whatsapp)),
+        name: 'Walk',
+      );
+      check(issues).isEmpty();
     });
   });
 

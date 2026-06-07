@@ -1854,6 +1854,10 @@ class AppLocalizationsEs extends AppLocalizations {
       'El activador de pánico de hardware está incompleto: revisa el número de pulsaciones o la duración de la pulsación.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Ninguno de los contactos elegidos puede recibir por el canal de este paso. Elige otro canal o añádelo a un contacto.';
+
+  @override
   String get validationDistressNoActionTitle => 'Sin paso de alerta saliente';
 
   @override
@@ -2014,6 +2018,17 @@ class AppLocalizationsEs extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Duración de la grabación (s)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Plantilla de mensaje';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Déjalo en blanco para usar la alerta predeterminada. Toca un marcador para insertarlo.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'En el iPhone, el SMS requiere que pulses Enviar manualmente en la app Mensajes. Si no puedes usar el teléfono, el mensaje no se enviará. Considera usar WhatsApp o Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Volumen';
 
   @override
@@ -2044,6 +2059,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Enviar primero un SMS con la ubicación';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'En el iPhone aparecerá un cuadro de confirmación antes de llamar. Toca «Llamar» rápidamente.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Contacto principal (id)';

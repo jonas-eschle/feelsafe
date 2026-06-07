@@ -943,5 +943,10 @@
   "settingsAlarmGradualLabel": "Aumentar el volumen de la alarma gradualmente",
   "settingsAlarmGradualInfo": "Inicia la alarma en voz baja y la sube hasta el volumen máximo. Este es el interruptor principal de toda la app; cada paso de alarma también tiene su propia opción de volumen gradual, y ambos deben estar activados para que se aplique el aumento.",
   "settingsAlarmRampLabel": "Duración del aumento",
-  "settingsAlarmRampInfo": "Cuánto tarda la alarma en alcanzar el volumen máximo desde cero, subiendo de forma uniforme durante este tiempo. No tiene efecto cuando el volumen gradual está desactivado."
+  "settingsAlarmRampInfo": "Cuánto tarda la alarma en alcanzar el volumen máximo desde cero, subiendo de forma uniforme durante este tiempo. No tiene efecto cuando el volumen gradual está desactivado.",
+  "eventDefaultsSmsMessageTemplate": "Plantilla de mensaje",
+  "eventDefaultsSmsMessageTemplateHint": "Déjalo en blanco para usar la alerta predeterminada. Toca un marcador para insertarlo.",
+  "eventDefaultsSmsIosWarning": "En el iPhone, el SMS requiere que pulses Enviar manualmente en la app Mensajes. Si no puedes usar el teléfono, el mensaje no se enviará. Considera usar WhatsApp o Telegram.",
+  "eventDefaultsCallEmergencyIosWarning": "En el iPhone aparecerá un cuadro de confirmación antes de llamar. Toca «Llamar» rápidamente.",
+  "validationSmsChannelNotOnContacts": "Ninguno de los contactos elegidos puede recibir por el canal de este paso. Elige otro canal o añádelo a un contacto."
 }

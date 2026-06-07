@@ -1865,6 +1865,10 @@ class AppLocalizationsEl extends AppLocalizations {
       'Ο ενεργοποιητής πανικού υλικού είναι ελλιπής — ελέγξτε τον αριθμό πατημάτων ή τη διάρκεια κρατήματος.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'Καμία από τις επιλεγμένες επαφές δεν μπορεί να λάβει μέσω του καναλιού αυτού του βήματος. Επιλέξτε άλλο κανάλι ή προσθέστε το σε μια επαφή.';
+
+  @override
   String get validationDistressNoActionTitle =>
       'Κανένα εξερχόμενο βήμα ειδοποίησης';
 
@@ -2026,6 +2030,17 @@ class AppLocalizationsEl extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Διάρκεια ηχογράφησης (δ)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Πρότυπο μηνύματος';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Αφήστε το κενό για χρήση της προεπιλεγμένης ειδοποίησης. Πατήστε ένα σύμβολο κράτησης θέσης για να το εισαγάγετε.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'Στο iPhone, το SMS απαιτεί να πατήσετε χειροκίνητα «Αποστολή» στην εφαρμογή Μηνύματα. Αν δεν μπορείτε να χειριστείτε το τηλέφωνό σας, το μήνυμα δεν θα σταλεί. Εξετάστε το WhatsApp ή το Telegram.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Ένταση';
 
   @override
@@ -2055,6 +2070,10 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get eventDefaultsCallEmergencySmsFirst =>
       'Αποστολή SMS τοποθεσίας πρώτα';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'Στο iPhone, πριν την κλήση θα εμφανιστεί παράθυρο επιβεβαίωσης. Πατήστε γρήγορα «Κλήση».';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Κύρια επαφή (id)';

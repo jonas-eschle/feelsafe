@@ -1824,6 +1824,10 @@ class AppLocalizationsAr extends AppLocalizations {
       'مُشغّل الطوارئ بالجهاز غير مكتمل — تحقّق من عدد الضغطات أو مدة الضغط المطوّل.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'لا يمكن لأي من جهات الاتصال المختارة الاستقبال عبر قناة هذه الخطوة. اختر قناة أخرى أو أضِفها إلى جهة اتصال.';
+
+  @override
   String get validationDistressNoActionTitle => 'لا توجد خطوة تنبيه صادرة';
 
   @override
@@ -1979,6 +1983,17 @@ class AppLocalizationsAr extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'مدة التسجيل (ث)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'قالب الرسالة';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'اتركه فارغًا لاستخدام التنبيه الافتراضي. انقر على عنصر نائب لإدراجه.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'على iPhone، تتطلب الرسائل النصية الضغط يدويًا على «إرسال» في تطبيق الرسائل. إذا لم تتمكن من استخدام هاتفك، فلن تُرسَل الرسالة. ففكِّر في استخدام WhatsApp أو Telegram بدلاً من ذلك.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'مستوى الصوت';
 
   @override
@@ -2004,6 +2019,10 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => 'إرسال رسالة الموقع أولاً';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'على iPhone، سيظهر مربع تأكيد قبل الاتصال. انقر على «اتصال» بسرعة.';
 
   @override
   String get eventDefaultsPhonePrimaryContact =>

@@ -27,6 +27,7 @@ import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -1108,6 +1109,179 @@ void main() {
       expect(find.text(l10n.validationDistressNoActionTitle), findsNothing);
       final saved = await db.sessionModesDao.getById('m1');
       check(saved).isNotNull();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // #20 — channel validation on save (spec 02:319). Drives the real _save()
+  // with the real contact list.
+  // -------------------------------------------------------------------------
+
+  group('ModeEditorScreen — sms channel validation on save', () {
+    testWidgets('blocks save when no targeted contact has the step channel', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // One SMS-only contact; the step sends via WhatsApp → nobody can receive.
+      await db.contactsDao.upsert(
+        EmergencyContact(
+          id: 'a',
+          name: 'Alice',
+          phoneNumber: '+15550001',
+          sortOrder: 0,
+        ),
+      );
+      await _seedMode(
+        db,
+        _mode(
+          steps: <ChainStep>[
+            ChainStep(
+              id: 's0',
+              type: ChainStepType.smsContact,
+              order: 0,
+              waitSeconds: 0,
+              durationSeconds: 15,
+              gracePeriodSeconds: 5,
+              retryCount: 0,
+              randomize: false,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // Blocking SnackBar shown; the editor did not pop (Save still present);
+      // no later edit was written (re-load yields the original whatsapp config,
+      // proving _save() bailed before persisting an update).
+      expect(find.text(l10n.validationSmsChannelNotOnContacts), findsOneWidget);
+      expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
+    });
+
+    testWidgets('saves when a targeted contact has the step channel', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // The contact has WhatsApp → the WhatsApp step is deliverable.
+      await db.contactsDao.upsert(
+        EmergencyContact(
+          id: 'a',
+          name: 'Alice',
+          phoneNumber: '+15550001',
+          sortOrder: 0,
+          channels: const <MessageChannel>[MessageChannel.whatsapp],
+        ),
+      );
+      await _seedMode(
+        db,
+        _mode(
+          steps: <ChainStep>[
+            ChainStep(
+              id: 's0',
+              type: ChainStepType.smsContact,
+              order: 0,
+              waitSeconds: 0,
+              durationSeconds: 15,
+              gracePeriodSeconds: 5,
+              retryCount: 0,
+              randomize: false,
+              config: const SmsContactConfig(channel: MessageChannel.whatsapp),
+            ),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.validationSmsChannelNotOnContacts), findsNothing);
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved).isNotNull();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // #20 — SMS message-template editor (spec 02:287-304). Drives the real
+  // screen → draft → DB round-trip.
+  // -------------------------------------------------------------------------
+
+  group('ModeEditorScreen — sms message template', () {
+    testWidgets('typing a template persists it through draft → DB', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s0', type: ChainStepType.smsContact)]),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await _expandStep(tester, l10n.chainStepNameSmsContact);
+      final Finder field = find.widgetWithText(
+        TextField,
+        l10n.eventDefaultsSmsMessageTemplate,
+      );
+      await _scrollTo(tester, field);
+      await tester.enterText(field, 'Help {name} at {location}');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final SmsContactConfig config =
+          saved!.chainSteps.first.config! as SmsContactConfig;
+      check(config.messageTemplate).equals('Help {name} at {location}');
+    });
+
+    testWidgets('a placeholder chip inserts its token into the template', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s0', type: ChainStepType.smsContact)]),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await _expandStep(tester, l10n.chainStepNameSmsContact);
+      final Finder chip = find.widgetWithText(ActionChip, '{location}');
+      await _scrollTo(tester, chip);
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final SmsContactConfig config =
+          saved!.chainSteps.first.config! as SmsContactConfig;
+      check(config.messageTemplate).equals('{location}');
     });
   });
 }

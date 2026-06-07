@@ -1828,6 +1828,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'Hardware panic trigger is incomplete — check its press count or hold duration.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'None of the chosen contacts can receive on this step\'s channel. Pick a different channel or add it to a contact.';
+
+  @override
   String get validationDistressNoActionTitle => 'No outbound alert step';
 
   @override
@@ -1984,6 +1988,17 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'Recording duration (s)';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'Message template';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'Leave blank to use the default alert. Tap a placeholder to insert it.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'On iPhone, SMS requires you to manually press Send in the Messages app. If you cannot interact with your phone, the message will not send. Consider using WhatsApp or Telegram instead.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'Volume';
 
   @override
@@ -2010,6 +2025,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => 'Send location SMS first';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'On iPhone, a confirmation dialog will appear before dialing. Tap \'Call\' quickly.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'Primary contact (id)';

@@ -814,5 +814,10 @@
   "settingsAlarmGradualLabel": "Stopniowo zwiększaj głośność alarmu",
   "settingsAlarmGradualInfo": "Rozpoczyna alarm cicho i zwiększa go do pełnej głośności. To główny przełącznik dla całej aplikacji; każdy krok alarmu ma też własną opcję stopniowej głośności, a oba muszą być włączone, aby narastanie zadziałało.",
   "settingsAlarmRampLabel": "Czas narastania",
-  "settingsAlarmRampInfo": "Jak długo alarm dochodzi do pełnej głośności od zera, narastając równomiernie w tym czasie. Nie działa, gdy stopniowa głośność jest wyłączona."
+  "settingsAlarmRampInfo": "Jak długo alarm dochodzi do pełnej głośności od zera, narastając równomiernie w tym czasie. Nie działa, gdy stopniowa głośność jest wyłączona.",
+  "eventDefaultsSmsMessageTemplate": "Szablon wiadomości",
+  "eventDefaultsSmsMessageTemplateHint": "Pozostaw puste, aby użyć domyślnego alertu. Dotknij symbolu zastępczego, aby go wstawić.",
+  "eventDefaultsSmsIosWarning": "Na iPhonie SMS wymaga ręcznego naciśnięcia Wyślij w aplikacji Wiadomości. Jeśli nie możesz obsługiwać telefonu, wiadomość nie zostanie wysłana. Rozważ użycie WhatsApp lub Telegram.",
+  "eventDefaultsCallEmergencyIosWarning": "Na iPhonie przed wybraniem numeru pojawi się okno potwierdzenia. Szybko dotknij „Połącz”.",
+  "validationSmsChannelNotOnContacts": "Żaden z wybranych kontaktów nie może odbierać kanałem tego kroku. Wybierz inny kanał lub dodaj go do kontaktu."
 }

@@ -1812,6 +1812,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'טריגר המצוקה החומרתי אינו שלם — בדוק את מספר הלחיצות או את משך הלחיצה הארוכה.';
 
   @override
+  String get validationSmsChannelNotOnContacts =>
+      'אף אחד מאנשי הקשר שנבחרו אינו יכול לקבל בערוץ של שלב זה. בחר ערוץ אחר או הוסף אותו לאיש קשר.';
+
+  @override
   String get validationDistressNoActionTitle => 'אין שלב התראה יוצא';
 
   @override
@@ -1968,6 +1972,17 @@ class AppLocalizationsHe extends AppLocalizations {
   String get eventDefaultsSmsRecordDuration => 'משך הקלטה (ש\')';
 
   @override
+  String get eventDefaultsSmsMessageTemplate => 'תבנית הודעה';
+
+  @override
+  String get eventDefaultsSmsMessageTemplateHint =>
+      'השאר ריק כדי להשתמש בהתראת ברירת המחדל. הקש על מציין מיקום כדי להוסיף אותו.';
+
+  @override
+  String get eventDefaultsSmsIosWarning =>
+      'ב‑iPhone, שליחת SMS מחייבת ללחוץ ידנית על שליחה באפליקציית ההודעות. אם אינך יכול להשתמש בטלפון, ההודעה לא תישלח. שקול להשתמש ב‑WhatsApp או ב‑Telegram במקום זאת.';
+
+  @override
   String get eventDefaultsLoudAlarmVolume => 'עוצמה';
 
   @override
@@ -1993,6 +2008,10 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get eventDefaultsCallEmergencySmsFirst => 'שלח תחילה SMS עם מיקום';
+
+  @override
+  String get eventDefaultsCallEmergencyIosWarning =>
+      'ב‑iPhone, לפני החיוג תופיע תיבת אישור. הקש במהירות על ‚התקשר‘.';
 
   @override
   String get eventDefaultsPhonePrimaryContact => 'איש קשר ראשי (מזהה)';

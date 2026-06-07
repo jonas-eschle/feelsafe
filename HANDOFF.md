@@ -3,8 +3,11 @@
 **Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
 PROGRESS: #13a + #13b + #14 + #13c (COMPLETE + cohort-VERIFIED PASS at
 `d54b986`+`81f131f`) + #13d COMPLETE + cohort-VERIFIED (PASS) at `0788c52` +
-#23 (alarm settings section, just-completed) done + committed (UNPUSHED).
-Next: #20 → M2 cohort → push.**
+#23 COMPLETE + cohort-VERIFIED (PASS) at `8c191ac` + #20 (channel validation
++ SMS template editor + iOS warnings) **PARTIAL**: sub-parts 1–3 COMPLETE +
+committed (UNPUSHED); sub-part 4 (iOS `critical_alert.wav`) **BLOCKED — needs
+user decision** (no such asset exists in the repo; recommendation below).
+Next: resolve #20 sub-part 4 → M2 cohort → push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -18,26 +21,48 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `d54b986` m2-#13c — Mode Editor Safety Options
 - `81f131f` m2-#13c-fix — cohort findings (local-template Add + test gaps)
 - `0788c52` m2-#13d — save + trigger save-validation
-- `<this>`   m2-#23 — alarm settings section
+- `8c191ac` m2-#23 — alarm settings section
+- `<this>`   m2-#20 — channel validation + SMS template editor + iOS warnings
+              (sub-parts 1–3; sub-part 4 critical_alert.wav BLOCKED)
 - (+ this handoff commit)
 
-**Tests: 3788 pass** (3768 prior + 20 net-new #23 tests: 13 widget tests
-driving the REAL `SettingsScreen` alarm section → fake controller, + 7
-controller tests driving the REAL `SettingsController` through a round-tripping
-in-memory `AppSettingsRepository`). Analyzer `--fatal-infos` clean. l10n parity
-green (8 new #23 keys × 14 locales). Settings golden corpus unchanged (the
-Alarm section sits below the 390×844 fold). Tree clean. Branch: `main`.
-(Pure-Dart UI + controller + l10n — no model/strategy/native change, so
-host/widget tests are the proof; emulator boot-smoke not required and not run.)
+**Tests: 3808 pass** (3788 prior + 20 net-new #20 tests: 8 pure-Dart
+channel-validation cases in `mode_draft_validator_test`, 4 mode-editor widget
+tests driving the REAL `_save()`/draft→DB (channel-validation block + allow,
+messageTemplate round-trip + placeholder-chip insert), 8 `EventSpecificConfig`
+widget tests under a `ThemeData(platform:)` override (iOS SMS warning
+show/hide + channel-gate, iOS callEmergency warning show/hide, template field
++ chips, blank→null clear)). Analyzer `--fatal-infos` clean. l10n parity green
+(5 new #20 keys × 14 locales; additions-only regen). deferral-grep 0; OLD/
+clean. Tree clean. Branch: `main`. (Pure-Dart validator + Flutter-only UI/l10n
+— no native/model/strategy change in the committed sub-parts; the iOS bundle
+change is sub-part 4, which is BLOCKED and NOT committed.)
 
-**#13c cohort loop:** #13c (`d54b986`) was reviewed by the verification
-cohort → **FIX_REQUIRED**, now **FIXED** in `<this>`. Findings addressed:
-C1 (the missing `[+ Add Template]` affordance for mode-local templates — see
-KEY FINDINGS) + T1–T6 (behavioral test gaps that were green-but-unwired:
-manage-link navigation, distress-trigger edit/remove, GPS-arrival radius at a
-non-default value, inherit-clears for Stealth/Event-defaults + a two-slot
-base-preservation test, GPS-logging inline-field round-trip, and Local
-Templates remove + add).
+**#20 BLOCKED sub-part (NEEDS USER DECISION):** iOS `critical_alert.wav` does
+NOT exist anywhere in the repo (verified: only `siren.wav`,
+`ringtone_default.wav`, `countdown_warning.wav` ship under `assets/audio/`;
+the 14 voice m4a; nothing named `critical_alert.*` is or ever was tracked).
+`lib/services/notification_service.dart:391` passes `sound:
+'critical_alert.wav'` to `DarwinNotificationDetails` for iOS escalation
+notifications (alarm/emergency/fakeCall), so iOS would fall back to the
+default notification sound — the bespoke critical-alert siren never plays.
+The task's hypothesis ("a Flutter asset already ships it; iOS just doesn't
+bundle it") is FALSE. **Recommendation:** the canonical alarm/critical sound
+the app already ships and plays on BOTH platforms is `assets/audio/siren.wav`
+(RIFF/WAVE PCM 16-bit mono 44.1 kHz, a valid `UNNotificationSound` format and
+well under the iOS 30 s limit; `audio_service.dart:244` notes "WAV decodes on
+both Android and iOS"). Bundling a copy of `siren.wav` as the iOS notification
+sound `critical_alert.wav` (root of `ios/Runner`, referenced from
+`Runner.xcodeproj` + `Info.plist`/Copy-Bundle-Resources) is a real,
+already-approved-as-the-alarm asset — NOT fabricated junk. But it is a
+safety-relevant UX decision (which sound iOS critical alerts play), so per
+Hard Rule 4 it needs explicit user sign-off before committing the copy. I did
+NOT commit a placeholder/junk wav (that would be a stub). **Decision needed:**
+(a) approve sourcing iOS `critical_alert.wav` from `siren.wav`, or (b) provide
+a dedicated critical-alert audio file. After the decision, the remaining work
+is mechanical: drop the file at `ios/Runner/critical_alert.wav`, add it to the
+`Runner` target's resources in `project.pbxproj` (PBXBuildFile +
+PBXFileReference + Resources build phase), and verify via CI `build-ios`.
 
 ---
 
@@ -47,19 +72,22 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: continue M2 — #20 (channel-validation-on-save; SMS
-messageTemplate editor; iOS SMS+callEmergency warnings; missing iOS
-`critical_alert.wav`), then the M2 cohort + push.** Per-fix recipe
+**Next action: (1) resolve #20 sub-part 4 (iOS `critical_alert.wav`) — see the
+BLOCKED section above; one AskUserQuestion (source from `siren.wav` vs. a
+dedicated file), then the mechanical bundle/pbxproj wiring + CI `build-ios`.
+(2) Run the M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both `opus`) → gate → push the M2 stack.** Per-fix recipe
 (unchanged): verify the gap yourself → implement (serial) → prove (host/widget
 tests driving the REAL controller; emulator for native) → l10n deltas →
 language agent for 13 locales → gate suite → commit → **ask before pushing**.
 
 **M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c AND #13d AND #23
-— are done):**
+— are done; #20 sub-parts 1–3 done):**
 
-1. **#20** — channel-validation-on-save; SMS message-template editor (the
-   `messageTemplate` field is in `SmsContactConfig` but has no editor yet);
-   iOS SMS+callEmergency warning strings; the missing iOS `critical_alert.wav`.
+1. **#20 sub-part 4 only** — iOS `critical_alert.wav` bundle (BLOCKED on a
+   user decision; sub-parts 1–3 — channel-validation-on-save, SMS
+   message-template editor, iOS SMS+callEmergency warnings — are COMPLETE +
+   committed). See the BLOCKED section.
 
 Then: **M2 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
 spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
@@ -171,6 +199,35 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   read-back + clamp-below/above + sibling-field preservation). Pure-Dart
   UI+controller — no model/strategy/native change, so emulator not required
   (not run). Settings goldens unchanged (Alarm section below the 844px fold).
+- **#20** (`<this>`): **GA-blocker #20 — sub-parts 1–3** (sub-part 4 BLOCKED,
+  see above). (1) **Channel-validation-on-save (BLOCK, spec 02:319 / 03:319):**
+  extended the pure-Dart `validateModeDraft` with a new `contacts` param +
+  `ModeValidationCode.smsChannelNotOnContacts`. For each `smsContact` step it
+  resolves the targeted recipients (mirroring
+  `sms_contact_strategy._resolveContacts` incl. the legacy allContacts+ids→
+  specificIds back-compat and firstContact-by-sortOrder) and BLOCKS iff the
+  step targets ≥1 contact but NONE carries the step's `channel`. An empty
+  target set (empty repo / specificIds-with-no-ids) does NOT block — that's
+  the no-contacts concern `SessionStartValidator` warns (not blocks) on, and
+  blocking it would be a false positive (philosophy). Wired through the real
+  `_save()` (`mode_editor_screen.dart:177-181` now passes `_contacts`) +
+  `_issueMessage` arm + `validationSmsChannelNotOnContacts`. (2) **SMS
+  `messageTemplate` editor (spec 02:287-304):** new reusable
+  `MessageTemplateField` in `config_fields.dart` (multi-line; blank commits as
+  `null` = seeded default; `ActionChip`s insert `{name}`/`{location}`/`{time}`/
+  `{description}` at the caret — `kSmsTemplatePlaceholders` in
+  `event_specific_config.dart`; `{photo}` excluded per G-017). `_SmsContactForm`
+  uses a direct-construct `_withTemplate` helper because `copyWith` can't null
+  the field. Persists draft→DB. (3) **iOS warnings (spec 02:325, 02:479):**
+  `_PlatformWarning` banner in `_SmsContactForm` (iOS + `channel == sms`) and
+  `_CallEmergencyForm` (iOS), gated on **`Theme.of(context).platform ==
+  TargetPlatform.iOS`** (NOT `Platform.isIOS` — the Theme platform is
+  host-test-overridable via `ThemeData(platform:)`). New keys
+  `eventDefaultsSmsIosWarning` / `eventDefaultsCallEmergencyIosWarning`. 20
+  net-new tests (see test-count note). 5 new l10n keys × 14 locales. Pure-Dart
+  validator + Flutter-only UI — no native path in the committed parts, so
+  emulator not required (not run); the iOS BUILD of sub-part 4's bundle change
+  defers to CI `build-ios` (real platform constraint, not a deferral).
 
 ---
 
@@ -264,6 +321,15 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
 
 ## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
 
+- **Spec 06:262 says the alarm ramp range is "0–60 s" but the
+  model/controller/`TimingSlider` enforce `[1,60]`** (0 is redundant with
+  gradual-OFF) — correct the spec prose `0`→`1`. (Flagged by the #23 cohort;
+  spec-doc fix only, no code change.)
+- **The `session_controller` AppSettings→EventServices copy-hop (≈618-621) is
+  not value-tested;** mitigated by the `loud_alarm_strategy` boundary tests —
+  add a dispatch-fake test asserting the recorded `rampSeconds` /
+  `alarmDndOverride` in a future #19/session pass (M5 coverage). (Flagged by
+  the #23 cohort.)
 - **`kMinRepeatPressCount = 2` is a validator-introduced floor with no explicit
   spec line** (04:1589 lists "press count" as a field only) — defensible
   (single press ≈ accidental tap), self-documented; revisit if a future spec
@@ -310,7 +376,9 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   FakeCall/DisguisedReminder when locked) → a notification-deeplink nav pass.
 - **#18 polish:** tapWord decoy words not localized; disguise icon is a neutral
   Material icon (template `iconAsset`/`imagePath` not rendered). → near #15.
-- **iOS `critical_alert.wav`** missing from the iOS bundle → fold into #20.
+- **iOS `critical_alert.wav`** missing from the iOS bundle → now the ACTIVE
+  **#20 sub-part 4 BLOCKED** item (see the BLOCKED section near the top — it
+  needs a user decision: source from `siren.wav` vs. a dedicated file).
 - **`docs/review/remaining-gaps.md`** is a STALE v2-era artifact — do NOT
   action against v3.
 
@@ -398,9 +466,9 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
-  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ done (UNPUSHED); remaining **#20
-  (channel validation / SMS template / iOS warnings) → M2 cohort → push.**
-  Then M3 (#15 stealth), M4
+  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ + #20 sub-parts 1–3 ✓ done
+  (UNPUSHED); remaining **#20 sub-part 4 (iOS `critical_alert.wav`, BLOCKED on
+  a user decision) → M2 cohort → push.** Then M3 (#15 stealth), M4
   (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
   #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
   The in-memory TaskList is cleared on `/clear` — this bullet is the durable

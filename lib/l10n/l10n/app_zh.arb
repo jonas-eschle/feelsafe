@@ -943,5 +943,10 @@
   "settingsAlarmGradualLabel": "逐渐增大警报音量",
   "settingsAlarmGradualInfo": "警报从低音量开始，逐渐增大到最大音量。这是整个应用的总开关；每个警报步骤也有各自的渐进音量选项，两者都开启时渐强才会生效。",
   "settingsAlarmRampLabel": "渐强时长",
-  "settingsAlarmRampInfo": "警报从零达到最大音量所需的时间，在此时间内均匀增大。关闭渐进音量时无效。"
+  "settingsAlarmRampInfo": "警报从零达到最大音量所需的时间，在此时间内均匀增大。关闭渐进音量时无效。",
+  "eventDefaultsSmsMessageTemplate": "消息模板",
+  "eventDefaultsSmsMessageTemplateHint": "留空则使用默认警报。点按占位符即可插入。",
+  "eventDefaultsSmsIosWarning": "在 iPhone 上，发送短信需要你在“信息”应用中手动点按“发送”。如果你无法操作手机，消息将不会发出。建议改用 WhatsApp 或 Telegram。",
+  "eventDefaultsCallEmergencyIosWarning": "在 iPhone 上，拨号前会出现确认对话框。请快速点按“呼叫”。",
+  "validationSmsChannelNotOnContacts": "所选联系人都无法通过此步骤的渠道接收。请选择其他渠道，或为联系人添加该渠道。"
 }

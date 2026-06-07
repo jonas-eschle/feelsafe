@@ -276,6 +276,17 @@ class _FakeCallForm extends StatelessWidget {
   }
 }
 
+/// The SMS message-template placeholder tokens offered in the editor.
+///
+/// Matches the supported placeholders in spec 02:287-291 (`{photo}` is
+/// intentionally excluded per spec audit G-017).
+const List<String> kSmsTemplatePlaceholders = <String>[
+  '{name}',
+  '{location}',
+  '{time}',
+  '{description}',
+];
+
 class _SmsContactForm extends StatelessWidget {
   const _SmsContactForm({
     required this.config,
@@ -289,10 +300,27 @@ class _SmsContactForm extends StatelessWidget {
   final List<EmergencyContact>? contacts;
   final VoidCallback? onManageContacts;
 
+  /// Rebuilds the config with [messageTemplate], which may be null.
+  ///
+  /// `copyWith` cannot clear a field (`x ?? this.x`), so a direct construction
+  /// is required to set the template back to null (= use the seeded default).
+  SmsContactConfig _withTemplate(String? messageTemplate) => SmsContactConfig(
+    contactIds: config.contactIds,
+    contactSelection: config.contactSelection,
+    channel: config.channel,
+    includeLocation: config.includeLocation,
+    includeMedicalInfo: config.includeMedicalInfo,
+    autoRecordAudio: config.autoRecordAudio,
+    recordDurationSeconds: config.recordDurationSeconds,
+    messageTemplate: messageTemplate,
+    blackScreenMode: config.blackScreenMode,
+  );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final List<EmergencyContact>? contacts = this.contacts;
+    final bool isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -304,6 +332,8 @@ class _SmsContactForm extends StatelessWidget {
           onChanged: (MessageChannel v) =>
               onChanged(config.copyWith(channel: v)),
         ),
+        if (isIos && config.channel == MessageChannel.sms)
+          _PlatformWarning(message: l10n.eventDefaultsSmsIosWarning),
         if (contacts != null) ...<Widget>[
           const SizedBox(height: 8),
           Text(l10n.smsContactRecipientsHeader),
@@ -314,6 +344,13 @@ class _SmsContactForm extends StatelessWidget {
             onManageContacts: onManageContacts ?? () {},
           ),
         ],
+        MessageTemplateField(
+          label: l10n.eventDefaultsSmsMessageTemplate,
+          hint: l10n.eventDefaultsSmsMessageTemplateHint,
+          value: config.messageTemplate,
+          placeholders: kSmsTemplatePlaceholders,
+          onChanged: (String? v) => onChanged(_withTemplate(v)),
+        ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.eventDefaultsSmsIncludeLocation),
@@ -441,9 +478,12 @@ class _CallEmergencyForm extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final bool isIos = Theme.of(context).platform == TargetPlatform.iOS;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
+        if (isIos)
+          _PlatformWarning(message: l10n.eventDefaultsCallEmergencyIosWarning),
         LabeledTextField(
           label: l10n.eventDefaultsCallEmergencyNumber,
           value: config.emergencyNumber ?? '',
@@ -532,6 +572,53 @@ class _HardwareButtonForm extends StatelessWidget {
           onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
       ],
+    );
+  }
+}
+
+// ─── iOS platform-limitation warning banner ────────────────────────────────
+
+/// An inline warning card surfacing an iOS platform limitation for a step.
+///
+/// Rendered only on iOS (the caller gates on [Theme.platform]); it explains a
+/// documented iOS behaviour the user cannot change — SMS requiring a manual
+/// Send tap (spec 02:325) or the emergency-call confirmation dialog (02:479).
+class _PlatformWarning extends StatelessWidget {
+  const _PlatformWarning({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final ColorScheme scheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: scheme.tertiaryContainer,
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Icon(
+              Icons.info_outline,
+              size: 20,
+              color: scheme.onTertiaryContainer,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                message,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: scheme.onTertiaryContainer,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

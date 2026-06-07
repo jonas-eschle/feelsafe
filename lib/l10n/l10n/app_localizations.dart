@@ -3425,6 +3425,12 @@ abstract class AppLocalizations {
   /// **'Hardware panic trigger is incomplete — check its press count or hold duration.'**
   String get validationHardwareTrigger;
 
+  /// Mode-editor save validation: an smsContact step targets contacts but none has the step's send channel enabled (spec 02:319).
+  ///
+  /// In en, this message translates to:
+  /// **'None of the chosen contacts can receive on this step\'s channel. Pick a different channel or add it to a contact.'**
+  String get validationSmsChannelNotOnContacts;
+
   /// Title of the non-blocking warning dialog shown when a distress mode has no SMS or call step (spec 04:1659).
   ///
   /// In en, this message translates to:
@@ -3707,6 +3713,24 @@ abstract class AppLocalizations {
   /// **'Recording duration (s)'**
   String get eventDefaultsSmsRecordDuration;
 
+  /// Field label for the SMS message-template editor (SmsContactConfig.messageTemplate). Spec 02:287-304.
+  ///
+  /// In en, this message translates to:
+  /// **'Message template'**
+  String get eventDefaultsSmsMessageTemplate;
+
+  /// Hint shown under the SMS message-template field explaining that a blank value uses the seeded default and chips insert placeholders.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave blank to use the default alert. Tap a placeholder to insert it.'**
+  String get eventDefaultsSmsMessageTemplateHint;
+
+  /// iOS platform-limitation warning shown in the mode editor when an smsContact step uses the SMS channel (spec 02:325).
+  ///
+  /// In en, this message translates to:
+  /// **'On iPhone, SMS requires you to manually press Send in the Messages app. If you cannot interact with your phone, the message will not send. Consider using WhatsApp or Telegram instead.'**
+  String get eventDefaultsSmsIosWarning;
+
   /// Field label for LoudAlarmConfig.volume (0.0–1.0).
   ///
   /// In en, this message translates to:
@@ -3760,6 +3784,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Send location SMS first'**
   String get eventDefaultsCallEmergencySmsFirst;
+
+  /// iOS platform-limitation warning shown in the mode editor when a callEmergency step is configured (spec 02:479).
+  ///
+  /// In en, this message translates to:
+  /// **'On iPhone, a confirmation dialog will appear before dialing. Tap \'Call\' quickly.'**
+  String get eventDefaultsCallEmergencyIosWarning;
 
   /// Field label for PhoneCallContactConfig.contactId (null = first sorted).
   ///
