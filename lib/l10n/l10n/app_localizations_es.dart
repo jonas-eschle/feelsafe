@@ -812,6 +812,9 @@ class AppLocalizationsEs extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Sin plantillas locales';
 
   @override
+  String get safetyOptionsAddTemplate => 'Añadir plantilla';
+
+  @override
   String get safetyOptionsManageTemplates =>
       'Gestionar plantillas de recordatorio';
 

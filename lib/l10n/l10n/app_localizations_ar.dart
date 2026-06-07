@@ -802,6 +802,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'لا توجد قوالب محلية';
 
   @override
+  String get safetyOptionsAddTemplate => 'إضافة قالب';
+
+  @override
   String get safetyOptionsManageTemplates => 'إدارة قوالب التذكير';
 
   @override

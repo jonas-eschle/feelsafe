@@ -793,6 +793,7 @@
   "safetyOptionsLocalTemplatesTitle": "القوالب المحلية",
   "safetyOptionsLocalTemplatesInfo": "تُضاف القوالب المحلية إلى مجموعة قوالب التذكير العامة لهذا الوضع فقط. استخدمها لخطوات التذكير المُموَّه الخاصة بهذا الوضع.",
   "safetyOptionsLocalTemplatesEmpty": "لا توجد قوالب محلية",
+  "safetyOptionsAddTemplate": "إضافة قالب",
   "safetyOptionsManageTemplates": "إدارة قوالب التذكير",
   "safetyOptionsEventDefaultsTitle": "الإعدادات الافتراضية للأحداث",
   "safetyOptionsEventDefaultsInfo": "تحدِّد الإعدادات الافتراضية للأحداث التهيئة الأولية لكل نوع خطوة. يستخدم «التوريث» إعداداتك الافتراضية العامة؛ ويتجاوزها «مخصّص» لخطوات هذا الوضع التي لا تملك تهيئة خاصة بها.",

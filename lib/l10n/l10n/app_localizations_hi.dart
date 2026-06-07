@@ -808,6 +808,9 @@ class AppLocalizationsHi extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'कोई स्थानीय टेम्पलेट नहीं';
 
   @override
+  String get safetyOptionsAddTemplate => 'टेम्पलेट जोड़ें';
+
+  @override
   String get safetyOptionsManageTemplates => 'रिमाइंडर टेम्पलेट प्रबंधित करें';
 
   @override

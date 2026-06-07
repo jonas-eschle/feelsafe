@@ -793,6 +793,7 @@
   "safetyOptionsLocalTemplatesTitle": "Szablony lokalne",
   "safetyOptionsLocalTemplatesInfo": "Szablony lokalne są dodawane do globalnej puli szablonów przypomnień tylko dla tego trybu. Używaj ich do kroków zamaskowanych przypomnień właściwych dla tego trybu.",
   "safetyOptionsLocalTemplatesEmpty": "Brak szablonów lokalnych",
+  "safetyOptionsAddTemplate": "Dodaj szablon",
   "safetyOptionsManageTemplates": "Zarządzaj szablonami przypomnień",
   "safetyOptionsEventDefaultsTitle": "Domyślne ustawienia zdarzeń",
   "safetyOptionsEventDefaultsInfo": "Domyślne ustawienia zdarzeń określają początkową konfigurację każdego typu kroku. „Dziedzicz” używa globalnych wartości; „Niestandardowe” zastępuje je dla kroków w tym trybie bez własnej konfiguracji.",

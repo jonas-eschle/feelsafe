@@ -1535,6 +1535,12 @@ abstract class AppLocalizations {
   /// **'No local templates'**
   String get safetyOptionsLocalTemplatesEmpty;
 
+  /// Button that opens the editor to create a new mode-local reminder template.
+  ///
+  /// In en, this message translates to:
+  /// **'Add template'**
+  String get safetyOptionsAddTemplate;
+
   /// Link that opens the global reminder-templates screen.
   ///
   /// In en, this message translates to:

@@ -23,12 +23,20 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/gps_logging_config.dart';
+import 'package:guardianangela/domain/models/mode_overrides.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
@@ -99,6 +107,22 @@ Future<SessionMode> _seedMode(
   await db.sessionModesDao.upsert(mode);
   return mode;
 }
+
+/// A mode-local [ReminderTemplate] fixture (`isGlobal: false`).
+ReminderTemplate _localTemplate({
+  String id = 'lt-1',
+  String name = 'Local note',
+  String title = 'Local title',
+}) => ReminderTemplate(
+  id: id,
+  name: name,
+  title: title,
+  body: 'Tap to confirm you are safe.',
+  confirmationType: ConfirmationType.tapButton,
+  isCustom: true,
+  displayStyle: ReminderDisplayStyle.fullScreen,
+  isGlobal: false,
+);
 
 /// Pumps the editor inside a router that provides `/home` (so `context.pop`
 /// after Save works) plus stub `/distress-modes` and
@@ -773,6 +797,449 @@ void main() {
       await tester.tap(gpsToggle);
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
+    });
+  });
+
+  // T1 — Manage-link navigation -------------------------------------------
+  group('SafetyOptions — manage-link navigation', () {
+    testWidgets('"Manage distress modes →" navigates to /distress-modes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final link = find.text(l10n.safetyOptionsManageDistressModes);
+      await _scrollTo(tester, link);
+      await tester.tap(link);
+      await tester.pumpAndSettle();
+      expect(find.text('distress modes screen'), findsOneWidget);
+    });
+
+    testWidgets(
+      '"Manage reminder templates" navigates to the templates screen',
+      (WidgetTester tester) async {
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        final db = _emptyDb();
+        addTearDown(db.close);
+        final mode = await _seedMode(db, _mode());
+        await _pump(
+          tester,
+          ModeEditorScreen(modeId: mode.id, isDistress: false),
+          _overrides(db),
+        );
+        await _openSafetyOptions(tester, l10n);
+        final link = find.text(l10n.safetyOptionsManageTemplates);
+        await _scrollTo(tester, link);
+        await tester.tap(link);
+        await tester.pumpAndSettle();
+        expect(find.text('templates screen'), findsOneWidget);
+      },
+    );
+  });
+
+  // T2 — distress-trigger edit/remove --------------------------------------
+  group('SafetyOptions — distress-trigger edit/remove', () {
+    testWidgets('changing the pattern to longPress normalises and persists', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      // Expand the trigger tile via its collapsed summary (volumeUp / 5×).
+      final summary = find.text(
+        l10n.safetyOptionsTriggerHardwareRepeat(
+          l10n.safetyOptionsButtonVolumeUp,
+          '5',
+        ),
+      );
+      await _scrollTo(tester, summary);
+      await tester.tap(summary);
+      await tester.pumpAndSettle();
+      // Open the pattern dropdown (current value = "repeat") and pick "long".
+      final patternValue = find.text(l10n.safetyOptionsPatternRepeat);
+      await _scrollTo(tester, patternValue);
+      await tester.tap(patternValue);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.safetyOptionsPatternLong).last);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final trigger =
+          saved!.distressTriggers.single as HardwareButtonDistressTrigger;
+      check(trigger.pattern).equals(PressPattern.longPress);
+      check(trigger.durationSeconds).equals(2.0);
+      // pressCount is normalised back to the model default for longPress.
+      check(trigger.pressCount).equals(5);
+    });
+
+    testWidgets('deleting a distress trigger persists an empty list', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      // The trigger tile's trailing delete button.
+      final deleteBtn = find.descendant(
+        of: find.byType(ExpansionTile),
+        matching: find.widgetWithIcon(IconButton, Icons.delete_outline),
+      );
+      await _scrollTo(tester, deleteBtn.first);
+      await tester.tap(deleteBtn.first);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.distressTriggers).isEmpty();
+    });
+
+    testWidgets('changing the button to volumeDown persists', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final summary = find.text(
+        l10n.safetyOptionsTriggerHardwareRepeat(
+          l10n.safetyOptionsButtonVolumeUp,
+          '5',
+        ),
+      );
+      await _scrollTo(tester, summary);
+      await tester.tap(summary);
+      await tester.pumpAndSettle();
+      // Open the button dropdown (current value = "Volume up") → "Volume down".
+      final buttonValue = find.text(l10n.safetyOptionsButtonVolumeUp);
+      await _scrollTo(tester, buttonValue);
+      await tester.tap(buttonValue.first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.safetyOptionsButtonVolumeDown).last);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final trigger =
+          saved!.distressTriggers.single as HardwareButtonDistressTrigger;
+      check(trigger.buttonType).equals(ButtonType.volumeDown);
+    });
+  });
+
+  // T3 — GPS-arrival radius at a non-default value -------------------------
+  group('SafetyOptions — GPS-arrival radius', () {
+    testWidgets('dragging the radius slider persists a non-default radius', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[GpsArrivalDisarmTrigger()],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      // The radius slider is the first Slider revealed by the enabled GPS
+      // trigger. Drag it far right (towards the 5 km max).
+      final slider = find.byType(Slider).first;
+      await _scrollTo(tester, slider);
+      await tester.drag(slider, const Offset(400, 0));
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final gps = saved!.disarmTriggers
+          .whereType<GpsArrivalDisarmTrigger>()
+          .single;
+      // Default is 200 m; a rightward drag must raise it within 50–5000.
+      check(gps.radiusMeters).isGreaterThan(200);
+      check(gps.radiusMeters).isLessOrEqual(5000);
+    });
+  });
+
+  // T4 — Inherit-clears round-trip for Stealth + Event-defaults; two-slot ---
+  group('SafetyOptions — inherit clears overrides', () {
+    testWidgets('Stealth Custom then Inherit clears overrides to null', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsStealthTitle));
+      // Stealth's Custom is the 2nd tri-state "Custom" in the section.
+      await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).at(1));
+      await tester.pumpAndSettle();
+      await _scrollTo(tester, find.text(l10n.safetyOptionsStealthTitle));
+      await tester.tap(find.text(l10n.safetyOptionsTriStateInherit).at(1));
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides).isNull();
+    });
+
+    testWidgets('Event-defaults Custom then Inherit clears overrides to null', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsEventDefaultsTitle));
+      await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).last);
+      await tester.pumpAndSettle();
+      await _scrollTo(tester, find.text(l10n.safetyOptionsEventDefaultsTitle));
+      // Event-defaults' two-state "Inherit" is the last "Inherit" in the
+      // section (after the GPS-logging and Stealth tri-states).
+      await tester.tap(
+        find.text(l10n.safetyOptionsEventDefaultsTwoStateInherit).last,
+      );
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides).isNull();
+    });
+
+    testWidgets(
+      'flipping Stealth→Inherit preserves a sibling GPS-logging override',
+      (WidgetTester tester) async {
+        final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+        final db = _emptyDb();
+        addTearDown(db.close);
+        // Seed BOTH gpsLogging (custom) and stealth (custom) overrides.
+        final mode = await _seedMode(
+          db,
+          SessionMode(
+            id: 'm1',
+            name: 'Walk',
+            chainSteps: <ChainStep>[_step('s0')],
+            overrides: const ModeOverrides(
+              gpsLogging: GpsLoggingConfig(intervalSeconds: 99),
+              stealth: StealthConfig(enabled: true),
+            ),
+          ),
+        );
+        await _pump(
+          tester,
+          ModeEditorScreen(modeId: mode.id, isDistress: false),
+          _overrides(db),
+        );
+        await _openSafetyOptions(tester, l10n);
+        // Flip the stealth tri-state to Inherit (2nd group's "Inherit").
+        await _scrollTo(tester, find.text(l10n.safetyOptionsStealthTitle));
+        await tester.tap(find.text(l10n.safetyOptionsTriStateInherit).at(1));
+        await tester.pumpAndSettle();
+        await _tapSave(tester, l10n);
+
+        final saved = await db.sessionModesDao.getById('m1');
+        // GPS-logging override survives; stealth is dropped — the base slot
+        // must not be lost when only stealth flips to inherit.
+        check(saved!.overrides).isNotNull();
+        check(saved.overrides!.gpsLogging).isNotNull();
+        check(saved.overrides!.gpsLogging!.intervalSeconds).equals(99);
+        check(saved.overrides!.stealth).isNull();
+      },
+    );
+  });
+
+  // T5 — GPS-logging Custom: edit an inline field round-trips --------------
+  group('SafetyOptions — GPS-logging inline field', () {
+    testWidgets('toggling includeInSms under Custom round-trips', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsGpsLoggingTitle));
+      // Enter Custom (1st tri-state Custom) → inline GpsLoggingFields appears.
+      await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).first);
+      await tester.pumpAndSettle();
+      // includeInSms defaults true; toggle it off via its SwitchListTile.
+      final includeToggle = find.widgetWithText(
+        SwitchListTile,
+        l10n.gpsLoggingIncludeInSms,
+      );
+      await _scrollTo(tester, includeToggle);
+      await tester.tap(includeToggle);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides?.gpsLogging?.enabled).equals(true);
+      check(saved.overrides?.gpsLogging?.includeInSms).equals(false);
+    });
+  });
+
+  // T6 — Local Templates: remove + add -------------------------------------
+  group('SafetyOptions — local templates', () {
+    testWidgets('removing the only local template clears overrides to null', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          overrides: ModeOverrides(
+            localTemplates: <ReminderTemplate>[_localTemplate()],
+          ),
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      // The local-template list tile's trailing delete button.
+      final tile = find.widgetWithText(ListTile, 'Local note');
+      await _scrollTo(tester, tile);
+      final deleteBtn = find.descendant(
+        of: tile,
+        matching: find.widgetWithIcon(IconButton, Icons.delete_outline),
+      );
+      await tester.tap(deleteBtn);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      // The sole override removed → the whole overrides object normalises null.
+      check(saved!.overrides).isNull();
+    });
+
+    testWidgets('[+ Add Template] stages a new local template into overrides', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final addBtn = find.text(l10n.safetyOptionsAddTemplate);
+      await _scrollTo(tester, addBtn);
+      await tester.tap(addBtn);
+      await tester.pumpAndSettle();
+      // The full-screen editor sheet opens with the create title.
+      expect(find.text(l10n.templatesCreateTitle), findsWidgets);
+      // Fill the three required fields (name / title / body).
+      final fields = find.byType(TextField);
+      await tester.enterText(fields.at(0), 'Delivery');
+      await tester.enterText(fields.at(1), 'Package arrived');
+      await tester.enterText(fields.at(2), 'Confirm you collected it.');
+      await tester.pumpAndSettle();
+      // Save the template (the sheet's Save action returns it to the editor).
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pumpAndSettle();
+      // Now save the mode itself.
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides).isNotNull();
+      final locals = saved.overrides!.localTemplates;
+      check(locals).isNotNull();
+      check(locals!.length).equals(1);
+      check(locals.single.name).equals('Delivery');
+      check(locals.single.isGlobal).isFalse();
+      check(locals.single.isCustom).isTrue();
+      // It must NOT have leaked into the global templates table.
+      final globals = await db.reminderTemplatesDao.getAll();
+      check(globals).isEmpty();
     });
   });
 

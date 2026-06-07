@@ -816,6 +816,9 @@ class AppLocalizationsEl extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Δεν υπάρχουν τοπικά πρότυπα';
 
   @override
+  String get safetyOptionsAddTemplate => 'Προσθήκη προτύπου';
+
+  @override
   String get safetyOptionsManageTemplates => 'Διαχείριση προτύπων υπενθύμισης';
 
   @override

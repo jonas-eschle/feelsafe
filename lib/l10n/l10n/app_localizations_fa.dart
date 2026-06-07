@@ -805,6 +805,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'هیچ الگوی محلی‌ای وجود ندارد';
 
   @override
+  String get safetyOptionsAddTemplate => 'افزودن قالب';
+
+  @override
   String get safetyOptionsManageTemplates => 'مدیریت الگوهای یادآوری';
 
   @override

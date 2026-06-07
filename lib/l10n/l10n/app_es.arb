@@ -922,6 +922,7 @@
   "safetyOptionsLocalTemplatesTitle": "Plantillas locales",
   "safetyOptionsLocalTemplatesInfo": "Las plantillas locales se añaden al conjunto global de plantillas de recordatorio solo para este modo. Úsalas para pasos de recordatorio disfrazado específicos de este modo.",
   "safetyOptionsLocalTemplatesEmpty": "Sin plantillas locales",
+  "safetyOptionsAddTemplate": "Añadir plantilla",
   "safetyOptionsManageTemplates": "Gestionar plantillas de recordatorio",
   "safetyOptionsEventDefaultsTitle": "Valores predeterminados de eventos",
   "safetyOptionsEventDefaultsInfo": "Los valores predeterminados de eventos definen la configuración inicial de cada tipo de paso. «Heredar» usa tus valores globales; «Personalizado» los anula para los pasos de este modo que no tengan configuración propia.",

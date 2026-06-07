@@ -787,6 +787,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => '暂无本地模板';
 
   @override
+  String get safetyOptionsAddTemplate => '添加模板';
+
+  @override
   String get safetyOptionsManageTemplates => '管理提醒模板';
 
   @override
@@ -2797,6 +2800,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get safetyOptionsLocalTemplatesEmpty => '尚無本機範本';
+
+  @override
+  String get safetyOptionsAddTemplate => '新增範本';
 
   @override
   String get safetyOptionsManageTemplates => '管理提醒範本';

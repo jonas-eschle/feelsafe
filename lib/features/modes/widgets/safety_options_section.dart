@@ -16,6 +16,7 @@ import 'package:guardianangela/features/modes/widgets/config_fields.dart';
 import 'package:guardianangela/features/modes/widgets/gps_logging_fields.dart';
 import 'package:guardianangela/features/modes/widgets/mode_event_defaults.dart';
 import 'package:guardianangela/features/modes/widgets/stealth_config_fields.dart';
+import 'package:guardianangela/features/template_editor/reminder_template_form.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// The override state of a [ModeOverrides] config field with an `enabled`
@@ -727,10 +728,12 @@ class _LocalTemplatesEditor extends StatelessWidget {
   final ValueChanged<SessionMode> onChanged;
   final VoidCallback onManageTemplates;
 
+  List<ReminderTemplate> get _templates =>
+      mode.overrides?.localTemplates ?? const <ReminderTemplate>[];
+
   void _remove(String id) {
     final List<ReminderTemplate> remaining = <ReminderTemplate>[
-      for (final ReminderTemplate t
-          in mode.overrides?.localTemplates ?? const <ReminderTemplate>[])
+      for (final ReminderTemplate t in _templates)
         if (t.id != id) t,
     ];
     onChanged(
@@ -738,11 +741,25 @@ class _LocalTemplatesEditor extends StatelessWidget {
     );
   }
 
+  /// Opens the reminder-template editor for a new mode-local template and
+  /// stages the result (`isGlobal: false`) into the draft on Save.
+  Future<void> _add(BuildContext context) async {
+    final ReminderTemplate? created = await Navigator.of(context).push(
+      MaterialPageRoute<ReminderTemplate>(
+        fullscreenDialog: true,
+        builder: (_) => const _LocalTemplateEditorSheet(),
+      ),
+    );
+    if (created == null) return;
+    onChanged(
+      _modeWithLocalTemplates(mode, <ReminderTemplate>[..._templates, created]),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final List<ReminderTemplate> templates =
-        mode.overrides?.localTemplates ?? const <ReminderTemplate>[];
+    final List<ReminderTemplate> templates = _templates;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
@@ -774,12 +791,71 @@ class _LocalTemplatesEditor extends StatelessWidget {
         Align(
           alignment: AlignmentDirectional.centerStart,
           child: TextButton.icon(
+            onPressed: () => _add(context),
+            icon: const Icon(Icons.add),
+            label: Text(l10n.safetyOptionsAddTemplate),
+          ),
+        ),
+        Align(
+          alignment: AlignmentDirectional.centerStart,
+          child: TextButton.icon(
             onPressed: onManageTemplates,
             icon: const Icon(Icons.chevron_right),
             label: Text(l10n.safetyOptionsManageTemplates),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// A full-screen editor for a new mode-local reminder template.
+///
+/// Reuses the shared [ReminderTemplateForm] body; on Save it returns a fresh
+/// `isCustom: true`, `isGlobal: false` [ReminderTemplate] via `Navigator.pop`
+/// for the [_LocalTemplatesEditor] to stage into the draft. Nothing is written
+/// to the database — the mode editor persists the whole draft on its own Save.
+class _LocalTemplateEditorSheet extends StatefulWidget {
+  const _LocalTemplateEditorSheet();
+
+  @override
+  State<_LocalTemplateEditorSheet> createState() =>
+      _LocalTemplateEditorSheetState();
+}
+
+class _LocalTemplateEditorSheetState extends State<_LocalTemplateEditorSheet> {
+  final GlobalKey<ReminderTemplateFormState> _formKey =
+      GlobalKey<ReminderTemplateFormState>();
+
+  void _save() {
+    final ReminderTemplate? created = _formKey.currentState?.buildTemplate(
+      existing: null,
+      isGlobal: false,
+    );
+    if (created == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Name, title, and body required.')),
+      );
+      return;
+    }
+    Navigator.of(context).pop(created);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(l10n.templatesCreateTitle),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: Text(l10n.commonCancel),
+          ),
+          TextButton(onPressed: _save, child: Text(l10n.commonSave)),
+        ],
+      ),
+      body: SafeArea(child: ReminderTemplateForm(key: _formKey)),
     );
   }
 }

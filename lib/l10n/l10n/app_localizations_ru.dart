@@ -811,6 +811,9 @@ class AppLocalizationsRu extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Нет локальных шаблонов';
 
   @override
+  String get safetyOptionsAddTemplate => 'Добавить шаблон';
+
+  @override
   String get safetyOptionsManageTemplates => 'Управление шаблонами напоминаний';
 
   @override

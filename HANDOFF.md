@@ -1,8 +1,8 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-07 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
-PROGRESS: #13a + #13b + #14 + #13c done + committed (UNPUSHED). Next: #13d,
-#23, #20 → M2 cohort → push.**
+**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
+PROGRESS: #13a + #13b + #14 + #13c (+ #13c-fix cohort loop) done +
+committed (UNPUSHED). Next: #13d, #23, #20 → M2 cohort → push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -13,13 +13,24 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `b557f98` m2-#13b — rebuild Mode Editor chain (per-step `StepConfigPanel`)
 - `11473ba` m2-#14 — SMS contact-selection grid
 - `f40baba` m2-handoff (prior session boundary)
-- `<this>`   m2-#13c — Mode Editor Safety Options
+- `d54b986` m2-#13c — Mode Editor Safety Options
+- `<this>`   m2-#13c-fix — cohort findings (local-template Add + test gaps)
 - (+ this handoff commit)
 
-**Tests: 3728 pass** (3708 baseline + 20 net new #13c tests). Analyzer
-`--fatal-infos` clean. l10n parity green (53 new keys × 14 locales for #13c:
-52 + `safetyOptionsDistressModeUseDefaultNamed`). app_boot_smoke green on the
-emulator after the #13c wiring. Tree clean. Branch: `main`.
+**Tests: 3740 pass** (3728 prior + 12 net-new #13c-fix behavioral tests).
+Analyzer `--fatal-infos` clean. l10n parity green (54 #13c keys × 14 locales:
+the 53 from #13c + `safetyOptionsAddTemplate` from #13c-fix). Tree clean.
+Branch: `main`. (Pure-Dart UI+tests fix — no native path touched, so
+host/widget tests are the proof; emulator boot-smoke not re-run.)
+
+**#13c cohort loop:** #13c (`d54b986`) was reviewed by the verification
+cohort → **FIX_REQUIRED**, now **FIXED** in `<this>`. Findings addressed:
+C1 (the missing `[+ Add Template]` affordance for mode-local templates — see
+KEY FINDINGS) + T1–T6 (behavioral test gaps that were green-but-unwired:
+manage-link navigation, distress-trigger edit/remove, GPS-arrival radius at a
+non-default value, inherit-clears for Stealth/Event-defaults + a two-slot
+base-preservation test, GPS-logging inline-field round-trip, and Local
+Templates remove + add).
 
 ---
 
@@ -116,6 +127,24 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
 
 ## KEY FINDINGS (carry into the next session)
 
+- **`ModeOverrides.localTemplates` is LIVE, not legacy.**
+  `session_controller.dart:495-500` merges `...?mode.overrides?.localTemplates`
+  into the effective reminder-template pool a `disguisedReminder` draws from.
+  The #13c-fix cohort flagged a possible "is this legacy?" ambiguity; the
+  tripwire was checked and CLEARED — it is consumed at runtime, so the
+  `[+ Add Template]` affordance (spec 04:1613) was implemented, not skipped.
+- **Mode-local template Add reuses a shared form, NOT the global editor
+  screen.** The global `TemplateEditorScreen._save()` is hardwired to upsert
+  `isGlobal: true` straight to the DB and `context.pop()` with no return value
+  — unusable for a draft-staged, `isGlobal: false`, not-yet-persisted local
+  template. Refactored the form body out into a reusable, DB/router-free
+  `ReminderTemplateForm` (`lib/features/template_editor/reminder_template_form.dart`,
+  exposes `buildTemplate({existing, isGlobal})`). `TemplateEditorScreen` now
+  composes it (global path unchanged — its existing tests stay green); the mode
+  editor's `_LocalTemplatesEditor` opens it in a `fullscreenDialog`
+  `MaterialPageRoute<ReminderTemplate>` and stages the result (`isGlobal: false`,
+  `isCustom: true`) into `_draft` via the existing `_modeWithLocalTemplates`
+  plumbing — nothing hits the DB until the mode itself is saved.
 - **Contact channel field is `channels`** (not `messageChannels` as some spec
   prose says). SMS-capable = `contact.channels.contains(config.channel)`.
 - **`allContacts` + non-empty `contactIds` ⇒ treated as SPECIFIC IDs** by

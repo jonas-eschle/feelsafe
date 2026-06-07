@@ -922,6 +922,7 @@
   "safetyOptionsLocalTemplatesTitle": "本地模板",
   "safetyOptionsLocalTemplatesInfo": "本地模板仅为此模式添加到全局提醒模板池中。可用于此模式专属的伪装提醒步骤。",
   "safetyOptionsLocalTemplatesEmpty": "暂无本地模板",
+  "safetyOptionsAddTemplate": "添加模板",
   "safetyOptionsManageTemplates": "管理提醒模板",
   "safetyOptionsEventDefaultsTitle": "事件默认值",
   "safetyOptionsEventDefaultsInfo": "事件默认值设置每种步骤类型的初始配置。“继承”使用你的全局默认值；“自定义”为此模式中没有自身配置的步骤覆盖这些默认值。",

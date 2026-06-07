@@ -809,6 +809,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Keine lokalen Vorlagen';
 
   @override
+  String get safetyOptionsAddTemplate => 'Vorlage hinzufügen';
+
+  @override
   String get safetyOptionsManageTemplates => 'Erinnerungsvorlagen verwalten';
 
   @override

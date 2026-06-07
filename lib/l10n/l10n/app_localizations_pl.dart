@@ -807,6 +807,9 @@ class AppLocalizationsPl extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Brak szablonów lokalnych';
 
   @override
+  String get safetyOptionsAddTemplate => 'Dodaj szablon';
+
+  @override
   String get safetyOptionsManageTemplates => 'Zarządzaj szablonami przypomnień';
 
   @override

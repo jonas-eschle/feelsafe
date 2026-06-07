@@ -812,6 +812,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Aucun modèle local';
 
   @override
+  String get safetyOptionsAddTemplate => 'Ajouter un modèle';
+
+  @override
   String get safetyOptionsManageTemplates => 'Gérer les modèles de rappel';
 
   @override

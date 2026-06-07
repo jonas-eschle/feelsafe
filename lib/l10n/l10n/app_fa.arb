@@ -793,6 +793,7 @@
   "safetyOptionsLocalTemplatesTitle": "الگوهای محلی",
   "safetyOptionsLocalTemplatesInfo": "الگوهای محلی فقط برای این حالت به مجموعهٔ سراسری الگوهای یادآوری افزوده می‌شوند. از آن‌ها برای مراحل یادآوری استتارشدهٔ مختص این حالت استفاده کنید.",
   "safetyOptionsLocalTemplatesEmpty": "هیچ الگوی محلی‌ای وجود ندارد",
+  "safetyOptionsAddTemplate": "افزودن قالب",
   "safetyOptionsManageTemplates": "مدیریت الگوهای یادآوری",
   "safetyOptionsEventDefaultsTitle": "پیش‌فرض‌های رویداد",
   "safetyOptionsEventDefaultsInfo": "پیش‌فرض‌های رویداد پیکربندی اولیهٔ هر نوع مرحله را تعیین می‌کنند. «ارث‌بری» از پیش‌فرض‌های سراسری شما استفاده می‌کند؛ «سفارشی» آن‌ها را برای مراحل این حالت که پیکربندی خاص خود را ندارند بازنویسی می‌کند.",

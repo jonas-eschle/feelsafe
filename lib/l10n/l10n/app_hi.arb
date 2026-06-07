@@ -793,6 +793,7 @@
   "safetyOptionsLocalTemplatesTitle": "स्थानीय टेम्पलेट",
   "safetyOptionsLocalTemplatesInfo": "स्थानीय टेम्पलेट केवल इस मोड के लिए वैश्विक रिमाइंडर-टेम्पलेट पूल में जोड़े जाते हैं. इस मोड के लिए विशिष्ट छद्म-रिमाइंडर चरणों के लिए उनका उपयोग करें.",
   "safetyOptionsLocalTemplatesEmpty": "कोई स्थानीय टेम्पलेट नहीं",
+  "safetyOptionsAddTemplate": "टेम्पलेट जोड़ें",
   "safetyOptionsManageTemplates": "रिमाइंडर टेम्पलेट प्रबंधित करें",
   "safetyOptionsEventDefaultsTitle": "इवेंट डिफ़ॉल्ट",
   "safetyOptionsEventDefaultsInfo": "इवेंट डिफ़ॉल्ट प्रत्येक चरण प्रकार के लिए प्रारंभिक कॉन्फ़िगरेशन सेट करते हैं. ‘इनहेरिट’ आपके वैश्विक डिफ़ॉल्ट का उपयोग करता है; ‘कस्टम’ इस मोड में बिना अपने कॉन्फ़िगरेशन वाले चरणों के लिए उन्हें ओवरराइड करता है.",

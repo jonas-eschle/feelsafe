@@ -811,6 +811,7 @@
   "safetyOptionsLocalTemplatesTitle": "Modèles locaux",
   "safetyOptionsLocalTemplatesInfo": "Les modèles locaux sont ajoutés au pool global de modèles de rappel pour ce mode uniquement. Utilisez-les pour des étapes de rappel déguisé propres à ce mode.",
   "safetyOptionsLocalTemplatesEmpty": "Aucun modèle local",
+  "safetyOptionsAddTemplate": "Ajouter un modèle",
   "safetyOptionsManageTemplates": "Gérer les modèles de rappel",
   "safetyOptionsEventDefaultsTitle": "Valeurs par défaut des événements",
   "safetyOptionsEventDefaultsInfo": "Les valeurs par défaut des événements définissent la configuration initiale de chaque type d’étape. « Hériter » utilise vos valeurs globales ; « Personnalisé » les remplace pour les étapes de ce mode sans configuration propre.",

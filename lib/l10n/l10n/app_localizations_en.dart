@@ -802,6 +802,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'No local templates';
 
   @override
+  String get safetyOptionsAddTemplate => 'Add template';
+
+  @override
   String get safetyOptionsManageTemplates => 'Manage reminder templates';
 
   @override

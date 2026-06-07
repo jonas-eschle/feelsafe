@@ -793,6 +793,7 @@
   "safetyOptionsLocalTemplatesTitle": "תבניות מקומיות",
   "safetyOptionsLocalTemplatesInfo": "תבניות מקומיות מתווספות למאגר תבניות התזכורת הגלובלי עבור מצב זה בלבד. השתמש בהן לשלבי תזכורת מוסווית הייחודיים למצב זה.",
   "safetyOptionsLocalTemplatesEmpty": "אין תבניות מקומיות",
+  "safetyOptionsAddTemplate": "הוספת תבנית",
   "safetyOptionsManageTemplates": "ניהול תבניות תזכורת",
   "safetyOptionsEventDefaultsTitle": "ברירות מחדל לאירועים",
   "safetyOptionsEventDefaultsInfo": "ברירות המחדל לאירועים קובעות את התצורה ההתחלתית לכל סוג שלב. ‏‘ירושה’ משתמשת בברירות המחדל הגלובליות שלך; ‘מותאם אישית’ דורס אותן עבור שלבים במצב זה ללא תצורה משלהם.",

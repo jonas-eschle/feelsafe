@@ -800,6 +800,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'אין תבניות מקומיות';
 
   @override
+  String get safetyOptionsAddTemplate => 'הוספת תבנית';
+
+  @override
   String get safetyOptionsManageTemplates => 'ניהול תבניות תזכורת';
 
   @override

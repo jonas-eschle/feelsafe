@@ -807,6 +807,9 @@ class AppLocalizationsUk extends AppLocalizations {
   String get safetyOptionsLocalTemplatesEmpty => 'Немає локальних шаблонів';
 
   @override
+  String get safetyOptionsAddTemplate => 'Додати шаблон';
+
+  @override
   String get safetyOptionsManageTemplates => 'Керування шаблонами нагадувань';
 
   @override

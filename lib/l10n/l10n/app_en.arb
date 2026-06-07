@@ -1031,6 +1031,10 @@
   "@safetyOptionsLocalTemplatesEmpty": {
     "description": "Empty state when a mode has no local templates."
   },
+  "safetyOptionsAddTemplate": "Add template",
+  "@safetyOptionsAddTemplate": {
+    "description": "Button that opens the editor to create a new mode-local reminder template."
+  },
   "safetyOptionsManageTemplates": "Manage reminder templates",
   "@safetyOptionsManageTemplates": {
     "description": "Link that opens the global reminder-templates screen."

@@ -922,6 +922,7 @@
   "safetyOptionsLocalTemplatesTitle": "Lokale Vorlagen",
   "safetyOptionsLocalTemplatesInfo": "Lokale Vorlagen werden nur für diesen Modus zum globalen Vorlagenpool für Erinnerungen hinzugefügt. Verwende sie für getarnte Erinnerungsschritte, die nur für diesen Modus gelten.",
   "safetyOptionsLocalTemplatesEmpty": "Keine lokalen Vorlagen",
+  "safetyOptionsAddTemplate": "Vorlage hinzufügen",
   "safetyOptionsManageTemplates": "Erinnerungsvorlagen verwalten",
   "safetyOptionsEventDefaultsTitle": "Ereignis-Standardwerte",
   "safetyOptionsEventDefaultsInfo": "Ereignis-Standardwerte legen die Ausgangskonfiguration für jeden Schritttyp fest. „Erben“ verwendet deine globalen Standardwerte; „Benutzerdefiniert“ überschreibt sie für Schritte in diesem Modus ohne eigene Konfiguration.",
