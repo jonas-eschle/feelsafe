@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Pozostaw puste, aby użyć domyślnego alertu. Dotknij symbolu zastępczego, aby go wstawić.",
   "eventDefaultsSmsIosWarning": "Na iPhonie SMS wymaga ręcznego naciśnięcia Wyślij w aplikacji Wiadomości. Jeśli nie możesz obsługiwać telefonu, wiadomość nie zostanie wysłana. Rozważ użycie WhatsApp lub Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "Na iPhonie przed wybraniem numeru pojawi się okno potwierdzenia. Szybko dotknij „Połącz”.",
-  "validationSmsChannelNotOnContacts": "Żaden z wybranych kontaktów nie może odbierać kanałem tego kroku. Wybierz inny kanał lub dodaj go do kontaktu."
+  "validationSmsChannelNotOnContacts": "Żaden z wybranych kontaktów nie może odbierać kanałem tego kroku. Wybierz inny kanał lub dodaj go do kontaktu.",
+  "sessionStealthNowPlaying": "Teraz odtwarzane",
+  "sessionStealthTrackTitle": "Utwór bez tytułu",
+  "sessionStealthArtistName": "Nieznany wykonawca",
+  "sessionStealthAlbumArtLabel": "Okładka albumu",
+  "sessionStealthPlay": "Odtwórz",
+  "sessionStealthPause": "Wstrzymaj",
+  "sessionStealthToggleLabel": "Tryb ukryty"
 }

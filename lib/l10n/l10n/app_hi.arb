@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "डिफ़ॉल्ट अलर्ट उपयोग करने के लिए खाली छोड़ें। डालने के लिए किसी प्लेसहोल्डर पर टैप करें।",
   "eventDefaultsSmsIosWarning": "iPhone पर, SMS के लिए आपको Messages ऐप में स्वयं Send दबाना होगा। यदि आप अपना फ़ोन नहीं चला सकते, तो संदेश नहीं भेजा जाएगा। इसके बजाय WhatsApp या Telegram उपयोग करने पर विचार करें।",
   "eventDefaultsCallEmergencyIosWarning": "iPhone पर, डायल करने से पहले एक पुष्टि संवाद दिखेगा। जल्दी से ‘Call’ पर टैप करें।",
-  "validationSmsChannelNotOnContacts": "चुने गए किसी भी संपर्क को इस चरण के चैनल पर संदेश नहीं मिल सकता। कोई अन्य चैनल चुनें या इसे किसी संपर्क में जोड़ें।"
+  "validationSmsChannelNotOnContacts": "चुने गए किसी भी संपर्क को इस चरण के चैनल पर संदेश नहीं मिल सकता। कोई अन्य चैनल चुनें या इसे किसी संपर्क में जोड़ें।",
+  "sessionStealthNowPlaying": "अभी चल रहा है",
+  "sessionStealthTrackTitle": "बिना शीर्षक वाला ट्रैक",
+  "sessionStealthArtistName": "अज्ञात कलाकार",
+  "sessionStealthAlbumArtLabel": "एल्बम कला",
+  "sessionStealthPlay": "चलाएँ",
+  "sessionStealthPause": "रोकें",
+  "sessionStealthToggleLabel": "गुप्त मोड"
 }

@@ -28,6 +28,7 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
+import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
@@ -137,6 +138,8 @@ SessionState _state({
   bool isPaused = false,
   int elapsedSeconds = 42,
   int remainingSeconds = 15,
+  bool stealthEnabled = false,
+  StealthTimerDisplay timerDisplay = StealthTimerDisplay.normal,
   ReminderTemplate? activeReminderTemplate,
 }) => SessionState(
   isSimulation: isSimulation,
@@ -149,6 +152,8 @@ SessionState _state({
   isPaused: isPaused,
   isDistressChain: false,
   remainingSeconds: remainingSeconds,
+  stealthEnabled: stealthEnabled,
+  timerDisplay: timerDisplay,
   activeReminderTemplate: activeReminderTemplate,
 );
 
@@ -359,6 +364,33 @@ void main() {
     pumpWidget: _harness(
       overrides: _overrides(_FakeSessionController(_state())),
       locale: const Locale('ar'),
+    ),
+  );
+
+  // Scenario 7 — dark, stealth fake music player (#15) with small corner
+  // clock. The session screen is fully disguised as a music app.
+  goldenTest(
+    'SessionScreen — dark stealth fake music player',
+    fileName: 'session_screen_s7_dark_stealth_music_player',
+    builder: () => GoldenTestGroup(
+      children: <Widget>[
+        _scenario(
+          name: 'dark — stealth music player',
+          screen: const SessionScreen(),
+        ),
+      ],
+    ),
+    pumpWidget: _harness(
+      overrides: _overrides(
+        _FakeSessionController(
+          _state(
+            stealthEnabled: true,
+            timerDisplay: StealthTimerDisplay.small,
+            elapsedSeconds: 155,
+          ),
+        ),
+      ),
+      themeMode: ThemeMode.dark,
     ),
   );
 }

@@ -809,6 +809,48 @@ abstract class AppLocalizations {
   /// **'Return home'**
   String get sessionCompletedReturnHome;
 
+  /// Minimalist header on the stealth fake-music-player session screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Now playing'**
+  String get sessionStealthNowPlaying;
+
+  /// Generic track-title chrome shown on the stealth fake music player so it reads as an ordinary music app.
+  ///
+  /// In en, this message translates to:
+  /// **'Untitled Track'**
+  String get sessionStealthTrackTitle;
+
+  /// Generic artist-name chrome shown beneath the track title on the stealth fake music player.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown Artist'**
+  String get sessionStealthArtistName;
+
+  /// Accessibility label for the album-art placeholder on the stealth fake music player.
+  ///
+  /// In en, this message translates to:
+  /// **'Album art'**
+  String get sessionStealthAlbumArtLabel;
+
+  /// Tooltip and accessibility label for the play button on the stealth fake music player (resumes the session).
+  ///
+  /// In en, this message translates to:
+  /// **'Play'**
+  String get sessionStealthPlay;
+
+  /// Tooltip and accessibility label for the pause button on the stealth fake music player (pauses the session).
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get sessionStealthPause;
+
+  /// Label beside the stealth on/off toggle at the bottom of the fake music player.
+  ///
+  /// In en, this message translates to:
+  /// **'Stealth Mode'**
+  String get sessionStealthToggleLabel;
+
   /// Title of the simulation-summary screen.
   ///
   /// In en, this message translates to:

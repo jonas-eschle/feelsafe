@@ -18,6 +18,7 @@ import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
+import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
@@ -90,6 +91,8 @@ class SessionState {
     this.lastError,
     this.needsGpsDestinationPrompt = false,
     this.stealthEnabled = false,
+    this.timerDisplay = StealthTimerDisplay.normal,
+    this.sessionScreenStealth = true,
     this.fakeCallShowNonce = 0,
     this.activeReminderTemplate,
     this.reminderShowNonce = 0,
@@ -170,11 +173,34 @@ class SessionState {
   /// Whether the resolved [StealthConfig] for the current session has
   /// `enabled == true`. Captured at `startSession` time from the mode
   /// override (or `AppDefaults.stealth`) so every session-screen surface
-  /// can re-render in the stealth variant without re-reading providers
-  /// — keeps the grace-period slider label, fake music player chrome and
-  /// other stealth toggles consistent throughout the session. Resets to
-  /// `false` on `endSession`. Spec 04 §Stealth Mode UI.
+  /// can re-render in the stealth variant without re-reading providers.
+  ///
+  /// When true the session screen swaps its normal chrome for the fake
+  /// music player ([FakeMusicPlayer]) and swaps the disarm-slider label
+  /// ([sessionDisarm] → [sessionDisarmStealth]). Resets to `false` on
+  /// `endSession`. Spec 04 §Stealth Mode UI.
   final bool stealthEnabled;
+
+  /// How the elapsed-time clock is rendered while stealth mode is active.
+  ///
+  /// Resolved at `startSession` from the same [StealthConfig] as
+  /// [stealthEnabled]. Drives [SessionElapsedClock] (`normal` = full top-bar
+  /// timer; `small` = 12pt corner clock that fades to 50 % after 10 s of no
+  /// interaction, G-018; `none` = hidden). Has visible effect only when
+  /// [stealthEnabled] is true — a non-stealth session always shows the full
+  /// `normal` clock so the user never loses sight of elapsed time. Defaults to
+  /// [StealthTimerDisplay.normal]. Spec 04 §Timer Display Options.
+  final StealthTimerDisplay timerDisplay;
+
+  /// Whether Guardian Angela branding is stripped from the session surface
+  /// while stealth mode is active.
+  ///
+  /// Resolved at `startSession` from the same [StealthConfig] as
+  /// [stealthEnabled]. When true (and [stealthEnabled] is true) the session
+  /// app-bar title is hidden and the end-session / disarm PIN screens render
+  /// in their minimal, brand-free variant (spec 04 §Stealth Mode and PIN).
+  /// Defaults to `true`. Spec 04 §Stealth Mode UI.
+  final bool sessionScreenStealth;
 
   /// Monotonic counter that increments each time a `fakeCall` step starts
   /// (including retries). The session screen listens for changes and pushes
@@ -245,6 +271,8 @@ class SessionState {
     bool clearError = false,
     bool? needsGpsDestinationPrompt,
     bool? stealthEnabled,
+    StealthTimerDisplay? timerDisplay,
+    bool? sessionScreenStealth,
     int? fakeCallShowNonce,
     ReminderTemplate? activeReminderTemplate,
     bool clearReminderTemplate = false,
@@ -278,6 +306,8 @@ class SessionState {
     needsGpsDestinationPrompt:
         needsGpsDestinationPrompt ?? this.needsGpsDestinationPrompt,
     stealthEnabled: stealthEnabled ?? this.stealthEnabled,
+    timerDisplay: timerDisplay ?? this.timerDisplay,
+    sessionScreenStealth: sessionScreenStealth ?? this.sessionScreenStealth,
     fakeCallShowNonce: fakeCallShowNonce ?? this.fakeCallShowNonce,
     activeReminderTemplate: clearReminderTemplate
         ? null
@@ -559,7 +589,9 @@ class SessionController extends AsyncNotifier<SessionState>
     );
 
     // Resolved StealthConfig is shared between the lock-task call below and
-    // every session-screen surface (via SessionState.stealthEnabled).
+    // every session-screen surface (via SessionState.stealthEnabled /
+    // .timerDisplay / .sessionScreenStealth — the mode override wins over
+    // AppDefaults.stealth, spec 04 §Stealth Mode UI).
     final stealth = mode.overrides?.stealth ?? settings.defaults.stealth;
 
     final next = (state.value ?? const SessionState.initial()).copyWith(
@@ -576,6 +608,8 @@ class SessionController extends AsyncNotifier<SessionState>
       simulationSilent: simulate,
       needsGpsDestinationPrompt: needsGps,
       stealthEnabled: stealth.enabled,
+      timerDisplay: stealth.timerDisplay,
+      sessionScreenStealth: stealth.sessionScreenStealth,
       clearPrior: true,
       clearError: true,
       clearRemaining: true,
@@ -1074,6 +1108,8 @@ class SessionController extends AsyncNotifier<SessionState>
         phase: SessionPhase.ended,
         isPaused: false,
         stealthEnabled: false,
+        timerDisplay: StealthTimerDisplay.normal,
+        sessionScreenStealth: true,
         clearRemaining: true,
       ),
     );

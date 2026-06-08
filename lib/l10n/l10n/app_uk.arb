@@ -948,5 +948,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Залиште порожнім, щоб використати типове сповіщення. Торкніться заповнювача, щоб вставити його.",
   "eventDefaultsSmsIosWarning": "На iPhone для надсилання SMS потрібно вручну натиснути «Надіслати» в застосунку «Повідомлення». Якщо ви не можете користуватися телефоном, повідомлення не буде надіслано. Розгляньте WhatsApp або Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "На iPhone перед набором з’явиться вікно підтвердження. Швидко натисніть «Подзвонити».",
-  "validationSmsChannelNotOnContacts": "Жоден з вибраних контактів не може отримати повідомлення каналом цього кроку. Виберіть інший канал або додайте його контакту."
+  "validationSmsChannelNotOnContacts": "Жоден з вибраних контактів не може отримати повідомлення каналом цього кроку. Виберіть інший канал або додайте його контакту.",
+  "sessionStealthNowPlaying": "Зараз грає",
+  "sessionStealthTrackTitle": "Трек без назви",
+  "sessionStealthArtistName": "Невідомий виконавець",
+  "sessionStealthAlbumArtLabel": "Обкладинка альбому",
+  "sessionStealthPlay": "Відтворити",
+  "sessionStealthPause": "Пауза",
+  "sessionStealthToggleLabel": "Прихований режим"
 }

@@ -396,6 +396,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionCompletedReturnHome => 'العودة إلى الصفحة الرئيسية';
 
   @override
+  String get sessionStealthNowPlaying => 'قيد التشغيل الآن';
+
+  @override
+  String get sessionStealthTrackTitle => 'مقطع بدون عنوان';
+
+  @override
+  String get sessionStealthArtistName => 'فنان غير معروف';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'غلاف الألبوم';
+
+  @override
+  String get sessionStealthPlay => 'تشغيل';
+
+  @override
+  String get sessionStealthPause => 'إيقاف مؤقت';
+
+  @override
+  String get sessionStealthToggleLabel => 'الوضع المتخفّي';
+
+  @override
   String get simulationSummaryTitle => 'ملخص المحاكاة';
 
   @override

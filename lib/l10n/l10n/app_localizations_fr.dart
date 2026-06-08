@@ -402,6 +402,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionCompletedReturnHome => 'Retour à l\'accueil';
 
   @override
+  String get sessionStealthNowPlaying => 'Lecture en cours';
+
+  @override
+  String get sessionStealthTrackTitle => 'Titre sans nom';
+
+  @override
+  String get sessionStealthArtistName => 'Artiste inconnu';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Pochette d’album';
+
+  @override
+  String get sessionStealthPlay => 'Lecture';
+
+  @override
+  String get sessionStealthPause => 'Pause';
+
+  @override
+  String get sessionStealthToggleLabel => 'Mode discret';
+
+  @override
   String get simulationSummaryTitle => 'Résumé de la simulation';
 
   @override

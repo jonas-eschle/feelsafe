@@ -401,6 +401,27 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionCompletedReturnHome => 'Wróć do ekranu głównego';
 
   @override
+  String get sessionStealthNowPlaying => 'Teraz odtwarzane';
+
+  @override
+  String get sessionStealthTrackTitle => 'Utwór bez tytułu';
+
+  @override
+  String get sessionStealthArtistName => 'Nieznany wykonawca';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Okładka albumu';
+
+  @override
+  String get sessionStealthPlay => 'Odtwórz';
+
+  @override
+  String get sessionStealthPause => 'Wstrzymaj';
+
+  @override
+  String get sessionStealthToggleLabel => 'Tryb ukryty';
+
+  @override
   String get simulationSummaryTitle => 'Podsumowanie symulacji';
 
   @override

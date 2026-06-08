@@ -397,6 +397,27 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionCompletedReturnHome => 'Return home';
 
   @override
+  String get sessionStealthNowPlaying => 'Now playing';
+
+  @override
+  String get sessionStealthTrackTitle => 'Untitled Track';
+
+  @override
+  String get sessionStealthArtistName => 'Unknown Artist';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Album art';
+
+  @override
+  String get sessionStealthPlay => 'Play';
+
+  @override
+  String get sessionStealthPause => 'Pause';
+
+  @override
+  String get sessionStealthToggleLabel => 'Stealth Mode';
+
+  @override
   String get simulationSummaryTitle => 'Simulation summary';
 
   @override

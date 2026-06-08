@@ -32,12 +32,15 @@ import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
+import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
 import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
+import 'package:guardianangela/features/session/widgets/fake_music_player.dart';
+import 'package:guardianangela/features/session/widgets/session_elapsed_clock.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/quick_exit_service_sim.dart';
@@ -72,6 +75,8 @@ class _FakeSessionController extends SessionController {
   int setSimulationSpeedCalls = 0;
   double? lastSimulationSpeedValue;
   int leapCalls = 0;
+  int pauseCalls = 0;
+  int resumeCalls = 0;
   int resetWrongPinAttemptsCalls = 0;
   int notifyWrongPinAttemptCalls = 0;
   int pauseDistressCountdownCalls = 0;
@@ -186,6 +191,12 @@ class _FakeSessionController extends SessionController {
 
   @override
   void leap() => leapCalls++;
+
+  @override
+  void pause({PauseReason reason = PauseReason.userRequested}) => pauseCalls++;
+
+  @override
+  void resume() => resumeCalls++;
 }
 
 /// In-memory [AppSettingsRepository] for end-session PIN flow tests.
@@ -283,6 +294,9 @@ SessionState _runningState({
   int missCount = 0,
   int elapsedSeconds = 42,
   bool stealthEnabled = false,
+  StealthTimerDisplay timerDisplay = StealthTimerDisplay.normal,
+  bool sessionScreenStealth = true,
+  bool isPaused = false,
   ReminderTemplate? activeReminderTemplate,
 }) {
   final step = _step(type, config: config);
@@ -294,7 +308,7 @@ SessionState _runningState({
     currentStepIndex: 0,
     missCount: missCount,
     isHolding: isHolding,
-    isPaused: false,
+    isPaused: isPaused,
     isDistressChain: false,
     remainingSeconds: 15,
     distressConfirmRemaining: distressConfirmRemaining,
@@ -304,6 +318,8 @@ SessionState _runningState({
     lastError: lastError,
     needsGpsDestinationPrompt: needsGpsDestinationPrompt,
     stealthEnabled: stealthEnabled,
+    timerDisplay: timerDisplay,
+    sessionScreenStealth: sessionScreenStealth,
     activeReminderTemplate: activeReminderTemplate,
   );
 }
@@ -1941,8 +1957,10 @@ void main() {
     ) async {
       final fake = _FakeSessionController(_runningState(elapsedSeconds: 65));
       await _pump(tester, fake);
-      // Elapsed 65 s → "01:05"
-      expect(find.text('01:05'), findsOneWidget);
+      // Elapsed 65 s → "1:05" (SessionElapsedClock normal mode: non-padded
+      // leading minutes, spec 04 §Timer Display Options).
+      expect(find.text('1:05'), findsOneWidget);
+      expect(find.byKey(sessionElapsedClockKey), findsOneWidget);
     });
 
     testWidgets('step counter label rendered when step is active', (
@@ -2206,6 +2224,177 @@ void main() {
 
       final l10n = await loadL10n(const Locale('en'));
       expect(find.text(l10n.sessionPausedBadge), findsOneWidget);
+    });
+  });
+
+  // ── Stealth: fake music player + timer display + branding (C1, #15) ───────
+  group('SessionScreen — stealth fake music player (#15)', () {
+    testWidgets('stealth ON renders the fake music player, not the step UI', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      await _pump(tester, fake);
+      // The disguise chrome is present…
+      expect(find.byType(FakeMusicPlayer), findsOneWidget);
+      expect(find.text(l10n.sessionStealthNowPlaying), findsOneWidget);
+      expect(find.text(l10n.sessionStealthTrackTitle), findsOneWidget);
+      // …and the normal hold-button step prompt is NOT shown underneath.
+      expect(find.text(l10n.sessionHoldPrompt), findsNothing);
+      // The standard header step counter does not render in the disguise.
+      expect(find.text(l10n.sessionStepLabel('1', '1')), findsNothing);
+    });
+
+    testWidgets('non-stealth session does NOT render the music player', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      expect(find.byType(FakeMusicPlayer), findsNothing);
+    });
+
+    testWidgets('play/pause button calls pause() while the session runs', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      await _pump(tester, fake);
+      // Running → the control is a "pause" button wired to pause().
+      await tester.tap(find.byTooltip(l10n.sessionStealthPause));
+      await tester.pump();
+      expect(fake.pauseCalls, 1);
+      expect(fake.resumeCalls, 0);
+    });
+
+    testWidgets(
+      'play/pause button calls resume() while the session is paused',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(stealthEnabled: true, isPaused: true),
+        );
+        await _pump(tester, fake);
+        // Paused → the control is a "play" button wired to resume().
+        await tester.tap(find.byTooltip(l10n.sessionStealthPlay));
+        await tester.pump();
+        expect(fake.resumeCalls, 1);
+        expect(fake.pauseCalls, 0);
+      },
+    );
+
+    testWidgets('swiping the music-player progress track calls disarm()', (
+      WidgetTester tester,
+    ) async {
+      // Use a tall phone-shaped surface so the music player fits without the
+      // overflow-safe scroll view becoming scrollable (a scrollable view
+      // would otherwise compete with the swipe gesture's pan recogniser).
+      tester.view.physicalSize = const Size(1170, 2532);
+      tester.view.devicePixelRatio = 3.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      await _pump(tester, fake);
+      // Drag the only knob across the track with an incremental horizontal
+      // gesture (a real swipe), crossing the 0.85 threshold.
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byIcon(Icons.arrow_forward_rounded)),
+      );
+      for (int i = 0; i < 40; i++) {
+        await gesture.moveBy(const Offset(20, 0));
+        await tester.pump();
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+      expect(fake.disarmCalls, 1);
+    });
+
+    testWidgets('timerDisplay.normal shows the full clock string', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(stealthEnabled: true, elapsedSeconds: 65),
+      );
+      await _pump(tester, fake);
+      expect(find.byKey(sessionElapsedClockKey), findsOneWidget);
+      // 65 s → "1:05".
+      expect(find.text('1:05'), findsOneWidget);
+    });
+
+    testWidgets('timerDisplay.small shows the corner M:SS clock', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(
+          stealthEnabled: true,
+          timerDisplay: StealthTimerDisplay.small,
+          elapsedSeconds: 65,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.byKey(sessionElapsedClockKey), findsOneWidget);
+      expect(find.text('1:05'), findsOneWidget);
+    });
+
+    testWidgets('timerDisplay.none hides the clock value', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(
+        _runningState(
+          stealthEnabled: true,
+          timerDisplay: StealthTimerDisplay.none,
+          elapsedSeconds: 65,
+        ),
+      );
+      await _pump(tester, fake);
+      // The widget is still in the tree (carries the key) but renders no text.
+      expect(find.byKey(sessionElapsedClockKey), findsOneWidget);
+      expect(find.text('1:05'), findsNothing);
+    });
+
+    testWidgets('sessionScreenStealth strips the app-bar title', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      await _pump(tester, fake);
+      // Brand-free: the "Session" title is gone from the app bar.
+      expect(find.text(l10n.sessionTitle), findsNothing);
+    });
+
+    testWidgets(
+      'sessionScreenStealth=false keeps the app-bar title even in stealth',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(stealthEnabled: true, sessionScreenStealth: false),
+        );
+        await _pump(tester, fake);
+        expect(find.text(l10n.sessionTitle), findsOneWidget);
+      },
+    );
+
+    testWidgets('end-session overlay renders brand-free in stealth', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      final repo = _FakeAppSettingsRepository();
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      // The overlay is up and the swipe gate works, but the brand title is
+      // stripped (spec 04 §Stealth Mode and PIN). The body text — which only
+      // the non-stealth swipe stage renders — is absent.
+      expect(find.byType(EndSessionOverlay), findsOneWidget);
+      expect(find.text(l10n.sessionEndOverlaySwipeLabel), findsOneWidget);
+      expect(find.text(l10n.sessionEndOverlayTitle), findsNothing);
+      expect(find.text(l10n.sessionEndOverlayBody), findsNothing);
     });
   });
 }

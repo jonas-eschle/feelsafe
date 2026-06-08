@@ -396,6 +396,27 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionCompletedReturnHome => 'חזרה לדף הבית';
 
   @override
+  String get sessionStealthNowPlaying => 'מתנגן כעת';
+
+  @override
+  String get sessionStealthTrackTitle => 'רצועה ללא שם';
+
+  @override
+  String get sessionStealthArtistName => 'אמן לא ידוע';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'עטיפת אלבום';
+
+  @override
+  String get sessionStealthPlay => 'נגן';
+
+  @override
+  String get sessionStealthPause => 'השהה';
+
+  @override
+  String get sessionStealthToggleLabel => 'מצב התגנבות';
+
+  @override
   String get simulationSummaryTitle => 'סיכום הסימולציה';
 
   @override

@@ -401,6 +401,27 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionCompletedReturnHome => 'Вернуться на главную';
 
   @override
+  String get sessionStealthNowPlaying => 'Сейчас играет';
+
+  @override
+  String get sessionStealthTrackTitle => 'Безымянный трек';
+
+  @override
+  String get sessionStealthArtistName => 'Неизвестный исполнитель';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Обложка альбома';
+
+  @override
+  String get sessionStealthPlay => 'Воспроизвести';
+
+  @override
+  String get sessionStealthPause => 'Пауза';
+
+  @override
+  String get sessionStealthToggleLabel => 'Скрытый режим';
+
+  @override
   String get simulationSummaryTitle => 'Итоги симуляции';
 
   @override

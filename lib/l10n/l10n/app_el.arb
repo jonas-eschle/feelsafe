@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Αφήστε το κενό για χρήση της προεπιλεγμένης ειδοποίησης. Πατήστε ένα σύμβολο κράτησης θέσης για να το εισαγάγετε.",
   "eventDefaultsSmsIosWarning": "Στο iPhone, το SMS απαιτεί να πατήσετε χειροκίνητα «Αποστολή» στην εφαρμογή Μηνύματα. Αν δεν μπορείτε να χειριστείτε το τηλέφωνό σας, το μήνυμα δεν θα σταλεί. Εξετάστε το WhatsApp ή το Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "Στο iPhone, πριν την κλήση θα εμφανιστεί παράθυρο επιβεβαίωσης. Πατήστε γρήγορα «Κλήση».",
-  "validationSmsChannelNotOnContacts": "Καμία από τις επιλεγμένες επαφές δεν μπορεί να λάβει μέσω του καναλιού αυτού του βήματος. Επιλέξτε άλλο κανάλι ή προσθέστε το σε μια επαφή."
+  "validationSmsChannelNotOnContacts": "Καμία από τις επιλεγμένες επαφές δεν μπορεί να λάβει μέσω του καναλιού αυτού του βήματος. Επιλέξτε άλλο κανάλι ή προσθέστε το σε μια επαφή.",
+  "sessionStealthNowPlaying": "Αναπαραγωγή τώρα",
+  "sessionStealthTrackTitle": "Κομμάτι χωρίς τίτλο",
+  "sessionStealthArtistName": "Άγνωστος καλλιτέχνης",
+  "sessionStealthAlbumArtLabel": "Εξώφυλλο άλμπουμ",
+  "sessionStealthPlay": "Αναπαραγωγή",
+  "sessionStealthPause": "Παύση",
+  "sessionStealthToggleLabel": "Λειτουργία απόκρυψης"
 }

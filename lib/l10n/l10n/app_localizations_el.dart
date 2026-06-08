@@ -402,6 +402,27 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionCompletedReturnHome => 'Επιστροφή στην αρχική';
 
   @override
+  String get sessionStealthNowPlaying => 'Αναπαραγωγή τώρα';
+
+  @override
+  String get sessionStealthTrackTitle => 'Κομμάτι χωρίς τίτλο';
+
+  @override
+  String get sessionStealthArtistName => 'Άγνωστος καλλιτέχνης';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Εξώφυλλο άλμπουμ';
+
+  @override
+  String get sessionStealthPlay => 'Αναπαραγωγή';
+
+  @override
+  String get sessionStealthPause => 'Παύση';
+
+  @override
+  String get sessionStealthToggleLabel => 'Λειτουργία απόκρυψης';
+
+  @override
   String get simulationSummaryTitle => 'Σύνοψη προσομοίωσης';
 
   @override

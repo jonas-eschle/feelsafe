@@ -948,5 +948,12 @@
   "eventDefaultsSmsMessageTemplateHint": "留空則使用預設警報。點按佔位符即可插入。",
   "eventDefaultsSmsIosWarning": "在 iPhone 上，傳送簡訊需要你在「訊息」App 中手動點按「傳送」。如果你無法操作手機，訊息將不會送出。建議改用 WhatsApp 或 Telegram。",
   "eventDefaultsCallEmergencyIosWarning": "在 iPhone 上，撥號前會出現確認對話框。請快速點按「通話」。",
-  "validationSmsChannelNotOnContacts": "所選聯絡人都無法透過此步驟的管道接收。請選擇其他管道，或為聯絡人新增該管道。"
+  "validationSmsChannelNotOnContacts": "所選聯絡人都無法透過此步驟的管道接收。請選擇其他管道，或為聯絡人新增該管道。",
+  "sessionStealthNowPlaying": "正在播放",
+  "sessionStealthTrackTitle": "未命名曲目",
+  "sessionStealthArtistName": "未知演出者",
+  "sessionStealthAlbumArtLabel": "專輯封面",
+  "sessionStealthPlay": "播放",
+  "sessionStealthPause": "暫停",
+  "sessionStealthToggleLabel": "隱身模式"
 }

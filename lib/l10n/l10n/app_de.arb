@@ -948,5 +948,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Leer lassen, um den Standardalarm zu verwenden. Tippe auf einen Platzhalter, um ihn einzufügen.",
   "eventDefaultsSmsIosWarning": "Auf dem iPhone musst du bei SMS in der Nachrichten-App manuell auf Senden tippen. Wenn du dein Telefon nicht bedienen kannst, wird die Nachricht nicht gesendet. Erwäge stattdessen WhatsApp oder Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "Auf dem iPhone erscheint vor dem Wählen ein Bestätigungsdialog. Tippe schnell auf „Anrufen“.",
-  "validationSmsChannelNotOnContacts": "Keiner der gewählten Kontakte kann über den Kanal dieses Schritts empfangen. Wähle einen anderen Kanal oder füge ihn einem Kontakt hinzu."
+  "validationSmsChannelNotOnContacts": "Keiner der gewählten Kontakte kann über den Kanal dieses Schritts empfangen. Wähle einen anderen Kanal oder füge ihn einem Kontakt hinzu.",
+  "sessionStealthNowPlaying": "Wird gerade abgespielt",
+  "sessionStealthTrackTitle": "Unbenannter Titel",
+  "sessionStealthArtistName": "Unbekannter Künstler",
+  "sessionStealthAlbumArtLabel": "Albumcover",
+  "sessionStealthPlay": "Wiedergabe",
+  "sessionStealthPause": "Pause",
+  "sessionStealthToggleLabel": "Tarnmodus"
 }

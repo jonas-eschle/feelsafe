@@ -401,6 +401,27 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionCompletedReturnHome => 'होम पर लौटें';
 
   @override
+  String get sessionStealthNowPlaying => 'अभी चल रहा है';
+
+  @override
+  String get sessionStealthTrackTitle => 'बिना शीर्षक वाला ट्रैक';
+
+  @override
+  String get sessionStealthArtistName => 'अज्ञात कलाकार';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'एल्बम कला';
+
+  @override
+  String get sessionStealthPlay => 'चलाएँ';
+
+  @override
+  String get sessionStealthPause => 'रोकें';
+
+  @override
+  String get sessionStealthToggleLabel => 'गुप्त मोड';
+
+  @override
   String get simulationSummaryTitle => 'सिमुलेशन सारांश';
 
   @override

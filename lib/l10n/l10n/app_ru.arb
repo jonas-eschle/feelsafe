@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Оставьте пустым, чтобы использовать оповещение по умолчанию. Коснитесь заполнителя, чтобы вставить его.",
   "eventDefaultsSmsIosWarning": "На iPhone для отправки SMS нужно вручную нажать «Отправить» в приложении «Сообщения». Если вы не можете пользоваться телефоном, сообщение не будет отправлено. Рассмотрите WhatsApp или Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "На iPhone перед набором появится окно подтверждения. Быстро нажмите «Позвонить».",
-  "validationSmsChannelNotOnContacts": "Ни один из выбранных контактов не может принять сообщение по каналу этого шага. Выберите другой канал или добавьте его контакту."
+  "validationSmsChannelNotOnContacts": "Ни один из выбранных контактов не может принять сообщение по каналу этого шага. Выберите другой канал или добавьте его контакту.",
+  "sessionStealthNowPlaying": "Сейчас играет",
+  "sessionStealthTrackTitle": "Безымянный трек",
+  "sessionStealthArtistName": "Неизвестный исполнитель",
+  "sessionStealthAlbumArtLabel": "Обложка альбома",
+  "sessionStealthPlay": "Воспроизвести",
+  "sessionStealthPause": "Пауза",
+  "sessionStealthToggleLabel": "Скрытый режим"
 }

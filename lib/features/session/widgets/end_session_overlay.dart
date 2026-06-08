@@ -85,6 +85,7 @@ class EndSessionOverlay extends ConsumerStatefulWidget {
     super.key,
     required this.onOutcome,
     this.isSimulation = false,
+    this.stealth = false,
   });
 
   /// Fired with the user's outcome. The overlay also calls
@@ -97,6 +98,12 @@ class EndSessionOverlay extends ConsumerStatefulWidget {
   /// (spec 04:545-548). Defaults to false.
   final bool isSimulation;
 
+  /// Whether to render the brand-free stealth variant (spec 04 §Stealth Mode
+  /// and PIN): the swipe / PIN stages drop the exit and lock glyphs and the
+  /// "Session End PIN" titles so the prompt carries no safety-app indicators.
+  /// Defaults to false.
+  final bool stealth;
+
   /// Convenience launcher that wraps the overlay in
   /// `showDialog<EndSessionOutcome>`, pops it on outcome, and resolves
   /// to the outcome the user picked.
@@ -106,6 +113,7 @@ class EndSessionOverlay extends ConsumerStatefulWidget {
   static Future<EndSessionOutcome> show(
     BuildContext context, {
     required bool isSimulation,
+    bool stealth = false,
   }) async {
     final result = await showDialog<EndSessionOutcome>(
       context: context,
@@ -113,6 +121,7 @@ class EndSessionOverlay extends ConsumerStatefulWidget {
       useSafeArea: false,
       builder: (BuildContext ctx) => EndSessionOverlay(
         isSimulation: isSimulation,
+        stealth: stealth,
         onOutcome: (EndSessionOutcome o) => Navigator.of(ctx).pop(o),
       ),
     );
@@ -357,11 +366,13 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
                 child: switch (_stage) {
                   _Stage.swipe => _SwipeStage(
                     isSimulation: widget.isSimulation,
+                    stealth: widget.stealth,
                     onCancel: _cancel,
                     onConfirm: _onSwipeConfirmed,
                   ),
                   _Stage.pin => _PinStage(
                     isSimulation: widget.isSimulation,
+                    stealth: widget.stealth,
                     entryLength: _entry.length,
                     showWrong: _showWrong,
                     showAppPinMismatch: _showAppPinMismatch,
@@ -384,11 +395,17 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
 class _SwipeStage extends StatelessWidget {
   const _SwipeStage({
     required this.isSimulation,
+    required this.stealth,
     required this.onCancel,
     required this.onConfirm,
   });
 
   final bool isSimulation;
+
+  /// Brand-free stealth variant: drops the exit glyph and the explanatory
+  /// title/body so the prompt reveals no safety-app identity (spec 04
+  /// §Stealth Mode and PIN).
+  final bool stealth;
   final VoidCallback onCancel;
   final VoidCallback onConfirm;
 
@@ -408,20 +425,22 @@ class _SwipeStage extends StatelessWidget {
               child: _SimBadge(label: l10n.sessionEndOverlaySimBadge),
             ),
           ),
-        Icon(Icons.exit_to_app, size: 64, color: theme.colorScheme.primary),
-        const SizedBox(height: 16),
-        Text(
-          l10n.sessionEndOverlayTitle,
-          style: textTheme.headlineMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 8),
-        Text(
-          l10n.sessionEndOverlayBody,
-          style: textTheme.bodyMedium,
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 32),
+        if (!stealth) ...<Widget>[
+          Icon(Icons.exit_to_app, size: 64, color: theme.colorScheme.primary),
+          const SizedBox(height: 16),
+          Text(
+            l10n.sessionEndOverlayTitle,
+            style: textTheme.headlineMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 8),
+          Text(
+            l10n.sessionEndOverlayBody,
+            style: textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 32),
+        ],
         SwipeSlider(
           label: l10n.sessionEndOverlaySwipeLabel,
           onConfirm: onConfirm,
@@ -436,6 +455,7 @@ class _SwipeStage extends StatelessWidget {
 class _PinStage extends StatelessWidget {
   const _PinStage({
     required this.isSimulation,
+    required this.stealth,
     required this.entryLength,
     required this.showWrong,
     required this.showAppPinMismatch,
@@ -447,6 +467,11 @@ class _PinStage extends StatelessWidget {
   });
 
   final bool isSimulation;
+
+  /// Brand-free stealth variant: drops the lock glyph and the
+  /// "Session End PIN" title so the keypad reads as a generic numeric input
+  /// (spec 04 §Stealth Mode and PIN).
+  final bool stealth;
   final int entryLength;
   final bool showWrong;
   final bool showAppPinMismatch;
@@ -472,13 +497,15 @@ class _PinStage extends StatelessWidget {
               child: _SimBadge(label: l10n.sessionEndOverlaySimBadge),
             ),
           ),
-        const Icon(Icons.lock_outline, size: 48),
-        const SizedBox(height: 16),
-        Text(
-          l10n.sessionEndPinPromptTitle,
-          style: textTheme.headlineSmall,
-          textAlign: TextAlign.center,
-        ),
+        if (!stealth) ...<Widget>[
+          const Icon(Icons.lock_outline, size: 48),
+          const SizedBox(height: 16),
+          Text(
+            l10n.sessionEndPinPromptTitle,
+            style: textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+        ],
         const SizedBox(height: 16),
         AnimatedBuilder(
           animation: shakeAnim,

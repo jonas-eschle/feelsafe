@@ -390,6 +390,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionCompletedReturnHome => '返回主页';
 
   @override
+  String get sessionStealthNowPlaying => '正在播放';
+
+  @override
+  String get sessionStealthTrackTitle => '未命名曲目';
+
+  @override
+  String get sessionStealthArtistName => '未知艺人';
+
+  @override
+  String get sessionStealthAlbumArtLabel => '专辑封面';
+
+  @override
+  String get sessionStealthPlay => '播放';
+
+  @override
+  String get sessionStealthPause => '暂停';
+
+  @override
+  String get sessionStealthToggleLabel => '隐身模式';
+
+  @override
   String get simulationSummaryTitle => '模拟摘要';
 
   @override
@@ -2466,6 +2487,27 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionCompletedReturnHome => '返回首頁';
+
+  @override
+  String get sessionStealthNowPlaying => '正在播放';
+
+  @override
+  String get sessionStealthTrackTitle => '未命名曲目';
+
+  @override
+  String get sessionStealthArtistName => '未知演出者';
+
+  @override
+  String get sessionStealthAlbumArtLabel => '專輯封面';
+
+  @override
+  String get sessionStealthPlay => '播放';
+
+  @override
+  String get sessionStealthPause => '暫停';
+
+  @override
+  String get sessionStealthToggleLabel => '隱身模式';
 
   @override
   String get simulationSummaryTitle => '模擬摘要';

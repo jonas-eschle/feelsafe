@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "برای استفاده از هشدار پیش‌فرض خالی بگذارید. برای درج، روی یک جانگهدار ضربه بزنید.",
   "eventDefaultsSmsIosWarning": "در آیفون، ارسال پیامک نیازمند آن است که در برنامهٔ Messages به‌صورت دستی روی «ارسال» بزنید. اگر نتوانید با تلفن خود کار کنید، پیام ارسال نخواهد شد. به‌جای آن WhatsApp یا Telegram را در نظر بگیرید.",
   "eventDefaultsCallEmergencyIosWarning": "در آیفون، پیش از شماره‌گیری یک کادر تأیید نمایش داده می‌شود. به‌سرعت روی «تماس» بزنید.",
-  "validationSmsChannelNotOnContacts": "هیچ‌یک از مخاطبان انتخاب‌شده نمی‌توانند از طریق کانال این مرحله پیام دریافت کنند. کانال دیگری انتخاب کنید یا آن را به یک مخاطب بیفزایید."
+  "validationSmsChannelNotOnContacts": "هیچ‌یک از مخاطبان انتخاب‌شده نمی‌توانند از طریق کانال این مرحله پیام دریافت کنند. کانال دیگری انتخاب کنید یا آن را به یک مخاطب بیفزایید.",
+  "sessionStealthNowPlaying": "در حال پخش",
+  "sessionStealthTrackTitle": "قطعهٔ بدون عنوان",
+  "sessionStealthArtistName": "هنرمند ناشناس",
+  "sessionStealthAlbumArtLabel": "جلد آلبوم",
+  "sessionStealthPlay": "پخش",
+  "sessionStealthPause": "مکث",
+  "sessionStealthToggleLabel": "حالت مخفی"
 }

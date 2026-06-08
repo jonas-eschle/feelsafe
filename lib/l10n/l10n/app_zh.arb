@@ -948,5 +948,12 @@
   "eventDefaultsSmsMessageTemplateHint": "留空则使用默认警报。点按占位符即可插入。",
   "eventDefaultsSmsIosWarning": "在 iPhone 上，发送短信需要你在“信息”应用中手动点按“发送”。如果你无法操作手机，消息将不会发出。建议改用 WhatsApp 或 Telegram。",
   "eventDefaultsCallEmergencyIosWarning": "在 iPhone 上，拨号前会出现确认对话框。请快速点按“呼叫”。",
-  "validationSmsChannelNotOnContacts": "所选联系人都无法通过此步骤的渠道接收。请选择其他渠道，或为联系人添加该渠道。"
+  "validationSmsChannelNotOnContacts": "所选联系人都无法通过此步骤的渠道接收。请选择其他渠道，或为联系人添加该渠道。",
+  "sessionStealthNowPlaying": "正在播放",
+  "sessionStealthTrackTitle": "未命名曲目",
+  "sessionStealthArtistName": "未知艺人",
+  "sessionStealthAlbumArtLabel": "专辑封面",
+  "sessionStealthPlay": "播放",
+  "sessionStealthPause": "暂停",
+  "sessionStealthToggleLabel": "隐身模式"
 }

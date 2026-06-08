@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "השאר ריק כדי להשתמש בהתראת ברירת המחדל. הקש על מציין מיקום כדי להוסיף אותו.",
   "eventDefaultsSmsIosWarning": "ב‑iPhone, שליחת SMS מחייבת ללחוץ ידנית על שליחה באפליקציית ההודעות. אם אינך יכול להשתמש בטלפון, ההודעה לא תישלח. שקול להשתמש ב‑WhatsApp או ב‑Telegram במקום זאת.",
   "eventDefaultsCallEmergencyIosWarning": "ב‑iPhone, לפני החיוג תופיע תיבת אישור. הקש במהירות על ‚התקשר‘.",
-  "validationSmsChannelNotOnContacts": "אף אחד מאנשי הקשר שנבחרו אינו יכול לקבל בערוץ של שלב זה. בחר ערוץ אחר או הוסף אותו לאיש קשר."
+  "validationSmsChannelNotOnContacts": "אף אחד מאנשי הקשר שנבחרו אינו יכול לקבל בערוץ של שלב זה. בחר ערוץ אחר או הוסף אותו לאיש קשר.",
+  "sessionStealthNowPlaying": "מתנגן כעת",
+  "sessionStealthTrackTitle": "רצועה ללא שם",
+  "sessionStealthArtistName": "אמן לא ידוע",
+  "sessionStealthAlbumArtLabel": "עטיפת אלבום",
+  "sessionStealthPlay": "נגן",
+  "sessionStealthPause": "השהה",
+  "sessionStealthToggleLabel": "מצב התגנבות"
 }

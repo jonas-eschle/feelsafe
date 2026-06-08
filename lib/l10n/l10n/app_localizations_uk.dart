@@ -399,6 +399,27 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionCompletedReturnHome => 'На головну';
 
   @override
+  String get sessionStealthNowPlaying => 'Зараз грає';
+
+  @override
+  String get sessionStealthTrackTitle => 'Трек без назви';
+
+  @override
+  String get sessionStealthArtistName => 'Невідомий виконавець';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'Обкладинка альбому';
+
+  @override
+  String get sessionStealthPlay => 'Відтворити';
+
+  @override
+  String get sessionStealthPause => 'Пауза';
+
+  @override
+  String get sessionStealthToggleLabel => 'Прихований режим';
+
+  @override
   String get simulationSummaryTitle => 'Підсумок симуляції';
 
   @override

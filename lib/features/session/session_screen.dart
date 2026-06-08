@@ -18,6 +18,7 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/pause_reason.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
+import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
@@ -25,6 +26,8 @@ import 'package:guardianangela/features/disguised_reminder/reminder_confirmation
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/widgets/emergency_confirm_overlay.dart';
 import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
+import 'package:guardianangela/features/session/widgets/fake_music_player.dart';
+import 'package:guardianangela/features/session/widgets/session_elapsed_clock.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -114,9 +117,15 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
         unawaited(_maybeShowReminder(s));
       }
     });
+    final s = stateAsync.value;
+    // Strip the "Session" title when the session asks for brand-free stealth
+    // chrome (spec 04 §Stealth Mode and PIN). The functional power/close
+    // actions stay — they are controls, not branding.
+    final brandStripped =
+        (s?.stealthEnabled ?? false) && (s?.sessionScreenStealth ?? false);
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.sessionTitle),
+        title: brandStripped ? null : Text(l10n.sessionTitle),
         actions: <Widget>[
           IconButton(
             icon: const Icon(Icons.power_settings_new),
@@ -171,9 +180,15 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   Future<void> _endSessionFlow(BuildContext context) async {
     final sessionState = ref.read(sessionControllerProvider).value;
     final isSimulation = sessionState?.isSimulation ?? false;
+    // Render the end-session swipe/PIN in the brand-free stealth variant when
+    // the session asks for it (spec 04 §Stealth Mode and PIN).
+    final stealth =
+        (sessionState?.stealthEnabled ?? false) &&
+        (sessionState?.sessionScreenStealth ?? false);
     final outcome = await EndSessionOverlay.show(
       context,
       isSimulation: isSimulation,
+      stealth: stealth,
     );
     if (!context.mounted) return;
     switch (outcome) {
@@ -308,7 +323,7 @@ class _SessionRootState extends ConsumerState<_SessionRoot> {
   }
 }
 
-class _SessionBody extends ConsumerWidget {
+class _SessionBody extends ConsumerStatefulWidget {
   const _SessionBody({required this.state, this.hideStepUi = false});
 
   final SessionState state;
@@ -318,6 +333,58 @@ class _SessionBody extends ConsumerWidget {
   /// foreground without rendering duplicate content underneath.
   ///
   /// Defaults to false.
+  final bool hideStepUi;
+
+  @override
+  ConsumerState<_SessionBody> createState() => _SessionBodyState();
+}
+
+class _SessionBodyState extends ConsumerState<_SessionBody> {
+  /// Bumped on every pointer-down anywhere on the session surface so the
+  /// stealth corner clock can restore to full opacity and restart its
+  /// 10 s idle-fade countdown (G-018). A plain counter is enough — only the
+  /// change matters to [SessionElapsedClock].
+  final ValueNotifier<int> _interaction = ValueNotifier<int>(0);
+
+  @override
+  void dispose() {
+    _interaction.dispose();
+    super.dispose();
+  }
+
+  void _onPointerDown(PointerDownEvent _) => _interaction.value++;
+
+  @override
+  Widget build(BuildContext context) {
+    final state = widget.state;
+    final controller = ref.read(sessionControllerProvider.notifier);
+    // Stealth disguise: the whole surface becomes a fake music player whose
+    // transport controls bind to the existing pause()/resume()/disarm()
+    // session controls (spec 04 §Fake Music Player). Wrapped in a Listener so
+    // any tap/swipe feeds the corner clock's G-018 idle-fade.
+    if (state.stealthEnabled) {
+      return Listener(
+        onPointerDown: _onPointerDown,
+        child: FakeMusicPlayer(
+          elapsedSeconds: state.elapsedSeconds,
+          isPaused: state.isPaused,
+          timerDisplay: state.timerDisplay,
+          interactionSignal: _interaction,
+          onPlayPause: () =>
+              state.isPaused ? controller.resume() : controller.pause(),
+          onDisarm: controller.disarm,
+        ),
+      );
+    }
+    return _StandardSessionBody(state: state, hideStepUi: widget.hideStepUi);
+  }
+}
+
+/// The non-stealth session body: header + step-specific UI + disarm slider.
+class _StandardSessionBody extends ConsumerWidget {
+  const _StandardSessionBody({required this.state, required this.hideStepUi});
+
+  final SessionState state;
   final bool hideStepUi;
 
   @override
@@ -401,10 +468,14 @@ class _SessionHeader extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     return Row(
       children: <Widget>[
+        // Non-stealth sessions always show the full `normal` clock so the
+        // user never loses sight of elapsed time; the small/none variants
+        // only apply inside the stealth music player. Spec 04 §Timer Display
+        // Options.
         Expanded(
-          child: Text(
-            _formatElapsed(state.elapsedSeconds),
-            style: textTheme.headlineSmall,
+          child: SessionElapsedClock(
+            elapsedSeconds: state.elapsedSeconds,
+            displayMode: StealthTimerDisplay.normal,
           ),
         ),
         if (state.currentStepIndex >= 0)
@@ -431,17 +502,6 @@ class _SessionHeader extends StatelessWidget {
         ],
       ],
     );
-  }
-
-  static String _formatElapsed(int seconds) {
-    final hours = seconds ~/ 3600;
-    final minutes = (seconds % 3600) ~/ 60;
-    final secs = seconds % 60;
-    String two(int v) => v.toString().padLeft(2, '0');
-    if (hours > 0) {
-      return '${two(hours)}:${two(minutes)}:${two(secs)}';
-    }
-    return '${two(minutes)}:${two(secs)}';
   }
 }
 

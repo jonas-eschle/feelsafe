@@ -837,5 +837,12 @@
   "eventDefaultsSmsMessageTemplateHint": "Laissez vide pour utiliser l’alerte par défaut. Touchez un espace réservé pour l’insérer.",
   "eventDefaultsSmsIosWarning": "Sur iPhone, l’envoi de SMS exige d’appuyer manuellement sur Envoyer dans l’app Messages. Si vous ne pouvez pas utiliser votre téléphone, le message ne sera pas envoyé. Préférez WhatsApp ou Telegram.",
   "eventDefaultsCallEmergencyIosWarning": "Sur iPhone, une boîte de confirmation apparaît avant l’appel. Touchez « Appeler » rapidement.",
-  "validationSmsChannelNotOnContacts": "Aucun des contacts choisis ne peut recevoir via le canal de cette étape. Choisissez un autre canal ou ajoutez-le à un contact."
+  "validationSmsChannelNotOnContacts": "Aucun des contacts choisis ne peut recevoir via le canal de cette étape. Choisissez un autre canal ou ajoutez-le à un contact.",
+  "sessionStealthNowPlaying": "Lecture en cours",
+  "sessionStealthTrackTitle": "Titre sans nom",
+  "sessionStealthArtistName": "Artiste inconnu",
+  "sessionStealthAlbumArtLabel": "Pochette d’album",
+  "sessionStealthPlay": "Lecture",
+  "sessionStealthPause": "Pause",
+  "sessionStealthToggleLabel": "Mode discret"
 }

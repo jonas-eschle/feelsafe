@@ -398,6 +398,27 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionCompletedReturnHome => 'بازگشت به خانه';
 
   @override
+  String get sessionStealthNowPlaying => 'در حال پخش';
+
+  @override
+  String get sessionStealthTrackTitle => 'قطعهٔ بدون عنوان';
+
+  @override
+  String get sessionStealthArtistName => 'هنرمند ناشناس';
+
+  @override
+  String get sessionStealthAlbumArtLabel => 'جلد آلبوم';
+
+  @override
+  String get sessionStealthPlay => 'پخش';
+
+  @override
+  String get sessionStealthPause => 'مکث';
+
+  @override
+  String get sessionStealthToggleLabel => 'حالت مخفی';
+
+  @override
   String get simulationSummaryTitle => 'خلاصه شبیه‌سازی';
 
   @override

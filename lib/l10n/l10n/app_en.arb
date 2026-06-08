@@ -488,6 +488,34 @@
   "@sessionCompletedReturnHome": {
     "description": "Return-home CTA after session."
   },
+  "sessionStealthNowPlaying": "Now playing",
+  "@sessionStealthNowPlaying": {
+    "description": "Minimalist header on the stealth fake-music-player session screen."
+  },
+  "sessionStealthTrackTitle": "Untitled Track",
+  "@sessionStealthTrackTitle": {
+    "description": "Generic track-title chrome shown on the stealth fake music player so it reads as an ordinary music app."
+  },
+  "sessionStealthArtistName": "Unknown Artist",
+  "@sessionStealthArtistName": {
+    "description": "Generic artist-name chrome shown beneath the track title on the stealth fake music player."
+  },
+  "sessionStealthAlbumArtLabel": "Album art",
+  "@sessionStealthAlbumArtLabel": {
+    "description": "Accessibility label for the album-art placeholder on the stealth fake music player."
+  },
+  "sessionStealthPlay": "Play",
+  "@sessionStealthPlay": {
+    "description": "Tooltip and accessibility label for the play button on the stealth fake music player (resumes the session)."
+  },
+  "sessionStealthPause": "Pause",
+  "@sessionStealthPause": {
+    "description": "Tooltip and accessibility label for the pause button on the stealth fake music player (pauses the session)."
+  },
+  "sessionStealthToggleLabel": "Stealth Mode",
+  "@sessionStealthToggleLabel": {
+    "description": "Label beside the stealth on/off toggle at the bottom of the fake music player."
+  },
   "simulationSummaryTitle": "Simulation summary",
   "@simulationSummaryTitle": {
     "description": "Title of the simulation-summary screen."

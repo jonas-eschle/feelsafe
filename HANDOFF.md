@@ -1,8 +1,62 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IS NOW FULLY
-IMPLEMENTED + COHORT-VERIFIED (PASS) + THE LAST COVERAGE-GAP FINDING CLOSED +
-GATE-GREEN + READY TO PUSH (UNPUSHED).** The M2 cohort (architect-reviewer
+**Snapshot:** 2026-06-08 — **M0 + M1 PUSHED. M2 PUSHED (presumed — was
+gate-green + pre-authorized; `origin/main` should now carry it). M3 (#15
+stealth) STARTED: chunk C1 (stealth session-screen UI) is DONE + GATE-GREEN +
+COMMITTED (UNPUSHED).** C1 delivered the **fake music player** (disguises the
+session screen, play/pause→`pause()`/`resume()`, swipe-on-progress→`disarm()`),
+the spec-named **`SessionElapsedClock`** widget (normal/small/none + the G-018
+10 s idle-fade), threaded `timerDisplay`+`sessionScreenStealth` into
+`SessionState`, and the **`sessionScreenStealth` branding strip** (app-bar
+title + brand-free end-session swipe/PIN). Authoritative gate is GREEN:
+analyzer `--fatal-infos` = 0; full suite `flutter test --concurrency=6` =
+**3843 pass** (3822 baseline + 21 net-new); emulator boot-smoke PASS on
+`emulator-5554`; l10n parity 14/14 on 7 new keys; deferral-grep 0; OLD/ clean.
+**NEXT ACTION = M3 C3** (notification/fakeName disguise + wire
+`BackgroundSessionService` start/stop). See the **M3 chunk plan** + **M3
+DECISIONS (user)** blocks below. C2 (spec-reconcile) + C5 (polish) follow C3.
+
+---
+
+## M3 chunk plan (#15 stealth — large, mostly-hollow; user-scoped)
+
+- **C1 — stealth session-screen UI** ✅ DONE this session (`m3-#15-c1`,
+  UNPUSHED). Fake music player + `SessionElapsedClock`(+G-018) + branding strip.
+- **C3 — NEXT.** Notification/`fakeName` disguise + **wire
+  `BackgroundSessionService`** to actually start/stop in M3 (user decision).
+- **C2.** Spec-reconcile: bless the standalone `/settings/stealth` screen in
+  spec 06; document `lockTaskMode`; add the spec remark that **stealth config
+  cannot change during an active session**; decide the fate of the in-player
+  "Stealth Mode: ON" toggle (see DECISIONS — I deferred it here, NOT a stub).
+- **C4.** `fakeIcon` → FULL per-preset rework (user decision; process-kill
+  mid-session risk is MOOT because config can't change mid-session).
+- **C5.** Polish: `fakeName` in in-session chrome (the music player currently
+  uses neutral localized track/artist strings); disguise template icons
+  (render-if-present + Material fallback); tapWord decoy-word localization.
+
+---
+
+## M3 DECISIONS (user — carry into C2/C3/C4/C5)
+
+1. **`fakeIcon` → FULL per-preset rework (C4).** Rationale: stealth settings
+   are configured BEFORE a session and **cannot change during an active
+   session**, so the "process-kill mid-session" risk is moot. (A spec remark to
+   that effect is to be added in C2.)
+2. **Config UI: KEEP the standalone `/settings/stealth` screen.** Spec 06 will
+   be corrected to bless it (C2).
+3. **`lockTaskMode`: KEEP + document** (C2). (Already wired:
+   `session_controller.dart:630` engages it for real sessions; released on
+   `endSession`.)
+4. **`BackgroundSessionService`: WIRE it to actually start/stop in M3 (C3).**
+5. **`fakeName` scope = notifications + in-session chrome (C5).**
+6. **Disguise template icons = render-if-present + Material fallback (C5).**
+
+---
+
+## OLD pre-M3 snapshot (M2 detail — retained for reference)
+
+**M2 WAS FULLY IMPLEMENTED + COHORT-VERIFIED (PASS) + THE LAST COVERAGE-GAP
+FINDING CLOSED + GATE-GREEN.** The M2 cohort (architect-reviewer
 spec-vs-code + qa-expert spec-vs-tests) PASSED with ONE low/non-blocking
 finding: a missing END-TO-END widget test proving the SMS contact-grid
 all-capable inference (`allContacts` ⇒ `contactIds = null`) persists through
@@ -89,27 +143,104 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: the ORCHESTRATOR PUSHES the M2 stack** (`main` is 11 commits
-ahead of `origin/main`; user pre-authorized the M2 push after the cohort
-passed — still confirm at the moment of pushing). **Then M3 (#15 stealth).**
-The M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests, both `opus`) is DONE and PASSED; its one low/non-blocking
-finding (a missing end-to-end grid-inference persistence test) is CLOSED by
-`abc1bbf`, and the authoritative pre-push gate is GREEN (analyzer 0; suite
-3822 pass; deferral-grep 0; OLD/ clean; tree clean). Per-fix recipe
-(unchanged for future work): verify the gap yourself → implement (serial) →
-prove (host/widget tests driving the REAL controller; emulator for native) →
-l10n deltas → language agent for 13 locales → gate suite → commit → **ask
-before pushing**.
+**Next action: M3 C3** — notification/`fakeName` disguise + wire
+`BackgroundSessionService` to actually start/stop. Then C2 (spec-reconcile) and
+C5 (polish). See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
 
-**M2 is COMPLETE + VERIFIED + GATE-GREEN** — #13a/#13b/#14/#13c/#13d/#23/#20
-(all 4 sub-parts) + the closing `abc1bbf` test. Nothing remains for M2 except
-the push itself (orchestrator's job). After the push, proceed to **M3
-(#15 stealth)**.
+C1 (this session) is COMMITTED but UNPUSHED (`m3-#15-c1`). The M2 stack was
+gate-green + user-pre-authorized to push; this session ASSUMES the orchestrator
+pushed it (confirm `git log origin/main` includes the M2 commits + `m2-handoff`
+`b4c8b21`). Per-fix recipe (unchanged): verify the gap yourself → implement
+(serial) → prove (host/widget tests driving the REAL controller/screen;
+emulator for native) → l10n deltas → translate 13 locales → gate suite →
+commit → **ask before pushing**.
+
+**DO NOT PUSH** without explicit user authorization (Hard Rule 12).
 
 ---
 
-## What's done this session (M2 spine — UNPUSHED)
+## What's done THIS session (M3 C1 — UNPUSHED, `m3-#15-c1`)
+
+**GAP verified first:** the only previously-wired stealth effect was the
+disarm-label swap (`sessionDisarm`→`sessionDisarmStealth` at
+`session_screen.dart` `_SessionBody`); `SessionState` carried only
+`stealthEnabled` (bare bool) and its doc OVER-CLAIMED it drove "fake music
+player chrome and other stealth toggles" — it drove ONLY the label swap.
+`timerDisplay`/`sessionScreenStealth` were resolved into a `StealthConfig` at
+`session_controller.dart:563` but **thrown away** (never carried into the UI).
+
+**Built (all proven by host/widget tests driving the REAL
+`SessionScreen`→`SessionController`):**
+
+1. **Fake music player** — new `lib/features/session/widgets/fake_music_player.dart`
+   (`FakeMusicPlayer`). Album-art placeholder + brand line + track/artist
+   chrome + transport controls. The **centre button is the REAL pause/resume**
+   (`onPlayPause` → `controller.pause()`/`resume()` chosen by `isPaused`); the
+   **progress track is a `SwipeSlider`** whose confirm = the REAL
+   `controller.disarm()` (reuses `sessionDisarmStealth` label). Gated on
+   `state.stealthEnabled` in `_SessionBody` (now a `ConsumerStatefulWidget`,
+   `session_screen.dart` ≈ :311) which wraps it in a `Listener(onPointerDown:)`
+   feeding the corner clock's G-018 idle-fade via a `ValueNotifier<int>`.
+   Overflow-safe (`LayoutBuilder`+`SingleChildScrollView`+min-height). Skip
+   prev/next are decorative (documented, not stubs). The disarm-label swap is
+   PRESERVED (the non-stealth body still uses it).
+2. **`SessionElapsedClock`** — new
+   `lib/features/session/widgets/session_elapsed_clock.dart`, key
+   `Key('session-elapsed-clock')` (const `sessionElapsedClockKey`). `normal` =
+   monospace heading clock, **always 100 % opacity**, `H:MM:SS`/`M:SS`
+   (non-padded leading field). `small` = 12 pt monospace `M:SS` (→ `H:MM` past
+   99 min), **fades to 50 % after 10 s idle (G-018, 400 ms), restored to 100 %
+   on any interaction** (driven by `interactionSignal`). `none` = `SizedBox`
+   that STILL carries the key. Replaced `_SessionHeader`'s inline always-on
+   timer (the old static `_formatElapsed` is DELETED). **Non-stealth sessions
+   always render `normal`** (a safety choice — never hide elapsed time when the
+   user isn't disguising; documented on `SessionState.timerDisplay`).
+3. **`SessionState` threading** — added `timerDisplay` (`StealthTimerDisplay`,
+   default `normal`) + `sessionScreenStealth` (`bool`, default `true`) to the
+   ctor/`copyWith` (`session_controller.dart`), resolved from the SAME
+   `StealthConfig` at `:563`, reset to defaults on `endSession`. Fixed the
+   over-claiming `stealthEnabled` doc.
+4. **`sessionScreenStealth` branding strip** — `SessionScreen` app-bar title is
+   **null** when `stealthEnabled && sessionScreenStealth` (`session_screen.dart`
+   ≈ :117). The end-session overlay gained a `stealth` flag
+   (`end_session_overlay.dart`): the swipe stage drops the exit glyph + title +
+   body, the PIN stage drops the lock glyph + "Session End PIN" title (spec
+   04:932-937). Threaded from `_endSessionFlow`.
+
+**Tests (net +21 → suite 3843):** new
+`test/features/session/widgets/session_elapsed_clock_test.dart` (format matrix
++ G-018 fade via `tester.pump(Duration)` timer-advance + interaction-restore +
+"normal never dims"); new `group('SessionScreen — stealth fake music player
+(#15)')` in `session_screen_test.dart` (music player renders / not in
+non-stealth; play→pause(), play→resume() when paused; **incremental** swipe →
+disarm() [single-jump `tester.drag` loses the arena to the scroll view — use a
+stepped gesture on a phone-sized surface]; timer normal/small/none; branding
+strip on/off; brand-free end-session overlay). One pre-existing assertion
+updated `01:05`→`1:05` (format change; tests follow code). `_FakeSessionController`
+gained `pauseCalls`/`resumeCalls`; `_runningState` gained
+`timerDisplay`/`sessionScreenStealth`/`isPaused`. Golden: new scenario 7
+(`session_screen_s7_dark_stealth_music_player`); s1-s6 `linux/` goldens
+re-baselined for the `0:42` format (ci/ variants unchanged — font-blind).
+**Emulator boot-smoke PASS** on `emulator-5554`.
+
+**l10n:** 7 new keys (`sessionStealthNowPlaying`, `…TrackTitle`, `…ArtistName`,
+`…AlbumArtLabel`, `…Play`, `…Pause`, `…ToggleLabel`) in `app_en.arb` + all 13
+translation ARBs (TEXT-INSERTED, additions-only: `8 +/1 -` per file = the prior
+last line re-added with a comma + 7 new lines). `gen-l10n` reports 0
+untranslated; parity 14/14. (`…ToggleLabel` is added for the future in-player
+toggle but is **not yet rendered** — see DECISIONS / C2.)
+
+**DEFERRED to C2 (NOT a stub):** the spec mockup's in-player "Stealth Mode: ON"
+toggle (spec 04:914/924). Its spec semantics ("toggle stealth on/off") directly
+conflict with the user decision that **stealth config cannot change during an
+active session**. Rendering a non-functional toggle would be a stub; making it
+functional would violate the decision. So C1 OMITS it and C2 (which already owns
+the "can't-change-mid-session" spec remark) decides its fate. The
+`sessionStealthToggleLabel` string is pre-staged.
+
+---
+
+## What's done (M2 spine — pushed/being-pushed)
 
 - **#13a** (`8f74423`): pure refactor — moved the 9 per-type `StepConfig`
   forms + shared field editors out of `event_defaults_screen.dart` into a
@@ -272,6 +403,36 @@ the push itself (orchestrator's job). After the push, proceed to **M3
 
 ## KEY FINDINGS (carry into the next session)
 
+- **(M3 C1) Stealth is now a 3-field carry on `SessionState`:**
+  `stealthEnabled` (bool), `timerDisplay` (`StealthTimerDisplay`),
+  `sessionScreenStealth` (bool) — all resolved together from ONE
+  `StealthConfig` at `session_controller.dart:563` and reset on `endSession`.
+  `copyWith` defaults them (it can't null; not an issue — they're non-nullable
+  with sensible defaults). The C5 `fakeName`/`notificationDisguise` wiring
+  should resolve from the SAME `stealth` local and carry alongside (add fields,
+  don't re-read providers in the UI).
+- **(M3 C1) Stealth = the WHOLE session body swaps to `FakeMusicPlayer`**
+  (`_SessionBody` branches on `state.stealthEnabled`); the standard
+  header+step-UI+disarm-slider live in `_StandardSessionBody`. The music
+  player binds to the EXISTING `pause()`/`resume()`/`disarm()` — do NOT invent
+  session-control semantics; bind new disguises to the real controller too.
+- **(M3 C1) `SwipeSlider` single-jump `tester.drag(Offset(2000,0))` FAILS
+  inside a `SingleChildScrollView`** (the scroll view wins the gesture arena on
+  one big move). Drive it with an **incremental stepped gesture** (40× 20 px
+  `moveBy`) on a phone-sized surface (`tester.view.physicalSize`). A real
+  horizontal swipe is incremental, so production is unaffected — only the
+  one-shot test helper is. The non-stealth `_DisarmAction` slider has no scroll
+  view, so its existing `tester.drag` test still works.
+- **(M3 C1) Timer normal-mode format is `M:SS`/`H:MM:SS` (non-padded leading
+  field)** per spec 04:928 — capital single letter = non-padded, doubled =
+  zero-padded. This CHANGED the displayed string from the old `_formatElapsed`
+  `MM:SS` (so `00:42`→`0:42`, `01:05`→`1:05`); one test assertion + the `linux/`
+  goldens were re-baselined. The CI (font-blind) goldens did NOT change.
+- **(M3 C1) G-018 corner-clock fade is `Timer`-based inside the widget**, fed by
+  a `Listenable interactionSignal` the host bumps on every pointer-down (a
+  `ValueNotifier<int>` in `_SessionBodyState` behind a root `Listener`).
+  Testable with `tester.pump(Duration)` (advances the fake clock for in-widget
+  timers) — no explicit `fakeAsync()` needed for a `testWidgets` timer.
 - **`HardwareButtonDistressTrigger.pressCount` is NON-nullable `int`**
   (default 5) — the doc says it "MUST be null for longPress" but the field
   can't actually be null. So the only representable hardware-trigger
@@ -496,7 +657,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3821 pass
+flutter test --concurrency=6                                    # 3843 pass (M3 C1)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -513,13 +674,14 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IMPLEMENTATION COMPLETE
-  (UNPUSHED)** — #13a ✓ + #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ + #20 ✓
-  (all 4 sub-parts) done. Remaining for M2: **verifier cohort → push** (user
-  pre-authorized). Then M3 (#15 stealth), M4 (#10/#9/#8/#16 + Tier-F), M5
-  (Phase-9: INT scenarios, device e2e incl. #11 adb-gsm + #12
-  background-throttle, spec-coverage matrix, coverage floor). The in-memory
-  TaskList is cleared on `/clear` — this bullet is the durable journal.
+- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ verified+gate-green
+  (pushed/being-pushed by orchestrator).** **M3 (#15 stealth) IN PROGRESS** —
+  **C1 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `m3-#15-c1`)**; C3 NEXT, then C2,
+  then C4/C5 (see the M3 chunk plan + M3 DECISIONS blocks near the top). Then
+  M4 (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl. #11
+  adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor). The
+  in-memory TaskList is cleared on `/clear` — this bullet is the durable
+  journal.
 
 ---
 

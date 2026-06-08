@@ -819,5 +819,12 @@
   "eventDefaultsSmsMessageTemplateHint": "اتركه فارغًا لاستخدام التنبيه الافتراضي. انقر على عنصر نائب لإدراجه.",
   "eventDefaultsSmsIosWarning": "على iPhone، تتطلب الرسائل النصية الضغط يدويًا على «إرسال» في تطبيق الرسائل. إذا لم تتمكن من استخدام هاتفك، فلن تُرسَل الرسالة. ففكِّر في استخدام WhatsApp أو Telegram بدلاً من ذلك.",
   "eventDefaultsCallEmergencyIosWarning": "على iPhone، سيظهر مربع تأكيد قبل الاتصال. انقر على «اتصال» بسرعة.",
-  "validationSmsChannelNotOnContacts": "لا يمكن لأي من جهات الاتصال المختارة الاستقبال عبر قناة هذه الخطوة. اختر قناة أخرى أو أضِفها إلى جهة اتصال."
+  "validationSmsChannelNotOnContacts": "لا يمكن لأي من جهات الاتصال المختارة الاستقبال عبر قناة هذه الخطوة. اختر قناة أخرى أو أضِفها إلى جهة اتصال.",
+  "sessionStealthNowPlaying": "قيد التشغيل الآن",
+  "sessionStealthTrackTitle": "مقطع بدون عنوان",
+  "sessionStealthArtistName": "فنان غير معروف",
+  "sessionStealthAlbumArtLabel": "غلاف الألبوم",
+  "sessionStealthPlay": "تشغيل",
+  "sessionStealthPause": "إيقاف مؤقت",
+  "sessionStealthToggleLabel": "الوضع المتخفّي"
 }
