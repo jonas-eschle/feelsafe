@@ -400,6 +400,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Now playing';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela is active';
+
+  @override
+  String get sessionServiceBody => 'Your safety session is running.';
+
+  @override
+  String get sessionServiceStealthBody => 'Playing';
+
+  @override
   String get sessionStealthTrackTitle => 'Untitled Track';
 
   @override

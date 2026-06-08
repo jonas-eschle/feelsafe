@@ -776,4 +776,110 @@ void main() {
       },
     );
   });
+
+  // -------------------------------------------------------------------------
+  // C3: notification disguise (stealth) — foreground service + reminder
+  // -------------------------------------------------------------------------
+
+  group('RealNotificationService — notification disguise (#15 C3)', () {
+    tearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test(
+      'foreground non-stealth uses real channel name + default icon',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showForegroundServiceNotification(
+          title: 'Guardian Angela is active',
+          body: 'Running',
+        );
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.android!.channelName).equals('System Service');
+        check(details.android!.icon).isNull();
+      },
+    );
+
+    test('foreground stealth uses generic channel name + neutral icon', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showForegroundServiceNotification(
+        title: 'Music',
+        body: 'Playing',
+        stealth: true,
+        fakeName: 'Music',
+      );
+      final (_, title, _, details) = plugin.shown.first;
+      // Title carries the disguise app name (fakeName), supplied by the caller.
+      check(title).equals('Music');
+      // Channel name is generic; the channel *id* is still session_service.
+      check(details!.android!.channelName).equals('Updates');
+      check(details.android!.channelId).equals('session_service');
+      // A neutral, non-branded status-bar icon is used.
+      check(details.android!.icon).equals('ic_stat_stealth');
+    });
+
+    test(
+      'disguised reminder non-stealth uses real channel + default icon',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(id: 1, title: 'T', body: 'B');
+        final (_, _, _, details) = plugin.shown.first;
+        check(details!.android!.channelName).equals('Reminders');
+        check(details.android!.icon).isNull();
+      },
+    );
+
+    test('disguised reminder stealth swaps channel name + icon', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showDisguisedReminder(
+        id: 1,
+        title: 'Calendar event',
+        body: 'Tap to view',
+        stealth: true,
+      );
+      final (_, _, _, details) = plugin.shown.first;
+      check(details!.android!.channelName).equals('Updates');
+      check(details.android!.icon).equals('ic_stat_stealth');
+    });
+
+    test(
+      'disguised reminder stealth PRESERVES all Extra-35 lock-screen flags',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        await svc.showDisguisedReminder(
+          id: 1,
+          title: 'T',
+          body: 'B',
+          stealth: true,
+        );
+        final (_, _, _, details) = plugin.shown.first;
+        // The disguise must NOT weaken the wake-the-locked-device guarantees.
+        check(details!.android!.fullScreenIntent).isTrue();
+        check(details.android!.importance).equals(Importance.max);
+        check(details.android!.priority).equals(Priority.max);
+        check(
+          details.android!.category,
+        ).equals(AndroidNotificationCategory.alarm);
+        check(
+          details.android!.visibility,
+        ).equals(NotificationVisibility.public);
+        check(
+          details.iOS!.interruptionLevel,
+        ).equals(InterruptionLevel.timeSensitive);
+      },
+    );
+
+    test('foreground stealth preserves ongoing + low importance', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showForegroundServiceNotification(
+        title: 'Music',
+        body: '',
+        stealth: true,
+      );
+      final (id, _, _, details) = plugin.shown.first;
+      check(id).equals(kForegroundNotificationId);
+      check(details!.android!.ongoing).isTrue();
+      check(details.android!.importance).equals(Importance.low);
+    });
+  });
 }

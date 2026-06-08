@@ -405,6 +405,15 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Αναπαραγωγή τώρα';
 
   @override
+  String get sessionServiceTitle => 'Το Guardian Angela είναι ενεργό';
+
+  @override
+  String get sessionServiceBody => 'Η συνεδρία ασφάλειάς σου εκτελείται.';
+
+  @override
+  String get sessionServiceStealthBody => 'Αναπαραγωγή';
+
+  @override
   String get sessionStealthTrackTitle => 'Κομμάτι χωρίς τίτλο';
 
   @override

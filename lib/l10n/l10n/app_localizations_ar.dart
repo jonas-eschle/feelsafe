@@ -399,6 +399,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionStealthNowPlaying => 'قيد التشغيل الآن';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela نشط';
+
+  @override
+  String get sessionServiceBody => 'جلسة الأمان الخاصة بك قيد التشغيل.';
+
+  @override
+  String get sessionServiceStealthBody => 'قيد التشغيل';
+
+  @override
   String get sessionStealthTrackTitle => 'مقطع بدون عنوان';
 
   @override

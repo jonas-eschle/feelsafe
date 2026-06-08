@@ -393,6 +393,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionStealthNowPlaying => '正在播放';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela 已启用';
+
+  @override
+  String get sessionServiceBody => '您的安全会话正在运行。';
+
+  @override
+  String get sessionServiceStealthBody => '正在播放';
+
+  @override
   String get sessionStealthTrackTitle => '未命名曲目';
 
   @override
@@ -2490,6 +2499,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionStealthNowPlaying => '正在播放';
+
+  @override
+  String get sessionServiceTitle => 'Guardian Angela 已啟用';
+
+  @override
+  String get sessionServiceBody => '您的安全工作階段正在執行。';
+
+  @override
+  String get sessionServiceStealthBody => '正在播放';
 
   @override
   String get sessionStealthTrackTitle => '未命名曲目';

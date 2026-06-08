@@ -2,37 +2,55 @@
 
 **Snapshot:** 2026-06-08 — **M0 + M1 PUSHED. M2 PUSHED (presumed — was
 gate-green + pre-authorized; `origin/main` should now carry it). M3 (#15
-stealth) STARTED: chunk C1 (stealth session-screen UI) is DONE + GATE-GREEN +
-COMMITTED (UNPUSHED).** C1 delivered the **fake music player** (disguises the
-session screen, play/pause→`pause()`/`resume()`, swipe-on-progress→`disarm()`),
-the spec-named **`SessionElapsedClock`** widget (normal/small/none + the G-018
-10 s idle-fade), threaded `timerDisplay`+`sessionScreenStealth` into
-`SessionState`, and the **`sessionScreenStealth` branding strip** (app-bar
-title + brand-free end-session swipe/PIN). Authoritative gate is GREEN:
-analyzer `--fatal-infos` = 0; full suite `flutter test --concurrency=6` =
-**3843 pass** (3822 baseline + 21 net-new); emulator boot-smoke PASS on
-`emulator-5554`; l10n parity 14/14 on 7 new keys; deferral-grep 0; OLD/ clean.
-**NEXT ACTION = M3 C3** (notification/fakeName disguise + wire
-`BackgroundSessionService` start/stop). See the **M3 chunk plan** + **M3
-DECISIONS (user)** blocks below. C2 (spec-reconcile) + C5 (polish) follow C3.
+stealth): C1 (stealth session-screen UI) DONE+COMMITTED (UNPUSHED, `ac65b9e`);
+C3 (notification/fakeName disguise + foreground-service start/stop wiring) DONE
++ GATE-GREEN + COMMITTED (UNPUSHED).** C3 closed the **background-survival gap**:
+`BackgroundSessionService.startService`/`stopService` had ZERO callers — the
+Android foreground service NEVER started, so a backgrounded session could be
+OS-killed. C3 wires `startService` on session start + `stopService` on
+end/disarm/dispose through the REAL `SessionController`; resolves
+`fakeName`/`notificationDisguise` onto `SessionState` from the SAME
+`StealthConfig` as C1; makes `showForegroundServiceNotification` +
+`showDisguisedReminder` honor the disguise (generic channel name + neutral
+`ic_stat_stealth` icon + `fakeName` title) — previously the `stealth` flag was
+IGNORED (const details); replaces the hard-coded `'Music paused'` with
+`'<fakeName> paused'`; and surfaces the real `fakeName` as the fake-music-player
+header brand line (C1 had a neutral placeholder there). Authoritative gate is
+GREEN: analyzer `--fatal-infos` = 0; full suite `flutter test --concurrency=6` =
+**3861 pass** (3843 C1 baseline + 18 net-new); emulator boot-smoke PASS on
+`emulator-5554` (+ `ic_stat_stealth.xml` confirmed compiled into the APK,
+`res/drawable/ic_stat_stealth`); l10n parity 14/14 on 3 new keys; deferral-grep
+0; OLD/ clean. **NEXT ACTION = M3 C4** (fakeIcon FULL per-preset rework: native
+10 activity-aliases + icons + `setStealthIcon(preset)` + arm-time caller + the
+spec remark that stealth settings are immutable during an active session). C2
+(spec-reconcile) + C5 (polish) also remain. See the **M3 chunk plan** + **M3
+DECISIONS (user)** blocks below.
 
 ---
 
 ## M3 chunk plan (#15 stealth — large, mostly-hollow; user-scoped)
 
-- **C1 — stealth session-screen UI** ✅ DONE this session (`m3-#15-c1`,
-  UNPUSHED). Fake music player + `SessionElapsedClock`(+G-018) + branding strip.
-- **C3 — NEXT.** Notification/`fakeName` disguise + **wire
-  `BackgroundSessionService`** to actually start/stop in M3 (user decision).
+- **C1 — stealth session-screen UI** ✅ DONE (`ac65b9e`, UNPUSHED). Fake music
+  player + `SessionElapsedClock`(+G-018) + branding strip.
+- **C3 — notification/`fakeName` disguise + foreground-service start/stop** ✅
+  DONE this session (`m3-#15-c3`, UNPUSHED). See "What's done THIS session" below.
+- **C4 — NEXT.** `fakeIcon` → FULL per-preset rework (user decision; process-kill
+  mid-session risk is MOOT because config can't change mid-session). Native: 10
+  activity-aliases + 10 icons + `setStealthIcon(preset)` on `StealthIconChannel`
+  + an arm-time caller (resolve `stealth.fakeIcon` at `startSession`). ALSO add
+  the spec remark (see C2) that stealth settings are immutable during a session.
+  NOTE: C3 added a single neutral *notification* small-icon (`ic_stat_stealth`);
+  that is the status-bar icon, a DIFFERENT concern from C4's *launcher* icon.
 - **C2.** Spec-reconcile: bless the standalone `/settings/stealth` screen in
   spec 06; document `lockTaskMode`; add the spec remark that **stealth config
   cannot change during an active session**; decide the fate of the in-player
-  "Stealth Mode: ON" toggle (see DECISIONS — I deferred it here, NOT a stub).
-- **C4.** `fakeIcon` → FULL per-preset rework (user decision; process-kill
-  mid-session risk is MOOT because config can't change mid-session).
-- **C5.** Polish: `fakeName` in in-session chrome (the music player currently
-  uses neutral localized track/artist strings); disguise template icons
-  (render-if-present + Material fallback); tapWord decoy-word localization.
+  "Stealth Mode: ON" toggle (DECISIONS — deferred, NOT a stub).
+- **C5.** Polish: the music-player **track/artist** strings are still neutral
+  localized placeholders (C3 wired `fakeName` to the **header brand line** only —
+  the spec's "Spotify/Apple Music" app-name slot — which is the correct fakeName
+  home; track/artist are song metadata, intentionally left neutral). Disguise
+  template icons (render-if-present + Material fallback); tapWord decoy-word
+  localization.
 
 ---
 
@@ -143,11 +161,14 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M3 C3** — notification/`fakeName` disguise + wire
-`BackgroundSessionService` to actually start/stop. Then C2 (spec-reconcile) and
-C5 (polish). See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
+**Next action: M3 C4** — `fakeIcon` FULL per-preset rework (native: 10
+activity-aliases + 10 launcher icons + `setStealthIcon(preset)` on
+`StealthIconChannel` + an arm-time caller resolving `stealth.fakeIcon` at
+`startSession`) + the spec remark (C2-owned) that stealth settings are immutable
+during an active session. Then C2 (spec-reconcile) and C5 (polish). See the **M3
+chunk plan** + **M3 DECISIONS (user)** blocks above.
 
-C1 (this session) is COMMITTED but UNPUSHED (`m3-#15-c1`). The M2 stack was
+C1 + C3 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c3`). The M2 stack was
 gate-green + user-pre-authorized to push; this session ASSUMES the orchestrator
 pushed it (confirm `git log origin/main` includes the M2 commits + `m2-handoff`
 `b4c8b21`). Per-fix recipe (unchanged): verify the gap yourself → implement
@@ -159,7 +180,118 @@ commit → **ask before pushing**.
 
 ---
 
-## What's done THIS session (M3 C1 — UNPUSHED, `m3-#15-c1`)
+## What's done THIS session (M3 C3 — UNPUSHED, `m3-#15-c3`)
+
+**GAPS verified first (all confirmed):** (1) `BackgroundSessionService.startService`
+/`stopService` had **ZERO callers** in `lib/features/` AND `configure()` was
+**never called anywhere** (not even in `main.dart` — only a comment) → the
+Android foreground service never started; a backgrounded session could be
+OS-killed. (2) `showForegroundServiceNotification` **IGNORED** its `stealth`
+param — `const NotificationDetails`, always channel `'System Service'`, no
+fakeName, no icon swap. (3) `showDisguisedReminder` had **no** stealth/disguise
+param (always `'Reminders'`). (4) `background_session_service._onActionTap`
+hard-coded `'Music paused'`. (5) C1's `FakeMusicPlayer` header used the neutral
+`sessionStealthNowPlaying` placeholder, NOT the resolved `fakeName`. Nobody
+subscribed to the bg-service `onPause`/`onResume`/`onImSafe` streams;
+`updateNotification` had zero callers (left as-is — out of C3 scope).
+
+**Built (all proven by host/widget tests driving the REAL controller/services):**
+
+1. **Resolve + carry `fakeName`/`notificationDisguise`.** Added both to
+   `SessionState` (ctor + `copyWith` + reset-on-`endSession` to `'Music'`/`true`),
+   resolved from the SAME `StealthConfig` C1 uses (`session_controller.dart`
+   ≈ :635 `final stealth = …`). Also added `notificationStealth`
+   (`= enabled && notificationDisguise`) to `EventServices` so the disguised
+   reminder strategy knows whether to disguise.
+2. **Notification disguise (service layer).** `notification_service.dart`:
+   `showForegroundServiceNotification` + `showDisguisedReminder` now build
+   **non-const** details and, when `stealth`, swap to a generic channel name
+   (`'Updates'`, const `_kDisguisedChannelName` — the channel **id** is
+   unchanged so the FG service stays bound to `session_service`) + a neutral
+   small-icon (`'ic_stat_stealth'`, new vector drawable
+   `android/app/src/main/res/drawable/ic_stat_stealth.xml`). **Extra-35
+   lock-screen flags are PRESERVED** under stealth (a disguised reminder must
+   still wake a locked device — asserted). Added `stealth`/`fakeName` params to
+   the protocol + Real + Sim for both notification methods and for
+   `BackgroundSessionServiceProtocol.startService`/`updateNotification`. The
+   `_onActionTap` pause text is now `'<fakeName> paused'` (default fakeName
+   `'Music'` → `'Music paused'`, so the existing G2 tests stay green).
+   `DisguisedReminderStrategy` threads `services.notificationStealth` →
+   `showDisguisedReminder(stealth:)`.
+3. **WIRE foreground-service start/stop (user decision #4).** New
+   `_startForegroundService({required StealthConfig stealth})` +
+   `_stopForegroundService()` on `SessionController`. `startSession` calls start
+   (after `engine.start()`), `endSession` + `_disposeAll` (provider-disposed,
+   live-session path) call stop. `configure()` runs **once** per controller
+   (guarded by `_backgroundConfigured`). The disguise title = `fakeName` when
+   `enabled && notificationDisguise`, else the localized `_fgServiceTitle`; body
+   = neutral `_fgServiceStealthBody` when disguised, else `_fgServiceBody`. The
+   3 FG-service strings are pre-localised via an **extended
+   `configureWidgetLabels`** (HomeScreen has the BuildContext; the notifier has
+   none — same pattern as the widget labels). Both helpers are **fail-soft**
+   (try/catch + log): a notification failure must never abort a session.
+4. **Triplet consistency.** Real-only instantiation stays in
+   `service_providers.dart` (the controller reads
+   `backgroundSessionServiceProvider`); Sim + protocol updated in lockstep for
+   every new param. False-positive philosophy: a **simulation** session ALSO
+   starts the FG service (a practice run must survive backgrounding too) —
+   asserted.
+5. **C1 fake-music-player fakeName.** `FakeMusicPlayer` gained a `fakeName`
+   param; the header brand line (the spec's "Spotify/Apple Music" app-name slot,
+   04:897) now shows the resolved `fakeName`, falling back to the neutral
+   `sessionStealthNowPlaying` label only when blank. Threaded from
+   `session_screen.dart` (`state.fakeName`). (Track/artist stay neutral — they
+   are song metadata, not the app name; spec 06:85 scopes fakeName to the app
+   NAME. The track/artist polish is C5.)
+
+**Tests (net +18 → suite 3861):** 6 FG-service lifecycle tests in
+`session_controller_dispatch_test.dart` (start configures+startService;
+endSession stopService; stealth+disguise → disguised start w/ fakeName title;
+stealth-without-disguise → normal start; configure-once-across-two-sessions;
+sim-also-starts) driving the REAL `SessionController` with a
+`SimulationBackgroundSessionService` override (added to the test `_container`).
+6 disguise tests in `notification_service_test.dart` (FG + reminder: non-stealth
+real channel + null icon; stealth generic channel + `ic_stat_stealth`; reminder
+stealth PRESERVES all Extra-35 flags; FG stealth keeps ongoing/low-importance).
+2 strategy tests (`notificationStealth` true→`stealth:true`, default→false).
+2 `FakeMusicPlayer` header tests (custom fakeName shown; blank→neutral
+fallback). 2 bg-service tests (custom fakeName → `'<name> paused'`; fakeName
+threaded). Updated test fakes: `_test_fakes.FakeNotificationService` +
+`buildServices` (+`notificationStealth`), `_RecordingNotificationService` +
+`_FakeSessionController.configureWidgetLabels` (new optional params),
+`session_screen_test._runningState` (+`fakeName`). One s7 stealth golden
+re-baselined (`linux/`; header text `Now playing`→`Music`; CI variant
+font-blind, unchanged).
+
+**l10n:** 3 new keys (`sessionServiceTitle`, `sessionServiceBody`,
+`sessionServiceStealthBody`) in `app_en.arb` + all 13 translation ARBs
+(TEXT-INSERTED after the `sessionStealthNowPlaying` anchor, additions-only: +3
+per translation ARB / +12 en). `gen-l10n` regen additions-only; parity 14/14.
+Brand name "Guardian Angela" kept untranslated.
+
+**Emulator:** boot-smoke PASS on `emulator-5554`; the new
+`ic_stat_stealth.xml` is **confirmed compiled into the APK**
+(`aapt2 dump resources` → `res/drawable/ic_stat_stealth`), so the disguise
+small-icon reference resolves at runtime (not a dangling ref). **NOT verified
+on-device:** an actual session START driving the FG service to runtime (no
+session-driving integration harness exists; that is M5 device-E2E territory).
+The host tests prove the wiring; the emulator proves it compiles+boots+the icon
+resource is real. iOS notification disguise is CI `build-ios`-gated (not locally
+buildable on this Linux box).
+
+**DEFERRED to C5 (NOT a stub):** music-player **track/artist** strings stay
+neutral localized placeholders (fakeName's correct home is the header app-name
+slot, now wired; track/artist are song metadata). `updateNotification` (and the
+bg-service `onPause`/`onResume`/`onImSafe` streams) still have no controller
+subscriber — the FG notification text does NOT live-update per engine event
+(start posts it; the action-tap self-update handles pause/resume text). Wiring a
+per-event `updateNotification` + subscribing the controller to the action
+streams is a larger lifecycle task; the start/stop survival gap (the C3 mandate)
+is closed. Not a stub — the notification is posted and persistent.
+
+---
+
+## What's done last session (M3 C1 — UNPUSHED, `ac65b9e`)
 
 **GAP verified first:** the only previously-wired stealth effect was the
 disarm-label swap (`sessionDisarm`→`sessionDisarmStealth` at
@@ -403,6 +535,51 @@ the "can't-change-mid-session" spec remark) decides its fate. The
 
 ## KEY FINDINGS (carry into the next session)
 
+- **(M3 C3) Stealth is now a 5-field carry on `SessionState`:** C1's
+  `stealthEnabled`/`timerDisplay`/`sessionScreenStealth` + C3's `fakeName`
+  (String, default `'Music'`) + `notificationDisguise` (bool, default `true`) —
+  ALL resolved together from ONE `StealthConfig` at `session_controller.dart`
+  ≈ :635 and reset on `endSession`. The `notificationDisguise` toggle is
+  INDEPENDENT of `sessionScreenStealth`: a session can hide on-screen branding
+  yet keep a normal notification (or vice-versa) — both honored. `copyWith`
+  defaults them (can't null; fine — non-nullable with defaults).
+- **(M3 C3) The Android foreground service is what keeps a backgrounded session
+  alive — and C3 is the FIRST thing that ever starts it.** `startService` is
+  called from `startSession` (`_startForegroundService`), `stopService` from
+  BOTH teardown paths (`endSession` clean-end + `_disposeAll` provider-disposed).
+  `configure()` is guarded by `_backgroundConfigured` (once per controller). If
+  a future change adds another session-end path, it MUST call
+  `_stopForegroundService()` or the persistent notification will outlive the
+  session.
+- **(M3 C3) The FG-service channel NAME can't be changed per-notification for a
+  LIVE channel** — `flutter_local_notifications` uses `AndroidNotificationDetails.
+  channelName` only to CREATE the channel; the `session_service` channel is
+  pre-created (`'System Service'`) by both `_createAndroidChannels` and
+  `flutter_background_service`'s `AndroidConfiguration`. So the disguise that
+  genuinely lands per-notification is the **title** (`fakeName`, caller-supplied)
+  + the **small-icon** (`ic_stat_stealth`). C3 still sets the generic
+  `channelName` in the details (harmless, and the capturing-plugin test asserts
+  it) but the channel **id** is always `session_service`. 'System Service' /
+  'Reminders' are already non-branded, so the live-channel-name limitation is
+  not a privacy leak.
+- **(M3 C3) Notification small-icon disguise needs a REAL drawable or the
+  notification breaks at runtime.** `AndroidNotificationDetails.icon` is a
+  resource NAME (String?); a dangling ref crashes the notification (opposite of
+  a safety win). C3 ships ONE neutral vector `ic_stat_stealth.xml` (a generic
+  music-note; system tints it monochrome). Verified it compiles into the APK via
+  `aapt2 dump resources`. This is the STATUS-BAR icon and is SEPARATE from C4's
+  *launcher* fakeIcon (activity-aliases). If C4 ever wants per-preset
+  *notification* icons too, extend `_kDisguisedIcon` to a preset→drawable map.
+- **(M3 C3) Foreground-service strings reach the notifier via
+  `configureWidgetLabels`** (extended with 3 optional FG params) — same
+  no-BuildContext pattern as the home-widget labels (HomeScreen calls it in
+  `didChangeDependencies`). `fakeName` is DATA (from `StealthConfig`, not
+  localisable); only the non-stealth title/body + the neutral disguised subtitle
+  are l10n keys.
+- **(M3 C3) `fakeName`'s in-player home is the HEADER brand line** (the spec
+  mockup's "Spotify / Apple Music" app-name slot, 04:897), NOT the track/artist.
+  Spec 06:85 scopes fakeName to the app NAME. C3 wired the header; track/artist
+  remain neutral song-metadata placeholders (C5 polish, if wanted at all).
 - **(M3 C1) Stealth is now a 3-field carry on `SessionState`:**
   `stealthEnabled` (bool), `timerDisplay` (`StealthTimerDisplay`),
   `sessionScreenStealth` (bool) — all resolved together from ONE
@@ -657,7 +834,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3843 pass (M3 C1)
+flutter test --concurrency=6                                    # 3861 pass (M3 C3)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty

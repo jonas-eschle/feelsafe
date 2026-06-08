@@ -404,6 +404,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Wird gerade abgespielt';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela ist aktiv';
+
+  @override
+  String get sessionServiceBody => 'Deine Sicherheitssitzung läuft.';
+
+  @override
+  String get sessionServiceStealthBody => 'Wird abgespielt';
+
+  @override
   String get sessionStealthTrackTitle => 'Unbenannter Titel';
 
   @override

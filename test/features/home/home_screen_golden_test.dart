@@ -66,6 +66,9 @@ class _FakeSessionController extends SessionController {
     required String statusSim,
     required String quickExit,
     required String fakeCall,
+    String? foregroundServiceTitle,
+    String? foregroundServiceBody,
+    String? foregroundServiceStealthBody,
   }) {}
 }
 

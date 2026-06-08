@@ -401,6 +401,15 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionStealthNowPlaying => 'در حال پخش';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela فعال است';
+
+  @override
+  String get sessionServiceBody => 'جلسهٔ ایمنی شما در حال اجراست.';
+
+  @override
+  String get sessionServiceStealthBody => 'در حال پخش';
+
+  @override
   String get sessionStealthTrackTitle => 'قطعهٔ بدون عنوان';
 
   @override

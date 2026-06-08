@@ -10,6 +10,7 @@ final class BackgroundSessionCall {
     this.title,
     this.body,
     this.stealth,
+    this.fakeName,
   });
 
   /// Method name: `configure`, `startService`, `updateNotification`,
@@ -24,6 +25,9 @@ final class BackgroundSessionCall {
 
   /// Stealth flag (for `startService` / `updateNotification`).
   final bool? stealth;
+
+  /// Disguise app name (for `startService` / `updateNotification`).
+  final String? fakeName;
 
   @override
   String toString() => 'BackgroundSessionCall(method: $method)';
@@ -63,6 +67,7 @@ class SimulationBackgroundSessionService
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     calls.add(
       BackgroundSessionCall(
@@ -70,6 +75,7 @@ class SimulationBackgroundSessionService
         title: title,
         body: body,
         stealth: stealth,
+        fakeName: fakeName,
       ),
     );
   }
@@ -79,6 +85,7 @@ class SimulationBackgroundSessionService
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     calls.add(
       BackgroundSessionCall(
@@ -86,6 +93,7 @@ class SimulationBackgroundSessionService
         title: title,
         body: body,
         stealth: stealth,
+        fakeName: fakeName,
       ),
     );
   }

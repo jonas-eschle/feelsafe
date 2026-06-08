@@ -46,10 +46,18 @@ abstract interface class NotificationServiceProtocol {
   ///
   /// [title] and [body] are the displayed (possibly disguised) strings.
   /// [id] uniquely identifies this notification for later cancellation.
+  ///
+  /// When [stealth] is `true` the notification additionally adopts a generic
+  /// channel name and a neutral status-bar icon so neither the notification
+  /// shade nor the lock screen reveals the app's true identity (spec 05
+  /// §Notification UI §Stealth Mode, spec 06:97 `notificationDisguise`). The
+  /// [title]/[body] are already the disguised template strings supplied by the
+  /// caller; [stealth] governs only the channel/icon chrome.
   Future<void> showDisguisedReminder({
     required int id,
     required String title,
     required String body,
+    bool stealth = false,
   });
 
   /// Shows an SMS-retry-exhausted notification on the `alarm` channel.
@@ -71,13 +79,16 @@ abstract interface class NotificationServiceProtocol {
   /// the `session_service` channel.
   ///
   /// [title] and [body] reflect the current session state. When
-  /// [stealth] is `true`, the notification uses the configured disguise
-  /// text and a neutral icon preset so it does not reveal the app's
-  /// purpose.
+  /// [stealth] is `true`, the notification adopts the disguised appearance: a
+  /// generic channel name and a neutral status-bar icon so it does not reveal
+  /// the app's purpose. The disguise app name itself ([fakeName]) is supplied
+  /// by the caller as [title]; [fakeName] is threaded through so the underlying
+  /// service can reuse it for derived text (e.g. the `"<name> paused"` state).
   Future<void> showForegroundServiceNotification({
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   });
 
   /// Shows an escalation notification that bypasses Do Not Disturb.

@@ -68,6 +68,7 @@ final class DisguisedReminderStrategy implements EventStrategy {
       id: notificationId,
       title: title,
       body: body,
+      stealth: services.notificationStealth,
     );
   }
 

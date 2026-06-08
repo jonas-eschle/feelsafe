@@ -302,12 +302,14 @@ final class FakeNotificationService implements NotificationServiceProtocol {
     required int id,
     required String title,
     required String body,
+    bool stealth = false,
   }) async {
     calls.add({
       'method': 'showDisguisedReminder',
       'id': id,
       'title': title,
       'body': body,
+      'stealth': stealth,
     });
   }
 
@@ -328,12 +330,14 @@ final class FakeNotificationService implements NotificationServiceProtocol {
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     calls.add({
       'method': 'showForegroundServiceNotification',
       'title': title,
       'body': body,
       'stealth': stealth,
+      'fakeName': fakeName,
     });
   }
 
@@ -434,6 +438,7 @@ EventServices buildServices({
   bool alarmDndOverride = false,
   bool alarmGradualVolume = false,
   int alarmGradualVolumeDurationSeconds = 5,
+  bool notificationStealth = false,
   ReminderTemplate? selectedReminderTemplate,
   bool Function()? isCancelled,
 }) => EventServices(
@@ -460,6 +465,7 @@ EventServices buildServices({
   alarmDndOverride: alarmDndOverride,
   alarmGradualVolume: alarmGradualVolume,
   alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
+  notificationStealth: notificationStealth,
   selectedReminderTemplate: selectedReminderTemplate,
   isCancelled: isCancelled,
 );

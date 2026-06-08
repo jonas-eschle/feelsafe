@@ -96,6 +96,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           statusSim: l10n.homeWidgetStatusSim,
           quickExit: l10n.homeWidgetQuickExit,
           fakeCall: l10n.homeWidgetFakeCall,
+          foregroundServiceTitle: l10n.sessionServiceTitle,
+          foregroundServiceBody: l10n.sessionServiceBody,
+          foregroundServiceStealthBody: l10n.sessionServiceStealthBody,
         );
     // Publish initial Idle status so the widget reflects the current state.
     ref

@@ -402,6 +402,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Зараз грає';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela активний';
+
+  @override
+  String get sessionServiceBody => 'Ваш сеанс безпеки виконується.';
+
+  @override
+  String get sessionServiceStealthBody => 'Відтворення';
+
+  @override
   String get sessionStealthTrackTitle => 'Трек без назви';
 
   @override

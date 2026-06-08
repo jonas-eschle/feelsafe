@@ -24,6 +24,7 @@ import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
@@ -93,6 +94,8 @@ class SessionState {
     this.stealthEnabled = false,
     this.timerDisplay = StealthTimerDisplay.normal,
     this.sessionScreenStealth = true,
+    this.fakeName = 'Music',
+    this.notificationDisguise = true,
     this.fakeCallShowNonce = 0,
     this.activeReminderTemplate,
     this.reminderShowNonce = 0,
@@ -202,6 +205,28 @@ class SessionState {
   /// Defaults to `true`. Spec 04 §Stealth Mode UI.
   final bool sessionScreenStealth;
 
+  /// The disguise app name shown in place of "Guardian Angela" while stealth
+  /// mode is active.
+  ///
+  /// Resolved at `startSession` from the same [StealthConfig] as
+  /// [stealthEnabled]. Surfaces (a) as the app/brand line of the fake music
+  /// player ([FakeMusicPlayer]) and (b) as the foreground-service notification
+  /// title when [notificationDisguise] is also true (spec 06:85 — "Fake app
+  /// name in notifications and app switcher"). Defaults to `'Music'`. Has
+  /// visible effect only when [stealthEnabled] is true; reset on `endSession`.
+  final String fakeName;
+
+  /// Whether the persistent foreground-service notification uses the disguised
+  /// (generic-channel + [fakeName]-title) appearance while stealth mode is
+  /// active.
+  ///
+  /// Resolved at `startSession` from the same [StealthConfig] as
+  /// [stealthEnabled]. Independent of [sessionScreenStealth]: a user may hide
+  /// the on-screen branding yet keep a normal notification, or vice-versa
+  /// (spec 06:87). Only effective when [stealthEnabled] is true. Defaults to
+  /// `true`; reset on `endSession`. Spec 05 §Notification UI §Stealth Mode.
+  final bool notificationDisguise;
+
   /// Monotonic counter that increments each time a `fakeCall` step starts
   /// (including retries). The session screen listens for changes and pushes
   /// the full-screen [FakeCallScreen] — the fake call "auto-appears like a real
@@ -273,6 +298,8 @@ class SessionState {
     bool? stealthEnabled,
     StealthTimerDisplay? timerDisplay,
     bool? sessionScreenStealth,
+    String? fakeName,
+    bool? notificationDisguise,
     int? fakeCallShowNonce,
     ReminderTemplate? activeReminderTemplate,
     bool clearReminderTemplate = false,
@@ -308,6 +335,8 @@ class SessionState {
     stealthEnabled: stealthEnabled ?? this.stealthEnabled,
     timerDisplay: timerDisplay ?? this.timerDisplay,
     sessionScreenStealth: sessionScreenStealth ?? this.sessionScreenStealth,
+    fakeName: fakeName ?? this.fakeName,
+    notificationDisguise: notificationDisguise ?? this.notificationDisguise,
     fakeCallShowNonce: fakeCallShowNonce ?? this.fakeCallShowNonce,
     activeReminderTemplate: clearReminderTemplate
         ? null
@@ -393,6 +422,15 @@ class SessionController extends AsyncNotifier<SessionState>
   String _widgetQuickExit = 'Quick Exit';
   String _widgetFakeCall = 'Fake Call';
 
+  // Pre-localised strings for the persistent foreground-service notification.
+  // Supplied alongside the widget labels (HomeScreen has the BuildContext); the
+  // controller has none. The disguised (stealth) title is the resolved
+  // StealthConfig.fakeName — data, not localisable — so only the non-stealth
+  // title/body and the neutral disguised subtitle are localised here.
+  String _fgServiceTitle = 'Guardian Angela is active';
+  String _fgServiceBody = 'Your safety session is running.';
+  String _fgServiceStealthBody = 'Playing';
+
   /// Consecutive wrong-PIN entries for the lifetime of the current session,
   /// shared across every PIN prompt (App PIN, Session End PIN, distress
   /// cancel). Defaults to 0 and resets on every (a) correct PIN entry,
@@ -453,12 +491,24 @@ class SessionController extends AsyncNotifier<SessionState>
     required String statusSim,
     required String quickExit,
     required String fakeCall,
+    String? foregroundServiceTitle,
+    String? foregroundServiceBody,
+    String? foregroundServiceStealthBody,
   }) {
     _widgetStatusIdle = statusIdle;
     _widgetStatusSession = statusSession;
     _widgetStatusSim = statusSim;
     _widgetQuickExit = quickExit;
     _widgetFakeCall = fakeCall;
+    if (foregroundServiceTitle != null) {
+      _fgServiceTitle = foregroundServiceTitle;
+    }
+    if (foregroundServiceBody != null) {
+      _fgServiceBody = foregroundServiceBody;
+    }
+    if (foregroundServiceStealthBody != null) {
+      _fgServiceStealthBody = foregroundServiceStealthBody;
+    }
   }
 
   /// Returns the wall-clock elapsed duration since session start, or null when
@@ -610,6 +660,8 @@ class SessionController extends AsyncNotifier<SessionState>
       stealthEnabled: stealth.enabled,
       timerDisplay: stealth.timerDisplay,
       sessionScreenStealth: stealth.sessionScreenStealth,
+      fakeName: stealth.fakeName,
+      notificationDisguise: stealth.notificationDisguise,
       clearPrior: true,
       clearError: true,
       clearRemaining: true,
@@ -653,6 +705,7 @@ class SessionController extends AsyncNotifier<SessionState>
       alarmGradualVolume: settings.alarmGradualVolume,
       alarmGradualVolumeDurationSeconds:
           settings.alarmGradualVolumeDurationSeconds,
+      notificationStealth: stealth.enabled && stealth.notificationDisguise,
       isCancelled: () {
         final e = _engine;
         return e == null || e.isEnded;
@@ -666,6 +719,15 @@ class SessionController extends AsyncNotifier<SessionState>
     }
     engine.start();
     _tick = Timer.periodic(const Duration(seconds: 1), (_) => _onTick());
+
+    // Promote to an Android foreground service so the OS does not kill the
+    // process while the app is backgrounded (spec 05 §BackgroundSessionService).
+    // Without this the session can silently die on backgrounding — the very
+    // failure stealth + a dead-man's switch must not have. The persistent
+    // notification is disguised (fakeName title + generic channel) when the
+    // user enabled notificationDisguise; otherwise it shows the normal active
+    // text. Fire-and-forget: a notification failure must never abort a session.
+    await _startForegroundService(stealth: stealth);
 
     // Observe app-lifecycle so the engine's background speed clamp (G-013)
     // engages while the app is backgrounded (spec 01 §setBackgroundClamp).
@@ -710,6 +772,64 @@ class SessionController extends AsyncNotifier<SessionState>
   }
 
   SessionMode? _distressMode;
+
+  /// Whether [BackgroundSessionServiceProtocol.configure] has already run for
+  /// this controller. The plugin's `configure` registers the background-isolate
+  /// entry points; it only needs to happen once per process. Guarded so a
+  /// second session does not re-register.
+  bool _backgroundConfigured = false;
+
+  /// Starts (or refreshes) the Android foreground service for an active
+  /// session, posting the persistent notification.
+  ///
+  /// The notification is disguised — [StealthConfig.fakeName] title on a
+  /// generic channel — when stealth mode is enabled AND
+  /// [StealthConfig.notificationDisguise] is on; otherwise it shows the normal
+  /// "Guardian Angela is active" text. [configure] is invoked first (idempotent
+  /// — the plugin guards re-registration) so the native isolate is registered
+  /// even on the very first session of the process.
+  ///
+  /// Errors are swallowed and logged: a failed notification must never abort a
+  /// session start (fail-soft on a non-safety-critical surface).
+  Future<void> _startForegroundService({required StealthConfig stealth}) async {
+    final disguised = stealth.enabled && stealth.notificationDisguise;
+    final background = ref.read(backgroundSessionServiceProvider);
+    try {
+      if (!_backgroundConfigured) {
+        await background.configure();
+        _backgroundConfigured = true;
+      }
+      await background.startService(
+        title: disguised ? stealth.fakeName : _fgServiceTitle,
+        body: disguised ? _fgServiceStealthBody : _fgServiceBody,
+        fakeName: stealth.fakeName,
+        stealth: disguised,
+      );
+    } catch (e, st) {
+      log(
+        'foreground service start failed (non-fatal): $e',
+        error: e,
+        stackTrace: st,
+        name: 'SessionController',
+      );
+    }
+  }
+
+  /// Stops the Android foreground service and removes the persistent
+  /// notification. Safe to call when no service is running. Errors are logged,
+  /// never thrown — teardown must always complete.
+  Future<void> _stopForegroundService() async {
+    try {
+      await ref.read(backgroundSessionServiceProvider).stopService();
+    } catch (e, st) {
+      log(
+        'foreground service stop failed (non-fatal): $e',
+        error: e,
+        stackTrace: st,
+        name: 'SessionController',
+      );
+    }
+  }
 
   /// Called when the user begins holding the hold-button.
   void holdPressed() {
@@ -1095,6 +1215,9 @@ class SessionController extends AsyncNotifier<SessionState>
     engine.endSession(reason: reason);
     await _finaliseLog(reason);
     await _disposeRunOnly();
+    // Stop the Android foreground service and drop its persistent notification
+    // now that the session has ended (spec 05 §BackgroundSessionService).
+    await _stopForegroundService();
     // Release lock-task / pinned-app mode if the previous session
     // engaged it. The platform service no-ops on non-Android.
     try {
@@ -1110,6 +1233,8 @@ class SessionController extends AsyncNotifier<SessionState>
         stealthEnabled: false,
         timerDisplay: StealthTimerDisplay.normal,
         sessionScreenStealth: true,
+        fakeName: 'Music',
+        notificationDisguise: true,
         clearRemaining: true,
       ),
     );
@@ -1231,6 +1356,11 @@ class SessionController extends AsyncNotifier<SessionState>
     final engine = _engine;
     if (engine != null && !engine.isEnded) {
       engine.endSession();
+      // The controller is being torn down while a session is still live (the
+      // provider was disposed). Drop the foreground service so its persistent
+      // notification does not outlive the session. Fire-and-forget — this path
+      // is synchronous and cannot await.
+      unawaited(_stopForegroundService());
     }
   }
 

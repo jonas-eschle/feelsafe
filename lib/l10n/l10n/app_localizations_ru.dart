@@ -404,6 +404,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Сейчас играет';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela активен';
+
+  @override
+  String get sessionServiceBody => 'Ваш сеанс безопасности выполняется.';
+
+  @override
+  String get sessionServiceStealthBody => 'Воспроизведение';
+
+  @override
   String get sessionStealthTrackTitle => 'Безымянный трек';
 
   @override

@@ -404,6 +404,15 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionStealthNowPlaying => 'Teraz odtwarzane';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela jest aktywny';
+
+  @override
+  String get sessionServiceBody => 'Twoja sesja bezpieczeństwa jest w toku.';
+
+  @override
+  String get sessionServiceStealthBody => 'Odtwarzanie';
+
+  @override
   String get sessionStealthTrackTitle => 'Utwór bez tytułu';
 
   @override

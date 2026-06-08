@@ -13,6 +13,7 @@ final class NotificationCall {
     this.contactName,
     this.actionPayload,
     this.stealth,
+    this.fakeName,
     this.sound,
   });
 
@@ -35,8 +36,12 @@ final class NotificationCall {
   /// Action payload (for [showSmsRetryExhaustedNotification]).
   final String? actionPayload;
 
-  /// Stealth flag (for [showForegroundServiceNotification]).
+  /// Stealth flag (for [showForegroundServiceNotification] /
+  /// [showDisguisedReminder]).
   final bool? stealth;
+
+  /// Disguise app name (for [showForegroundServiceNotification]).
+  final String? fakeName;
 
   /// Sound filename (for [showAlarmEscalation] on iOS).
   final String? sound;
@@ -95,6 +100,7 @@ class SimulationNotificationService implements NotificationServiceProtocol {
     required int id,
     required String title,
     required String body,
+    bool stealth = false,
   }) async {
     calls.add(
       NotificationCall(
@@ -102,6 +108,7 @@ class SimulationNotificationService implements NotificationServiceProtocol {
         id: id,
         title: title,
         body: body,
+        stealth: stealth,
       ),
     );
   }
@@ -125,6 +132,7 @@ class SimulationNotificationService implements NotificationServiceProtocol {
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     calls.add(
       NotificationCall(
@@ -132,6 +140,7 @@ class SimulationNotificationService implements NotificationServiceProtocol {
         title: title,
         body: body,
         stealth: stealth,
+        fakeName: fakeName,
       ),
     );
   }

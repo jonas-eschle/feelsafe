@@ -404,6 +404,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionStealthNowPlaying => 'अभी चल रहा है';
 
   @override
+  String get sessionServiceTitle => 'Guardian Angela सक्रिय है';
+
+  @override
+  String get sessionServiceBody => 'आपका सुरक्षा सत्र चल रहा है।';
+
+  @override
+  String get sessionServiceStealthBody => 'चल रहा है';
+
+  @override
   String get sessionStealthTrackTitle => 'बिना शीर्षक वाला ट्रैक';
 
   @override

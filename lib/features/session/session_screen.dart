@@ -369,6 +369,7 @@ class _SessionBodyState extends ConsumerState<_SessionBody> {
           elapsedSeconds: state.elapsedSeconds,
           isPaused: state.isPaused,
           timerDisplay: state.timerDisplay,
+          fakeName: state.fakeName,
           interactionSignal: _interaction,
           onPlayPause: () =>
               state.isPaused ? controller.resume() : controller.pause(),

@@ -117,6 +117,12 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
   String _lastBody = 'Your session is running.';
   bool _stealthMode = false;
 
+  // Resolved disguise app name (StealthConfig.fakeName), cached so the
+  // pause-action self-update can read "<fakeName> paused" instead of a
+  // hard-coded "Music paused". Defaults to 'Music' (the StealthConfig default)
+  // so an un-customised stealth session reads "Music paused" exactly as before.
+  String _fakeName = 'Music';
+
   // -------------------------------------------------------------------------
   // BackgroundSessionServiceProtocol implementation
   // -------------------------------------------------------------------------
@@ -187,6 +193,7 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     log(
       'startService title="$title" stealth=$stealth',
@@ -195,10 +202,12 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
     _lastTitle = title;
     _lastBody = body;
     _stealthMode = stealth;
+    if (fakeName != null) _fakeName = fakeName;
     await _notification.showForegroundServiceNotification(
       title: title,
       body: body,
       stealth: stealth,
+      fakeName: fakeName,
     );
   }
 
@@ -207,6 +216,7 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     log(
       'updateNotification title="$title" stealth=$stealth',
@@ -215,10 +225,12 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
     _lastTitle = title;
     _lastBody = body;
     _stealthMode = stealth;
+    if (fakeName != null) _fakeName = fakeName;
     await _notification.showForegroundServiceNotification(
       title: title,
       body: body,
       stealth: stealth,
+      fakeName: fakeName,
     );
   }
 
@@ -267,12 +279,13 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
         // Update notification text to reflect the paused state immediately
         // (spec 05:823-832). The engine-timer pause is owned by SessionController
         // (Phase 6); we only own the notification here.
-        // G2: stealth mode shows "Music paused"; normal mode shows "Session
-        // paused" (spec 05:825).
+        // G2: stealth mode shows "<fakeName> paused" (default fakeName 'Music'
+        // → "Music paused"); normal mode shows "Session paused" (spec 05:825).
         _notification.showForegroundServiceNotification(
-          title: _stealthMode ? 'Music paused' : 'Session paused',
+          title: _stealthMode ? '$_fakeName paused' : 'Session paused',
           body: 'Tap Resume to continue.',
           stealth: _stealthMode,
+          fakeName: _fakeName,
         );
         _pauseController.add(null);
       case kActionResume:
@@ -284,6 +297,7 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
           title: _lastTitle,
           body: _lastBody,
           stealth: _stealthMode,
+          fakeName: _fakeName,
         );
         _resumeController.add(null);
     }

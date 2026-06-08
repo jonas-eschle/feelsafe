@@ -42,6 +42,7 @@ final class EventServices {
     this.alarmDndOverride = false,
     this.alarmGradualVolume = false,
     this.alarmGradualVolumeDurationSeconds = 5,
+    this.notificationStealth = false,
     this.selectedReminderTemplate,
     this.isCancelled,
   });
@@ -139,6 +140,16 @@ final class EventServices {
   /// Applied only when the ramp is active.
   final int alarmGradualVolumeDurationSeconds;
 
+  /// Whether out-of-app notifications adopt the disguised (generic channel +
+  /// neutral icon) appearance.
+  ///
+  /// Resolved once per session as `StealthConfig.enabled &&
+  /// StealthConfig.notificationDisguise`. [DisguisedReminderStrategy] passes it
+  /// to [NotificationServiceProtocol.showDisguisedReminder] so a locked-screen
+  /// reminder does not reveal the app when the user enabled notification
+  /// disguise (spec 06:97). Defaults to `false`.
+  final bool notificationStealth;
+
   /// The reminder template selected for the current `disguisedReminder` fire.
   ///
   /// Set per-dispatch by the [SessionController] (which owns template
@@ -185,6 +196,7 @@ final class EventServices {
         alarmDndOverride: alarmDndOverride,
         alarmGradualVolume: alarmGradualVolume,
         alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
+        notificationStealth: notificationStealth,
         selectedReminderTemplate:
             selectedReminderTemplate ?? this.selectedReminderTemplate,
         isCancelled: isCancelled,

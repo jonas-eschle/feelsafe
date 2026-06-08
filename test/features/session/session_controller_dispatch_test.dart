@@ -35,6 +35,7 @@ import 'package:guardianangela/domain/models/mode_overrides.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
@@ -43,6 +44,7 @@ import 'package:guardianangela/services/protocols/notification_service_protocol.
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 import 'package:guardianangela/services/sim/audio_service_sim.dart';
+import 'package:guardianangela/services/sim/background_session_service_sim.dart';
 import 'package:guardianangela/services/sim/call_state_service_sim.dart';
 import 'package:guardianangela/services/sim/contact_service_sim.dart';
 import 'package:guardianangela/services/sim/flash_service_sim.dart';
@@ -167,11 +169,13 @@ final class _RecordingNotificationService
     required int id,
     required String title,
     required String body,
+    bool stealth = false,
   }) async => calls.add({
     'method': 'showDisguisedReminder',
     'id': id,
     'title': title,
     'body': body,
+    'stealth': stealth,
   });
 
   @override
@@ -185,7 +189,14 @@ final class _RecordingNotificationService
     required String title,
     required String body,
     bool stealth = false,
-  }) async => calls.add({'method': 'showForegroundServiceNotification'});
+    String? fakeName,
+  }) async => calls.add({
+    'method': 'showForegroundServiceNotification',
+    'title': title,
+    'body': body,
+    'stealth': stealth,
+    'fakeName': fakeName,
+  });
 
   @override
   Future<void> showAlarmEscalation({
@@ -312,6 +323,34 @@ SessionMode _fakeCallMode() => SessionMode(
   ],
 );
 
+/// A loudAlarm mode carrying a stealth override (C3 foreground-service wiring
+/// tests). [disguise] controls `notificationDisguise`; [fakeName] sets the
+/// disguise app name.
+SessionMode _stealthMode({bool disguise = true, String fakeName = 'Music'}) =>
+    SessionMode(
+      id: 'mode-stealth',
+      name: 'Stealth Test',
+      chainSteps: <ChainStep>[
+        ChainStep(
+          id: 'step-st-0',
+          type: ChainStepType.holdButton,
+          order: 0,
+          waitSeconds: 0,
+          durationSeconds: 30,
+          gracePeriodSeconds: 5,
+          retryCount: 0,
+          randomize: false,
+        ),
+      ],
+      overrides: ModeOverrides(
+        stealth: StealthConfig(
+          enabled: true,
+          fakeName: fakeName,
+          notificationDisguise: disguise,
+        ),
+      ),
+    );
+
 // ─── Container builder ────────────────────────────────────────────────────────
 
 ProviderContainer _container(
@@ -319,6 +358,7 @@ ProviderContainer _container(
   AudioServiceProtocol? audio,
   NotificationServiceProtocol? notification,
   CallStateServiceProtocol? callState,
+  SimulationBackgroundSessionService? background,
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -357,6 +397,9 @@ ProviderContainer _container(
       ),
       callStateServiceProvider.overrideWithValue(
         callState ?? SimulationCallStateService(),
+      ),
+      backgroundSessionServiceProvider.overrideWithValue(
+        background ?? SimulationBackgroundSessionService(),
       ),
     ],
   );
@@ -886,5 +929,128 @@ void main() {
 
       await notifier.endSession();
     });
+  });
+
+  // ─── C3: foreground-service start/stop wiring (#15) ──────────────────────────
+  group('foreground service lifecycle (#15 C3)', () {
+    test('startSession configures + starts the foreground service', () async {
+      final bg = SimulationBackgroundSessionService();
+      final container = _container(db, background: bg);
+      await container.read(sessionControllerProvider.future);
+
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+
+      // configure() runs once and a startService posts the persistent
+      // notification (this is the wire that keeps a backgrounded session alive).
+      check(bg.calls.map((c) => c.method)).contains('configure');
+      final starts = bg.calls.where((c) => c.method == 'startService');
+      check(starts).isNotEmpty();
+      // Non-stealth mode → not disguised.
+      check(starts.first.stealth).equals(false);
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+
+    test('endSession stops the foreground service', () async {
+      final bg = SimulationBackgroundSessionService();
+      final container = _container(db, background: bg);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      bg.reset();
+
+      await notifier.endSession();
+
+      check(bg.calls.map((c) => c.method)).contains('stopService');
+    });
+
+    test(
+      'stealth+disguise session starts a disguised service with fakeName',
+      () async {
+        final bg = SimulationBackgroundSessionService();
+        final container = _container(db, background: bg);
+        await container.read(sessionControllerProvider.future);
+        final notifier = container.read(sessionControllerProvider.notifier);
+
+        await notifier.startSession(
+          mode: _stealthMode(fakeName: 'Spotify'),
+          simulate: false,
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        final start = bg.calls.firstWhere((c) => c.method == 'startService');
+        // Disguised: stealth flag set, title is the fakeName, fakeName threaded.
+        check(start.stealth).equals(true);
+        check(start.title).equals('Spotify');
+        check(start.fakeName).equals('Spotify');
+
+        await notifier.endSession();
+      },
+    );
+
+    test(
+      'stealth WITHOUT notificationDisguise starts a normal service',
+      () async {
+        final bg = SimulationBackgroundSessionService();
+        final container = _container(db, background: bg);
+        await container.read(sessionControllerProvider.future);
+        final notifier = container.read(sessionControllerProvider.notifier);
+
+        await notifier.startSession(
+          mode: _stealthMode(disguise: false, fakeName: 'Spotify'),
+          simulate: false,
+        );
+        await Future<void>.delayed(Duration.zero);
+
+        final start = bg.calls.firstWhere((c) => c.method == 'startService');
+        // notificationDisguise=false → the persistent notification is NOT
+        // disguised even though the on-screen session is stealthed.
+        check(start.stealth).equals(false);
+        check(start.title).equals('Guardian Angela is active');
+
+        await notifier.endSession();
+      },
+    );
+
+    test('configure runs only once across two sessions', () async {
+      final bg = SimulationBackgroundSessionService();
+      final container = _container(db, background: bg);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      await notifier.startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      await notifier.endSession();
+      await notifier.startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+
+      check(bg.calls.where((c) => c.method == 'configure')).length.equals(1);
+
+      await notifier.endSession();
+    });
+
+    test(
+      'simulation session also starts the foreground service (process kept alive)',
+      () async {
+        final bg = SimulationBackgroundSessionService();
+        final container = _container(db, background: bg);
+        await container.read(sessionControllerProvider.future);
+        final notifier = container.read(sessionControllerProvider.notifier);
+
+        await notifier.startSession(mode: _loudAlarmMode(), simulate: true);
+        await Future<void>.delayed(Duration.zero);
+
+        // A simulation still wants the persistent notification + keep-alive so
+        // the practice run survives backgrounding like a real one.
+        check(bg.calls.where((c) => c.method == 'startService')).isNotEmpty();
+
+        await notifier.endSession();
+      },
+    );
   });
 }

@@ -390,6 +390,44 @@ void main() {
       },
     );
 
+    // C3: the pause text is derived from the resolved fakeName, not a
+    // hard-coded "Music". A custom fakeName → "<fakeName> paused".
+    test(
+      'C3: custom fakeName → stealth pause title is "<fakeName> paused"',
+      () async {
+        await svc.startService(
+          title: 'Spotify',
+          body: '',
+          stealth: true,
+          fakeName: 'Spotify',
+        );
+        notif.reset();
+
+        notif.injectActionTap(kActionPause);
+        await Future<void>.delayed(Duration.zero);
+
+        final pauseNotif = notif.calls
+            .where((c) => c.method == 'showForegroundServiceNotification')
+            .last;
+        check(pauseNotif.title).equals('Spotify paused');
+        check(pauseNotif.stealth).equals(true);
+        check(pauseNotif.fakeName).equals('Spotify');
+      },
+    );
+
+    test('C3: startService threads fakeName to the notification', () async {
+      await svc.startService(
+        title: 'Calendar',
+        body: '',
+        stealth: true,
+        fakeName: 'Calendar',
+      );
+      final fg = notif.calls
+          .where((c) => c.method == 'showForegroundServiceNotification')
+          .first;
+      check(fg.fakeName).equals('Calendar');
+    });
+
     // -----------------------------------------------------------------------
     // NEW-2: Resume restores the prior title + body, not a generic fallback
     // -----------------------------------------------------------------------

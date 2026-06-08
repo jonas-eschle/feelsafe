@@ -815,6 +815,24 @@ abstract class AppLocalizations {
   /// **'Now playing'**
   String get sessionStealthNowPlaying;
 
+  /// Title of the persistent foreground-service notification shown while a safety session runs (non-stealth).
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Angela is active'**
+  String get sessionServiceTitle;
+
+  /// Body of the persistent foreground-service notification shown while a safety session runs (non-stealth).
+  ///
+  /// In en, this message translates to:
+  /// **'Your safety session is running.'**
+  String get sessionServiceBody;
+
+  /// Minimal, innocuous body of the persistent notification when the session is disguised; reads like a music app so it avoids suspicion.
+  ///
+  /// In en, this message translates to:
+  /// **'Playing'**
+  String get sessionServiceStealthBody;
+
   /// Generic track-title chrome shown on the stealth fake music player so it reads as an ordinary music app.
   ///
   /// In en, this message translates to:

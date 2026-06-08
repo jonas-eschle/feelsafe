@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Neutral status-bar small-icon for disguised notifications (stealth mode).
+
+  A generic music-note glyph (the default 'Music' disguise) with NO Guardian
+  Angela branding, so a casual glance at the notification shade reads it as an
+  ordinary media app. The system tints notification small-icons monochrome, so
+  the fill colour here is cosmetic. Referenced by `_kDisguisedIcon` in
+  lib/services/notification_service.dart. The full per-preset stealth icon
+  rework (launcher icon + activity aliases) is a separate concern (fakeIcon).
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="?attr/colorControlNormal">
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,3v10.55c-0.59,-0.34 -1.27,-0.55 -2,-0.55 -2.21,0 -4,1.79 -4,4s1.79,4 4,4 4,-1.79 4,-4V7h4V3h-6z" />
+</vector>

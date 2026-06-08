@@ -101,6 +101,38 @@ void main() {
     });
 
     test(
+      'threads notificationStealth=true into the stealth arg (#15 C3)',
+      () async {
+        final notification = FakeNotificationService();
+        final services = buildServices(
+          notification: notification,
+          notificationStealth: true,
+        );
+        await const DisguisedReminderStrategy().executeReal(
+          _step(config: const DisguisedReminderConfig()),
+          services,
+        );
+        final call = notification.calls.firstWhere(
+          (c) => c['method'] == 'showDisguisedReminder',
+        );
+        check(call['stealth']).equals(true);
+      },
+    );
+
+    test('default (no stealth) passes stealth=false (#15 C3)', () async {
+      final notification = FakeNotificationService();
+      final services = buildServices(notification: notification);
+      await const DisguisedReminderStrategy().executeReal(
+        _step(config: const DisguisedReminderConfig()),
+        services,
+      );
+      final call = notification.calls.firstWhere(
+        (c) => c['method'] == 'showDisguisedReminder',
+      );
+      check(call['stealth']).equals(false);
+    });
+
+    test(
       'notification ID is offset by step.order (id=100 for order=0)',
       () async {
         final notification = FakeNotificationService();

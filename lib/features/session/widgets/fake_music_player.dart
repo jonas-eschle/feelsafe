@@ -30,6 +30,7 @@ class FakeMusicPlayer extends StatelessWidget {
     required this.elapsedSeconds,
     required this.isPaused,
     required this.timerDisplay,
+    required this.fakeName,
     required this.onPlayPause,
     required this.onDisarm,
     this.interactionSignal,
@@ -45,6 +46,13 @@ class FakeMusicPlayer extends StatelessWidget {
 
   /// Which clock presentation to render as the playback-time indicator.
   final StealthTimerDisplay timerDisplay;
+
+  /// The resolved disguise app name ([StealthConfig.fakeName]) shown as the
+  /// player's app/brand line in the header — the slot the spec mockup labels
+  /// "Spotify / Apple Music" (spec 04 §Fake Music Player; 06:85 — fakeName is
+  /// the disguise app name). Falls back to a neutral "Now playing" label when
+  /// empty so the header is never blank.
+  final String fakeName;
 
   /// Invoked when the user taps the central transport button. The host wires
   /// this to `resume()` when [isPaused] is true and `pause()` otherwise.
@@ -87,7 +95,13 @@ class FakeMusicPlayer extends StatelessWidget {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          l10n.sessionStealthNowPlaying,
+                          // The disguise app name occupies the header (the
+                          // "Spotify / Apple Music" slot). Empty fakeName falls
+                          // back to a neutral localized label so the header is
+                          // never blank.
+                          fakeName.trim().isEmpty
+                              ? l10n.sessionStealthNowPlaying
+                              : fakeName,
                           style: textTheme.titleSmall,
                         ),
                       ),

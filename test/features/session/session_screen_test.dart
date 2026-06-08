@@ -296,6 +296,7 @@ SessionState _runningState({
   bool stealthEnabled = false,
   StealthTimerDisplay timerDisplay = StealthTimerDisplay.normal,
   bool sessionScreenStealth = true,
+  String fakeName = 'Music',
   bool isPaused = false,
   ReminderTemplate? activeReminderTemplate,
 }) {
@@ -320,6 +321,7 @@ SessionState _runningState({
     stealthEnabled: stealthEnabled,
     timerDisplay: timerDisplay,
     sessionScreenStealth: sessionScreenStealth,
+    fakeName: fakeName,
     activeReminderTemplate: activeReminderTemplate,
   );
 }
@@ -2237,12 +2239,38 @@ void main() {
       await _pump(tester, fake);
       // The disguise chrome is present…
       expect(find.byType(FakeMusicPlayer), findsOneWidget);
-      expect(find.text(l10n.sessionStealthNowPlaying), findsOneWidget);
+      // The header brand line shows the resolved fakeName (default 'Music').
+      expect(find.text('Music'), findsOneWidget);
       expect(find.text(l10n.sessionStealthTrackTitle), findsOneWidget);
       // …and the normal hold-button step prompt is NOT shown underneath.
       expect(find.text(l10n.sessionHoldPrompt), findsNothing);
       // The standard header step counter does not render in the disguise.
       expect(find.text(l10n.sessionStepLabel('1', '1')), findsNothing);
+    });
+
+    testWidgets('header brand line shows the resolved fakeName (#15 C3)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(stealthEnabled: true, fakeName: 'Spotify'),
+      );
+      await _pump(tester, fake);
+      // The configured disguise app name occupies the player's app/brand line…
+      expect(find.text('Spotify'), findsOneWidget);
+      // …and the neutral "Now playing" fallback is NOT shown when a name is set.
+      expect(find.text(l10n.sessionStealthNowPlaying), findsNothing);
+    });
+
+    testWidgets('blank fakeName falls back to the neutral header label', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(stealthEnabled: true, fakeName: '   '),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionStealthNowPlaying), findsOneWidget);
     });
 
     testWidgets('non-stealth session does NOT render the music player', (

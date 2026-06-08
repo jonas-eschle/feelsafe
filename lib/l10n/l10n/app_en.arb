@@ -492,6 +492,18 @@
   "@sessionStealthNowPlaying": {
     "description": "Minimalist header on the stealth fake-music-player session screen."
   },
+  "sessionServiceTitle": "Guardian Angela is active",
+  "@sessionServiceTitle": {
+    "description": "Title of the persistent foreground-service notification shown while a safety session runs (non-stealth)."
+  },
+  "sessionServiceBody": "Your safety session is running.",
+  "@sessionServiceBody": {
+    "description": "Body of the persistent foreground-service notification shown while a safety session runs (non-stealth)."
+  },
+  "sessionServiceStealthBody": "Playing",
+  "@sessionServiceStealthBody": {
+    "description": "Minimal, innocuous body of the persistent notification when the session is disguised; reads like a music app so it avoids suspicion."
+  },
   "sessionStealthTrackTitle": "Untitled Track",
   "@sessionStealthTrackTitle": {
     "description": "Generic track-title chrome shown on the stealth fake music player so it reads as an ordinary music app."

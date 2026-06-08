@@ -26,6 +26,25 @@ const String _kAlarmChannelName = 'Alerts';
 const String _kUpdatesChannelId = 'updates';
 const String _kUpdatesChannelName = 'Updates';
 
+/// Generic, innocuous channel name shown in the notification shade when a
+/// notification is disguised (`notificationDisguise`). Replaces the real
+/// channel name (e.g. "System Service", "Reminders") so a casual observer reads
+/// the notification as a mundane system/app message (spec 06:97).
+///
+/// The channel *id* never changes — only the display name passed in the
+/// per-notification details — so the foreground service stays bound to its
+/// `session_service` channel.
+const String _kDisguisedChannelName = 'Updates';
+
+/// Neutral status-bar small-icon used for disguised notifications.
+///
+/// A generic monochrome glyph (no Guardian Angela branding) bundled as an
+/// Android drawable (`android/app/src/main/res/drawable/ic_stat_stealth.xml`).
+/// On platforms without the resource the call falls back to the default icon.
+/// The full per-preset stealth icon rework (launcher + activity aliases) is a
+/// separate concern (fakeIcon, spec 06:86).
+const String _kDisguisedIcon = 'ic_stat_stealth';
+
 /// ID used for the foreground-service persistent notification.
 const int kForegroundNotificationId = 1;
 
@@ -298,22 +317,28 @@ class RealNotificationService implements NotificationServiceProtocol {
     required int id,
     required String title,
     required String body,
+    bool stealth = false,
   }) async {
     log(
-      'showDisguisedReminder id=$id title="$title"',
+      'showDisguisedReminder id=$id title="$title" stealth=$stealth',
       name: 'NotificationService',
     );
-    const details = NotificationDetails(
+    // All Extra-35 lock-screen flags are preserved regardless of [stealth] —
+    // a disguised reminder must still wake a locked device. [stealth] only
+    // swaps the channel display name + status-bar icon to neutral values so the
+    // shade does not reveal the app (spec 05 §Notification UI §Stealth Mode).
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
         _kRemindersChannelId,
-        _kRemindersChannelName,
+        stealth ? _kDisguisedChannelName : _kRemindersChannelName,
         importance: Importance.max,
         priority: Priority.max,
         fullScreenIntent: true,
         category: AndroidNotificationCategory.alarm,
         visibility: NotificationVisibility.public,
+        icon: stealth ? _kDisguisedIcon : null,
       ),
-      iOS: DarwinNotificationDetails(
+      iOS: const DarwinNotificationDetails(
         interruptionLevel: InterruptionLevel.timeSensitive,
       ),
     );
@@ -360,19 +385,27 @@ class RealNotificationService implements NotificationServiceProtocol {
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   }) async {
     log(
       'showForegroundServiceNotification stealth=$stealth',
       name: 'NotificationService',
     );
-    const details = NotificationDetails(
+    // When disguised, present a generic channel name + neutral icon so the
+    // persistent notification reads as a mundane app message. The channel *id*
+    // is unchanged (the foreground service is bound to `session_service`); only
+    // the display name and small-icon differ (spec 05 §Notification UI §Stealth
+    // Mode). The disguise app name itself is already carried in [title]
+    // (= fakeName) by the caller.
+    final details = NotificationDetails(
       android: AndroidNotificationDetails(
         _kSessionServiceChannelId,
-        _kSessionServiceChannelName,
+        stealth ? _kDisguisedChannelName : _kSessionServiceChannelName,
         importance: Importance.low,
         priority: Priority.low,
         ongoing: true,
         autoCancel: false,
+        icon: stealth ? _kDisguisedIcon : null,
       ),
     );
     await _plugin.show(

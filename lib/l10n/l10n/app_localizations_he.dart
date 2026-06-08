@@ -399,6 +399,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionStealthNowPlaying => 'מתנגן כעת';
 
   @override
+  String get sessionServiceTitle => '‏Guardian Angela פעיל';
+
+  @override
+  String get sessionServiceBody => '‏הפעלת הבטיחות שלך פעילה.';
+
+  @override
+  String get sessionServiceStealthBody => 'מתנגן';
+
+  @override
   String get sessionStealthTrackTitle => 'רצועה ללא שם';
 
   @override

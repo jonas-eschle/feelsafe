@@ -16,21 +16,27 @@ abstract interface class BackgroundSessionServiceProtocol {
   ///
   /// [title] and [body] are the initial notification strings. [stealth]
   /// activates the disguised notification appearance (spec 05
-  /// §BackgroundSessionService §Stealth Mode).
+  /// §BackgroundSessionService §Stealth Mode). [fakeName] is the resolved
+  /// disguise app name; the service reuses it for derived self-updates such as
+  /// the `"<name> paused"` text shown when the user taps the Pause action while
+  /// the app is backgrounded.
   Future<void> startService({
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   });
 
   /// Updates the foreground-service notification text in place.
   ///
   /// Call on every engine event to reflect the current session state.
-  /// [stealth] controls whether the update uses disguised strings.
+  /// [stealth] controls whether the update uses disguised strings. [fakeName]
+  /// refreshes the disguise app name used for derived self-updates.
   Future<void> updateNotification({
     required String title,
     required String body,
     bool stealth = false,
+    String? fakeName,
   });
 
   /// Stops the foreground service and removes the persistent
