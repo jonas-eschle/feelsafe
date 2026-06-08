@@ -1,11 +1,17 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-08 — **M0 + M1 + M2 PUSHED (`origin/main` = `b4c8b21`,
-confirmed). M3 (#15 stealth) FULLY IMPLEMENTED — C1 (`ac65b9e`) + C3
-(`a6c36ef`) + C4 (`837c1e4`) + C2 (`55f958d`) + C5 (#18 disguise polish) ALL
-DONE + GATE-GREEN + COMMITTED (UNPUSHED).** NEXT = **the M3 verifier cohort
-(architect-reviewer spec-vs-code + qa-expert spec-vs-tests, both opus, over the
-WHOLE M3 stack C1–C5) → full gate → push the M3 stack (user pre-authorized).**
+**Snapshot:** 2026-06-08 — **M0 + M1 + M2 PUSHED (`origin/main` = `b4c8b21`).
+M3 (#15 stealth) FULLY IMPLEMENTED + MILESTONE-COHORT-VERIFIED (PASS),
+GATE-GREEN, ready to push** — C1 (`ac65b9e`) + C3 (`a6c36ef`) + C4 (`837c1e4`)
++ C2 (`55f958d`) + C5 (`256bb93`). NEXT = **orchestrator pushes the M3 stack,
+then M4 (#10/#9/#8/#16 + the Tier-F + R-8 emergency-number decisions).**
+M3 milestone cohort (architect-reviewer spec-vs-code + qa-expert spec-vs-tests,
+both opus, whole stack): **PASS** — all 5 stealth safety invariants verified at
+integration level (disguised reminder still full-screen-fires; fakeIcon switch
+leaves the app launchable; stealth immutable mid-session; FG service starts/stops
+with the session; engine timer runs under the music-player disguise). 2
+non-gating advisories carried → per-preset integration-test hardening (M5
+device-e2e) + stale spec `06:521` summary-table cell (M4 doc-sweep).
 
 **M3 C5 (THIS session) — #18 disguise polish (pure Flutter):**
 (1) **Localized the tapWord decoy words.** The English-only `_decoyPool` in
