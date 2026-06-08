@@ -1,4 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">Guardian Angela safety session status and quick actions.</string>
+
+    <!--
+      The real launcher label (Guardian Angela's own icon = the StealthIconPreset.none
+      default). Used by the .MainActivityAlias real launcher entry.
+    -->
+    <string name="app_name">Guardian Angela</string>
+
+    <!--
+      Per-preset stealth launcher labels (the home-screen text under a disguised
+      icon). One per StealthIconPreset disguise alias; the matching alias is
+      enabled by StealthIconChannel.setStealthIcon(preset). Intentionally generic
+      app-category words so the tile reads as an ordinary app, never Guardian
+      Angela. These are static manifest-time labels (the OS launcher renders them),
+      distinct from the runtime, user-editable StealthConfig.fakeName.
+    -->
+    <string name="stealth_label_music">Music</string>
+    <string name="stealth_label_calendar">Calendar</string>
+    <string name="stealth_label_fitness">Fitness</string>
+    <string name="stealth_label_weather">Weather</string>
+    <string name="stealth_label_news">News</string>
+    <string name="stealth_label_photos">Photos</string>
+    <string name="stealth_label_notes">Notes</string>
+    <string name="stealth_label_clock">Clock</string>
+    <string name="stealth_label_podcast">Podcasts</string>
 </resources>

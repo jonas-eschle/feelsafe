@@ -131,18 +131,157 @@
         </activity>
 
         <!--
-          Launcher alias — the only component with a MAIN/LAUNCHER intent-filter.
-          StealthIconChannel.setStealthIconEnabled(false) disables this alias,
-          removing the app from the launcher/recents, while MainActivity remains
-          enabled so the app stays launchable via other means (deep links, etc.).
-          Toggling this alias may cause Android to kill the process; expected.
+          ── Launcher aliases (stealth fakeIcon, §5-D6 / spec 11 REJ-6) ───────
+          MainActivity carries NO launcher filter; the MAIN/LAUNCHER filter
+          lives on these aliases so StealthIconChannel can swap which icon/label
+          the launcher shows without ever disabling MainActivity (which would
+          make the app permanently unlaunchable).
+
+          INVARIANT: EXACTLY ONE alias is enabled at any time. The DEFAULT
+          (factory) state below enables only .MainActivityAlias (the real
+          Guardian Angela launcher, = StealthIconPreset.none); all 9 disguise
+          aliases default to android:enabled="false". StealthIconChannel.
+          setStealthIcon(preset) enables the chosen alias and disables the
+          others (PackageManager.setComponentEnabledSetting, DONT_KILL_APP).
+          This is applied at stealth-CONFIG-SAVE time (never mid-session), so a
+          possible process-kill on the alias swap cannot interrupt a live
+          session (stealth settings are immutable during an active session).
         -->
+
+        <!-- Real Guardian Angela launcher = StealthIconPreset.none (default ON). -->
         <activity-alias
             android:name=".MainActivityAlias"
             android:targetActivity=".MainActivity"
             android:enabled="true"
             android:exported="true"
-            android:label="@string/widget_description">
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: music (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_music"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_music"
+            android:label="@string/stealth_label_music">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: calendar (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_calendar"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_calendar"
+            android:label="@string/stealth_label_calendar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: fitness (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_fitness"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_fitness"
+            android:label="@string/stealth_label_fitness">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: weather (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_weather"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_weather"
+            android:label="@string/stealth_label_weather">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: news (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_news"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_news"
+            android:label="@string/stealth_label_news">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: photos (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_photos"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_photos"
+            android:label="@string/stealth_label_photos">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: notes (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_notes"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_notes"
+            android:label="@string/stealth_label_notes">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: clock (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_clock"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_clock"
+            android:label="@string/stealth_label_clock">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity-alias>
+
+        <!-- Disguise: podcast (default OFF). -->
+        <activity-alias
+            android:name=".StealthAlias_podcast"
+            android:targetActivity=".MainActivity"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_stealth_podcast"
+            android:label="@string/stealth_label_podcast">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

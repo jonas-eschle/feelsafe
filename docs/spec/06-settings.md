@@ -100,6 +100,10 @@ The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`,
 
 Modes can override via `ModeOverrides.stealth`. The Defaults submenu (`/settings/defaults`) no longer contains a separate Stealth sub-screen — stealth is configured entirely from this collapsible section.
 
+**Stealth settings are immutable during an active session.** All `StealthConfig` fields are resolved once at `startSession` and frozen for the lifetime of that session; editing them mid-session has no effect on the running session (the new values apply only to the *next* session). This invariant is what makes the per-preset `fakeIcon` launcher disguise safe to switch eagerly: because the configuration can never change while a session runs, the Android activity-alias swap (which `PackageManager.DONT_KILL_APP` mitigates but cannot guarantee against a process kill) can be applied at **config-save time** with no risk of killing a live safety session.
+
+**`fakeIcon` launcher disguise — when it applies.** Unlike `lockTaskMode` (a session-scoped pinning engaged at session start and released at end), the launcher icon is a *persistent* home-screen concealment: a user who enables stealth wants Guardian Angela's identity hidden from the launcher and app-switcher **at all times, including between sessions**, so a partner who browses the device never sees a safety app. The disguise is therefore driven by the **global** `AppDefaults.stealth.fakeIcon` and applied whenever stealth config is saved from this section (`enabled` ⇒ the chosen preset; `disabled`/`none` ⇒ the real Guardian Angela icon restored), via one enabled `<activity-alias>` per preset (`StealthAlias_<preset>`; spec 11 REJ-6). A `ModeOverrides.stealth.fakeIcon` does **not** retarget the launcher (the launcher is device-global, not session-scoped); a mode override governs only the in-session disguise surfaces. If a config save happens while a session is active, the icon flip is deferred (per the immutability invariant above) and reconciled on the next save made with no session running.
+
 ---
 
 ### Security Section (`/settings/security`)

@@ -4,7 +4,33 @@
 gate-green + pre-authorized; `origin/main` should now carry it). M3 (#15
 stealth): C1 (stealth session-screen UI) DONE+COMMITTED (UNPUSHED, `ac65b9e`);
 C3 (notification/fakeName disguise + foreground-service start/stop wiring) DONE
-+ GATE-GREEN + COMMITTED (UNPUSHED).** C3 closed the **background-survival gap**:
++ GATE-GREEN + COMMITTED (UNPUSHED); C4 (full per-preset fakeIcon launcher
+disguise, native) DONE + GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c4`).**
+
+**M3 C4 (THIS session) — full per-preset `fakeIcon` launcher disguise:** the
+single on/off `StealthIconChannel` alias is reworked to **10 launcher
+activity-aliases** — the real `.MainActivityAlias` (= `StealthIconPreset.none`,
+default `enabled=true`) + 9 disguise aliases `.StealthAlias_<preset>`
+(`music/calendar/fitness/weather/news/photos/notes/clock/podcast`, default
+`enabled=false`), exactly ONE enabled at a time. Each disguise alias has its own
+adaptive launcher icon (`mipmap-anydpi-v26/ic_stealth_<preset>.xml` = solid
+`#131118` background + a **Material Symbols** foreground vector
+`drawable/ic_stealth_fg_<preset>.xml`, sourced from the design system, NOT
+bespoke art; minSdk 26 ⇒ adaptive XML only, no raster fallback) + a neutral
+`@string/stealth_label_<preset>` label. The Kotlin channel method is now
+`setStealthIcon(preset)` (enable target alias first, then disable the others,
+all `DONT_KILL_APP`). Dart triplet reworked in lockstep: protocol/Real/Sim
+`setStealthIcon(StealthIconPreset)`; `StealthIconCall` now carries a `preset`
+(was a `bool enabled`). **Runtime caller wired (was the ZERO-caller dead
+method):** `SettingsStealthController._saveStealth` now calls
+`_applyLauncherIcon(stealth)` on every save in `/settings/stealth` — preset =
+`enabled ? fakeIcon : none`; **suppressed while a session is active**
+(`SessionController.isSessionActive`, new public getter) so the alias swap can
+never kill a live session (config still persists; icon reconciles on the next
+no-session save). Spec remark added (spec 06 §Stealth Mode Section): stealth
+settings are immutable during an active session, and the launcher icon applies
+at **config-save** time (global `AppDefaults.stealth.fakeIcon`), unlike
+session-scoped `lockTaskMode`. C3 closed the **background-survival gap**:
 `BackgroundSessionService.startService`/`stopService` had ZERO callers — the
 Android foreground service NEVER started, so a backgrounded session could be
 OS-killed. C3 wires `startService` on session start + `stopService` on
@@ -34,13 +60,15 @@ DECISIONS (user)** blocks below.
   player + `SessionElapsedClock`(+G-018) + branding strip.
 - **C3 — notification/`fakeName` disguise + foreground-service start/stop** ✅
   DONE this session (`m3-#15-c3`, UNPUSHED). See "What's done THIS session" below.
-- **C4 — NEXT.** `fakeIcon` → FULL per-preset rework (user decision; process-kill
-  mid-session risk is MOOT because config can't change mid-session). Native: 10
-  activity-aliases + 10 icons + `setStealthIcon(preset)` on `StealthIconChannel`
-  + an arm-time caller (resolve `stealth.fakeIcon` at `startSession`). ALSO add
-  the spec remark (see C2) that stealth settings are immutable during a session.
-  NOTE: C3 added a single neutral *notification* small-icon (`ic_stat_stealth`);
-  that is the status-bar icon, a DIFFERENT concern from C4's *launcher* icon.
+- **C4 — ✅ DONE this session (`m3-#15-c4`, UNPUSHED).** `fakeIcon` → FULL
+  per-preset rework. Native: 10 launcher activity-aliases (1 real + 9 disguise)
+  + 9 adaptive Material-sourced icons + `setStealthIcon(preset)` on
+  `StealthIconChannel`. Caller wired at **config-save** time in
+  `SettingsStealthController` (NOT arm-time — see the trigger finding below),
+  guarded by `SessionController.isSessionActive` so the alias swap never runs
+  mid-session. Spec remark added (the C2 task can cross-reference it). NOTE: C3's
+  neutral *notification* small-icon (`ic_stat_stealth`) is the status-bar icon, a
+  DIFFERENT concern from C4's *launcher* icon (both now exist, independently).
 - **C2.** Spec-reconcile: bless the standalone `/settings/stealth` screen in
   spec 06; document `lockTaskMode`; add the spec remark that **stealth config
   cannot change during an active session**; decide the fate of the in-player
@@ -161,14 +189,14 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M3 C4** — `fakeIcon` FULL per-preset rework (native: 10
-activity-aliases + 10 launcher icons + `setStealthIcon(preset)` on
-`StealthIconChannel` + an arm-time caller resolving `stealth.fakeIcon` at
-`startSession`) + the spec remark (C2-owned) that stealth settings are immutable
-during an active session. Then C2 (spec-reconcile) and C5 (polish). See the **M3
-chunk plan** + **M3 DECISIONS (user)** blocks above.
+**Next action: M3 C2** — config-UI/spec reconciliation: keep the standalone
+`/settings/stealth` screen, fix spec 04-vs-06, document `lockTaskMode` (7th field
++ info-tooltip), resolve the in-player "Stealth Mode: ON" toggle, and reconcile
+the spec remarks (the C4 immutability/launcher-trigger remark is now in spec 06
+§Stealth Mode Section — fold C2's own remark in alongside it). Then C5 (polish).
+See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
 
-C1 + C3 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c3`). The M2 stack was
+C1 + C3 + C4 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c3` + `m3-#15-c4`). The M2 stack was
 gate-green + user-pre-authorized to push; this session ASSUMES the orchestrator
 pushed it (confirm `git log origin/main` includes the M2 commits + `m2-handoff`
 `b4c8b21`). Per-fix recipe (unchanged): verify the gap yourself → implement
@@ -180,7 +208,99 @@ commit → **ask before pushing**.
 
 ---
 
-## What's done THIS session (M3 C3 — UNPUSHED, `m3-#15-c3`)
+## What's done THIS session (M3 C4 — UNPUSHED, `m3-#15-c4`)
+
+**GAP verified first (confirmed):** `StealthIconChannel` was a single on/off
+toggle of ONE alias (`.MainActivityAlias`, labelled `@string/widget_description`,
+icon = the app's own `@mipmap/ic_launcher`); `setStealthIconEnabled(bool)` on the
+Dart triplet had **ZERO runtime callers** — `SettingsStealthController.setFakeIcon`
+only persisted the preset to the DB, never touching the native channel. The
+`iconFromStealth(preset)` helper referenced in the enum doc **does not exist**
+(only the comment mentions it). minSdk = 26 (so adaptive launcher icons are
+XML-only). `StealthIconPreset` = 10 values (`music/calendar/fitness/weather/news/
+photos/notes/clock/podcast/none`, `none` = the real GA icon). Spec 11 REJ-6
+named the design intent verbatim (`StealthAlias_music`/`_podcast`/`_calendar`).
+
+**Built (proven by host tests + an on-device alias-switch/relaunch check):**
+
+1. **Per-preset Android activity-aliases** (`AndroidManifest.xml`): the one alias
+   became **10 launcher aliases** — `.MainActivityAlias` (the real GA launcher =
+   `none`, `enabled=true`, `@mipmap/ic_launcher`, `@string/app_name`) + 9
+   `.StealthAlias_<preset>` (each `enabled=false`, own MAIN/LAUNCHER filter, own
+   adaptive icon + `@string/stealth_label_<preset>`). Factory state = EXACTLY ONE
+   enabled (the real launcher) → launchable out of the box. Verified in the
+   merged manifest (`aapt2 dump xmltree`).
+2. **Launcher icons** (design-system-sourced, NOT bespoke): 9 adaptive
+   `mipmap-anydpi-v26/ic_stealth_<preset>.xml` = `@color/ic_stealth_background`
+   (`#131118`, new `values/colors.xml`) + a Material Symbols `<foreground>`
+   vector `drawable/ic_stealth_fg_<preset>.xml` (music_note, calendar_today,
+   fitness_center, wb_sunny, article, photo_library, edit_note, schedule,
+   podcasts — scaled 2.5× onto the 108-unit safe zone, white fill). All 9
+   mipmaps + 9 vectors + the colour compiled into the APK (`aapt2 dump
+   resources`); no dangling `android:icon` refs.
+3. **Native channel + protocol rework:** `StealthIconChannel.setStealthIcon`
+   (Kotlin; `aliasByPreset` map; enable target FIRST then disable the others, all
+   `DONT_KILL_APP`; unknown preset → `result.error`). Dart triplet in lockstep:
+   protocol/Real/Sim `setStealthIcon(StealthIconPreset)`; `StealthIconCall` now
+   carries a `preset` (was `bool enabled`); the base `SystemUiCall` no longer has
+   a shared `enabled` (moved onto `LockTaskCall`). Real instantiation stays in
+   `service_providers.dart` (CI grep). `MainActivity.kt` channel registration
+   unchanged (method name is dispatched inside the handler).
+4. **Runtime caller + session-lock:** `SettingsStealthController._saveStealth`
+   now calls `_applyLauncherIcon(stealth)` on EVERY save in `/settings/stealth`
+   (preset = `enabled ? fakeIcon : none`), **suppressed while a session is
+   active** via the new public `SessionController.isSessionActive` getter
+   (`_engine != null && !_engine.isEnded`). Fail-soft (the Real service
+   try/catches the channel). The config still persists during a session; the icon
+   reconciles on the next no-session save.
+5. **Spec remark** (`docs/spec/06-settings.md` §Stealth Mode Section): two
+   paragraphs — (a) **stealth settings are immutable during an active session**
+   (resolved once at `startSession`, frozen; this is what makes the eager alias
+   swap safe); (b) **the `fakeIcon` launcher disguise applies at config-save
+   time** from the GLOBAL `AppDefaults.stealth.fakeIcon` (persistent home-screen
+   concealment, unlike session-scoped `lockTaskMode`); a `ModeOverrides` icon
+   does not retarget the launcher.
+
+**Tests (net +7 → suite 3868):** `test/services/system_ui_service_test.dart`
+reworked to the preset API (sim records `StealthIconCall.preset`; lock-task tests
+cast to `LockTaskCall` for `.enabled`). New
+`test/features/settings_stealth/settings_stealth_controller_test.dart` — 7 tests
+driving the REAL `SettingsStealthController` through `_saveStealth` with a
+round-tripping in-memory repo + a `SimulationSystemUiService` override: enabling
+applies the configured preset; changing the preset applies it; disabling →
+`none`; a non-icon save still reconciles; persist round-trips; **session-active →
+NO `setStealthIcon` call** (lock); session-active still PERSISTS the config. The
+existing `settings_stealth_screen_test.dart` (fake-controller, doesn't hit
+`_saveStealth`) stays green.
+
+**l10n:** ZERO new ARB keys (the preset dropdown labels already exist as
+`stealthPreset*`). The 9 launcher labels are **Android resource strings**
+(`res/values/strings.xml` `stealth_label_<preset>` + `app_name`), rendered by the
+OS launcher — static + English-only, intentionally generic; the 14-ARB parity
+rule does not apply. No `gen-l10n` run needed.
+
+**Emulator (the relaunch-after-switch proof):** boot-smoke PASS on
+`emulator-5554` on the reworked build. Debug APK builds clean (manifest + 10
+aliases + 9 icons through aapt2). **Relaunch-after-switch VERIFIED:** an
+integration test (`integration_test/stealth_icon_switch_test.dart`) drove the
+REAL `RealSystemUiService.setStealthIcon` in-process across all 10 presets and
+left `music` enabled; while it ran, `cmd package resolve-activity -a MAIN -c
+LAUNCHER` resolved to **`.StealthAlias_music`** (the disguise alias became the
+sole launcher), `cmd package query-activities` listed only `.StealthAlias_music`,
+and `am start -n …/.StealthAlias_music` launched the app with
+`topResumedActivity = …/.StealthAlias_music` — i.e. **after the switch the app
+STILL LAUNCHES via the disguise icon** (the unlaunchable-app failure mode is ruled
+out). KEY FINDING: `pm enable` of another package's component is blocked from the
+adb shell (`SecurityException … to 1`) and `adb root` is refused on this
+production image — the swap can ONLY be driven from the app's own UID, hence the
+integration-test path. (A naive concurrent `am start` mid-test stalls the
+integration binding — observe alias state via adb instead; the proof above used
+that.) iOS: `setStealthIcon` no-ops (component toggling unavailable); the iOS
+stub compiles — CI `build-ios`-gated (not locally buildable on Linux).
+
+---
+
+## What's done last session (M3 C3 — UNPUSHED, `m3-#15-c3`)
 
 **GAPS verified first (all confirmed):** (1) `BackgroundSessionService.startService`
 /`stopService` had **ZERO callers** in `lib/features/` AND `configure()` was
@@ -535,6 +655,58 @@ the "can't-change-mid-session" spec remark) decides its fate. The
 
 ## KEY FINDINGS (carry into the next session)
 
+- **(M3 C4) The launcher `fakeIcon` applies at CONFIG-SAVE time, NOT arm-time —
+  this is the corrected trigger.** The HANDOFF chunk-plan previously said
+  "resolve `stealth.fakeIcon` at `startSession`" (mirroring `lockTaskMode`).
+  That is WRONG for the launcher: the home-screen icon is a *persistent*
+  concealment — a user enabling stealth wants GA hidden from the launcher/app-
+  switcher **at all times, including between sessions** (so a partner browsing
+  the phone never sees a safety app). Arm-time apply+revert would expose the GA
+  icon between sessions, defeating the disguise, AND would flip the alias at the
+  most dangerous moment (session start) where a `DONT_KILL_APP` process-kill
+  could abort the just-started session. So the caller lives in
+  `SettingsStealthController._saveStealth → _applyLauncherIcon` (global
+  `AppDefaults.stealth.fakeIcon`; preset = `enabled ? fakeIcon : none`), guarded
+  by `SessionController.isSessionActive` (new public getter). `lockTaskMode`
+  stays arm-time (it IS session-scoped). Documented in spec 06 §Stealth Mode
+  Section. A `ModeOverrides.stealth.fakeIcon` does NOT retarget the launcher
+  (device-global, not per-session) — it governs only in-session disguise
+  surfaces; that mode-override field is effectively unused for the launcher.
+- **(M3 C4) `pm enable` from the adb shell CANNOT toggle another package's
+  components** (`SecurityException: Shell cannot change component state … to 1`),
+  and `adb root` is refused on the production emulator image (`adbd cannot run as
+  root in production builds`). So the alias swap can only be driven from the
+  app's OWN UID. The relaunch-after-switch proof therefore runs as an
+  integration test (`integration_test/stealth_icon_switch_test.dart`) that calls
+  the REAL `RealSystemUiService.setStealthIcon(preset)` in-process for all 10
+  presets (a missing alias / dangling icon would throw a PlatformException), and
+  leaves the launcher on the `music` disguise. Component-enabled state is
+  PERSISTENT in PackageManager (survives the app process), so a shell
+  `cmd package resolve-activity -a MAIN -c LAUNCHER <pkg>` AFTER the run observes
+  which alias resolves the launcher. NOTE: a fresh `flutter test` reinstall
+  RESETS component state to the manifest factory defaults (real launcher on), so
+  observe BEFORE re-running.
+- **(M3 C4) minSdk 26 ⇒ adaptive launcher icons are XML-only — no raster
+  fallback needed.** The app ships plain-PNG `mipmap-*/ic_launcher.png` (no
+  pre-existing `mipmap-anydpi-v26/`), but for the disguise presets I used
+  `<adaptive-icon>` (`@color/ic_stealth_background` `#131118` + a Material
+  Symbols `<foreground>` vector scaled 2.5× and centred on the 108-unit safe
+  zone). Sourcing the foregrounds from Material Symbols (e.g. `music_note`,
+  `calendar_today`, `fitness_center`, `podcasts`) is the "design-system, not
+  bespoke art" route — verify each in the APK with `aapt2 dump resources` (all 9
+  mipmaps + 9 fg vectors + the colour compiled). The icons are SEPARATE from the
+  flutter_launcher_icons-generated `ic_launcher`; don't regenerate launcher icons
+  blindly or you may clobber them.
+- **(M3 C4) `StealthIconChannel` enables target-alias FIRST, then disables the
+  others** (both `DONT_KILL_APP`) so there is never a zero-launcher-entry window
+  (which would make the app momentarily unlaunchable). The factory-default
+  manifest state (real `.MainActivityAlias` enabled, all 9 disguises
+  `enabled=false`) is the safety net — verified in the merged manifest via
+  `aapt2 dump xmltree --file AndroidManifest.xml`. The disguise labels are
+  **Android resource strings** (`res/values/strings.xml`
+  `stealth_label_<preset>`), NOT Flutter ARB keys — the OS launcher renders them,
+  so they're static + English-only (intentionally generic app-category words);
+  the 14-ARB l10n-parity rule does not apply to them (zero ARB keys added in C4).
 - **(M3 C3) Stealth is now a 5-field carry on `SessionState`:** C1's
   `stealthEnabled`/`timerDisplay`/`sessionScreenStealth` + C3's `fakeName`
   (String, default `'Music'`) + `notificationDisguise` (bool, default `true`) —
@@ -834,7 +1006,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3861 pass (M3 C3)
+flutter test --concurrency=6                                    # 3868 pass (M3 C4)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -853,12 +1025,12 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ verified+gate-green
   (pushed/being-pushed by orchestrator).** **M3 (#15 stealth) IN PROGRESS** —
-  **C1 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `m3-#15-c1`)**; C3 NEXT, then C2,
-  then C4/C5 (see the M3 chunk plan + M3 DECISIONS blocks near the top). Then
-  M4 (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl. #11
-  adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor). The
-  in-memory TaskList is cleared on `/clear` — this bullet is the durable
-  journal.
+  **C1 + C3 + C4 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` / `m3-#15-c3` /
+  `m3-#15-c4`)**; **C2 NEXT** (spec-reconcile), then C5 (polish) (see the M3 chunk
+  plan + M3 DECISIONS blocks near the top). Then M4 (#10/#9/#8/#16 + Tier-F), M5
+  (Phase-9: INT scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
+  spec-coverage matrix, coverage floor). The in-memory TaskList is cleared on
+  `/clear` — this bullet is the durable journal.
 
 ---
 

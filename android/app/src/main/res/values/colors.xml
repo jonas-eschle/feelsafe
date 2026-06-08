@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--
+      Adaptive-icon background for the stealth launcher disguises
+      (StealthIconChannel per-preset aliases). Matches the app's own
+      adaptive-icon background (#131118, see CLAUDE.md §App Identity) so a
+      disguised icon reads as a normal dark app tile, not Guardian Angela.
+    -->
+    <color name="ic_stealth_background">#131118</color>
+</resources>

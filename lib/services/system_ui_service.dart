@@ -8,6 +8,7 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 
+import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/services/protocols/system_ui_service_protocol.dart';
 
 // ---------------------------------------------------------------------------
@@ -24,9 +25,9 @@ const MethodChannel _kStealthIconChannel = MethodChannel(
 /// Production [SystemUiServiceProtocol].
 ///
 /// **Android** routes each call to the appropriate Kotlin MethodChannel:
-/// - [setStealthIconEnabled]: `StealthIconChannel.kt` toggles the
-///   package manager component alias so the app icon disappears from
-///   the device launcher and recent-apps list.
+/// - [setStealthIcon]: `StealthIconChannel.kt` enables the one
+///   `<activity-alias>` matching the preset (and disables the rest) so
+///   the launcher icon/label is disguised.
 /// - [toggleLockTaskMode]: `SystemUiChannel.kt` pins or unpins the
 ///   activity in Android Task Locking (pinned-app mode).
 ///
@@ -49,22 +50,22 @@ class RealSystemUiService implements SystemUiServiceProtocol {
   // ---------------------------------------------------------------------------
 
   @override
-  Future<void> setStealthIconEnabled(bool enabled) async {
+  Future<void> setStealthIcon(StealthIconPreset preset) async {
     if (!Platform.isAndroid) {
       log(
-        'setStealthIconEnabled($enabled) — no-op on iOS',
+        'setStealthIcon(${preset.name}) — no-op on iOS',
         name: 'SystemUiService',
       );
       return;
     }
 
-    log('setStealthIconEnabled($enabled)', name: 'SystemUiService');
+    log('setStealthIcon(${preset.name})', name: 'SystemUiService');
     try {
-      await _kStealthIconChannel.invokeMethod<void>('setStealthIconEnabled', {
-        'enabled': enabled,
+      await _kStealthIconChannel.invokeMethod<void>('setStealthIcon', {
+        'preset': preset.name,
       });
     } catch (e) {
-      log('setStealthIconEnabled error: $e', name: 'SystemUiService');
+      log('setStealthIcon error: $e', name: 'SystemUiService');
     }
   }
 

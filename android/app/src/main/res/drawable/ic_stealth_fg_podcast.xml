@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Adaptive-icon foreground for the 'podcast' stealth launcher disguise.
+  Material Symbols `podcasts` glyph (white) on the shared 108dp adaptive
+  foreground. Sourced from the Material design system.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="2.5" android:scaleY="2.5"
+        android:translateX="24" android:translateY="24">
+        <path android:fillColor="#FFFFFF"
+            android:pathData="M14,8c0,-1.11 -0.9,-2 -2,-2s-2,0.89 -2,2 0.9,2 2,2 2,-0.89 2,-2zM16.5,8c0,2.05 -1.23,3.81 -3,4.58V21c0,0.55 -0.45,1 -1,1h-1c-0.55,0 -1,-0.45 -1,-1v-8.42c-1.77,-0.77 -3,-2.53 -3,-4.58 0,-2.76 2.24,-5 5,-5s5,2.24 5,5zM18.5,8c0,-3.59 -2.91,-6.5 -6.5,-6.5S5.5,4.41 5.5,8c0,1.82 0.75,3.47 1.96,4.65l-1.06,1.06C4.9,12.23 4,10.22 4,8c0,-4.42 3.58,-8 8,-8s8,3.58 8,8c0,2.22 -0.9,4.23 -2.35,5.68l-1.06,-1.06C17.75,11.47 18.5,9.82 18.5,8z" />
+    </group>
+</vector>

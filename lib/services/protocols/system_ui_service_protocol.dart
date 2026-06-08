@@ -1,3 +1,5 @@
+import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
+
 /// Abstract interface for Android system-UI operations.
 ///
 /// See spec 05 §BackgroundSessionService §Stealth Mode and
@@ -8,19 +10,23 @@
 ///
 /// All methods are invoked through their respective MethodChannels
 /// (`com.guardianangela.app/system_ui`,
-/// `com.guardianangela.app/sms` stealth-icon side) in the Real
-/// implementation; the Simulation implementation is a no-op that
-/// logs the call.
+/// `com.guardianangela.app/stealth_icon`) in the Real implementation;
+/// the Simulation implementation is a no-op that logs the call.
 abstract interface class SystemUiServiceProtocol {
-  /// Shows or hides the app launcher icon.
+  /// Applies a per-preset launcher-icon disguise.
   ///
-  /// When [enabled] is `false` the package manager disables the
-  /// main activity component alias so the app no longer appears in
-  /// the device launcher or recent-apps list (Android
-  /// `StealthIconChannel.kt` — package-manager component toggling).
+  /// The Android `StealthIconChannel.kt` enables exactly one
+  /// `<activity-alias>` (and disables the others) so the home-screen
+  /// icon and label match [preset]. [StealthIconPreset.none] restores
+  /// the real Guardian Angela launcher icon; every other value swaps in
+  /// a neutral disguise (music, calendar, …).
   ///
-  /// iOS: no-op (component toggling is not available on iOS).
-  Future<void> setStealthIconEnabled(bool enabled);
+  /// Apply this at stealth-config-save time only, never during an
+  /// active session: the alias swap can kill the process, and stealth
+  /// settings are immutable while a session runs.
+  ///
+  /// iOS: no-op (component/launcher toggling is not available on iOS).
+  Future<void> setStealthIcon(StealthIconPreset preset);
 
   /// Enables or disables Android Task Locking (lock-task / pinned-app
   /// mode) for session stealth.

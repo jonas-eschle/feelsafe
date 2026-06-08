@@ -1592,6 +1592,18 @@ class SessionController extends AsyncNotifier<SessionState>
     state = AsyncData(s.copyWith(lastError: message));
   }
 
+  /// Whether a session is currently in-flight (started and not yet ended).
+  ///
+  /// True from `startSession` until the engine ends / the session is torn
+  /// down. Used by settings controllers to enforce that stealth settings —
+  /// in particular the launcher [StealthConfig.fakeIcon] disguise, whose
+  /// native alias swap can kill the process — are immutable while a session
+  /// runs (the icon is applied only at config-save time, never mid-session).
+  bool get isSessionActive {
+    final e = _engine;
+    return e != null && !e.isEnded;
+  }
+
   /// Reference to the underlying engine for tests / advanced callers.
   ///
   /// Returns null when no session is active. Mutating the engine outside
