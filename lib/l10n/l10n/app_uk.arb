@@ -958,5 +958,6 @@
   "sessionStealthArtistName": "Невідомий виконавець",
   "sessionStealthAlbumArtLabel": "Обкладинка альбому",
   "sessionStealthPlay": "Відтворити",
-  "sessionStealthPause": "Пауза"
+  "sessionStealthPause": "Пауза",
+  "sessionReminderDecoyWords": "ПІЗНІШЕ,ПРОПУСТИТИ,ГОТОВО,ВІДКРИТИ,ПОКАЗАТИ,ОК,ДАЛІ,ЩЕ,ВІДКЛАСТИ,ЗАКРИТИ"
 }

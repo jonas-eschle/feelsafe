@@ -337,6 +337,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Πατήστε για συνέχεια';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'ΑΡΓΟΤΕΡΑ,ΠΑΡΑΛΕΙΨΗ,ΕΓΙΝΕ,ΑΝΟΙΓΜΑ,ΠΡΟΒΟΛΗ,ΕΝΤΑΞΕΙ,ΕΠΟΜΕΝΟ,ΠΕΡΙΣΣΟΤΕΡΑ,ΑΝΑΒΟΛΗ,ΚΛΕΙΣΙΜΟ';
+
+  @override
   String get sessionReminderSwipeLabel => 'Σύρτε για απόρριψη';
 
   @override

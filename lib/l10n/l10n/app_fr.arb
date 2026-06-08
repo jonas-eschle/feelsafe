@@ -847,5 +847,6 @@
   "sessionStealthArtistName": "Artiste inconnu",
   "sessionStealthAlbumArtLabel": "Pochette d’album",
   "sessionStealthPlay": "Lecture",
-  "sessionStealthPause": "Pause"
+  "sessionStealthPause": "Pause",
+  "sessionReminderDecoyWords": "PLUS TARD,IGNORER,TERMINÉ,OUVRIR,VOIR,OK,SUIVANT,PLUS,RAPPELER,FERMER"
 }

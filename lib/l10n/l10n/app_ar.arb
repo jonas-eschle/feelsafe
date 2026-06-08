@@ -829,5 +829,6 @@
   "sessionStealthArtistName": "فنان غير معروف",
   "sessionStealthAlbumArtLabel": "غلاف الألبوم",
   "sessionStealthPlay": "تشغيل",
-  "sessionStealthPause": "إيقاف مؤقت"
+  "sessionStealthPause": "إيقاف مؤقت",
+  "sessionReminderDecoyWords": "لاحقًا,تخطّي,تم,فتح,عرض,حسنًا,التالي,المزيد,تأجيل,إغلاق"
 }

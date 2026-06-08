@@ -338,6 +338,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Appuyer pour continuer';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'PLUS TARD,IGNORER,TERMINÉ,OUVRIR,VOIR,OK,SUIVANT,PLUS,RAPPELER,FERMER';
+
+  @override
   String get sessionReminderSwipeLabel => 'Glisser pour fermer';
 
   @override

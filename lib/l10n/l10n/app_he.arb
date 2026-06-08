@@ -829,5 +829,6 @@
   "sessionStealthArtistName": "אמן לא ידוע",
   "sessionStealthAlbumArtLabel": "עטיפת אלבום",
   "sessionStealthPlay": "נגן",
-  "sessionStealthPause": "השהה"
+  "sessionStealthPause": "השהה",
+  "sessionReminderDecoyWords": "מאוחר יותר,דלג,בוצע,פתח,הצג,אישור,הבא,עוד,נדנוד,סגור"
 }

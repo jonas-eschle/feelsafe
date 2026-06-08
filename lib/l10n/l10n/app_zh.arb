@@ -958,5 +958,6 @@
   "sessionStealthArtistName": "未知艺人",
   "sessionStealthAlbumArtLabel": "专辑封面",
   "sessionStealthPlay": "播放",
-  "sessionStealthPause": "暂停"
+  "sessionStealthPause": "暂停",
+  "sessionReminderDecoyWords": "稍后,跳过,完成,打开,查看,好的,下一个,更多,稍后提醒,关闭"
 }

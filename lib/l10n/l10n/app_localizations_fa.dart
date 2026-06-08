@@ -334,6 +334,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionReminderTapWordHint => 'برای ادامه بزنید';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'بعداً,رد کردن,انجام شد,باز کردن,نمایش,باشه,بعدی,بیشتر,یادآوری,بستن';
+
+  @override
   String get sessionReminderSwipeLabel => 'بکشید تا بسته شود';
 
   @override

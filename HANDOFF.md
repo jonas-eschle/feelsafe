@@ -1,14 +1,50 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-08 — **M0 + M1 PUSHED. M2 PUSHED (presumed — was
-gate-green + pre-authorized; `origin/main` should now carry it). M3 (#15
-stealth): C1 (stealth session-screen UI) DONE+COMMITTED (UNPUSHED, `ac65b9e`);
-C3 (notification/fakeName disguise + foreground-service start/stop wiring) DONE
-+ GATE-GREEN + COMMITTED (UNPUSHED); C4 (full per-preset fakeIcon launcher
-disguise, native) DONE + GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c4`); C2
-(config-UI/spec reconciliation + lockTaskMode doc + Phase-7 doc cleanup) DONE +
-GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c2`).** NEXT = **M3 C5** (#18 disguise
-polish) then the **M3 verifier cohort + push**.
+**Snapshot:** 2026-06-08 — **M0 + M1 + M2 PUSHED (`origin/main` = `b4c8b21`,
+confirmed). M3 (#15 stealth) FULLY IMPLEMENTED — C1 (`ac65b9e`) + C3
+(`a6c36ef`) + C4 (`837c1e4`) + C2 (`55f958d`) + C5 (#18 disguise polish) ALL
+DONE + GATE-GREEN + COMMITTED (UNPUSHED).** NEXT = **the M3 verifier cohort
+(architect-reviewer spec-vs-code + qa-expert spec-vs-tests, both opus, over the
+WHOLE M3 stack C1–C5) → full gate → push the M3 stack (user pre-authorized).**
+
+**M3 C5 (THIS session) — #18 disguise polish (pure Flutter):**
+(1) **Localized the tapWord decoy words.** The English-only `_decoyPool` in
+`reminder_word_choices.dart` became `kReminderDecoyPoolFallback` (the documented
+English fallback), and `buildReminderWordChoices` gained an optional
+`List<String>? decoyPool` param (null/empty → fallback). `_TapWordChoices` in
+`reminder_confirmation.dart` now sources the pool from a NEW l10n key
+`sessionReminderDecoyWords` (a comma-separated list of ~10 neutral
+notification-action words per locale), parsed via `_decoyPoolFor(l10n)`
+(split-on-comma → trim → uppercase → drop blanks). Added the key to ALL 14 ARBs
+(en template + 13 translations, text-inserted, additions-only) + `gen-l10n`.
+**Hardened the safety invariant:** the decoy-collision filter is now
+case-insensitive (`w.toUpperCase() != keyword.toUpperCase()`) so a localized
+decoy can never accidentally equal the real keyword. The deterministic
+seed/rotate selection (the real-word-among-decoys mechanism) is UNCHANGED — only
+the pool source moved.
+(2) **Rendered `ReminderTemplate.imagePath`/`iconAsset`** in
+`ReminderDisguiseContent` via a new private `_TemplateDisguiseIcon`
+(render-if-present + Material fallback, user decision #6): `imagePath` → `Image`
+(asset, or `FileImage` for an absolute `/…` path) → wins; else `iconAsset` →
+either a canonical category key (`kReminderIconCategories`, e.g. `'fitness'`) →
+`reminderIconDataFor(key)` Material symbol, OR an asset-path-looking string
+(contains `/` or an image extension, per spec 03's `"assets/icons/calendar.png"`
+example) → `Image`; else the Material `Icons.notifications_active_outlined`
+fallback. A broken image path degrades to the Material fallback via
+`errorBuilder` (a bad path can NEVER expose the disguise). **Settable
+assessment (per the task):** `iconAsset` IS settable in production — the M2
+`ReminderTemplateForm` (`reminder_template_form.dart:133`) persists one of 8
+category KEYS into it; so the category-key→Material-icon branch is the live
+production path. `imagePath` is NOT settable by any production path today (no
+seed template + the form has no image picker — only tests set it), but
+render-if-present is the correct contract for when one does. NO asset/icon
+picker built (out of C5 scope; an `imagePath` image-picker is a sensible future
+item — noted under DEFERRED). NO new disguise art commissioned. Gate GREEN:
+analyzer `--fatal-infos` = 0; full suite **3882** (3873 C2 baseline + 9 net-new:
+3 pure-function decoy-pool + 6 widget [4 icon render/fallback + 2 localized-decoy
+under a non-English `es` locale]); l10n parity 14/14 (`sessionReminderDecoyWords`
+14/14); deferral-grep 0; OLD/ clean. **Pure Flutter — no native path touched, so
+no emulator run needed.**
 
 **M3 C2 (THIS session) — reconciliation + cleanup (mostly-spec, small UI):**
 (1) **Spec 04-vs-06 contradiction resolved in favour of the standalone
@@ -111,12 +147,15 @@ DECISIONS (user)** blocks below.
   spec 06 (C4); the in-player "Stealth Mode: ON" toggle RESOLVED → removed from
   the spec mockup + `sessionStealthToggleLabel` removed from all 14 ARBs; stale
   "Phase 7" system-ui doc-comments corrected. See "What's done THIS session".
-- **C5.** Polish: the music-player **track/artist** strings are still neutral
-  localized placeholders (C3 wired `fakeName` to the **header brand line** only —
-  the spec's "Spotify/Apple Music" app-name slot — which is the correct fakeName
-  home; track/artist are song metadata, intentionally left neutral). Disguise
-  template icons (render-if-present + Material fallback); tapWord decoy-word
-  localization.
+- **C5 — ✅ DONE this session (`m3-#15-c5`, UNPUSHED).** #18 disguise polish:
+  tapWord decoy-word localization (new `sessionReminderDecoyWords` × 14;
+  `buildReminderWordChoices(decoyPool:)` + the English `kReminderDecoyPoolFallback`)
+  + disguise template icon/image rendering (`_TemplateDisguiseIcon`,
+  render-if-present + Material fallback). The music-player **track/artist** strings
+  STAY neutral localized placeholders (C3 wired `fakeName` to the **header brand
+  line** only — the spec's "Spotify/Apple Music" app-name slot — which is the
+  correct fakeName home; track/artist are song metadata, intentionally left
+  neutral; this is NOT a stub). See "What's done THIS session".
 
 ---
 
@@ -227,22 +266,19 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M3 C5** — #18 disguise polish: localize the tapWord decoy words
-+ render `ReminderTemplate.iconAsset`/`imagePath` (render-if-present + Material
-fallback, user decision #6); the music-player track/artist strings stay neutral
-(fakeName's home is the header brand line, already wired in C3). THEN run the
-**M3 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests across C1+C2+C3+C4+C5) → full gate → **push the M3 stack** (user
-auth required). See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
+**Next action: the M3 verifier cohort** — M3 is FULLY IMPLEMENTED (C1–C5).
+Run the cohort (architect-reviewer spec-vs-code + qa-expert spec-vs-tests, both
+opus, across the WHOLE M3 stack C1+C2+C3+C4+C5) → full gate → **push the M3
+stack** (user pre-authorized). See the **M3 chunk plan** + **M3 DECISIONS
+(user)** blocks above. Re-engage the implementing path on any `FIX_REQUIRED`.
 
-C1 + C2 + C3 + C4 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c2` +
-`m3-#15-c3` + `m3-#15-c4`). The M2 stack was
-gate-green + user-pre-authorized to push; this session ASSUMES the orchestrator
-pushed it (confirm `git log origin/main` includes the M2 commits + `m2-handoff`
-`b4c8b21`). Per-fix recipe (unchanged): verify the gap yourself → implement
-(serial) → prove (host/widget tests driving the REAL controller/screen;
-emulator for native) → l10n deltas → translate 13 locales → gate suite →
-commit → **ask before pushing**.
+C1 + C2 + C3 + C4 + C5 are COMMITTED but UNPUSHED (`ac65b9e` + `a6c36ef` +
+`837c1e4` + `55f958d` + `m3-#15-c5`). The M2 stack is PUSHED — confirmed
+`origin/main` = `b4c8b21` (includes the M2 commits + `m2-handoff`). Per-fix
+recipe (unchanged): verify the gap yourself → implement (serial) → prove
+(host/widget tests driving the REAL controller/screen; emulator for native) →
+l10n deltas → translate 13 locales → gate suite → commit → **ask before
+pushing**.
 
 **DO NOT PUSH** without explicit user authorization (Hard Rule 12).
 
@@ -919,13 +955,25 @@ stealth appearance only; stealth is configured pre-session on
 
 ---
 
-## DEFERRED — M3 (NOT stubs; carry into C5 / the M3 cohort / M5)
+## DEFERRED — M3 (NOT stubs; carry into the M3 cohort / M4 / M5)
 
-- **(C5, NEXT) #18 disguise polish** — localize the tapWord decoy words (still
-  English); render `ReminderTemplate.iconAsset`/`imagePath` (render-if-present
-  + Material fallback, user decision #6). Also the music-player **track/artist**
-  strings stay neutral localized placeholders (fakeName's home is the header
-  brand line, wired in C3; track/artist are song metadata — polish only).
+- **(C5 DONE — these residuals carry, NOT stubs)** The music-player
+  **track/artist** strings stay neutral localized placeholders (fakeName's home
+  is the header brand line, wired in C3; track/artist are song metadata —
+  intentional, not a stub). **A `ReminderTemplate.imagePath` image picker** in
+  the M2 `ReminderTemplateForm` is a sensible FUTURE item: C5 RENDERS `imagePath`
+  if present (the correct contract), but no production path SETS it today (the
+  form only sets `iconAsset` category keys; no seed template sets either). An
+  image-picker that writes `imagePath` (and/or lets a custom template pick a raw
+  asset path for `iconAsset`) would light up the image branch — out of C5 scope,
+  not built. (`iconAsset` IS already settable via the form's category dropdown.)
+- **(M4 doc-sweep) Wholesale stale-"Phase 7" doc-comment cleanup in
+  `service_providers.dart`** — 8+ service-provider handlers still carry
+  "registered in Phase 7"-style doc-comments, several of which are now WIRED
+  (e.g. the foreground/notification/stealth handlers via M3 C3/C4). C2 fixed
+  ONLY the system-ui/stealth comments in scope; the rest is a future doc-sweep
+  (no code change, comments only — verify each handler's real registration
+  state in `MainActivity.kt` before rewording). Low priority; M4.
 - **(C1, revisit) Small-mode corner-clock placement** — the `small` timer fades
   in the top-right corner over the standard chrome; if a full-bleed *stealth
   background* lands (a true blank/disguise canvas behind the music player), the
@@ -1007,8 +1055,10 @@ stealth appearance only; stealth is configured pre-session on
   persisted but unconsumed at runtime → M2 spec-cleanup OR honour at runtime.
 - **Background full-screen launch-to-route** (notification full-screen-intent →
   FakeCall/DisguisedReminder when locked) → a notification-deeplink nav pass.
-- **#18 polish:** tapWord decoy words not localized; disguise icon is a neutral
-  Material icon (template `iconAsset`/`imagePath` not rendered). → near #15.
+- **#18 polish:** ✅ DONE in M3 C5 (`m3-#15-c5`) — tapWord decoy words localized
+  (`sessionReminderDecoyWords` × 14); template `imagePath`/`iconAsset` rendered
+  (`_TemplateDisguiseIcon`, render-if-present + Material fallback). No longer
+  deferred.
 - **iOS `critical_alert.wav`** — RESOLVED this session (#20 sub-part 4): bundled
   from `siren.wav` + wired in `project.pbxproj`; CI `build-ios` is the build
   gate. No longer deferred.
@@ -1081,7 +1131,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3873 pass (M3 C2)
+flutter test --concurrency=6                                    # 3882 pass (M3 C5)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -1098,12 +1148,12 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ verified+gate-green
-  (pushed/being-pushed by orchestrator).** **M3 (#15 stealth) IN PROGRESS** —
-  **C1 + C2 + C3 + C4 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` /
-  `m3-#15-c2` / `m3-#15-c3` / `m3-#15-c4`)**; **C5 NEXT** (#18 disguise polish),
-  then the **M3 verifier cohort + push** (see the M3 chunk plan + M3 DECISIONS
-  blocks near the top). Then M4 (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT
+- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ pushed (`origin/main` =
+  `b4c8b21`).** **M3 (#15 stealth) FULLY IMPLEMENTED** — **C1 + C2 + C3 + C4 +
+  C5 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` / `55f958d` / `a6c36ef` /
+  `837c1e4` / `m3-#15-c5`)**; **NEXT = the M3 verifier cohort + push** (see the
+  M3 chunk plan + M3 DECISIONS blocks near the top). Then M4 (#10/#9/#8/#16 +
+  Tier-F + the `service_providers.dart` Phase-7 doc-sweep), M5 (Phase-9: INT
   scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
   spec-coverage matrix, coverage floor). The in-memory TaskList is cleared on
   `/clear` — this bullet is the durable journal.

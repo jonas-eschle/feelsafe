@@ -13,6 +13,7 @@ import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/disguised_reminder/reminder_confirmation.dart';
 import 'package:guardianangela/features/disguised_reminder/reminder_word_choices.dart';
+import 'package:guardianangela/features/template_editor/reminder_template_form.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 ReminderTemplate _template({
@@ -20,6 +21,8 @@ ReminderTemplate _template({
   String? keyword,
   String? buttonLabel,
   String? subtitle,
+  String? iconAsset,
+  String? imagePath,
   ReminderDisplayStyle displayStyle = ReminderDisplayStyle.subtle,
 }) => ReminderTemplate(
   id: 'tmpl',
@@ -27,6 +30,8 @@ ReminderTemplate _template({
   title: 'You have an appointment',
   body: 'Meeting with Alex at 3 PM',
   subtitle: subtitle,
+  iconAsset: iconAsset,
+  imagePath: imagePath,
   confirmationType: confirmationType,
   keyword: keyword,
   buttonLabel: buttonLabel,
@@ -35,8 +40,15 @@ ReminderTemplate _template({
   isGlobal: true,
 );
 
-Future<void> _pump(WidgetTester tester, Widget child) =>
-    pumpScreen(tester, Scaffold(body: Center(child: child)));
+Future<void> _pump(
+  WidgetTester tester,
+  Widget child, {
+  Locale locale = const Locale('en'),
+}) => pumpScreen(
+  tester,
+  Scaffold(body: Center(child: child)),
+  locale: locale,
+);
 
 void main() {
   group('ReminderConfirmation — tapButton', () {
@@ -191,6 +203,145 @@ void main() {
         ),
       );
       expect(find.text('Tomorrow, 9:00 AM'), findsOneWidget);
+    });
+  });
+
+  group('ReminderDisguiseContent — template icon (#18)', () {
+    testWidgets('falls back to the Material notification icon when unset', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(confirmationType: ConfirmationType.dismiss),
+          onConfirm: () {},
+        ),
+      );
+      expect(find.byIcon(Icons.notifications_active_outlined), findsOneWidget);
+      // No image is rendered in the fallback path.
+      expect(find.byType(Image), findsNothing);
+    });
+
+    testWidgets('renders the category Material icon from iconAsset', (
+      tester,
+    ) async {
+      // The template editor persists a category KEY (e.g. 'fitness') into
+      // iconAsset; it must map to that category's Material symbol, NOT the
+      // notification fallback.
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(
+            confirmationType: ConfirmationType.dismiss,
+            iconAsset: 'fitness',
+          ),
+          onConfirm: () {},
+        ),
+      );
+      expect(find.byIcon(reminderIconDataFor('fitness')), findsOneWidget);
+      expect(find.byIcon(Icons.notifications_active_outlined), findsNothing);
+    });
+
+    testWidgets('renders an Image when iconAsset is an asset path', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(
+            confirmationType: ConfirmationType.dismiss,
+            iconAsset: 'assets/icons/calendar.png',
+          ),
+          onConfirm: () {},
+        ),
+      );
+      // The render path is the image branch (asset is absent in the test
+      // bundle, so it degrades to the Material fallback via errorBuilder —
+      // but an Image widget is still constructed for the path).
+      expect(find.byType(Image), findsOneWidget);
+    });
+
+    testWidgets(
+      'renders an Image when imagePath is set (wins over iconAsset)',
+      (tester) async {
+        await _pump(
+          tester,
+          ReminderDisguiseContent(
+            template: _template(
+              confirmationType: ConfirmationType.dismiss,
+              iconAsset: 'fitness',
+              imagePath: 'assets/disguise/calendar_full.png',
+            ),
+            onConfirm: () {},
+          ),
+        );
+        // imagePath takes precedence: an Image is rendered and the iconAsset
+        // category Material icon is NOT.
+        expect(find.byType(Image), findsOneWidget);
+        expect(find.byIcon(reminderIconDataFor('fitness')), findsNothing);
+      },
+    );
+  });
+
+  group('ReminderConfirmation — tapWord localized decoys (#18)', () {
+    testWidgets('decoys render in the active locale, not English', (
+      tester,
+    ) async {
+      // Drive the Spanish locale: decoys must come from the es pool
+      // (e.g. CERRAR) and none of the English fallback words may appear.
+      await _pump(
+        tester,
+        ReminderConfirmation(
+          template: _template(
+            confirmationType: ConfirmationType.tapWord,
+            keyword: 'STREAK',
+          ),
+          onConfirm: () {},
+        ),
+        locale: const Locale('es'),
+      );
+      final l10n = await loadL10n(const Locale('es'));
+      final esPool = <String>[
+        for (final w in l10n.sessionReminderDecoyWords.split(','))
+          if (w.trim().isNotEmpty) w.trim().toUpperCase(),
+      ];
+      // The keyword is present.
+      expect(find.text('STREAK'), findsOneWidget);
+      // Every rendered choice other than the keyword is a Spanish decoy.
+      final buttons = tester
+          .widgetList<OutlinedButton>(find.byType(OutlinedButton))
+          .toList();
+      expect(buttons.length, 3);
+      var localizedDecoys = 0;
+      for (final btn in buttons) {
+        final label = (btn.child as Text?)?.data ?? '';
+        if (label == 'STREAK') {
+          continue;
+        }
+        expect(esPool, contains(label));
+        expect(kReminderDecoyPoolFallback, isNot(contains(label)));
+        localizedDecoys++;
+      }
+      expect(localizedDecoys, 2);
+    });
+
+    testWidgets('the keyword still confirms with a localized pool', (
+      tester,
+    ) async {
+      var confirmed = 0;
+      await _pump(
+        tester,
+        ReminderConfirmation(
+          template: _template(
+            confirmationType: ConfirmationType.tapWord,
+            keyword: 'STREAK',
+          ),
+          onConfirm: () => confirmed++,
+        ),
+        locale: const Locale('es'),
+      );
+      await tester.tap(find.text('STREAK'));
+      expect(confirmed, 1);
     });
   });
 }

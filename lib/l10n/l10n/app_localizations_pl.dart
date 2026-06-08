@@ -337,6 +337,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Dotknij, aby kontynuować';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'PÓŹNIEJ,POMIŃ,GOTOWE,OTWÓRZ,POKAŻ,OK,DALEJ,WIĘCEJ,DRZEMKA,ZAMKNIJ';
+
+  @override
   String get sessionReminderSwipeLabel => 'Przesuń, aby zamknąć';
 
   @override

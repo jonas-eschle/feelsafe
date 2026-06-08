@@ -958,5 +958,6 @@
   "sessionStealthArtistName": "未知演出者",
   "sessionStealthAlbumArtLabel": "專輯封面",
   "sessionStealthPlay": "播放",
-  "sessionStealthPause": "暫停"
+  "sessionStealthPause": "暫停",
+  "sessionReminderDecoyWords": "稍後,略過,完成,開啟,檢視,好,下一個,更多,稍後提醒,關閉"
 }

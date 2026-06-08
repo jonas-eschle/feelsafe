@@ -53,4 +53,52 @@ void main() {
     );
     check(anyNonZero).isTrue();
   });
+
+  group('localized decoy pool', () {
+    test('decoys are drawn from the supplied pool, not the fallback', () {
+      const pool = ['MAÑANA', 'OMITIR', 'HECHO', 'ABRIR', 'VER'];
+      final words = buildReminderWordChoices('STREAK', decoyPool: pool);
+      check(words).contains('STREAK');
+      final decoys = words.where((w) => w != 'STREAK');
+      for (final d in decoys) {
+        check(pool).contains(d);
+      }
+      // And NONE of the English fallback words leaked in.
+      for (final d in decoys) {
+        check(kReminderDecoyPoolFallback).not((it) => it.contains(d));
+      }
+    });
+
+    test('an empty pool falls back to the English pool', () {
+      // The default (omitted) decoyPool is null, so the no-arg result already
+      // uses the English fallback; an explicitly empty pool must match it.
+      final fromEmpty = buildReminderWordChoices(
+        'STREAK',
+        decoyPool: const <String>[],
+      );
+      final fromDefault = buildReminderWordChoices('STREAK');
+      check(fromEmpty).deepEquals(fromDefault);
+      // Every word in the fallback result is sourced from the English pool.
+      final decoys = fromDefault.where((w) => w != 'STREAK');
+      for (final d in decoys) {
+        check(kReminderDecoyPoolFallback).contains(d);
+      }
+    });
+
+    test('a decoy equal to the keyword is filtered (case-insensitive)', () {
+      // 'skip' collides with the pool's 'SKIP' — it must be excluded even
+      // though the casing differs.
+      const pool = ['SKIP', 'LATER', 'DONE', 'OPEN'];
+      final words = buildReminderWordChoices(
+        'skip',
+        optionCount: 4,
+        decoyPool: pool,
+      );
+      check(words).contains('skip');
+      final decoys = words.where((w) => w != 'skip');
+      for (final d in decoys) {
+        check(d.toUpperCase()).not((it) => it.equals('SKIP'));
+      }
+    });
+  });
 }

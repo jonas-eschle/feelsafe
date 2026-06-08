@@ -329,6 +329,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionReminderTapWordHint => '点击继续';
 
   @override
+  String get sessionReminderDecoyWords => '稍后,跳过,完成,打开,查看,好的,下一个,更多,稍后提醒,关闭';
+
+  @override
   String get sessionReminderSwipeLabel => '滑动关闭';
 
   @override
@@ -2436,6 +2439,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionReminderTapWordHint => '點按繼續';
+
+  @override
+  String get sessionReminderDecoyWords => '稍後,略過,完成,開啟,檢視,好,下一個,更多,稍後提醒,關閉';
 
   @override
   String get sessionReminderSwipeLabel => '滑動關閉';

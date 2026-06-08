@@ -335,6 +335,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Торкніться для продовження';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'ПІЗНІШЕ,ПРОПУСТИТИ,ГОТОВО,ВІДКРИТИ,ПОКАЗАТИ,ОК,ДАЛІ,ЩЕ,ВІДКЛАСТИ,ЗАКРИТИ';
+
+  @override
   String get sessionReminderSwipeLabel => 'Проведіть, щоб закрити';
 
   @override

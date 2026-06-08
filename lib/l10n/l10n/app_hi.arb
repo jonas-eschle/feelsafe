@@ -829,5 +829,6 @@
   "sessionStealthArtistName": "अज्ञात कलाकार",
   "sessionStealthAlbumArtLabel": "एल्बम कला",
   "sessionStealthPlay": "चलाएँ",
-  "sessionStealthPause": "रोकें"
+  "sessionStealthPause": "रोकें",
+  "sessionReminderDecoyWords": "बाद में,छोड़ें,पूर्ण,खोलें,देखें,ठीक है,अगला,और,स्नूज़,बंद करें"
 }

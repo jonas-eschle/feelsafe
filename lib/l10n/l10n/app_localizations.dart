@@ -703,6 +703,12 @@ abstract class AppLocalizations {
   /// **'Tap to continue'**
   String get sessionReminderTapWordHint;
 
+  /// Comma-separated pool of short, neutral filler words shown as decoys alongside a tapWord reminder's real keyword. Must stay plausible and generic in each language (e.g. notification-button-style words) so the real word does not stand out; uppercased in the UI. At least 9 distinct words recommended.
+  ///
+  /// In en, this message translates to:
+  /// **'LATER,SKIP,DONE,OPEN,VIEW,OKAY,NEXT,MORE,SNOOZE,CLOSE'**
+  String get sessionReminderDecoyWords;
+
   /// Label on the swipe-to-confirm track for a swipe disguisedReminder confirmation.
   ///
   /// In en, this message translates to:

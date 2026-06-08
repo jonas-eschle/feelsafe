@@ -958,5 +958,6 @@
   "sessionStealthArtistName": "Unbekannter Künstler",
   "sessionStealthAlbumArtLabel": "Albumcover",
   "sessionStealthPlay": "Wiedergabe",
-  "sessionStealthPause": "Pause"
+  "sessionStealthPause": "Pause",
+  "sessionReminderDecoyWords": "SPÄTER,ÜBERSPRINGEN,FERTIG,ÖFFNEN,ANZEIGEN,OKAY,WEITER,MEHR,ERINNERN,SCHLIESSEN"
 }

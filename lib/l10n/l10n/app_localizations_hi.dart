@@ -335,6 +335,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionReminderTapWordHint => 'जारी रखने के लिए टैप करें';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'बाद में,छोड़ें,पूर्ण,खोलें,देखें,ठीक है,अगला,और,स्नूज़,बंद करें';
+
+  @override
   String get sessionReminderSwipeLabel => 'बंद करने के लिए स्वाइप करें';
 
   @override

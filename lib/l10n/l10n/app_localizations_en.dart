@@ -333,6 +333,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Tap to continue';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'LATER,SKIP,DONE,OPEN,VIEW,OKAY,NEXT,MORE,SNOOZE,CLOSE';
+
+  @override
   String get sessionReminderSwipeLabel => 'Swipe to dismiss';
 
   @override

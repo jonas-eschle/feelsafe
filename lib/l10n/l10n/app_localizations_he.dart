@@ -333,6 +333,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionReminderTapWordHint => 'הקש/י להמשך';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'מאוחר יותר,דלג,בוצע,פתח,הצג,אישור,הבא,עוד,נדנוד,סגור';
+
+  @override
   String get sessionReminderSwipeLabel => 'החלק/י לסגירה';
 
   @override

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -5,6 +7,7 @@ import 'package:guardianangela/core/widgets/swipe_slider.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/disguised_reminder/reminder_word_choices.dart';
+import 'package:guardianangela/features/template_editor/reminder_template_form.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
 /// Renders the disguise content of a [ReminderTemplate] — icon, title,
@@ -32,16 +35,11 @@ class ReminderDisguiseContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
     final subtitle = template.subtitle;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        Icon(
-          Icons.notifications_active_outlined,
-          size: 48,
-          color: colorScheme.primary,
-        ),
+        _TemplateDisguiseIcon(template: template),
         const SizedBox(height: 12),
         Text(
           template.title,
@@ -66,6 +64,82 @@ class ReminderDisguiseContent extends StatelessWidget {
         ReminderConfirmation(template: template, onConfirm: onConfirm),
       ],
     );
+  }
+}
+
+/// The leading disguise glyph for a [ReminderTemplate].
+///
+/// Renders the template's own art when set, falling back to a neutral
+/// notification icon otherwise (user decision M3 #6):
+///
+/// 1. [ReminderTemplate.imagePath] — a custom image (full-screen disguise art);
+///    rendered from assets, or from the device file system when an absolute
+///    path. This is the richest disguise, so it wins.
+/// 2. [ReminderTemplate.iconAsset] — either one of the canonical
+///    [kReminderIconCategories] keys (the value the template editor persists),
+///    mapped to its Material symbol, or an asset image path (e.g.
+///    `assets/icons/calendar.png`, per spec 03 §ReminderTemplate).
+/// 3. Otherwise the Material [Icons.notifications_active_outlined] fallback.
+///
+/// A broken image reference degrades to the Material fallback rather than
+/// showing an error glyph, so a bad path can never make the disguise obvious.
+class _TemplateDisguiseIcon extends StatelessWidget {
+  const _TemplateDisguiseIcon({required this.template});
+
+  final ReminderTemplate template;
+
+  static const double _size = 48;
+
+  @override
+  Widget build(BuildContext context) {
+    final imagePath = template.imagePath;
+    if (imagePath != null && imagePath.isNotEmpty) {
+      return _image(imagePath);
+    }
+    final iconAsset = template.iconAsset;
+    if (iconAsset != null && iconAsset.isNotEmpty) {
+      if (kReminderIconCategories.contains(iconAsset)) {
+        return _materialIcon(context, reminderIconDataFor(iconAsset));
+      }
+      if (_looksLikeAssetPath(iconAsset)) {
+        return _image(iconAsset);
+      }
+    }
+    return _fallback(context);
+  }
+
+  Widget _image(String path) {
+    final ImageProvider provider = path.startsWith('/')
+        ? FileImage(File(path))
+        : AssetImage(path) as ImageProvider;
+    return Image(
+      image: provider,
+      width: _size,
+      height: _size,
+      fit: BoxFit.contain,
+      // A missing asset/file must never surface an error glyph — that would
+      // break the disguise. Degrade silently to the neutral Material icon.
+      errorBuilder: (context, error, stackTrace) => _fallback(context),
+    );
+  }
+
+  Widget _materialIcon(BuildContext context, IconData icon) =>
+      Icon(icon, size: _size, color: Theme.of(context).colorScheme.primary);
+
+  Widget _fallback(BuildContext context) =>
+      _materialIcon(context, Icons.notifications_active_outlined);
+
+  /// Heuristic: an [iconAsset] that is not a known category key is treated as
+  /// an asset path when it looks like one (contains a slash or ends in a
+  /// common image extension), matching the spec example
+  /// `"assets/icons/calendar.png"`.
+  static bool _looksLikeAssetPath(String value) {
+    if (value.contains('/')) {
+      return true;
+    }
+    const exts = <String>['.png', '.jpg', '.jpeg', '.webp', '.gif', '.bmp'];
+    final lower = value.toLowerCase();
+    return exts.any(lower.endsWith);
   }
 }
 
@@ -141,7 +215,10 @@ class _TapWordChoices extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final words = buildReminderWordChoices(keyword);
+    final words = buildReminderWordChoices(
+      keyword,
+      decoyPool: _decoyPoolFor(l10n),
+    );
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -169,5 +246,17 @@ class _TapWordChoices extends StatelessWidget {
     } else {
       HapticFeedback.lightImpact();
     }
+  }
+
+  /// Parses the comma-separated localized decoy words for the current locale.
+  ///
+  /// Returns null when the resource is blank, letting
+  /// [buildReminderWordChoices] fall back to its English pool.
+  static List<String>? _decoyPoolFor(AppLocalizations l10n) {
+    final words = <String>[
+      for (final raw in l10n.sessionReminderDecoyWords.split(','))
+        if (raw.trim().isNotEmpty) raw.trim().toUpperCase(),
+    ];
+    return words.isEmpty ? null : words;
   }
 }

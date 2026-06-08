@@ -958,5 +958,6 @@
   "sessionStealthArtistName": "Artista desconocido",
   "sessionStealthAlbumArtLabel": "Carátula del álbum",
   "sessionStealthPlay": "Reproducir",
-  "sessionStealthPause": "Pausar"
+  "sessionStealthPause": "Pausar",
+  "sessionReminderDecoyWords": "MÁS TARDE,OMITIR,HECHO,ABRIR,VER,VALE,SIGUIENTE,MÁS,POSPONER,CERRAR"
 }

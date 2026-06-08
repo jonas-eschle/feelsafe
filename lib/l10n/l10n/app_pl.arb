@@ -829,5 +829,6 @@
   "sessionStealthArtistName": "Nieznany wykonawca",
   "sessionStealthAlbumArtLabel": "Okładka albumu",
   "sessionStealthPlay": "Odtwórz",
-  "sessionStealthPause": "Wstrzymaj"
+  "sessionStealthPause": "Wstrzymaj",
+  "sessionReminderDecoyWords": "PÓŹNIEJ,POMIŃ,GOTOWE,OTWÓRZ,POKAŻ,OK,DALEJ,WIĘCEJ,DRZEMKA,ZAMKNIJ"
 }

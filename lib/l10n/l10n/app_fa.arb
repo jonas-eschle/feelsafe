@@ -829,5 +829,6 @@
   "sessionStealthArtistName": "هنرمند ناشناس",
   "sessionStealthAlbumArtLabel": "جلد آلبوم",
   "sessionStealthPlay": "پخش",
-  "sessionStealthPause": "مکث"
+  "sessionStealthPause": "مکث",
+  "sessionReminderDecoyWords": "بعداً,رد کردن,انجام شد,باز کردن,نمایش,باشه,بعدی,بیشتر,یادآوری,بستن"
 }

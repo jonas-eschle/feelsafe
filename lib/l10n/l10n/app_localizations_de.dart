@@ -337,6 +337,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sessionReminderTapWordHint => 'Zum Fortfahren tippen';
 
   @override
+  String get sessionReminderDecoyWords =>
+      'SPÄTER,ÜBERSPRINGEN,FERTIG,ÖFFNEN,ANZEIGEN,OKAY,WEITER,MEHR,ERINNERN,SCHLIESSEN';
+
+  @override
   String get sessionReminderSwipeLabel => 'Zum Schließen wischen';
 
   @override
