@@ -414,6 +414,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "Wybierz numer alarmowy",
   "stealthLockTaskLabel": "Przypnij aplikację podczas sesji",
   "stealthLockTaskSubtitle": "Uniemożliwia opuszczenie aplikacji podczas trwającej sesji. Na Androidzie włącza przypinanie ekranu; na innych platformach nie ma efektu.",
+  "stealthLockTaskInfo": "Przypina Guardian Angela do ekranu na czas całej sesji, dzięki czemu nie można przesunąć jej, aby zamknąć, ani przełączyć aplikacji. Kompromis: Android wyświetla systemowy komunikat „Aplikacja jest przypięta” i blokuje przełączanie aplikacji do końca sesji — widoczne dla każdego, kto patrzy na ekran. Pozostaw wyłączone, jeśli wolisz swobodnie przełączać się między aplikacjami podczas sesji. Bez efektu na platformach bez przypinania ekranu.",
   "homeTagline": "Twój anioł czuwa nad tobą.",
   "onboardingWelcomeGreeting": "Cześć, jestem Angela",
   "onboardingWelcomeBodyFull": "Jestem twoim osobistym aniołem stróżem. Towarzyszę ci w drodze, czuwam nad twoim wieczorem i działam, gdy coś jest nie tak.",
@@ -828,6 +829,5 @@
   "sessionStealthArtistName": "Nieznany wykonawca",
   "sessionStealthAlbumArtLabel": "Okładka albumu",
   "sessionStealthPlay": "Odtwórz",
-  "sessionStealthPause": "Wstrzymaj",
-  "sessionStealthToggleLabel": "Tryb ukryty"
+  "sessionStealthPause": "Wstrzymaj"
 }

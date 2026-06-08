@@ -211,6 +211,50 @@ void main() {
     });
   });
 
+  group('SettingsStealthController — lockTaskMode persistence', () {
+    test('setLockTaskMode(true) round-trips through the repo', () async {
+      // lockTaskMode is the session-scoped pinning preference. The controller
+      // only persists it (the OS pinning is engaged by the session controller
+      // at session start); assert the saved value survives a reload.
+      final repo = _InMemorySettingsRepo(
+        _settingsWithStealth(const StealthConfig(enabled: true)),
+      );
+      final sysUi = SimulationSystemUiService();
+      final container = _container(repo: repo, sysUi: sysUi);
+
+      await container.read(settingsStealthControllerProvider.future);
+      final notifier = container.read(
+        settingsStealthControllerProvider.notifier,
+      );
+      await notifier.setLockTaskMode(true);
+
+      final saved = await repo.load();
+      check(saved.defaults.stealth.lockTaskMode).isTrue();
+      // Persisting the pinning preference does not push a lock-task call here;
+      // it is engaged by the session controller at session start.
+      check(sysUi.calls.whereType<LockTaskCall>()).isEmpty();
+    });
+
+    test('setLockTaskMode(false) clears the persisted preference', () async {
+      final repo = _InMemorySettingsRepo(
+        _settingsWithStealth(
+          const StealthConfig(enabled: true, lockTaskMode: true),
+        ),
+      );
+      final sysUi = SimulationSystemUiService();
+      final container = _container(repo: repo, sysUi: sysUi);
+
+      await container.read(settingsStealthControllerProvider.future);
+      final notifier = container.read(
+        settingsStealthControllerProvider.notifier,
+      );
+      await notifier.setLockTaskMode(false);
+
+      final saved = await repo.load();
+      check(saved.defaults.stealth.lockTaskMode).isFalse();
+    });
+  });
+
   group('SettingsStealthController — session-active lock', () {
     test('does NOT apply the icon while a session is active', () async {
       final repo = _InMemorySettingsRepo(

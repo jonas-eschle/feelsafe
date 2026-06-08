@@ -428,9 +428,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionStealthPause => 'Пауза';
 
   @override
-  String get sessionStealthToggleLabel => 'Скрытый режим';
-
-  @override
   String get simulationSummaryTitle => 'Итоги симуляции';
 
   @override
@@ -1017,6 +1014,10 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Не даёт выйти из приложения, пока идёт сессия. На Android включается закрепление экрана; на других платформах не действует.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Закрепляет Guardian Angela на экране на всё время сессии, чтобы приложение нельзя было смахнуть или переключить. Компромисс: Android показывает системное уведомление «Приложение закреплено» и блокирует переключение приложений до конца сессии — это видно всем, кто смотрит на экран. Оставьте выключенным, если хотите свободно переключаться между приложениями во время сессии. На платформах без закрепления экрана не действует.';
 
   @override
   String get homeTagline => 'Твой ангел тебя прикроет.';

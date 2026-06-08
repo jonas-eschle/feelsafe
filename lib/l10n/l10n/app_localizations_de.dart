@@ -428,9 +428,6 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sessionStealthPause => 'Pause';
 
   @override
-  String get sessionStealthToggleLabel => 'Tarnmodus';
-
-  @override
   String get simulationSummaryTitle => 'Simulations-Zusammenfassung';
 
   @override
@@ -1015,6 +1012,10 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Verhindert das Verlassen der App während einer laufenden Sitzung. Unter Android aktiviert dies die Bildschirmfixierung; auf anderen Plattformen hat es keine Wirkung.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Fixiert Guardian Angela für die gesamte Sitzung auf dem Bildschirm, sodass die App nicht weggewischt oder gewechselt werden kann. Kompromiss: Android zeigt einen System-Hinweis \"App ist angeheftet\" und blockiert den App-Wechsel bis zum Sitzungsende — sichtbar für jeden, der auf den Bildschirm schaut. Lass dies aus, wenn du während einer Sitzung frei zwischen Apps wechseln möchtest. Auf Plattformen ohne Bildschirmfixierung ohne Wirkung.';
 
   @override
   String get homeTagline => 'Dein Engel passt auf dich auf.';

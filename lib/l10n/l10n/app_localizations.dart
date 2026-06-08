@@ -863,12 +863,6 @@ abstract class AppLocalizations {
   /// **'Pause'**
   String get sessionStealthPause;
 
-  /// Label beside the stealth on/off toggle at the bottom of the fake music player.
-  ///
-  /// In en, this message translates to:
-  /// **'Stealth Mode'**
-  String get sessionStealthToggleLabel;
-
   /// Title of the simulation-summary screen.
   ///
   /// In en, this message translates to:
@@ -1930,6 +1924,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.'**
   String get stealthLockTaskSubtitle;
+
+  /// Info bottom-sheet body explaining the lock-task / screen-pinning trade-off.
+  ///
+  /// In en, this message translates to:
+  /// **'Pins Guardian Angela to the screen for the whole session so it can\'t be swiped away or switched out of. Trade-off: Android shows a system \"App is pinned\" banner and blocks app-switching until the session ends — visible to anyone watching the screen. Leave this off if you\'d rather move freely between apps during a session. No effect on platforms without screen-pinning.'**
+  String get stealthLockTaskInfo;
 
   /// Tagline shown below the Guardian Angela logo.
   ///

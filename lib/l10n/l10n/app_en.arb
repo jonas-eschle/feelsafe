@@ -524,10 +524,6 @@
   "@sessionStealthPause": {
     "description": "Tooltip and accessibility label for the pause button on the stealth fake music player (pauses the session)."
   },
-  "sessionStealthToggleLabel": "Stealth Mode",
-  "@sessionStealthToggleLabel": {
-    "description": "Label beside the stealth on/off toggle at the bottom of the fake music player."
-  },
   "simulationSummaryTitle": "Simulation summary",
   "@simulationSummaryTitle": {
     "description": "Title of the simulation-summary screen."
@@ -1297,6 +1293,10 @@
   "stealthLockTaskSubtitle": "Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.",
   "@stealthLockTaskSubtitle": {
     "description": "Helper subtitle below the lock-task toggle."
+  },
+  "stealthLockTaskInfo": "Pins Guardian Angela to the screen for the whole session so it can't be swiped away or switched out of. Trade-off: Android shows a system \"App is pinned\" banner and blocks app-switching until the session ends — visible to anyone watching the screen. Leave this off if you'd rather move freely between apps during a session. No effect on platforms without screen-pinning.",
+  "@stealthLockTaskInfo": {
+    "description": "Info bottom-sheet body explaining the lock-task / screen-pinning trade-off."
   },
   "homeTagline": "Your angel's got your back.",
   "@homeTagline": {

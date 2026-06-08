@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'package:guardianangela/core/widgets/info_icon_button.dart';
 import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/features/settings_stealth/settings_stealth_controller.dart';
@@ -71,6 +72,13 @@ class SettingsStealthScreen extends ConsumerWidget {
                   subtitle: Text(l10n.stealthLockTaskSubtitle),
                   value: s.config.lockTaskMode,
                   onChanged: notifier.setLockTaskMode,
+                ),
+                Align(
+                  alignment: AlignmentDirectional.centerEnd,
+                  child: InfoIconButton(
+                    title: l10n.stealthLockTaskLabel,
+                    body: l10n.stealthLockTaskInfo,
+                  ),
                 ),
                 ListTile(
                   title: Text(l10n.stealthTimerDisplayLabel),

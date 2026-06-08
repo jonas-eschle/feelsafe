@@ -543,6 +543,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "Notrufnummer auswählen",
   "stealthLockTaskLabel": "App während der Sitzung anheften",
   "stealthLockTaskSubtitle": "Verhindert das Verlassen der App während einer laufenden Sitzung. Unter Android aktiviert dies die Bildschirmfixierung; auf anderen Plattformen hat es keine Wirkung.",
+  "stealthLockTaskInfo": "Fixiert Guardian Angela für die gesamte Sitzung auf dem Bildschirm, sodass die App nicht weggewischt oder gewechselt werden kann. Kompromiss: Android zeigt einen System-Hinweis \"App ist angeheftet\" und blockiert den App-Wechsel bis zum Sitzungsende — sichtbar für jeden, der auf den Bildschirm schaut. Lass dies aus, wenn du während einer Sitzung frei zwischen Apps wechseln möchtest. Auf Plattformen ohne Bildschirmfixierung ohne Wirkung.",
   "homeTagline": "Dein Engel passt auf dich auf.",
   "onboardingWelcomeGreeting": "Hi, ich bin Angela",
   "onboardingWelcomeBodyFull": "Ich bin dein persönlicher Schutzengel. Ich begleite dich, wache über deinen Abend und greife ein, wenn sich etwas falsch anfühlt.",
@@ -957,6 +958,5 @@
   "sessionStealthArtistName": "Unbekannter Künstler",
   "sessionStealthAlbumArtLabel": "Albumcover",
   "sessionStealthPlay": "Wiedergabe",
-  "sessionStealthPause": "Pause",
-  "sessionStealthToggleLabel": "Tarnmodus"
+  "sessionStealthPause": "Pause"
 }

@@ -423,9 +423,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionStealthPause => 'השהה';
 
   @override
-  String get sessionStealthToggleLabel => 'מצב התגנבות';
-
-  @override
   String get simulationSummaryTitle => 'סיכום הסימולציה';
 
   @override
@@ -1004,6 +1001,10 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'מונע יציאה מהאפליקציה כל עוד מושב פעיל. ב-Android זה מפעיל נעיצת מסך; בפלטפורמות אחרות אין לכך השפעה.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'נועץ את Guardian Angela למסך למשך כל המושב כך שאי אפשר להחליק כדי לסגור או לעבור לאפליקציה אחרת. פשרה: Android מציג הודעת מערכת \"האפליקציה נעוצה\" וחוסם מעבר בין אפליקציות עד שהמושב מסתיים — גלוי לכל מי שמביט במסך. השאר כבוי אם אתה מעדיף לעבור בחופשיות בין אפליקציות במהלך מושב. ללא השפעה בפלטפורמות ללא נעיצת מסך.';
 
   @override
   String get homeTagline => 'המלאך שלך שומר עלייך.';

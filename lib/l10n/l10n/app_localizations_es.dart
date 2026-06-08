@@ -427,9 +427,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get sessionStealthPause => 'Pausar';
 
   @override
-  String get sessionStealthToggleLabel => 'Modo sigiloso';
-
-  @override
   String get simulationSummaryTitle => 'Resumen de la simulación';
 
   @override
@@ -1020,6 +1017,10 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Impide salir de la app mientras hay una sesión activa. En Android activa el anclaje de pantalla; en otras plataformas no tiene efecto.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Fija Guardian Angela en la pantalla durante toda la sesión para que no se pueda deslizar para cerrarla ni cambiar de app. Contrapartida: Android muestra un aviso del sistema \"La app está fijada\" y bloquea el cambio de app hasta que termina la sesión, visible para cualquiera que mire la pantalla. Déjalo desactivado si prefieres moverte libremente entre apps durante una sesión. Sin efecto en plataformas sin anclaje de pantalla.';
 
   @override
   String get homeTagline => 'Tu ángel te cuida las espaldas.';

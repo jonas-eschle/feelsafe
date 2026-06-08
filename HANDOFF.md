@@ -5,7 +5,41 @@ gate-green + pre-authorized; `origin/main` should now carry it). M3 (#15
 stealth): C1 (stealth session-screen UI) DONE+COMMITTED (UNPUSHED, `ac65b9e`);
 C3 (notification/fakeName disguise + foreground-service start/stop wiring) DONE
 + GATE-GREEN + COMMITTED (UNPUSHED); C4 (full per-preset fakeIcon launcher
-disguise, native) DONE + GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c4`).**
+disguise, native) DONE + GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c4`); C2
+(config-UI/spec reconciliation + lockTaskMode doc + Phase-7 doc cleanup) DONE +
+GATE-GREEN + COMMITTED (UNPUSHED, `m3-#15-c2`).** NEXT = **M3 C5** (#18 disguise
+polish) then the **M3 verifier cohort + push**.
+
+**M3 C2 (THIS session) — reconciliation + cleanup (mostly-spec, small UI):**
+(1) **Spec 04-vs-06 contradiction resolved in favour of the standalone
+`/settings/stealth` screen** (the user-kept design): spec 06 §Stealth Mode
+Section no longer calls stealth a "collapsible card on the main settings
+screen" — it now blesses the standalone `SettingsStealthScreen` (reached from
+the Security → Stealth hub row), with an explicit *Reconciliation note (M3 C2)*
+recording the superseded card phrasing. Spec 04:106 already named
+`/settings/stealth` correctly (no edit needed). (2) **`lockTaskMode` KEPT +
+documented:** it was ALREADY exposed as a `SwitchListTile` in the standalone
+screen (with `stealthLockTaskSubtitle`); C2 added an **`InfoIconButton`
+trade-off tooltip** beside it (new ARB key `stealthLockTaskInfo` × 14 locales:
+the screen-pinning "App is pinned" banner + app-switch block mid-session) and
+added `lockTaskMode` to the spec-06 field table as the **7th field** + an
+info-tooltip line + a paragraph noting it is the only *OS-session-scoped*
+StealthConfig field (engaged at session start, unlike the config-save-time
+`fakeIcon`). (3) **In-player "Stealth Mode: ON" toggle RESOLVED → removed** from
+the spec mockup (04:914/924, with a *Removed (M3 C2)* note explaining the
+immutability conflict), and the pre-staged `sessionStealthToggleLabel` ARB key
+**removed from all 14 ARBs** (had ZERO `lib/`+`test/` references — confirmed) +
+`gen-l10n` regen. (4) **Stale "Phase 7" doc-comments fixed:**
+`system_ui_service.dart` (:1-4 header + :38-40 class doc) and
+`service_providers.dart` (:301-303 systemUi provider) now say the native
+handlers are *registered in MainActivity.kt* (the StealthIconChannel handler
+EXISTS) — no new "Phase X" string introduced. (Other services' Phase-7 comments
+are out of C2 scope — system-ui/stealth only.) Gate GREEN: analyzer = 0; suite
+**3873** (3868 C4 baseline + 5 net-new: 2 REAL-controller lockTaskMode persist +
+3 screen InfoIconButton render/absent/tap-opens-sheet); l10n parity 14/14
+(`stealthLockTaskInfo` added 14/14; `sessionStealthToggleLabel` removed 0/14);
+deferral-grep 0; OLD/ clean. **No native path touched → no emulator run needed
+(doc-comment + Flutter-UI + spec + ARB only).**
 
 **M3 C4 (THIS session) — full per-preset `fakeIcon` launcher disguise:** the
 single on/off `StealthIconChannel` alias is reworked to **10 launcher
@@ -69,10 +103,14 @@ DECISIONS (user)** blocks below.
   mid-session. Spec remark added (the C2 task can cross-reference it). NOTE: C3's
   neutral *notification* small-icon (`ic_stat_stealth`) is the status-bar icon, a
   DIFFERENT concern from C4's *launcher* icon (both now exist, independently).
-- **C2.** Spec-reconcile: bless the standalone `/settings/stealth` screen in
-  spec 06; document `lockTaskMode`; add the spec remark that **stealth config
-  cannot change during an active session**; decide the fate of the in-player
-  "Stealth Mode: ON" toggle (DECISIONS — deferred, NOT a stub).
+- **C2 — ✅ DONE this session (`m3-#15-c2`, UNPUSHED).** Spec-reconcile: spec 06
+  §Stealth blesses the standalone `/settings/stealth` screen (collapsible-card
+  phrasing superseded with a reconciliation note); `lockTaskMode` documented as
+  the 7th field + an `InfoIconButton` trade-off tooltip added to the screen
+  (new `stealthLockTaskInfo` × 14); the immutability remark already lives in
+  spec 06 (C4); the in-player "Stealth Mode: ON" toggle RESOLVED → removed from
+  the spec mockup + `sessionStealthToggleLabel` removed from all 14 ARBs; stale
+  "Phase 7" system-ui doc-comments corrected. See "What's done THIS session".
 - **C5.** Polish: the music-player **track/artist** strings are still neutral
   localized placeholders (C3 wired `fakeName` to the **header brand line** only —
   the spec's "Spotify/Apple Music" app-name slot — which is the correct fakeName
@@ -189,14 +227,16 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M3 C2** — config-UI/spec reconciliation: keep the standalone
-`/settings/stealth` screen, fix spec 04-vs-06, document `lockTaskMode` (7th field
-+ info-tooltip), resolve the in-player "Stealth Mode: ON" toggle, and reconcile
-the spec remarks (the C4 immutability/launcher-trigger remark is now in spec 06
-§Stealth Mode Section — fold C2's own remark in alongside it). Then C5 (polish).
-See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
+**Next action: M3 C5** — #18 disguise polish: localize the tapWord decoy words
++ render `ReminderTemplate.iconAsset`/`imagePath` (render-if-present + Material
+fallback, user decision #6); the music-player track/artist strings stay neutral
+(fakeName's home is the header brand line, already wired in C3). THEN run the
+**M3 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests across C1+C2+C3+C4+C5) → full gate → **push the M3 stack** (user
+auth required). See the **M3 chunk plan** + **M3 DECISIONS (user)** blocks above.
 
-C1 + C3 + C4 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c3` + `m3-#15-c4`). The M2 stack was
+C1 + C2 + C3 + C4 are COMMITTED but UNPUSHED (`ac65b9e` + `m3-#15-c2` +
+`m3-#15-c3` + `m3-#15-c4`). The M2 stack was
 gate-green + user-pre-authorized to push; this session ASSUMES the orchestrator
 pushed it (confirm `git log origin/main` includes the M2 commits + `m2-handoff`
 `b4c8b21`). Per-fix recipe (unchanged): verify the gap yourself → implement
@@ -482,13 +522,15 @@ last line re-added with a comma + 7 new lines). `gen-l10n` reports 0
 untranslated; parity 14/14. (`…ToggleLabel` is added for the future in-player
 toggle but is **not yet rendered** — see DECISIONS / C2.)
 
-**DEFERRED to C2 (NOT a stub):** the spec mockup's in-player "Stealth Mode: ON"
-toggle (spec 04:914/924). Its spec semantics ("toggle stealth on/off") directly
-conflict with the user decision that **stealth config cannot change during an
-active session**. Rendering a non-functional toggle would be a stub; making it
-functional would violate the decision. So C1 OMITS it and C2 (which already owns
-the "can't-change-mid-session" spec remark) decides its fate. The
-`sessionStealthToggleLabel` string is pre-staged.
+**~~DEFERRED to C2~~ — RESOLVED in C2 (`m3-#15-c2`):** the spec mockup's
+in-player "Stealth Mode: ON" toggle (spec 04:914/924). Its spec semantics
+("toggle stealth on/off") conflict with the immutable-during-session decision —
+a functional toggle violates it; a dead one is a stub. **C2 removed it** from
+the spec mockup (with a *Removed (M3 C2)* note) and **deleted the pre-staged
+`sessionStealthToggleLabel` key from all 14 ARBs** (zero `lib/`+`test/`
+references — confirmed before removal). The session screen renders the resolved
+stealth appearance only; stealth is configured pre-session on
+`SettingsStealthScreen`.
 
 ---
 
@@ -877,6 +919,39 @@ the "can't-change-mid-session" spec remark) decides its fate. The
 
 ---
 
+## DEFERRED — M3 (NOT stubs; carry into C5 / the M3 cohort / M5)
+
+- **(C5, NEXT) #18 disguise polish** — localize the tapWord decoy words (still
+  English); render `ReminderTemplate.iconAsset`/`imagePath` (render-if-present
+  + Material fallback, user decision #6). Also the music-player **track/artist**
+  strings stay neutral localized placeholders (fakeName's home is the header
+  brand line, wired in C3; track/artist are song metadata — polish only).
+- **(C1, revisit) Small-mode corner-clock placement** — the `small` timer fades
+  in the top-right corner over the standard chrome; if a full-bleed *stealth
+  background* lands (a true blank/disguise canvas behind the music player), the
+  corner-clock placement should be revisited so it floats above that background
+  per spec 04:929 rather than the current body. Minor; no current visual bug.
+- **(C3, revisit) FG-notification live-body-update + unwired bg-service
+  streams.** `BackgroundSessionService.updateNotification` has no controller
+  subscriber, and nobody subscribes the bg-service `onPause`/`onResume`/
+  `onImSafe` streams — so the persistent FG notification text does NOT
+  live-update per engine event (start posts it; the action-tap self-updates
+  pause/resume text). Wiring a per-event `updateNotification` + the stream
+  subscriptions is a larger lifecycle task; the start/stop *survival* gap (the
+  C3 mandate) is closed. NOT a stub — the notification is posted + persistent.
+- **(C4-cohort, fold into M5 device-e2e) Per-preset launcher-success
+  on-device assertion.** The C4 integration test
+  (`integration_test/stealth_icon_switch_test.dart`) drives all 10 presets and
+  asserts the FINAL state (`music` resolves the launcher + relaunches). It does
+  NOT assert success *per preset* mid-loop (a PlatformException would surface,
+  but a silent per-preset alias mis-enable wouldn't be caught until the end).
+  Harden it in M5 device-e2e to observe alias state after EACH preset, not just
+  the last. (KEY FINDING: `pm enable` of the app's component is shell-blocked +
+  `adb root` refused on the production image → the swap is only drivable from
+  the app's own UID, so the in-process integration-test path is the only proof
+  channel; a concurrent `am start` mid-test stalls the binding — observe via
+  adb between runs.)
+
 ## DEFERRED — M2 polish (NOT stubs; fold into the listed chunk)
 
 - **Spec 06:262 says the alarm ramp range is "0–60 s" but the
@@ -1006,7 +1081,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3868 pass (M3 C4)
+flutter test --concurrency=6                                    # 3873 pass (M3 C2)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -1025,10 +1100,11 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ verified+gate-green
   (pushed/being-pushed by orchestrator).** **M3 (#15 stealth) IN PROGRESS** —
-  **C1 + C3 + C4 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` / `m3-#15-c3` /
-  `m3-#15-c4`)**; **C2 NEXT** (spec-reconcile), then C5 (polish) (see the M3 chunk
-  plan + M3 DECISIONS blocks near the top). Then M4 (#10/#9/#8/#16 + Tier-F), M5
-  (Phase-9: INT scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
+  **C1 + C2 + C3 + C4 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` /
+  `m3-#15-c2` / `m3-#15-c3` / `m3-#15-c4`)**; **C5 NEXT** (#18 disguise polish),
+  then the **M3 verifier cohort + push** (see the M3 chunk plan + M3 DECISIONS
+  blocks near the top). Then M4 (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT
+  scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
   spec-coverage matrix, coverage floor). The in-memory TaskList is cleared on
   `/clear` — this bullet is the durable journal.
 

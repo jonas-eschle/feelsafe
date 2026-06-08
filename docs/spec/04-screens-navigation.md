@@ -910,18 +910,15 @@ When stealth mode is enabled in settings, the session screen transforms:
 │  (Swipe left on progress = │
 │   "I feel fine" disarm)     │
 │                             │
-│  ═══════════════════════════│
-│  (toggle) Stealth Mode: ON  │
-│  (hidden if off)            │
-│                             │
 └─────────────────────────────┘
 ```
+
+> **Removed (M3 C2): the in-player "Stealth Mode: ON" toggle.** Earlier drafts of this mockup showed a stealth on/off toggle at the bottom of the fake music player. It has no valid in-session function: **stealth configuration is immutable during an active session** (resolved once at `startSession` and frozen — see spec 06 §Stealth Mode Section), so a *functional* mid-session toggle would violate that invariant, and a non-functional one would be a dead control (a stub). Stealth is configured before a session on `SettingsStealthScreen` (`/settings/stealth`); the session screen renders the resolved appearance only. The toggle is therefore omitted from the implemented fake music player.
 
 **Behavior:**
 - Shows as standard music player (Spotify, Apple Music, YouTube Music UI)
 - Play/pause controls work (pause = pause session, resume = resume)
 - Swipe on progress bar left-to-right = "I feel fine" disarm
-- Toggle switch for stealth mode on/off
 - Timer shows as music playback time (corner, if configured)
 
 **Timer Display Options (configurable per user):**

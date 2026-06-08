@@ -428,9 +428,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get sessionStealthPause => 'Wstrzymaj';
 
   @override
-  String get sessionStealthToggleLabel => 'Tryb ukryty';
-
-  @override
   String get simulationSummaryTitle => 'Podsumowanie symulacji';
 
   @override
@@ -1012,6 +1009,10 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Uniemożliwia opuszczenie aplikacji podczas trwającej sesji. Na Androidzie włącza przypinanie ekranu; na innych platformach nie ma efektu.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Przypina Guardian Angela do ekranu na czas całej sesji, dzięki czemu nie można przesunąć jej, aby zamknąć, ani przełączyć aplikacji. Kompromis: Android wyświetla systemowy komunikat „Aplikacja jest przypięta” i blokuje przełączanie aplikacji do końca sesji — widoczne dla każdego, kto patrzy na ekran. Pozostaw wyłączone, jeśli wolisz swobodnie przełączać się między aplikacjami podczas sesji. Bez efektu na platformach bez przypinania ekranu.';
 
   @override
   String get homeTagline => 'Twój anioł czuwa nad tobą.';

@@ -428,9 +428,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionStealthPause => 'रोकें';
 
   @override
-  String get sessionStealthToggleLabel => 'गुप्त मोड';
-
-  @override
   String get simulationSummaryTitle => 'सिमुलेशन सारांश';
 
   @override
@@ -1014,6 +1011,10 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'सत्र चलते समय ऐप से बाहर निकलने से रोकता है। Android पर यह स्क्रीन-पिनिंग सक्रिय करता है; अन्य प्लेटफ़ॉर्म पर इसका कोई प्रभाव नहीं है।';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'पूरे सत्र के दौरान Guardian Angela को स्क्रीन पर पिन कर देता है ताकि इसे स्वाइप करके बंद या स्विच न किया जा सके। समझौता: Android एक सिस्टम सूचना \"ऐप पिन किया गया है\" दिखाता है और सत्र समाप्त होने तक ऐप-स्विचिंग रोक देता है — जो स्क्रीन देख रहे किसी भी व्यक्ति को दिखता है। यदि आप सत्र के दौरान ऐप्स के बीच स्वतंत्र रूप से जाना चाहते हैं तो इसे बंद रहने दें। स्क्रीन-पिनिंग के बिना वाले प्लेटफ़ॉर्म पर कोई प्रभाव नहीं।';
 
   @override
   String get homeTagline => 'आपकी एंजेल आपके साथ है।';

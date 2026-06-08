@@ -425,9 +425,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionStealthPause => 'مکث';
 
   @override
-  String get sessionStealthToggleLabel => 'حالت مخفی';
-
-  @override
   String get simulationSummaryTitle => 'خلاصه شبیه‌سازی';
 
   @override
@@ -1010,6 +1007,10 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'از خروج از برنامه در حین اجرای جلسه جلوگیری می‌کند. در اندروید این کار سنجاق کردن صفحه را فعال می‌کند؛ در سایر سیستم‌عامل‌ها بی‌اثر است.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Guardian Angela را برای کل جلسه روی صفحه سنجاق می‌کند تا نتوان آن را با کشیدن بست یا به برنامهٔ دیگری جابه‌جا شد. بده‌بستان: اندروید یک پیام سیستمی «برنامه سنجاق شده است» نشان می‌دهد و تا پایان جلسه جابه‌جایی بین برنامه‌ها را مسدود می‌کند — برای هرکسی که به صفحه نگاه می‌کند قابل‌مشاهده است. اگر ترجیح می‌دهید در حین جلسه آزادانه بین برنامه‌ها جابه‌جا شوید، این را خاموش بگذارید. در سیستم‌عامل‌های بدون سنجاق صفحه بی‌اثر است.';
 
   @override
   String get homeTagline => 'فرشته‌ات هوای تو را دارد.';

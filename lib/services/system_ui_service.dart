@@ -1,4 +1,4 @@
-// Native channel handler lands in Phase 7
+// Native channel handlers are registered in MainActivity.kt
 // (Android: SystemUiChannel.kt — 'com.guardianangela.app/system_ui'
 //           StealthIconChannel.kt — 'com.guardianangela.app/stealth_icon';
 //  iOS: no-op — component toggling and lock-task are unavailable on iOS).
@@ -35,8 +35,9 @@ const MethodChannel _kStealthIconChannel = MethodChannel(
 /// pinning have no iOS equivalent (spec 10 §Platform-Specific
 /// Limitations).
 ///
-/// When the native handler is missing (Phase 7 not yet landed), calls
-/// will receive a [MissingPluginException] which is caught and logged.
+/// On a host without the native handler (e.g. a unit-test or desktop
+/// build) calls receive a [MissingPluginException] which is caught and
+/// logged so the absence is non-fatal.
 ///
 /// **Single constructor location rule:** no `RealSystemUiService()`
 /// call may appear outside `lib/services/service_providers.dart`

@@ -543,6 +543,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "Elegir número de emergencia",
   "stealthLockTaskLabel": "Fijar la app durante la sesión",
   "stealthLockTaskSubtitle": "Impide salir de la app mientras hay una sesión activa. En Android activa el anclaje de pantalla; en otras plataformas no tiene efecto.",
+  "stealthLockTaskInfo": "Fija Guardian Angela en la pantalla durante toda la sesión para que no se pueda deslizar para cerrarla ni cambiar de app. Contrapartida: Android muestra un aviso del sistema \"La app está fijada\" y bloquea el cambio de app hasta que termina la sesión, visible para cualquiera que mire la pantalla. Déjalo desactivado si prefieres moverte libremente entre apps durante una sesión. Sin efecto en plataformas sin anclaje de pantalla.",
   "homeTagline": "Tu ángel te cuida las espaldas.",
   "onboardingWelcomeGreeting": "Hola, soy Angela",
   "onboardingWelcomeBodyFull": "Soy tu guardiana personal. Te acompaño, vigilo tu salida nocturna y actúo si algo va mal.",
@@ -957,6 +958,5 @@
   "sessionStealthArtistName": "Artista desconocido",
   "sessionStealthAlbumArtLabel": "Carátula del álbum",
   "sessionStealthPlay": "Reproducir",
-  "sessionStealthPause": "Pausar",
-  "sessionStealthToggleLabel": "Modo sigiloso"
+  "sessionStealthPause": "Pausar"
 }

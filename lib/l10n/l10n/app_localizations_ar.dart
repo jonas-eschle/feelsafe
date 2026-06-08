@@ -423,9 +423,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionStealthPause => 'إيقاف مؤقت';
 
   @override
-  String get sessionStealthToggleLabel => 'الوضع المتخفّي';
-
-  @override
   String get simulationSummaryTitle => 'ملخص المحاكاة';
 
   @override
@@ -1006,6 +1003,10 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'يمنع مغادرة التطبيق أثناء تشغيل الجلسة. على نظام Android يفعّل هذا تثبيت الشاشة؛ وعلى الأنظمة الأخرى لا يكون له أي تأثير.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'يثبّت Guardian Angela على الشاشة طوال الجلسة بحيث لا يمكن تمريره للإغلاق أو التبديل إلى تطبيق آخر. المقايضة: يعرض نظام Android إشعارًا للنظام \"التطبيق مثبّت\" ويمنع التبديل بين التطبيقات حتى تنتهي الجلسة — وهو مرئي لأي شخص ينظر إلى الشاشة. اتركه معطّلًا إذا كنت تفضّل التنقّل بحرية بين التطبيقات أثناء الجلسة. لا تأثير له على الأنظمة التي لا تدعم تثبيت الشاشة.';
 
   @override
   String get homeTagline => 'ملاكك يحرسك.';

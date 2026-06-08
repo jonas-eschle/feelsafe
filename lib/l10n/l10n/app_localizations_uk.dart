@@ -426,9 +426,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionStealthPause => 'Пауза';
 
   @override
-  String get sessionStealthToggleLabel => 'Прихований режим';
-
-  @override
   String get simulationSummaryTitle => 'Підсумок симуляції';
 
   @override
@@ -1013,6 +1010,10 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Не дає вийти із застосунку під час активної сесії. На Android вмикає закріплення екрана; на інших платформах не діє.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Закріплює Guardian Angela на екрані на весь час сесії, щоб застосунок не можна було змахнути або переключити. Компроміс: Android показує системне сповіщення «Застосунок закріплено» й блокує переключення застосунків до кінця сесії — це бачить кожен, хто дивиться на екран. Залиште вимкненим, якщо хочете вільно переходити між застосунками під час сесії. На платформах без закріплення екрана не діє.';
 
   @override
   String get homeTagline => 'Ваш янгол вас оберігає.';

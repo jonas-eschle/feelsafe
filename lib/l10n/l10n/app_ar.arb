@@ -414,6 +414,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "اختيار رقم الطوارئ",
   "stealthLockTaskLabel": "تثبيت التطبيق أثناء الجلسة",
   "stealthLockTaskSubtitle": "يمنع مغادرة التطبيق أثناء تشغيل الجلسة. على نظام Android يفعّل هذا تثبيت الشاشة؛ وعلى الأنظمة الأخرى لا يكون له أي تأثير.",
+  "stealthLockTaskInfo": "يثبّت Guardian Angela على الشاشة طوال الجلسة بحيث لا يمكن تمريره للإغلاق أو التبديل إلى تطبيق آخر. المقايضة: يعرض نظام Android إشعارًا للنظام \"التطبيق مثبّت\" ويمنع التبديل بين التطبيقات حتى تنتهي الجلسة — وهو مرئي لأي شخص ينظر إلى الشاشة. اتركه معطّلًا إذا كنت تفضّل التنقّل بحرية بين التطبيقات أثناء الجلسة. لا تأثير له على الأنظمة التي لا تدعم تثبيت الشاشة.",
   "homeTagline": "ملاكك يحرسك.",
   "onboardingWelcomeGreeting": "مرحبًا، أنا أنجيلا",
   "onboardingWelcomeBodyFull": "أنا حارستك الشخصية. أمشي معك، وأراقب أمسيتك بالخارج، وأتصرّف إذا شعرتُ أن شيئًا ما ليس على ما يُرام.",
@@ -828,6 +829,5 @@
   "sessionStealthArtistName": "فنان غير معروف",
   "sessionStealthAlbumArtLabel": "غلاف الألبوم",
   "sessionStealthPlay": "تشغيل",
-  "sessionStealthPause": "إيقاف مؤقت",
-  "sessionStealthToggleLabel": "الوضع المتخفّي"
+  "sessionStealthPause": "إيقاف مؤقت"
 }

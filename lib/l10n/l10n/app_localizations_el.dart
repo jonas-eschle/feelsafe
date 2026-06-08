@@ -429,9 +429,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get sessionStealthPause => 'Παύση';
 
   @override
-  String get sessionStealthToggleLabel => 'Λειτουργία απόκρυψης';
-
-  @override
   String get simulationSummaryTitle => 'Σύνοψη προσομοίωσης';
 
   @override
@@ -1022,6 +1019,10 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Αποτρέπει την έξοδο από την εφαρμογή ενώ τρέχει μια συνεδρία. Στο Android ενεργοποιεί το καρφίτσωμα οθόνης· στις άλλες πλατφόρμες δεν έχει καμία επίδραση.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Καρφιτσώνει το Guardian Angela στην οθόνη για όλη τη διάρκεια της συνεδρίας, ώστε να μην μπορεί να κλείσει με σάρωση ούτε να γίνει εναλλαγή εφαρμογής. Συμβιβασμός: το Android εμφανίζει ένα μήνυμα συστήματος «Η εφαρμογή είναι καρφιτσωμένη» και μπλοκάρει την εναλλαγή εφαρμογών μέχρι να λήξει η συνεδρία — ορατό σε οποιονδήποτε κοιτάζει την οθόνη. Άφησέ το απενεργοποιημένο αν προτιμάς να μετακινείσαι ελεύθερα μεταξύ εφαρμογών κατά τη συνεδρία. Καμία επίδραση σε πλατφόρμες χωρίς καρφίτσωμα οθόνης.';
 
   @override
   String get homeTagline => 'Ο άγγελός σου σε προσέχει.';

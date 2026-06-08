@@ -299,7 +299,7 @@ final callStateServiceProvider = Provider<CallStateServiceProtocol>((ref) {
 /// [SystemUiServiceProtocol] — Android MethodChannels for stealth-icon
 /// toggling and lock-task pinning; iOS no-op.
 ///
-/// Native handler lands in Phase 7
+/// Native handlers are registered in MainActivity.kt
 /// (Android: SystemUiChannel.kt + StealthIconChannel.kt; iOS: no-op stubs).
 /// Tests override with [SimulationSystemUiService] from
 /// `lib/services/sim/system_ui_service_sim.dart`.

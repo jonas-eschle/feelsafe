@@ -424,9 +424,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionStealthPause => 'Pause';
 
   @override
-  String get sessionStealthToggleLabel => 'Stealth Mode';
-
-  @override
   String get simulationSummaryTitle => 'Simulation summary';
 
   @override
@@ -1008,6 +1005,10 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Prevents leaving the app while a session is running. On Android this engages screen-pinning; on other platforms this is a no-op.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Pins Guardian Angela to the screen for the whole session so it can\'t be swiped away or switched out of. Trade-off: Android shows a system \"App is pinned\" banner and blocks app-switching until the session ends — visible to anyone watching the screen. Leave this off if you\'d rather move freely between apps during a session. No effect on platforms without screen-pinning.';
 
   @override
   String get homeTagline => 'Your angel\'s got your back.';

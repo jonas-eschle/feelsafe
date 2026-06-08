@@ -414,6 +414,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "בחרי מספר חירום",
   "stealthLockTaskLabel": "נעצי את האפליקציה במהלך מושב",
   "stealthLockTaskSubtitle": "מונע יציאה מהאפליקציה כל עוד מושב פעיל. ב-Android זה מפעיל נעיצת מסך; בפלטפורמות אחרות אין לכך השפעה.",
+  "stealthLockTaskInfo": "נועץ את Guardian Angela למסך למשך כל המושב כך שאי אפשר להחליק כדי לסגור או לעבור לאפליקציה אחרת. פשרה: Android מציג הודעת מערכת \"האפליקציה נעוצה\" וחוסם מעבר בין אפליקציות עד שהמושב מסתיים — גלוי לכל מי שמביט במסך. השאר כבוי אם אתה מעדיף לעבור בחופשיות בין אפליקציות במהלך מושב. ללא השפעה בפלטפורמות ללא נעיצת מסך.",
   "homeTagline": "המלאך שלך שומר עלייך.",
   "onboardingWelcomeGreeting": "היי, אני אנג'לה",
   "onboardingWelcomeBodyFull": "אני המלאכית השומרת האישית שלך. אני מלווה אותך, שומרת עלייך בערב הבילוי שלך, ופועלת אם משהו מרגיש לא בסדר.",
@@ -828,6 +829,5 @@
   "sessionStealthArtistName": "אמן לא ידוע",
   "sessionStealthAlbumArtLabel": "עטיפת אלבום",
   "sessionStealthPlay": "נגן",
-  "sessionStealthPause": "השהה",
-  "sessionStealthToggleLabel": "מצב התגנבות"
+  "sessionStealthPause": "השהה"
 }

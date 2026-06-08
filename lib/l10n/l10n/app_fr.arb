@@ -432,6 +432,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "Choisir le numéro d'urgence",
   "stealthLockTaskLabel": "Épingler l'application pendant la session",
   "stealthLockTaskSubtitle": "Empêche de quitter l'application pendant qu'une session est en cours. Sur Android, cela active l'épinglage de l'écran ; sur les autres plateformes, cela n'a aucun effet.",
+  "stealthLockTaskInfo": "Épingle Guardian Angela à l'écran pendant toute la session afin qu'on ne puisse pas la balayer pour la fermer ni changer d'application. Compromis : Android affiche un bandeau système \"Application épinglée\" et bloque le changement d'application jusqu'à la fin de la session — visible par quiconque regarde l'écran. Laissez ceci désactivé si vous préférez passer librement d'une application à l'autre pendant une session. Sans effet sur les plateformes sans épinglage d'écran.",
   "homeTagline": "Votre ange veille sur vous.",
   "onboardingWelcomeGreeting": "Bonjour, je suis Angela",
   "onboardingWelcomeBodyFull": "Je suis votre gardienne personnelle. Je marche avec vous, veille sur votre soirée et passe à l'action si quelque chose ne va pas.",
@@ -846,6 +847,5 @@
   "sessionStealthArtistName": "Artiste inconnu",
   "sessionStealthAlbumArtLabel": "Pochette d’album",
   "sessionStealthPlay": "Lecture",
-  "sessionStealthPause": "Pause",
-  "sessionStealthToggleLabel": "Mode discret"
+  "sessionStealthPause": "Pause"
 }

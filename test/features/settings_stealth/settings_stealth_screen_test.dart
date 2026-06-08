@@ -20,6 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/widgets/info_icon_button.dart';
 import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
@@ -886,6 +887,49 @@ void main() {
         overrides: _overrides(_FakeStealthController(_stateWith())),
       );
       expect(find.text(l10n.stealthLockTaskLabel), findsNothing);
+    });
+
+    testWidgets('renders an info button next to the lock-task toggle', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(
+          _FakeStealthController(_stateWith(enabled: true)),
+        ),
+      );
+      // The lock-task toggle is the only field with an InfoIconButton on
+      // this screen, so exactly one is rendered (and only when enabled).
+      expect(find.byType(InfoIconButton), findsOneWidget);
+    });
+
+    testWidgets('info button is absent when stealth is disabled', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(_FakeStealthController(_stateWith())),
+      );
+      expect(find.byType(InfoIconButton), findsNothing);
+    });
+
+    testWidgets('tapping the info button opens the trade-off explanation', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsStealthScreen(),
+        overrides: _overrides(
+          _FakeStealthController(_stateWith(enabled: true)),
+        ),
+      );
+      await tester.tap(find.byType(InfoIconButton));
+      await tester.pumpAndSettle();
+      // The info sheet shows the lock-task trade-off body verbatim.
+      expect(find.text(l10n.stealthLockTaskInfo), findsOneWidget);
     });
   });
 }

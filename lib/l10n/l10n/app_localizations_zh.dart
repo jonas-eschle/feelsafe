@@ -417,9 +417,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionStealthPause => '暂停';
 
   @override
-  String get sessionStealthToggleLabel => '隐身模式';
-
-  @override
   String get simulationSummaryTitle => '模拟摘要';
 
   @override
@@ -988,6 +985,10 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       '防止在会话进行期间离开应用。在 Android 上将启用屏幕固定；在其他平台上此项无效。';
+
+  @override
+  String get stealthLockTaskInfo =>
+      '在整个会话期间将 Guardian Angela 固定在屏幕上，使其无法被滑动关闭或切换走。权衡：Android 会显示系统提示“应用已固定”，并在会话结束前阻止切换应用——任何看着屏幕的人都能看到。如果你希望在会话期间自由地在应用之间切换，请关闭此项。在不支持屏幕固定的平台上无效。';
 
   @override
   String get homeTagline => '你的守护天使一直在你身边。';
@@ -2525,9 +2526,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get sessionStealthPause => '暫停';
 
   @override
-  String get sessionStealthToggleLabel => '隱身模式';
-
-  @override
   String get simulationSummaryTitle => '模擬摘要';
 
   @override
@@ -3096,6 +3094,10 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get stealthLockTaskSubtitle =>
       '守護進行中防止離開 App。在 Android 上會啟用螢幕固定;在其他平台上則不會有作用。';
+
+  @override
+  String get stealthLockTaskInfo =>
+      '在整個守護期間將 Guardian Angela 固定在螢幕上，使其無法被滑動關閉或切換離開。取捨：Android 會顯示系統提示「App 已固定」，並在守護結束前阻止切換 App——任何看著螢幕的人都看得到。如果你希望在守護期間自由地在 App 之間切換，請關閉此項。在不支援螢幕固定的平台上無效。';
 
   @override
   String get homeTagline => '你的天使,守護有你。';

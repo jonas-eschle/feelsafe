@@ -71,13 +71,11 @@ See **Defaults Submenu → GPS Logging** below for the full configuration.
 
 Stealth mode is a structured `StealthConfig` managed as part of `AppDefaults.stealth`. Individual modes can override via `ModeOverrides.stealth`. Stealth mode is independent of PIN settings — a user may enable stealth without PIN or PIN without stealth.
 
-This section is a **collapsible card directly on the main settings screen** (not a separate sub-screen). The collapsed state shows a summary line; expanding it reveals all `StealthConfig` fields inline.
+Stealth is configured on its **own dedicated sub-screen** (`SettingsStealthScreen` at `/settings/stealth`), reached from the **Security → Stealth** row of the settings hub (per the subcategory table above — the hub itself shows only Theme + Language, and every other configuration is a self-contained sub-screen). The row's trailing chevron opens the screen; the screen shows the master toggle plus, when enabled, all sub-option fields in a single scrollable list.
 
-**Collapsed state (default):**
-- **Summary line:** "Stealth: OFF" or "Stealth: ON (3 options configured)"
-- Tap to expand
+> **Reconciliation note (M3 C2).** Earlier drafts of this section described stealth as an inline *collapsible card on the main settings screen*. That conflicts with the subcategory table at the top of this document (which routes Stealth to `/settings/stealth`) and with `docs/spec/04-screens-navigation.md` (route list + `SettingsStealthScreen`). The standalone sub-screen is the implemented and blessed design; the collapsible-card phrasing is superseded.
 
-**Expanded state shows all `StealthConfig` fields inline:**
+**The screen shows all `StealthConfig` fields:**
 
 | Field | Control | Default | Description |
 |-------|---------|---------|-------------|
@@ -87,8 +85,9 @@ This section is a **collapsible card directly on the main settings screen** (not
 | **notificationDisguise** | Toggle switch (shown when enabled) | true | Use generic notification channel name/icon ℹ |
 | **timerDisplay** | 3-option selector: Normal / Small / None (shown when enabled) | Normal | Session timer visibility during session ℹ |
 | **sessionScreenStealth** | Toggle switch (shown when enabled) | true | Remove Guardian Angela branding from session screen ℹ |
+| **lockTaskMode** | Toggle switch (shown when enabled) | false | Pin the running session to the foreground (Android screen-pinning) for the session's lifetime ℹ |
 
-The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`, `sessionScreenStealth`) are shown only when `enabled` is ON. When `enabled` is OFF, the section collapses to just the enabled toggle and the summary line.
+The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`, `sessionScreenStealth`, `lockTaskMode`) are shown only when `enabled` is ON. When `enabled` is OFF, the screen shows just the master enabled toggle.
 
 **Info tooltips:**
 - `enabled`: "Hides safety indicators. Useful if you don't want others to see you're using a safety app."
@@ -97,8 +96,11 @@ The sub-options (`fakeName`, `fakeIcon`, `notificationDisguise`, `timerDisplay`,
 - `notificationDisguise`: "Notifications use a generic channel name like 'Reminders' or 'Updates'."
 - `timerDisplay`: "Normal = full timer at top. Small = 12pt monospace M:SS in the top-right corner that fades to 50% opacity after 10 s of no interaction (G-018 wireframe in spec 04 §Session Screen Timer Display). None = hidden."
 - `sessionScreenStealth`: "Removes Guardian Angela branding (logo, name) from the session screen."
+- `lockTaskMode`: "Pins Guardian Angela to the screen for the whole session so it can't be swiped away or switched out of. Trade-off: Android shows a system 'App is pinned' banner and blocks app-switching until the session ends — visible to anyone watching the screen. Leave off if you'd rather move freely between apps during a session. No effect on platforms without screen-pinning."
 
-Modes can override via `ModeOverrides.stealth`. The Defaults submenu (`/settings/defaults`) no longer contains a separate Stealth sub-screen — stealth is configured entirely from this collapsible section.
+`lockTaskMode` is the only `StealthConfig` field that is **session-scoped at the OS level**: the session controller engages Android screen-pinning at session start (`SystemUiService.toggleLockTaskMode`) and releases it on session end. The screen here only persists the user's preference; nothing pins until a session actually starts. This contrasts with `fakeIcon`, whose launcher disguise applies at config-save time (see below).
+
+Modes can override via `ModeOverrides.stealth`. There is no separate Stealth screen under the Defaults submenu — stealth is configured entirely from the standalone `SettingsStealthScreen` (`/settings/stealth`) described in this section.
 
 **Stealth settings are immutable during an active session.** All `StealthConfig` fields are resolved once at `startSession` and frozen for the lifetime of that session; editing them mid-session has no effect on the running session (the new values apply only to the *next* session). This invariant is what makes the per-preset `fakeIcon` launcher disguise safe to switch eagerly: because the configuration can never change while a session runs, the Android activity-alias swap (which `PackageManager.DONT_KILL_APP` mitigates but cannot guarantee against a process kill) can be applied at **config-save time** with no risk of killing a live safety session.
 

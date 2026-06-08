@@ -543,6 +543,7 @@
   "settingsEmergencyNumberCountryPickerTitle": "選擇緊急號碼",
   "stealthLockTaskLabel": "守護期間鎖定 App",
   "stealthLockTaskSubtitle": "守護進行中防止離開 App。在 Android 上會啟用螢幕固定;在其他平台上則不會有作用。",
+  "stealthLockTaskInfo": "在整個守護期間將 Guardian Angela 固定在螢幕上，使其無法被滑動關閉或切換離開。取捨：Android 會顯示系統提示「App 已固定」，並在守護結束前阻止切換 App——任何看著螢幕的人都看得到。如果你希望在守護期間自由地在 App 之間切換，請關閉此項。在不支援螢幕固定的平台上無效。",
   "homeTagline": "你的天使,守護有你。",
   "onboardingWelcomeGreeting": "嗨,我是 Angela",
   "onboardingWelcomeBodyFull": "我是你的專屬守護者。我會陪你同行、守望你的夜晚外出,並在情況不對時採取行動。",
@@ -957,6 +958,5 @@
   "sessionStealthArtistName": "未知演出者",
   "sessionStealthAlbumArtLabel": "專輯封面",
   "sessionStealthPlay": "播放",
-  "sessionStealthPause": "暫停",
-  "sessionStealthToggleLabel": "隱身模式"
+  "sessionStealthPause": "暫停"
 }

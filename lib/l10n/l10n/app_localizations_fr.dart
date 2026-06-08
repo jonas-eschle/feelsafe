@@ -429,9 +429,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get sessionStealthPause => 'Pause';
 
   @override
-  String get sessionStealthToggleLabel => 'Mode discret';
-
-  @override
   String get simulationSummaryTitle => 'Résumé de la simulation';
 
   @override
@@ -1021,6 +1018,10 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get stealthLockTaskSubtitle =>
       'Empêche de quitter l\'application pendant qu\'une session est en cours. Sur Android, cela active l\'épinglage de l\'écran ; sur les autres plateformes, cela n\'a aucun effet.';
+
+  @override
+  String get stealthLockTaskInfo =>
+      'Épingle Guardian Angela à l\'écran pendant toute la session afin qu\'on ne puisse pas la balayer pour la fermer ni changer d\'application. Compromis : Android affiche un bandeau système \"Application épinglée\" et bloque le changement d\'application jusqu\'à la fin de la session — visible par quiconque regarde l\'écran. Laissez ceci désactivé si vous préférez passer librement d\'une application à l\'autre pendant une session. Sans effet sur les plateformes sans épinglage d\'écran.';
 
   @override
   String get homeTagline => 'Votre ange veille sur vous.';
