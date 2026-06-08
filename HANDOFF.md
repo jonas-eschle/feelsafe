@@ -1,12 +1,36 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IMPLEMENTATION
-SET DONE (UNPUSHED): #13a + #13b + #14 + #13c (cohort-VERIFIED PASS at
-`d54b986`+`81f131f`) + #13d (PASS `0788c52`) + #23 (PASS `8c191ac`) + #20 —
-ALL 4 SUB-PARTS NOW COMPLETE.** #20 sub-part 4 (iOS `critical_alert.wav`)
-was the last BLOCKED item; the user approved sourcing it from
-`assets/audio/siren.wav`, so it is now wired (file + pbxproj). The remaining
-M2 work is the verifier cohort + push.**
+**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IS NOW FULLY
+IMPLEMENTED + COHORT-VERIFIED (PASS) + THE LAST COVERAGE-GAP FINDING CLOSED +
+GATE-GREEN + READY TO PUSH (UNPUSHED).** The M2 cohort (architect-reviewer
+spec-vs-code + qa-expert spec-vs-tests) PASSED with ONE low/non-blocking
+finding: a missing END-TO-END widget test proving the SMS contact-grid
+all-capable inference (`allContacts` ⇒ `contactIds = null`) persists through
+the REAL Mode Editor to the DB. **That test is now added and green** (`abc1bbf`
+— see below). The authoritative pre-push gate was re-run and is GREEN:
+analyzer `--fatal-infos` = 0; full suite `flutter test --concurrency=6` =
+**3822 pass** (3821 baseline + 1 new) with zero `sqlite3mc` errors; deferral-grep
+0; OLD/ clean; tree clean. **NEXT ACTION = the ORCHESTRATOR PUSHES the M2 stack
+(11 commits ahead of `origin/main`), then M3 (#15 stealth).** The M2 set is:
+#13a + #13b + #14 + #13c (cohort-VERIFIED PASS at `d54b986`+`81f131f`) + #13d
+(PASS `0788c52`) + #23 (PASS `8c191ac`) + #20 (ALL 4 SUB-PARTS) + #14-test
+(`abc1bbf`, close M2-cohort finding).
+
+**sqlite3mc native-asset note (carry forward):** the transient
+`libsqlite3mc.x64.linux.so` "Hash of downloaded file … expected …" failure is a
+**GitHub release-CDN flap**: direct `curl` of
+`github.com/simolus3/sqlite3.dart/releases/download/sqlite3-3.3.1/libsqlite3mc.x64.linux.so`
+intermittently returns **HTTP 504**, and the Dart hook's `HttpClient` streams the
+504 error-page body AS the "binary" (so it hashes to garbage). The pin is
+`9139316c6bffee12ea095c5353fa2a10362aa3698cf04cf12ffcf982e248dc1a`
+(`sqlite3-3.3.1/lib/src/hook/asset_hashes.dart`). Recovery: **just re-run** — a
+retry usually lands an HTTP 200 with correct bytes (verified this session: 504
+then 200-GOOD on the next attempt), after which the hook caches the good file
+in `.dart_tool/hooks_runner/shared/sqlite3/build/download-<random>/` and reuses
+it. The `download-<hex>` dirname is `Object.hash(...).toRadixString(16)` and is
+**randomised per Dart isolate**, so you cannot pre-seed it by name — retrying the
+download is the fix, not cache surgery. This session's authoritative full run
+completed with the native build succeeding cleanly (0 hash errors).
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -23,16 +47,20 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `8c191ac` m2-#23 — alarm settings section
 - `967fe59` m2-#20 — channel validation + SMS template editor + iOS warnings
               (sub-parts 1–3)
-- `<this>`   m2-#20-fix — iOS `critical_alert.wav` (siren.wav) + shared
+- `<prior>`  m2-#20-fix — iOS `critical_alert.wav` (siren.wav) + shared
               SMS-target resolver (sub-part 4 + cohort DRY advisory + a test
               read-back)
+- `abc1bbf`  m2-#14 — e2e grid-inference persistence test (close M2-cohort
+              finding): one mode-editor widget test driving deselect→reselect
+              of a contact chip, asserting the saved `SmsContactConfig` reloads
+              from the DB as `allContacts` with `contactIds == null`
 - (+ this handoff commit)
 
-**Tests: 3821 pass** (3808 prior + 13 net-new resolver-branch tests in the new
-`test/domain/orchestration/resolve_sms_targets_test.dart`; +1 added DB
-read-back assertion inside the existing channel-mismatch blocked-save widget
-test). Analyzer `--fatal-infos` clean. deferral-grep 0; OLD/ clean. Tree clean.
-Branch: `main`. (Pure-Dart shared resolver + strategy/validator delegation; the
+**Tests: 3822 pass** (3821 prior + 1 net-new end-to-end grid-inference widget
+test in `test/features/mode_editor/mode_editor_screen_test.dart`). Analyzer
+`--fatal-infos` clean (0 issues). deferral-grep 0; OLD/ clean. Tree clean.
+Branch: `main` (11 commits ahead of `origin/main`). (Pure-Dart shared resolver +
+strategy/validator delegation; the
 iOS bundle change — `ios/Runner/critical_alert.wav` + `project.pbxproj`
 entries — has NO local build proof: it builds in CI's `build-ios` job, the
 real gate on a non-macOS host.)
@@ -61,20 +89,23 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests, both `opus`) → full gate → push the M2 stack (the user has
-pre-authorized the M2 push after the cohort passes).** Per-fix recipe
-(unchanged): verify the gap yourself → implement (serial) → prove (host/widget
-tests driving the REAL controller; emulator for native) → l10n deltas →
-language agent for 13 locales → gate suite → commit → **ask before pushing**.
+**Next action: the ORCHESTRATOR PUSHES the M2 stack** (`main` is 11 commits
+ahead of `origin/main`; user pre-authorized the M2 push after the cohort
+passed — still confirm at the moment of pushing). **Then M3 (#15 stealth).**
+The M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both `opus`) is DONE and PASSED; its one low/non-blocking
+finding (a missing end-to-end grid-inference persistence test) is CLOSED by
+`abc1bbf`, and the authoritative pre-push gate is GREEN (analyzer 0; suite
+3822 pass; deferral-grep 0; OLD/ clean; tree clean). Per-fix recipe
+(unchanged for future work): verify the gap yourself → implement (serial) →
+prove (host/widget tests driving the REAL controller; emulator for native) →
+l10n deltas → language agent for 13 locales → gate suite → commit → **ask
+before pushing**.
 
-**M2 implementation set is COMPLETE** — #13a/#13b/#14/#13c/#13d/#23/#20 (all 4
-sub-parts) done and committed (UNPUSHED). Nothing implementation-side remains
-for M2. Next is verification + push:
-
-**M2 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests, both `opus`) → gate → **push the M2 stack (user pre-authorized;
-still confirm at the moment of pushing).**
+**M2 is COMPLETE + VERIFIED + GATE-GREEN** — #13a/#13b/#14/#13c/#13d/#23/#20
+(all 4 sub-parts) + the closing `abc1bbf` test. Nothing remains for M2 except
+the push itself (orchestrator's job). After the push, proceed to **M3
+(#15 stealth)**.
 
 ---
 
