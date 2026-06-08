@@ -29,6 +29,7 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -692,6 +693,76 @@ void main() {
       await _scrollTo(tester, find.text(l10n.smsContactRecipientsHeader));
       expect(find.text(l10n.smsContactRecipientsHeader), findsOneWidget);
       expect(find.widgetWithText(FilterChip, 'Alice'), findsOneWidget);
+    });
+
+    testWidgets('deselect-then-reselect persists allContacts with null '
+        'contactIds end-to-end', (WidgetTester tester) async {
+      // Proves the grid's all-capable inference (allContacts ⇒ contactIds
+      // cleared to null) survives the REAL Mode Editor → draft → DB round-trip,
+      // not just at the grid boundary. A non-null id list under allContacts is
+      // read as *specific* IDs by the runtime resolver, so this is the trap:
+      // any copyWith on the save path silently re-introducing contactIds would
+      // make this FAIL RED.
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // Two SMS-capable contacts: EmergencyContact.channels defaults to
+      // [MessageChannel.sms], so both carry the step's sms channel and the
+      // default smsContact config (channel sms, allContacts) selects BOTH on
+      // first render.
+      check(
+        EmergencyContact(
+          id: 'probe',
+          name: 'probe',
+          phoneNumber: '+10000000',
+          sortOrder: 0,
+        ).channels,
+      ).deepEquals(<MessageChannel>[MessageChannel.sms]);
+      await db.contactsDao.upsert(
+        EmergencyContact(
+          id: 'a',
+          name: 'Alice',
+          phoneNumber: '+15550001',
+          sortOrder: 0,
+        ),
+      );
+      await db.contactsDao.upsert(
+        EmergencyContact(
+          id: 'b',
+          name: 'Bob',
+          phoneNumber: '+15550002',
+          sortOrder: 1,
+        ),
+      );
+      await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s0', type: ChainStepType.smsContact)]),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      await _expandStep(tester, l10n.chainStepNameSmsContact);
+      final Finder alice = find.widgetWithText(FilterChip, 'Alice');
+      await _scrollTo(tester, alice);
+      // Both chips start selected (allContacts). Deselect Alice → the
+      // selection narrows to the strict subset {Bob} ⇒ specificIds.
+      await tester.tap(alice);
+      await tester.pumpAndSettle();
+      // Reselect Alice → all capable contacts selected again ⇒ allContacts
+      // with contactIds cleared back to null.
+      await tester.tap(find.widgetWithText(FilterChip, 'Alice'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final SmsContactConfig config =
+          saved!.chainSteps.first.config! as SmsContactConfig;
+      check(config.contactSelection).equals(SmsContactSelection.allContacts);
+      check(config.contactIds).isNull();
     });
   });
 
