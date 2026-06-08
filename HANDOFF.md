@@ -1,13 +1,12 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IN
-PROGRESS: #13a + #13b + #14 + #13c (COMPLETE + cohort-VERIFIED PASS at
-`d54b986`+`81f131f`) + #13d COMPLETE + cohort-VERIFIED (PASS) at `0788c52` +
-#23 COMPLETE + cohort-VERIFIED (PASS) at `8c191ac` + #20 (channel validation
-+ SMS template editor + iOS warnings) **PARTIAL**: sub-parts 1–3 COMPLETE +
-committed (UNPUSHED); sub-part 4 (iOS `critical_alert.wav`) **BLOCKED — needs
-user decision** (no such asset exists in the repo; recommendation below).
-Next: resolve #20 sub-part 4 → M2 cohort → push.**
+**Snapshot:** 2026-06-08 — **M0 + M1 COMPLETE+VERIFIED+PUSHED. M2 IMPLEMENTATION
+SET DONE (UNPUSHED): #13a + #13b + #14 + #13c (cohort-VERIFIED PASS at
+`d54b986`+`81f131f`) + #13d (PASS `0788c52`) + #23 (PASS `8c191ac`) + #20 —
+ALL 4 SUB-PARTS NOW COMPLETE.** #20 sub-part 4 (iOS `critical_alert.wav`)
+was the last BLOCKED item; the user approved sourcing it from
+`assets/audio/siren.wav`, so it is now wired (file + pbxproj). The remaining
+M2 work is the verifier cohort + push.**
 
 The M1 stack was already pushed before this session (the previous handoff was
 written pre-push; `origin/main` = `b62ba2b`). M2 builds the configuration UIs.
@@ -22,47 +21,37 @@ one milestone after the verifier cohort (rule 12 + plan §3.7):
 - `81f131f` m2-#13c-fix — cohort findings (local-template Add + test gaps)
 - `0788c52` m2-#13d — save + trigger save-validation
 - `8c191ac` m2-#23 — alarm settings section
-- `<this>`   m2-#20 — channel validation + SMS template editor + iOS warnings
-              (sub-parts 1–3; sub-part 4 critical_alert.wav BLOCKED)
+- `967fe59` m2-#20 — channel validation + SMS template editor + iOS warnings
+              (sub-parts 1–3)
+- `<this>`   m2-#20-fix — iOS `critical_alert.wav` (siren.wav) + shared
+              SMS-target resolver (sub-part 4 + cohort DRY advisory + a test
+              read-back)
 - (+ this handoff commit)
 
-**Tests: 3808 pass** (3788 prior + 20 net-new #20 tests: 8 pure-Dart
-channel-validation cases in `mode_draft_validator_test`, 4 mode-editor widget
-tests driving the REAL `_save()`/draft→DB (channel-validation block + allow,
-messageTemplate round-trip + placeholder-chip insert), 8 `EventSpecificConfig`
-widget tests under a `ThemeData(platform:)` override (iOS SMS warning
-show/hide + channel-gate, iOS callEmergency warning show/hide, template field
-+ chips, blank→null clear)). Analyzer `--fatal-infos` clean. l10n parity green
-(5 new #20 keys × 14 locales; additions-only regen). deferral-grep 0; OLD/
-clean. Tree clean. Branch: `main`. (Pure-Dart validator + Flutter-only UI/l10n
-— no native/model/strategy change in the committed sub-parts; the iOS bundle
-change is sub-part 4, which is BLOCKED and NOT committed.)
+**Tests: 3821 pass** (3808 prior + 13 net-new resolver-branch tests in the new
+`test/domain/orchestration/resolve_sms_targets_test.dart`; +1 added DB
+read-back assertion inside the existing channel-mismatch blocked-save widget
+test). Analyzer `--fatal-infos` clean. deferral-grep 0; OLD/ clean. Tree clean.
+Branch: `main`. (Pure-Dart shared resolver + strategy/validator delegation; the
+iOS bundle change — `ios/Runner/critical_alert.wav` + `project.pbxproj`
+entries — has NO local build proof: it builds in CI's `build-ios` job, the
+real gate on a non-macOS host.)
 
-**#20 BLOCKED sub-part (NEEDS USER DECISION):** iOS `critical_alert.wav` does
-NOT exist anywhere in the repo (verified: only `siren.wav`,
-`ringtone_default.wav`, `countdown_warning.wav` ship under `assets/audio/`;
-the 14 voice m4a; nothing named `critical_alert.*` is or ever was tracked).
-`lib/services/notification_service.dart:391` passes `sound:
-'critical_alert.wav'` to `DarwinNotificationDetails` for iOS escalation
-notifications (alarm/emergency/fakeCall), so iOS would fall back to the
-default notification sound — the bespoke critical-alert siren never plays.
-The task's hypothesis ("a Flutter asset already ships it; iOS just doesn't
-bundle it") is FALSE. **Recommendation:** the canonical alarm/critical sound
-the app already ships and plays on BOTH platforms is `assets/audio/siren.wav`
-(RIFF/WAVE PCM 16-bit mono 44.1 kHz, a valid `UNNotificationSound` format and
-well under the iOS 30 s limit; `audio_service.dart:244` notes "WAV decodes on
-both Android and iOS"). Bundling a copy of `siren.wav` as the iOS notification
-sound `critical_alert.wav` (root of `ios/Runner`, referenced from
-`Runner.xcodeproj` + `Info.plist`/Copy-Bundle-Resources) is a real,
-already-approved-as-the-alarm asset — NOT fabricated junk. But it is a
-safety-relevant UX decision (which sound iOS critical alerts play), so per
-Hard Rule 4 it needs explicit user sign-off before committing the copy. I did
-NOT commit a placeholder/junk wav (that would be a stub). **Decision needed:**
-(a) approve sourcing iOS `critical_alert.wav` from `siren.wav`, or (b) provide
-a dedicated critical-alert audio file. After the decision, the remaining work
-is mechanical: drop the file at `ios/Runner/critical_alert.wav`, add it to the
-`Runner` target's resources in `project.pbxproj` (PBXBuildFile +
-PBXFileReference + Resources build phase), and verify via CI `build-ios`.
+**#20 sub-part 4 (RESOLVED):** the user approved sourcing iOS
+`critical_alert.wav` from `assets/audio/siren.wav` (the canonical alarm sound
+the app already ships and plays on both platforms; RIFF/WAVE PCM 16-bit mono
+44.1 kHz, a valid `UNNotificationSound` format, well under the iOS 30 s limit).
+Done this session: copied the bytes verbatim to `ios/Runner/critical_alert.wav`
+(SHA-256 identical to `siren.wav`); added three `project.pbxproj` entries
+modelled on the existing `Assets.xcassets` root resource — a `PBXFileReference`
+(`GA00010000000000000000A1`, `lastKnownFileType = audio.wav`), a `PBXBuildFile`
+(`GA00010000000000000000A0`), the file in the **Runner target's Resources build
+phase** (`97C146EC…`), and a listing in the Runner `PBXGroup`. The pbxproj
+parses (balanced braces/parens, 15/15 sections, cross-refs consistent).
+`notification_service.dart:391` defaults `sound: 'critical_alert.wav'`, which
+now resolves to the bundled file at runtime. **iOS build is NOT verifiable on
+this Linux box — CI `build-ios` is the gate.** No `Info.plist` change is needed:
+`UNNotificationSound(named:)` resolves bundle-root sounds without a plist key.
 
 ---
 
@@ -72,25 +61,20 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: (1) resolve #20 sub-part 4 (iOS `critical_alert.wav`) — see the
-BLOCKED section above; one AskUserQuestion (source from `siren.wav` vs. a
-dedicated file), then the mechanical bundle/pbxproj wiring + CI `build-ios`.
-(2) Run the M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests, both `opus`) → gate → push the M2 stack.** Per-fix recipe
+**Next action: M2 verifier cohort (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both `opus`) → full gate → push the M2 stack (the user has
+pre-authorized the M2 push after the cohort passes).** Per-fix recipe
 (unchanged): verify the gap yourself → implement (serial) → prove (host/widget
 tests driving the REAL controller; emulator for native) → l10n deltas →
 language agent for 13 locales → gate suite → commit → **ask before pushing**.
 
-**M2 remaining chunks (the spine — #13a/#13b/#14 — AND #13c AND #13d AND #23
-— are done; #20 sub-parts 1–3 done):**
+**M2 implementation set is COMPLETE** — #13a/#13b/#14/#13c/#13d/#23/#20 (all 4
+sub-parts) done and committed (UNPUSHED). Nothing implementation-side remains
+for M2. Next is verification + push:
 
-1. **#20 sub-part 4 only** — iOS `critical_alert.wav` bundle (BLOCKED on a
-   user decision; sub-parts 1–3 — channel-validation-on-save, SMS
-   message-template editor, iOS SMS+callEmergency warnings — are COMPLETE +
-   committed). See the BLOCKED section.
-
-Then: **M2 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
-spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
+**M2 verifier cohort** (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both `opus`) → gate → **push the M2 stack (user pre-authorized;
+still confirm at the moment of pushing).**
 
 ---
 
@@ -228,6 +212,30 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   validator + Flutter-only UI — no native path in the committed parts, so
   emulator not required (not run); the iOS BUILD of sub-part 4's bundle change
   defers to CI `build-ios` (real platform constraint, not a deferral).
+- **#20-fix** (`<this>`): closes #20 (sub-part 4) + one cohort DRY advisory + a
+  test read-back. (A) **iOS `critical_alert.wav`** — see the resolved sub-part-4
+  section above; `siren.wav` bytes → `ios/Runner/critical_alert.wav`, 3
+  pbxproj entries + Runner-group listing, CI `build-ios` is the build gate.
+  (B) **Shared SMS-target resolver (safety-critical DRY).** The validator's
+  `_resolveSmsTargets` hand-duplicated the runtime
+  `SmsContactStrategy._resolveContacts`; branch-equivalent but free to drift,
+  and drift = the editor validating a different recipient set than distress
+  actually messages. Extracted ONE pure-Dart function `resolveSmsTargets(
+  SmsContactConfig, List<EmergencyContact>) → List<EmergencyContact>` into
+  `lib/domain/orchestration/resolve_sms_targets.dart`. BOTH call sites now
+  delegate to it (the strategy passes `services.contacts.all`; the validator
+  passes its `contacts` param). Runtime semantics preserved EXACTLY (the
+  runtime was the source of truth): all 35 `sms_contact_strategy_test` cases +
+  all `mode_draft_validator_test` channel cases stay green unchanged. 13
+  net-new direct branch tests cover every path (allContacts true-all + empty;
+  legacy allContacts+ids→specificIds + empty-ids→genuine-all; firstContact by
+  sortOrder + ties + no-mutate + empty; specificIds order + missing-id-skip +
+  duplicate-preserve + null + empty). (C) **Test read-back** — the
+  channel-mismatch blocked-save widget test now asserts the persisted step
+  config is still `SmsContactConfig(channel: whatsapp)` (explicit no-persist
+  proof; the comment previously advertised a read-back it didn't perform). No
+  l10n/native/model change; pure-Dart + a test. Emulator not run (iOS bundle is
+  the only native artifact, and it is CI-gated).
 
 ---
 
@@ -276,10 +284,19 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   plumbing — nothing hits the DB until the mode itself is saved.
 - **Contact channel field is `channels`** (not `messageChannels` as some spec
   prose says). SMS-capable = `contact.channels.contains(config.channel)`.
-- **`allContacts` + non-empty `contactIds` ⇒ treated as SPECIFIC IDs** by
-  `sms_contact_strategy.dart:135` (legacy back-compat). So true "all" MUST
-  null `contactIds`. `SmsContactConfig.copyWith` (and `ChainStep.copyWith`)
-  CANNOT null a field (`x ?? this.x`) — construct the object directly to clear.
+- **`allContacts` + non-empty `contactIds` ⇒ treated as SPECIFIC IDs** by the
+  resolver (legacy back-compat). So true "all" MUST null `contactIds`.
+  `SmsContactConfig.copyWith` (and `ChainStep.copyWith`) CANNOT null a field
+  (`x ?? this.x`) — construct the object directly to clear.
+- **SMS-target resolution is now ONE shared pure-Dart function**
+  (`resolveSmsTargets` in `lib/domain/orchestration/resolve_sms_targets.dart`).
+  The runtime `SmsContactStrategy._resolveContacts` AND the save-time
+  `validateModeDraft` both delegate to it — they can no longer drift, so the
+  recipient set the editor validates always equals the set distress messages
+  at runtime. It is Flutter-free (lives in `lib/domain/`, takes a plain
+  `List<EmergencyContact>`); the strategy adapts via `services.contacts.all`.
+  Edit this ONE function (and its branch test) for any future change to "who
+  gets messaged". Branch test: `test/domain/orchestration/resolve_sms_targets_test.dart`.
 - **`EventSpecificConfig` is shared** (Mode Editor + Event Defaults). It keeps
   the existing `eventDefaults*` l10n keys (context-neutral). The smsContact
   grid only shows when `contacts != null`.
@@ -376,9 +393,9 @@ spec-vs-tests, both `opus`) → gate → **ask the user to push the M2 stack.**
   FakeCall/DisguisedReminder when locked) → a notification-deeplink nav pass.
 - **#18 polish:** tapWord decoy words not localized; disguise icon is a neutral
   Material icon (template `iconAsset`/`imagePath` not rendered). → near #15.
-- **iOS `critical_alert.wav`** missing from the iOS bundle → now the ACTIVE
-  **#20 sub-part 4 BLOCKED** item (see the BLOCKED section near the top — it
-  needs a user decision: source from `siren.wav` vs. a dedicated file).
+- **iOS `critical_alert.wav`** — RESOLVED this session (#20 sub-part 4): bundled
+  from `siren.wav` + wired in `project.pbxproj`; CI `build-ios` is the build
+  gate. No longer deferred.
 - **`docs/review/remaining-gaps.md`** is a STALE v2-era artifact — do NOT
   action against v3.
 
@@ -448,7 +465,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3788 pass
+flutter test --concurrency=6                                    # 3821 pass
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -465,14 +482,13 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IN PROGRESS** — #13a ✓ +
-  #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ + #20 sub-parts 1–3 ✓ done
-  (UNPUSHED); remaining **#20 sub-part 4 (iOS `critical_alert.wav`, BLOCKED on
-  a user decision) → M2 cohort → push.** Then M3 (#15 stealth), M4
-  (#10/#9/#8/#16 + Tier-F), M5 (Phase-9: INT scenarios, device e2e incl.
-  #11 adb-gsm + #12 background-throttle, spec-coverage matrix, coverage floor).
-  The in-memory TaskList is cleared on `/clear` — this bullet is the durable
-  journal.
+- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 IMPLEMENTATION COMPLETE
+  (UNPUSHED)** — #13a ✓ + #13b ✓ + #14 ✓ + #13c ✓ + #13d ✓ + #23 ✓ + #20 ✓
+  (all 4 sub-parts) done. Remaining for M2: **verifier cohort → push** (user
+  pre-authorized). Then M3 (#15 stealth), M4 (#10/#9/#8/#16 + Tier-F), M5
+  (Phase-9: INT scenarios, device e2e incl. #11 adb-gsm + #12
+  background-throttle, spec-coverage matrix, coverage floor). The in-memory
+  TaskList is cleared on `/clear` — this bullet is the durable journal.
 
 ---
 
@@ -486,7 +502,9 @@ Don't skip it because "the session went short."
 
 ---
 
-End of hand-off. M0+M1 verified+pushed; **M2 config-UI in progress** — #13a +
-#13b (per-step config) + #14 (SMS contact grid) + #13c (Safety Options) + #13d
-(save + trigger save-validation) + #23 (alarm settings section) committed,
-UNPUSHED. Resume by **building #20 → M2 cohort → push.**
+End of hand-off. M0+M1 verified+pushed; **M2 config-UI IMPLEMENTATION COMPLETE**
+— #13a + #13b (per-step config) + #14 (SMS contact grid) + #13c (Safety
+Options) + #13d (save-validation) + #23 (alarm settings) + #20 (all 4
+sub-parts: channel validation, SMS template editor, iOS warnings, iOS
+`critical_alert.wav` bundle) committed, UNPUSHED. Resume by **running the M2
+verifier cohort → full gate → push the M2 stack (user pre-authorized).**

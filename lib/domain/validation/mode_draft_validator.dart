@@ -2,10 +2,10 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
-import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/orchestration/resolve_sms_targets.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
 
@@ -168,66 +168,22 @@ List<ModeValidationIssue> validateModeDraft(
 /// Whether an `smsContact` [config] targets at least one contact yet none of
 /// those targeted contacts has [SmsContactConfig.channel] enabled.
 ///
-/// Mirrors the runtime resolver (`sms_contact_strategy._resolveContacts` +
-/// the `channels.contains` filter): the step's selected recipients are
-/// resolved first, then filtered by channel. A step that targets nobody
-/// (empty repo, `specificIds` with no ids) is NOT flagged here — an empty
-/// recipient set is the no-contacts concern handled (as a warning, not a
-/// block) by `SessionStartValidator`, and blocking it would be a false
-/// positive while the user is still building the mode. Only a genuine
-/// misconfiguration — recipients chosen, but the chosen channel is on none
-/// of them — blocks the save (spec 02:319).
+/// Uses the shared [resolveSmsTargets] — the same resolver the runtime
+/// `SmsContactStrategy` uses — so validation and runtime delivery agree on
+/// the recipient set, then applies the `channels.contains` filter. A step
+/// that targets nobody (empty repo, `specificIds` with no ids) is NOT flagged
+/// here — an empty recipient set is the no-contacts concern handled (as a
+/// warning, not a block) by `SessionStartValidator`, and blocking it would be
+/// a false positive while the user is still building the mode. Only a genuine
+/// misconfiguration — recipients chosen, but the chosen channel is on none of
+/// them — blocks the save (spec 02:319).
 bool _smsStepTargetsContactsWithoutChannel(
   SmsContactConfig config,
   List<EmergencyContact> contacts,
 ) {
-  final List<EmergencyContact> targeted = _resolveSmsTargets(config, contacts);
+  final List<EmergencyContact> targeted = resolveSmsTargets(config, contacts);
   if (targeted.isEmpty) return false;
   return !targeted.any((c) => c.channels.contains(config.channel));
-}
-
-/// Resolves the contacts an `smsContact` [config] targets, before the
-/// channel filter, mirroring `sms_contact_strategy._resolveContacts`.
-List<EmergencyContact> _resolveSmsTargets(
-  SmsContactConfig config,
-  List<EmergencyContact> contacts,
-) {
-  // Legacy back-compat: allContacts + explicit contactIds → specific IDs.
-  final List<String>? ids = config.contactIds;
-  if (config.contactSelection == SmsContactSelection.allContacts &&
-      ids != null &&
-      ids.isNotEmpty) {
-    return _contactsByIds(ids, contacts);
-  }
-  return switch (config.contactSelection) {
-    SmsContactSelection.allContacts => contacts,
-    SmsContactSelection.firstContact =>
-      contacts.isEmpty
-          ? const <EmergencyContact>[]
-          : <EmergencyContact>[
-              (List<EmergencyContact>.from(
-                contacts,
-              )..sort((a, b) => a.sortOrder.compareTo(b.sortOrder))).first,
-            ],
-    SmsContactSelection.specificIds =>
-      (ids == null || ids.isEmpty)
-          ? const <EmergencyContact>[]
-          : _contactsByIds(ids, contacts),
-  };
-}
-
-/// The contacts in [contacts] whose id appears in [ids] (order preserved).
-List<EmergencyContact> _contactsByIds(
-  List<String> ids,
-  List<EmergencyContact> contacts,
-) {
-  final Map<String, EmergencyContact> byId = <String, EmergencyContact>{
-    for (final EmergencyContact c in contacts) c.id: c,
-  };
-  return <EmergencyContact>[
-    for (final String id in ids)
-      if (byId[id] case final EmergencyContact c) c,
-  ];
 }
 
 /// Whether [trigger] satisfies its pattern's field-consistency contract.

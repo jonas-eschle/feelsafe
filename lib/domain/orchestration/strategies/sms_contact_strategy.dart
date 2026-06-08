@@ -4,11 +4,11 @@ import 'dart:developer';
 import 'package:clock/clock.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
-import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/domain/orchestration/resolve_sms_targets.dart';
 
 /// Default message template used when [SmsContactConfig.messageTemplate]
 /// is `null`.
@@ -124,42 +124,10 @@ final class SmsContactStrategy implements EventStrategy {
 
   /// Resolves the target contacts based on [SmsContactConfig.contactSelection].
   ///
-  /// Legacy back-compat: when [contactSelection] is [SmsContactSelection.allContacts]
-  /// AND [contactIds] is non-null/non-empty, the list is treated as specific IDs.
+  /// Delegates to the shared [resolveSmsTargets] so the runtime recipient set
+  /// and the save-time validator (`validateModeDraft`) can never diverge.
   List<EmergencyContact> _resolveContacts(
     SmsContactConfig config,
     EventServices services,
-  ) {
-    final all = services.contacts.all;
-
-    // Legacy back-compat: allContacts + explicit contactIds → specific IDs.
-    if (config.contactSelection == SmsContactSelection.allContacts &&
-        config.contactIds != null &&
-        config.contactIds!.isNotEmpty) {
-      return _resolveByIds(config.contactIds!, services);
-    }
-
-    switch (config.contactSelection) {
-      case SmsContactSelection.allContacts:
-        return all;
-      case SmsContactSelection.firstContact:
-        if (all.isEmpty) {
-          return const [];
-        }
-        final sorted = List<EmergencyContact>.from(all)
-          ..sort((a, b) => a.sortOrder.compareTo(b.sortOrder));
-        return [sorted.first];
-      case SmsContactSelection.specificIds:
-        final ids = config.contactIds;
-        if (ids == null || ids.isEmpty) {
-          return const [];
-        }
-        return _resolveByIds(ids, services);
-    }
-  }
-
-  List<EmergencyContact> _resolveByIds(
-    List<String> ids,
-    EventServices services,
-  ) => ids.map(services.contacts.byId).whereType<EmergencyContact>().toList();
+  ) => resolveSmsTargets(config, services.contacts.all);
 }

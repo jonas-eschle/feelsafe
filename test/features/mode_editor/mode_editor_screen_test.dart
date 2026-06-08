@@ -1164,6 +1164,12 @@ void main() {
       // proving _save() bailed before persisting an update).
       expect(find.text(l10n.validationSmsChannelNotOnContacts), findsOneWidget);
       expect(find.widgetWithText(TextButton, l10n.commonSave), findsOneWidget);
+      // Explicit no-persist proof: the seeded step config is still the
+      // original whatsapp config (the blocked _save() never wrote to the DB).
+      final reloaded = await db.sessionModesDao.getById('m1');
+      check(
+        reloaded!.chainSteps.first.config,
+      ).equals(const SmsContactConfig(channel: MessageChannel.whatsapp));
     });
 
     testWidgets('saves when a targeted contact has the step channel', (
