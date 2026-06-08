@@ -938,10 +938,22 @@ class AppLocalizationsEl extends AppLocalizations {
       'Χρήση βιομετρικών για το κλείδωμα της εφαρμογής';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Χρήση βιομετρικών για ακύρωση κινδύνου';
+
+  @override
   String get launchPinTitle => 'Εισαγάγετε το PIN της εφαρμογής';
 
   @override
   String get launchPinBiometricReason => 'Ξεκλείδωμα Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason =>
+      'Επιβεβαιώστε για τη λήξη της συνεδρίας';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Επιβεβαιώστε ότι είστε εσείς για ακύρωση';
 
   @override
   String get launchPinIncorrect => 'Λανθασμένο PIN';

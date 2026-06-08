@@ -959,5 +959,8 @@
   "sessionStealthAlbumArtLabel": "Обкладинка альбому",
   "sessionStealthPlay": "Відтворити",
   "sessionStealthPause": "Пауза",
-  "sessionReminderDecoyWords": "ПІЗНІШЕ,ПРОПУСТИТИ,ГОТОВО,ВІДКРИТИ,ПОКАЗАТИ,ОК,ДАЛІ,ЩЕ,ВІДКЛАСТИ,ЗАКРИТИ"
+  "sessionReminderDecoyWords": "ПІЗНІШЕ,ПРОПУСТИТИ,ГОТОВО,ВІДКРИТИ,ПОКАЗАТИ,ОК,ДАЛІ,ЩЕ,ВІДКЛАСТИ,ЗАКРИТИ",
+  "securityDistressCancelBiometric": "Використовувати біометрію для скасування тривоги",
+  "sessionEndBiometricReason": "Підтвердьте, щоб завершити сеанс",
+  "distressCancelBiometricReason": "Підтвердьте, що це ви, для скасування"
 }

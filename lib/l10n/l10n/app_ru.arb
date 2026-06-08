@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "Обложка альбома",
   "sessionStealthPlay": "Воспроизвести",
   "sessionStealthPause": "Пауза",
-  "sessionReminderDecoyWords": "ПОЗЖЕ,ПРОПУСТИТЬ,ГОТОВО,ОТКРЫТЬ,ПОКАЗАТЬ,ОК,ДАЛЕЕ,ЕЩЁ,ОТЛОЖИТЬ,ЗАКРЫТЬ"
+  "sessionReminderDecoyWords": "ПОЗЖЕ,ПРОПУСТИТЬ,ГОТОВО,ОТКРЫТЬ,ПОКАЗАТЬ,ОК,ДАЛЕЕ,ЕЩЁ,ОТЛОЖИТЬ,ЗАКРЫТЬ",
+  "securityDistressCancelBiometric": "Использовать биометрию для отмены сигнала бедствия",
+  "sessionEndBiometricReason": "Подтвердите, чтобы завершить сеанс",
+  "distressCancelBiometricReason": "Подтвердите, что это вы, для отмены"
 }

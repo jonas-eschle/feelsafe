@@ -930,10 +930,22 @@ class AppLocalizationsDe extends AppLocalizations {
   String get securityAppPinBiometric => 'Biometrie für App-Sperre verwenden';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Biometrie zum Abbrechen des Notrufs verwenden';
+
+  @override
   String get launchPinTitle => 'App-PIN eingeben';
 
   @override
   String get launchPinBiometricReason => 'Guardian Angela entsperren';
+
+  @override
+  String get sessionEndBiometricReason =>
+      'Bestätigen, um die Sitzung zu beenden';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Bestätige, dass du es bist, zum Abbrechen';
 
   @override
   String get launchPinIncorrect => 'Falsche PIN';

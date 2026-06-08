@@ -959,5 +959,8 @@
   "sessionStealthAlbumArtLabel": "Carátula del álbum",
   "sessionStealthPlay": "Reproducir",
   "sessionStealthPause": "Pausar",
-  "sessionReminderDecoyWords": "MÁS TARDE,OMITIR,HECHO,ABRIR,VER,VALE,SIGUIENTE,MÁS,POSPONER,CERRAR"
+  "sessionReminderDecoyWords": "MÁS TARDE,OMITIR,HECHO,ABRIR,VER,VALE,SIGUIENTE,MÁS,POSPONER,CERRAR",
+  "securityDistressCancelBiometric": "Usar biometría para cancelar la alerta",
+  "sessionEndBiometricReason": "Confirma para finalizar la sesión",
+  "distressCancelBiometricReason": "Confirma que eres tú para cancelar"
 }

@@ -933,10 +933,21 @@ class AppLocalizationsRu extends AppLocalizations {
       'Использовать биометрию для блокировки приложения';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Использовать биометрию для отмены сигнала бедствия';
+
+  @override
   String get launchPinTitle => 'Введите PIN приложения';
 
   @override
   String get launchPinBiometricReason => 'Разблокировать Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'Подтвердите, чтобы завершить сеанс';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Подтвердите, что это вы, для отмены';
 
   @override
   String get launchPinIncorrect => 'Неверный PIN';

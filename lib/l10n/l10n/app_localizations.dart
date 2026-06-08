@@ -1763,6 +1763,12 @@ abstract class AppLocalizations {
   /// **'Use biometrics for App lock'**
   String get securityAppPinBiometric;
 
+  /// Toggle: enable a biometric (fingerprint / Face ID) prompt before the PIN keypad when cancelling the distress confirmation window, as an alternative to typing the PIN.
+  ///
+  /// In en, this message translates to:
+  /// **'Use biometrics to cancel distress'**
+  String get securityDistressCancelBiometric;
+
   /// Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set.
   ///
   /// In en, this message translates to:
@@ -1774,6 +1780,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unlock Guardian Angela'**
   String get launchPinBiometricReason;
+
+  /// Reason text shown inside the system biometric (fingerprint / Face ID) prompt when ending a session, before falling back to the Session End PIN keypad. Brand-free so it does not reveal the safety app under stealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm to end the session'**
+  String get sessionEndBiometricReason;
+
+  /// Reason text shown inside the system biometric (fingerprint / Face ID) prompt when cancelling the distress confirmation window, before falling back to the PIN keypad. Brand-free so it does not reveal the safety app under stealth.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm it\'s you to cancel'**
+  String get distressCancelBiometricReason;
 
   /// Inline error shown beneath the launch-gate keypad after a wrong PIN entry.
   ///

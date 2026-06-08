@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "غلاف الألبوم",
   "sessionStealthPlay": "تشغيل",
   "sessionStealthPause": "إيقاف مؤقت",
-  "sessionReminderDecoyWords": "لاحقًا,تخطّي,تم,فتح,عرض,حسنًا,التالي,المزيد,تأجيل,إغلاق"
+  "sessionReminderDecoyWords": "لاحقًا,تخطّي,تم,فتح,عرض,حسنًا,التالي,المزيد,تأجيل,إغلاق",
+  "securityDistressCancelBiometric": "استخدام السمات الحيوية لإلغاء الاستغاثة",
+  "sessionEndBiometricReason": "أكِّد لإنهاء الجلسة",
+  "distressCancelBiometricReason": "أكِّد هويتك للإلغاء"
 }

@@ -1183,6 +1183,10 @@
   "@securityAppPinBiometric": {
     "description": "Toggle: enable biometric (fingerprint / Face ID) unlock at the App-lock launch gate, as an alternative to typing the App PIN."
   },
+  "securityDistressCancelBiometric": "Use biometrics to cancel distress",
+  "@securityDistressCancelBiometric": {
+    "description": "Toggle: enable a biometric (fingerprint / Face ID) prompt before the PIN keypad when cancelling the distress confirmation window, as an alternative to typing the PIN."
+  },
   "launchPinTitle": "Enter your App PIN",
   "@launchPinTitle": {
     "description": "Title on the App-lock launch screen shown over the whole app on cold start when an App PIN is set."
@@ -1190,6 +1194,14 @@
   "launchPinBiometricReason": "Unlock Guardian Angela",
   "@launchPinBiometricReason": {
     "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt at the launch gate."
+  },
+  "sessionEndBiometricReason": "Confirm to end the session",
+  "@sessionEndBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt when ending a session, before falling back to the Session End PIN keypad. Brand-free so it does not reveal the safety app under stealth."
+  },
+  "distressCancelBiometricReason": "Confirm it's you to cancel",
+  "@distressCancelBiometricReason": {
+    "description": "Reason text shown inside the system biometric (fingerprint / Face ID) prompt when cancelling the distress confirmation window, before falling back to the PIN keypad. Brand-free so it does not reveal the safety app under stealth."
   },
   "launchPinIncorrect": "Incorrect PIN",
   "@launchPinIncorrect": {

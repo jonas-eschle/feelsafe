@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "एल्बम कला",
   "sessionStealthPlay": "चलाएँ",
   "sessionStealthPause": "रोकें",
-  "sessionReminderDecoyWords": "बाद में,छोड़ें,पूर्ण,खोलें,देखें,ठीक है,अगला,और,स्नूज़,बंद करें"
+  "sessionReminderDecoyWords": "बाद में,छोड़ें,पूर्ण,खोलें,देखें,ठीक है,अगला,और,स्नूज़,बंद करें",
+  "securityDistressCancelBiometric": "संकट रद्द करने के लिए बायोमेट्रिक्स का उपयोग करें",
+  "sessionEndBiometricReason": "सत्र समाप्त करने के लिए पुष्टि करें",
+  "distressCancelBiometricReason": "रद्द करने के लिए पुष्टि करें कि यह आप हैं"
 }

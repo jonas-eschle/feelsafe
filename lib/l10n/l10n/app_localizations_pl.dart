@@ -928,10 +928,21 @@ class AppLocalizationsPl extends AppLocalizations {
   String get securityAppPinBiometric => 'Użyj biometrii do blokady aplikacji';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Użyj biometrii, aby anulować alarm';
+
+  @override
   String get launchPinTitle => 'Wprowadź PIN aplikacji';
 
   @override
   String get launchPinBiometricReason => 'Odblokuj Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'Potwierdź, aby zakończyć sesję';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Potwierdź, że to Ty, aby anulować';
 
   @override
   String get launchPinIncorrect => 'Nieprawidłowy PIN';

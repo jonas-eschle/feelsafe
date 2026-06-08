@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "עטיפת אלבום",
   "sessionStealthPlay": "נגן",
   "sessionStealthPause": "השהה",
-  "sessionReminderDecoyWords": "מאוחר יותר,דלג,בוצע,פתח,הצג,אישור,הבא,עוד,נדנוד,סגור"
+  "sessionReminderDecoyWords": "מאוחר יותר,דלג,בוצע,פתח,הצג,אישור,הבא,עוד,נדנוד,סגור",
+  "securityDistressCancelBiometric": "שימוש בביומטריה לביטול מצוקה",
+  "sessionEndBiometricReason": "אשרו כדי לסיים את הסשן",
+  "distressCancelBiometricReason": "אשרו שזה אתם כדי לבטל"
 }

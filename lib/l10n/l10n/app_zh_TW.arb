@@ -959,5 +959,8 @@
   "sessionStealthAlbumArtLabel": "專輯封面",
   "sessionStealthPlay": "播放",
   "sessionStealthPause": "暫停",
-  "sessionReminderDecoyWords": "稍後,略過,完成,開啟,檢視,好,下一個,更多,稍後提醒,關閉"
+  "sessionReminderDecoyWords": "稍後,略過,完成,開啟,檢視,好,下一個,更多,稍後提醒,關閉",
+  "securityDistressCancelBiometric": "使用生物辨識取消求救",
+  "sessionEndBiometricReason": "確認以結束工作階段",
+  "distressCancelBiometricReason": "確認是您本人以取消"
 }

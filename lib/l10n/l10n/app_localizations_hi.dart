@@ -930,10 +930,21 @@ class AppLocalizationsHi extends AppLocalizations {
       'ऐप लॉक के लिए बायोमेट्रिक्स का उपयोग करें';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'संकट रद्द करने के लिए बायोमेट्रिक्स का उपयोग करें';
+
+  @override
   String get launchPinTitle => 'अपना ऐप PIN दर्ज करें';
 
   @override
   String get launchPinBiometricReason => 'Guardian Angela अनलॉक करें';
+
+  @override
+  String get sessionEndBiometricReason => 'सत्र समाप्त करने के लिए पुष्टि करें';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'रद्द करने के लिए पुष्टि करें कि यह आप हैं';
 
   @override
   String get launchPinIncorrect => 'गलत PIN';

@@ -205,12 +205,42 @@ class _EndSessionOverlayState extends ConsumerState<EndSessionOverlay>
       widget.onOutcome(EndSessionOutcome.endConfirmed);
       return;
     }
+    // Biometric-first (opt-in, `sessionEndPinBiometricEnabled`): mirror the
+    // launch gate (R-27 ladder) — try the device biometric before the keypad
+    // and end the session on a successful match. The PIN keypad stays the
+    // fallback on cancel / failure / absence (fail-soft toward the PIN, per
+    // BiometricServiceProtocol). Spec 06 §Session End PIN.
+    if (settings.sessionEndPinBiometricEnabled &&
+        await _tryEndSessionBiometric()) {
+      return;
+    }
+    if (!mounted) return;
     setState(() {
       _stage = _Stage.pin;
       _entry.clear();
       _showWrong = false;
       _showAppPinMismatch = false;
     });
+  }
+
+  /// Attempts the opt-in biometric substitute for the Session End PIN.
+  ///
+  /// Returns true only when the device has usable biometrics AND the user
+  /// authenticated successfully — in which case the session-end outcome has
+  /// already been reported. Returns false on absence, cancel, failure, or an
+  /// unmounted state so the caller falls back to the PIN keypad.
+  Future<bool> _tryEndSessionBiometric() async {
+    final biometric = ref.read(biometricServiceProvider);
+    if (!await biometric.isAvailable()) return false;
+    if (!mounted) return false;
+    final reason = AppLocalizations.of(context).sessionEndBiometricReason;
+    final ok = await biometric.authenticate(reason: reason);
+    if (!mounted) return false;
+    if (ok) {
+      widget.onOutcome(EndSessionOutcome.endConfirmed);
+      return true;
+    }
+    return false;
   }
 
   Future<void> _onDigit(int d) async {

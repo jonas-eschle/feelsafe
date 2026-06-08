@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "جلد آلبوم",
   "sessionStealthPlay": "پخش",
   "sessionStealthPause": "مکث",
-  "sessionReminderDecoyWords": "بعداً,رد کردن,انجام شد,باز کردن,نمایش,باشه,بعدی,بیشتر,یادآوری,بستن"
+  "sessionReminderDecoyWords": "بعداً,رد کردن,انجام شد,باز کردن,نمایش,باشه,بعدی,بیشتر,یادآوری,بستن",
+  "securityDistressCancelBiometric": "استفاده از زیست‌سنجی برای لغو اضطرار",
+  "sessionEndBiometricReason": "برای پایان جلسه تأیید کنید",
+  "distressCancelBiometricReason": "برای لغو هویت خود را تأیید کنید"
 }

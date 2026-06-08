@@ -43,6 +43,7 @@ class SettingsSecurityScreen extends ConsumerWidget {
               infoBody: l10n.securitySessionEndPinInfo,
               isSet: s.sessionEndPinSet,
               sessionEndBiometricEnabled: s.sessionEndBiometricEnabled,
+              distressCancelBiometricEnabled: s.distressCancelBiometricEnabled,
               pinTimeoutSeconds: s.pinTimeoutSeconds,
             ),
             const SizedBox(height: 16),
@@ -94,6 +95,7 @@ class _PinCard extends ConsumerWidget {
     required this.infoBody,
     required this.isSet,
     this.sessionEndBiometricEnabled,
+    this.distressCancelBiometricEnabled,
     this.pinTimeoutSeconds,
     this.appBiometricEnabled,
   });
@@ -104,6 +106,7 @@ class _PinCard extends ConsumerWidget {
   final String infoBody;
   final bool isSet;
   final bool? sessionEndBiometricEnabled;
+  final bool? distressCancelBiometricEnabled;
   final int? pinTimeoutSeconds;
   final bool? appBiometricEnabled;
 
@@ -174,6 +177,15 @@ class _PinCard extends ConsumerWidget {
                   ref
                       .read(settingsSecurityControllerProvider.notifier)
                       .setSessionEndBiometric(v);
+                },
+              ),
+              SwitchListTile(
+                title: Text(l10n.securityDistressCancelBiometric),
+                value: distressCancelBiometricEnabled ?? false,
+                onChanged: (bool v) {
+                  ref
+                      .read(settingsSecurityControllerProvider.notifier)
+                      .setDistressCancelBiometric(v);
                 },
               ),
               Padding(

@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "Εξώφυλλο άλμπουμ",
   "sessionStealthPlay": "Αναπαραγωγή",
   "sessionStealthPause": "Παύση",
-  "sessionReminderDecoyWords": "ΑΡΓΟΤΕΡΑ,ΠΑΡΑΛΕΙΨΗ,ΕΓΙΝΕ,ΑΝΟΙΓΜΑ,ΠΡΟΒΟΛΗ,ΕΝΤΑΞΕΙ,ΕΠΟΜΕΝΟ,ΠΕΡΙΣΣΟΤΕΡΑ,ΑΝΑΒΟΛΗ,ΚΛΕΙΣΙΜΟ"
+  "sessionReminderDecoyWords": "ΑΡΓΟΤΕΡΑ,ΠΑΡΑΛΕΙΨΗ,ΕΓΙΝΕ,ΑΝΟΙΓΜΑ,ΠΡΟΒΟΛΗ,ΕΝΤΑΞΕΙ,ΕΠΟΜΕΝΟ,ΠΕΡΙΣΣΟΤΕΡΑ,ΑΝΑΒΟΛΗ,ΚΛΕΙΣΙΜΟ",
+  "securityDistressCancelBiometric": "Χρήση βιομετρικών για ακύρωση κινδύνου",
+  "sessionEndBiometricReason": "Επιβεβαιώστε για τη λήξη της συνεδρίας",
+  "distressCancelBiometricReason": "Επιβεβαιώστε ότι είστε εσείς για ακύρωση"
 }

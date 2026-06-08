@@ -79,6 +79,8 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
   bool? lastDeceptiveDialog;
   int sessionEndBiometricCalls = 0;
   bool? lastSessionEndBiometric;
+  int distressCancelBiometricCalls = 0;
+  bool? lastDistressCancelBiometric;
   int clearPinCalls = 0;
   PinType? lastClearedType;
 
@@ -92,6 +94,15 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     final cur = state.value;
     if (cur == null) return;
     state = AsyncData(_copyWith(cur, sessionEndBiometricEnabled: enabled));
+  }
+
+  @override
+  Future<void> setDistressCancelBiometric(bool enabled) async {
+    distressCancelBiometricCalls++;
+    lastDistressCancelBiometric = enabled;
+    final cur = state.value;
+    if (cur == null) return;
+    state = AsyncData(_copyWith(cur, distressCancelBiometricEnabled: enabled));
   }
 
   @override
@@ -160,6 +171,7 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     bool? deceptiveDialogEnabled,
     bool? sessionEndBiometricEnabled,
     bool? appBiometricEnabled,
+    bool? distressCancelBiometricEnabled,
   }) => SettingsSecurityState(
     appPinSet: appPinSet ?? s.appPinSet,
     sessionEndPinSet: sessionEndPinSet ?? s.sessionEndPinSet,
@@ -170,6 +182,8 @@ class _FakeSettingsSecurityController extends SettingsSecurityController {
     sessionEndBiometricEnabled:
         sessionEndBiometricEnabled ?? s.sessionEndBiometricEnabled,
     appBiometricEnabled: appBiometricEnabled ?? s.appBiometricEnabled,
+    distressCancelBiometricEnabled:
+        distressCancelBiometricEnabled ?? s.distressCancelBiometricEnabled,
   );
 }
 
@@ -200,6 +214,7 @@ SettingsSecurityState _secState({
   bool deceptiveDialogEnabled = false,
   bool sessionEndBiometricEnabled = false,
   bool appBiometricEnabled = false,
+  bool distressCancelBiometricEnabled = false,
 }) => SettingsSecurityState(
   appPinSet: appPinSet,
   sessionEndPinSet: sessionEndPinSet,
@@ -209,6 +224,7 @@ SettingsSecurityState _secState({
   deceptiveDialogEnabled: deceptiveDialogEnabled,
   sessionEndBiometricEnabled: sessionEndBiometricEnabled,
   appBiometricEnabled: appBiometricEnabled,
+  distressCancelBiometricEnabled: distressCancelBiometricEnabled,
 );
 
 // ---------------------------------------------------------------------------
@@ -385,7 +401,13 @@ void main() {
     testWidgets('renders Duress PIN title', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
+      // The Duress card sits below the test-viewport fold (the Session-End
+      // card now carries three biometric/timeout controls); it is still laid
+      // out in the non-lazy ListView, so match including offstage widgets.
+      expect(
+        find.text(l10n.securityDuressPinTitle, skipOffstage: false),
+        findsOneWidget,
+      );
     });
   });
 
@@ -409,7 +431,11 @@ void main() {
     testWidgets('renders Duress PIN help text', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      expect(find.text(l10n.securityDuressPinBody), findsOneWidget);
+      // Below-fold (see "renders Duress PIN title") — match offstage too.
+      expect(
+        find.text(l10n.securityDuressPinBody, skipOffstage: false),
+        findsOneWidget,
+      );
     });
   });
 
@@ -480,12 +506,20 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      final cards = tester.widgetList<Card>(find.byType(Card)).toList();
-      final duressCard = find.descendant(
-        of: find.byWidget(cards[2]),
-        matching: find.text(l10n.securitySetPin),
+      // Duress is the third card and sits (with its button) below the
+      // test-viewport fold — assert presence in its Card without requiring
+      // visibility (the non-lazy ListView lays all cards out).
+      final duressCard = find.ancestor(
+        of: find.text(l10n.securityDuressPinTitle, skipOffstage: false),
+        matching: find.byType(Card, skipOffstage: false),
       );
-      expect(duressCard, findsOneWidget);
+      expect(
+        find.descendant(
+          of: duressCard,
+          matching: find.text(l10n.securitySetPin, skipOffstage: false),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Duress PIN shows "Change PIN" when configured', (
@@ -496,12 +530,19 @@ void main() {
         tester,
         fake: _FakeSettingsSecurityController(_secState(duressPinSet: true)),
       );
-      final cards = tester.widgetList<Card>(find.byType(Card)).toList();
-      final duressCard = find.descendant(
-        of: find.byWidget(cards[2]),
-        matching: find.text(l10n.securityChangePin),
+      // Duress is the third card and sits (with its button) below the fold —
+      // assert presence in its Card without requiring visibility.
+      final duressCard = find.ancestor(
+        of: find.text(l10n.securityDuressPinTitle, skipOffstage: false),
+        matching: find.byType(Card, skipOffstage: false),
       );
-      expect(duressCard, findsOneWidget);
+      expect(
+        find.descendant(
+          of: duressCard,
+          matching: find.text(l10n.securityChangePin, skipOffstage: false),
+        ),
+        findsOneWidget,
+      );
     });
   });
 
@@ -542,8 +583,14 @@ void main() {
       final observer = _FakeNavigatorObserver();
       await _pumpWithRouter(tester, fake: fake, observer: observer);
       final l10n = await loadL10n(const Locale('en'));
-      // The third "Set PIN" button belongs to Duress PIN.
-      await tester.tap(find.text(l10n.securitySetPin).at(2));
+      // The third "Set PIN" button belongs to Duress PIN — below the fold, so
+      // scroll it into view before tapping.
+      final duressSetPin = find
+          .text(l10n.securitySetPin, skipOffstage: false)
+          .at(2);
+      await tester.ensureVisible(duressSetPin);
+      await tester.pumpAndSettle();
+      await tester.tap(duressSetPin);
       await tester.pumpAndSettle();
       check(observer.pushed).isNotEmpty();
     });
@@ -612,11 +659,12 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text(l10n.securityDeceptiveDialogToggle), findsOneWidget);
-      // Three SwitchListTiles total: app-lock biometric + session-end
-      // biometric + deceptive. skipOffstage:false counts scrolled-off items.
+      // Four SwitchListTiles total: app-lock biometric + session-end
+      // biometric + distress-cancel biometric + deceptive. skipOffstage:false
+      // counts scrolled-off items.
       expect(
         find.byType(SwitchListTile, skipOffstage: false),
-        findsNWidgets(3),
+        findsNWidgets(4),
       );
     });
 
@@ -717,6 +765,51 @@ void main() {
       await tester.pumpAndSettle();
       check(fake.sessionEndBiometricCalls).equals(1);
       check(fake.lastSessionEndBiometric).equals(true);
+    });
+  });
+
+  // ── Distress-cancel biometric toggle (#9) ──────────────────────────────────
+
+  group('SettingsSecurityScreen — distress-cancel biometric toggle', () {
+    testWidgets(
+      'renders inside the Session End PIN card with the right label',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+        expect(find.text(l10n.securityDistressCancelBiometric), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'reflects state — on when distressCancelBiometricEnabled true',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pump(
+          tester,
+          fake: _FakeSettingsSecurityController(
+            _secState(distressCancelBiometricEnabled: true),
+          ),
+        );
+        final tile = tester.widget<SwitchListTile>(
+          find.ancestor(
+            of: find.text(l10n.securityDistressCancelBiometric),
+            matching: find.byType(SwitchListTile),
+          ),
+        );
+        check(tile.value).isTrue();
+      },
+    );
+
+    testWidgets('toggling the switch calls setDistressCancelBiometric(true)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSettingsSecurityController(_secState());
+      await _pump(tester, fake: fake);
+      await tester.tap(find.text(l10n.securityDistressCancelBiometric));
+      await tester.pumpAndSettle();
+      check(fake.distressCancelBiometricCalls).equals(1);
+      check(fake.lastDistressCancelBiometric).equals(true);
     });
   });
 
@@ -865,15 +958,16 @@ void main() {
   group('SettingsSecurityScreen — card layout', () {
     testWidgets('renders exactly three PIN cards', (WidgetTester tester) async {
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      // Three [Card] widgets — one per PIN type.
-      expect(find.byType(Card), findsNWidgets(3));
+      // Three [Card] widgets — one per PIN type. The Duress card is below the
+      // test-viewport fold, so count offstage widgets too.
+      expect(find.byType(Card, skipOffstage: false), findsNWidgets(3));
     });
 
     testWidgets('three FilledButtons present (one per PIN card)', (
       WidgetTester tester,
     ) async {
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      expect(find.byType(FilledButton), findsNWidgets(3));
+      expect(find.byType(FilledButton, skipOffstage: false), findsNWidgets(3));
     });
   });
 
@@ -916,9 +1010,19 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
-      expect(find.text(l10n.securityAppPinTitle), findsOneWidget);
-      expect(find.text(l10n.securitySessionEndPinTitle), findsOneWidget);
-      expect(find.text(l10n.securityDuressPinTitle), findsOneWidget);
+      // All three titles are laid out (the Duress card is below the fold).
+      expect(
+        find.text(l10n.securityAppPinTitle, skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.securitySessionEndPinTitle, skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.securityDuressPinTitle, skipOffstage: false),
+        findsOneWidget,
+      );
     });
 
     testWidgets('SwitchListTile exposes a title for screen readers', (

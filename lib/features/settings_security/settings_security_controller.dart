@@ -30,6 +30,7 @@ class SettingsSecurityState {
     required this.deceptiveDialogEnabled,
     required this.sessionEndBiometricEnabled,
     required this.appBiometricEnabled,
+    required this.distressCancelBiometricEnabled,
   });
 
   /// Whether an App PIN is configured.
@@ -56,6 +57,10 @@ class SettingsSecurityState {
   /// Whether biometric is allowed to substitute for the App PIN at the
   /// launch gate (spec 06 §App PIN).
   final bool appBiometricEnabled;
+
+  /// Whether biometric is offered before the PIN keypad when cancelling the
+  /// distress confirmation window (spec 01 §Distress Confirmation Window).
+  final bool distressCancelBiometricEnabled;
 }
 
 /// Controller for the security submenu.
@@ -72,6 +77,7 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       deceptiveDialogEnabled: settings.deceptivePinDialogEnabled,
       sessionEndBiometricEnabled: settings.sessionEndPinBiometricEnabled,
       appBiometricEnabled: settings.appPinBiometricEnabled,
+      distressCancelBiometricEnabled: settings.distressCancelBiometricEnabled,
     );
   }
 
@@ -121,6 +127,14 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
     await repo.save(settings.copyWith(sessionEndPinBiometricEnabled: enabled));
+    ref.invalidateSelf();
+  }
+
+  /// Toggles the biometric offered before the distress-cancel PIN keypad.
+  Future<void> setDistressCancelBiometric(bool enabled) async {
+    final repo = ref.read(appSettingsRepositoryProvider);
+    final settings = await repo.load();
+    await repo.save(settings.copyWith(distressCancelBiometricEnabled: enabled));
     ref.invalidateSelf();
   }
 

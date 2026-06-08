@@ -1,5 +1,136 @@
 # Guardian Angela v3 — Session Hand-off
 
+**Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4
+STARTED — C1 (#9 biometric for session-end + distress-cancel) DONE, GATE-GREEN,
+COMMITTED (UNPUSHED).** This session wired the two dead biometric flags
+(`sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`) at their two
+PIN prompts (biometric-first, PIN fallback), mirroring the launch-gate reference
+pattern, and — because the distress-cancel flag had NO setter / NO Settings
+toggle (a deeper dead-flag than the brief implied) — added the
+`setDistressCancelBiometric` controller path + the Settings→Security toggle so
+the feature is actually reachable. The distress-cancel 15s-timeout-window
+invariant (spec 01:1019) is preserved: the timer starts BEFORE the biometric
+prompt and is never reset on biometric failure (proven by a dedicated host
+test). Gate: analyzer `--fatal-infos` 0; full suite **3895** (3882 M3-C5
+baseline + 13 net-new); emulator boot-smoke PASS on `emulator-5554` (build still
+links `local_auth`); l10n parity 14/14 on 3 new keys; deferral-grep 0; OLD/
+clean. **NEXT = M4 C2 — #10 R-8 emergency-number map (Option B, user-reviewed) +
+`phone_validators.dart` + first-launch locale seeding.** See the **M4 DECISIONS
+(user, 2026-06-08/09)** block below. iOS Face ID is CI `build-ios`-gated (not
+buildable on this Linux host) — NOT verified here.
+
+---
+
+## M4 DECISIONS (user, 2026-06-08/09) — carry into every M4 chunk
+
+- **#9 biometric (session-end + distress-cancel)** = THIS chunk (C1, DONE).
+  Both PIN prompts now try biometric first when the per-site flag is on and the
+  device has enrolled biometrics, falling back to the PIN keypad on
+  cancel/failure/absence (fail-soft toward the PIN, never toward an open app).
+  The distress-cancel attempt runs INSIDE the already-started 15s window.
+- **#10 R-8 emergency-number map = Option B.** Wikipedia base + ITU cross-check
+  for the top ~40 by population; EVERY entry CITED; primary all-services number
+  only; `'112'` fallback. **The produced map MUST be surfaced to the user for
+  review BEFORE merge** (recorded requirement — do not merge the map unreviewed).
+  Build `phone_validators.dart` (spec 06:227) + first-launch locale seeding; fix
+  the hard-coded `'112'` in `home_controller.startSession:118`.
+- **#16 = keep the GPS-destination prompt IN-SESSION** (already M1-wired); add
+  ONLY (a) the on-tap Active-Triggers-Summary and (b) the notification re-ask via
+  a NEW shared `lib/core/utils/permission_utils.dart::ensureNotificationPermission`
+  (spec-mandated in 3 places; refactor the notif-settings screen + the
+  Safety-Setup-Checklist item 6 to delegate to it).
+- **#8 = build MINIMAL,** reusing the existing **SessionLog in-progress marker**
+  (NOT the spec's separate JSON file); informational modal + [Start same mode]
+  (a fresh session) / [Acknowledge]; reconcile the spec marker text to the
+  SessionLog approach.
+- **Tier-F:** **F1 DESCOPE.** **F2 PENDING — the orchestrator is running a
+  research team on the AlarmManager-watchdog / force-kill-resilience question;
+  decision TBD — do NOT touch F2 / the `SCHEDULE_EXACT_ALARM` permission yet.**
+  **F3 = build as USER-SUPPLIED ringtones** (a ringtone picker/import in the
+  fake-call config — the user provides their own audio, sidestepping licensing;
+  NOT bundled per-style assets). **F4 = KEEP+BUILD** (wire `requireLaunchAuth` /
+  `launchAuthBiometric` per spec — but FIRST determine from the spec what they do
+  BEYOND the App-PIN launch gate; if genuinely identical/redundant, surface that
+  to the orchestrator rather than building a duplicate). **F5 = KEEP+BUILD**
+  (post-session feedback prompt).
+
+---
+
+## What's done THIS session (M4 C1 — UNPUSHED, `m4-#9`)
+
+**GAP verified first (confirmed, deeper than briefed):** BOTH PIN prompts
+ignored their persisted biometric flag — a classic dead-flag.
+(1) `end_session_overlay._onSwipeConfirmed` jumped straight to the PIN keypad;
+`sessionEndPinBiometricEnabled` was read NOWHERE. (2) `session_screen.dart`
+distress-cancel `_onCancelTapped` jumped straight to the keypad + 15s timer;
+`distressCancelBiometricEnabled` was read NOWHERE. (3) **The distress-cancel
+flag had NO `setDistressCancelBiometric` setter, was NOT in `SettingsSecurityState`,
+and had NO Settings toggle** — it was only read in `clearPin`'s reconstruction,
+so it could never be turned on by any UI path (the brief's "the toggles are
+already exposed" was wrong for distress-cancel; only App-PIN + Session-End were).
+`SimulationBiometricService` (records `isAvailable`/`authenticate` in `.calls`)
+already exists as the proven test double; the launch gate
+(`launch_pin_screen.dart:82-111`) is the reference consumer.
+
+**Built (all proven by host widget tests driving the REAL overlay/screen):**
+
+1. **Session-end biometric** (`end_session_overlay.dart` :208-247). After the
+   swipe confirms and a `sessionEndPinHash` is set, when
+   `sessionEndPinBiometricEnabled` a new `_tryEndSessionBiometric()` runs
+   `isAvailable()` → `authenticate(reason: sessionEndBiometricReason)`; success
+   reports `EndSessionOutcome.endConfirmed` (short-circuits the keypad); any
+   false path (absence/cancel/failure/unmounted) falls through to `_Stage.pin`.
+   Mirrors the launch gate; PIN stays the fallback.
+2. **Distress-cancel biometric** (`session_screen.dart` :776-822). In
+   `_onCancelTapped`, after `pauseDistressCountdown()` + `setState(pinPrompt)`,
+   the 15s timer is **started FIRST** (`_startPinTimer()`), THEN — when
+   `distressCancelBiometricEnabled` — `_tryDistressCancelBiometric()` runs
+   `isAvailable()` → `authenticate(reason: distressCancelBiometricReason)`;
+   success → `resetWrongPinAttempts()` + cancel timer + `cancelDistress()`;
+   failure/cancel → the keypad is already shown and the timer keeps running
+   **untouched** (spec 01:1019 "within the same 15s timeout window"). `_pinTimer
+   == null` guards the race where the window expires (fires distress + unmounts)
+   during the async biometric call.
+3. **Made the distress-cancel flag settable** (otherwise the C1 distress-cancel
+   half is itself a dead flag): `distressCancelBiometricEnabled` added to
+   `SettingsSecurityState` (+ `build()`), a `setDistressCancelBiometric` setter
+   on `SettingsSecurityController` (copyWith→save→invalidateSelf, mirrors the
+   other two), and a `SwitchListTile` toggle in the Session-End `_PinCard` of
+   `settings_security_screen.dart` (new label `securityDistressCancelBiometric`).
+4. **l10n:** 3 new keys — `securityDistressCancelBiometric` (toggle),
+   `sessionEndBiometricReason`, `distressCancelBiometricReason` — in `app_en.arb`
+   (with `@meta`) + all 13 translation ARBs (TEXT-INSERTED, additions-only: the
+   prior-last `sessionReminderDecoyWords` line gains a trailing comma + 3 new
+   lines). The two reason strings are intentionally **brand-free** ("Confirm to
+   end the session" / "Confirm it's you to cancel") so the OS biometric sheet
+   never reveals the safety app under stealth (spec 01:1017). `gen-l10n`
+   additions-only (165 insertions, 0 deletions in the generated files); parity
+   14/14.
+
+**Tests (net +13 → suite 3895):** 3 session-end biometric (success→ends w/o
+keypad; off→no call+keypad; failure→keypad+PIN still ends) + 4 distress-cancel
+biometric (success→cancelDistress; off→no call+keypad; failure→keypad+PIN
+cancels; **failure does NOT reset the 15s window — the keypad shows the full
+remaining 15s and 16×1s ticks still fire `confirmDistress(distressConfirmTimeout)`**)
+in `session_screen_test.dart`; 3 REAL-controller persist tests in the new
+`settings_security_controller_test.dart` (build reflects flag / setter
+round-trips through the repo / sibling flags untouched); 3 settings-screen
+toggle tests (render / reflect-on / tap-calls-setter). Eight PRE-EXISTING
+settings-screen tests (Duress-card title/body/buttons/3-card-count/accessibility)
+were updated to `skipOffstage:false` presence finders because the new 4th
+SwitchListTile pushed the Duress card below the test-viewport fold (tests follow
+code; the card is laid out in the non-lazy ListView, just clipped).
+
+**Emulator:** boot-smoke PASS on `emulator-5554` (`assembleDebug` + install +
+"app boots to a MaterialApp shell"), confirming the build still links
+`local_auth ^3.0.0`. The OS biometric sheet is system-rendered; the WIRING is
+proven by the host widget tests above. iOS Face ID is CI `build-ios`-gated — NOT
+verified on this Linux host.
+
+---
+
+## OLD pre-M4 snapshot (M0–M3 detail — retained for reference)
+
 **Snapshot:** 2026-06-08 — **M0 + M1 + M2 PUSHED (`origin/main` = `b4c8b21`).
 M3 (#15 stealth) FULLY IMPLEMENTED + MILESTONE-COHORT-VERIFIED (PASS),
 GATE-GREEN, ready to push** — C1 (`ac65b9e`) + C3 (`a6c36ef`) + C4 (`837c1e4`)
@@ -272,19 +403,21 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: the M3 verifier cohort** — M3 is FULLY IMPLEMENTED (C1–C5).
-Run the cohort (architect-reviewer spec-vs-code + qa-expert spec-vs-tests, both
-opus, across the WHOLE M3 stack C1+C2+C3+C4+C5) → full gate → **push the M3
-stack** (user pre-authorized). See the **M3 chunk plan** + **M3 DECISIONS
-(user)** blocks above. Re-engage the implementing path on any `FIX_REQUIRED`.
+**Next action: M4 C2 — #10 R-8 emergency-number map (Option B).** M0–M3 are
+PUSHED (`origin/main` = `5ab69c6`); M4 C1 (#9 biometric) is DONE+GATE-GREEN+
+COMMITTED (UNPUSHED, `m4-#9`). Build the Option-B map (Wikipedia base + ITU
+cross-check for the top ~40 by population, every entry CITED, primary
+all-services number only, `'112'` fallback) → **surface it to the user for
+review BEFORE merge** → `phone_validators.dart` (spec 06:227) + first-launch
+locale seeding → fix the hard-coded `'112'` in `home_controller.startSession:118`.
+See the **M4 DECISIONS (user, 2026-06-08/09)** block near the top for every M4
+chunk's scope (incl. **F2 is PENDING on the orchestrator's research — do NOT
+touch it**).
 
-C1 + C2 + C3 + C4 + C5 are COMMITTED but UNPUSHED (`ac65b9e` + `a6c36ef` +
-`837c1e4` + `55f958d` + `m3-#15-c5`). The M2 stack is PUSHED — confirmed
-`origin/main` = `b4c8b21` (includes the M2 commits + `m2-handoff`). Per-fix
-recipe (unchanged): verify the gap yourself → implement (serial) → prove
-(host/widget tests driving the REAL controller/screen; emulator for native) →
-l10n deltas → translate 13 locales → gate suite → commit → **ask before
-pushing**.
+Per-chunk recipe (unchanged): verify the gap yourself → implement (serial) →
+prove (host/widget tests driving the REAL controller/screen; emulator for
+native) → l10n deltas → translate 13 locales → gate suite → commit → **ask
+before pushing**.
 
 **DO NOT PUSH** without explicit user authorization (Hard Rule 12).
 
@@ -739,6 +872,44 @@ stealth appearance only; stealth is configured pre-session on
 
 ## KEY FINDINGS (carry into the next session)
 
+- **(M4 C1) The distress-cancel 15s window is a widget-local `Timer`
+  (`_DistressConfirmationOverlayState._pinTimer` in `session_screen.dart`), so
+  "don't reset it across a biometric attempt" = start it BEFORE the biometric
+  and never call `_startPinTimer()` again on the failure path.** Unlike the
+  launch gate (which has no timer), this overlay owns the window. The biometric
+  attempt is `await`ed AFTER `_startPinTimer()`; the `_pinTimer == null` checks
+  before/after `authenticate()` handle the race where the window expires
+  mid-prompt (the expiry fires `confirmDistress` + unmounts the overlay).
+  Provable in a `testWidgets` with `tester.pump(Duration(seconds:1))` ×16 — the
+  in-widget periodic timer advances with the fake clock; assert the timeout
+  STILL fires after a failed biometric (and that the keypad shows the full
+  `distressCancelPinTimeoutLabel(15)` immediately after the attempt).
+- **(M4 C1) `distressCancelBiometricEnabled` was a TRIPLE dead-flag** — ignored
+  by the prompt AND unsettable (no setter, not in `SettingsSecurityState`, no
+  toggle; only read in `clearPin`'s field-by-field reconstruction). Wiring just
+  the prompt would have left it permanently false. The full path now exists:
+  state field + `setDistressCancelBiometric` + a Session-End-card toggle. The
+  brief's "the Settings→Security UI already exposes the toggles" held ONLY for
+  App-PIN + Session-End; verify a flag is *settable* before assuming a prompt
+  gap is the whole gap.
+- **(M4 C1) Biometric reason strings for in-session prompts must be BRAND-FREE.**
+  The launch gate uses `launchPinBiometricReason = "Unlock Guardian Angela"`
+  (fine — pre-session), but the session-end and distress-cancel sheets can pop
+  on a disguised device, so their reasons name no app (`sessionEndBiometricReason`
+  / `distressCancelBiometricReason`). Spec 01:1017 ("Confirmation UI respects
+  stealth mode — no app branding").
+- **(M4 C1) `SimulationBiometricService(available:, authenticateResult:)`** is
+  the ready-made test double (`lib/services/sim/biometric_service_sim.dart`); it
+  records `'isAvailable'`/`'authenticate'` in `.calls` so a test can assert the
+  consult ORDER and that an OFF toggle never consults it (`.calls.isEmpty()`).
+  Override `biometricServiceProvider.overrideWithValue(bio)` in the existing
+  `session_screen_test` `_pump`/`_pumpWithRouter` `extraOverrides`.
+- **(M4 C1) Adding a SwitchListTile to a settings card pushes later cards below
+  the 600px test-viewport fold** → pre-existing `find.text`/`find.byType`
+  (default `skipOffstage:true`) finders silently miss them. Fix presence/count
+  assertions with `skipOffstage:false`; fix a TAP with `tester.ensureVisible`
+  first (offstage widgets aren't hittable). The settings ListView is non-lazy
+  (`ListView(children:[...])`), so the widgets ARE built — just clipped.
 - **(M3 C4) The launcher `fakeIcon` applies at CONFIG-SAVE time, NOT arm-time —
   this is the corrected trigger.** The HANDOFF chunk-plan previously said
   "resolve `stealth.fakeIcon` at `startSession`" (mirroring `lockTaskMode`).
@@ -1137,7 +1308,7 @@ redirect to a file with `>` instead.
 
 ```bash
 flutter analyze --fatal-infos                                   # 0 issues
-flutter test --concurrency=6                                    # 3882 pass (M3 C5)
+flutter test --concurrency=6                                    # 3895 pass (M4 C1)
 dart format <changed .dart files>                              # changed files only
 grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/  # 0
 git status --porcelain -- OLD/                                  # empty
@@ -1154,13 +1325,19 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
-- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ pushed (`origin/main` =
-  `b4c8b21`).** **M3 (#15 stealth) FULLY IMPLEMENTED** — **C1 + C2 + C3 + C4 +
-  C5 ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `ac65b9e` / `55f958d` / `a6c36ef` /
-  `837c1e4` / `m3-#15-c5`)**; **NEXT = the M3 verifier cohort + push** (see the
-  M3 chunk plan + M3 DECISIONS blocks near the top). Then M4 (#10/#9/#8/#16 +
-  Tier-F + the `service_providers.dart` Phase-7 doc-sweep), M5 (Phase-9: INT
-  scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
+- **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ pushed. M3 (#15 stealth) ✓
+  pushed (`origin/main` = `5ab69c6`).** **M4 STARTED — C1 (#9 biometric:
+  session-end + distress-cancel) ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `m4-#9`).**
+  **NEXT = M4 C2 — #10 R-8 emergency-number map (Option B, user-reviewed BEFORE
+  merge) + `phone_validators.dart` + first-launch locale seeding + fix
+  `home_controller.startSession:118` hard-coded `'112'`.** Remaining M4 chunks
+  (carry the M4 DECISIONS block near the top): #16 (Active-Triggers-Summary +
+  shared `permission_utils.ensureNotificationPermission`), #8 (minimal
+  in-progress-marker resume modal), Tier-F (F1 descope / **F2 PENDING — awaiting
+  the orchestrator's force-kill-resilience research; do NOT touch F2 yet** / F3
+  user-supplied ringtones / F4 launch-auth + redundancy check / F5 feedback
+  prompt), and the `service_providers.dart` Phase-7 doc-sweep. Then M5 (Phase-9:
+  INT scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
   spec-coverage matrix, coverage floor). The in-memory TaskList is cleared on
   `/clear` — this bullet is the durable journal.
 

@@ -926,10 +926,20 @@ class AppLocalizationsFa extends AppLocalizations {
   String get securityAppPinBiometric => 'استفاده از زیست‌سنجی برای قفل برنامه';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'استفاده از زیست‌سنجی برای لغو اضطرار';
+
+  @override
   String get launchPinTitle => 'پین برنامه را وارد کنید';
 
   @override
   String get launchPinBiometricReason => 'باز کردن قفل Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'برای پایان جلسه تأیید کنید';
+
+  @override
+  String get distressCancelBiometricReason => 'برای لغو هویت خود را تأیید کنید';
 
   @override
   String get launchPinIncorrect => 'پین نادرست';

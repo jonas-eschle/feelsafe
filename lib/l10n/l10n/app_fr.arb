@@ -848,5 +848,8 @@
   "sessionStealthAlbumArtLabel": "Pochette d’album",
   "sessionStealthPlay": "Lecture",
   "sessionStealthPause": "Pause",
-  "sessionReminderDecoyWords": "PLUS TARD,IGNORER,TERMINÉ,OUVRIR,VOIR,OK,SUIVANT,PLUS,RAPPELER,FERMER"
+  "sessionReminderDecoyWords": "PLUS TARD,IGNORER,TERMINÉ,OUVRIR,VOIR,OK,SUIVANT,PLUS,RAPPELER,FERMER",
+  "securityDistressCancelBiometric": "Utiliser la biométrie pour annuler la détresse",
+  "sessionEndBiometricReason": "Confirmez pour terminer la session",
+  "distressCancelBiometricReason": "Confirmez votre identité pour annuler"
 }

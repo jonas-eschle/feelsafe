@@ -830,5 +830,8 @@
   "sessionStealthAlbumArtLabel": "Okładka albumu",
   "sessionStealthPlay": "Odtwórz",
   "sessionStealthPause": "Wstrzymaj",
-  "sessionReminderDecoyWords": "PÓŹNIEJ,POMIŃ,GOTOWE,OTWÓRZ,POKAŻ,OK,DALEJ,WIĘCEJ,DRZEMKA,ZAMKNIJ"
+  "sessionReminderDecoyWords": "PÓŹNIEJ,POMIŃ,GOTOWE,OTWÓRZ,POKAŻ,OK,DALEJ,WIĘCEJ,DRZEMKA,ZAMKNIJ",
+  "securityDistressCancelBiometric": "Użyj biometrii, aby anulować alarm",
+  "sessionEndBiometricReason": "Potwierdź, aby zakończyć sesję",
+  "distressCancelBiometricReason": "Potwierdź, że to Ty, aby anulować"
 }

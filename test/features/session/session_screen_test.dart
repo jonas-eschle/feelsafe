@@ -43,6 +43,7 @@ import 'package:guardianangela/features/session/widgets/fake_music_player.dart';
 import 'package:guardianangela/features/session/widgets/session_elapsed_clock.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/sim/biometric_service_sim.dart';
 import 'package:guardianangela/services/sim/quick_exit_service_sim.dart';
 import '../../helpers/widget_test_helpers.dart';
 
@@ -1437,6 +1438,154 @@ void main() {
     );
   });
 
+  // ── Distress-cancel biometric (#9) ───────────────────────────────────────
+  group('SessionScreen — distress-cancel biometric (#9)', () {
+    testWidgets(
+      'biometric success → cancelDistress without showing the keypad',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            distressCancelBiometricEnabled: true,
+          ),
+        );
+        final bio = SimulationBiometricService(
+          available: true,
+          authenticateResult: true,
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+            biometricServiceProvider.overrideWithValue(bio),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        // Biometric was consulted in order, distress cancelled, no PIN typed.
+        check(bio.calls).deepEquals(<String>['isAvailable', 'authenticate']);
+        check(fake.cancelDistressCalls).equals(1);
+        check(fake.resetWrongPinAttemptsCalls).isGreaterThan(0);
+        check(fake.pauseDistressCountdownCalls).equals(1);
+      },
+    );
+
+    testWidgets('biometric off → no biometric call, keypad shown', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      final bio = SimulationBiometricService(
+        available: true,
+        authenticateResult: true,
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+          biometricServiceProvider.overrideWithValue(bio),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+      // The toggle is off → the biometric service is never consulted.
+      check(bio.calls).isEmpty();
+      expect(find.text(l10n.distressCancelPinPromptTitle), findsOneWidget);
+      expect(find.byType(PinKeypad), findsOneWidget);
+      check(fake.cancelDistressCalls).equals(0);
+    });
+
+    testWidgets('biometric failure → keypad shown and PIN still cancels', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          sessionEndPinHash: _hashDigits('1234'),
+          distressCancelBiometricEnabled: true,
+        ),
+      );
+      // available but the user cancels / mismatches → authenticate == false.
+      final bio = SimulationBiometricService()..available = true;
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+          biometricServiceProvider.overrideWithValue(bio),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+      check(bio.calls).deepEquals(<String>['isAvailable', 'authenticate']);
+      // Fell back to the keypad; distress not yet cancelled.
+      expect(find.byType(PinKeypad), findsOneWidget);
+      check(fake.cancelDistressCalls).equals(0);
+      // The PIN keypad still works after the failed biometric.
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+      check(fake.cancelDistressCalls).equals(1);
+    });
+
+    testWidgets(
+      'biometric failure does NOT reset the 15s window — timeout still fires',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            distressCancelBiometricEnabled: true,
+          ),
+        );
+        final bio = SimulationBiometricService()..available = true;
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+            biometricServiceProvider.overrideWithValue(bio),
+          ],
+        );
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pumpAndSettle();
+        // The biometric attempt ran at t=0 and the window is untouched: the
+        // keypad shows the FULL remaining time (15s default), proving the
+        // deadline was neither reset nor extended by the biometric prompt.
+        check(bio.calls).deepEquals(<String>['isAvailable', 'authenticate']);
+        expect(
+          find.text(l10n.distressCancelPinTimeoutLabel(15)),
+          findsOneWidget,
+        );
+        // Advancing the SAME 16 one-second ticks still fires the timeout — if
+        // the biometric attempt had restarted the timer this would not fire.
+        for (int i = 0; i < 16; i++) {
+          await tester.pump(const Duration(seconds: 1));
+        }
+        check(fake.confirmDistressCalls).equals(1);
+        check(
+          fake.lastConfirmDistressReason,
+        ).equals(EndReason.distressConfirmTimeout);
+      },
+    );
+  });
+
   // ── Session-Interrupted Prompt (Extra 13) ─────────────────────────────────
   group('SessionScreen — interrupted prompt (Extra 13)', () {
     testWidgets('shows interrupted title and body when priorInterrupted', (
@@ -1640,6 +1789,105 @@ void main() {
       await tester.pumpAndSettle();
       check(fake.endSessionCalls).equals(1);
       check(fake.resetWrongPinAttemptsCalls).isGreaterThan(0);
+    });
+
+    // ── Biometric-first (#9) ───────────────────────────────────────────────
+    testWidgets(
+      'biometric success → swipe ends the session without the keypad',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(_runningState());
+        final repo = _FakeAppSettingsRepository(
+          initial: AppSettings(
+            sessionEndPinHash: _hashDigits('1234'),
+            sessionEndPinBiometricEnabled: true,
+          ),
+        );
+        final bio = SimulationBiometricService(
+          available: true,
+          authenticateResult: true,
+        );
+        await _pumpWithRouter(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+            biometricServiceProvider.overrideWithValue(bio),
+          ],
+        );
+        await tester.tap(find.byTooltip(l10n.commonClose));
+        await tester.pumpAndSettle();
+        await _swipeToConfirm(tester);
+        await tester.pumpAndSettle();
+        // Biometric consulted in order; session ended with no PIN typed.
+        check(bio.calls).deepEquals(<String>['isAvailable', 'authenticate']);
+        check(fake.endSessionCalls).equals(1);
+        expect(find.text(l10n.sessionEndPinPromptTitle), findsNothing);
+      },
+    );
+
+    testWidgets('biometric off → swipe shows the keypad, no biometric call', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      final bio = SimulationBiometricService(
+        available: true,
+        authenticateResult: true,
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+          biometricServiceProvider.overrideWithValue(bio),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      // Toggle off → the biometric service is never consulted; keypad shown.
+      check(bio.calls).isEmpty();
+      expect(find.text(l10n.sessionEndPinPromptTitle), findsOneWidget);
+      check(fake.endSessionCalls).equals(0);
+    });
+
+    testWidgets('biometric failure → keypad shown and PIN still ends', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(
+          sessionEndPinHash: _hashDigits('1234'),
+          sessionEndPinBiometricEnabled: true,
+        ),
+      );
+      final bio = SimulationBiometricService()..available = true;
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+          biometricServiceProvider.overrideWithValue(bio),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      check(bio.calls).deepEquals(<String>['isAvailable', 'authenticate']);
+      // Fell back to the keypad; session not yet ended.
+      expect(find.text(l10n.sessionEndPinPromptTitle), findsOneWidget);
+      check(fake.endSessionCalls).equals(0);
+      // PIN still works after the failed biometric.
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+      check(fake.endSessionCalls).equals(1);
     });
 
     testWidgets('app-PIN entered → shows mismatch hint, no end', (

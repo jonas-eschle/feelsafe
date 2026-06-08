@@ -920,10 +920,19 @@ class AppLocalizationsHe extends AppLocalizations {
   String get securityAppPinBiometric => 'השתמש בביומטריה לנעילת האפליקציה';
 
   @override
+  String get securityDistressCancelBiometric => 'שימוש בביומטריה לביטול מצוקה';
+
+  @override
   String get launchPinTitle => 'הזן את ה-PIN של האפליקציה';
 
   @override
   String get launchPinBiometricReason => 'ביטול נעילת Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'אשרו כדי לסיים את הסשן';
+
+  @override
+  String get distressCancelBiometricReason => 'אשרו שזה אתם כדי לבטל';
 
   @override
   String get launchPinIncorrect => 'PIN שגוי';

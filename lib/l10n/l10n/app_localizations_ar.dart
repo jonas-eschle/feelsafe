@@ -922,10 +922,20 @@ class AppLocalizationsAr extends AppLocalizations {
   String get securityAppPinBiometric => 'استخدام القياسات الحيوية لقفل التطبيق';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'استخدام السمات الحيوية لإلغاء الاستغاثة';
+
+  @override
   String get launchPinTitle => 'أدخل رمز PIN الخاص بالتطبيق';
 
   @override
   String get launchPinBiometricReason => 'إلغاء قفل Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'أكِّد لإنهاء الجلسة';
+
+  @override
+  String get distressCancelBiometricReason => 'أكِّد هويتك للإلغاء';
 
   @override
   String get launchPinIncorrect => 'رمز PIN غير صحيح';

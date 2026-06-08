@@ -935,10 +935,21 @@ class AppLocalizationsFr extends AppLocalizations {
       'Utiliser la biométrie pour le verrouillage de l’application';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Utiliser la biométrie pour annuler la détresse';
+
+  @override
   String get launchPinTitle => 'Saisissez le PIN de l’application';
 
   @override
   String get launchPinBiometricReason => 'Déverrouiller Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'Confirmez pour terminer la session';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Confirmez votre identité pour annuler';
 
   @override
   String get launchPinIncorrect => 'PIN incorrect';

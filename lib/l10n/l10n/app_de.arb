@@ -959,5 +959,8 @@
   "sessionStealthAlbumArtLabel": "Albumcover",
   "sessionStealthPlay": "Wiedergabe",
   "sessionStealthPause": "Pause",
-  "sessionReminderDecoyWords": "SPÄTER,ÜBERSPRINGEN,FERTIG,ÖFFNEN,ANZEIGEN,OKAY,WEITER,MEHR,ERINNERN,SCHLIESSEN"
+  "sessionReminderDecoyWords": "SPÄTER,ÜBERSPRINGEN,FERTIG,ÖFFNEN,ANZEIGEN,OKAY,WEITER,MEHR,ERINNERN,SCHLIESSEN",
+  "securityDistressCancelBiometric": "Biometrie zum Abbrechen des Notrufs verwenden",
+  "sessionEndBiometricReason": "Bestätigen, um die Sitzung zu beenden",
+  "distressCancelBiometricReason": "Bestätige, dass du es bist, zum Abbrechen"
 }

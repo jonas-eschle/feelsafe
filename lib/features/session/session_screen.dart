@@ -781,7 +781,44 @@ class _DistressConfirmationOverlayState
       _showAppPinMismatch = false;
       _pinTimeoutRemaining = settings.pinTimeoutSeconds;
     });
+    // Start the 15-second window FIRST so it is already counting down while
+    // the optional biometric prompt is up — a biometric attempt must NOT
+    // reset it (spec 01 §Distress Confirmation Window: biometric failure or
+    // cancel "falls through to PIN entry within the same 15s timeout window").
     _startPinTimer();
+    // Biometric-first (opt-in, `distressCancelBiometricEnabled`): show the
+    // device biometric before the keypad. Success cancels the distress chain;
+    // cancel / failure / absence simply leaves the already-visible keypad and
+    // the still-running timer in place (fail-soft toward the PIN, per
+    // BiometricServiceProtocol). Q18 / spec 01:1019.
+    if (settings.distressCancelBiometricEnabled) {
+      await _tryDistressCancelBiometric();
+    }
+  }
+
+  /// Attempts the opt-in biometric substitute for the distress-cancel PIN.
+  ///
+  /// On a successful match this cancels the distress chain (and stops the 15s
+  /// timer). On absence / cancel / failure it does nothing — the PIN keypad is
+  /// already shown and the 15s window keeps running untouched, so the user can
+  /// still type the PIN within the same window.
+  Future<void> _tryDistressCancelBiometric() async {
+    final biometric = ref.read(biometricServiceProvider);
+    if (!await biometric.isAvailable()) return;
+    if (!mounted) return;
+    // Guard against the timer having already expired (which fires distress and
+    // unmounts the overlay) while `isAvailable()` was in flight.
+    if (_pinTimer == null) return;
+    final reason = AppLocalizations.of(context).distressCancelBiometricReason;
+    final ok = await biometric.authenticate(reason: reason);
+    if (!mounted || _pinTimer == null) return;
+    if (ok) {
+      ref.read(sessionControllerProvider.notifier).resetWrongPinAttempts();
+      _pinTimer?.cancel();
+      _pinTimer = null;
+      ref.read(sessionControllerProvider.notifier).cancelDistress();
+    }
+    // On failure / cancel: keypad stays, timer keeps running — no reset.
   }
 
   void _startPinTimer() {

@@ -903,10 +903,19 @@ class AppLocalizationsZh extends AppLocalizations {
   String get securityAppPinBiometric => '为应用锁启用生物识别';
 
   @override
+  String get securityDistressCancelBiometric => '使用生物识别取消求救';
+
+  @override
   String get launchPinTitle => '输入应用 PIN 码';
 
   @override
   String get launchPinBiometricReason => '解锁 Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => '确认以结束会话';
+
+  @override
+  String get distressCancelBiometricReason => '确认是您本人以取消';
 
   @override
   String get launchPinIncorrect => 'PIN 码错误';
@@ -3015,10 +3024,19 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get securityAppPinBiometric => '為應用程式鎖定使用生物辨識';
 
   @override
+  String get securityDistressCancelBiometric => '使用生物辨識取消求救';
+
+  @override
   String get launchPinTitle => '輸入應用程式 PIN';
 
   @override
   String get launchPinBiometricReason => '解鎖 Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => '確認以結束工作階段';
+
+  @override
+  String get distressCancelBiometricReason => '確認是您本人以取消';
 
   @override
   String get launchPinIncorrect => 'PIN 錯誤';

@@ -929,10 +929,21 @@ class AppLocalizationsUk extends AppLocalizations {
       'Використовувати біометрію для блокування застосунку';
 
   @override
+  String get securityDistressCancelBiometric =>
+      'Використовувати біометрію для скасування тривоги';
+
+  @override
   String get launchPinTitle => 'Введіть PIN-код застосунку';
 
   @override
   String get launchPinBiometricReason => 'Розблокувати Guardian Angela';
+
+  @override
+  String get sessionEndBiometricReason => 'Підтвердьте, щоб завершити сеанс';
+
+  @override
+  String get distressCancelBiometricReason =>
+      'Підтвердьте, що це ви, для скасування';
 
   @override
   String get launchPinIncorrect => 'Неправильний PIN-код';
