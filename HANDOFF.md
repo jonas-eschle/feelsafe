@@ -1,12 +1,77 @@
 # Guardian Angela v3 — Session Hand-off
 
+## ⇒ ORCHESTRATOR RESUME — READ THIS FIRST (fresh-session entry point)
+
+**Run AS ORCHESTRATOR, not implementer** (memory `feedback_orchestration_handoff_baton`):
+stay lean, delegate ALL spec/source reading to fresh Opus sub-agents, consume only
+this baton + each agent's final report. Per chunk: fresh implementer (Opus,
+background, **SOLE committer** on the tree) → per-chunk **cohort** (architect-reviewer
+spec-vs-code + qa-expert spec-vs-tests, both Opus, parallel, READ-ONLY) → on
+FIX_REQUIRED a fresh fix agent → re-cohort the delta → advance. Do a cheap
+orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. **ONE
+committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
+run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
+
+**VERIFIED STATE (clean stop):** HEAD = `921de67`, **+12 commits UNPUSHED** vs
+origin/main (=`f5eea2c`), tree clean. Suite **4287 pass**, `analyze --fatal-infos` = 0,
+**coverage-of-logic 89.46%**, floor 88.8. M0–M4 PUSHED; M5 (FINAL milestone) in progress.
+(NB: local commits survive a `/clear` — the 12 commits are safe; the fresh session
+continues C7→C10 then pushes the whole stack at C10.)
+
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7:** C1/C2/C3/A5 (INT scenarios
++ SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
+(device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
+· C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
+services + main.dart) · **C6b (non-feature tail)** — ALL architect+qa **PASS**.
+
+**3 production bugs found+fixed+verified this run** (for the C10 milestone summary):
+(1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
+on disarm; (2) `messaging._launchUrl`/`phone._dial` un-awaited `return launchUrl()` let an
+async rejection escape the degrade catch → a failed distress-SMS/call threw instead of
+degrading to `false`; (3) C4 `CallStateChannel.kt` MethodChannel/EventChannel name-shadow
+→ a real incoming call never paused a session.
+
+**NEXT = C7 — `lib/features/` controllers + screens + `app_router.dart` (≈1153 missed
+lines, 85.7%→~99%). C7 MUST BE SPLIT.** C6b hit **402k** subagent-tokens (> the 400k hard
+ceiling) on a SMALLER surface — one C7 agent WILL overflow. Orchestrator: first pull
+per-feature missed-line counts from the lcov (cheap), then dispatch **~3–4 SEQUENTIAL**
+sub-agents (C7a/C7b/C7c…), each scoped to a feature subset sized **≤~250k**, cohort each.
+Features hold only ~5 device-only lines total (census below) → nearly all host-coverable
+via widget + controller tests. `app_router.dart` (111L) pairs with the screens sub-agent.
+
+**THEN:** **C8** — populate `test/spec_coverage_test.dart` + enable its Phase-9
+assertions; reconcile the stale `docs/spec/07-test-plan.md` contract table. C8 list now
+also includes: the **6 C6 + 10 C6b coverage host-test files have NO spec-07 IDs** (add
+rows or a "coverage host-tests" annex); split **INT-007** into host (`test/integration/
+call_state_session_test.dart`) vs device (`integration_test/real_call_pause_test.dart`);
+add device rows for **#12 background-throttle** + the **stealth launcher-alias swap**; iOS
+rows = "(CI build-ios)" only, never faked device-green; spec-05 notes (the stopFlash
+per-loop-captured-completer invariant is load-bearing; the launch degrade-to-`false`
+contract). → **C9** — doc-sweep: **~31 stale `Phase [0-9]` comment markers across ~27
+`lib/services/` files** (incl. `protocols/*` "Phase 5 supplies…" boilerplate,
+`service_providers.dart:8`, `quick_exit_service`, `background_session_service`,
+`audio_service`, `permission_audit_service`) + the CLAUDE.md native-files list tidy
+(**`PhoneChannel.kt`/`DeviceStateChannel.kt` are listed but don't exist**). → **C10** —
+final GA-readiness milestone cohort + the authoritative full gate + **PUSH the whole M5
+stack** (declares the v3 wiring remediation DONE). **Do NOT push before C10.**
+
+**C10 DENOMINATOR DECISION (orchestrator/user call at C8 or C10):** to set the final
+~99%-of-logic target, decide (a) exclude the **~71 codegen Drift-DSL lines** (glob
+`lib/data/db/tables/*.dart`; PROVEN to throw "should not be called at runtime" — legit,
+structurally like `*.g.dart`); (b) treat the **~96 `Platform.is*` device-only lines** as
+device-e2e/CI-build-covered (user already ruled iOS = "CI-build-verified is sufficient").
+With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% host ceiling.
+
+---
+
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
 (INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
 C4 (device-e2e #11/#12/stealth) + C4-fix + C5 (coverage-of-logic gate +
 ratchet floor) + C6 (5 zero-coverage safety services + main.dart) + **C6b
-(rest of the NON-feature surface)** DONE (all UNPUSHED — HEAD = `7f4b102` the
-`m5-c6b` commit, ahead of origin/main by **11**). THIS session: **C6b — host
+(rest of the NON-feature surface)** DONE + COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — HEAD = `921de67`,
+the `m5-c6b` HANDOFF-baton commit atop code commit `7f4b102`, ahead of
+origin/main by **12**). THIS session: **C6b — host
 tests for the remaining NON-feature surface (services + data layer +
 domain/core tails); coverage-of-logic 87.14%→89.46%; floor ratcheted
 86.5→88.8; found + fixed a real `_launchUrl`/`_dial` un-awaited-return bug
