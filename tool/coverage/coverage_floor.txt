@@ -93,7 +93,42 @@
 #     No production bugs found in this surface. The trash-screen super.key
 #     const line is pinned with a non-const UniqueKey() construction
 #     (C7b's de-jitter trick).
-#   * Floor set to 93.8 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7e ratchet (2026-06-10) = 95.73%-of-logic (12734 / 13302 lines)
+#     after covering the home + post-session surface — 7 of 8 files now 0
+#     missed: home_controller (39→0, real ProviderContainer + in-memory
+#     Drift + recording SessionController/checklist/settings fakes; sim
+#     start downgrades validation errors, real start blocks + surfaces
+#     them, distress resolution mode-local > global default > null,
+#     RealSessionStartValidator prewarm success AND failure-non-fatal),
+#     home_screen (28→2, GoRouter harness for the appbar/start pushes +
+#     home_widget MethodChannel/EventChannel mocks driving the
+#     guardianangela:// quick-exit / fake-call deep links end-to-end),
+#     simulation_summary_screen (29→0, share_plus channel mock asserting
+#     the formatted log text, wrong-PIN shake → clearPinError + entry wipe,
+#     backspace, skip-tap), simulation_summary_controller (26→0, real Drift
+#     round-trip of a recorder-shaped log + sha256 PIN gating),
+#     gps_logging_controller (24→0, recording settings repo pins
+#     no-sibling-clobber saves), safety_setup_checklist (10→0, app-resume +
+#     return-from-navigation refreshes, Got-it / Go-there sheet paths,
+#     default permission_handler lookup), chain_summary (12→0, icon/name
+#     mapping exhaustive + empty chain), feedback_form_screen (2→0, real
+#     Drift feedback-history insert + cancel pop). +168 covered lines.
+#     Found + fixed TWO real production bugs (both red→green proven):
+#     (1) HomeController.build kept a STALE persisted selectedModeId after
+#     its mode was deleted (Modes delete never rewrites the setting) — no
+#     chip rendered selected, ChainSummary fell back to another mode, and
+#     Start silently dead-ended (returns false with no errors → no dialog);
+#     build now re-anchors to the first existing mode. (2) the
+#     simulation-summary share button rendered whenever the PIN was
+#     unlocked even with log == null (stale / purged log id) — tapping it
+#     null-asserted `state.log!` and crashed; the button now also requires
+#     a log. The 2 remaining lines (home_screen 65-66) are the defensive
+#     catch around a synchronous widgetClicked.listen failure — not
+#     synthesizable on host (the mapped EventChannel stream never throws
+#     synchronously at listen). The HomeScreen super.key const line is
+#     pinned with a non-const UniqueKey() construction (C7b's de-jitter
+#     trick).
+#   * Floor set to 95.1 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -103,4 +138,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-93.8
+95.1

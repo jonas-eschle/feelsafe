@@ -64,8 +64,15 @@ class HomeController extends AsyncNotifier<HomeState> {
     final modes = await db.sessionModesDao.getRegularModes();
     final contacts = await ContactsRepository(db.contactsDao).getAll();
     final settings = await ref.read(appSettingsRepositoryProvider).load();
-    final selected =
-        settings.selectedModeId ?? (modes.isNotEmpty ? modes.first.id : null);
+    // Why the existence check: deleting a mode does not rewrite
+    // appSettings.selectedModeId, so the persisted id can go stale. Keeping
+    // it would render no selected chip while startSession dead-ends with a
+    // silent `mode == null → false` — a dead Start button. Re-anchor to the
+    // first mode instead so the user can always start.
+    final persisted = settings.selectedModeId;
+    final selected = persisted != null && modes.any((m) => m.id == persisted)
+        ? persisted
+        : (modes.isNotEmpty ? modes.first.id : null);
     return HomeState(
       modes: modes,
       contacts: contacts,

@@ -11,6 +11,7 @@
 library;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -123,6 +124,33 @@ SimulationSummaryState _state({
 List<Override> _overrideWith(_FakeSimSummaryController fake) => <Override>[
   simulationSummaryControllerProvider.overrideWith(() => fake),
 ];
+
+/// Controller whose build throws — drives the `error:` AsyncValue branch.
+class _ThrowingSimSummaryController extends SimulationSummaryController {
+  @override
+  Future<SimulationSummaryState> build() async =>
+      throw StateError('summary log unreadable');
+}
+
+/// Mocks the share_plus MethodChannel and records every share call's
+/// argument map.
+List<Map<Object?, Object?>> _mockShareChannel(WidgetTester tester) {
+  final calls = <Map<Object?, Object?>>[];
+  const channel = MethodChannel('dev.fluttercommunity.plus/share');
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(channel, (
+    MethodCall call,
+  ) async {
+    calls.add(call.arguments as Map<Object?, Object?>);
+    return 'dev.fluttercommunity.plus/share/success';
+  });
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      channel,
+      null,
+    ),
+  );
+  return calls;
+}
 
 // ---------------------------------------------------------------------------
 // Pump helpers
@@ -604,6 +632,172 @@ void main() {
         pinUnlocked: true,
       );
       expect(state.durationSeconds, 0);
+    });
+  });
+
+  // ── PIN prompt interactions (screen handlers) ─────────────────────────
+
+  group('SimulationSummaryScreen — PIN prompt handlers', () {
+    testWidgets('tapping Skip unlocks the summary via the screen', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      final l10n = await loadL10n(const Locale('en'));
+
+      final skip = find.widgetWithText(
+        TextButton,
+        l10n.simulationPinPromptSkip,
+        skipOffstage: false,
+      );
+      await tester.ensureVisible(skip);
+      await tester.pumpAndSettle();
+      await tester.tap(skip);
+      await tester.pumpAndSettle();
+
+      check(fake.skipPinCalls).equals(1);
+      expect(find.text(l10n.simulationSummaryTimelineHeader), findsOneWidget);
+    });
+
+    testWidgets('backspace removes the last entered digit', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+
+      await tester.tap(find.text('1'));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      // Four more digits now make up the full entry — the dropped '1'
+      // must NOT be part of the submitted PIN.
+      for (final d in <String>['2', '3', '4', '5']) {
+        await tester.tap(find.text(d));
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+
+      check(fake.submitPinCalls).equals(1);
+      check(fake.lastSubmittedPin).equals('2345');
+    });
+
+    testWidgets('wrong-PIN shake clears the error and the entry', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSimSummaryController(
+        _state(pinRequired: true, pinUnlocked: false),
+      );
+      await _pump(tester, controller: fake);
+      final l10n = await loadL10n(const Locale('en'));
+
+      // Wrong PIN (fake accepts only '0000') → pinError → shake.
+      for (final d in <String>['1', '2', '3', '5']) {
+        await tester.tap(find.text(d));
+        await tester.pump();
+      }
+      await tester.pump();
+      expect(find.text(l10n.simulationPinIncorrect), findsOneWidget);
+
+      // Let the shake run out: clearPinError fires and the entry resets.
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.simulationPinIncorrect), findsNothing);
+
+      // A fresh 4-digit entry submits exactly '0000' — proof the four
+      // wrong digits were wiped rather than prefixed.
+      for (final d in <String>['0', '0', '0', '0']) {
+        await tester.tap(find.text(d));
+        await tester.pump();
+      }
+      await tester.pumpAndSettle();
+      check(fake.submitPinCalls).equals(2);
+      check(fake.lastSubmittedPin).equals('0000');
+      expect(find.text(l10n.simulationSummaryTimelineHeader), findsOneWidget);
+    });
+  });
+
+  // ── Share action ────────────────────────────────────────────────────────
+
+  group('SimulationSummaryScreen — share action', () {
+    testWidgets('share button forwards the formatted log to share_plus', (
+      WidgetTester tester,
+    ) async {
+      final calls = _mockShareChannel(tester);
+      final fake = _FakeSimSummaryController(_state());
+      await _pump(tester, controller: fake);
+      final l10n = await loadL10n(const Locale('en'));
+
+      await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+
+      check(calls.length).equals(1);
+      final String text = calls.single['text']! as String;
+      check(text).contains('Mode: Walk Mode');
+      check(text).contains('Session started');
+      check(text).contains('started');
+      check(text).contains('2026-01-01T12:00:00.000Z');
+      check(
+        calls.single['subject']! as String,
+      ).equals(l10n.simulationSummaryShareSubject);
+    });
+  });
+
+  // ── Error + empty branches ──────────────────────────────────────────────
+
+  group('SimulationSummaryScreen — error and empty branches', () {
+    testWidgets('a controller build failure renders the error body', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const SimulationSummaryScreen(logId: 'log-1'),
+        overrides: <Override>[
+          simulationSummaryControllerProvider.overrideWith(
+            _ThrowingSimSummaryController.new,
+          ),
+        ],
+        settle: false,
+      );
+      await tester.pump();
+      await tester.pump();
+
+      expect(find.textContaining('summary log unreadable'), findsOneWidget);
+    });
+
+    testWidgets('an unlocked state with a missing log shows the empty body', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSimSummaryController(
+        const SimulationSummaryState(
+          log: null,
+          pinRequired: false,
+          pinUnlocked: true,
+        ),
+      );
+      await _pump(tester, controller: fake);
+
+      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
+      // With nothing to share, the share affordance must NOT render —
+      // tapping it would null-assert on `state.log`.
+      expect(find.byIcon(Icons.share), findsNothing);
+    });
+
+    testWidgets('the empty-id scaffold returns home via the button', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSimSummaryController(_state());
+      await _pumpWithRouter(tester, fake: fake, logId: '');
+      expect(find.text(l10n.simulationSummaryEmpty), findsOneWidget);
+
+      await tester.tap(find.text(l10n.simulationSummaryReturn));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(SimulationSummaryScreen), findsNothing);
     });
   });
 }

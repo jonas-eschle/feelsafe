@@ -56,7 +56,11 @@ class _SimulationSummaryScreenState
       appBar: AppBar(
         title: Text(l10n.simulationSummaryTitle),
         actions: <Widget>[
-          if (async.value?.pinUnlocked ?? false)
+          // The log may be null even when unlocked (stale / purged log id
+          // with no PIN set) — without the log check the tap handler's
+          // `log!` null-assert would crash on a screen with nothing to
+          // share.
+          if ((async.value?.pinUnlocked ?? false) && async.value?.log != null)
             IconButton(
               tooltip: l10n.simulationSummaryShare,
               icon: const Icon(Icons.share),

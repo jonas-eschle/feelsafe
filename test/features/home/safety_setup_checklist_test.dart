@@ -203,6 +203,10 @@ Future<_PushedRoute> _pump(
   _FakeAppSettingsRepository? settingsRepo,
   Future<bool> Function()? permissionLookup,
   Future<bool> Function()? permissionRequester,
+  // When true the widget receives a NULL lookup and falls back to the
+  // real `Permission.notification.status` read — the test must install a
+  // fake [PermissionHandlerPlatform] first.
+  bool useDefaultPermissionLookup = false,
 }) async {
   final pushed = _PushedRoute();
   final router = GoRouter(
@@ -216,7 +220,9 @@ Future<_PushedRoute> _pump(
             modes: modes,
             // Default the lookup to "denied" so the test does not hang
             // waiting on the real `permission_handler` platform channel.
-            permissionLookup: permissionLookup ?? () async => false,
+            permissionLookup: useDefaultPermissionLookup
+                ? null
+                : (permissionLookup ?? () async => false),
             permissionRequester: permissionRequester ?? () async => false,
           ),
         ),
@@ -690,6 +696,108 @@ void main() {
         check(perm.requestPermissionsCalls).equals(1);
       },
     );
+  });
+
+  group('SafetySetupChecklist — default permission lookup', () {
+    testWidgets(
+      'with no injected lookup the row reflects the platform status',
+      (WidgetTester tester) async {
+        final original = PermissionHandlerPlatform.instance;
+        PermissionHandlerPlatform.instance = _FakePermissionHandlerPlatform(
+          status: PermissionStatus.granted,
+        );
+        addTearDown(() => PermissionHandlerPlatform.instance = original);
+        final l10n = await loadL10n(const Locale('en'));
+
+        await _pump(tester, useDefaultPermissionLookup: true);
+
+        // Item 6 (notifications) is the only complete item → 1 / 6.
+        expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+      },
+    );
+  });
+
+  group('SafetySetupChecklist — refresh triggers', () {
+    testWidgets('an app resume re-reads the repository flags', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeChecklistRepository();
+      await _pump(tester, repo: repo);
+      expect(find.text(l10n.homeChecklistProgress('0', '6')), findsOneWidget);
+
+      // The first simulation completes while the app is backgrounded…
+      await repo.markSimulationDone();
+      tester.binding.handleAppLifecycleStateChanged(AppLifecycleState.resumed);
+      await tester.pumpAndSettle();
+
+      // …and the resume hook re-reads the flags: item 4 flips to done.
+      expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+    });
+
+    testWidgets('returning from an item navigation refreshes the rows', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeChecklistRepository();
+      final pushed = await _pump(tester, repo: repo);
+
+      await tester.tap(find.text(l10n.homeChecklistItem1Title));
+      await tester.pumpAndSettle();
+      check(pushed.lastPushed).equals(RouteNames.contactForm);
+
+      // Flag flips while the user is on the pushed screen; popping back
+      // must re-read it (the post-navigation _refresh).
+      await repo.markSimulationDone();
+      tester.state<NavigatorState>(find.byType(Navigator).last).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+    });
+
+    testWidgets('returning from a tutorial "Go there" target refreshes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeChecklistRepository();
+      final pushed = await _pump(tester, repo: repo);
+
+      // Item 3 opens the stealth tutorial sheet with a "Go there" CTA.
+      await tester.tap(find.text(l10n.homeChecklistItem3Title));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.homeChecklistGoThere));
+      await tester.pumpAndSettle();
+      check(pushed.lastPushed).equals(RouteNames.settingsStealth);
+
+      await repo.markSimulationDone();
+      tester.state<NavigatorState>(find.byType(Navigator).last).pop();
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+    });
+
+    testWidgets('"Got it" closes the tutorial sheet without navigating', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeChecklistRepository();
+      final pushed = await _pump(tester, repo: repo);
+
+      // Item 4 (simulation) has a tutorial with NO "Go there" target.
+      await tester.tap(find.text(l10n.homeChecklistItem4Title));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.homeChecklistGotIt), findsOneWidget);
+
+      await repo.markSimulationDone();
+      await tester.tap(find.text(l10n.homeChecklistGotIt));
+      await tester.pumpAndSettle();
+
+      // Sheet dismissed, nothing pushed, and the close-path refresh
+      // picked up the new flag.
+      expect(find.text(l10n.homeChecklistGotIt), findsNothing);
+      check(pushed.lastPushed).isNull();
+      expect(find.text(l10n.homeChecklistProgress('1', '6')), findsOneWidget);
+    });
   });
 }
 

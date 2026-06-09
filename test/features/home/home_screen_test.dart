@@ -16,15 +16,21 @@
 /// needs (`AsyncData(state)`, `AsyncLoading()`, `AsyncError(e, st)`).
 library;
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -1145,4 +1151,422 @@ void main() {
       expect(find.text(l10n.homeStartSession), findsOneWidget);
     });
   });
+
+  group('HomeScreen — async branches', () {
+    testWidgets('shows the loading spinner while the controller builds', (
+      WidgetTester tester,
+    ) async {
+      // Non-const construction on purpose: pins the DA row for the const
+      // constructor (const instantiations are canonicalized away by the
+      // compiler and report 0 hits — known lcov jitter).
+      await pumpScreen(
+        tester,
+        HomeScreen(key: UniqueKey()),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(_NeverController.new),
+        ],
+        settle: false,
+      );
+      await tester.pump();
+      final l10n = await loadL10n(const Locale('en'));
+      // The body spinner from `stateAsync.when(loading: ...)` — the home
+      // dashboard must never flash while modes are loading.
+      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.text(l10n.homeStartSession), findsNothing);
+    });
+
+    testWidgets('surfaces a controller build failure as an error body', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(_ThrowingController.new),
+        ],
+        settle: false,
+      );
+      await tester.pump();
+      await tester.pump();
+      expect(find.textContaining('home db unavailable'), findsOneWidget);
+    });
+  });
+
+  group('HomeScreen — chain summary fallback selection', () {
+    testWidgets('a stale selectedModeId falls back to the first mode chain', (
+      WidgetTester tester,
+    ) async {
+      final m1 = _mode('m1', 'Walk');
+      final m2 = _mode(
+        'm2',
+        'Date',
+        chainSteps: <ChainStep>[_step('m2-s0', ChainStepType.loudAlarm)],
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(modes: <SessionMode>[m1, m2], selectedModeId: 'ghost'),
+            ),
+          ),
+        ],
+      );
+      final ChainSummary summary = tester.widget<ChainSummary>(
+        find.byType(ChainSummary),
+      );
+      // orElse fallback: ghost id → first mode's steps, never m2's.
+      check(summary.steps.map((s) => s.id)).deepEquals(<String>['m1-step-0']);
+    });
+  });
+
+  group('HomeScreen — contact chips are inert pop targets', () {
+    testWidgets('tapping a contact chip or the overflow chip stays on home', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final contacts = <EmergencyContact>[
+        for (int i = 1; i <= 6; i++) _contact('c$i', 'Contact $i'),
+      ];
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[_mode('m1', 'Walk')],
+                selectedModeId: 'm1',
+                contacts: contacts,
+              ),
+            ),
+          ),
+        ],
+      );
+      await tester.tap(find.text('Contact 1'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('+1'));
+      await tester.pumpAndSettle();
+      // maybePop on the root route is a no-op — home keeps rendering.
+      expect(find.text(l10n.homeStartSession), findsOneWidget);
+      expect(find.text('Contact 1'), findsOneWidget);
+    });
+  });
+
+  group('HomeScreen — notification-blocked dialog dismissal', () {
+    testWidgets('OK dismisses the blocked warning; still no start', (
+      WidgetTester tester,
+    ) async {
+      final original = PermissionHandlerPlatform.instance;
+      PermissionHandlerPlatform.instance = _FakePermissionHandlerPlatform(
+        status: PermissionStatus.permanentlyDenied,
+      );
+      addTearDown(() => PermissionHandlerPlatform.instance = original);
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeHomeController(
+        _state(
+          modes: <SessionMode>[
+            _mode(
+              'm1',
+              'Walk',
+              chainSteps: <ChainStep>[
+                _step('m1-s0', ChainStepType.disguisedReminder),
+              ],
+            ),
+          ],
+          selectedModeId: 'm1',
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
+      );
+      await _tapStartAndProceed(tester, l10n);
+      await tester.tap(find.text(l10n.permissionNotifNotNow));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.homeStartBlockedNotifTitle), findsOneWidget);
+
+      await tester.tap(find.text(l10n.commonOk));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.homeStartBlockedNotifTitle), findsNothing);
+      check(fake.startSessionCalls).equals(0);
+    });
+  });
+
+  group('HomeScreen — router navigation', () {
+    testWidgets('app bar actions push contacts / history / settings', (
+      WidgetTester tester,
+    ) async {
+      final nav = await _pumpHomeWithRouter(
+        tester,
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(_state()),
+          ),
+        ],
+      );
+
+      await tester.tap(find.byIcon(Icons.people_outline));
+      await tester.pumpAndSettle();
+      check(nav.pushed).deepEquals(<String>[RouteNames.contacts]);
+      tester.state<NavigatorState>(find.byType(Navigator).last).pop();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.history));
+      await tester.pumpAndSettle();
+      check(nav.pushed.last).equals(RouteNames.pastEvents);
+      tester.state<NavigatorState>(find.byType(Navigator).last).pop();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.settings_outlined));
+      await tester.pumpAndSettle();
+      check(nav.pushed.last).equals(RouteNames.settings);
+    });
+
+    testWidgets('a successful start navigates to /session', (
+      WidgetTester tester,
+    ) async {
+      _installGrantedPerm(tester);
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeHomeController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk')], selectedModeId: 'm1'),
+      );
+      final nav = await _pumpHomeWithRouter(
+        tester,
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
+      );
+
+      await _tapStartAndProceed(tester, l10n);
+
+      check(fake.startSessionCalls).equals(1);
+      check(nav.pushed).deepEquals(<String>[RouteNames.session]);
+    });
+  });
+
+  group('HomeScreen — widget deep-link routing', () {
+    testWidgets('cold-start widget URI routes to the fake call screen', (
+      WidgetTester tester,
+    ) async {
+      _mockHomeWidgetChannel(
+        tester,
+        coldStartUri: 'guardianangela://fake-call',
+      );
+      final nav = await _pumpHomeWithRouter(
+        tester,
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(_state()),
+          ),
+        ],
+      );
+
+      check(nav.pushed).deepEquals(<String>[RouteNames.fakeCall]);
+    });
+
+    testWidgets(
+      'quick-exit tap with an active session pushes /session?quickExit=true',
+      (WidgetTester tester) async {
+        _mockHomeWidgetChannel(tester);
+        final clicks = _mockWidgetClickStream(tester);
+        final nav = await _pumpHomeWithRouter(
+          tester,
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(
+              () => _FakeHomeController(_state()),
+            ),
+            sessionControllerProvider.overrideWith(
+              () => _FakeSessionController(
+                const SessionState.initial().copyWith(phase: SessionPhase.wait),
+              ),
+            ),
+          ],
+        );
+
+        clicks.emit('guardianangela://quick-exit');
+        await tester.pumpAndSettle();
+
+        check(nav.pushed).deepEquals(<String>[RouteNames.session]);
+        check(nav.lastQuery).deepEquals(<String, String>{'quickExit': 'true'});
+      },
+    );
+
+    testWidgets('quick-exit tap with no active session is a no-op', (
+      WidgetTester tester,
+    ) async {
+      _mockHomeWidgetChannel(tester);
+      final clicks = _mockWidgetClickStream(tester);
+      final nav = await _pumpHomeWithRouter(
+        tester,
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(_state()),
+          ),
+          sessionControllerProvider.overrideWith(
+            () => _FakeSessionController(const SessionState.initial()),
+          ),
+        ],
+      );
+
+      clicks.emit('guardianangela://quick-exit');
+      await tester.pumpAndSettle();
+
+      check(nav.pushed).isEmpty();
+    });
+
+    testWidgets('foreign schemes and unknown hosts are ignored', (
+      WidgetTester tester,
+    ) async {
+      _mockHomeWidgetChannel(tester);
+      final clicks = _mockWidgetClickStream(tester);
+      final nav = await _pumpHomeWithRouter(
+        tester,
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(_state()),
+          ),
+        ],
+      );
+
+      clicks.emit('https://example.com/fake-call');
+      await tester.pumpAndSettle();
+      clicks.emit('guardianangela://unknown-action');
+      await tester.pumpAndSettle();
+
+      check(nav.pushed).isEmpty();
+    });
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Router pump + home_widget channel mocks (deep-link routing tests)
+// ---------------------------------------------------------------------------
+
+/// Controller whose build never completes — pins the loading branch.
+class _NeverController extends HomeController {
+  @override
+  Future<HomeState> build() => Completer<HomeState>().future;
+}
+
+/// Controller whose build throws — pins the error branch.
+class _ThrowingController extends HomeController {
+  @override
+  Future<HomeState> build() async => throw StateError('home db unavailable');
+}
+
+/// Records every named push reaching a non-home route.
+class _RecordedNav {
+  final List<String> pushed = <String>[];
+  Map<String, String> lastQuery = const <String, String>{};
+}
+
+/// Pumps [HomeScreen] under a GoRouter shell whose child routes record
+/// their own activation, so tests can assert `context.pushNamed` calls.
+Future<_RecordedNav> _pumpHomeWithRouter(
+  WidgetTester tester, {
+  required List<Override> overrides,
+}) async {
+  final nav = _RecordedNav();
+  final router = GoRouter(
+    initialLocation: '/',
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/',
+        builder: (_, _) => const HomeScreen(),
+        routes: <RouteBase>[
+          for (final name in <String>[
+            RouteNames.contacts,
+            RouteNames.pastEvents,
+            RouteNames.settings,
+            RouteNames.session,
+            RouteNames.fakeCall,
+          ])
+            GoRoute(
+              path: name,
+              name: name,
+              builder: (_, GoRouterState s) {
+                nav.pushed.add(name);
+                nav.lastQuery = Map<String, String>.of(s.uri.queryParameters);
+                return Scaffold(body: Text('route:$name'));
+              },
+            ),
+        ],
+      ),
+    ],
+  );
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: overrides,
+      child: MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          useMaterial3: true,
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return nav;
+}
+
+/// Mocks the `home_widget` MethodChannel. [coldStartUri] is returned from
+/// `initiallyLaunchedFromHomeWidget` (null = not launched via widget).
+void _mockHomeWidgetChannel(WidgetTester tester, {String? coldStartUri}) {
+  tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+    const MethodChannel('home_widget'),
+    (MethodCall call) async {
+      if (call.method == 'initiallyLaunchedFromHomeWidget') {
+        return coldStartUri;
+      }
+      return true;
+    },
+  );
+  addTearDown(
+    () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+      const MethodChannel('home_widget'),
+      null,
+    ),
+  );
+}
+
+/// Captured sink of the mocked `home_widget/updates` EventChannel.
+///
+/// Lets a test emit a widget-tap URI AFTER the screen has settled, so the
+/// session-controller state the handler reads is already resolved.
+class _WidgetClickStream {
+  MockStreamHandlerEventSink? _sink;
+
+  /// Emits one foreground widget-tap [uri] to the subscribed screen.
+  void emit(String uri) {
+    final sink = _sink;
+    if (sink == null) {
+      throw StateError('emit() before the screen subscribed to the stream.');
+    }
+    sink.success(uri);
+  }
+}
+
+/// Mocks the `home_widget/updates` EventChannel (the foreground
+/// widget-tap stream) and returns a handle for emitting URIs.
+_WidgetClickStream _mockWidgetClickStream(WidgetTester tester) {
+  final stream = _WidgetClickStream();
+  tester.binding.defaultBinaryMessenger.setMockStreamHandler(
+    const EventChannel('home_widget/updates'),
+    MockStreamHandler.inline(
+      onListen: (Object? args, MockStreamHandlerEventSink sink) {
+        stream._sink = sink;
+      },
+    ),
+  );
+  return stream;
 }

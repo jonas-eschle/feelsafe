@@ -19,12 +19,16 @@ import 'package:flutter/services.dart';
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/domain/enums/feedback_type.dart';
+import 'package:guardianangela/domain/models/feedback_entry.dart';
 import 'package:guardianangela/features/feedback_form/feedback_form_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -82,6 +86,7 @@ Future<void> _pumpWithRouter(
   Locale locale = const Locale('en'),
   ThemeMode themeMode = ThemeMode.light,
   bool settle = true,
+  List<Override> overrides = const <Override>[],
 }) async {
   final router = GoRouter(
     initialLocation: '/feedback',
@@ -102,6 +107,7 @@ Future<void> _pumpWithRouter(
   );
   await tester.pumpWidget(
     ProviderScope(
+      overrides: overrides,
       child: MaterialApp.router(
         locale: locale,
         routerConfig: router,
@@ -575,5 +581,55 @@ void main() {
         check(launcher.calls).isNotEmpty();
       },
     );
+  });
+
+  group('FeedbackFormScreen — local history persistence', () {
+    testWidgets('a sent feedback lands in the real feedback history', (
+      WidgetTester tester,
+    ) async {
+      final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+      addTearDown(db.close);
+      await _pumpWithRouter(
+        tester,
+        overrides: <Override>[databaseProvider.overrideWith((_) async => db)],
+      );
+      await tester.enterText(
+        find.byType(TextField).last,
+        'Persisted feedback message.',
+      );
+      await tester.pump();
+
+      await _tapSend(tester);
+      await tester.pumpAndSettle();
+
+      final List<FeedbackEntry> rows = await db.feedbackHistoryDao.getAll();
+      check(rows.length).equals(1);
+      check(rows.single.message).equals('Persisted feedback message.');
+      check(rows.single.category).equals(FeedbackType.bug);
+      check(launcher.calls).isNotEmpty();
+    });
+  });
+
+  group('FeedbackFormScreen — cancel', () {
+    testWidgets('the cancel button pops back without sending', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester);
+      final cancel = find.widgetWithText(
+        TextButton,
+        l10n.commonCancel,
+        skipOffstage: false,
+      );
+      await tester.ensureVisible(cancel);
+      await tester.pumpAndSettle();
+
+      await tester.tap(cancel);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(FeedbackFormScreen), findsNothing);
+      expect(find.text('home'), findsOneWidget);
+      check(launcher.calls).isEmpty();
+    });
   });
 }
