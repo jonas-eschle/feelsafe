@@ -611,13 +611,21 @@ jobs:
       # before the integration suite compiles.
       - name: Generate Drift adapters (build_runner)
         run: dart run build_runner build --delete-conflicting-outputs
-      - name: Run Patrol e2e tests
+      - name: Run host-safe integration tests
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
-        # Lines: 331-340
+        # `--exclude-tags device-e2e` SKIPS the files that need a real Android
+        # emulator to drive real-OS stimuli (real_call_pause / background_throttle
+        # / stealth_icon_switch). This `ubuntu-latest` host runner has NO device,
+        # so without the exclusion those files would execute against the host and
+        # could false-green (e.g. asserting a clamp the OS never delivered). The
+        # device proofs run LOCALLY on `emulator-5554` via tool/device_e2e/*.sh
+        # (per the M5 emulator standard — no hosted-emulator CI job, owner
+        # decision 2026-06-09). The remaining host-safe integration_test files
+        # (app_boot_smoke / audio_assets / disguised_reminder) still run here.
         run: |
-          flutter test integration_test/ --concurrency=1
+          flutter test integration_test/ --concurrency=1 --exclude-tags device-e2e

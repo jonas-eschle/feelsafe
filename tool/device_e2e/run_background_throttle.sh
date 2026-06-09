@@ -2,14 +2,18 @@
 # Host runner for the C4 #12 device-e2e proof (background-throttle / G-013).
 #
 # Coordination (markers via debugPrint → the HOST test stdout = $LOG):
-#   GA-E2E A-READY / B-READY        → adb shell input keyevent KEYCODE_HOME
-#                                       (real OS background)
-#   GA-E2E A-BACKGROUNDED           → bring app to foreground (monkey launch)
-#   GA-E2E A-FOREGROUNDED / *-DONE  (informational)
+#   GA-E2E A-READY / B-READY            → adb shell input keyevent KEYCODE_HOME
+#                                           (real OS background)
+#   GA-E2E A-BACKGROUNDED / B-BACKGROUNDED → foreground the app
+#                                           (monkey -c LAUNCHER)
+#   GA-E2E A-FOREGROUNDED / *-SURVIVED / *-DONE  (informational)
 #
-# The on-device test owns every assertion (engine clamp state via the
-# @visibleForTesting `engine` getter; real-session liveness). This script only
-# drives the real OS lifecycle stimulus and reports the test's own verdict.
+# The on-device test owns every assertion and HARD-asserts the REAL OS-delivered
+# lifecycle transition (proof A: clamp engages via the @visibleForTesting
+# `engine` getter; proof B: a real paused→resumed round-trip is observed AND the
+# session survives). There is NO silent direct-drive fallback — if the OS does
+# not deliver the lifecycle event, the on-device test fails RED. This script
+# only drives the real OS lifecycle stimulus and reports the test's own verdict.
 #
 # Usage: tool/device_e2e/run_background_throttle.sh [serial]
 set -uo pipefail

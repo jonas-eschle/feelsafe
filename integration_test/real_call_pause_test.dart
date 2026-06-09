@@ -15,11 +15,20 @@
 //
 // HOST↔DEVICE COORDINATION (see _device_e2e_support.dart + tool/device_e2e/):
 // the test logs `GA-E2E READY-FOR-CALL`, then polls the REAL SessionState for
-// the pause; the host runner — tailing logcat — fires `adb emu gsm call` on
-// that marker. The test then logs `GA-E2E PAUSE-OBSERVED`; the host fires
-// `adb emu gsm cancel`, and the test polls for the resume. All assertions are
-// on-device against the real controller — a host that fired the wrong command
-// would simply let `pollUntil` time out and the test fail RED (no vacuous pass).
+// the pause; the host runner — grepping the captured `flutter test` STDOUT log
+// (markers reach it via `debugPrint`; `dart:developer log` does NOT route to
+// logcat in this embedder, see _device_e2e_support.dart) — fires `adb emu gsm
+// call` on that marker. The test then logs `GA-E2E PAUSE-OBSERVED`; the host
+// fires `adb emu gsm cancel`, and the test polls for the resume. All assertions
+// are on-device against the real controller — a host that fired the wrong
+// command would simply let `pollUntil` time out and the test fail RED (no
+// vacuous pass).
+//
+// DEVICE-ONLY: tagged `device-e2e` (declared in dart_test.yaml) so the host
+// `flutter test integration_test/ --exclude-tags device-e2e` CI job SKIPS it —
+// the real-OS telephony stimulus is only drivable on the emulator via the local
+// tool/device_e2e/run_real_call_pause.sh runner (which invokes this file by
+// explicit path, so the tag does not gate it there).
 //
 // REQUIRES `READ_PHONE_STATE` granted before the run (the host runner grants
 // it). Without it CallStateChannel emits a `permissionDenied` error instead of
@@ -28,6 +37,8 @@
 // iOS: the equivalent path is CXCallObserver (CallStatePlugin.swift), reliable
 // only while audio is active; NOT drivable on this Linux box — CI build-ios
 // only.
+@Tags(['device-e2e'])
+library;
 
 import 'package:flutter/widgets.dart';
 

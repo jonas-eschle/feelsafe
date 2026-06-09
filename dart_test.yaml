@@ -1,3 +1,11 @@
 tags:
   golden:
     skip: false
+  # Device-e2e integration tests that need a real Android emulator to drive
+  # real-OS stimuli (telephony, lifecycle backgrounding, launcher-alias swaps).
+  # Declared (not skipped) so the tag is known: the host CI `e2e` job runs
+  # `flutter test integration_test/ --exclude-tags device-e2e` (the host runner
+  # cannot deliver real OS events), while the local `tool/device_e2e/*.sh`
+  # runners invoke each tagged file by explicit path on `emulator-5554`.
+  device-e2e:
+    skip: false

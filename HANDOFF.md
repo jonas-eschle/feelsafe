@@ -2,23 +2,47 @@
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
-(INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm)
-DONE (all UNPUSHED). THIS session: **C4 device-e2e DONE + a real production bug
-fixed** (`m5-e2e`, UNPUSHED).** All three C4 items are EMULATOR-PROVEN on
-`emulator-5554` (Pixel_9_Pro/API36): **#11 incoming-call pause/resume** (real
-`adb emu gsm call/cancel` → native telephony → engine PAUSED reason=incomingCall
-→ RESUME; test exit=0) — and it **surfaced + FIXED a genuine production bug**:
-`CallStateChannel.onListen` never started the telephony listener (the
-`startListening` MethodChannel handler was SHADOWED by the same-named EventChannel
-on the shared binary-messenger slot), so a real incoming call would NEVER have
-paused the session in production. **#12 background-throttle** (real OS
-`KEYCODE_HOME` → `didChangeAppLifecycleState(paused)` → `setBackgroundClamp` 200×→
-60× → foreground releases; PLUS real-session liveness across the round-trip; test
-exit=0). **Stealth per-preset hardening** (host observes the launcher resolver
-via `resolve-activity` after EACH switch — 6–9 of 10 distinct preset aliases
-caught per run, FAILS=0, final=`.StealthAlias_music`; closes the M3-C4 deferral).
-Host suite STILL **4068** (no regression); `test/integration/` **35/35**
-flake-free (no f22ea41 regression); whole-project analyze **0**. NEXT = **M5 C5 —
+(INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
+C4 (device-e2e #11/#12/stealth) DONE (all UNPUSHED). THIS session: **C4-fix —
+the C4-review-cohort honesty defect on #12 is FIXED + the device-e2e tag
+mechanism is now the standard** (`m5-c4fix`, UNPUSHED).**
+
+**THE FIX (this session):**
+- **#12 was a stub-in-spirit: it silently greened on host / no-stimulus.** Its
+  proof A had a silent `else` direct-drive FALLBACK (so a no-OS run still
+  asserted the clamp), and proof B asserted only bare `isSessionActive`. The CI
+  `e2e` job (`ubuntu-latest`, tag-gated, ran `flutter test integration_test/`
+  with no device + no exclusion) executed #12 on the HOST → false-green on a
+  release tag. EMPIRICALLY RE-ESTABLISHED on `emulator-5554` (3/3 runs): a real
+  OS `KEYCODE_HOME` **reliably** delivers `AppLifecycleState.paused` to the
+  integration_test engine. So #12 is now **branch A**: the silent fallback is
+  REMOVED; proof A HARD-asserts the OS-delivered clamp (200×→60× then foreground-
+  release), proof B HARD-asserts a real `paused→resumed` round-trip was OBSERVED
+  (test-local `WidgetsBindingObserver`) + the session survived it. PROVEN: on
+  host/no-stimulus #12 now FAILS RED (`osPaused=false` → red); on-device it
+  PASSES (`osClamp=true`, `B-SURVIVED roundTrip=true`, exit=0). The clamp
+  ARITHMETIC stays host-covered (`background_clamp_test.dart`,
+  `session_controller_clamp_test.dart`); the speed EFFECT is honestly sim-only.
+- **Device-e2e tag mechanism = the new standard.** All THREE device-e2e files
+  (`real_call_pause_test.dart`, `background_throttle_test.dart`,
+  `stealth_icon_switch_test.dart`) now carry `@Tags(['device-e2e'])` + `library;`;
+  the tag is declared in root `dart_test.yaml` (single per-package config; Flutter
+  reads it for `integration_test/` too). The CI `e2e` host job now runs
+  `flutter test integration_test/ --concurrency=1 --exclude-tags device-e2e` —
+  PROVEN to SKIP all 3 device files (runs only the host-safe
+  `audio_assets`/`app_boot_smoke`/`disguised_reminder` = +9). The local
+  `tool/device_e2e/*.sh` runners invoke each file by EXPLICIT PATH, which runs
+  regardless of tag — re-verified: #11 + stealth still pass on-device after the
+  tagging. Everyday gate UNCHANGED (lefthook pre-push + CI `test` run bare
+  `flutter test` → `test/` only, never `integration_test/`).
+- **NITs fixed:** `real_call_pause_test.dart` header now says the runner greps the
+  captured `flutter test` STDOUT log (not "tails logcat"); `background_throttle_test.dart`
+  header + runner now say `monkey … LAUNCHER` foreground (not `am start …
+  MainActivityAlias`).
+
+Host suite STILL **4068** (no regression — device tests live in
+`integration_test/`, excluded from the host run); whole-project analyze **0**;
+the 3 device runs PASS on `emulator-5554` (exit=0 each). NEXT = **M5 C5 —
 coverage exclusion config + the floor mechanism** (see "next action" below).
 
 ---
@@ -666,6 +690,37 @@ Items added by C3 (INT-011..014 + WID):
   mechanism (`main.dart:260`); there is no separate "live locale provider" to
   export — the test mirrors the production wiring with a watched code provider.
   C8 should add these two file names to the renamed contract table.
+
+Items added by C4 (device-e2e #11/#12/stealth — from the qa-expert cohort; C8
+must fold these into the spec-07 rewrite):
+
+- **#12 has NO spec-07 row.** Add a device-e2e row for the background-clamp
+  lifecycle (G-013), with an HONEST sim-only scope: the on-device proof
+  (`integration_test/background_throttle_test.dart`, tag `device-e2e`) HARD-
+  asserts a REAL OS background engages the clamp on a real engine + a real
+  `paused→resumed` round-trip is observed; the clamp's SPEED EFFECT (200×→60×)
+  is sim-only (no-op for real wall-clock sessions) and its ARITHMETIC is covered
+  host-side (`test/domain/engine/background_clamp_test.dart`,
+  `test/features/session/session_controller_clamp_test.dart`). Do NOT write a
+  spec-07 row implying an OS-delivered real-speed clamp.
+- **INT-007 should SPLIT host vs device.** The host scenario (preserved-remaining
+  pause/resume via the injected `SimulationCallStateService.setState`, `fakeAsync`)
+  lives at `test/integration/call_state_session_test.dart`; the real-telephony
+  device proof (adb-gsm → native `CallStateChannel` → engine pause/resume) lives
+  at `integration_test/real_call_pause_test.dart` (tag `device-e2e`). The spec-07
+  INT-007 row currently conflates them — C8 should name both files with their
+  distinct scopes.
+- **The stealth launcher-alias swap has NO spec-07 row.** TC-51/52/53 cover
+  stealth UI hiding only (progress-bar/missed-indicator/notification-disguise —
+  spec-07:265-267, 1027-1029), NOT the per-preset launcher-alias swap. Add a
+  device-e2e row for `integration_test/stealth_icon_switch_test.dart` (tag
+  `device-e2e`; `RealSystemUiService.setStealthIcon` per-preset alias swap
+  observed via the host `cmd package resolve-activity` poll).
+- **Confirm iOS rows for #11 / #12 / stealth are "(CI build-ios)" ONLY** — never
+  faked device-green. iOS call-state is CXCallObserver (`CallStatePlugin.swift`,
+  audio-active only), iOS `setStealthIcon` no-ops, and the lifecycle clamp's iOS
+  path is build-verified, not driven on this Linux box. Per the M5 decision, iOS
+  spec-coverage rows are CI-build-verified only.
 
 ---
 

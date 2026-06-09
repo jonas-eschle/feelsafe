@@ -27,6 +27,15 @@
 // concurrent `am start` mid-test stalls the integration binding, so the host
 // must NOT relaunch during a dwell, only read. iOS: `setStealthIcon` no-ops
 // (component toggling unavailable); CI build-ios only.
+//
+// DEVICE-ONLY: tagged `device-e2e` (declared in dart_test.yaml) so the host
+// `flutter test integration_test/ --exclude-tags device-e2e` CI job SKIPS it —
+// `PackageManager.setComponentEnabledSetting` for the app's own components only
+// works on-device from the app's UID. The local
+// tool/device_e2e/run_stealth_per_preset.sh runner invokes this file by
+// explicit path (the tag does not gate an explicit-path invocation).
+@Tags(['device-e2e'])
+library;
 
 import 'dart:developer' as developer;
 
