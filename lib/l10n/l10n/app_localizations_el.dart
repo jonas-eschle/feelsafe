@@ -1413,6 +1413,15 @@ class AppLocalizationsEl extends AppLocalizations {
       'Προβολή αρχείου καταγραφής συμβάντων';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'Πώς ήταν η εμπειρία σας;';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'Αποστολή σχολίων';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'Παράλειψη';
+
+  @override
   String get settingsGeneralHeader => 'Γενικά';
 
   @override

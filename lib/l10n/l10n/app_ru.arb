@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Стандартный рингтон",
   "eventDefaultsFakeCallRingtoneCustom": "Свой: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Выбрать рингтон…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Использовать стандартный"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Использовать стандартный",
+  "sessionCompletedFeedbackPrompt": "Как всё прошло?",
+  "sessionCompletedFeedbackSend": "Отправить отзыв",
+  "sessionCompletedFeedbackSkip": "Пропустить"
 }

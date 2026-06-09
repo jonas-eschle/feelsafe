@@ -1397,6 +1397,15 @@ class AppLocalizationsHi extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'इवेंट लॉग देखें';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'आपका अनुभव कैसा रहा?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'प्रतिक्रिया भेजें';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'छोड़ें';
+
+  @override
   String get settingsGeneralHeader => 'सामान्य';
 
   @override

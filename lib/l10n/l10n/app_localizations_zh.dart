@@ -1339,6 +1339,15 @@ class AppLocalizationsZh extends AppLocalizations {
   String get sessionCompletedViewEventLog => '查看事件日志';
 
   @override
+  String get sessionCompletedFeedbackPrompt => '您的体验如何？';
+
+  @override
+  String get sessionCompletedFeedbackSend => '发送反馈';
+
+  @override
+  String get sessionCompletedFeedbackSkip => '跳过';
+
+  @override
   String get settingsGeneralHeader => '通用';
 
   @override
@@ -3609,6 +3618,15 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get sessionCompletedViewEventLog => '檢視事件紀錄';
+
+  @override
+  String get sessionCompletedFeedbackPrompt => '您的體驗如何？';
+
+  @override
+  String get sessionCompletedFeedbackSend => '傳送意見回饋';
+
+  @override
+  String get sessionCompletedFeedbackSkip => '略過';
 
   @override
   String get settingsGeneralHeader => '一般';

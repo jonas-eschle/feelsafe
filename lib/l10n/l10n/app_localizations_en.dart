@@ -1388,6 +1388,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'View event log';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'How was your experience?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'Send feedback';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'Skip';
+
+  @override
   String get settingsGeneralHeader => 'General';
 
   @override

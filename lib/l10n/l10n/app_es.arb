@@ -1029,5 +1029,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Tono predeterminado",
   "eventDefaultsFakeCallRingtoneCustom": "Personalizado: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Elegir tono…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Usar predeterminado"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Usar predeterminado",
+  "sessionCompletedFeedbackPrompt": "¿Cómo fue tu experiencia?",
+  "sessionCompletedFeedbackSend": "Enviar comentarios",
+  "sessionCompletedFeedbackSkip": "Omitir"
 }

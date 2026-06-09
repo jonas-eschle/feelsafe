@@ -8,8 +8,10 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// Shown after a session completes normally.
 ///
 /// Renders the duration row, the simulation banner (when applicable),
-/// and the two CTAs. Suppressed entirely in stealth mode (spec 04
-/// §Chain Exhausted Screen — stealth path silently routes home).
+/// the two CTAs, and — only when [showFeedbackPrompt] — the optional,
+/// dismissible post-session feedback prompt (spec 04 §Chain Exhausted —
+/// Tier-F F5). Suppressed entirely in stealth mode (spec 04 §Chain
+/// Exhausted Screen — stealth path silently routes home).
 class SessionCompletedScreen extends StatelessWidget {
   /// Creates a [SessionCompletedScreen].
   ///
@@ -21,6 +23,7 @@ class SessionCompletedScreen extends StatelessWidget {
     this.durationSeconds,
     this.logId,
     this.isSimulation = false,
+    this.showFeedbackPrompt = false,
   });
 
   /// Total duration of the completed session in seconds.
@@ -31,6 +34,15 @@ class SessionCompletedScreen extends StatelessWidget {
 
   /// Whether the completed session was a simulation.
   final bool isSimulation;
+
+  /// Whether to render the optional post-session feedback prompt
+  /// (spec 04 §Chain Exhausted — Tier-F F5).
+  ///
+  /// Set by the session-end flow only for clean **real** completions once
+  /// the user has finished at least [FeedbackPromptRepository.promptThreshold]
+  /// sessions, and never under stealth. The prompt is dismissible and never
+  /// blocks the Return-Home / View-Log actions. Defaults to false.
+  final bool showFeedbackPrompt;
 
   String _formatDuration(int seconds) {
     if (seconds < 60) return '${seconds}s';
@@ -125,8 +137,70 @@ class SessionCompletedScreen extends StatelessWidget {
                 ),
                 child: Text(l10n.sessionCompletedViewEventLog),
               ),
+              if (showFeedbackPrompt) ...<Widget>[
+                const SizedBox(height: 24),
+                const _FeedbackPrompt(),
+              ],
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Optional, dismissible "How was your experience?" card on the completion
+/// screen (spec 04 §Chain Exhausted — Tier-F F5).
+///
+/// `[Send feedback]` pushes the existing `/settings/feedback` form (which
+/// persists to the local `feedback_history` Drift table — there is no remote
+/// backend); `[Skip]` hides the card for the remainder of this visit. Local
+/// dismiss state lives here so the screen above stays stateless. The card is
+/// never shown under stealth or for simulations (the parent gates that).
+class _FeedbackPrompt extends StatefulWidget {
+  const _FeedbackPrompt();
+
+  @override
+  State<_FeedbackPrompt> createState() => _FeedbackPromptState();
+}
+
+class _FeedbackPromptState extends State<_FeedbackPrompt> {
+  bool _dismissed = false;
+
+  @override
+  Widget build(BuildContext context) {
+    if (_dismissed) return const SizedBox.shrink();
+    final l10n = AppLocalizations.of(context);
+    final theme = Theme.of(context);
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              l10n.sessionCompletedFeedbackPrompt,
+              style: theme.textTheme.titleMedium,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextButton(
+                  onPressed: () => setState(() => _dismissed = true),
+                  child: Text(l10n.sessionCompletedFeedbackSkip),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () =>
+                      context.pushNamed(RouteNames.settingsFeedback),
+                  child: Text(l10n.sessionCompletedFeedbackSend),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

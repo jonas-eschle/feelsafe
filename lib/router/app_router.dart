@@ -142,10 +142,13 @@ final goRouterProvider = Provider<GoRouter>((ref) {
           );
           final isSimulation =
               state.uri.queryParameters['simulation'] == 'true';
+          final showFeedbackPrompt =
+              state.uri.queryParameters['feedback'] == 'true';
           return SessionCompletedScreen(
             durationSeconds: duration,
             logId: state.uri.queryParameters['id'],
             isSimulation: isSimulation,
+            showFeedbackPrompt: showFeedbackPrompt,
           );
         },
       ),

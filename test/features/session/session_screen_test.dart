@@ -18,6 +18,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
@@ -36,11 +37,13 @@ import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
+import 'package:guardianangela/features/feedback_form/feedback_prompt_repository.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/features/session/session_screen.dart';
 import 'package:guardianangela/features/session/widgets/end_session_overlay.dart';
 import 'package:guardianangela/features/session/widgets/fake_music_player.dart';
 import 'package:guardianangela/features/session/widgets/session_elapsed_clock.dart';
+import 'package:guardianangela/features/session_completed/session_completed_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/biometric_service_sim.dart';
@@ -2754,6 +2757,177 @@ void main() {
       expect(find.text(l10n.sessionEndOverlayBody), findsNothing);
     });
   });
+
+  // ── Post-session feedback prompt path (Tier-F F5) ───────────────────────
+  //
+  // Drives the REAL SessionController._confirmedEnd flow (End-Session swipe,
+  // no PIN) through the REAL FeedbackPromptRepository, then asserts the real
+  // SessionCompletedScreen surfaces (or suppresses) the feedback prompt. The
+  // completion route renders the actual screen reading the `feedback` query
+  // param so the whole chain is exercised end-to-end.
+  group('SessionScreen — post-session feedback prompt (F5)', () {
+    testWidgets(
+      'clean REAL end at the threshold surfaces the feedback prompt',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        // Two prior completions seeded → this clean end is the 3rd, crossing
+        // FeedbackPromptRepository.promptThreshold.
+        SharedPreferences.setMockInitialValues(<String, Object>{
+          FeedbackPromptRepository.completedCountKey: 2,
+        });
+        final promptRepo = FeedbackPromptRepository();
+        final fake = _FakeSessionController(_runningState());
+        await _pumpFeedbackPath(tester, fake, promptRepo);
+        await tester.tap(find.byTooltip(l10n.commonClose));
+        await tester.pumpAndSettle();
+        await _swipeToConfirm(tester);
+        await tester.pumpAndSettle();
+        // Counter advanced to 3 and the real completed screen shows the prompt.
+        check(await promptRepo.completedCount()).equals(3);
+        expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsOneWidget);
+        expect(find.text(l10n.sessionCompletedFeedbackSend), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'clean REAL end below the threshold counts but shows no prompt',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        SharedPreferences.setMockInitialValues(<String, Object>{});
+        final promptRepo = FeedbackPromptRepository();
+        final fake = _FakeSessionController(_runningState());
+        await _pumpFeedbackPath(tester, fake, promptRepo);
+        await tester.tap(find.byTooltip(l10n.commonClose));
+        await tester.pumpAndSettle();
+        await _swipeToConfirm(tester);
+        await tester.pumpAndSettle();
+        // First completion is recorded, but the prompt stays hidden (< 3).
+        check(await promptRepo.completedCount()).equals(1);
+        expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+      },
+    );
+
+    testWidgets('a SIMULATION clean end never counts or prompts', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // Pre-seed AT the threshold to prove a simulation still never prompts.
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        FeedbackPromptRepository.completedCountKey: 3,
+      });
+      final promptRepo = FeedbackPromptRepository();
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
+      await _pumpFeedbackPath(tester, fake, promptRepo);
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      // Simulation must not bump the real-session counter…
+      check(await promptRepo.completedCount()).equals(3);
+      // …and the prompt never appears for a simulation completion.
+      expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+    });
+
+    testWidgets('a STEALTH clean end never counts or prompts', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        FeedbackPromptRepository.completedCountKey: 3,
+      });
+      final promptRepo = FeedbackPromptRepository();
+      final fake = _FakeSessionController(_runningState(stealthEnabled: true));
+      await _pumpFeedbackPath(tester, fake, promptRepo);
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+      // Stealth completion is silent: no count bump, no prompt
+      // (spec 04:1247/1250).
+      check(await promptRepo.completedCount()).equals(3);
+      expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+    });
+  });
+}
+
+/// Pumps [SessionScreen] inside a router whose `completed` route renders the
+/// REAL [SessionCompletedScreen] (reading the `feedback` query param) so the
+/// F5 end-to-end path can be asserted. Overrides the real
+/// [feedbackPromptRepositoryProvider] with [promptRepo].
+Future<void> _pumpFeedbackPath(
+  WidgetTester tester,
+  _FakeSessionController fake,
+  FeedbackPromptRepository promptRepo, {
+  List<Override> extraOverrides = const <Override>[],
+}) async {
+  final router = GoRouter(
+    initialLocation: '/session',
+    routes: <GoRoute>[
+      GoRoute(
+        path: '/session',
+        name: RouteNames.session,
+        builder: (_, _) => const SessionScreen(),
+        routes: <GoRoute>[
+          GoRoute(
+            path: 'completed',
+            name: RouteNames.sessionCompleted,
+            builder: (_, GoRouterState state) => SessionCompletedScreen(
+              durationSeconds: int.tryParse(
+                state.uri.queryParameters['duration'] ?? '',
+              ),
+              logId: state.uri.queryParameters['id'],
+              isSimulation: state.uri.queryParameters['simulation'] == 'true',
+              showFeedbackPrompt:
+                  state.uri.queryParameters['feedback'] == 'true',
+            ),
+          ),
+        ],
+      ),
+      GoRoute(
+        path: '/settings/feedback',
+        name: RouteNames.settingsFeedback,
+        builder: (_, _) => const _Blank(),
+      ),
+      GoRoute(
+        path: '/',
+        name: RouteNames.home,
+        builder: (_, _) => const _Blank(),
+      ),
+    ],
+  );
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: <Override>[
+        sessionControllerProvider.overrideWith(() => fake),
+        feedbackPromptRepositoryProvider.overrideWithValue(promptRepo),
+        // No PIN configured → the End-Session swipe completes immediately,
+        // driving _confirmedEnd. Without this the overlay cannot read
+        // settings and the swipe path stalls.
+        appSettingsRepositoryProvider.overrideWithValue(
+          _FakeAppSettingsRepository(),
+        ),
+        quickExitServiceProvider.overrideWith(
+          (_) => SimulationQuickExitService(),
+        ),
+        ...extraOverrides,
+      ],
+      child: MaterialApp.router(
+        routerConfig: router,
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          useMaterial3: true,
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
 }
 
 // ---------------------------------------------------------------------------

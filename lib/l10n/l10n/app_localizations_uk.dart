@@ -1403,6 +1403,15 @@ class AppLocalizationsUk extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'Переглянути журнал подій';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'Як усе пройшло?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'Надіслати відгук';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'Пропустити';
+
+  @override
   String get settingsGeneralHeader => 'Загальні';
 
   @override

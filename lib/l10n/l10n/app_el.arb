@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Προεπιλεγμένος ήχος",
   "eventDefaultsFakeCallRingtoneCustom": "Προσαρμοσμένος: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Επιλογή ήχου κλήσης…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Χρήση προεπιλογής"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Χρήση προεπιλογής",
+  "sessionCompletedFeedbackPrompt": "Πώς ήταν η εμπειρία σας;",
+  "sessionCompletedFeedbackSend": "Αποστολή σχολίων",
+  "sessionCompletedFeedbackSkip": "Παράλειψη"
 }

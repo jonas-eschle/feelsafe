@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "डिफ़ॉल्ट रिंग",
   "eventDefaultsFakeCallRingtoneCustom": "कस्टम: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "रिंगटोन चुनें…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "डिफ़ॉल्ट का उपयोग करें"
+  "eventDefaultsFakeCallRingtoneUseDefault": "डिफ़ॉल्ट का उपयोग करें",
+  "sessionCompletedFeedbackPrompt": "आपका अनुभव कैसा रहा?",
+  "sessionCompletedFeedbackSend": "प्रतिक्रिया भेजें",
+  "sessionCompletedFeedbackSkip": "छोड़ें"
 }

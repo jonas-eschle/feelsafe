@@ -1761,6 +1761,18 @@
   "@sessionCompletedViewEventLog": {
     "description": "Button to open the per-session event log detail."
   },
+  "sessionCompletedFeedbackPrompt": "How was your experience?",
+  "@sessionCompletedFeedbackPrompt": {
+    "description": "Heading of the optional post-session feedback prompt on the session-completed screen."
+  },
+  "sessionCompletedFeedbackSend": "Send feedback",
+  "@sessionCompletedFeedbackSend": {
+    "description": "Button on the post-session feedback prompt that opens the feedback form."
+  },
+  "sessionCompletedFeedbackSkip": "Skip",
+  "@sessionCompletedFeedbackSkip": {
+    "description": "Button on the post-session feedback prompt that dismisses it without sending feedback."
+  },
   "settingsGeneralHeader": "General",
   "@settingsGeneralHeader": {
     "description": "Section header for general settings."

@@ -1029,5 +1029,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "預設鈴聲",
   "eventDefaultsFakeCallRingtoneCustom": "自訂：{fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "選擇鈴聲…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "使用預設"
+  "eventDefaultsFakeCallRingtoneUseDefault": "使用預設",
+  "sessionCompletedFeedbackPrompt": "您的體驗如何？",
+  "sessionCompletedFeedbackSend": "傳送意見回饋",
+  "sessionCompletedFeedbackSkip": "略過"
 }

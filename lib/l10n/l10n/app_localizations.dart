@@ -2549,6 +2549,24 @@ abstract class AppLocalizations {
   /// **'View event log'**
   String get sessionCompletedViewEventLog;
 
+  /// Heading of the optional post-session feedback prompt on the session-completed screen.
+  ///
+  /// In en, this message translates to:
+  /// **'How was your experience?'**
+  String get sessionCompletedFeedbackPrompt;
+
+  /// Button on the post-session feedback prompt that opens the feedback form.
+  ///
+  /// In en, this message translates to:
+  /// **'Send feedback'**
+  String get sessionCompletedFeedbackSend;
+
+  /// Button on the post-session feedback prompt that dismisses it without sending feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get sessionCompletedFeedbackSkip;
+
   /// Section header for general settings.
   ///
   /// In en, this message translates to:

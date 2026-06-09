@@ -1029,5 +1029,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Standardklingelton",
   "eventDefaultsFakeCallRingtoneCustom": "Eigener: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Klingelton wählen…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Standard verwenden"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Standard verwenden",
+  "sessionCompletedFeedbackPrompt": "Wie war deine Erfahrung?",
+  "sessionCompletedFeedbackSend": "Feedback senden",
+  "sessionCompletedFeedbackSkip": "Überspringen"
 }

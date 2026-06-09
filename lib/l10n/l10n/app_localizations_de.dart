@@ -1402,6 +1402,15 @@ class AppLocalizationsDe extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'Ereignisprotokoll anzeigen';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'Wie war deine Erfahrung?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'Feedback senden';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'Überspringen';
+
+  @override
   String get settingsGeneralHeader => 'Allgemein';
 
   @override

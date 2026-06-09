@@ -1384,6 +1384,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'הצג יומן אירועים';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'איך הייתה החוויה שלך?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'שליחת משוב';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'דלג';
+
+  @override
   String get settingsGeneralHeader => 'כללי';
 
   @override

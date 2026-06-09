@@ -224,10 +224,28 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
   }) async {
     final controller = ref.read(sessionControllerProvider.notifier);
     final recorderId = controller.currentSessionLogId;
+    // Resolve the stealth flag before the await so a post-await rebuild can
+    // never flip it; the completed screen suppresses the feedback prompt and
+    // (per spec 04:1247) all branding in stealth.
+    final sessionState = ref.read(sessionControllerProvider).value;
+    final stealth =
+        (sessionState?.stealthEnabled ?? false) &&
+        (sessionState?.sessionScreenStealth ?? false);
     await controller.endSession();
+    // Count only clean REAL completions, then decide whether the optional
+    // post-session feedback prompt is due (spec 04 §Chain Exhausted — F5).
+    // Simulations are practice and never bump the counter, and the prompt is
+    // never offered under stealth.
+    var showFeedback = false;
+    if (!isSimulation && !stealth) {
+      final promptRepo = ref.read(feedbackPromptRepositoryProvider);
+      await promptRepo.recordCompletedSession();
+      showFeedback = await promptRepo.shouldShowPrompt();
+    }
     if (!context.mounted) return;
     final params = <String, String>{if (isSimulation) 'simulation': 'true'};
     if (recorderId != null) params['id'] = recorderId;
+    if (showFeedback) params['feedback'] = 'true';
     context.goNamed(RouteNames.sessionCompleted, queryParameters: params);
   }
 

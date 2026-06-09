@@ -1029,5 +1029,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "默认铃声",
   "eventDefaultsFakeCallRingtoneCustom": "自定义：{fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "选择铃声…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "使用默认"
+  "eventDefaultsFakeCallRingtoneUseDefault": "使用默认",
+  "sessionCompletedFeedbackPrompt": "您的体验如何？",
+  "sessionCompletedFeedbackSend": "发送反馈",
+  "sessionCompletedFeedbackSkip": "跳过"
 }

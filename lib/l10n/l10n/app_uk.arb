@@ -1029,5 +1029,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Стандартний рингтон",
   "eventDefaultsFakeCallRingtoneCustom": "Власний: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Вибрати рингтон…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Використати стандартний"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Використати стандартний",
+  "sessionCompletedFeedbackPrompt": "Як усе пройшло?",
+  "sessionCompletedFeedbackSend": "Надіслати відгук",
+  "sessionCompletedFeedbackSkip": "Пропустити"
 }

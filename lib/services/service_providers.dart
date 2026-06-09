@@ -27,6 +27,7 @@ import 'package:guardianangela/data/repositories/json_singleton_repository.dart'
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/session_context.dart';
+import 'package:guardianangela/features/feedback_form/feedback_prompt_repository.dart';
 import 'package:guardianangela/features/home/home_checklist_repository.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/background_session_service.dart';
@@ -173,6 +174,15 @@ final feedbackHistoryRepositoryProvider =
       final db = await ref.watch(databaseProvider.future);
       return FeedbackHistoryRepository(db.feedbackHistoryDao);
     });
+
+/// [FeedbackPromptRepository] gating the optional post-session feedback
+/// prompt by counting clean real-session completions (spec 04 §Chain
+/// Exhausted Screen — Tier-F F5). SharedPreferences-backed; no DB needed.
+final feedbackPromptRepositoryProvider = Provider<FeedbackPromptRepository>((
+  ref,
+) {
+  return FeedbackPromptRepository();
+});
 
 // ---- Output / sensor services ----
 

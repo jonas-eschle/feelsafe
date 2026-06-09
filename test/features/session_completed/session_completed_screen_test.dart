@@ -450,6 +450,93 @@ void main() {
 
   // ── View Event Log routing ─────────────────────────────────────────────
 
+  // ── Post-session feedback prompt (Tier-F F5) ────────────────────────────
+
+  group('SessionCompletedScreen — feedback prompt', () {
+    testWidgets('prompt is hidden by default (showFeedbackPrompt = false)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(tester, const SessionCompletedScreen());
+      expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+      expect(find.text(l10n.sessionCompletedFeedbackSend), findsNothing);
+      expect(find.text(l10n.sessionCompletedFeedbackSkip), findsNothing);
+    });
+
+    testWidgets('prompt is shown when showFeedbackPrompt = true', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SessionCompletedScreen(showFeedbackPrompt: true),
+      );
+      expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsOneWidget);
+      expect(find.text(l10n.sessionCompletedFeedbackSend), findsOneWidget);
+      expect(find.text(l10n.sessionCompletedFeedbackSkip), findsOneWidget);
+    });
+
+    testWidgets(
+      'Return Home and View Log remain present alongside the prompt',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await pumpScreen(
+          tester,
+          const SessionCompletedScreen(showFeedbackPrompt: true),
+        );
+        // The prompt never replaces the primary CTAs — it is additive.
+        expect(find.text(l10n.sessionCompletedReturnHome), findsOneWidget);
+        expect(find.text(l10n.sessionCompletedViewEventLog), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'tapping Skip dismisses the prompt without leaving the screen',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await pumpScreen(
+          tester,
+          const SessionCompletedScreen(showFeedbackPrompt: true),
+        );
+        expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsOneWidget);
+        await tester.tap(find.text(l10n.sessionCompletedFeedbackSkip));
+        await tester.pumpAndSettle();
+        // Prompt gone; the completion screen itself remains.
+        expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+        expect(find.text(l10n.sessionCompletedTitle), findsOneWidget);
+        expect(tester.takeException(), isNull);
+      },
+    );
+
+    testWidgets('tapping Send feedback routes to the feedback form', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final router = GoRouter(
+        initialLocation: '/session/completed',
+        routes: <RouteBase>[
+          GoRoute(
+            path: '/session/completed',
+            name: RouteNames.sessionCompleted,
+            builder: (_, _) =>
+                const SessionCompletedScreen(showFeedbackPrompt: true),
+          ),
+          GoRoute(
+            path: '/settings/feedback',
+            name: RouteNames.settingsFeedback,
+            builder: (_, _) =>
+                const Scaffold(body: Center(child: Text('Feedback form'))),
+          ),
+        ],
+      );
+      await _pumpWithRouter(tester, router: router);
+      expect(find.text(l10n.sessionCompletedFeedbackSend), findsOneWidget);
+      await tester.tap(find.text(l10n.sessionCompletedFeedbackSend));
+      await tester.pumpAndSettle();
+      expect(find.text('Feedback form'), findsOneWidget);
+    });
+  });
+
   group('SessionCompletedScreen — View Event Log routing', () {
     testWidgets('with logId navigates to the per-log detail route', (
       WidgetTester tester,

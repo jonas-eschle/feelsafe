@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Domyślny dzwonek",
   "eventDefaultsFakeCallRingtoneCustom": "Własny: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Wybierz dzwonek…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Użyj domyślnego"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Użyj domyślnego",
+  "sessionCompletedFeedbackPrompt": "Jak oceniasz swoje doświadczenie?",
+  "sessionCompletedFeedbackSend": "Wyślij opinię",
+  "sessionCompletedFeedbackSkip": "Pomiń"
 }

@@ -1392,6 +1392,15 @@ class AppLocalizationsFa extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'مشاهدهٔ گزارش رویدادها';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'تجربه شما چطور بود؟';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'ارسال بازخورد';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'رد کردن';
+
+  @override
   String get settingsGeneralHeader => 'عمومی';
 
   @override

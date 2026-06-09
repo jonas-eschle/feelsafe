@@ -1406,6 +1406,15 @@ class AppLocalizationsRu extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'Посмотреть журнал событий';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'Как всё прошло?';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'Отправить отзыв';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'Пропустить';
+
+  @override
   String get settingsGeneralHeader => 'Общие';
 
   @override

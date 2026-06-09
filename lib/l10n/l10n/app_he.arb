@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "צלצול ברירת מחדל",
   "eventDefaultsFakeCallRingtoneCustom": "מותאם אישית: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "בחירת צלצול…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "השתמש בברירת המחדל"
+  "eventDefaultsFakeCallRingtoneUseDefault": "השתמש בברירת המחדל",
+  "sessionCompletedFeedbackPrompt": "איך הייתה החוויה שלך?",
+  "sessionCompletedFeedbackSend": "שליחת משוב",
+  "sessionCompletedFeedbackSkip": "דלג"
 }

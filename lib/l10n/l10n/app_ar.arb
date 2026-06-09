@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "النغمة الافتراضية",
   "eventDefaultsFakeCallRingtoneCustom": "مخصص: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "اختيار نغمة…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "استخدام الافتراضي"
+  "eventDefaultsFakeCallRingtoneUseDefault": "استخدام الافتراضي",
+  "sessionCompletedFeedbackPrompt": "كيف كانت تجربتك؟",
+  "sessionCompletedFeedbackSend": "إرسال التعليقات",
+  "sessionCompletedFeedbackSkip": "تخطي"
 }

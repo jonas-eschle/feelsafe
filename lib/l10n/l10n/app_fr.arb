@@ -918,5 +918,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "Sonnerie par défaut",
   "eventDefaultsFakeCallRingtoneCustom": "Personnalisée : {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "Choisir une sonnerie…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "Utiliser par défaut"
+  "eventDefaultsFakeCallRingtoneUseDefault": "Utiliser par défaut",
+  "sessionCompletedFeedbackPrompt": "Comment s'est passée votre expérience ?",
+  "sessionCompletedFeedbackSend": "Envoyer des commentaires",
+  "sessionCompletedFeedbackSkip": "Passer"
 }

@@ -6,12 +6,17 @@ STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
 Session-Interrupted prompt) + C5 (Tier-F F1/F2 descope + REMOVE
 `SCHEDULE_EXACT_ALARM` + spec/doc reconciliation) + C6 (Tier-F F3: user-supplied
-fake-call ringtone + bundled-default fallback) DONE, GATE-GREEN, COMMITTED
-(UNPUSHED). NEXT = M4 C7 — F4: wire `requireLaunchAuth` / `launchAuthBiometric`
-per spec — but FIRST determine from the spec what they do BEYOND the existing
-App-PIN launch gate; if genuinely identical/redundant, surface that to the
-orchestrator rather than building a duplicate. (F5 = post-session feedback
-prompt also still TO BUILD.)**
+fake-call ringtone + bundled-default fallback) + **C8 (Tier-F F5: post-session
+feedback prompt — BUILT, GATE-GREEN, COMMITTED, UNPUSHED)** DONE, COMMITTED
+(UNPUSHED). C7 (Tier-F F4: `requireLaunchAuth` / `launchAuthBiometric`) =
+**REDUNDANT → BLOCKED for owner — NO COMMIT, tree clean** (the determine-first
+step found both fields SUPERSEDED by spec `03-data-models.md:813`; building UI +
+a consumer would duplicate the existing App-PIN gate exactly — see the C7
+section below). NEXT = **resolve the C7/F4 redundancy decision with the owner**
+(recommendation: DELETE both dead fields in a schema-cleanup), THEN the **M4
+milestone cohort + owner emergency-map review (DE=110, ET=911, CI=111) + push
+the M4 stack**. With C8 built, the only OPEN M4 item is the C7/F4 owner
+decision.**
 
 > **OWNER FINAL pre-push emergency-map review (carry to the M4 push).** The C2
 > R-8 map (`lib/domain/models/emergency_numbers.dart`, 109 countries) still
@@ -19,6 +24,182 @@ prompt also still TO BUILD.)**
 > **DE=110, ET=911, CI=111** (the orchestrator must surface the C2 "CHANGES
 > FROM THE REVIEWED DRAFT" summary before pushing M4). The count is now
 > guarded by an EXACT `== 109` test (C5), so a silent map edit fails CI.
+
+---
+
+## M4 C7 (Tier-F F4) — DETERMINE-FIRST → REDUNDANT → BLOCKED for owner (NO COMMIT)
+
+**Task:** wire `requireLaunchAuth` / `launchAuthBiometric` (`AppSettings`) per
+spec — but FIRST determine whether they are DISTINCT from the existing App-PIN
+launch gate or REDUNDANT. **Finding: both are REDUNDANT (spec-confirmed dead
+fields). No code written; tree clean; this is a genuine owner decision.**
+
+**STEP-1 evidence (decisive — the spec itself supersedes them):**
+- **`docs/spec/03-data-models.md:813`** (verbatim): "`requireLaunchAuth` +
+  `launchAuthBiometric`: **superseded (2026-06).** The launch gate is driven by
+  `appPinHash != null` (trigger) + `appPinBiometricEnabled` (biometric), not by
+  a separate toggle … These two fields are **retained on the model (default off
+  / on) but currently unused; candidate for removal in a dedicated
+  schema-cleanup pass.**"
+- **`docs/spec/06-settings.md` §App PIN (153-161) + §Session End Note (171)** —
+  the launch-gate effect, its trigger, and its biometric toggle are ALL spec'd
+  on `appPinHash` / `appPinBiometricEnabled`. Neither F4 field is named as a
+  control anywhere in 06; the only other refs are `08-decisions:1060` (Q18, a
+  bare model-field inventory) and `docs/rewrite/ga-wiring-remediation.md:100`
+  ("dead fields — redundant w/ App-PIN gate").
+- **Runtime: ZERO consumer.** Grep of `lib/` + `test/` for both names →
+  the model boilerplate ONLY (`app_settings.dart` ctor/fromJson/copyWith/toJson/
+  ==/hashCode) + a pure passthrough in `settings_security_controller.dart:108-109`
+  (`clearPin` direct-construct copies `s.requireLaunchAuth`/`s.launchAuthBiometric`
+  forward UNCHANGED — never read for a decision) + persistence-round-trip tests.
+  The launch gate is `appPinHash != null` end-to-end: `main.dart:120`
+  `lockForLaunch(appPinSet: settings.appPinHash != null)` → `launch_gate_controller.dart`
+  → `app_router.dart:87-91` redirect → `launch_pin_screen.dart:86` biometric
+  branch gated on `appPinBiometricEnabled`.
+
+**Per-field overlap:**
+- **`requireLaunchAuth`** ≡ "an App PIN is set". The gate already shows iff
+  `appPinHash != null`. A separate "require auth on launch" master toggle would
+  be meaningless without a credential, and the credential (`appPinHash`) IS the
+  toggle. No distinct behavior in the spec.
+- **`launchAuthBiometric`** ≡ `appPinBiometricEnabled` (which ALREADY drives
+  biometric-first at the gate, wired M4 C1). A 1:1 duplicate. (Note their
+  defaults even disagree — `launchAuthBiometric` defaults **true**,
+  `appPinBiometricEnabled` defaults **false** — so honoring `launchAuthBiometric`
+  would silently flip the coercion-safe default to biometric-on, a
+  security regression; another reason not to wire it.)
+
+**Decision (STEP 2 = REDUNDANT → STOP):** building Settings UI + a consumer
+would produce dead-equivalent code that duplicates the App-PIN gate — exactly
+what the brief said NOT to do. **Committed nothing; `git status --porcelain`
+empty.**
+
+**RECOMMENDATION for the owner (orchestrator to surface):** **DELETE both
+fields** in a dedicated `AppSettings` schema-cleanup (pre-alpha = nuke-and-reseed,
+no migration). Touch points if approved: `lib/domain/models/app_settings.dart`
+(ctor default, field, fromJson, copyWith param+body, toJson, ==, hashCode — 8
+sites) + `settings_security_controller.dart:108-109` (drop the 2 passthrough
+lines in `clearPin`) + the 3 assertions in `test/domain/models/app_settings_test.dart`
+(76-83, 286-287) + `test/data/repositories/app_settings_repository_test.dart:72`
++ the spec line `03-data-models.md:777-778`+`813` (remove the fields + the
+"superseded" note) + `08-decisions:1060` (drop from the Q18 inventory). The
+App-PIN gate remains the SOLE launch-auth (no behavior lost). **Alternative if
+the owner wants a real distinct feature:** re-spec `requireLaunchAuth` as a
+*re-lock-on-resume* master (the current gate is cold-start-ONLY — a "lock every
+time the app returns to foreground" toggle WOULD be net-new behavior) — but
+that is a NEW feature request, not "wire the existing dead field", and needs an
+owner spec decision first.
+
+---
+
+## What's done THIS session (M4 C8 — UNPUSHED, `m4-tierF-#F5`)
+
+**Tier-F F5 — post-session feedback prompt.** Spec marks it `[Optional]`; the
+owner chose KEEP+BUILD.
+
+**STEP-1 DETERMINE (was it the F4 void-trap? NO — coherent local destination).**
+The app has no server, so the question was "where does the feedback GO?" The
+NORMATIVE doc `04-screens-navigation.md:2338` answers it decisively: feedback is
+saved to a **local `feedback_history` Drift table** (verbatim: *"offline-first;
+no remote backend in v3. The history is exportable via Settings → Backup."*).
+That whole pipeline ALREADY EXISTS and works: `feedback_history` table +
+`FeedbackEntry` model + `FeedbackHistoryDao` + `FeedbackHistoryRepository` +
+`FeedbackFormScreen` (which persists locally via
+`feedbackHistoryRepositoryProvider` before the mailto). So F5 is NOT
+purposeless — it has a real, server-free destination. (NOTE a spec conflict:
+`06-settings.md:285` says the form opens a *GitHub Issue / mailto*; doc 04 is
+NORMATIVE and wins — the local Drift table is the destination. The existing form
+does BOTH: local write + mailto.) **The only gap was the spec mockup's
+`[Send Feedback]/[Skip]` prompt on the Chain Exhausted screen — unbuilt.**
+Judgment: **BUILD** (a sensible local destination exists → exactly the
+lean-toward-build case).
+
+**Built (all proven by host/widget tests driving the REAL path):**
+1. **`FeedbackPromptRepository`** (`lib/features/feedback_form/feedback_prompt_repository.dart`,
+   NEW) — SharedPreferences-backed counter of **clean REAL-session
+   completions** (`completedCount` / `recordCompletedSession` /
+   `shouldShowPrompt`), gate = `promptThreshold = 3` (spec 04:1250 "after 3
+   successful sessions"). No-throw everywhere (a prefs failure → 0 → no prompt,
+   never a spurious prompt or crash). Mirrors `HomeChecklistRepository` (same
+   injectable-loader / mock-prefs pattern). Provider
+   `feedbackPromptRepositoryProvider` (plain `Provider`, SharedPreferences —
+   no DB) added to `service_providers.dart` + a row in `docs/wiring-map.md`
+   (the wiring-map coverage test requires every provider to be registered —
+   that was the lone first-run full-suite failure, now fixed).
+2. **Counter hook + gating in `_confirmedEnd`** (`session_screen.dart` :221) —
+   after the deliberate End-Session swipe+(PIN) clean end, **for a REAL,
+   non-stealth session only**: `recordCompletedSession()` then
+   `shouldShowPrompt()`; the result is passed as a `feedback=true` query param
+   to `/session/completed`. Simulations NEVER count (practice mode); stealth
+   NEVER counts/prompts (spec 04:1247 — stealth completion is silent). The
+   stealth flag is resolved BEFORE the `await` so a post-await rebuild can't
+   flip it.
+3. **The prompt UI** (`session_completed_screen.dart`) — new
+   `showFeedbackPrompt` field (wired from the route param in `app_router.dart`)
+   gates a `_FeedbackPrompt` private **StatefulWidget**: a dismissible card
+   ("How was your experience?" + **[Skip]** [hides locally] + **[Send
+   feedback]** → `pushNamed(settingsFeedback)` → the existing local-persisting
+   form). Additive — never replaces Return-Home / View-Log; the screen itself
+   stays a `StatelessWidget`.
+
+**Trigger correctness (NOT shown mid-emergency — verified):** `/session/completed`
+is reached by ONLY ONE call site (`session_screen.dart:231` in `_confirmedEnd`,
+the deliberate End-Session flow). Distress/escalation NEVER routes there — a
+distress trigger fires the distress chain and the session CONTINUES; the
+grace-period "I'm Safe" slider calls `engine.disarm()` which RESETS the chain to
+step 0 (does NOT end the session). So the prompt can only appear after a calm,
+user-chosen clean end. Proven by tests for stealth/simulation suppression.
+
+**Tests (net +17 → suite 4034, baseline 4017):** +8
+`feedback_prompt_repository_test.dart` (default 0 / increment-returns-new /
+below-threshold-false / flips-true-AT-threshold / stays-true-beyond /
+pre-seeded-honoured / **throwing-loader degrades to no-prompt, never throws**);
++5 `session_completed_screen_test.dart` feedback group (hidden by default; shown
+when flag set; **Return-Home/View-Log remain alongside**; **[Skip] dismisses
+without leaving the screen**; **[Send feedback] routes to the form**); +4
+`session_screen_test.dart` REAL-path group driving the actual
+`SessionController._confirmedEnd` swipe → REAL `FeedbackPromptRepository` → REAL
+`SessionCompletedScreen` reading `feedback=` (clean real end AT threshold →
+counter 2→3 + prompt SHOWS; below threshold → counts 0→1 + NO prompt; **SIMULATION
+→ no count, no prompt**; **STEALTH → no count, no prompt**).
+
+**l10n:** 3 NEW keys in `app_en.arb` (+`@meta`) — `sessionCompletedFeedbackPrompt`
+("How was your experience?") / `…FeedbackSend` ("Send feedback") / `…FeedbackSkip`
+("Skip") — + all 13 translation ARBs (additions-only via the proven JSON-load →
+add → dump(indent=2, ensure_ascii=False) script; "Send feedback" reuses each
+locale's existing `settingsFeedbackRow`, "Skip" reuses `onboardingSkip` for term
+consistency). `gen-l10n` 0 untranslated; generated `.dart` strictly
+additions-only (**+146, 0 deletions** ×14); parity 14/14.
+
+**Gate (ALL GREEN):** analyzer `--fatal-infos` = **0**; full suite
+`flutter test --concurrency=6` = **4034 pass** (4017 + 17 net-new);
+deferral-grep (`grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/`)
+= **0**; `git status --porcelain -- OLD/` empty; wiring-map coverage GREEN (new
+provider registered). **Pure Flutter — NO native path touched, so no emulator
+run needed.**
+
+**KEY FINDINGS (C8):**
+- **F5 is NOT the F4 void-trap.** The NORMATIVE doc 04:2338 already settled the
+  no-server question — feedback persists to the local `feedback_history` Drift
+  table (exportable via Backup) — and the ENTIRE pipeline (table/model/dao/repo/
+  form) was already built and wiring the form's local write. The only missing
+  piece was the completed-screen *prompt*. (Doc 06:285's "GitHub Issue/mailto"
+  is superseded by the NORMATIVE doc 04; the form does both.)
+- **`/session/completed` has exactly ONE caller** (`_confirmedEnd`, the
+  deliberate End-Session flow). The grace-period disarm slider calls
+  `engine.disarm()` → RESET to step 0 (session CONTINUES, no nav); distress
+  fires the distress chain (no nav). So the completed screen — and therefore
+  the feedback prompt — is structurally unreachable mid-emergency. This made
+  the "not shown during a real emergency aftermath" requirement free.
+- **The wiring-map coverage test (`test/wiring/wiring_map_coverage_test.dart`)
+  is a hard gate on every NEW `*Provider` in `service_providers.dart`** — it
+  parses the file + `docs/wiring-map.md` and fails if a provider lacks a row.
+  This was the sole first-run full-suite failure; ALWAYS add a wiring-map row
+  when adding a provider.
+- A simulation completion DOES reach `/session/completed` (with
+  `simulation=true`); only the SEPARATE `/session/simulation-summary` is the
+  sim-specific screen. So the prompt had to be gated on `!isSimulation` too, not
+  just `!stealth`.
 
 ---
 
@@ -961,29 +1142,41 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M4 C6 — F3: user-supplied ringtone(s) for the fake-call.** Build
-a ringtone picker/import in the fake-call step config: the user provides their
-own audio file (sidesteps licensing), played as the fake-call ringtone — NOT
-bundled per-style assets. M0–M3 are PUSHED (`origin/main` = `5ab69c6`); M4
-C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map + `phone_validators` + locale
+**Next action: resolve the C7/F4 owner decision, THEN run the M4 milestone
+cohort + owner emergency-map review + push the M4 stack.** With C8 (F5) BUILT,
+**all M4 BUILD work is done**; the only OPEN item is the C7/F4 redundancy owner
+decision (recommendation: DELETE both dead fields in a schema-cleanup — see the
+C7 section). M0–M3 are PUSHED (`origin/main` = `5ab69c6`); the M4 UNPUSHED stack
+is C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map + `phone_validators` + locale
 seeding, `m4-#10`) + C3 (#16 notification re-ask + Active-Triggers-Summary +
 `permission_utils.dart`, `m4-#16`) + C4 (#8 Session-Interrupted prompt, `m4-#8`)
 + C5 (Tier-F F1/F2 descope + REMOVE `SCHEDULE_EXACT_ALARM` + spec/doc
-reconciliation, `m4-tierF`) are DONE+GATE-GREEN+COMMITTED (UNPUSHED).
+reconciliation, `m4-tierF`) + C6 (Tier-F F3 user-supplied ringtone, `m4-tierF-#F3`)
++ **C8 (Tier-F F5 post-session feedback prompt, `m4-tierF-#F5`)** — all
+DONE+GATE-GREEN+COMMITTED (UNPUSHED).
 
-**DEFERRED — still TO DO (C6/C7/C8 + the orchestrator's pre-push):**
-- **F3 = C6 (the NEXT chunk):** user-supplied ringtone(s) for the fake-call
-  (ringtone picker/import in the fake-call config; user provides their own
-  audio — sidesteps licensing; NOT bundled per-style assets).
-- **F4 = KEEP+BUILD (a later chunk):** wire `requireLaunchAuth` /
-  `launchAuthBiometric` per spec — but FIRST determine from the spec whether
-  they do anything BEYOND the App-PIN launch gate; if genuinely
-  identical/redundant, surface that to the orchestrator rather than building a
-  duplicate.
-- **F5 = KEEP+BUILD (a later chunk):** post-session feedback prompt.
+**DEFERRED — still TO DO (the C7 owner decision + the orchestrator's pre-push):**
+- **F4 = C7 BLOCKED-for-owner:** `requireLaunchAuth` / `launchAuthBiometric` are
+  REDUNDANT (spec-confirmed dead fields, no code written, tree clean — see the
+  C7 section). Owner decides: DELETE both in a schema-cleanup (recommended) OR
+  re-spec `requireLaunchAuth` as a re-lock-on-resume master (a NEW feature). DO
+  NOT touch `app_settings.dart`'s `requireLaunchAuth`/`launchAuthBiometric` or
+  `launch_auth*` fields until the owner rules.
 - **Owner FINAL pre-push emergency-map review** (the orchestrator must surface
   the C2 "CHANGES FROM THE REVIEWED DRAFT" summary before the M4 push;
   spot-confirm **DE=110, ET=911, CI=111**). The count is now `== 109`-guarded.
+- **`lib/services/*` Phase-X doc-sweep tail + CLAUDE.md native-files tidy**
+  (carried from prior chunks — C5 swept `service_providers.dart`'s 9 strings;
+  CLAUDE.md still lists `PhoneChannel.kt`/`DeviceStateChannel.kt` which do NOT
+  exist — see C5 KEY FINDINGS).
+
+**DONE in C8 (`m4-tierF-#F5`):** post-session feedback prompt on
+`SessionCompletedScreen` (optional/dismissible `[Send feedback]`/`[Skip]`,
+gated to ≥3 clean REAL completions via the new SharedPreferences-backed
+`FeedbackPromptRepository`, NEVER for simulation/stealth, NEVER mid-emergency)
+→ routes to the existing `/settings/feedback` form (local `feedback_history`
+Drift persistence; no server). +17 tests; +3 l10n keys ×14; new provider row in
+`docs/wiring-map.md`. See the C8 section.
 
 **DONE in C5 (`m4-tierF`):** Tier-F F1 DESCOPE (spec 05 note) + F2 DESCOPE +
 `SCHEDULE_EXACT_ALARM` REMOVED from the manifest (spec 10 notes) +

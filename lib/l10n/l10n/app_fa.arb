@@ -900,5 +900,8 @@
   "eventDefaultsFakeCallRingtoneDefault": "زنگ پیش‌فرض",
   "eventDefaultsFakeCallRingtoneCustom": "سفارشی: {fileName}",
   "eventDefaultsFakeCallRingtoneChoose": "انتخاب آهنگ زنگ…",
-  "eventDefaultsFakeCallRingtoneUseDefault": "استفاده از پیش‌فرض"
+  "eventDefaultsFakeCallRingtoneUseDefault": "استفاده از پیش‌فرض",
+  "sessionCompletedFeedbackPrompt": "تجربه شما چطور بود؟",
+  "sessionCompletedFeedbackSend": "ارسال بازخورد",
+  "sessionCompletedFeedbackSkip": "رد کردن"
 }

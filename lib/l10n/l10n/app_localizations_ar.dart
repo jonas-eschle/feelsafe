@@ -1396,6 +1396,15 @@ class AppLocalizationsAr extends AppLocalizations {
   String get sessionCompletedViewEventLog => 'عرض سجل الأحداث';
 
   @override
+  String get sessionCompletedFeedbackPrompt => 'كيف كانت تجربتك؟';
+
+  @override
+  String get sessionCompletedFeedbackSend => 'إرسال التعليقات';
+
+  @override
+  String get sessionCompletedFeedbackSkip => 'تخطي';
+
+  @override
   String get settingsGeneralHeader => 'عام';
 
   @override
