@@ -2,20 +2,24 @@
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
-(INT-005..010) + C3 (INT-011..014 + WID-001/002) DONE; the integration suite was
-ROBUSTLY stabilized at `f22ea41` (onboarding-teardown segfault fixed, 25/25
-clean) and an earlier two-agent collision on the integration tests was RESOLVED
-by the orchestrator (`f22ea41` restored, tree clean); then THIS session **A5
-SMS-cancel-on-disarm BUILT + proven + spec reconciled** (`m5-A5`, UNPUSHED).**
-The A5 gap (a queued distress SMS not retracted when the user signals safe) is
-now closed: `MessagingServiceProtocol.cancelPending` is on the interface,
-`EventStrategy.executeReal` returns the SMS `MessageWorkId`s (cross-cutting — all
-9 strategies updated), and `SessionController` accumulates them + cancels on
-`disarm()` AND on a safe clean end (NOT on distress/escalation). Suite **4068**
-(4066 + 2 net-new INT-010 cancel cases). `test/integration/` = **35/35**,
-flake-free reconfirmed (5× under `--concurrency=6`, no segfault — the
-`closeIntegrationDb` drain is intact). NEXT = **M5 C4 — device-e2e #11 (adb-gsm) +
-#12 (background-throttle) + stealth-icon per-preset hardening (EMULATOR)**.
+(INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm)
+DONE (all UNPUSHED). THIS session: **C4 device-e2e DONE + a real production bug
+fixed** (`m5-e2e`, UNPUSHED).** All three C4 items are EMULATOR-PROVEN on
+`emulator-5554` (Pixel_9_Pro/API36): **#11 incoming-call pause/resume** (real
+`adb emu gsm call/cancel` → native telephony → engine PAUSED reason=incomingCall
+→ RESUME; test exit=0) — and it **surfaced + FIXED a genuine production bug**:
+`CallStateChannel.onListen` never started the telephony listener (the
+`startListening` MethodChannel handler was SHADOWED by the same-named EventChannel
+on the shared binary-messenger slot), so a real incoming call would NEVER have
+paused the session in production. **#12 background-throttle** (real OS
+`KEYCODE_HOME` → `didChangeAppLifecycleState(paused)` → `setBackgroundClamp` 200×→
+60× → foreground releases; PLUS real-session liveness across the round-trip; test
+exit=0). **Stealth per-preset hardening** (host observes the launcher resolver
+via `resolve-activity` after EACH switch — 6–9 of 10 distinct preset aliases
+caught per run, FAILS=0, final=`.StealthAlias_music`; closes the M3-C4 deferral).
+Host suite STILL **4068** (no regression); `test/integration/` **35/35**
+flake-free (no f22ea41 regression); whole-project analyze **0**. NEXT = **M5 C5 —
+coverage exclusion config + the floor mechanism** (see "next action" below).
 
 ---
 
@@ -43,8 +47,15 @@ flake-free reconfirmed (5× under `--concurrency=6`, no segfault — the
 - **C3 — INT-011..014 + WID-001/002 ✓ DONE (this session)** (wrongPIN→distress /
   cold-launch interrupted-prompt / smart-retention clock-advance / soft-delete
   restore+purge; onboarding full-flow + language-switch widget cohort).
-- **C4 — device-e2e #11/#12 + stealth-icon hardening** (emulator; tag-gated).
-- **C5 — coverage config + the exclusion list above.**
+- **C4 — device-e2e #11/#12 + stealth-icon hardening ✓ DONE (this session,
+  `m5-e2e`)** — all EMULATOR-PROVEN on `emulator-5554`; found+fixed a real
+  CallStateChannel production bug. See the **"M5 C4 — DONE"** section below.
+- **C5 — coverage config + the exclusion list above.** NOTE the C5 exclusion
+  list (above) lists `call_state` among the "host-uncoverable `Real*Service`
+  native wrappers" — but C4 now makes `RealCallStateService`'s native path
+  DEVICE-coverable AND `CallStateChannel.kt` is now bug-fixed; C5/C8 should note
+  the native-channel device-e2e coverage (it stays host-EXCLUDED for the host
+  coverage floor, but the device-e2e is a real proof, not a gap).
 - **C6 — coverage: services + orphan files.**
 - **C7 — coverage: feature tail** (may split).
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
@@ -422,6 +433,151 @@ deferral-grep = **0**; `git status --porcelain -- OLD/` empty. Host only
   genuine gap WID-001 fills is driving the REAL controller so the persisted
   side-effects (profile + isFirstLaunch flip) are actually proven — not
   duplicate coverage.
+
+### M5 C4 — device-e2e #11/#12 + stealth-icon hardening (DONE this session, `m5-e2e`, UNPUSHED)
+
+All three items run on `emulator-5554` (Pixel_9_Pro/API36) via dedicated host
+runners in **`tool/device_e2e/`** + on-device tests in **`integration_test/`**.
+**HONEST device-vs-host-vs-CI accounting per item below.** New shared helper
+`integration_test/_device_e2e_support.dart` (`emitMarker`, `pollUntil`,
+`waitForPhonePermission`, `holdOnlyMode`, `buildDeviceE2eContainer`).
+
+**#11 — incoming-call pause/resume — DEVICE-PROVEN (exit=0, re-run stable 2×).**
+`integration_test/real_call_pause_test.dart` + `tool/device_e2e/run_real_call_pause.sh`.
+Drives the FULL real telephony path: `adb emu gsm call <n>` → `TelephonyManager
+CALL_STATE_RINGING` → `CallStateChannel.kt` "ringing" on the EventChannel →
+`RealCallStateService` → `SessionController._onCallStateChanged` →
+`engine.pause(incomingCall)`; the on-device test polls the REAL `SessionState`
+and ASSERTS `isPaused==true && pauseReason==PauseReason.incomingCall` (marker
+`PAUSE-OBSERVED reason=PauseReason.incomingCall`); then `adb emu gsm cancel` →
+`idle` → `engine.resume()` → `isPaused==false` (`RESUME-OBSERVED`), session still
+live. **THIS SURFACED + FIXED A REAL PRODUCTION BUG** (see KEY FINDINGS) —
+`android/.../CallStateChannel.kt` `onListen` now calls `startTelephonyListener()`.
+
+**#12 — background-throttle — DEVICE-PROVEN (exit=0, both proofs).**
+`integration_test/background_throttle_test.dart` +
+`tool/device_e2e/run_background_throttle.sh`. (A) CLAMP: a SIM session at 200×;
+real OS `adb shell input keyevent KEYCODE_HOME` DID deliver
+`AppLifecycleState.paused` to the controller observer →
+`engine.setBackgroundClamp(true)` → `effectiveSpeedMultiplier` capped 200→**60**;
+`monkey` foreground → released → 200 (marker `A-BACKGROUNDED osClamp=true` +
+`A-FOREGROUNDED viaRealOs=true` — the STRONGEST path, real OS → observer →
+engine, NOT the direct-drive fallback). (B) LIVENESS: a REAL session stays live
+across the real HOME→foreground round-trip (`B-SURVIVED`, engine not ended).
+Observed via the `@visibleForTesting SessionController.engine` getter.
+
+**Stealth per-preset hardening — DEVICE-PROVEN (FAILS=0, re-run stable; closes
+the M3-C4 deferral).** `integration_test/stealth_icon_switch_test.dart` (rewritten
+to a single comprehensive per-preset test) +
+`tool/device_e2e/run_stealth_per_preset.sh`. The in-process test walks ALL 10
+presets via the REAL `RealSystemUiService.setStealthIcon` (each apply asserts
+no-throw on-device); the host TIGHT-POLLS `cmd package resolve-activity -a MAIN
+-c LAUNCHER` throughout and verifies the launcher resolver matches each preset's
+alias AFTER its switch — **6–9 of 10 distinct preset aliases caught per run**
+(`music/calendar/fitness/weather/news/photos/notes/clock/podcast/none`→
+`.MainActivityAlias`), gate = ≥2 distinct (NOT just the final — the M3-C4 gap) +
+final = `.StealthAlias_music`. The 1–4 "not sampled" per run are the coarse adb
+poll missing a transient, logged INFO (not failures).
+
+**Honest device-vs-host-vs-CI:**
+- **#11 / #12 / stealth: EMULATOR-PROVEN** on `emulator-5554` (the exact runs +
+  markers above; re-run stable).
+- **iOS** (CallKit/CXCallObserver `CallStatePlugin.swift`; iOS `setStealthIcon`
+  no-ops) = **CI `build-ios` ONLY**, NOT device-provable on this Linux box.
+- The background-clamp WIRING + the FG-service START are ALSO host-tested
+  (`session_controller_clamp_test.dart`, `background_clamp_test.dart`); #12-B does
+  NOT claim FG-service OS-kill-resistance (the harness SIMs
+  `flutter_background_service` — it hangs headless), only that the lifecycle
+  round-trip doesn't END the session. The clamp speed-EFFECT is sim-only by
+  design (no-op for real wall-clock sessions).
+
+**Coordination pattern (the reusable C4 finding):** the on-device test emits
+`GA-E2E <MARKER>` via `debugPrint` (routes to the HOST `flutter test` STDOUT,
+captured to the runner's log file — `dart:developer log` does NOT reach logcat in
+this embedder, verified); the host greps that log and fires the matching `adb`
+command at each marker boundary; the on-device test polls REAL state with
+wall-clock `pollUntil` and ASSERTS there (a wrong host action → `pollUntil`
+times out → red test; no vacuous pass). Runners wrap `flutter test` in `timeout`
+and redirect to a file (never pipe a long run through `tail`).
+
+**Gate (ALL GREEN):** whole-project `flutter analyze --fatal-infos` = **0**; host
+`flutter test test/ --concurrency=6` = **4068 pass** (UNCHANGED — device tests
+live in `integration_test/`, excluded from the host run); `test/integration/` =
+**35/35** flake-free (no f22ea41 regression); the 3 device runs above ran green
+on `emulator-5554` (exit=0 / FAILS=0); deferral-grep = **0**; `git
+status --porcelain -- OLD/` empty. Native `CallStateChannel.kt` has the one-line
+fix + an explanatory comment; no Kotlin host-test framework exists (native is
+device-tested per project convention).
+
+**KEY FINDINGS (C4) — carry to C5/C8:**
+- **PRODUCTION BUG FOUND + FIXED (`CallStateChannel.kt`).** A `MethodChannel`
+  and an `EventChannel` registered under the SAME channel name
+  (`com.guardianangela.app/call_state`, MainActivity:45-48) share ONE
+  `BinaryMessenger` message-handler slot — the EventChannel's StreamHandler
+  (registered 2nd) SHADOWS the MethodChannel handler. So
+  `RealCallStateService.start()`'s `invokeMethod("startListening")` ALWAYS
+  resolved to `MissingPluginException` (swallowed by the service's try/catch),
+  and `onListen` only set `eventSink` WITHOUT starting the listener → **the
+  telephony listener never registered → a real incoming call would NOT pause the
+  session in production.** FIX: `onListen` now calls `startTelephonyListener()`
+  (the EventChannel subscription is the real lifecycle signal;
+  `RealCallStateService` subscribes via `receiveBroadcastStream()`). `onCancel`
+  already stopped it symmetrically. Host tests (INT-007/008) use the
+  `SimulationCallStateService.setState` seam, which bypasses the native channel —
+  so ONLY the device-e2e could catch this. (Re-verify on iOS in CI: the iOS
+  `CallStatePlugin.swift` path is independent.)
+- **`flutter test integration_test/<file>` does NOT register MainActivity's
+  MANUAL platform channels for the test isolate UNTIL the full app launches.** A
+  bare integration test that builds its own container hits
+  `MissingPluginException` on `call_state`/`system_ui`/`stealth_icon`. FIX:
+  call `await app.main()` first (channels are process-global on the default
+  binary messenger; the test's own container then reaches them). This is why #11
+  and the stealth test both call `app.main()`.
+- **`dart:developer log` does NOT reach `adb logcat` under `flutter test
+  integration_test`; `debugPrint` DOES reach the host test stdout.** Host↔device
+  coordination must poll the captured `flutter test` STDOUT log, not logcat.
+  `debugPrint` is THROTTLED for bursts — use `debugPrintSynchronously` when
+  emitting many markers rapidly (the stealth walk needed this).
+- **`flutter test`'s reinstall WIPES pre-granted runtime permissions.** A grant
+  BEFORE `flutter test` is lost. The on-device test must GATE on the permission
+  (`waitForPhonePermission` polls `Permission.phone.status`, emits
+  `AWAITING-PHONE-GRANT`) while the host `pm grant`s in a loop. Note
+  `Permission.phone` (permission_handler) checks the whole phone GROUP
+  (READ_PHONE_STATE + READ_PHONE_NUMBERS + CALL_PHONE) — grant ALL three or the
+  status never flips, even though the native channel only needs READ_PHONE_STATE.
+- **The `emu gsm` listener fires only on a STATE TRANSITION (idle→ringing).** A
+  leftover ringing call from an aborted prior run means NO transition when the
+  next listener registers → no pause. The runner WAITS for `mCallState=0` before
+  the run. `adb -s emulator-5554 emu gsm call/cancel <num>` is confirmed working
+  on this emulator (`emu gsm status` = OK; drives `mCallState` 0↔1).
+- **A REAL session HANGS on a headless `integration_test` embedder unless
+  `flutter_background_service` + `flutter_local_notifications` are SIM'd** (FG
+  `configure()`/`startService()` never completes; `setSmallIcon` NPEs on the bare
+  engine). `buildDeviceE2eContainer` SIMs those + location/contacts/phone/
+  messaging, keeps `call_state` + the engine/controller REAL.
+- **Disabling the RUNNING activity's OWN launcher alias detaches the Flutter
+  engine ~3.5s later** (the platform reacts to the component-disable), which
+  stalls a long in-process preset walk — the PRE-EXISTING all-presets stealth
+  test has the same behaviour (it never reaches "All tests passed" cleanly; the
+  M3-C4 "proof" was the adb resolve-activity observation, not a green test). FIX:
+  a MINIMAL single-frame-pump walk completes all 10 switches before the detach;
+  the HOST runner is the authoritative arbiter (observed launcher resolvers),
+  NOT the in-process test's exit code (which the runner kills).
+- **Emulator DISK fills up** (180MB debug APK × repeated reinstalls; `/data` hit
+  94%). `adb -s emulator-5554 shell pm trim-caches 5G` + `pm compile -a --reset`
+  reclaims space; uninstalling GA frees the APK. Trim before each device run if
+  tight (a failed reinstall SIGKILLs the test → exit 137 mid-run).
+
+**Next action = "M5 C5 — coverage exclusion config + the floor mechanism"**
+(exclude generated `lib/l10n/**`, `*.g.dart`/`*.freezed.dart`, the seven
+host-uncoverable `Real*Service` native wrappers — note C4 makes `call_state`
+device-e2e-proven but it stays host-EXCLUDED for the host coverage floor —
+`main.dart`, and protocol-only abstract files; set up the gate; per the owner's
+99%-of-logic target). To re-run the C4 device proofs:
+`bash tool/device_e2e/run_real_call_pause.sh`, `run_background_throttle.sh`,
+`run_stealth_per_preset.sh` (each wraps `timeout`; needs `emulator-5554` up +
+`ANDROID_HOME`/PATH exported per the Emulator standard below; `pm trim-caches 5G`
+first if `/data` is tight).
 
 ### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
 

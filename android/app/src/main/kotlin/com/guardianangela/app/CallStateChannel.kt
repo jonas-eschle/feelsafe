@@ -53,6 +53,19 @@ class CallStateChannel(private val context: Context) :
 
     override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
         eventSink = events
+        // Start the telephony listener on EventChannel subscription, not only on
+        // the `startListening` MethodChannel call. A MethodChannel and an
+        // EventChannel registered under the SAME channel name share one
+        // BinaryMessenger message-handler slot, so the EventChannel's
+        // StreamHandler (registered second in MainActivity) SHADOWS the
+        // MethodChannel handler — `invokeMethod("startListening")` then resolves
+        // to MissingPluginException and is swallowed by RealCallStateService.
+        // Without this line the telephony listener would never register and a
+        // real incoming call would NOT pause the session. `onCancel` already
+        // stops it symmetrically. (Surfaced by the #11 device-e2e on the
+        // emulator via `adb emu gsm call`; host tests use the sim seam and could
+        // not catch it.)
+        startTelephonyListener()
     }
 
     override fun onCancel(arguments: Any?) {
