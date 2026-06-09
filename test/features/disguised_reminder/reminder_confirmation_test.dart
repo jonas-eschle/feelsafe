@@ -281,6 +281,64 @@ void main() {
         expect(find.byIcon(reminderIconDataFor('fitness')), findsNothing);
       },
     );
+
+    testWidgets('an absolute path renders from the device file system', (
+      tester,
+    ) async {
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(
+            confirmationType: ConfirmationType.dismiss,
+            imagePath: '/nonexistent_c7c/disguise.png',
+          ),
+          onConfirm: () {},
+        ),
+      );
+      final Image img = tester.widget<Image>(find.byType(Image));
+      expect(img.image, isA<FileImage>());
+      expect(
+        (img.image as FileImage).file.path,
+        '/nonexistent_c7c/disguise.png',
+      );
+    });
+
+    testWidgets('a bare filename with an image extension is asset-loaded', (
+      tester,
+    ) async {
+      // No slash, but '.png' marks it as a path, not a category key.
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(
+            confirmationType: ConfirmationType.dismiss,
+            iconAsset: 'photo.png',
+          ),
+          onConfirm: () {},
+        ),
+      );
+      final Image img = tester.widget<Image>(find.byType(Image));
+      expect(img.image, isA<AssetImage>());
+    });
+
+    testWidgets('an unknown non-path iconAsset keeps the neutral fallback', (
+      tester,
+    ) async {
+      // Neither a category key nor path-like: the disguise must degrade to
+      // the Material fallback, never an error glyph or a broken image.
+      await _pump(
+        tester,
+        ReminderDisguiseContent(
+          template: _template(
+            confirmationType: ConfirmationType.dismiss,
+            iconAsset: 'mystery',
+          ),
+          onConfirm: () {},
+        ),
+      );
+      expect(find.byType(Image), findsNothing);
+      expect(find.byIcon(Icons.notifications_active_outlined), findsOneWidget);
+    });
   });
 
   group('ReminderConfirmation — tapWord localized decoys (#18)', () {

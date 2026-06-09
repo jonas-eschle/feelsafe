@@ -136,7 +136,11 @@ Future<void> _pumpWithRouter(
       GoRoute(
         path: '/settings/templates/edit',
         name: RouteNames.templateEditor,
-        builder: (_, _) => const Scaffold(body: SizedBox.shrink()),
+        // Surfaces the id query param so tests can pin WHICH template
+        // the screen opened the editor for ('new' on create-from-scratch).
+        builder: (_, GoRouterState state) => Scaffold(
+          body: Text('editor:${state.uri.queryParameters['id'] ?? 'new'}'),
+        ),
       ),
     ],
   );
@@ -258,6 +262,141 @@ void main() {
       await tester.tap(find.byType(FloatingActionButton));
       await tester.pumpAndSettle();
       check(observer.pushed.length).isGreaterThan(countBefore);
+    });
+  });
+
+  // ── FAB add sheet ──────────────────────────────────────────────────────────
+
+  group('ReminderTemplatesScreen — FAB add sheet', () {
+    testWidgets('"From scratch" opens the editor without an id', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final observer = _FakeNavigatorObserver();
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: _seedTemplates()),
+      );
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesAddFromScratch));
+      await tester.pumpAndSettle();
+
+      expect(find.text('editor:new'), findsOneWidget);
+      check(fake.duplicateCalls).equals(0);
+    });
+
+    testWidgets('dismissing the sheet via barrier opens nothing', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: _seedTemplates()),
+      );
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      // Tap the modal barrier above the sheet to dismiss with a null choice.
+      await tester.tapAt(const Offset(400, 20));
+      await tester.pumpAndSettle();
+
+      expect(find.textContaining('editor:'), findsNothing);
+      check(fake.duplicateCalls).equals(0);
+    });
+
+    testWidgets('"From template" lists only built-ins in the picker', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final templates = <ReminderTemplate>[
+        _template('b1', 'Calendar'),
+        _template('c1', 'My Custom', isCustom: true),
+      ];
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: templates),
+      );
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesAddFromTemplate));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.templatesPickFromBuiltinTitle), findsOneWidget);
+      // The picker sheet shows the built-in but NOT the custom template.
+      // ('Calendar' appears twice: once in the list row behind the sheet,
+      // once inside the picker.)
+      expect(find.text('Calendar'), findsNWidgets(2));
+      expect(find.text('My Custom'), findsOneWidget); // list row only
+      check(fake.duplicateCalls).equals(0);
+    });
+
+    testWidgets('picking a built-in duplicates it and opens its editor', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: <ReminderTemplate>[_template('b1', 'Calendar')]),
+      );
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesAddFromTemplate));
+      await tester.pumpAndSettle();
+      // Tap the built-in row INSIDE the picker sheet (the list row behind
+      // the sheet shows the same name).
+      await tester.tap(find.text('Calendar').last);
+      await tester.pumpAndSettle();
+
+      // The clone (isCustom=true) was created from the picked source …
+      check(fake.duplicateCalls).equals(1);
+      check(fake.lastDuplicateId).equals('b1');
+      // … and the editor opened on the freshly minted id.
+      expect(find.text('editor:new-id'), findsOneWidget);
+    });
+
+    testWidgets('dismissing the built-in picker duplicates nothing', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeReminderTemplatesController(
+        _state(templates: <ReminderTemplate>[_template('b1', 'Calendar')]),
+      );
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesAddFromTemplate));
+      await tester.pumpAndSettle();
+      await tester.tapAt(const Offset(400, 20));
+      await tester.pumpAndSettle();
+
+      check(fake.duplicateCalls).equals(0);
+      expect(find.textContaining('editor:'), findsNothing);
+    });
+  });
+
+  // ── Empty state CTA ────────────────────────────────────────────────────────
+
+  group('ReminderTemplatesScreen — empty state CTA', () {
+    testWidgets('Add-first button opens the create editor', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeReminderTemplatesController(_state());
+      final observer = _FakeNavigatorObserver();
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+
+      await tester.tap(find.text(l10n.templatesEmptyAddFirst));
+      await tester.pumpAndSettle();
+
+      expect(find.text('editor:new'), findsOneWidget);
     });
   });
 

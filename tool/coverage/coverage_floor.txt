@@ -52,7 +52,28 @@
 #     which `x ?? this.x`-keeps the old value — clearing a previously-set
 #     emergency number / primary contact silently did nothing; both now use
 #     the file's documented direct-construction pattern.
-#   * Floor set to 91.4 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7c ratchet (2026-06-09) = 93.11%-of-logic (12385 / 13302 lines)
+#     after covering the editors + distress surface — 9 of 11 files now 0
+#     missed: distress_modes_controller (42→0, real ProviderContainer +
+#     in-memory Drift + recording settings repo; every delete guard pinned in
+#     BOTH directions, two red→green-proven), reminder_templates_screen
+#     (33→1, FAB add-sheet from-scratch/from-template/builtin-picker flows),
+#     template_editor_screen (22→0, dirty-cancel discard guard + PopScope),
+#     reminder_templates_controller (17→0), event_defaults_controller (10→0),
+#     mode_editor_screen (6→2, unsaved Keep/Discard + manage-contacts),
+#     reminder_template_form (5→0, icon dropdown + isDirty), distress_modes
+#     _screen (4→1, in-use tooltip + defensive in-use-delete snackbar),
+#     reminder_confirmation (3→0, FileImage/asset-ext/disguise-fallback),
+#     event_defaults_screen (1→0, hardwareButton save slot),
+#     mode_editor_controller (1→0, load-unknown StateError). +140 covered
+#     lines. Also made the fake-call hold-to-distress test deterministic via
+#     an injectable FakeCallScreen.now clock seam (was wall-clock flaky).
+#     The 4 remaining lines in these files are 2 defensive-unreachable
+#     _issueMessage arms (distressNoActionStep is only ever emitted
+#     non-blocking; the arm exists for switch exhaustiveness — C9 candidate)
+#     and 2 const-constructor lines that flip with const-canonicalization
+#     jitter (DistressModesScreen/ReminderTemplatesScreen `super.key` lines).
+#   * Floor set to 92.5 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -62,4 +83,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-91.4
+92.5

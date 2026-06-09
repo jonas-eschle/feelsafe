@@ -728,6 +728,19 @@ void main() {
       await _pumpAndExpand(tester, ChainStepType.hardwareButton);
       await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
     });
+
+    testWidgets('toggling blackScreen switch saves the hardwareButton slot', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // blackScreenMode defaults to false — toggling flips to true.
+      final fake = await _pumpAndExpand(tester, ChainStepType.hardwareButton);
+      await _tapSwitch(tester, l10n.eventDefaultsBlackScreen);
+      check(fake.saveCalls).equals(1);
+      check(fake.lastSaved!.hardwareButton.blackScreenMode).isTrue();
+      // Sibling slots are untouched by the per-type replace.
+      check(fake.lastSaved!.loudAlarm).equals(const LoudAlarmConfig());
+    });
   });
 
   // ── RTL ───────────────────────────────────────────────────────────────────

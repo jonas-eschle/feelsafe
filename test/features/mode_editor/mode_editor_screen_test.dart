@@ -22,6 +22,7 @@ import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
@@ -128,6 +129,12 @@ Future<void> _pumpWithRouter(
             builder: (BuildContext ctx, GoRouterState s) => child,
           ),
         ],
+      ),
+      GoRoute(
+        path: '/contacts',
+        name: RouteNames.contacts,
+        builder: (BuildContext ctx, GoRouterState s) =>
+            const Scaffold(body: Text('contacts-route')),
       ),
     ],
   );
@@ -897,6 +904,80 @@ void main() {
       await tester.binding.handlePopRoute();
       await tester.pumpAndSettle();
       expect(find.text(l10n.modeUnsavedTitle), findsOneWidget);
+    });
+
+    testWidgets('Keep editing dismisses the dialog and stays on the editor', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await pumpScreen(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        overrides: _overrides(db),
+      );
+      await tester.enterText(find.byType(TextField).first, 'Changed Name');
+      await tester.pump();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.modeUnsavedKeep));
+      await tester.pumpAndSettle();
+
+      // Still editing: dialog gone, edit preserved, screen not popped.
+      expect(find.byType(AlertDialog), findsNothing);
+      expect(find.byType(ModeEditorScreen), findsOneWidget);
+      expect(find.text('Changed Name'), findsOneWidget);
+    });
+
+    testWidgets('Discard pops the editor without persisting the edit', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        _overrides(db),
+      );
+      await tester.enterText(find.byType(TextField).first, 'Changed Name');
+      await tester.pump();
+      await tester.binding.handlePopRoute();
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.modeUnsavedDiscard));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ModeEditorScreen), findsNothing);
+      check(await db.sessionModesDao.getAll()).isEmpty();
+    });
+  });
+
+  group('ModeEditorScreen — manage contacts link', () {
+    testWidgets('empty-contacts prompt on an smsContact step opens contacts', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s1', type: ChainStepType.smsContact)]),
+      );
+      await _pumpWithRouter(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _expandStep(tester, l10n.chainStepNameSmsContact);
+      await _scrollTo(tester, find.text(l10n.smsContactEmptyAddPrompt));
+
+      await tester.tap(find.text(l10n.smsContactEmptyAddPrompt));
+      await tester.pumpAndSettle();
+
+      expect(find.text('contacts-route'), findsOneWidget);
     });
   });
 

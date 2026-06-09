@@ -686,6 +686,93 @@ void main() {
       check(fake.deleteCalls).equals(1);
       check(fake.lastDeletedId).equals('d2');
     });
+
+    testWidgets('delete tooltip explains why an in-use mode is locked', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final modes = <SessionMode>[_mode('d1', 'Default'), _mode('d2', 'Used')];
+      final fake = _FakeDistressModesController(
+        _state(modes: modes, defaultId: 'd1', referencedIds: <String>{'d2'}),
+      );
+      await pumpScreen(
+        tester,
+        const DistressModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(
+        find
+            .descendant(
+              of: find.ancestor(
+                of: find.text('Used'),
+                matching: find.byType(ListTile),
+              ),
+              matching: find.byType(PopupMenuButton<String>),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
+
+      final deleteItem = tester.widget<PopupMenuItem<String>>(
+        find
+            .ancestor(
+              of: find.text(l10n.commonDelete),
+              matching: find.byType(PopupMenuItem<String>),
+            )
+            .first,
+      );
+      check(deleteItem.enabled).isFalse();
+      final tooltip = tester.widget<Tooltip>(
+        find
+            .ancestor(
+              of: find.text(l10n.commonDelete),
+              matching: find.byType(Tooltip),
+            )
+            .first,
+      );
+      check(tooltip.message).equals(l10n.modesDistressInUse);
+    });
+
+    testWidgets(
+      'second line of defense: a delete selection on an in-use mode is '
+      'refused with an explanation (no escalation of data loss)',
+      (WidgetTester tester) async {
+        // The menu item is disabled, so a user cannot normally select it;
+        // drive the PopupMenuButton callback directly to pin the defensive
+        // guard behind the disabled item.
+        final l10n = await loadL10n(const Locale('en'));
+        final modes = <SessionMode>[
+          _mode('d1', 'Default'),
+          _mode('d2', 'Used'),
+        ];
+        final fake = _FakeDistressModesController(
+          _state(modes: modes, defaultId: 'd1', referencedIds: <String>{'d2'}),
+        );
+        await pumpScreen(
+          tester,
+          const DistressModesScreen(),
+          overrides: _overrideWith(fake),
+        );
+
+        final button = tester.widget<PopupMenuButton<String>>(
+          find
+              .descendant(
+                of: find.ancestor(
+                  of: find.text('Used'),
+                  matching: find.byType(ListTile),
+                ),
+                matching: find.byType(PopupMenuButton<String>),
+              )
+              .first,
+        );
+        button.onSelected?.call('delete');
+        await tester.pumpAndSettle();
+
+        // The mode is NOT deleted and the user is told why.
+        check(fake.deleteCalls).equals(0);
+        expect(find.text(l10n.modesDistressInUse), findsOneWidget);
+      },
+    );
   });
 
   // ── PopupMenu: Edit & Duplicate ───────────────────────────────────────────

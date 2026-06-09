@@ -31,6 +31,7 @@ import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
+import 'package:guardianangela/features/template_editor/reminder_template_form.dart';
 import 'package:guardianangela/features/template_editor/template_editor_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -660,6 +661,145 @@ void main() {
       // No data persisted.
       final all = await db.reminderTemplatesDao.getAll();
       check(all).isEmpty();
+    });
+  });
+
+  // ---- Group: cancel button & discard guard --------------------------------
+
+  group('TemplateEditorScreen — cancel button & discard guard', () {
+    testWidgets('Cancel on a pristine form pops without a dialog', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      expect(find.text('home'), findsOneWidget);
+      check(await db.reminderTemplatesDao.getAll()).isEmpty();
+    });
+
+    testWidgets('Cancel while dirty shows the discard dialog; Keep stays', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Edited');
+      await tester.pump();
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.templatesDiscardChangesTitle), findsOneWidget);
+      await tester.tap(find.text(l10n.templatesDiscardKeep));
+      await tester.pumpAndSettle();
+
+      // Keep editing: still on the editor, edit preserved.
+      expect(find.text('home'), findsNothing);
+      expect(find.text('Edited'), findsOneWidget);
+    });
+
+    testWidgets('Cancel while dirty + Discard pops without saving', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Edited');
+      await tester.pump();
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesDiscardDiscard));
+      await tester.pumpAndSettle();
+
+      expect(find.text('home'), findsOneWidget);
+      check(await db.reminderTemplatesDao.getAll()).isEmpty();
+    });
+
+    testWidgets('system back while dirty asks first; Discard then pops', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Edited');
+      await tester.pump();
+
+      // PopScope(canPop: false) intercepts the pop and asks instead.
+      final NavigatorState nav = tester.state(find.byType(Navigator));
+      unawaited(nav.maybePop());
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.templatesDiscardChangesTitle), findsOneWidget);
+
+      await tester.tap(find.text(l10n.templatesDiscardDiscard));
+      await tester.pumpAndSettle();
+
+      expect(find.text('home'), findsOneWidget);
+      check(await db.reminderTemplatesDao.getAll()).isEmpty();
+    });
+  });
+
+  // ---- Group: icon category -------------------------------------------------
+
+  group('TemplateEditorScreen — icon category', () {
+    testWidgets('edit mode preselects the stored icon category', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await db.reminderTemplatesDao.upsert(
+        _template().copyWith(iconAsset: 'fitness'),
+      );
+      await pumpScreen(
+        tester,
+        const TemplateEditorScreen(templateId: 't-1'),
+        overrides: baseOverrides,
+      );
+
+      final dropdown = tester.widget<DropdownButtonFormField<String>>(
+        find.byType(DropdownButtonFormField<String>),
+      );
+      check(dropdown.initialValue).equals('fitness');
+      expect(find.text(l10n.templatesIconFitness), findsWidgets);
+    });
+
+    testWidgets('changing the icon category is persisted on save', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpWithRouter(tester, overrides: baseOverrides);
+      await tester.enterText(find.byType(TextField).at(0), 'Gym');
+      await tester.enterText(find.byType(TextField).at(1), 'Workout');
+      await tester.enterText(find.byType(TextField).at(2), 'Leg day.');
+
+      await tester.tap(find.byType(DropdownButtonFormField<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.templatesIconFitness).last);
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      final all = await db.reminderTemplatesDao.getAll();
+      check(all.length).equals(1);
+      check(all.single.iconAsset).equals('fitness');
+    });
+
+    testWidgets('isDirty flips once the user edits a field', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        const TemplateEditorScreen(),
+        overrides: baseOverrides,
+      );
+      final ReminderTemplateFormState form = tester
+          .state<ReminderTemplateFormState>(find.byType(ReminderTemplateForm));
+      check(form.isDirty).isFalse();
+
+      await tester.enterText(find.byType(TextField).at(0), 'Edited');
+      await tester.pump();
+
+      check(form.isDirty).isTrue();
     });
   });
 

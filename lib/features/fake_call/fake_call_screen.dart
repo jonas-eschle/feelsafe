@@ -28,10 +28,21 @@ class FakeCallScreen extends ConsumerStatefulWidget {
   /// decline-safe flag, voice prompt name, ring duration). Defaults to
   /// `FakeCallConfig()` so the route handler can instantiate without a
   /// config when the chain step has none.
-  const FakeCallScreen({super.key, this.config = const FakeCallConfig()});
+  const FakeCallScreen({
+    super.key,
+    this.config = const FakeCallConfig(),
+    this.now = DateTime.now,
+  });
 
   /// Per-step configuration loaded from the chain step (or defaults).
   final FakeCallConfig config;
+
+  /// Clock used to measure the hold-for-distress elapsed time.
+  ///
+  /// Defaults to [DateTime.now]; injectable so widget tests can drive the
+  /// hold ticker with deterministic fake time instead of wall-clock.
+  @visibleForTesting
+  final DateTime Function() now;
 
   @override
   ConsumerState<FakeCallScreen> createState() => _FakeCallScreenState();
@@ -85,13 +96,13 @@ class _FakeCallScreenState extends ConsumerState<FakeCallScreen> {
   }
 
   void _startHold() {
-    _holdStart = DateTime.now();
+    _holdStart = widget.now();
     _holdTicker?.cancel();
     _holdTicker = Timer.periodic(const Duration(milliseconds: 80), (_) {
       final started = _holdStart;
       if (started == null || !mounted) return;
       final holdSeconds = widget.config.declineWithDistressHoldSeconds;
-      final elapsed = DateTime.now().difference(started).inMilliseconds / 1000;
+      final elapsed = widget.now().difference(started).inMilliseconds / 1000;
       final progress = (elapsed / holdSeconds).clamp(0.0, 1.0);
       _controller.updateHold(progress);
       // Spec 04:1130 — haptic at 800ms into hold.

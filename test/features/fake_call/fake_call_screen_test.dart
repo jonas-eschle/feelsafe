@@ -50,22 +50,24 @@ Future<void> _pump(
 
 /// Builds a minimal [GoRouter] that places [FakeCallScreen] at
 /// `/fake-call` on top of a blank `/` home route.
-GoRouter _buildRouter({FakeCallConfig config = const FakeCallConfig()}) =>
-    GoRouter(
-      initialLocation: '/',
-      routes: <RouteBase>[
-        GoRoute(
-          path: '/',
-          builder: (BuildContext context, GoRouterState state) =>
-              const Scaffold(body: Center(child: Text('Home'))),
-        ),
-        GoRoute(
-          path: '/fake-call',
-          builder: (BuildContext context, GoRouterState state) =>
-              FakeCallScreen(config: config),
-        ),
-      ],
-    );
+GoRouter _buildRouter({
+  FakeCallConfig config = const FakeCallConfig(),
+  DateTime Function() now = DateTime.now,
+}) => GoRouter(
+  initialLocation: '/',
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) =>
+          const Scaffold(body: Center(child: Text('Home'))),
+    ),
+    GoRoute(
+      path: '/fake-call',
+      builder: (BuildContext context, GoRouterState state) =>
+          FakeCallScreen(config: config, now: now),
+    ),
+  ],
+);
 
 Future<void> _pumpWithRouter(
   WidgetTester tester, {
@@ -465,8 +467,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Hang-up after answering disarms via the controller and closes the
-      // call screen (spec 02 §fakeCall Answer / Hang-up Semantics).
+      // call screen (spec 02 §fakeCall Answer / Hang-up Semantics). It must
+      // NOT escalate: no distress confirm (core bias — err toward not
+      // escalating).
       check(fake.hangUpCalls).equals(1);
+      check(fake.confirmDistressCalls).equals(0);
       expect(find.byType(FakeCallScreen), findsNothing);
       expect(find.text('Home'), findsOneWidget);
     });
@@ -493,7 +498,11 @@ void main() {
 
       final fake = _NonceController(const SessionState.initial());
       const config = FakeCallConfig(declineWithDistressHoldSeconds: 1);
-      final router = _buildRouter(config: config);
+      // Deterministic clock seam: the hold ticker measures elapsed time via
+      // FakeCallScreen.now, which the loop below advances in lockstep with
+      // the fake-async timer pumps — no wall-clock dependence.
+      var fakeNow = DateTime(2026);
+      final router = _buildRouter(config: config, now: () => fakeNow);
       await _pumpWithRouter(
         tester,
         router: router,
@@ -505,20 +514,20 @@ void main() {
       await tester.pumpAndSettle();
 
       // Press and HOLD the decline button: long-press start arms the
-      // 80 ms hold ticker, which measures real wall-clock time.
+      // 80 ms hold ticker (hold start reads the injected clock).
       final gesture = await tester.startGesture(
         tester.getCenter(find.byType(FilledButton)),
       );
       await tester.pump(const Duration(milliseconds: 600));
 
-      // Drive the ticker against real time until the 1 s hold completes
-      // (each pump fires one 80 ms tick; runAsync lets real time pass).
+      // Drive the ticker deterministically: each iteration advances the
+      // injected clock by 80 ms, then pumps one 80 ms timer tick, so tick k
+      // sees elapsed = k*80 ms (haptic at tick 10 = 800 ms, completion at
+      // tick 13 = 1040 ms >= 1 s). The stopwatch is only a runaway backstop.
       final sw = Stopwatch()..start();
       while (fake.confirmDistressCalls == 0 &&
           sw.elapsed < const Duration(seconds: 10)) {
-        await tester.runAsync(
-          () => Future<void>.delayed(const Duration(milliseconds: 25)),
-        );
+        fakeNow = fakeNow.add(const Duration(milliseconds: 80));
         await tester.pump(const Duration(milliseconds: 80));
       }
       await gesture.up();
