@@ -275,8 +275,9 @@ final notificationServiceProvider = Provider<NotificationServiceProtocol>((
 /// [HardwareButtonServiceProtocol] — Android volume-key EventChannel +
 /// iOS audio_service headphone-remote handler.
 ///
-/// Native handler lands in Phase 7
-/// (Android: HardwareButtonChannel.kt; iOS: audio_service handler).
+/// Native handler registered in `MainActivity.kt`
+/// (`com.guardianangela.app/hardware_button` EventChannel →
+/// `HardwareButtonChannel.kt`; iOS: `audio_service` media-button handler).
 /// Tests override with [SimulationHardwareButtonService] from
 /// `lib/services/sim/hardware_button_service_sim.dart`.
 final hardwareButtonServiceProvider = Provider<HardwareButtonServiceProtocol>((
@@ -288,8 +289,10 @@ final hardwareButtonServiceProvider = Provider<HardwareButtonServiceProtocol>((
 /// [CallStateServiceProtocol] — Android PhoneStateListener + iOS
 /// CXCallObserver via platform channels.
 ///
-/// Native handler lands in Phase 7
-/// (Android: CallStateChannel.kt; iOS: CallStatePlugin.swift).
+/// Native handler registered in `MainActivity.kt`
+/// (`com.guardianangela.app/call_state` Method+Event channel →
+/// `CallStateChannel.kt`; iOS: `CallStatePlugin.swift`, registered in
+/// `AppDelegate.swift`).
 /// Tests override with [SimulationCallStateService] from
 /// `lib/services/sim/call_state_service_sim.dart`.
 final callStateServiceProvider = Provider<CallStateServiceProtocol>((ref) {
@@ -311,7 +314,8 @@ final systemUiServiceProvider = Provider<SystemUiServiceProtocol>((ref) {
 /// the onboarding "Use my SIM number" affordance (spec 04 Extra 28).
 ///
 /// Android invokes `getSimPhoneNumber` via
-/// `com.guardianangela.app/device_info` (Phase 7 native handler).
+/// `com.guardianangela.app/device_info`, whose handler (`DeviceInfoChannel.kt`)
+/// is registered in `MainActivity.kt`.
 /// iOS/web/desktop return [SimNumberUnsupported] without touching the
 /// platform channel.
 ///
@@ -344,8 +348,8 @@ final phoneServiceProvider = Provider<PhoneServiceProtocol>((ref) {
 /// notifications and to listen for retry-action taps. The phone-call channel
 /// dispatches via [phoneServiceProvider].
 ///
-/// Phase 7 native dependency: Android `SmsChannel.kt` + `SmsWorker.kt`
-/// (MethodChannel `com.guardianangela.app/sms`).
+/// Android native dependency: `SmsChannel.kt` + `SmsWorker.kt` (MethodChannel
+/// `com.guardianangela.app/sms`, registered in `MainActivity.kt`).
 ///
 /// Tests override with [SimulationMessagingService] from
 /// `lib/services/sim/messaging_service_sim.dart`.
@@ -363,9 +367,13 @@ final messagingServiceProvider = Provider<MessagingServiceProtocol>((ref) {
 /// sessions. Provides persistent notification with "I'm Safe", "Pause", and
 /// "Resume" action buttons.
 ///
-/// Phase 7 native dependency: `flutter_background_service` plugin handles
-/// the Android foreground service promotion and iOS background task.
-/// The Dart side manages notification content and action routing via
+/// Native dependency: the `flutter_background_service` plugin handles the
+/// Android foreground service promotion (its `BackgroundService` is declared
+/// in `AndroidManifest.xml` with `foregroundServiceType="specialUse"`) and the
+/// iOS background task; the plugin self-registers via the generated plugin
+/// registrant (no custom channel in `MainActivity.kt`). `start`/`stop` are
+/// wired into the session lifecycle by `SessionController` (M3 C3). The Dart
+/// side manages notification content and action routing via
 /// [notificationServiceProvider].
 ///
 /// Tests override with [SimulationBackgroundSessionService] from
@@ -378,14 +386,15 @@ final backgroundSessionServiceProvider =
     });
 
 /// [QuickExitServiceProtocol] — terminates the app on demand via the
-/// `com.guardianangela.app/quick_exit` MethodChannel (Phase 7 native
-/// landing).
+/// `com.guardianangela.app/quick_exit` MethodChannel, whose handler is
+/// registered in `MainActivity.kt`.
 ///
 /// On Android the native handler invokes `finishAndRemoveTask()` so the
 /// activity also vanishes from the recents stack; on iOS it invokes
-/// `exit(0)`. Until the native handler ships, the Real implementation
-/// falls back to `SystemNavigator.pop(animated: false)` so the gesture
-/// still has a visible effect during development.
+/// `exit(0)`. If the channel is ever unavailable (e.g. an error response),
+/// the Real implementation falls back to `SystemNavigator.pop(animated:
+/// false)` so the gesture still has a visible effect — a defensive fallback,
+/// not a missing-handler placeholder.
 ///
 /// Tests override with [SimulationQuickExitService] from
 /// `lib/services/sim/quick_exit_service_sim.dart`.
@@ -448,8 +457,10 @@ final sessionLogRecorderProvider = FutureProvider<SessionLogRecorderFactory>((
 /// §Permission Audit Flow §step 2). The [revocations] stream polls for
 /// mid-session permission changes.
 ///
-/// Phase 7 native landing: the Android DeviceStateChannel will push
-/// permission-change events; until then this polls on the Dart side.
+/// Mid-session revocation detection is **Dart-side polling** via
+/// `package:permission_handler` — there is no native push channel for
+/// permission-change events (no such Android channel is registered in
+/// `MainActivity.kt`). The polling cadence is owned by the service.
 ///
 /// Tests override with [SimulationPermissionAuditService] from
 /// `lib/services/sim/permission_audit_service_sim.dart`.
@@ -508,13 +519,16 @@ final backupServiceProvider = FutureProvider<BackupServiceProtocol>((
 });
 
 // ---------------------------------------------------------------------------
-// HomeWidgetService — Phase 7
+// HomeWidgetService
 // ---------------------------------------------------------------------------
 
 /// [HomeWidgetServiceProtocol] backed by `package:home_widget 0.9.x`.
 ///
 /// Writes five pre-localised string keys to the shared widget data store and
-/// triggers a native widget refresh on every session-state transition.
+/// triggers a native widget refresh on every session-state transition. The
+/// Android home-screen widget is the `GuardianAngelaAppWidget.kt` RemoteViews
+/// provider declared in `AndroidManifest.xml`; the plugin self-registers via
+/// the generated plugin registrant (no custom channel in `MainActivity.kt`).
 /// The interactivity callback [homeWidgetCallback] handles Android background
 /// taps; iOS taps use the `guardianangela://` URL scheme directly.
 ///

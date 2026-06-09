@@ -32,10 +32,10 @@ void main() {
       });
     });
 
-    test('has a substantial set of countries', () {
-      // The reviewed draft covers ~100+ countries; guard against accidental
-      // truncation.
-      check(emergencyNumbers.length).isGreaterOrEqual(100);
+    test('contains exactly the 109 reviewed countries', () {
+      // Exact count (not a floor) so silent map truncation OR an accidental
+      // duplicate-key collapse is caught — the reviewed draft is 109 entries.
+      check(emergencyNumbers.length).equals(109);
     });
   });
 

@@ -4,10 +4,114 @@
 STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
-Session-Interrupted prompt) DONE, GATE-GREEN, COMMITTED (UNPUSHED). NEXT =
-M4 C5 — Tier-F F1+F2 descope (spec notes + REMOVE the `SCHEDULE_EXACT_ALARM`
-permission) + `service_providers` Phase-7 doc-sweep + carried test/spec-note
-tidies.**
+Session-Interrupted prompt) + C5 (Tier-F F1/F2 descope + REMOVE
+`SCHEDULE_EXACT_ALARM` + spec/doc reconciliation) DONE, GATE-GREEN, COMMITTED
+(UNPUSHED). NEXT = M4 C6 — F3: user-supplied ringtone(s) for the fake-call (a
+ringtone picker/import in the fake-call config; user provides their own audio —
+sidesteps licensing; NOT bundled per-style assets).**
+
+> **OWNER FINAL pre-push emergency-map review (carry to the M4 push).** The C2
+> R-8 map (`lib/domain/models/emergency_numbers.dart`, 109 countries) still
+> awaits the owner's FINAL pre-push spot-confirm of the reviewed adjustments —
+> **DE=110, ET=911, CI=111** (the orchestrator must surface the C2 "CHANGES
+> FROM THE REVIEWED DRAFT" summary before pushing M4). The count is now
+> guarded by an EXACT `== 109` test (C5), so a silent map edit fails CI.
+
+---
+
+## What's done THIS session (M4 C5 — UNPUSHED, `m4-tierF`)
+
+**Low-risk cleanup chunk: Tier-F F1/F2 descope + the `SCHEDULE_EXACT_ALARM`
+removal + a spec/doc reconciliation pass. All six items verified precisely
+against the code/native side first.**
+
+- **A. F1 descope (spec note).** `docs/spec/05-services.md` §System Volume
+  Override — added a reconciliation note: the media-stream override is DESCOPED
+  for GA because the loud alarm already plays on `STREAM_ALARM` (audible in
+  silent/vibrate, governed by alarm volume), so forcing the *media* stream to
+  max is redundant. Nothing was built for F1; this is a spec-only note.
+- **B. F2 descope + permission REMOVED.** Removed `SCHEDULE_EXACT_ALARM` from
+  `android/app/src/main/AndroidManifest.xml` (was line 63-64) — replaced with a
+  descope-rationale comment. Added matching reconciliation notes to
+  `docs/spec/10-platform-matrix.md`: the permission-list block (the line is
+  deleted + a note) AND the Background-Execution table (the *Alarm Manager
+  Watchdog* row → DESCOPED/DESCOPED; *App Kill Recovery* row → NO/NO launch-only;
+  *Background Timer* reworded to "kept alive by the foreground service, no
+  AlarmManager"). Rationale captured: a watchdog can only NOTIFY (not escalate)
+  and is defeated by the force-stop it targets; FG service + the #8
+  interrupted-prompt cover the realistic cases; app-death = session gone.
+- **C. C4 spec reconciliation (the contradiction the C4 cohort flagged).**
+  `docs/spec/01-chain-engine.md` §Extra-13 ("No resume after force-close",
+  ≈657-665) REWRITTEN: the marker is the in-progress **`SessionLog` row** (no
+  `endedAt`), written at `startSession`, deleted at clean end; detection in
+  `SessionController.build` deletes orphans so it fires once; the stale
+  "separate `active_session_marker.json`" + the FALSE "No `SessionLog` entry is
+  written for the killed session" are gone (mirrors the note already at
+  04:962-988). Added the **Duress-PIN carve-out** note there
+  (`writeInterruptMarker: false` for the App-lock cold-start distress — exempt
+  from interrupted-prompt detection BY DESIGN, security, not a bug).
+  `docs/spec/07-test-plan.md` INT-012 reworded: "seed `active_session_marker.json`"
+  → "seed an in-progress (orphan) `SessionLog` row (no `endedAt`)".
+- **D. C3 spec-ordering note.** `docs/spec/04-screens-navigation.md` on-tap
+  Start flow — added a one-line note that the notification re-ask runs BEFORE
+  session creation (block-on-deny gate), reconciling the literal
+  "step 3 after Create WalkSession" numbering.
+- **E. `service_providers.dart` Phase-7 doc-sweep (verify-then-reword).** All
+  **9** stale "Phase 7" strings reworded after verifying each against
+  `MainActivity.kt` / `AppDelegate.swift` / the manifest:
+  - **REGISTERED in `MainActivity.kt`** → reworded to say so: HardwareButton
+    (`hardware_button` EventChannel), CallState (`call_state` Method+Event;
+    iOS `CallStatePlugin.swift` in `AppDelegate`), DeviceInfo (`DeviceInfoChannel.kt`),
+    SMS/Messaging (`SmsChannel.kt`+`SmsWorker.kt`), QuickExit (`quick_exit`
+    handler → `finishAndRemoveTask()`; the `SystemNavigator.pop` is now framed
+    as a defensive on-error fallback, NOT a missing-handler placeholder).
+  - **Plugin self-registered (no custom channel)** → reworded: BackgroundSession
+    (`flutter_background_service`; `BackgroundService` in the manifest;
+    start/stop wired by `SessionController` M3 C3), HomeWidget (`home_widget` +
+    `GuardianAngelaAppWidget.kt` RemoteViews receiver in the manifest).
+  - **Genuinely NOT a native channel** → reworded to the accurate status (no
+    invented Phase X): PermissionAudit — the comment referenced a
+    `DeviceStateChannel` that **does not exist**; mid-session revocation is
+    Dart-side polling via `permission_handler`. NOTE: `MainActivity.kt`'s own
+    header still says "all 7 custom platform channels" (accurate: SMS,
+    call_state, hardware_button, system_ui, stealth_icon, device_info,
+    quick_exit) — left as-is (correct).
+- **F. Emergency-map count tightened.** `test/domain/models/emergency_numbers_test.dart`
+  — the `length >= 100` floor → exact `== 109` (confirmed 109 entries via regex
+  count first); catches silent truncation / duplicate-key collapse.
+
+**Gate (ALL GREEN):** analyzer `--fatal-infos` = **0**; full suite
+`flutter test --concurrency=6` = **3990 pass** (unchanged — F tightened an
+existing assertion, no count change); **emulator boot-smoke PASS** on
+`emulator-5554` (debug APK builds 24-33s + installs + "app boots to a
+MaterialApp shell"); **`SCHEDULE_EXACT_ALARM` confirmed REMOVED** from the built
+APK (`aapt2 dump permissions build/app/outputs/flutter-apk/app-debug.apk` — the
+permission is absent; `USE_EXACT_ALARM` also absent; no transitive dep re-added
+it); deferral-grep (`grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)"
+lib/features/`) = **0** AND no new "Phase X" in `service_providers.dart`; `git
+status --porcelain -- OLD/` empty. 8 files changed (1 manifest + 5 spec + 1
+service-providers + 1 test).
+
+**KEY FINDINGS (C5):**
+- **The CLAUDE.md native-files list is slightly ahead of reality.** It names
+  `PhoneChannel.kt` and `DeviceStateChannel.kt`, but NEITHER exists in
+  `android/app/src/main/kotlin/com/guardianangela/app/`. Phone calls go via
+  `url_launcher` (Dart-only `tel:`, no native channel); the SIM-number channel
+  is `DeviceInfoChannel.kt` (= `com.guardianangela.app/device_info`). The
+  PermissionAudit provider's "DeviceStateChannel will push events" comment was
+  therefore describing a channel that was never built — reworded to the real
+  Dart-side polling mechanism.
+- **`aapt2 dump permissions <apk>` is the authoritative APK-permission check**
+  (`~/Android/Sdk/build-tools/36.1.0/aapt2`). Grepping the AGP *merged*
+  manifest is misleading here because the merger preserves XML comments — my
+  descope-rationale comment text contains the string "SCHEDULE_EXACT_ALARM", so
+  a naive grep "hits". The APK dump is unambiguous (the permission is gone).
+- **`MainActivity.kt` registers exactly 7 custom channels** (SMS, call_state,
+  hardware_button, system_ui, stealth_icon, device_info, quick_exit);
+  BackgroundSession + HomeWidget are plugin-self-registered (manifest entries,
+  generated plugin registrant), NOT MainActivity channels — the doc-sweep had
+  to distinguish these two registration styles rather than blanket-claim
+  "registered in MainActivity.kt".
 
 ---
 
@@ -720,33 +824,35 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M4 C5 — Tier-F F1+F2 descope (spec notes + REMOVE the
-`SCHEDULE_EXACT_ALARM` permission) + `service_providers` Phase-7 doc-sweep + the
-carried test/spec-note tidies.** M0–M3 are PUSHED (`origin/main` = `5ab69c6`);
-M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map + `phone_validators` + locale
+**Next action: M4 C6 — F3: user-supplied ringtone(s) for the fake-call.** Build
+a ringtone picker/import in the fake-call step config: the user provides their
+own audio file (sidesteps licensing), played as the fake-call ringtone — NOT
+bundled per-style assets. M0–M3 are PUSHED (`origin/main` = `5ab69c6`); M4
+C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map + `phone_validators` + locale
 seeding, `m4-#10`) + C3 (#16 notification re-ask + Active-Triggers-Summary +
 `permission_utils.dart`, `m4-#16`) + C4 (#8 Session-Interrupted prompt, `m4-#8`)
-are DONE+GATE-GREEN+COMMITTED (UNPUSHED).
++ C5 (Tier-F F1/F2 descope + REMOVE `SCHEDULE_EXACT_ALARM` + spec/doc
+reconciliation, `m4-tierF`) are DONE+GATE-GREEN+COMMITTED (UNPUSHED).
 
-**DEFERRED — C5 (and the orchestrator's pre-push) must do:**
-- **Tier-F F1 DESCOPE + F2 DESCOPE:** add the spec notes AND **REMOVE the
-  `SCHEDULE_EXACT_ALARM` permission** from `AndroidManifest.xml` (no
-  AlarmManager watchdog — user-decided 2026-06-09). C5 owns the manifest edit;
-  C2/C3/C4 deliberately did NOT touch it.
-- **`service_providers.dart` Phase-7 doc-sweep:** the remaining services'
-  stale "Phase 7" doc-comments (M3 C2 fixed only system-ui/stealth).
-- **Tighten the emergency-map literal-count assertion to `== 109`** in
-  `test/domain/models/emergency_numbers_test.dart` (C2-cohort hardening).
-- **The C3 spec-ordering one-line note** (the translation ARBs are NOT in the
-  en-template key order — gen-l10n matches by key NAME; record it where the spec
-  describes l10n if not already noted).
-- **Re-evaluate the launch-gate-brand reason** consideration (F4 KEEP+BUILD: see
-  the M4 DECISIONS block — FIRST determine from the spec whether
-  `requireLaunchAuth`/`launchAuthBiometric` do anything BEYOND the App-PIN launch
-  gate; if redundant, surface that rather than building a duplicate).
+**DEFERRED — still TO DO (C6/C7/C8 + the orchestrator's pre-push):**
+- **F3 = C6 (the NEXT chunk):** user-supplied ringtone(s) for the fake-call
+  (ringtone picker/import in the fake-call config; user provides their own
+  audio — sidesteps licensing; NOT bundled per-style assets).
+- **F4 = KEEP+BUILD (a later chunk):** wire `requireLaunchAuth` /
+  `launchAuthBiometric` per spec — but FIRST determine from the spec whether
+  they do anything BEYOND the App-PIN launch gate; if genuinely
+  identical/redundant, surface that to the orchestrator rather than building a
+  duplicate.
+- **F5 = KEEP+BUILD (a later chunk):** post-session feedback prompt.
 - **Owner FINAL pre-push emergency-map review** (the orchestrator must surface
   the C2 "CHANGES FROM THE REVIEWED DRAFT" summary before the M4 push;
-  spot-confirm **DE=110, ET=911, CI=111**).
+  spot-confirm **DE=110, ET=911, CI=111**). The count is now `== 109`-guarded.
+
+**DONE in C5 (`m4-tierF`):** Tier-F F1 DESCOPE (spec 05 note) + F2 DESCOPE +
+`SCHEDULE_EXACT_ALARM` REMOVED from the manifest (spec 10 notes) +
+`service_providers.dart` Phase-7 doc-sweep (all 9 strings) + the C4 spec-01
+SessionLog-marker reconciliation + Duress-PIN carve-out note + the C3
+spec-ordering note (04) + the emergency-map `== 109` exact-count tightening.
 
 Per-chunk recipe (unchanged): verify the gap yourself → implement (serial) →
 prove (host/widget tests driving the REAL controller/screen; emulator for

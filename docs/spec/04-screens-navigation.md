@@ -480,6 +480,16 @@ The main dashboard and entry point after onboarding. Displays mode selector, qui
      session-notification steps, block the start with an inline
      warning.
 
+     > **Reconciliation note (M4 C5): ordering.** Although this step is
+     > numbered after "Create WalkSession", the notification re-ask in the
+     > implementation runs **before** any session is created — it is a
+     > block-on-deny gate (`home_controller`/`home_screen._onStart`: summary
+     > → `ensureNotificationPermission` → `startSession`). A denied permission
+     > for a notification-dependent chain aborts the start, so no
+     > `WalkSession` / `SessionEngine` is ever instantiated. Read steps 2–4 as
+     > "validate (incl. the notification gate), then create + start" — the
+     > gate precedes creation.
+
      > **Reconciliation note (M4 C3).** "session-notification steps" maps to
      > the two `ChainStepType`s whose delivery is a user-facing notification:
      > `disguisedReminder` (the silent check-in that must wake a locked

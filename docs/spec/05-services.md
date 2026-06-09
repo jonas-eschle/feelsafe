@@ -96,6 +96,17 @@ When enabled in settings, volume ramps linearly from 0 to the target volume over
 
 On Android, the app can temporarily set the system media stream to max volume before playing alarm or ringtone. This is controlled by a toggle in audio settings (default true). The system volume is restored after playback stops or the session ends.
 
+> **Reconciliation note (M4 C5, 2026-06-09): media-stream override DESCOPED
+> for GA.** The loud alarm already plays on `STREAM_ALARM` (see *Loud Alarm*
+> above), which on Android is audible even in silent/vibrate mode and is
+> governed by the alarm volume — not the media volume. Forcing the system
+> *media* stream to max is therefore redundant for the alarm's audibility
+> guarantee, while carrying the side-effect of overriding the user's media
+> volume. The override is **not built for GA**; the `STREAM_ALARM` routing is
+> the audibility mechanism. (The audio-settings toggle is reserved for a
+> future revisit should a media-routed sound — e.g. a custom ringtone preview
+> — ever need it.)
+
 ### Voice Recordings (Extra-32, C2)
 
 **`playVoiceRecording(String? filePath, {bool useSpeaker = false, bool isSimulation = false})`**

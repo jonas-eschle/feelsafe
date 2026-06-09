@@ -1330,7 +1330,7 @@ end-to-end timer-driven flows. These scenarios close that gap.
 | Simulation leap to next event (D2) | Partial | **INT-009** |
 | Disarm cancels queued SMS (A5) | Partial (orchestrator cleanDisarm no-op) | **INT-010** |
 | Distress via wrongPinThreshold (A3) | Settings round-trip only | **INT-011** (in Phase 9 cohort) |
-| Session-Interrupted prompt (Extra 13, informational) | No | **INT-012** (Phase 9 — seed `active_session_marker.json`, assert prompt + Acknowledge path) |
+| Session-Interrupted prompt (Extra 13, informational) | No | **INT-012** (Phase 9 — seed an in-progress (orphan) `SessionLog` row (no `endedAt`), assert prompt + Acknowledge path) |
 | Smart retention (B8) | No | **INT-013** (Phase 9 — clock-advance test) |
 | Soft-delete log (Extra 11) | No | **INT-014** (Phase 9 — restore + hard-purge transitions) |
 | Onboarding full flow | No | **WID-001** (Phase 6 widget cohort) |

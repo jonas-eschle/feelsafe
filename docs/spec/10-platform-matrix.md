@@ -171,9 +171,9 @@ Complete feature-by-platform support matrix for Guardian Angela, documenting And
 |---|---|---|---|---|
 | **Foreground Service** | YES | Limited | START_STICKY, FOREGROUND_SERVICE | Android: persistent service with notification, auto-restart after kill. iOS: no direct equivalent; uses background modes (audio, location, voip). |
 | **Wakelock** | YES | YES | WAKE_LOCK | Keep device awake during session (no screen sleep) |
-| **Alarm Manager Watchdog** | YES | NO | SCHEDULE_EXACT_ALARM | Android: periodic alarm detects app kills, shows notification. iOS: no equivalent; app kill detected only at next launch. |
-| **Background Timer** | YES | PARTIAL | — | Android: exact timers via AlarmManager. iOS: approximate timers only (OS may delay up to 10 min if device asleep). |
-| **App Kill Recovery** | YES (auto-restarts) | NO (launch-only) | — | Android: foreground service + AlarmManager watchdog. iOS: prompt shown on next launch. |
+| **Alarm Manager Watchdog** | DESCOPED | DESCOPED | — | **DESCOPED for GA (M4 C5, 2026-06-09).** A watchdog alarm could only *notify*, never escalate, and a force-stop cancels the app's alarms anyway — so it cannot survive the force-stop it targets. `SCHEDULE_EXACT_ALARM` is no longer declared. Both platforms now detect an interrupted session **only at next launch** via the Session-Interrupted prompt (spec 04 §Extra 13). |
+| **Background Timer** | YES | PARTIAL | — | Android: in-process timers kept alive by the foreground service (no AlarmManager). iOS: approximate timers only (OS may delay up to 10 min if device asleep). |
+| **App Kill Recovery** | NO (launch-only) | NO (launch-only) | — | **No process resurrection on either platform** — app-death = session gone (session state is in-memory only, lessons-learned §5.2). The foreground service reduces the chance of a kill while backgrounded; once killed, the session is detected only at next launch and surfaced via the Session-Interrupted prompt (spec 04 §Extra 13). |
 
 ---
 
@@ -276,8 +276,20 @@ CAMERA                  — Camera flash SOS pattern
 VIBRATE                 — Haptic feedback
 WAKE_LOCK               — Keep device awake
 FOREGROUND_SERVICE      — Persistent background notification
-SCHEDULE_EXACT_ALARM    — Watchdog alarm for app kill detection
 ```
+
+> **Reconciliation note (M4 C5, 2026-06-09): `SCHEDULE_EXACT_ALARM` removed.**
+> The AlarmManager watchdog is **DESCOPED** for GA, so this permission is no
+> longer declared in `AndroidManifest.xml`. Rationale: a periodic watchdog
+> alarm can only *notify* the user — it cannot escalate (send SMS, place
+> calls) — and it is itself defeated by the very force-stop it targets (a
+> force-stopped app's alarms are cancelled until the user next opens it). The
+> foreground service (the persistent session notification) plus the
+> Session-Interrupted prompt (detected at next launch, spec 04 §Extra 13)
+> cover the realistic kill cases. The design posture is **app-death = session
+> gone** (session state is in-memory only, lessons-learned §5.2). Shipping a
+> declared-but-unused exact-alarm permission is a Google-Play-review
+> liability, so it was removed entirely.
 
 ### iOS Permissions
 ```

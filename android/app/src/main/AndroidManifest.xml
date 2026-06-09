@@ -60,8 +60,13 @@
          is the correct typed permission for this case (§5-D8 resolved). -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE"/>
 
-    <!-- SCHEDULE_EXACT_ALARM: watchdog alarm (spec 10:279,174). -->
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <!-- SCHEDULE_EXACT_ALARM intentionally NOT declared. The AlarmManager
+         watchdog (spec 10:174,279) is DESCOPED for GA (M4 C5, 2026-06-09): a
+         periodic alarm can only NOTIFY, never escalate, and is itself defeated
+         by the force-stop it would target. App-death = session gone (in-memory
+         only); the foreground service + the Session-Interrupted prompt cover
+         the realistic cases. Declaring an unused exact-alarm permission is a
+         Play-review liability, so it is removed entirely. -->
 
     <!-- POST_NOTIFICATIONS: Android 13+ notifications (matrix 10:90).
          Absent from spec-10 permission block but required by
