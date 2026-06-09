@@ -73,14 +73,15 @@ class PastEventsTrashController extends AsyncNotifier<PastEventsTrashState> {
     // the trash portion here, but the age-based purge is cheap and
     // always-correct.
     try {
-      final purged = await repo.purgeExpiredLogs(
+      final purge = await repo.purgeExpiredLogs(
         retentionDays: settings.sessionLogRetentionDays,
         now: DateTime.now().toUtc(),
         trashRetentionDays: settings.trashRetentionDays,
       );
-      if (purged > 0) {
+      if (purge.movedToTrash > 0 || purge.hardDeleted > 0) {
         log(
-          'trash-screen open purged $purged expired rows',
+          'trash-screen open: ${purge.movedToTrash} aged logs moved to '
+          'trash, ${purge.hardDeleted} expired trash rows hard-deleted',
           name: 'PastEventsTrashController',
         );
       }

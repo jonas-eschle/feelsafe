@@ -168,20 +168,33 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
           .watch()
           .map((rows) => rows.map(_rowToModel).toList());
 
-  /// Deletes every log whose reference time (`endedAt` if set, else
-  /// `startedAt`) is strictly older than [cutoff].
+  /// Soft-deletes every LIVE log whose reference time (`endedAt` if set,
+  /// else `startedAt`) is strictly older than [cutoff] by stamping
+  /// [SessionLogs.deletedAtMs] with [nowMs].
+  ///
+  /// This is stage 1 of the B8 retention policy (spec 03 §SessionLog
+  /// "Storage & retention (B8)" step 5): aged logs move into the
+  /// recoverable trash, where the Trash screen can restore them until
+  /// the second-stage [hardDeleteTrashedOlderThan] purge runs after
+  /// `AppSettings.trashRetentionDays` (Extra 11).
+  ///
+  /// Already-trashed rows are never touched — re-stamping would reset
+  /// their trash clock and indefinitely defer the hard purge.
   ///
   /// When [keepCritical] is true (the default for the B8 smart-retention
   /// policy), logs that recorded a destructive action are retained
-  /// regardless of age. See spec 03 §SessionLog "Storage & retention (B8)".
+  /// regardless of age.
   ///
-  /// Returns the number of logs deleted.
-  Future<int> deleteOlderThan(
+  /// Returns the number of logs moved to the trash.
+  Future<int> softDeleteOlderThan(
     DateTime cutoff, {
+    required int nowMs,
     bool keepCritical = true,
   }) async {
     final cutoffMs = cutoff.toUtc().millisecondsSinceEpoch;
-    final candidateRows = await select(sessionLogs).get();
+    final candidateRows = await (select(
+      sessionLogs,
+    )..where((l) => l.deletedAtMs.isNull())).get();
     final candidates = candidateRows
         .map((row) {
           final logEndsAt = row.endedAtMs ?? row.startedAtMs;
@@ -198,7 +211,11 @@ class SessionLogsDao extends DatabaseAccessor<GuardianAngelaDatabase>
     if (candidates.isEmpty) {
       return 0;
     }
-    return (delete(sessionLogs)..where((l) => l.id.isIn(candidates))).go();
+    // The redundant deletedAtMs guard protects the no-re-stamp invariant
+    // against a concurrent softDelete between the SELECT and this UPDATE.
+    return (update(sessionLogs)
+          ..where((l) => l.id.isIn(candidates) & l.deletedAtMs.isNull()))
+        .write(SessionLogsCompanion(deletedAtMs: Value(nowMs)));
   }
 
   /// Returns true if the log carries at least one event indicating a

@@ -130,17 +130,22 @@ Future<void> runBootstrap(
 
   // Step 4 — Startup log purge (B8 + trash retention):
   //   * non-critical logs older than AppSettings.sessionLogRetentionDays
-  //   * trashed logs older than AppSettings.trashRetentionDays
-  //     (spec 03:970, spec 04:2455–2459).
+  //     are SOFT-deleted into the recoverable trash (spec 03:966–967)
+  //   * trashed logs older than AppSettings.trashRetentionDays are
+  //     hard-deleted (spec 03:970, spec 04:2455–2459).
   try {
     final repo = await container.read(sessionLogRepositoryProvider.future);
-    final deleted = await repo.purgeExpiredLogs(
+    final purge = await repo.purgeExpiredLogs(
       retentionDays: settings.sessionLogRetentionDays,
       now: DateTime.now().toUtc(),
       trashRetentionDays: settings.trashRetentionDays,
     );
-    if (deleted > 0) {
-      log('Purged $deleted expired session logs', name: 'main');
+    if (purge.movedToTrash > 0 || purge.hardDeleted > 0) {
+      log(
+        'Startup log purge: ${purge.movedToTrash} aged logs moved to '
+        'trash, ${purge.hardDeleted} expired trash rows hard-deleted',
+        name: 'main',
+      );
     }
   } catch (e, st) {
     log(

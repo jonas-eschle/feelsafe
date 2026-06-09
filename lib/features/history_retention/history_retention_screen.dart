@@ -34,11 +34,14 @@ class _HistoryRetentionScreenState
     final l10n = AppLocalizations.of(context);
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final repo = await ref.read(sessionLogRepositoryProvider.future);
-    final purged = await repo.purgeExpiredLogs(
+    final result = await repo.purgeExpiredLogs(
       retentionDays: settings.sessionLogRetentionDays,
       trashRetentionDays: settings.trashRetentionDays,
       now: DateTime.now().toUtc(),
     );
+    // The snackbar reports the total rows the purge affected: aged logs
+    // moved to the (recoverable) trash + expired trash rows hard-deleted.
+    final purged = result.movedToTrash + result.hardDeleted;
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(l10n.historyRetentionPurged(purged))),

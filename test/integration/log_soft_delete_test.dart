@@ -114,8 +114,8 @@ void main() {
     await repo.restore('log-1');
 
     // A live, recent log is not touched by the age purge.
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
-    check(deleted).equals(0);
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    check(result).equals((movedToTrash: 0, hardDeleted: 0));
     check(
       (await repo.getAll()).map((l) => l.id).toList(),
     ).deepEquals(['log-1']);
@@ -133,9 +133,9 @@ void main() {
 
     // The default trash window is 7 days → the 10-day-old trash is purged,
     // the fresh one survives.
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 365, now: now);
+    final result = await repo.purgeExpiredLogs(retentionDays: 365, now: now);
 
-    check(deleted).equals(1);
+    check(result).equals((movedToTrash: 0, hardDeleted: 1));
     final trashedNow = await repo.getTrashed();
     check(trashedNow.map((l) => l.id).toList()).deepEquals(['fresh-trash']);
   });
@@ -156,12 +156,9 @@ void main() {
 
     // Even with an effectively-infinite age window, the elapsed default 7-day
     // trash window hard-deletes the trashed critical log.
-    final deleted = await repo.purgeExpiredLogs(
-      retentionDays: 100000,
-      now: now,
-    );
+    final result = await repo.purgeExpiredLogs(retentionDays: 100000, now: now);
 
-    check(deleted).equals(1);
+    check(result).equals((movedToTrash: 0, hardDeleted: 1));
     check(await repo.getTrashed()).isEmpty();
     check(await repo.getById('critical-trashed')).isNull();
   });

@@ -16,6 +16,8 @@
 /// (lines 2463–2550).
 library;
 
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -592,6 +594,41 @@ void main() {
       await tester.tap(find.text(l10n.pastEventsDetailShareText));
       await tester.pumpAndSettle();
       check(_capturedShareText ?? '').contains('Date Mode');
+    });
+
+    testWidgets('evidence-mode export is VALID JSON that round-trips a '
+        'modeName containing quotes, backslashes and newlines', (
+      WidgetTester tester,
+    ) async {
+      // A user-editable mode name with every JSON-hostile character class.
+      const trickyName = 'has "quotes", a back\\slash and\nnewlines';
+      final db = _openDb();
+      addTearDown(db.close);
+      await db.sessionLogsDao.upsert(
+        _log(id: 'ev-tricky', modeName: trickyName),
+      );
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'ev-tricky', evidenceMode: true),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailShareText));
+      await tester.pumpAndSettle();
+      check(_capturedShareText).isNotNull();
+      // The police-report evidence bundle MUST parse as JSON…
+      final decoded = jsonDecode(_capturedShareText!) as Map<String, dynamic>;
+      // …and round-trip the exact string, unmangled.
+      check(decoded['modeName']).equals(trickyName);
+      check(decoded['id']).equals('ev-tricky');
+      check(decoded['startedAt']).equals(_base.toIso8601String());
+      final events = decoded['events'] as List<dynamic>;
+      check(events.length).equals(2);
+      final first = events.first as Map<String, dynamic>;
+      check(first['type']).equals('started');
+      check(first['timestamp']).equals(_base.toIso8601String());
     });
 
     testWidgets('evidence mode JSON contains startedAt key', (

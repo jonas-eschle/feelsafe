@@ -105,7 +105,7 @@ class _OrderingSentryService implements SentryServiceProtocol {
 }
 
 /// A [SessionLogRepository] substitute that appends `'purgeLogs'` to [calls]
-/// and returns 0 deleted records.
+/// and reports zero purge activity.
 ///
 /// Constructed with a real in-memory database so the provider chain
 /// is satisfied, but [purgeExpiredLogs] never touches it.
@@ -115,13 +115,13 @@ class _OrderingSessionLogRepo extends SessionLogRepository {
   final List<String> calls;
 
   @override
-  Future<int> purgeExpiredLogs({
+  Future<PurgeResult> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
     int trashRetentionDays = 7,
   }) async {
     calls.add('purgeLogs');
-    return 0;
+    return (movedToTrash: 0, hardDeleted: 0);
   }
 }
 
@@ -198,17 +198,18 @@ class _RecordingSentryService implements SentryServiceProtocol {
   Future<void> close() async {}
 }
 
-/// A [SessionLogRepository] whose [purgeExpiredLogs] returns a fixed non-zero
-/// count (exercises the `deleted > 0` log branch in runBootstrap step 4).
+/// A [SessionLogRepository] whose [purgeExpiredLogs] reports fixed non-zero
+/// counts for both stages (exercises the activity-log branch in
+/// runBootstrap step 4).
 class _PurgingSessionLogRepo extends SessionLogRepository {
   _PurgingSessionLogRepo(super.dao);
 
   @override
-  Future<int> purgeExpiredLogs({
+  Future<PurgeResult> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
     int trashRetentionDays = 7,
-  }) async => 3;
+  }) async => (movedToTrash: 2, hardDeleted: 1);
 }
 
 /// A [SessionLogRepository] whose [purgeExpiredLogs] throws (exercises the
@@ -217,7 +218,7 @@ class _ThrowingSessionLogRepo extends SessionLogRepository {
   _ThrowingSessionLogRepo(super.dao);
 
   @override
-  Future<int> purgeExpiredLogs({
+  Future<PurgeResult> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
     int trashRetentionDays = 7,
@@ -484,12 +485,16 @@ void main() {
       await repo.upsert(_normalLog(id: 'old', startedAt: oldDate));
       await repo.upsert(_normalLog(id: 'recent', startedAt: recentDate));
 
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 180, now: now);
-      check(deleted).equals(1);
+      final result = await repo.purgeExpiredLogs(retentionDays: 180, now: now);
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
 
       final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
       check(remaining.length).equals(1);
       check(remaining.first.id).equals('recent');
+      // Two-stage retention: the aged log went to the trash, not away.
+      check(
+        (await db.sessionLogsDao.getTrashed()).map((l) => l.id).toList(),
+      ).deepEquals(['old']);
     });
 
     test(
@@ -514,11 +519,11 @@ void main() {
           ),
         );
 
-        final deleted = await repo.purgeExpiredLogs(
+        final result = await repo.purgeExpiredLogs(
           retentionDays: 180,
           now: now,
         );
-        check(deleted).equals(0);
+        check(result).equals((movedToTrash: 0, hardDeleted: 0));
 
         final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
         check(remaining.length).equals(2);
@@ -530,11 +535,11 @@ void main() {
       addTearDown(db.close);
       final repo = SessionLogRepository(db.sessionLogsDao);
 
-      final deleted = await repo.purgeExpiredLogs(
+      final result = await repo.purgeExpiredLogs(
         retentionDays: 30,
         now: DateTime.utc(2026, 6),
       );
-      check(deleted).equals(0);
+      check(result).equals((movedToTrash: 0, hardDeleted: 0));
     });
 
     test('retentionDays = 1 purges yesterday logs', () async {
@@ -556,8 +561,8 @@ void main() {
         ),
       );
 
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 1, now: now);
-      check(deleted).equals(1);
+      final result = await repo.purgeExpiredLogs(retentionDays: 1, now: now);
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
 
       final remaining = await db.sessionLogsDao.getAllOrderedByStartDesc();
       check(remaining.first.id).equals('today');
@@ -844,7 +849,7 @@ void main() {
   // --------------------------------------------------------------------------
 
   group('runBootstrap — purge + TTS-failure branches', () {
-    test('logs when purgeExpiredLogs reports deleted > 0', () async {
+    test('logs when purgeExpiredLogs reports purge activity', () async {
       final db = _openDb();
       final purgeRepo = _PurgingSessionLogRepo(db.sessionLogsDao);
       final container = ProviderContainer(
@@ -867,7 +872,8 @@ void main() {
         await db.close();
       });
 
-      // Reaches step 7 (the deleted>0 branch ran without aborting bootstrap).
+      // Reaches step 7 (the activity-log branch ran without aborting
+      // bootstrap).
       Widget? root;
       await runBootstrap(container, runner: (w) => root = w);
       await Future<void>.delayed(Duration.zero);

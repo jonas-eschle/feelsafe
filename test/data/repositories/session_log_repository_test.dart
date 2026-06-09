@@ -22,32 +22,31 @@ void main() {
   });
 
   group('SessionLogRepository.purgeExpiredLogs', () {
-    test('returns 0 when no logs exist', () async {
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
-      check(deleted).equals(0);
+    test('returns zero counts when no logs exist', () async {
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      check(result).equals((movedToTrash: 0, hardDeleted: 0));
     });
 
-    test(
-      'deletes a non-critical log whose endedAt is older than cutoff',
-      () async {
-        // Arrange — 60-day-old non-critical session.
-        await db.sessionLogsDao.upsert(
-          _nonCriticalLog(
-            id: 'old',
-            startedAt: now.subtract(const Duration(days: 60)),
-            endedAt: now.subtract(const Duration(days: 60)),
-          ),
-        );
-        // Act — retentionDays=30 → cutoff is 30 days before now.
-        final deleted = await repo.purgeExpiredLogs(
-          retentionDays: 30,
-          now: now,
-        );
-        // Assert
-        check(deleted).equals(1);
-        check(await db.sessionLogsDao.getAll()).isEmpty();
-      },
-    );
+    test('SOFT-deletes a non-critical log whose endedAt is older than cutoff '
+        'into the recoverable trash (B8 step 5)', () async {
+      // Arrange — 60-day-old non-critical session.
+      await db.sessionLogsDao.upsert(
+        _nonCriticalLog(
+          id: 'old',
+          startedAt: now.subtract(const Duration(days: 60)),
+          endedAt: now.subtract(const Duration(days: 60)),
+        ),
+      );
+      // Act — retentionDays=30 → cutoff is 30 days before now.
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      // Assert — hidden from live, but recoverable: still in the table
+      // with deletedAt stamped at the purge time.
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
+      check(await db.sessionLogsDao.getAll()).isEmpty();
+      final trashed = await db.sessionLogsDao.getTrashed();
+      check(trashed.map((l) => l.id).toList()).deepEquals(['old']);
+      check(trashed.single.deletedAt).equals(now);
+    });
 
     test('keeps a non-critical log inside the retention window', () async {
       // Arrange — log ended 1 day ago, retentionDays=30.
@@ -59,10 +58,11 @@ void main() {
         ),
       );
       // Act
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
-      // Assert
-      check(deleted).equals(0);
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      // Assert — untouched: still live, never trashed.
+      check(result).equals((movedToTrash: 0, hardDeleted: 0));
       check((await db.sessionLogsDao.getAll()).single.id).equals('recent');
+      check(await db.sessionLogsDao.getTrashed()).isEmpty();
     });
 
     test('keeps a critical log even when older than cutoff', () async {
@@ -75,10 +75,11 @@ void main() {
         ),
       );
       // Act
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
-      // Assert — critical survives.
-      check(deleted).equals(0);
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      // Assert — critical survives LIVE (not even trashed).
+      check(result).equals((movedToTrash: 0, hardDeleted: 0));
       check((await db.sessionLogsDao.getAll()).single.id).equals('crit');
+      check(await db.sessionLogsDao.getTrashed()).isEmpty();
     });
 
     test('mixed batch: deletes only non-critical past-cutoff logs', () async {
@@ -112,12 +113,15 @@ void main() {
         ),
       );
       // Act
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
-      // Assert — only noncrit-old removed.
-      check(deleted).equals(1);
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      // Assert — only noncrit-old left the live list, into the trash.
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
       check(
         (await db.sessionLogsDao.getAll()).map((l) => l.id).toSet(),
       ).deepEquals({'noncrit-recent', 'crit-old', 'crit-recent'});
+      check(
+        (await db.sessionLogsDao.getTrashed()).map((l) => l.id).toList(),
+      ).deepEquals(['noncrit-old']);
     });
 
     test('uses startedAt as the reference time when endedAt is null', () async {
@@ -130,12 +134,12 @@ void main() {
         ),
       );
       // Act
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
       // Assert
-      check(deleted).equals(1);
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
     });
 
-    test('retentionDays is honoured: shorter window deletes more', () async {
+    test('retentionDays is honoured: shorter window trashes more', () async {
       // Arrange — 10-day-old non-critical log.
       await db.sessionLogsDao.upsert(
         _nonCriticalLog(
@@ -145,17 +149,14 @@ void main() {
         ),
       );
       // Act — wide window first, narrow window second.
-      final keptCount = await repo.purgeExpiredLogs(
-        retentionDays: 30,
-        now: now,
-      );
-      check(keptCount).equals(0);
-      final deletedCount = await repo.purgeExpiredLogs(
+      final kept = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      check(kept).equals((movedToTrash: 0, hardDeleted: 0));
+      final trashedNow = await repo.purgeExpiredLogs(
         retentionDays: 7,
         now: now,
       );
-      // Assert — narrower window deletes the 10-day-old log.
-      check(deletedCount).equals(1);
+      // Assert — narrower window moves the 10-day-old log to the trash.
+      check(trashedNow).equals((movedToTrash: 1, hardDeleted: 0));
     });
   });
 
@@ -215,14 +216,14 @@ void main() {
 
         // Act — wide age-based retention so the live cutoff doesn't
         // touch anything; trash cutoff = 7 days (default).
-        final deleted = await repo.purgeExpiredLogs(
+        final result = await repo.purgeExpiredLogs(
           retentionDays: 365,
           now: now,
         );
 
         // Assert — only 'old-trash' was hard-deleted; 'recent-trash'
         // is still in the trash.
-        check(deleted).equals(1);
+        check(result).equals((movedToTrash: 0, hardDeleted: 1));
         final remaining = (await db.sessionLogsDao.getAll(
           includeTrashed: true,
         )).map((l) => l.id).toSet();
@@ -247,14 +248,14 @@ void main() {
         );
 
         // Act — trashRetentionDays default is 7 days.
-        final deleted = await repo.purgeExpiredLogs(
+        final result = await repo.purgeExpiredLogs(
           retentionDays: 365,
           now: now,
         );
 
         // Assert — critical-ness does NOT save trashed rows once the
         // retention window has elapsed.
-        check(deleted).equals(1);
+        check(result).equals((movedToTrash: 0, hardDeleted: 1));
         check(await db.sessionLogsDao.getAll(includeTrashed: true)).isEmpty();
       },
     );

@@ -4,15 +4,22 @@
 /// [GuardianAngelaDatabase] (no mocks, no fakes) with the reference clock
 /// injected via [SessionLogRepository.purgeExpiredLogs]'s `now` parameter — so
 /// "advancing the clock" is a pure value, no `package:clock` / `fake_async`
-/// needed. It proves the B8 smart-retention contract:
-///   - a NON-critical log older than the retention window is purged;
+/// needed. It proves the B8 smart-retention contract, which is TWO-STAGE
+/// (spec 03:966–967):
+///   - a NON-critical log older than the retention window is SOFT-deleted
+///     into the recoverable trash (stage 1), and hard-deleted only after a
+///     further `trashRetentionDays` elapses (stage 2, Extra-11);
 ///   - a CRITICAL log (one that recorded a destructive action — an SMS/phone/
 ///     emergency/loud-alarm step that actually fired, by event-type or by a
-///     `sent`/`queued` delivery status) is kept indefinitely regardless of age;
+///     `sent`/`queued` delivery status) is kept LIVE indefinitely regardless
+///     of age;
 ///   - a log inside the retention window is kept;
 ///   - the reference time is `endedAt ?? startedAt` (an old-start but
 ///     recently-ended session is judged by `endedAt`);
-///   - `purgeExpiredLogs` returns the number of rows actually deleted.
+///   - an already-trashed row is never re-stamped by the age pass (its trash
+///     clock keeps running) and is governed by the trash pass alone;
+///   - `purgeExpiredLogs` returns a per-stage `PurgeResult`
+///     (`movedToTrash` / `hardDeleted`).
 ///
 /// Criticality matches the real DAO predicate
 /// (`SessionLogsDao._eventIndicatesDestructiveAction`): destructive step types
@@ -110,12 +117,15 @@ void main() {
     check(SessionLogsDao.isCritical(benign)).isFalse();
     check(SessionLogsDao.isCritical(critical)).isTrue();
 
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
 
-    // Exactly the one non-critical stale log was deleted.
-    check(deleted).equals(1);
+    // Exactly the one non-critical stale log was moved to the trash.
+    check(result).equals((movedToTrash: 1, hardDeleted: 0));
     final remaining = await repo.getAll();
     check(remaining.map((l) => l.id).toList()).deepEquals(['critical-old']);
+    check(
+      (await repo.getTrashed()).map((l) => l.id).toList(),
+    ).deepEquals(['benign-old']);
   });
 
   test('INT-013 a log INSIDE the retention window is kept even when '
@@ -130,12 +140,13 @@ void main() {
       ),
     );
 
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
 
-    check(deleted).equals(0);
+    check(result).equals((movedToTrash: 0, hardDeleted: 0));
     check(
       (await repo.getAll()).map((l) => l.id).toList(),
     ).deepEquals(['recent-benign']);
+    check(await repo.getTrashed()).isEmpty();
   });
 
   test('INT-013 the retention reference time is endedAt (not startedAt): an '
@@ -153,9 +164,9 @@ void main() {
       ),
     );
 
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
 
-    check(deleted).equals(0);
+    check(result).equals((movedToTrash: 0, hardDeleted: 0));
     check(
       (await repo.getAll()).map((l) => l.id).toList(),
     ).deepEquals(['long-running']);
@@ -170,12 +181,100 @@ void main() {
         _log(id: 'old-orphan', startedAt: start, events: [_benignEvent(start)]),
       );
 
-      final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+      final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
 
-      check(deleted).equals(1);
+      check(result).equals((movedToTrash: 1, hardDeleted: 0));
       check(await repo.getAll()).isEmpty();
+      // Stage 1 only: the orphan is in the trash, not destroyed.
+      check(
+        (await repo.getTrashed()).map((l) => l.id).toList(),
+      ).deepEquals(['old-orphan']);
     },
   );
+
+  test('INT-013 two-stage retention (B8 step 5 + Extra-11): an aged benign '
+      'live log is SOFT-deleted into the trash (recoverable), hard-deleted '
+      'only after trashRetentionDays; an aged CRITICAL live log stays '
+      'live', () async {
+    final fortyDaysAgo = now.subtract(const Duration(days: 40));
+    final benign = _log(
+      id: 'aged-benign',
+      startedAt: fortyDaysAgo,
+      endedAt: fortyDaysAgo.add(const Duration(minutes: 10)),
+      events: [_benignEvent(fortyDaysAgo)],
+    );
+    final critical = _log(
+      id: 'aged-critical',
+      startedAt: fortyDaysAgo,
+      endedAt: fortyDaysAgo.add(const Duration(minutes: 10)),
+      events: [_smsSentEvent(fortyDaysAgo)],
+    );
+    await repo.upsert(benign);
+    await repo.upsert(critical);
+    check(SessionLogsDao.isCritical(benign)).isFalse();
+    check(SessionLogsDao.isCritical(critical)).isTrue();
+
+    // FIRST purge — stage 1: the aged benign log is moved to the trash,
+    // NOT destroyed (spec 03:966 "soft-delete the log into the trash box").
+    final first = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    check(first).equals((movedToTrash: 1, hardDeleted: 0));
+
+    final afterFirst = await repo.getById('aged-benign');
+    check(afterFirst).isNotNull(); // the row still exists…
+    check(afterFirst!.deletedAt).equals(now); // …stamped with the purge time,
+    check(
+      (await repo.getTrashed()).map((l) => l.id).toList(),
+    ).deepEquals(['aged-benign']); // …recoverable from the Trash screen,
+    check(
+      (await repo.getAll()).map((l) => l.id).toList(),
+    ).deepEquals(['aged-critical']); // …hidden from live; CRITICAL stays live.
+
+    // SECOND purge with now advanced past the default 7-day trash window —
+    // stage 2: the trashed row is hard-deleted; the critical log is STILL
+    // live and was never trashed.
+    final later = now.add(const Duration(days: 8));
+    final second = await repo.purgeExpiredLogs(retentionDays: 30, now: later);
+    check(second).equals((movedToTrash: 0, hardDeleted: 1));
+    check(await repo.getById('aged-benign')).isNull();
+    check(await repo.getTrashed()).isEmpty();
+    check(
+      (await repo.getAll()).map((l) => l.id).toList(),
+    ).deepEquals(['aged-critical']);
+  });
+
+  test('INT-013 the age pass never re-stamps an already-trashed row: its '
+      'trash clock keeps running and it survives the purge inside the trash '
+      'window even when its reference time is past the age cutoff', () async {
+    // Benign log whose reference time is way past the 30-day age cutoff…
+    final fortyDaysAgo = now.subtract(const Duration(days: 40));
+    await repo.upsert(
+      _log(
+        id: 'aged-trashed',
+        startedAt: fortyDaysAgo,
+        endedAt: fortyDaysAgo,
+        events: [_benignEvent(fortyDaysAgo)],
+      ),
+    );
+    // …that the user trashed 5 days ago — INSIDE the 7-day trash window.
+    final fiveDaysAgo = now.subtract(const Duration(days: 5));
+    await repo.softDelete('aged-trashed', now: fiveDaysAgo);
+
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    check(result).equals((movedToTrash: 0, hardDeleted: 0));
+
+    // Still recoverable, with the ORIGINAL trash stamp (no clock reset).
+    final trashed = await repo.getTrashed();
+    check(trashed.map((l) => l.id).toList()).deepEquals(['aged-trashed']);
+    check(trashed.single.deletedAt).equals(fiveDaysAgo);
+
+    // Its trash clock kept running: 3 more days (5 + 3 = 8 > 7) → gone.
+    final second = await repo.purgeExpiredLogs(
+      retentionDays: 30,
+      now: now.add(const Duration(days: 3)),
+    );
+    check(second).equals((movedToTrash: 0, hardDeleted: 1));
+    check(await repo.getById('aged-trashed')).isNull();
+  });
 
   test('INT-013 a mixed cohort: stale non-critical purged, stale critical + '
       'recent both survive, with the correct delete count', () async {
@@ -207,11 +306,14 @@ void main() {
       ),
     );
 
-    final deleted = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
+    final result = await repo.purgeExpiredLogs(retentionDays: 30, now: now);
 
-    // Only the stale non-critical log goes.
-    check(deleted).equals(1);
+    // Only the stale non-critical log leaves the live list — into trash.
+    check(result).equals((movedToTrash: 1, hardDeleted: 0));
     final surviving = (await repo.getAll()).map((l) => l.id).toList()..sort();
     check(surviving).deepEquals(['b-stale-critical', 'c-recent-benign']);
+    check(
+      (await repo.getTrashed()).map((l) => l.id).toList(),
+    ).deepEquals(['a-stale-benign']);
   });
 }

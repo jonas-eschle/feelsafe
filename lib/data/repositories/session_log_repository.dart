@@ -1,6 +1,16 @@
 import 'package:guardianangela/data/db/dao/session_logs_dao.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 
+/// Outcome of [SessionLogRepository.purgeExpiredLogs].
+///
+/// The two stages of the retention policy are reported separately
+/// because they are NOT interchangeable: [movedToTrash] rows still
+/// exist and are recoverable from the Trash screen, while
+/// [hardDeleted] rows are gone for good. Callers needing a single
+/// "rows the purge affected" figure (e.g. the Purge-now snackbar)
+/// sum the two.
+typedef PurgeResult = ({int movedToTrash, int hardDeleted});
+
 /// Policy-layer wrapper around [SessionLogsDao].
 ///
 /// Translates the app-level retention contract into the DAO-level cutoff
@@ -77,27 +87,34 @@ class SessionLogRepository {
   /// number of rows deleted.
   Future<int> hardDeleteAllTrashed() => _dao.hardDeleteAllTrashed();
 
-  /// Deletes every non-critical log whose reference time
-  /// (`endedAt` if set, else `startedAt`) is strictly older than
-  /// `now - Duration(days: retentionDays)`, AND every trashed log
-  /// whose [SessionLog.deletedAt] is older than
-  /// `now - Duration(days: trashRetentionDays)`.
+  /// Runs the two-stage retention purge (B8 step 5 + Extra 11).
+  ///
+  /// Stage 1 (age pass): every non-critical LIVE log whose reference
+  /// time (`endedAt` if set, else `startedAt`) is strictly older than
+  /// `now - Duration(days: retentionDays)` is SOFT-deleted into the
+  /// trash ([SessionLog.deletedAt] stamped with [now]), where it stays
+  /// recoverable for `trashRetentionDays` (spec 03:966–967).
+  /// Already-trashed rows are never re-stamped.
+  ///
+  /// Stage 2 (trash pass): every trashed log whose
+  /// [SessionLog.deletedAt] is older than
+  /// `now - Duration(days: trashRetentionDays)` is hard-deleted.
   ///
   /// Critical logs (B8: at least one event that fired a destructive
   /// step — sms/phone/emergency/loud-alarm with delivery `sent`/`queued`
   /// or a `step_started`/`step_fired`/`stepAdvancing` event on a
-  /// destructive step type) are preserved by the age-based purge
-  /// indefinitely. The trash purge ignores criticality — once the
-  /// user has trashed a log and the retention window has elapsed,
-  /// the row is hard-deleted regardless (spec 03:970,
-  /// spec 04:2455–2459).
+  /// destructive step type) are preserved by the age-based pass
+  /// indefinitely. The trash pass ignores criticality — once the
+  /// user (or the age pass) has trashed a log and the retention
+  /// window has elapsed, the row is hard-deleted regardless
+  /// (spec 03:970, spec 04:2455–2459).
   ///
   /// [trashRetentionDays] defaults to 7 (spec 04:2459); pass a custom
   /// value to honour the user's configured override from
   /// `AppSettings.trashRetentionDays`.
   ///
-  /// Returns the total number of rows deleted (age-based + trash).
-  Future<int> purgeExpiredLogs({
+  /// Returns a [PurgeResult] with both per-stage counts.
+  Future<PurgeResult> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
     int trashRetentionDays = 7,
@@ -105,9 +122,12 @@ class SessionLogRepository {
     final cutoff = now.subtract(Duration(days: retentionDays));
     // The DAO defaults `keepCritical` to true; B8 requires it, so we
     // rely on the default rather than re-stating it (lint).
-    final aged = await _dao.deleteOlderThan(cutoff);
+    final movedToTrash = await _dao.softDeleteOlderThan(
+      cutoff,
+      nowMs: now.toUtc().millisecondsSinceEpoch,
+    );
     final trashCutoff = now.subtract(Duration(days: trashRetentionDays));
-    final trashed = await _dao.hardDeleteTrashedOlderThan(trashCutoff);
-    return aged + trashed;
+    final hardDeleted = await _dao.hardDeleteTrashedOlderThan(trashCutoff);
+    return (movedToTrash: movedToTrash, hardDeleted: hardDeleted);
   }
 }

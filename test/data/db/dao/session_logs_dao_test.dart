@@ -74,7 +74,8 @@ void main() {
     });
 
     test(
-      'deleteOlderThan keeps critical logs even when older than cutoff',
+      'softDeleteOlderThan keeps critical logs live even when older than '
+      'cutoff, and TRASHES (not hard-deletes) the stale mundane one',
       () async {
         // Arrange
         await db.sessionLogsDao.upsert(
@@ -92,22 +93,31 @@ void main() {
           _log('recent-mundane', t0.add(const Duration(days: 30))),
         );
         // Act — cutoff is 5 days after t0, so old logs are stale.
-        final removed = await db.sessionLogsDao.deleteOlderThan(
-          t0.add(const Duration(days: 5)),
+        final cutoff = t0.add(const Duration(days: 5));
+        final trashed = await db.sessionLogsDao.softDeleteOlderThan(
+          cutoff,
+          nowMs: cutoff.millisecondsSinceEpoch,
         );
-        // Assert — only `old-mundane` is purged.
-        check(removed).equals(1);
+        // Assert — only `old-mundane` left the live list…
+        check(trashed).equals(1);
         final remaining = (await db.sessionLogsDao.getAll())
             .map((l) => l.id)
             .toSet();
         check(
           remaining,
         ).deepEquals({'old-critical', 'recent-critical', 'recent-mundane'});
+        // …but it still exists, recoverable in the trash with the stamp.
+        final mundane = await db.sessionLogsDao.getById('old-mundane');
+        check(mundane).isNotNull();
+        check(mundane!.deletedAt).equals(cutoff);
+        check(
+          (await db.sessionLogsDao.getTrashed()).map((l) => l.id).toList(),
+        ).deepEquals(['old-mundane']);
       },
     );
 
     test(
-      'deleteOlderThan with keepCritical=false purges every stale log',
+      'softDeleteOlderThan with keepCritical=false trashes every stale log',
       () async {
         // Arrange
         await db.sessionLogsDao.upsert(
@@ -115,17 +125,21 @@ void main() {
         );
         await db.sessionLogsDao.upsert(_log('old-mundane', t0));
         // Act
-        final removed = await db.sessionLogsDao.deleteOlderThan(
+        final trashed = await db.sessionLogsDao.softDeleteOlderThan(
           t0.add(const Duration(days: 1)),
+          nowMs: t0.add(const Duration(days: 1)).millisecondsSinceEpoch,
           keepCritical: false,
         );
-        // Assert
-        check(removed).equals(2);
+        // Assert — both gone from live, both still in the table (trash).
+        check(trashed).equals(2);
         check(await db.sessionLogsDao.getAll()).isEmpty();
+        check(
+          await db.sessionLogsDao.getAll(includeTrashed: true),
+        ).length.equals(2);
       },
     );
 
-    test('deleteOlderThan uses startedAt when endedAt is null', () async {
+    test('softDeleteOlderThan uses startedAt when endedAt is null', () async {
       // Arrange — never-finished log started long ago.
       await db.sessionLogsDao.upsert(
         SessionLog(
@@ -145,11 +159,33 @@ void main() {
         ),
       );
       // Act
-      final removed = await db.sessionLogsDao.deleteOlderThan(
+      final trashed = await db.sessionLogsDao.softDeleteOlderThan(
         t0.add(const Duration(hours: 1)),
+        nowMs: t0.add(const Duration(hours: 1)).millisecondsSinceEpoch,
       );
       // Assert
-      check(removed).equals(1);
+      check(trashed).equals(1);
+    });
+
+    test('softDeleteOlderThan never re-stamps an already-trashed row (its '
+        'trash clock is preserved)', () async {
+      // Arrange — stale row already trashed at a known earlier stamp.
+      await db.sessionLogsDao.upsert(_log('stale-trashed', t0));
+      final originalStamp = t0.add(const Duration(days: 2));
+      await db.sessionLogsDao.softDelete(
+        'stale-trashed',
+        originalStamp.millisecondsSinceEpoch,
+      );
+      // Act — age pass at a much later now.
+      final trashed = await db.sessionLogsDao.softDeleteOlderThan(
+        t0.add(const Duration(days: 30)),
+        nowMs: t0.add(const Duration(days: 30)).millisecondsSinceEpoch,
+      );
+      // Assert — untouched: count 0, original stamp intact.
+      check(trashed).equals(0);
+      final row = await db.sessionLogsDao.getById('stale-trashed');
+      check(row).isNotNull();
+      check(row!.deletedAt).equals(originalStamp);
     });
 
     test('isCritical predicate flags destructive event types', () {

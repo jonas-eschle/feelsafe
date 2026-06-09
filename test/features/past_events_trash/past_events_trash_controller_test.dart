@@ -68,7 +68,7 @@ class _ThrowingPurgeRepository extends SessionLogRepository {
   const _ThrowingPurgeRepository(super.dao);
 
   @override
-  Future<int> purgeExpiredLogs({
+  Future<PurgeResult> purgeExpiredLogs({
     required int retentionDays,
     required DateTime now,
     int trashRetentionDays = 7,

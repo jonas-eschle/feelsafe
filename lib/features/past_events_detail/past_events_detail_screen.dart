@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -135,25 +137,22 @@ class _PastEventsDetailScreenState
     return lines.join('\n');
   }
 
-  String _toEvidenceJson(SessionLog log) {
-    final buf = StringBuffer('{')
-      ..write('"id":"${log.id}",')
-      ..write('"modeName":"${log.modeName}",')
-      ..write('"startedAt":"${log.startedAt.toIso8601String()}",')
-      ..write('"endedAt":"${log.endedAt?.toIso8601String() ?? ''}",')
-      ..write('"events":[');
-    for (int i = 0; i < log.events.length; i++) {
-      final e = log.events[i];
-      if (i > 0) buf.write(',');
-      buf
-        ..write('{')
-        ..write('"timestamp":"${e.timestamp.toIso8601String()}",')
-        ..write('"type":"${e.eventType}"')
-        ..write('}');
-    }
-    buf.write(']}');
-    return buf.toString();
-  }
+  /// Builds the police-report evidence bundle via [jsonEncode] so
+  /// user-editable strings (mode name) are escaped correctly — hand-rolled
+  /// interpolation produced malformed JSON for quotes/backslashes/newlines.
+  String _toEvidenceJson(SessionLog log) => jsonEncode(<String, Object?>{
+    'id': log.id,
+    'modeName': log.modeName,
+    'startedAt': log.startedAt.toIso8601String(),
+    'endedAt': log.endedAt?.toIso8601String() ?? '',
+    'events': <Object?>[
+      for (final e in log.events)
+        <String, Object?>{
+          'timestamp': e.timestamp.toIso8601String(),
+          'type': e.eventType,
+        },
+    ],
+  });
 
   @override
   Widget build(BuildContext context) {
