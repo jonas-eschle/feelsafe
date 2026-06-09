@@ -1,16 +1,17 @@
 # Guardian Angela v3 — Session Hand-off
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
-(FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) DONE
-(`m5-int`, UNPUSHED) + C2 (INT-005..010) DONE this session (`m5-int`, UNPUSHED),
-both GATE-GREEN.** The whole `test/integration/` tree was greenfield (0 of 14 INT
-scenarios existed); C1 built the reusable harness + 4 scenarios, C2 added 6 more
-(distress-panic / duress-no-op / real-call pause+resume / real-call-over-fakeCall
-/ sim-leap / SMS-disarm) reusing the harness verbatim. Suite now **4043** (4037 +
-6 net-new INT-005..010). `test/integration/` = **10/10**, determinism proven (5×
-full dir + 6× the new-files stress, no jitter flake). NEXT = **M5 C3 —
-INT-011..014 + WID-001/002 (reuse the C1 harness
-`test/integration/_session_harness.dart`).**
+(FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
+(INT-005..010) + C3 (INT-011..014 + WID-001/002) ALL DONE (`m5-int`, UNPUSHED),
+each GATE-GREEN.** The whole `test/integration/` tree was greenfield; C1 built
+the reusable harness + 4 scenarios, C2 added 6, **C3 added the final 4 INT + the
+2 WID scenarios this session** (wrongPIN→distress / cold-launch
+interrupted-prompt / smart-retention clock-advance / soft-delete restore+purge;
+onboarding full-flow + language-switch). **ALL 14 INT + 2 WID scenarios are now
+BUILT.** Suite now **4066** (4043 + 23 net-new C3 tests). `test/integration/` =
+**33/33**, determinism proven (3× the 6 new files under `--concurrency=6`, no
+flake). NEXT = **M5 C4 — device-e2e #11 (adb-gsm) + #12 (background-throttle) +
+stealth-icon per-preset hardening (EMULATOR)**.
 
 ---
 
@@ -35,9 +36,9 @@ INT-011..014 + WID-001/002 (reuse the C1 harness
 - **C1 — INT-001..004 + integration harness ✓ DONE.**
 - **C2 — INT-005..010 ✓ DONE (this session)** (distress-panic / duress-no-op /
   real-call pause+resume / real-call-over-fakeCall / sim-leap / SMS-disarm).
-- **C3 — INT-011..014 + WID-001/002** (wrongPIN→distress / interrupted-prompt /
-  smart-retention clock-advance / soft-delete restore+purge; onboarding flow +
-  language-switch widget cohort).
+- **C3 — INT-011..014 + WID-001/002 ✓ DONE (this session)** (wrongPIN→distress /
+  cold-launch interrupted-prompt / smart-retention clock-advance / soft-delete
+  restore+purge; onboarding full-flow + language-switch widget cohort).
 - **C4 — device-e2e #11/#12 + stealth-icon hardening** (emulator; tag-gated).
 - **C5 — coverage config + the exclusion list above.**
 - **C6 — coverage: services + orphan files.**
@@ -209,6 +210,125 @@ only, no emulator.
   `EnginePaused.snapshot.remaining` (exactly 20s) + the timer firing after the
   matching elapse — not via a live remaining read.
 
+### M5 C3 — INT-011..014 + WID-001/002 (DONE this session, `m5-int`, UNPUSHED)
+
+**Six new files** under `test/integration/` (no `lib/` change — pure test
+additions, no l10n touched). Each scenario tagged with its `INT-0NN` / `WID-00N`
+id in the test NAME (grep-able for the C8 matrix). The four INT session ones
+reuse the C1 `SessionDriver`/harness; INT-013/014 drive the REAL
+`SessionLogRepository` directly; the two WID ones are widget tests against the
+REAL screens/controllers. Net **+23** tests → suite **4066** (4043 + 23).
+
+- **`wrong_pin_distress_session_test.dart`** — **INT-011** (A3, +2). Drives the
+  REAL wired wrong-PIN path: `controller.notifyWrongPinAttempt()` ×(threshold−1)
+  ticks the in-memory counter + emits `deceptiveOldPinShown` each time (no
+  escalation below threshold); the threshold-th attempt + the wired
+  `controller.confirmDistress(reason: EndReason.wrongPinExhausted)` swaps in the
+  distress chain (`distressTriggered` ×1, distress smsContact+callEmergency fire
+  [`sendMessage` + `callEmergency('112')`], terminal `distressCompleted` →
+  `sessionEnded(wrongPinExhausted)`). 2nd test = spec-30d sim carve-out
+  (faithful controller-level form — see C8 list). **RED-proven** logically: drop
+  the `confirmDistress` and INT-011 fails (no distress).
+- **`interrupted_prompt_session_test.dart`** — **INT-012** (Extra-13 / M4-C4 e2e,
+  +5). Seeds an orphan `SessionLog` (endedAt==null) directly into the in-memory
+  DB via `SessionLogRepository.upsert`, builds the REAL `SessionController`, and
+  asserts `build()` orphan-detection surfaces `priorInterrupted` + `priorModeId`
+  / `priorModeName` / `priorStartedAt`; that detection **hard-deletes** the
+  orphan (fires once — 2nd cold launch sees nothing); a cleanly-finalised log
+  (endedAt set) does NOT surface; newest-orphan-wins + ALL orphans cleared;
+  `acknowledgeInterruptedPrompt()` clears the flags. This is the real M4-C4
+  feature proven end-to-end (not rebuilt). (Duress-PIN carve-out
+  `writeInterruptMarker:false` documented in the header — writes no marker, so
+  nothing to assert there.)
+- **`log_retention_test.dart`** — **INT-013** (B8, +5). Drives the REAL
+  `SessionLogRepository.purgeExpiredLogs({retentionDays, now})` over a real
+  in-memory DB with the clock injected as the `now` value (NO `package:clock` /
+  `fake_async` needed — `now` is a plain param). Proves: stale NON-critical
+  purged but stale CRITICAL kept indefinitely; in-window kept; reference time is
+  `endedAt ?? startedAt` (old-start/recent-end kept by endedAt; orphan judged by
+  startedAt); mixed-cohort delete count. Fixtures grounded in the REAL
+  `SessionLogsDao.isCritical` predicate (asserted alongside).
+- **`log_soft_delete_test.dart`** — **INT-014** (Extra-11, +6). Drives the REAL
+  repo trash lifecycle: softDelete→trash (hidden from live, `deletedAt` set,
+  getById still returns it) → restore→live (deletedAt cleared, survives a
+  subsequent age purge) → re-trash → hard-purge. The default 7-day trash window
+  purges a 10-day-old trash; **the trash purge IGNORES criticality** (a trashed
+  CRITICAL log past the window is hard-deleted even with an infinite age window
+  — the key Extra-11 invariant); `hardDeleteAllTrashed` ("Empty trash") removes
+  every trashed row regardless of age, leaving live logs intact.
+- **`onboarding_flow_widget_test.dart`** — **WID-001** (+2). Drives the REAL
+  `OnboardingController` (NOT the existing canned `_FakeOnboardingController`)
+  through the FULL welcome→profile→permissions→"Get started" flow, asserting the
+  wired completion side-effects via in-memory recording repos that round-trip
+  save→load: the typed profile draft is persisted (name+phone), `isFirstLaunch`
+  flips true→false, nav leaves onboarding for home. Uses the established
+  `_FakePermissionHandlerPlatform` seam (real `requestAllPermissions`
+  `permission_handler` call → deterministic no-op). 2nd test: empty draft →
+  null name/phone, flag still flips.
+- **`language_switch_widget_test.dart`** — **WID-002** (decision 43, +3). Proves
+  the real localization wiring: a `MaterialApp.locale` driven by a watched
+  language-code provider (mirroring `main.dart:260`
+  `locale: Locale(s.languageCode)`) re-resolves the REAL `AppLocalizations`
+  delegate the instant the value flips — `homeTagline` flips en
+  ("Your angel's got your back.") → de ("Dein Engel passt auf dich auf.") → en
+  with no restart. An anchor-precondition test guards en≠de. A 3rd test drives
+  the REAL `SettingsController.setLanguage('de')` → asserts it persists the code
+  to the repo (the wiring behind the Settings language picker; the existing
+  settings_screen test only asserts the fake is *called*).
+
+**Gate (ALL GREEN):** whole-project `flutter analyze --fatal-infos` = **0**;
+full suite `flutter test --concurrency=6` = **4066 pass** (4043 + 23 net-new);
+`test/integration/` = **33/33** + **3× the 6 new files under `--concurrency=6`,
+no flake** (DB/widget tests, no Random → no jitter trap; cross-test in-memory
+DBs are isolated per `setUp`); no `expect(true,true)`/`.skip` filler;
+deferral-grep = **0**; `git status --porcelain -- OLD/` empty. Host only
+(fakeAsync/DB/widget) — **no emulator** (C4's job).
+
+**KEY FINDINGS (C3) — carry to C4/C8:**
+- **A3 terminal reason is `EndReason.wrongPinExhausted`** (NOT `wrongPinThreshold`
+  / `duressPin`). The wired sequence (`session_screen.dart:1020-1027`,
+  `launch_pin_screen.dart:167-170`, `end_session_overlay.dart:354-357`) is:
+  `controller.notifyWrongPinAttempt()` (increments `_wrongPinAttempts`, calls
+  `engine.notifyWrongPin(count)` → emits `deceptiveOldPinShown`, returns the
+  post-increment count) → the **caller** compares `>= settings.wrongPinThreshold`
+  (default 5) → `controller.confirmDistress(reason: wrongPinExhausted)`. The
+  engine's `notifyWrongPin` ONLY emits the forensic `deceptiveOldPinShown`; it
+  does NOT itself escalate — the threshold compare + `confirmDistress` live in
+  the UI layer.
+- **`SessionState` has NO `isSessionActive`** — that getter is on the
+  `SessionController` notifier (`:1652`, `engine != null && !engine.isEnded`).
+  `SessionState` carries `phase`/`priorInterrupted`/… For "no live session"
+  assert `notifier.isSessionActive == false`.
+- **`SessionLogRepository.purgeExpiredLogs` + `softDelete` take `now`/`now:` as
+  plain params** — INT-013/014 need NO `package:clock`/`fake_async`; inject the
+  reference time directly. Criticality = `SessionLogsDao.isCritical(log)`
+  (public for tests): destructive step types `{smsContact, phoneCallContact,
+  callEmergency, loudAlarm}` × fired eventTypes `{step_started, stepAdvancing,
+  step_fired}`, OR ANY event with `deliveryStatus` in `{sent, queued}`. Build a
+  critical fixture with `SessionLogEvent(eventType:'step_fired',
+  stepType:'smsContact', deliveryStatus:'sent')`; a non-critical one with
+  `eventType:'started', stepType:'holdButton'`.
+- **The harness fakes can't prove a WRITE.** `FakeAppSettingsRepository`/
+  `FakeUserProfileRepository` override `load()` to a FIXED value and ignore
+  `save()`. WID-001 (and the WID-002 setLanguage test) needed small in-memory
+  recording subclasses (`save` updates an in-memory field, `load`/`loadOrNull`
+  return it) to assert what `completeOnboarding`/`setLanguage` persisted.
+- **Riverpod-3 gotchas in test code:** `Override` is NOT exported by
+  `flutter_riverpod/flutter_riverpod.dart` — import
+  `package:flutter_riverpod/misc.dart show Override` (as the existing onboarding
+  test does). `StateProvider` is legacy in Riverpod 3 and unused project-wide —
+  use a tiny `Notifier`/`NotifierProvider` instead. A bare-`ProviderContainer`
+  test that calls a notifier method doing `ref.invalidateSelf()` leaks a
+  pending timer under `testWidgets`; mount the container via
+  `UncontrolledProviderScope` in the tree + `pumpAndSettle` so the rebuild
+  drains (or write it as a plain `test()`).
+- **WID-001 vs the existing onboarding test:** the pre-existing
+  `onboarding_screen_test.dart` is a render/navigation test on a canned
+  `_FakeOnboardingController` (it overrides `completeOnboarding` to a no-op). The
+  genuine gap WID-001 fills is driving the REAL controller so the persisted
+  side-effects (profile + isFirstLaunch flip) are actually proven — not
+  duplicate coverage.
+
 ### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
 
 The spec-07 §Integration Test Scenarios prose has drifted from the real API in
@@ -254,6 +374,54 @@ far (C1 + C2):
   build chunk (capture the work-id through the strategy/orchestrator + wire
   `cancelPending` into the disarm path). NOT a stub — the test asserts real
   behavior and would go red if disarm regressed.
+
+Items added by C3 (INT-011..014 + WID):
+
+- **INT-011 (A3)** — spec scenarios 70/71 describe the behaviour ("enter wrong
+  PIN 5×" → "distress chain fired") without naming an API; the spec-07 table row
+  just says "wrongPinThreshold (A3)". The wired path has NO single
+  "wrongPinThreshold" entry point: it's `controller.notifyWrongPinAttempt()`
+  (counter + `deceptiveOldPinShown`, returns count) → the UI compares
+  `>= settings.wrongPinThreshold` → `controller.confirmDistress(reason:
+  EndReason.wrongPinExhausted)`. The terminal `EndReason` is **`wrongPinExhausted`**
+  (the spec's implied `wrongPinThreshold` enum case does NOT exist).
+- **INT-011 (spec-30d sim carve-out)** — spec 30d ("simulation wrong PIN does
+  NOT fire distress") is enforced in the **UI** (`session_screen.dart:990`: a sim
+  session uses a local `_simWrongAttempts`, shows the educational SnackBar, and
+  never calls the controller). The CONTROLLER itself has no `isSimulation` guard
+  inside `notifyWrongPinAttempt`/`confirmDistress`. The faithful controller-level
+  invariant tested: in a sim session the wrong-PIN counter alone never escalates
+  — distress only ever fires on an explicit `confirmDistress` (which the UI never
+  issues in sim). The UI gate proper is covered by the session_screen widget
+  tests.
+- **INT-012 (Extra-13)** — already reconciled in C5 from the stale
+  `active_session_marker.json` to the real in-progress `SessionLog` row
+  (endedAt==null). INT-012 drives THAT real marker via `SessionLogRepository`
+  (seed orphan → real `SessionController.build()` detects+deletes → assert
+  `priorInterrupted` + the prior fields → `acknowledgeInterruptedPrompt` clears).
+  No separate JSON file exists. Duress-PIN cold-start distress uses
+  `writeInterruptMarker:false` (no marker → never prompts; security carve-out).
+  **No NEW divergence** beyond what C5 already noted — the test simply realises
+  the C5-reconciled wording. C8 should confirm the spec-07 INT-012 row + spec 04
+  §Session-Interrupted Prompt both read "orphan SessionLog row", which they now
+  do.
+- **INT-013/014 (B8 / Extra-11)** — spec-07 table rows say "clock-advance test"
+  and "restore + hard-purge transitions" with no API. The real API needs NO
+  clock library: `SessionLogRepository.purgeExpiredLogs({retentionDays, now})`
+  and `softDelete(id, {now})` take the reference time as a plain param.
+  Criticality is the public `SessionLogsDao.isCritical` predicate. No spec
+  contradiction — just an API the table didn't name. C8 should rename the
+  contract-table rows to the real files (`log_retention_test.dart` /
+  `log_soft_delete_test.dart`).
+- **WID-001 / WID-002** — spec-07 table rows ("Onboarding full flow" → "Phase 6
+  widget cohort"; "Language switch instant rebuild (43)" → "Phase 6 widget
+  cohort") name no files. They now map to
+  `test/integration/onboarding_flow_widget_test.dart` /
+  `language_switch_widget_test.dart`. WID-002's instant-rebuild is the real
+  `MaterialApp.locale = Locale(languageCode)` + `AppLocalizations.delegate`
+  mechanism (`main.dart:260`); there is no separate "live locale provider" to
+  export — the test mirrors the production wiring with a watched code provider.
+  C8 should add these two file names to the renamed contract table.
 
 ---
 
