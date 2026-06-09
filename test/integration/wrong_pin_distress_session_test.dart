@@ -120,7 +120,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-011 reaching the wrong Session-End PIN threshold fires the '

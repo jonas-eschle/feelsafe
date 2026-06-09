@@ -129,7 +129,7 @@ void main() {
 
   tearDown(() async {
     callState.dispose();
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-007 real call during a countdown pauses the engine and resumes '

@@ -110,7 +110,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-005 distress fired via hardware panic: main chain replaced, '

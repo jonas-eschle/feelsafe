@@ -15,11 +15,28 @@
 ///   - navigation leaves the onboarding screen for home.
 ///
 /// It uses in-memory recording repositories that round-trip `save → load`
-/// (the harness's fixed-value fakes cannot prove a write), the established
+/// (the harness's fixed-value fakes cannot prove a write) and the established
 /// permission-handler platform seam (so the real `requestAllPermissions`
-/// `permission_handler` call is a deterministic no-op with no OS dialog), and a
-/// real in-memory DB for the controller's contacts watch. Every assertion
-/// would go red if the real completion wiring regressed.
+/// `permission_handler` call is a deterministic no-op with no OS dialog). Every
+/// assertion would go red if the real completion wiring regressed.
+///
+/// **Teardown stability — NO native DB (do not reintroduce one).** The
+/// onboarding flow proves only that the profile persists + `isFirstLaunch`
+/// flips + nav leaves onboarding; it asserts NOTHING about contact counts.
+/// `OnboardingController._watchContacts()` reads `databaseProvider` purely to
+/// surface `contactCount`, and it swallows any read failure (an empty/loading
+/// DB is acceptable during onboarding → `contactCount` stays 0). So instead of
+/// opening a real native sqlite3 `NativeDatabase.memory()` (which this test
+/// would then have to **close during teardown** — a native close that, while
+/// the flutter binding finalized under `--concurrency=6`, caused a
+/// non-deterministic `flutter_tester` host-VM teardown SEGFAULT *after every
+/// assertion had already passed*), we override `databaseProvider` to fail fast.
+/// `_watchContacts` catches it, `contactCount` stays 0 (never asserted), and no
+/// native DB is ever opened → there is no native handle to close in teardown →
+/// the segfault root cause is eliminated. This mirrors WID-002, which uses only
+/// recording repos (no native DB) and never segfaults. The lone `tearDown` now
+/// just restores the `PermissionHandlerPlatform.instance` singleton — a single
+/// synchronous effect with no async native close to race against.
 library;
 
 import 'package:flutter/material.dart';
@@ -33,7 +50,6 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
@@ -172,29 +188,41 @@ Future<void> _pump(WidgetTester tester, List<Override> overrides) async {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  late GuardianAngelaDatabase db;
   late _RecordingSettingsRepository settingsRepo;
   late _RecordingProfileRepository profileRepo;
   late _NoopPermissionPlatform permPlatform;
+  late PermissionHandlerPlatform originalPermPlatform;
 
   setUp(() {
-    db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
     // isFirstLaunch starts TRUE (a genuine first launch — the model default);
     // completion must flip it to false. Asserted live below before/after.
     settingsRepo = _RecordingSettingsRepository(const AppSettings());
     profileRepo = _RecordingProfileRepository(const UserProfile());
-    final original = PermissionHandlerPlatform.instance;
+    originalPermPlatform = PermissionHandlerPlatform.instance;
     permPlatform = _NoopPermissionPlatform();
     PermissionHandlerPlatform.instance = permPlatform;
-    addTearDown(() => PermissionHandlerPlatform.instance = original);
   });
 
-  tearDown(() async {
-    await db.close();
+  // Single SYNCHRONOUS teardown: restore the global
+  // `PermissionHandlerPlatform.instance` singleton. There is deliberately no
+  // native DB to close here (see the library doc) — the previous async
+  // `db.close()` racing the binding finalization under `--concurrency=6` was
+  // the `flutter_tester` teardown segfault root cause, now removed entirely.
+  tearDown(() {
+    PermissionHandlerPlatform.instance = originalPermPlatform;
   });
 
   List<Override> overrides() => <Override>[
-    databaseProvider.overrideWith((ref) async => db),
+    // No native sqlite3 DB. `OnboardingController._watchContacts` reads this
+    // only to count contacts (for `contactCount`, which this test never
+    // asserts) and swallows any failure — so failing fast keeps the native DB
+    // out of the test entirely, eliminating the native-close-in-teardown that
+    // segfaulted the host VM under `--concurrency=6`.
+    databaseProvider.overrideWith(
+      (ref) async => throw StateError(
+        'onboarding widget test: no DB (contactCount is unused here)',
+      ),
+    ),
     appSettingsRepositoryProvider.overrideWithValue(settingsRepo),
     userProfileRepositoryProvider.overrideWithValue(profileRepo),
     // onboardingControllerProvider is NOT overridden — the REAL controller

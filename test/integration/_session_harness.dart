@@ -184,6 +184,39 @@ final class RecordingFakes {
   final FakeContactService contacts;
 }
 
+// ─── Teardown: drain-then-close ──────────────────────────────────────────────
+
+/// Drains the real event loop, then closes [db]. **Every**
+/// `buildIntegrationContainer`-based session scenario MUST tear its DB down
+/// through this helper (`tearDown(() => closeIntegrationDb(db))`), never a bare
+/// `await db.close()`.
+///
+/// **Why (host-VM teardown crash — the M5 root cause).** These scenarios run a
+/// `fakeAsync` body, but the **real** [SessionController] finalises its
+/// [SessionLog] via `unawaited(_finaliseLog(...))` and seeds the in-progress
+/// marker via an unawaited `upsert`. Those are genuine `package:drift` writes
+/// against the native sqlite3 in-memory [db], so they **escape the `fakeAsync`
+/// zone** and settle on the *real* event loop AFTER the `fakeAsync` body has
+/// returned. If `tearDown` then closes the native DB while one of those writes
+/// is still in flight, a native-layer free races a live statement and crashes
+/// the shared `flutter_tester` shell — surfacing non-deterministically under
+/// `--concurrency=6` as `Shell subprocess crashed with segmentation fault` /
+/// SIGTERM / `<test> - did not complete`, AFTER every assertion has already
+/// passed (so the test logic is correct — it is purely a teardown-ordering
+/// fault). Awaiting two zero-duration *real* `Timer`s here yields the event loop
+/// long enough for every escaped write to complete against the still-open DB
+/// before it is closed, making finalization deterministic. No assertion is
+/// affected. (Empirically: `flutter test --concurrency=6 test/integration/` goes
+/// from ~15-30%-crash to 20/20 clean with this helper applied to every
+/// DB-closing session scenario.)
+Future<void> closeIntegrationDb(GuardianAngelaDatabase db) async {
+  // Two real-event-loop turns: the first lets the escaped `_finaliseLog`
+  // future run, the second lets its awaited `upsert` continuation settle.
+  await Future<void>.delayed(Duration.zero);
+  await Future<void>.delayed(Duration.zero);
+  await db.close();
+}
+
 // ─── Container builder ──────────────────────────────────────────────────────
 
 /// Builds a [ProviderContainer] that drives the **real** [SessionController]

@@ -111,7 +111,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-003 Date Mode happy path: reminder fires, user checks in each '

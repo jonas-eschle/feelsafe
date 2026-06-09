@@ -102,7 +102,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-001 Walk Mode happy path: hold to begin, check in, chain re-arms '

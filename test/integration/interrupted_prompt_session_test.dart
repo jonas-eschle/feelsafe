@@ -90,7 +90,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   ProviderContainer container() =>

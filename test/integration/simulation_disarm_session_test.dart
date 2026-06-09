@@ -96,7 +96,7 @@ void main() {
   });
 
   tearDown(() async {
-    await db.close();
+    await closeIntegrationDb(db);
   });
 
   test('INT-009 simulation leap collapses the duration timer and transitions '
