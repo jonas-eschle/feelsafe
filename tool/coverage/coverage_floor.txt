@@ -29,7 +29,17 @@
 #     notification/device_info/messaging/hardware_button/background_session ≈
 #     96 lines), codegen-only Drift table DSLs (≈71 lines, throw at runtime),
 #     and the thin Sentry SDK passthrough (≈9 lines) — left in the denominator.
-#   * Floor set to 88.8 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7a ratchet (2026-06-09) = 90.86%-of-logic (12077 / 13292 lines)
+#     after covering the session/fake-call feature tail: session_controller
+#     (80→2 missed), session_screen (70→2), end_session_overlay (14→0),
+#     session_elapsed_clock (8→0), fake_call_screen (12→0),
+#     fake_call_controller (4→0). +191 covered lines. Found + fixed a real
+#     teardown bug (_stopForegroundService read `ref` during onDispose —
+#     threw, was swallowed, persistent notification leaked; service instance
+#     now captured at session start). The 4 remaining lines in these files
+#     are defensive-unreachable (null-state timer guards, a dead stealth
+#     ternary branch — C9 candidate, and an EngineRunning(-1) pattern arm).
+#   * Floor set to 90.2 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -39,4 +49,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-88.8
+90.2

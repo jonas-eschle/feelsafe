@@ -159,6 +159,109 @@ void main() {
       check(_smallOpacity(tester)).equals(0.5);
     });
 
+    testWidgets('swapping the interaction signal rewires the listener', (
+      WidgetTester tester,
+    ) async {
+      final signalA = ValueNotifier<int>(0);
+      final signalB = ValueNotifier<int>(0);
+      addTearDown(signalA.dispose);
+      addTearDown(signalB.dispose);
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.small,
+        interactionSignal: signalA,
+      );
+      await tester.pump(const Duration(seconds: 11));
+      await tester.pump(const Duration(milliseconds: 450));
+      check(_smallOpacity(tester)).equals(0.5);
+
+      // Host swaps in a NEW signal (didUpdateWidget rewires listeners).
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.small,
+        interactionSignal: signalB,
+      );
+
+      // The new signal restores the clock …
+      signalB.value++;
+      await tester.pump();
+      check(_smallOpacity(tester)).equals(1.0);
+
+      // … while the detached old signal no longer does.
+      await tester.pump(const Duration(seconds: 11));
+      await tester.pump(const Duration(milliseconds: 450));
+      check(_smallOpacity(tester)).equals(0.5);
+      signalA.value++;
+      await tester.pump();
+      check(_smallOpacity(tester)).equals(0.5);
+    });
+
+    testWidgets('switching INTO small mode arms the idle fade', (
+      WidgetTester tester,
+    ) async {
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.normal,
+      );
+      // Same widget identity (same key) — this drives didUpdateWidget.
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.small,
+      );
+      check(_smallOpacity(tester)).equals(1.0);
+
+      await tester.pump(const Duration(seconds: 11));
+      await tester.pump(const Duration(milliseconds: 450));
+      check(_smallOpacity(tester)).equals(0.5);
+    });
+
+    testWidgets('switching OUT of small mode cancels the fade and resets', (
+      WidgetTester tester,
+    ) async {
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.small,
+      );
+      // Dim first so the reset on mode change is observable.
+      await tester.pump(const Duration(seconds: 11));
+      await tester.pump(const Duration(milliseconds: 450));
+      check(_smallOpacity(tester)).equals(0.5);
+
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.normal,
+      );
+      // Normal mode: no fade wrapper, full-form timer text.
+      expect(
+        find.descendant(
+          of: find.byKey(sessionElapsedClockKey),
+          matching: find.byType(AnimatedOpacity),
+        ),
+        findsNothing,
+      );
+      expect(find.text('1:05'), findsOneWidget);
+
+      // Returning to small starts clean (dimmed state was reset, idle timer
+      // re-armed — not inherited from the previous small stint).
+      await _pumpClock(
+        tester,
+        elapsedSeconds: 65,
+        mode: StealthTimerDisplay.small,
+      );
+      check(_smallOpacity(tester)).equals(1.0);
+      await tester.pump(const Duration(seconds: 9));
+      check(_smallOpacity(tester)).equals(1.0);
+      await tester.pump(const Duration(seconds: 2));
+      await tester.pump(const Duration(milliseconds: 450));
+      check(_smallOpacity(tester)).equals(0.5);
+    });
+
     testWidgets('normal mode never dims (no AnimatedOpacity fade)', (
       WidgetTester tester,
     ) async {

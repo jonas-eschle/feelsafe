@@ -29,6 +29,7 @@ import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
+import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
 import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
@@ -841,6 +842,14 @@ class SessionController extends AsyncNotifier<SessionState>
   /// second session does not re-register.
   bool _backgroundConfigured = false;
 
+  /// Background-session service captured at session start.
+  ///
+  /// [_stopForegroundService] must work from `ref.onDispose` (controller
+  /// torn down while a session is live), where `ref.read` throws — which
+  /// would silently leave the persistent notification behind. Holding the
+  /// instance for the session's lifetime keeps teardown ref-free.
+  BackgroundSessionServiceProtocol? _backgroundService;
+
   /// Starts (or refreshes) the Android foreground service for an active
   /// session, posting the persistent notification.
   ///
@@ -856,6 +865,7 @@ class SessionController extends AsyncNotifier<SessionState>
   Future<void> _startForegroundService({required StealthConfig stealth}) async {
     final disguised = stealth.enabled && stealth.notificationDisguise;
     final background = ref.read(backgroundSessionServiceProvider);
+    _backgroundService = background;
     try {
       if (!_backgroundConfigured) {
         await background.configure();
@@ -882,7 +892,9 @@ class SessionController extends AsyncNotifier<SessionState>
   /// never thrown — teardown must always complete.
   Future<void> _stopForegroundService() async {
     try {
-      await ref.read(backgroundSessionServiceProvider).stopService();
+      final BackgroundSessionServiceProtocol background =
+          _backgroundService ?? ref.read(backgroundSessionServiceProvider);
+      await background.stopService();
     } catch (e, st) {
       log(
         'foreground service stop failed (non-fatal): $e',
@@ -1718,6 +1730,18 @@ class SessionController extends AsyncNotifier<SessionState>
   /// Reference to the recorder for tests; null when no session is active.
   @visibleForTesting
   SessionLogRecorder? get recorder => _recorder;
+
+  /// The per-session [EventServices] bundle for tests; null when no
+  /// session is active. Exposed so tests can verify the bundle's
+  /// session-cancellation contract (`isCancelled`).
+  @visibleForTesting
+  EventServices? get eventServices => _eventServices;
+
+  /// Test-only injection point that routes a crafted [ChainEventData]
+  /// through the real engine-event handler, so defensive metadata
+  /// fallbacks (unknown reason names) can be exercised on host.
+  @visibleForTesting
+  void debugHandleEngineEvent(ChainEventData event) => _onEngineEvent(event);
 
   /// Id of the in-flight session log, exposed to UI navigation code so the
   /// completed / simulation-summary screens can deep-link to the right

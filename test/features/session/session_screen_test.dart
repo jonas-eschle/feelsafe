@@ -93,6 +93,13 @@ class _FakeSessionController extends SessionController {
   int resumeDistressCountdownCalls = 0;
   int _fakeWrongAttempts = 0;
 
+  /// Configurable result for [currentSessionLogId] (the real getter reads
+  /// the live recorder, which the fake never creates). Defaults to null.
+  String? fakeSessionLogId;
+
+  @override
+  String? get currentSessionLogId => fakeSessionLogId;
+
   @override
   Future<SessionState> build() async => _initial;
 
@@ -242,6 +249,24 @@ class _FakeAppSettingsRepository extends AppSettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async => _current = value;
+}
+
+/// An [AppSettingsRepository] whose [load] resolves only after [delay] —
+/// used to race user input against the in-flight settings fetch.
+class _SlowAppSettingsRepository extends _FakeAppSettingsRepository {
+  _SlowAppSettingsRepository({super.initial, required this.delay});
+
+  final Duration delay;
+
+  /// Number of [load] calls observed (proves the single-flight guard).
+  int loadCalls = 0;
+
+  @override
+  Future<AppSettings> load() async {
+    loadCalls++;
+    await Future<void>.delayed(delay);
+    return super.load();
+  }
 }
 
 /// Returns a SHA-256 hex digest of [digits] using the same UTF-8 encoding
@@ -2846,6 +2871,600 @@ void main() {
       // (spec 04:1247/1250).
       check(await promptRepo.completedCount()).equals(3);
       expect(find.text(l10n.sessionCompletedFeedbackPrompt), findsNothing);
+    });
+  });
+
+  // ── Route pop resets the auto-appear flags (#17/#18) ──────────────────────
+  group('SessionScreen — auto-appear flag resets on route pop', () {
+    testWidgets('fake call can re-appear after the pushed route pops', (
+      WidgetTester tester,
+    ) async {
+      final initial = _runningState(
+        type: ChainStepType.fakeCall,
+        config: const FakeCallConfig(),
+        phase: SessionPhase.duration,
+      );
+      final fake = _FakeSessionController(initial);
+      await _pumpWithRouter(tester, fake);
+
+      fake.emit(initial.copyWith(fakeCallShowNonce: 1));
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-fakecall')).evaluate()).isNotEmpty();
+
+      // Pop the fake-call route (user declined / engine moved on).
+      Navigator.of(
+        tester.element(find.byKey(const Key('stub-fakecall'))),
+      ).pop();
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-fakecall')).evaluate()).isEmpty();
+
+      // The guard flag must be cleared — a retry re-fire must re-appear.
+      fake.emit(initial.copyWith(fakeCallShowNonce: 2));
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-fakecall')).evaluate()).isNotEmpty();
+    });
+
+    testWidgets('full-screen reminder can re-appear after its route pops', (
+      WidgetTester tester,
+    ) async {
+      final initial = _runningState(
+        type: ChainStepType.disguisedReminder,
+        phase: SessionPhase.duration,
+        activeReminderTemplate: _fullScreenTemplate,
+      );
+      final fake = _FakeSessionController(initial);
+      await _pumpWithRouter(tester, fake);
+
+      fake.emit(initial.copyWith(reminderShowNonce: 1));
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-reminder')).evaluate()).isNotEmpty();
+
+      Navigator.of(
+        tester.element(find.byKey(const Key('stub-reminder'))),
+      ).pop();
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-reminder')).evaluate()).isEmpty();
+
+      fake.emit(initial.copyWith(reminderShowNonce: 2));
+      await tester.pumpAndSettle();
+      check(find.byKey(const Key('stub-reminder')).evaluate()).isNotEmpty();
+    });
+  });
+
+  // ── End-session flow details (C7a) ────────────────────────────────────────
+  group('SessionScreen — end-session flow details', () {
+    testWidgets('the session log id is forwarded to the completed screen', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      SharedPreferences.setMockInitialValues(<String, Object>{});
+      final promptRepo = FeedbackPromptRepository();
+      final fake = _FakeSessionController(_runningState())
+        ..fakeSessionLogId = 'log-123';
+      await _pumpFeedbackPath(tester, fake, promptRepo);
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+
+      final completed = tester.widget<SessionCompletedScreen>(
+        find.byType(SessionCompletedScreen),
+      );
+      check(completed.logId).equals('log-123');
+    });
+
+    testWidgets('cancelling the quick-exit dialog does not quick-exit', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      await _pump(tester, fake);
+      await tester.tap(find.byTooltip(l10n.sessionQuickExitTitle));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.sessionQuickExitBody), findsOneWidget);
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.sessionQuickExitBody), findsNothing);
+      check(fake.triggerQuickExitCalls).equals(0);
+    });
+
+    testWidgets(
+      'a swipe before the settings load lands still resolves the PIN gate',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(_runningState());
+        final repo = _SlowAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+          delay: const Duration(seconds: 1),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        await tester.tap(find.byTooltip(l10n.commonClose));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 200));
+        // Swipe while the overlay's settings load is still in flight.
+        await _swipeToConfirm(tester);
+        await tester.pump();
+        // The swipe handler must NOT bypass the PIN: nothing ended yet.
+        check(fake.endSessionCalls).equals(0);
+        // Once the load lands, the gate resolves to the PIN keypad.
+        await tester.pump(const Duration(seconds: 2));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.sessionEndPinPromptTitle), findsOneWidget);
+        check(fake.endSessionCalls).equals(0);
+      },
+    );
+
+    testWidgets('backspace edits the end-session PIN entry', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState());
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.byTooltip(l10n.commonClose));
+      await tester.pumpAndSettle();
+      await _swipeToConfirm(tester);
+      await tester.pumpAndSettle();
+
+      // Mistype two digits, erase them (plus one no-op on empty), then
+      // type the correct PIN — only possible if backspace really edits.
+      await _typeDigits(tester, '99');
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+
+      check(fake.endSessionCalls).equals(1);
+      check(fake.notifyWrongPinAttemptCalls).equals(0);
+    });
+
+    test('endReasonFor maps every overlay outcome to its EndReason', () {
+      check(
+        endReasonFor(EndSessionOutcome.dismissed),
+      ).equals(EndReason.userQuit);
+      check(
+        endReasonFor(EndSessionOutcome.endConfirmed),
+      ).equals(EndReason.userQuit);
+      check(
+        endReasonFor(EndSessionOutcome.duressPinEntered),
+      ).equals(EndReason.duressPin);
+      check(
+        endReasonFor(EndSessionOutcome.wrongPinExhausted),
+      ).equals(EndReason.wrongPinExhausted);
+    });
+  });
+
+  // ── Distress overlay settings races (C7a) ─────────────────────────────────
+  group('SessionScreen — distress overlay settings races', () {
+    testWidgets(
+      'cancel during the in-flight settings load waits (no double fetch) '
+      'and still reaches the PIN stage',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSessionController(
+          _runningState(distressConfirmRemaining: 5),
+        );
+        final repo = _SlowAppSettingsRepository(
+          initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+          delay: const Duration(milliseconds: 400),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+          settle: false,
+        );
+        await tester.pump();
+        // initState's load is still in flight — tap cancel NOW.
+        await tester.tap(find.text(l10n.distressConfirmCancel));
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+
+        // The handler yielded for the in-flight load instead of refetching.
+        check(repo.loadCalls).equals(1);
+        expect(find.byType(PinKeypad), findsOneWidget);
+        check(fake.pauseDistressCountdownCalls).equals(1);
+      },
+    );
+
+    testWidgets(
+      'overlay dismissed before the settings load lands does not crash',
+      (WidgetTester tester) async {
+        final initial = _runningState(distressConfirmRemaining: 5);
+        final fake = _FakeSessionController(initial);
+        final repo = _SlowAppSettingsRepository(
+          initial: const AppSettings(),
+          delay: const Duration(milliseconds: 400),
+        );
+        await _pump(
+          tester,
+          fake,
+          extraOverrides: <Override>[
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+          settle: false,
+        );
+        await tester.pump();
+        // The countdown resolves (cancel elsewhere) → the overlay unmounts
+        // while its settings load is still pending.
+        fake.emit(initial.copyWith(clearDistressConfirm: true));
+        await tester.pump();
+        // Now the load lands against the unmounted state.
+        await tester.pump(const Duration(milliseconds: 500));
+        await tester.pumpAndSettle();
+
+        expect(tester.takeException(), isNull);
+        expect(find.byType(PinKeypad), findsNothing);
+      },
+    );
+
+    testWidgets('backspace edits the distress-cancel PIN entry', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(distressConfirmRemaining: 5),
+      );
+      final repo = _FakeAppSettingsRepository(
+        initial: AppSettings(sessionEndPinHash: _hashDigits('1234')),
+      );
+      await _pump(
+        tester,
+        fake,
+        extraOverrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+        ],
+      );
+      await tester.tap(find.text(l10n.distressConfirmCancel));
+      await tester.pumpAndSettle();
+
+      await _typeDigits(tester, '99');
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      // Extra backspace on an empty entry is a guarded no-op.
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      await _typeDigits(tester, '1234');
+      await tester.pumpAndSettle();
+
+      check(fake.cancelDistressCalls).equals(1);
+      check(fake.confirmDistressCalls).equals(0);
+      check(fake.notifyWrongPinAttemptCalls).equals(0);
+    });
+  });
+
+  // ── Step-UI branches (C7a) ────────────────────────────────────────────────
+  group('SessionScreen — step-UI branches', () {
+    testWidgets('the stealth surface never shows the branded disarm label', (
+      WidgetTester tester,
+    ) async {
+      // stealthEnabled swaps the whole body for the fake music player —
+      // its disarm affordance must use the neutral wording only.
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          phase: SessionPhase.holdWait,
+          stealthEnabled: true,
+          sessionScreenStealth: false,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionDisarmStealth), findsOneWidget);
+      expect(find.text(l10n.sessionDisarm), findsNothing);
+    });
+
+    testWidgets('missCount > 0 renders the miss-count chip', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(_runningState(missCount: 2));
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionMissCount('2')), findsOneWidget);
+    });
+
+    testWidgets('grace phase shows the red last-chance countdown label', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(phase: SessionPhase.grace),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionHoldGraceCountdown('15')), findsOneWidget);
+    });
+
+    testWidgets('sensitivity phase shows the release countdown label', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(phase: SessionPhase.sensitivity),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionHoldReleaseCountdown('15')), findsOneWidget);
+    });
+
+    testWidgets('hold button press/release reaches the controller', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(phase: SessionPhase.holdWait),
+      );
+      await _pump(tester, fake);
+
+      final target = find.text(l10n.sessionHoldTouchToBegin);
+      final gesture = await tester.startGesture(tester.getCenter(target));
+      await tester.pump(const Duration(milliseconds: 200));
+      check(fake.holdPressedCalls).equals(1);
+
+      await gesture.up();
+      await tester.pump();
+      check(fake.holdReleasedCalls).equals(1);
+
+      // A cancelled tap (pointer dragged away) must also release the hold —
+      // otherwise a slipped finger would keep the engine in holding state.
+      final cancelGesture = await tester.startGesture(tester.getCenter(target));
+      await tester.pump(const Duration(milliseconds: 200));
+      check(fake.holdPressedCalls).equals(2);
+      await cancelGesture.moveBy(const Offset(300, 0));
+      await tester.pump();
+      check(fake.holdReleasedCalls).equals(2);
+      await cancelGesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('blackScreenMode renders the black hold surface and wires '
+        'press/release', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          phase: SessionPhase.holdWait,
+          config: const HoldButtonConfig(blackScreenMode: true),
+        ),
+      );
+      await _pump(tester, fake);
+
+      final target = find.text(l10n.sessionHoldTouchToBegin);
+      expect(target, findsOneWidget);
+      final gesture = await tester.startGesture(tester.getCenter(target));
+      await tester.pump(const Duration(milliseconds: 200));
+      check(fake.holdPressedCalls).equals(1);
+      await gesture.up();
+      await tester.pump();
+      check(fake.holdReleasedCalls).equals(1);
+
+      // A slipped finger (tap cancel) must release the hold too.
+      final cancelGesture = await tester.startGesture(tester.getCenter(target));
+      await tester.pump(const Duration(milliseconds: 200));
+      check(fake.holdPressedCalls).equals(2);
+      await cancelGesture.moveBy(const Offset(300, 0));
+      await tester.pump();
+      check(fake.holdReleasedCalls).equals(2);
+      await cancelGesture.up();
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('blackScreenMode shows the hold prompt while holding', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          phase: SessionPhase.duration,
+          isHolding: true,
+          config: const HoldButtonConfig(blackScreenMode: true),
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionHoldPrompt), findsOneWidget);
+    });
+
+    testWidgets('reminder wait UI formats minutes and shows the miss count', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.wait,
+          missCount: 3,
+        ).copyWith(remainingSeconds: 90),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionStepNextCheckIn('1m 30s')), findsOneWidget);
+      expect(find.text(l10n.sessionMissCount('3')), findsWidgets);
+    });
+
+    testWidgets('reminder wait UI formats whole minutes without seconds', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.disguisedReminder,
+          phase: SessionPhase.wait,
+        ).copyWith(remainingSeconds: 120),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionStepNextCheckIn('2m')), findsOneWidget);
+    });
+
+    testWidgets('GPS prompt confirm forwards the parsed destination', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(needsGpsDestinationPrompt: true),
+      );
+      await _pump(tester, fake);
+
+      await tester.enterText(find.byType(TextField).at(0), '46.5');
+      await tester.enterText(find.byType(TextField).at(1), '6.6');
+      await tester.tap(find.text(l10n.sessionGpsDestinationConfirm));
+      await tester.pumpAndSettle();
+
+      check(fake.setGpsDestinationCalls).equals(1);
+      check(fake.lastSetGpsLat).equals(46.5);
+      check(fake.lastSetGpsLng).equals(6.6);
+    });
+
+    testWidgets('GPS prompt confirm rejects unparseable coordinates', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(needsGpsDestinationPrompt: true),
+      );
+      await _pump(tester, fake);
+
+      await tester.enterText(find.byType(TextField).at(0), 'abc');
+      await tester.enterText(find.byType(TextField).at(1), '6.6');
+      await tester.tap(find.text(l10n.sessionGpsDestinationConfirm));
+      await tester.pumpAndSettle();
+
+      // No destination forwarded; the prompt stays up.
+      check(fake.setGpsDestinationCalls).equals(0);
+      expect(find.text(l10n.sessionGpsDestinationTitle), findsOneWidget);
+    });
+
+    testWidgets('simulation controls drive speed, leap and silent toggles', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeSessionController(_runningState(isSimulation: true));
+      await _pump(tester, fake);
+
+      await tester.drag(find.byType(Slider), const Offset(80, 0));
+      await tester.pumpAndSettle();
+      check(fake.setSimulationSpeedCalls).isGreaterOrEqual(1);
+      check(fake.lastSimulationSpeedValue).isNotNull();
+      check(fake.lastSimulationSpeedValue!).isGreaterThan(1.0);
+
+      await tester.tap(find.byIcon(Icons.fast_forward));
+      await tester.pump();
+      check(fake.leapCalls).equals(1);
+
+      // simulationSilent defaults true → toggling requests false.
+      await tester.tap(find.byType(Switch));
+      await tester.pump();
+      check(fake.setSimulationSilentCalls).equals(1);
+      check(fake.lastSimulationSilentValue).equals(false);
+    });
+
+    testWidgets('fakeCall step exposes a manual re-open button', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.fakeCall,
+          config: const FakeCallConfig(callerName: 'Zoe'),
+          phase: SessionPhase.duration,
+        ),
+      );
+      await _pumpWithRouter(tester, fake);
+
+      await tester.tap(find.text(l10n.sessionStepFakeCallOpen));
+      await tester.pumpAndSettle();
+
+      check(find.byKey(const Key('stub-fakecall')).evaluate()).isNotEmpty();
+    });
+
+    testWidgets('callEmergency wait UI renders the configured number', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.callEmergency,
+          config: const CallEmergencyConfig(emergencyNumber: '999'),
+          phase: SessionPhase.wait,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(
+        find.text(l10n.sessionStepCallEmergencyNumber('999')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('callEmergency wait UI falls back to 112 and flags the '
+        'simulation block', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          type: ChainStepType.callEmergency,
+          config: const CallEmergencyConfig(),
+          phase: SessionPhase.wait,
+          isSimulation: true,
+        ),
+      );
+      await _pump(tester, fake);
+      expect(
+        find.text(l10n.sessionStepCallEmergencyNumber('112')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.sessionStepSimBlockedEmergency), findsOneWidget);
+    });
+
+    testWidgets('a NEW emergency step re-arms a previously dismissed overlay', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final s1 = _runningState(
+        type: ChainStepType.callEmergency,
+        phase: SessionPhase.duration,
+      );
+      final fake = _FakeSessionController(s1);
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionEmergencyConfirmKeep), findsOneWidget);
+
+      // Dismiss for THIS step.
+      await tester.tap(find.text(l10n.sessionEmergencyConfirmKeep));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.sessionEmergencyConfirmKeep), findsNothing);
+
+      // A different emergency step starts → the stale dismissal must clear
+      // and the overlay must re-arm (each emergency gets its own veto).
+      final step2 = ChainStep(
+        id: 'em-step-2',
+        type: ChainStepType.callEmergency,
+        order: 0,
+        waitSeconds: 0,
+        durationSeconds: 30,
+        gracePeriodSeconds: 5,
+        retryCount: 0,
+        randomize: false,
+      );
+      fake.emit(s1.copyWith(activeChain: <ChainStep>[step2]));
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.sessionEmergencyConfirmKeep), findsOneWidget);
     });
   });
 }

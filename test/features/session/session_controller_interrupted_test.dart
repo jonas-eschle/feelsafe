@@ -343,6 +343,39 @@ void main() {
       check(state.priorInterrupted).isFalse();
     });
 
+    test('mode with a distressModeId → restart resolves and wires the distress '
+        'mode (confirmDistress fires the distress chain)', () async {
+      final distress = _holdMode(id: 'mode-dist', name: 'Distress');
+      await db.sessionModesDao.upsert(distress);
+      await db.sessionModesDao.upsert(
+        _holdMode().copyWith(distressModeId: 'mode-dist'),
+      );
+      await logRepo.upsert(
+        _orphan(
+          id: 'orphan-1',
+          modeId: 'mode-hold',
+          modeName: 'Walk Mode',
+          startedAt: DateTime.utc(2026, 5, 1, 10),
+        ),
+      );
+      final container = _container(db);
+      await container.read(sessionControllerProvider.future);
+      final notifier = container.read(sessionControllerProvider.notifier);
+
+      final started = await notifier.startInterruptedModeAgain();
+      check(started).isTrue();
+
+      // The restarted session resolved mode.distressModeId — so a distress
+      // trigger now swaps in the distress chain instead of failing loud.
+      notifier.confirmDistress();
+      await Future<void>.delayed(Duration.zero);
+      final state = container.read(sessionControllerProvider).value!;
+      check(state.lastError).isNull();
+      check(state.isDistressChain).isTrue();
+
+      await notifier.endSession();
+    });
+
     test(
       'start same mode writes a NEW marker (not a resume of the old)',
       () async {

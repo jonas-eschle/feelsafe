@@ -13,6 +13,7 @@ library;
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -23,6 +24,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
+import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/features/fake_call/fake_call_controller.dart';
 import 'package:guardianangela/features/fake_call/fake_call_screen.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
@@ -111,10 +113,27 @@ class _NonceController extends SessionController {
 
   final SessionState _initial;
 
+  int answerCalls = 0;
+  int hangUpCalls = 0;
+  int confirmDistressCalls = 0;
+
   @override
   Future<SessionState> build() async => _initial;
 
   void emit(SessionState next) => state = AsyncData(next);
+
+  @override
+  Future<void> answerFakeCall({
+    String? voiceRecordingPath,
+    bool useSpeaker = false,
+  }) async => answerCalls++;
+
+  @override
+  void hangUpFakeCall() => hangUpCalls++;
+
+  @override
+  void confirmDistress({EndReason reason = EndReason.hardwarePanic}) =>
+      confirmDistressCalls++;
 }
 
 // ---------------------------------------------------------------------------
@@ -420,6 +439,102 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
+  group('FakeCallScreen — hang up', () {
+    testWidgets('tapping Hang Up notifies the controller and pops the route', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _NonceController(const SessionState.initial());
+      final router = _buildRouter();
+      await _pumpWithRouter(
+        tester,
+        router: router,
+        overrides: <Override>[
+          sessionControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      unawaited(router.push<void>('/fake-call'));
+      await tester.pumpAndSettle();
+
+      // Answer first (slide), then hang up.
+      await tester.drag(find.byIcon(Icons.call), const Offset(1200, 0));
+      await tester.pumpAndSettle();
+      check(fake.answerCalls).equals(1);
+
+      await tester.tap(find.text(l10n.fakeCallHangUp));
+      await tester.pumpAndSettle();
+
+      // Hang-up after answering disarms via the controller and closes the
+      // call screen (spec 02 §fakeCall Answer / Hang-up Semantics).
+      check(fake.hangUpCalls).equals(1);
+      expect(find.byType(FakeCallScreen), findsNothing);
+      expect(find.text('Home'), findsOneWidget);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  group('FakeCallScreen — hold-to-distress completes', () {
+    testWidgets('holding decline for the configured duration fires distress, '
+        'haptics at 800 ms, and pops the call', (WidgetTester tester) async {
+      var hapticCalls = 0;
+      tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+        SystemChannels.platform,
+        (MethodCall call) async {
+          if (call.method == 'HapticFeedback.vibrate') hapticCalls++;
+          return null;
+        },
+      );
+      addTearDown(
+        () => tester.binding.defaultBinaryMessenger.setMockMethodCallHandler(
+          SystemChannels.platform,
+          null,
+        ),
+      );
+
+      final fake = _NonceController(const SessionState.initial());
+      const config = FakeCallConfig(declineWithDistressHoldSeconds: 1);
+      final router = _buildRouter(config: config);
+      await _pumpWithRouter(
+        tester,
+        router: router,
+        overrides: <Override>[
+          sessionControllerProvider.overrideWith(() => fake),
+        ],
+      );
+      unawaited(router.push<void>('/fake-call'));
+      await tester.pumpAndSettle();
+
+      // Press and HOLD the decline button: long-press start arms the
+      // 80 ms hold ticker, which measures real wall-clock time.
+      final gesture = await tester.startGesture(
+        tester.getCenter(find.byType(FilledButton)),
+      );
+      await tester.pump(const Duration(milliseconds: 600));
+
+      // Drive the ticker against real time until the 1 s hold completes
+      // (each pump fires one 80 ms tick; runAsync lets real time pass).
+      final sw = Stopwatch()..start();
+      while (fake.confirmDistressCalls == 0 &&
+          sw.elapsed < const Duration(seconds: 10)) {
+        await tester.runAsync(
+          () => Future<void>.delayed(const Duration(milliseconds: 25)),
+        );
+        await tester.pump(const Duration(milliseconds: 80));
+      }
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      // 1.0 progress fired the distress chain exactly once …
+      check(fake.confirmDistressCalls).equals(1);
+      // … the spec'd mid-hold haptic pulse fired (spec 04:1130) …
+      check(hapticCalls).isGreaterOrEqual(1);
+      // … and the call screen dismissed itself.
+      expect(find.byType(FakeCallScreen), findsNothing);
+      expect(find.text('Home'), findsOneWidget);
+    });
+  });
+
+  // -------------------------------------------------------------------------
   group('FakeCallScreen — active state', () {
     testWidgets('answered state shows Hang Up button', (
       WidgetTester tester,
@@ -461,6 +576,36 @@ void main() {
         find.text(l10n.fakeCallActiveDuration('00', '00')),
         findsOneWidget,
       );
+    });
+
+    testWidgets('the active ticker keeps the mm:ss timer rendering', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester);
+      await tester.drag(find.byIcon(Icons.call), const Offset(1200, 0));
+      await tester.pumpAndSettle();
+
+      // Fire the 1 s active ticker twice; the elapsed label must keep
+      // rendering a well-formed duration (wall-clock barely moved).
+      await tester.pump(const Duration(seconds: 1));
+      await tester.pump(const Duration(seconds: 1));
+
+      expect(tester.takeException(), isNull);
+      expect(
+        find.text(l10n.fakeCallActiveDuration('00', '00')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('answered state shows unknown-caller label for empty name', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, config: const FakeCallConfig(callerName: ''));
+      await tester.drag(find.byIcon(Icons.call), const Offset(1200, 0));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.fakeCallUnknownCaller), findsOneWidget);
     });
   });
 
@@ -523,6 +668,22 @@ void main() {
       controller.releaseSlide();
       expect(controller.value.slideProgress, 0.0);
       expect(controller.value.phase, FakeCallPhase.incoming);
+    });
+
+    test('answer() forces the active phase with a completed slide', () {
+      final controller = FakeCallController(const FakeCallConfig());
+      addTearDown(controller.dispose);
+      controller.answer();
+      expect(controller.value.phase, FakeCallPhase.active);
+      expect(controller.value.slideProgress, 1.0);
+    });
+
+    test('tickActive publishes the elapsed call duration', () {
+      final controller = FakeCallController(const FakeCallConfig());
+      addTearDown(controller.dispose);
+      controller.answer();
+      controller.tickActive(const Duration(seconds: 75));
+      expect(controller.value.activeElapsed, const Duration(seconds: 75));
     });
   });
 }
