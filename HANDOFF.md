@@ -12,32 +12,62 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = `921de67`, **+12 commits UNPUSHED** vs
-origin/main (=`f5eea2c`), tree clean. Suite **4287 pass**, `analyze --fatal-infos` = 0,
-**coverage-of-logic 89.46%**, floor 88.8. M0–M4 PUSHED; M5 (FINAL milestone) in progress.
-(NB: local commits survive a `/clear` — the 12 commits are safe; the fresh session
-continues C7→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop code commit `8c1bc18`,
+**+14 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4357 pass**,
+`analyze --fatal-infos` = 0, **coverage-of-logic 90.86%**, floor 90.2. M0–M4 PUSHED;
+M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`; the fresh
+session continues C7b→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7b:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
-services + main.dart) · **C6b (non-feature tail)** — ALL architect+qa **PASS**.
+services + main.dart) · C6b (non-feature tail) · **C7a (session + fake_call feature
+tail)** — ALL architect+qa **PASS**.
 
-**3 production bugs found+fixed+verified this run** (for the C10 milestone summary):
+**4 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
 on disarm; (2) `messaging._launchUrl`/`phone._dial` un-awaited `return launchUrl()` let an
 async rejection escape the degrade catch → a failed distress-SMS/call threw instead of
 degrading to `false`; (3) C4 `CallStateChannel.kt` MethodChannel/EventChannel name-shadow
-→ a real incoming call never paused a session.
+→ a real incoming call never paused a session; (4) C7a `SessionController.
+_stopForegroundService` read `ref` during `onDispose` teardown (`UnmountedRefException`,
+swallowed by the non-fatal catch) → the persistent foreground notification leaked on
+mid-session teardown; fix = capture `_backgroundService` at session start
+(architect-verified against the Riverpod 3.2.1 source).
 
-**NEXT = C7 — `lib/features/` controllers + screens + `app_router.dart` (≈1153 missed
-lines, 85.7%→~99%). C7 MUST BE SPLIT.** C6b hit **402k** subagent-tokens (> the 400k hard
-ceiling) on a SMALLER surface — one C7 agent WILL overflow. Orchestrator: first pull
-per-feature missed-line counts from the lcov (cheap), then dispatch **~3–4 SEQUENTIAL**
-sub-agents (C7a/C7b/C7c…), each scoped to a feature subset sized **≤~250k**, cohort each.
-Features hold only ~5 device-only lines total (census below) → nearly all host-coverable
-via widget + controller tests. `app_router.dart` (111L) pairs with the screens sub-agent.
+**NEXT = C7b. The remaining C7 tail (966 missed lines) is re-sliced into SIX sequential
+sub-chunks** — calibration: C7a's 188-line/6-file chunk cost **335k ACTUAL** subagent-
+tokens (harness-measured; the agent's own ≈180k self-estimate was LOW — always read the
+harness usage line, never trust self-reports), so **~150–180 missed lines per agent** is
+the safe scope. Per-chunk cohort stays. The slices (missed/instrumented, C7a-fresh lcov):
+- **C7b — modes (158, 10 files):** event_specific_config 51/356, safety_options_section
+  31/535, modes_controller 25/28, mode_event_defaults 12/24, stealth_config_fields 11/60,
+  modes_screen 10/102, step_config_panel 6/60, gps_logging_fields 5/39, sms_contact_grid
+  4/77, config_fields 3/126.
+- **C7c — editors + distress (144, 12 files):** reminder_templates_screen 33/116 +
+  _controller 17/20, template_editor_screen 22/67 + reminder_template_form 5/129,
+  event_defaults_controller 10/13 + _screen 1/51, mode_editor_screen 6/248 + _controller
+  1/10, distress_modes_controller 42/45 + _screen 4/66, reminder_confirmation 3/89.
+- **C7d — history/logs (180, 7 files):** past_events_trash_screen 41/119 + _controller
+  39/43, past_events_detail_screen 38/122, past_events_controller 36/40,
+  history_retention_controller 15/18 + _screen 11/73.
+- **C7e — home + post-session (170, 9 files):** home_controller 39/52, home_screen
+  28/195, chain_summary 12/102, safety_setup_checklist 10/224, simulation_summary_screen
+  29/199 + _controller 26/49, gps_logging_controller 24/27, feedback_form_screen 2/80.
+- **C7f — nav/entry + contacts (159, 8 files):** app_router 60/111, contacts_screen
+  29/131 + _controller 27/30, onboarding_screen 26/190 + _controller 5/31,
+  contact_form_screen 6/157, launch_pin_screen 6/120.
+- **C7g — settings + misc (155, 11 files):** settings_security_controller 55/75 +
+  _screen 7/117 + remove_pin_dialog 5/77, settings_screen 21/235 + _controller 15/50,
+  backup_restore_screen 22/122, profile_controller 10/13 + _screen 5/137,
+  settings_stealth_controller 9/41 + _screen 1/89, about_screen 4/72, pin_setup_screen
+  1/90.
+Only ~5 of these lines are `Platform.is*` device-only (about/contacts/contact_form;
+fake_call's were host-covered by C7a). Implementer lessons now baked into prompts: pipe
+coverage-run output to a FILE, never through `tail` (a truncated log forced C7a to
+duplicate a full coverage run); NEVER run bare `dart format .` (it reformats OLD/ —
+scope to `dart format lib test`).
 
 **THEN:** **C8** — populate `test/spec_coverage_test.dart` + enable its Phase-9
 assertions; reconcile the stale `docs/spec/07-test-plan.md` contract table. C8 list now
@@ -65,18 +95,55 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 ---
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
-(FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
-(INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
-C4 (device-e2e #11/#12/stealth) + C4-fix + C5 (coverage-of-logic gate +
-ratchet floor) + C6 (5 zero-coverage safety services + main.dart) + **C6b
-(rest of the NON-feature surface)** DONE + COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — HEAD = `921de67`,
-the `m5-c6b` HANDOFF-baton commit atop code commit `7f4b102`, ahead of
-origin/main by **12**). THIS session: **C6b — host
-tests for the remaining NON-feature surface (services + data layer +
-domain/core tails); coverage-of-logic 87.14%→89.46%; floor ratcheted
-86.5→88.8; found + fixed a real `_launchUrl`/`_dial` un-awaited-return bug
-that let an async launch rejection escape the degrade catch (`m5-c6b`).
-NEXT = C7 (the `lib/features/` tail).****
+(FINAL milestone, Phase-9) IN PROGRESS — C1 + C2 + C3 + A5 + C4 + C4-fix + C5 +
+C6 + C6b + **C7a (session + fake_call feature tail)** DONE + COHORT-VERIFIED
+(architect+qa PASS; all UNPUSHED — code HEAD = `8c1bc18` + the `m5-c7a` baton
+commit atop, ahead of origin/main by **14**). THIS session: **C7a — host tests
+for the session/fake-call feature tail; coverage-of-logic 89.46%→90.86%; floor
+ratcheted 88.8→90.2; found + fixed a real foreground-notification teardown leak
+(`_stopForegroundService` read `ref` in onDispose) (`m5-c7a`). NEXT = C7b (modes),
+then C7c..C7g per the re-sliced plan in the resume block.**
+
+---
+
+## KEY FINDINGS (C7a — new baseline + carry to C7b..g)
+
+**Coverage-of-logic 89.46% → 90.86%** (12077 / 13292 lines; +191 covered).
+**Floor ratcheted 88.8 → 90.2** (gate PROVEN OK at 90.2, RED at 99.9). Suite
+**4287 → 4357** (+70), 0 fail. analyze `--fatal-infos` = 0. Host only.
+
+**Per-file (missed before→after):** session_controller 80→2 (the 2 =
+defensive-unreachable :1136 null-state tick guard + :1515 `EngineRunning(-1)`
+pattern arm); session_screen 70→2 (:469 DEAD stealth-disarm ternary — the
+`_StandardSessionBody` only builds when `!stealthEnabled`; **C9 candidate**;
+:888 unmounted pin-timer guard); end_session_overlay 14→0;
+session_elapsed_clock 8→0; fake_call_screen 12→0; fake_call_controller 4→0.
+
+**PRODUCTION BUG #4 (fixed, cohort-verified):** see the resume block. Test
+"disposing the container mid-session … stops the foreground service" pins it
+(red pre-fix). Seams added (C6 pattern): `session_controller.dart:1737`
+`eventServices` getter + `:1743` `debugHandleEngineEvent(...)`.
+
+**Cohort PASS ×2 with MINOR notes (non-blocking, parked):** (arch) `_disposeAll`
+stops the FG service but not lock-task mode — PRE-EXISTING asymmetry, moot
+(pinning dies with the process; `toggleLockTaskMode` would hit the same
+ref-in-teardown throw — same capture-at-start pattern is the fix if ever
+wanted); (qa) fake_call hang-up test could add an explicit
+`confirmDistressCalls == 0`; the active-ticker test only proves no-crash (pump
+can't advance wall-clock); lifecycle test uses 8s Stopwatch polling loops where
+async DB writes prevent fakeAsync.
+
+**C9 additions from C7a:** session_screen.dart:464-471 dead stealth ternary;
+`EventServices.isCancelled` has NO production consumer though its doc says
+strategies poll it (`event_services.dart:169-172`) + stale
+`// ignore: avoid_returning_null_for_void` there.
+
+**Orchestrator calibration:** C7a = 188 missed lines / 6 files → **335k actual
+subagent-tokens, 217 tool-uses, 55 min** (self-estimate said 180k — LOW).
+Cohort cost: arch 61k + qa 90k. Most expensive sub-surface: the
+session_controller lifecycle suite (3 fix iterations: holdWait-vs-wait phases,
+sim-recorder non-persistence, `??` downward-inference nullability) + a
+duplicated full coverage run (truncated `tail` log).
 
 ---
 
@@ -349,7 +416,11 @@ census is recorded in its comment block.
   a real flash stopFlash-hang bug. **C6b** (the remaining NON-feature files —
   app_router, notification/audio/recording/service_providers, the data layer,
   domain + core-widget tails) carried in the C6 KEY FINDINGS above.
-- **C7 — coverage: `lib/features/` controllers + screens** (may split C7a/C7b).
+- **C7 — coverage: `lib/features/` controllers + screens — SPLIT a..g.**
+  **C7a (session + fake_call) ✓ DONE + cohort-verified** (89.46→90.86%, floor
+  90.2, bug #4 fixed — see KEY FINDINGS C7a). C7b (modes) → C7c (editors +
+  distress) → C7d (history/logs) → C7e (home + post-session) → C7f (nav/entry
+  + contacts) → C7g (settings + misc); per-file slices in the resume block.
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
