@@ -909,6 +909,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsEmergencyNumberCountryPickerTitle => 'اختيار رقم الطوارئ';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'رقم الطوارئ';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'الرقم المطلوب الاتصال به';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'الأرقام الشائعة';
+
+  @override
+  String get phoneWarnInvalidChars => 'يُسمح فقط بالأرقام و+ و* و#.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'عادةً ما تتكوّن أرقام الطوارئ من 3 أرقام على الأقل.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'يبدو هذا رقم هاتف عادي، وليس رقم خدمات طوارئ.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'أدخل رقمًا — لا يمكن ترك هذا الحقل فارغًا.';
+
+  @override
   String get settingsRedoOnboarding => 'إعادة التهيئة';
 
   @override

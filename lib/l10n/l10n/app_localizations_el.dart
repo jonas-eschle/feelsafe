@@ -924,6 +924,30 @@ class AppLocalizationsEl extends AppLocalizations {
       'Επιλογή αριθμού έκτακτης ανάγκης';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Αριθμός έκτακτης ανάγκης';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Αριθμός για κλήση';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Συνηθισμένοι αριθμοί';
+
+  @override
+  String get phoneWarnInvalidChars => 'Επιτρέπονται μόνο ψηφία, +, * και #.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Οι αριθμοί έκτακτης ανάγκης έχουν συνήθως τουλάχιστον 3 ψηφία.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Αυτό μοιάζει με κανονικό τηλεφωνικό αριθμό, όχι με αριθμό έκτακτης ανάγκης.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Εισαγάγετε έναν αριθμό — δεν μπορεί να είναι κενό.';
+
+  @override
   String get settingsRedoOnboarding => 'Επανεκκίνηση εισαγωγής';
 
   @override

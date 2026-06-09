@@ -747,4 +747,53 @@ void main() {
       expect(find.text(l10n.contactChannelsHeader), findsOneWidget);
     });
   });
+
+  // ---- Group: phone-number warning (Extra 26) ------------------------------
+
+  group('ContactFormScreen — phone-number warning', () {
+    testWidgets('no warning for a well-formed number', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      // Phone is the 2nd of the 3 text fields (name, phone, relationship).
+      await tester.enterText(find.byType(TextField).at(1), '+1 555-123-4567');
+      await tester.pump();
+      expect(find.text(l10n.phoneWarnInvalidChars), findsNothing);
+    });
+
+    testWidgets('shows the invalid-character warning for letters', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      await tester.enterText(find.byType(TextField).at(1), 'call me');
+      await tester.pump();
+      expect(find.text(l10n.phoneWarnInvalidChars), findsOneWidget);
+    });
+
+    testWidgets('a long contact number does NOT warn (no length check)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ContactFormScreen(),
+        overrides: baseOverrides,
+      );
+      await tester.enterText(find.byType(TextField).at(1), '00441234567890');
+      await tester.pump();
+      // The looks-like-regular warning is for the emergency field only.
+      expect(find.text(l10n.phoneWarnLooksLikeRegular), findsNothing);
+      expect(find.text(l10n.phoneWarnInvalidChars), findsNothing);
+    });
+  });
 }

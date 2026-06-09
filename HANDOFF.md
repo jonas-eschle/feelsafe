@@ -1,8 +1,104 @@
 # Guardian Angela v3 — Session Hand-off
 
 **Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4
-STARTED — C1 (#9 biometric for session-end + distress-cancel) DONE, GATE-GREEN,
-COMMITTED (UNPUSHED).** This session wired the two dead biometric flags
+STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
+`phone_validators` + locale seeding) DONE, GATE-GREEN, COMMITTED (UNPUSHED).**
+C2 built the safety-critical R-8 country→emergency-number map (109 countries,
+`lib/domain/models/emergency_numbers.dart`, owner-reviewed "unified-else-police"
+rule, every adjusted entry web-verified + 2 `// VERIFY` flags), the mandated
+`PhoneValidators` (`lib/core/utils/phone_validators.dart`), first-launch locale
+seeding in `runBootstrap` (`seedFirstLaunchSettings`), an editable emergency-
+number dialog with the validator wired (the old picker was preset-only, no
+free-text — a spec gap), the contact-form `warnContactNumber` reuse, and the
+`home_controller.startSession` hard-coded-`'112'`→`settings.emergencyCallNumber`
+fix. Gate: analyzer `--fatal-infos` 0; full suite **3944** (3895 C1 baseline +
+49 net-new); l10n parity 14/14 on 7 new keys; deferral-grep 0; OLD/ clean.
+**The final emergency map is committed locally and awaits the owner's FINAL
+pre-push review** (the orchestrator will surface the "CHANGES FROM THE REVIEWED
+DRAFT" summary before the M4 push). **NEXT = M4 C3 — #16 notification re-ask +
+Active-Triggers-Summary + the shared `permission_utils.dart`.** No native path
+in C2 → no emulator run. See the **M4 DECISIONS** block below (F2 now DECIDED:
+DESCOPE).
+
+---
+
+## What's done THIS session (M4 C2 — UNPUSHED, `m4-#10`)
+
+**GAPS verified first (all confirmed):** the `emergencyNumbers` map existed
+ONLY as a spec sketch (`docs/spec/03:1321`, ~6 grouped entries) — **no code
+map**; `phone_validators.dart` did **not** exist; there was **no first-launch
+locale seeding** (everyone got the model-default `'112'`);
+`home_controller.startSession:118` passed a **hard-coded `'112'`** to the
+start-validator. BONUS gap: the Settings emergency-number control was a
+**preset-only bottom sheet** with NO free-text field and NO validator — the
+spec (06:215-226) mandates an *editable* dialog, so the picker was incomplete.
+
+**Built (all proven by pure-Dart unit tests + widget tests):**
+
+1. **The R-8 map** — `lib/domain/models/emergency_numbers.dart`:
+   `const Map<String,String> emergencyNumbers` (109 countries, ISO-alpha-2 keys)
+   + `const kEmergencyFallback = '112'`. Header cites the methodology
+   (Wikipedia base + ITU/gov cross-check, owner-reviewed 2026-06-09), the
+   **unified-else-police** rule, and the `'112'` GSM-fallback rationale. Every
+   entry has an inline source/role comment. Applied the owner's rules to the
+   reviewed draft (see "CHANGES FROM THE REVIEWED DRAFT" in the final report).
+2. **`emergencyNumberForLocale(String) → String`** (same file) — total, never
+   throws: extracts the region subtag from a platform locale (`en_US`, `de-DE`,
+   `pt_BR.UTF-8`, codeset/`@modifier` stripped), upper-cases, looks it up, and
+   falls back to `'112'` for a bare/region-less/unmapped locale.
+3. **`PhoneValidators`** — `lib/core/utils/phone_validators.dart` (pure Dart,
+   Flutter-free, returns `PhoneNumberWarning?` codes, not strings):
+   `warnEmergencyNumber` (empty→`empty` [Save-blocking]; non-`[0-9+*#]`→
+   `invalidCharacters`; <3 **digits**→`tooShort`; >6 digits→
+   `looksLikeRegularNumber`) + `warnContactNumber` (char-class only, additionally
+   tolerates space/hyphen — a contact is a regular number, no length warning).
+   Digit-count ignores `+ * #` (so `*12#`=2 digits=tooShort).
+4. **First-launch locale seeding** — `seedFirstLaunchSettings(repo,
+   {deviceLocale})` in `main.dart`, wired into `runBootstrap` Step 2 (uses
+   `Platform.localeName`). Seeds ONLY when `repo.loadOrNull() == null` (genuine
+   first launch — no settings file yet); a returning user's value is returned
+   verbatim and **never overwritten** (precedence tier 1 wins, even if it equals
+   `'112'`). `SeedData.defaultAppSettings` gained an `emergencyCallNumber`
+   param (default `'112'`).
+5. **Editable emergency dialog** — replaced the preset-only sheet with
+   `_EmergencyNumberDialog` (`settings_screen.dart`): free-text `TextField` +
+   live non-blocking `warnEmergencyNumber` warning (empty→`errorText` + Save
+   disabled; other warnings→`helperText`, Save stays enabled) + common-number
+   quick-fill tiles. Returns the trimmed value; a blank can never persist.
+6. **Contact-form reuse** — `warnContactNumber` wired as live `helperText`
+   below the phone field (`contact_form_screen.dart`); empty stays enforced by
+   the form's own `validationPhoneRequired`.
+7. **home_controller fix** — `startSession` now loads `settings` before the
+   validator and passes `settings.emergencyCallNumber` (was `'112'`).
+8. **Code→l10n glue** — `phoneWarningMessage(l10n, warning)` in
+   `lib/core/utils/phone_warning_l10n.dart` (UI-glue, shared by the dialog +
+   contact form) maps the pure-Dart code → localized string.
+
+**Tests (net +49 → suite 3944):** 17 validator (`test/core/utils/
+phone_validators_test.dart`: char-class, the 3/6-digit boundaries, empty,
+contact leniency) + 24 map/locale (`test/domain/models/emergency_numbers_test.dart`:
+well-formed keys/numbers, no-malformed, the mandated adjustments [PK==15,
+DE==110, CO==123, ZA==112, ET==911, CI==111] + EU-112 block, locale resolution +
+fallbacks + case-insensitivity) + 8 seeding (`test/main_seed_first_launch_test.dart`:
+first-launch seeds+saves per region, unmapped→112, returning-user verbatim +
+NO-save + 112-preserved) + 5 settings-dialog widget + 3 contact-form-warning
+widget. A duplicate-key scan + a 109==literal-count check guard the map.
+
+**l10n:** 7 new keys (`settingsEmergencyNumberEditTitle`/`…FieldLabel`/
+`…PresetsLabel`, `phoneWarnInvalidChars`/`…TooShort`/`…LooksLikeRegular`/
+`…EmergencyEmpty`) in `app_en.arb` (+`@meta`) + all 13 translation ARBs
+(TEXT-INSERTED, additions-only: prior-last `distressCancelBiometricReason` gains
+a comma + 7 new lines). `gen-l10n` 0 untranslated; generated `.dart` additions-
+only; parity 14/14.
+
+**Web-verification (the safety gate):** every adjusted/flagged entry was
+cross-checked against Wikipedia + targeted gov/embassy/police-site searches —
+see the final report's "CHANGES FROM THE REVIEWED DRAFT". The 2 `// VERIFY`
+entries (ET=911, CI=111) ship the best pick + flag per the owner's accept.
+
+---
+
+**(prior C1 snapshot retained below)** This session wired the two dead biometric flags
 (`sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`) at their two
 PIN prompts (biometric-first, PIN fallback), mirroring the launch-gate reference
 pattern, and — because the distress-cancel flag had NO setter / NO Settings
@@ -43,9 +139,11 @@ buildable on this Linux host) — NOT verified here.
   (NOT the spec's separate JSON file); informational modal + [Start same mode]
   (a fresh session) / [Acknowledge]; reconcile the spec marker text to the
   SessionLog approach.
-- **Tier-F:** **F1 DESCOPE.** **F2 PENDING — the orchestrator is running a
-  research team on the AlarmManager-watchdog / force-kill-resilience question;
-  decision TBD — do NOT touch F2 / the `SCHEDULE_EXACT_ALARM` permission yet.**
+- **Tier-F:** **F1 DESCOPE.** **F2 DESCOPE — DECIDED (2026-06-09).** The
+  orchestrator's force-kill-resilience research concluded and the user decided
+  to **descope F2 and REMOVE the `SCHEDULE_EXACT_ALARM` permission** (no
+  AlarmManager watchdog). The permission removal is **executed in C5** (a later
+  M4 chunk) — do NOT touch the manifest / permission in C2/C3/C4; C5 owns it.
   **F3 = build as USER-SUPPLIED ringtones** (a ringtone picker/import in the
   fake-call config — the user provides their own audio, sidestepping licensing;
   NOT bundled per-style assets). **F4 = KEEP+BUILD** (wire `requireLaunchAuth` /
@@ -403,16 +501,19 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M4 C2 — #10 R-8 emergency-number map (Option B).** M0–M3 are
-PUSHED (`origin/main` = `5ab69c6`); M4 C1 (#9 biometric) is DONE+GATE-GREEN+
-COMMITTED (UNPUSHED, `m4-#9`). Build the Option-B map (Wikipedia base + ITU
-cross-check for the top ~40 by population, every entry CITED, primary
-all-services number only, `'112'` fallback) → **surface it to the user for
-review BEFORE merge** → `phone_validators.dart` (spec 06:227) + first-launch
-locale seeding → fix the hard-coded `'112'` in `home_controller.startSession:118`.
-See the **M4 DECISIONS (user, 2026-06-08/09)** block near the top for every M4
-chunk's scope (incl. **F2 is PENDING on the orchestrator's research — do NOT
-touch it**).
+**Next action: M4 C3 — #16 notification re-ask + Active-Triggers-Summary +
+the shared `permission_utils.dart`.** M0–M3 are PUSHED (`origin/main` =
+`5ab69c6`); M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map +
+`phone_validators` + locale seeding, `m4-#10`) are DONE+GATE-GREEN+COMMITTED
+(UNPUSHED). **The C2 emergency map awaits the owner's FINAL pre-push review**
+(the orchestrator surfaces the "CHANGES FROM THE REVIEWED DRAFT" summary before
+the M4 push). For C3: keep the GPS-destination prompt IN-SESSION (already
+M1-wired); add ONLY (a) the on-tap Active-Triggers-Summary and (b) the
+notification re-ask via a NEW shared
+`lib/core/utils/permission_utils.dart::ensureNotificationPermission`
+(spec-mandated in 3 places; refactor the notif-settings screen + the
+Safety-Setup-Checklist item 6 to delegate to it). See the **M4 DECISIONS** block
+near the top (F2 is now DECIDED: DESCOPE + remove `SCHEDULE_EXACT_ALARM` in C5).
 
 Per-chunk recipe (unchanged): verify the gap yourself → implement (serial) →
 prove (host/widget tests driving the REAL controller/screen; emulator for
@@ -872,6 +973,43 @@ stealth appearance only; stealth is configured pre-session on
 
 ## KEY FINDINGS (carry into the next session)
 
+- **(M4 C2) The emergency number flows `AppSettings.emergencyCallNumber` →
+  `session_controller.dart:703` → `EventServices.emergencyNumberDefault` →
+  `CallEmergencyStrategy`** (per-step `CallEmergencyConfig.emergencyNumber`
+  overrides it). The map/seeding only sets the *default* the user sees + the
+  validator gates; the dial path was already wired. To change "what number gets
+  dialed by default," edit `emergencyNumbers` (the map) — the runtime already
+  reads `settings.emergencyCallNumber`.
+- **(M4 C2) First-launch detection = `AppSettingsRepository.loadOrNull() ==
+  null`**, NOT `isFirstLaunch` (which the onboarding flow flips and is about
+  routing, not persistence). `loadOrNull()` returns null iff no settings file
+  exists on disk; `load()` returns seeded defaults even when absent, so it can't
+  distinguish "never seeded" from "user-saved 112". Seed on the null signal,
+  then NEVER re-seed (the file now exists) — that is what preserves a user value
+  of `'112'` as a deliberate choice. The seed hook is `seedFirstLaunchSettings`
+  in `main.dart`, called in `runBootstrap` Step 2 (NOT in the onboarding
+  controller — seeding must happen on the very first boot, before any screen).
+- **(M4 C2) `PhoneValidators` returns CODES, not strings** (pure Dart in
+  `lib/core/utils/`, same Flutter-free pattern as `validateModeDraft`). The
+  code→string mapper lives in `lib/core/utils/phone_warning_l10n.dart` (a
+  separate UI-glue file that CAN import `AppLocalizations`) and is shared by the
+  Settings dialog + the contact form. Keep the validator Flutter-free; add new
+  warning strings to the mapper, not the validator.
+- **(M4 C2) The emergency-number Settings control had to be REBUILT, not just
+  wired** — it was a preset-only bottom sheet (no free-text, no validator),
+  which violates spec 06:215-226 (an *editable* free-form field). The new
+  `_EmergencyNumberDialog` is the live control: empty→`errorText`+Save-disabled
+  (the only Save-blocking case), other warnings→non-blocking `helperText`, a
+  blank never persists. If a future task touches the emergency number, edit the
+  dialog (not a sheet).
+- **(M4 C2) The R-8 "unified-else-police" rule** (owner, 2026-06-09): use the
+  genuine all-services number where one exists, else the POLICE line for split
+  countries. The map ships 109 countries; micro-states are deliberately ABSENT
+  → they fall through to `kEmergencyFallback` `'112'`. Two entries carry
+  `// VERIFY` (ET=911, CI=111 — sources genuinely conflict; owner accepted
+  shipping the best pick + flag). A wrong police number is dangerous — web-verify
+  before changing ANY entry, and prefer keeping the value + a `// VERIFY` over a
+  confident-wrong change. The map AWAITS the owner's final pre-push review.
 - **(M4 C1) The distress-cancel 15s window is a widget-local `Timer`
   (`_DistressConfirmationOverlayState._pinTimer` in `session_screen.dart`), so
   "don't reset it across a biometric attempt" = start it BEFORE the biometric
@@ -1326,17 +1464,17 @@ pre-push runs `flutter analyze --fatal-infos` + `flutter test`.
 - **Plan doc:** `docs/rewrite/ga-wiring-remediation.md` (gap inventory §2 =
   tasks #8–#23, method §3, milestones M0–M5 §4).
 - **Milestones:** **M0 ✓ pushed. M1 ✓ pushed. M2 ✓ pushed. M3 (#15 stealth) ✓
-  pushed (`origin/main` = `5ab69c6`).** **M4 STARTED — C1 (#9 biometric:
-  session-end + distress-cancel) ✓ DONE+GATE-GREEN+COMMITTED (UNPUSHED, `m4-#9`).**
-  **NEXT = M4 C2 — #10 R-8 emergency-number map (Option B, user-reviewed BEFORE
-  merge) + `phone_validators.dart` + first-launch locale seeding + fix
-  `home_controller.startSession:118` hard-coded `'112'`.** Remaining M4 chunks
-  (carry the M4 DECISIONS block near the top): #16 (Active-Triggers-Summary +
-  shared `permission_utils.ensureNotificationPermission`), #8 (minimal
-  in-progress-marker resume modal), Tier-F (F1 descope / **F2 PENDING — awaiting
-  the orchestrator's force-kill-resilience research; do NOT touch F2 yet** / F3
-  user-supplied ringtones / F4 launch-auth + redundancy check / F5 feedback
-  prompt), and the `service_providers.dart` Phase-7 doc-sweep. Then M5 (Phase-9:
+  pushed (`origin/main` = `5ab69c6`).** **M4 STARTED — C1 (#9 biometric) ✓
+  DONE (UNPUSHED, `m4-#9`); C2 (#10 R-8 emergency map + `phone_validators` +
+  locale seeding + the `home_controller` `'112'` fix) ✓ DONE+GATE-GREEN+
+  COMMITTED (UNPUSHED, `m4-#10`) — the map awaits the owner's FINAL pre-push
+  review.** **NEXT = M4 C3 — #16 notification re-ask + Active-Triggers-Summary +
+  the shared `permission_utils.dart`.** Remaining M4 chunks
+  (carry the M4 DECISIONS block near the top): #16 (C3, next), #8 (minimal
+  in-progress-marker resume modal), Tier-F (F1 descope / **F2 DESCOPE — DECIDED;
+  remove `SCHEDULE_EXACT_ALARM` in C5** / F3 user-supplied ringtones / F4
+  launch-auth + redundancy check / F5 feedback prompt), and the
+  `service_providers.dart` Phase-7 doc-sweep. Then M5 (Phase-9:
   INT scenarios, device e2e incl. #11 adb-gsm + #12 background-throttle,
   spec-coverage matrix, coverage floor). The in-memory TaskList is cleared on
   `/clear` — this bullet is the durable journal.

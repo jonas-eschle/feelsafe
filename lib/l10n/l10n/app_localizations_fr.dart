@@ -921,6 +921,31 @@ class AppLocalizationsFr extends AppLocalizations {
       'Choisir le numéro d\'urgence';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Numéro d\'urgence';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Numéro à composer';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Numéros courants';
+
+  @override
+  String get phoneWarnInvalidChars =>
+      'Seuls les chiffres, +, * et # sont autorisés.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Les numéros d\'urgence comportent généralement au moins 3 chiffres.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Cela ressemble à un numéro de téléphone ordinaire, pas à un numéro d\'urgence.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Saisissez un numéro : ce champ ne peut pas être vide.';
+
+  @override
   String get settingsRedoOnboarding => 'Refaire l\'introduction';
 
   @override

@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "ПОЗЖЕ,ПРОПУСТИТЬ,ГОТОВО,ОТКРЫТЬ,ПОКАЗАТЬ,ОК,ДАЛЕЕ,ЕЩЁ,ОТЛОЖИТЬ,ЗАКРЫТЬ",
   "securityDistressCancelBiometric": "Использовать биометрию для отмены сигнала бедствия",
   "sessionEndBiometricReason": "Подтвердите, чтобы завершить сеанс",
-  "distressCancelBiometricReason": "Подтвердите, что это вы, для отмены"
+  "distressCancelBiometricReason": "Подтвердите, что это вы, для отмены",
+  "settingsEmergencyNumberEditTitle": "Номер экстренной службы",
+  "settingsEmergencyNumberFieldLabel": "Номер для набора",
+  "settingsEmergencyNumberPresetsLabel": "Распространённые номера",
+  "phoneWarnInvalidChars": "Допустимы только цифры, +, * и #.",
+  "phoneWarnTooShort": "Номера экстренных служб обычно состоят минимум из 3 цифр.",
+  "phoneWarnLooksLikeRegular": "Похоже на обычный телефонный номер, а не на номер экстренной службы.",
+  "phoneWarnEmergencyEmpty": "Введите номер — поле не может быть пустым."
 }

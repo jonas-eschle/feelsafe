@@ -922,6 +922,30 @@ class AppLocalizationsEs extends AppLocalizations {
       'Elegir número de emergencia';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Número de emergencia';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Número a marcar';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Números habituales';
+
+  @override
+  String get phoneWarnInvalidChars => 'Solo se permiten dígitos, +, * y #.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Los números de emergencia suelen tener al menos 3 dígitos.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Esto parece un número de teléfono normal, no un número de emergencias.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Introduce un número: no puede estar vacío.';
+
+  @override
   String get settingsRedoOnboarding => 'Repetir introducción';
 
   @override

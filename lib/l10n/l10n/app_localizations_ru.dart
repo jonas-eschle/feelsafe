@@ -919,6 +919,30 @@ class AppLocalizationsRu extends AppLocalizations {
       'Выберите номер экстренной помощи';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Номер экстренной службы';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Номер для набора';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Распространённые номера';
+
+  @override
+  String get phoneWarnInvalidChars => 'Допустимы только цифры, +, * и #.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Номера экстренных служб обычно состоят минимум из 3 цифр.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Похоже на обычный телефонный номер, а не на номер экстренной службы.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Введите номер — поле не может быть пустым.';
+
+  @override
   String get settingsRedoOnboarding => 'Повторить знакомство';
 
   @override

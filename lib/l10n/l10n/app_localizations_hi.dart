@@ -916,6 +916,30 @@ class AppLocalizationsHi extends AppLocalizations {
       'आपातकालीन नंबर चुनें';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'आपातकालीन नंबर';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'डायल किया जाने वाला नंबर';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'सामान्य नंबर';
+
+  @override
+  String get phoneWarnInvalidChars => 'केवल अंक, +, * और # की अनुमति है।';
+
+  @override
+  String get phoneWarnTooShort =>
+      'आपातकालीन नंबर आमतौर पर कम से कम 3 अंकों के होते हैं।';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'यह एक सामान्य फ़ोन नंबर जैसा लगता है, आपातकालीन सेवा नंबर नहीं।';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'एक नंबर दर्ज करें — यह खाली नहीं हो सकता।';
+
+  @override
   String get settingsRedoOnboarding => 'परिचय दोबारा करें';
 
   @override

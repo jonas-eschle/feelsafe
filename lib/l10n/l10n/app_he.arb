@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "מאוחר יותר,דלג,בוצע,פתח,הצג,אישור,הבא,עוד,נדנוד,סגור",
   "securityDistressCancelBiometric": "שימוש בביומטריה לביטול מצוקה",
   "sessionEndBiometricReason": "אשרו כדי לסיים את הסשן",
-  "distressCancelBiometricReason": "אשרו שזה אתם כדי לבטל"
+  "distressCancelBiometricReason": "אשרו שזה אתם כדי לבטל",
+  "settingsEmergencyNumberEditTitle": "מספר חירום",
+  "settingsEmergencyNumberFieldLabel": "המספר לחיוג",
+  "settingsEmergencyNumberPresetsLabel": "מספרים נפוצים",
+  "phoneWarnInvalidChars": "מותר להזין רק ספרות, +, * ו-#.",
+  "phoneWarnTooShort": "מספרי חירום כוללים בדרך כלל לפחות 3 ספרות.",
+  "phoneWarnLooksLikeRegular": "זה נראה כמו מספר טלפון רגיל, לא כמו מספר חירום.",
+  "phoneWarnEmergencyEmpty": "יש להזין מספר — השדה אינו יכול להיות ריק."
 }

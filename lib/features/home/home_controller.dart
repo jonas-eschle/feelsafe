@@ -110,12 +110,13 @@ class HomeController extends AsyncNotifier<HomeState> {
     if (mode == null) {
       return false;
     }
+    final settings = await ref.read(appSettingsRepositoryProvider).load();
     final validator = ref.read(sessionStartValidatorProvider);
     if (validator is RealSessionStartValidator) {
       try {
         await validator.updateCachedState(
           contactCount: current.contacts.length,
-          emergencyNumber: '112',
+          emergencyNumber: settings.emergencyCallNumber,
           requiredPermissions: AppPermission.values.toSet(),
         );
         await validator.prewarm();
@@ -129,7 +130,6 @@ class HomeController extends AsyncNotifier<HomeState> {
       return false;
     }
     // Resolve distress mode (mode-local id first, then global default).
-    final settings = await ref.read(appSettingsRepositoryProvider).load();
     final distressId =
         mode.distressModeId ?? settings.defaults.defaultDistressModeId;
     final distressMode = distressId == null

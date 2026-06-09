@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "बाद में,छोड़ें,पूर्ण,खोलें,देखें,ठीक है,अगला,और,स्नूज़,बंद करें",
   "securityDistressCancelBiometric": "संकट रद्द करने के लिए बायोमेट्रिक्स का उपयोग करें",
   "sessionEndBiometricReason": "सत्र समाप्त करने के लिए पुष्टि करें",
-  "distressCancelBiometricReason": "रद्द करने के लिए पुष्टि करें कि यह आप हैं"
+  "distressCancelBiometricReason": "रद्द करने के लिए पुष्टि करें कि यह आप हैं",
+  "settingsEmergencyNumberEditTitle": "आपातकालीन नंबर",
+  "settingsEmergencyNumberFieldLabel": "डायल किया जाने वाला नंबर",
+  "settingsEmergencyNumberPresetsLabel": "सामान्य नंबर",
+  "phoneWarnInvalidChars": "केवल अंक, +, * और # की अनुमति है।",
+  "phoneWarnTooShort": "आपातकालीन नंबर आमतौर पर कम से कम 3 अंकों के होते हैं।",
+  "phoneWarnLooksLikeRegular": "यह एक सामान्य फ़ोन नंबर जैसा लगता है, आपातकालीन सेवा नंबर नहीं।",
+  "phoneWarnEmergencyEmpty": "एक नंबर दर्ज करें — यह खाली नहीं हो सकता।"
 }

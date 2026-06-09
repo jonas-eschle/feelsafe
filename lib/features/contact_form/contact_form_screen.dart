@@ -7,6 +7,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/core/utils/phone_validators.dart';
+import 'package:guardianangela/core/utils/phone_warning_l10n.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -206,12 +208,29 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      TextField(
-                        controller: _phoneCtl,
-                        keyboardType: TextInputType.phone,
-                        decoration: InputDecoration(
-                          labelText: l10n.contactFieldPhone,
-                        ),
+                      // Live, non-blocking character-class warning (Extra 26).
+                      // Empty is enforced separately by _save()'s required
+                      // check, so only the invalid-character advisory is
+                      // surfaced here as helperText.
+                      ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: _phoneCtl,
+                        builder: (BuildContext context, TextEditingValue v, _) {
+                          final PhoneNumberWarning? warning =
+                              PhoneValidators.warnContactNumber(v.text.trim());
+                          final String? helper =
+                              warning == PhoneNumberWarning.invalidCharacters
+                              ? phoneWarningMessage(l10n, warning!)
+                              : null;
+                          return TextField(
+                            controller: _phoneCtl,
+                            keyboardType: TextInputType.phone,
+                            decoration: InputDecoration(
+                              labelText: l10n.contactFieldPhone,
+                              helperText: helper,
+                              helperMaxLines: 2,
+                            ),
+                          );
+                        },
                       ),
                       const SizedBox(height: 12),
                       TextField(

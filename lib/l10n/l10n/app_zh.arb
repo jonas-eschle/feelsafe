@@ -962,5 +962,12 @@
   "sessionReminderDecoyWords": "稍后,跳过,完成,打开,查看,好的,下一个,更多,稍后提醒,关闭",
   "securityDistressCancelBiometric": "使用生物识别取消求救",
   "sessionEndBiometricReason": "确认以结束会话",
-  "distressCancelBiometricReason": "确认是您本人以取消"
+  "distressCancelBiometricReason": "确认是您本人以取消",
+  "settingsEmergencyNumberEditTitle": "紧急电话号码",
+  "settingsEmergencyNumberFieldLabel": "拨打的号码",
+  "settingsEmergencyNumberPresetsLabel": "常用号码",
+  "phoneWarnInvalidChars": "只允许使用数字、+、* 和 #。",
+  "phoneWarnTooShort": "紧急电话号码通常至少有 3 位数字。",
+  "phoneWarnLooksLikeRegular": "这看起来像普通电话号码，而不是紧急服务号码。",
+  "phoneWarnEmergencyEmpty": "请输入号码——此处不能为空。"
 }

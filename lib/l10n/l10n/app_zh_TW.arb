@@ -962,5 +962,12 @@
   "sessionReminderDecoyWords": "稍後,略過,完成,開啟,檢視,好,下一個,更多,稍後提醒,關閉",
   "securityDistressCancelBiometric": "使用生物辨識取消求救",
   "sessionEndBiometricReason": "確認以結束工作階段",
-  "distressCancelBiometricReason": "確認是您本人以取消"
+  "distressCancelBiometricReason": "確認是您本人以取消",
+  "settingsEmergencyNumberEditTitle": "緊急電話號碼",
+  "settingsEmergencyNumberFieldLabel": "撥打的號碼",
+  "settingsEmergencyNumberPresetsLabel": "常用號碼",
+  "phoneWarnInvalidChars": "只允許使用數字、+、* 和 #。",
+  "phoneWarnTooShort": "緊急電話號碼通常至少有 3 位數字。",
+  "phoneWarnLooksLikeRegular": "這看起來像一般電話號碼，而不是緊急服務號碼。",
+  "phoneWarnEmergencyEmpty": "請輸入號碼——此處不能空白。"
 }

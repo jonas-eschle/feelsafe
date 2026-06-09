@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "بعداً,رد کردن,انجام شد,باز کردن,نمایش,باشه,بعدی,بیشتر,یادآوری,بستن",
   "securityDistressCancelBiometric": "استفاده از زیست‌سنجی برای لغو اضطرار",
   "sessionEndBiometricReason": "برای پایان جلسه تأیید کنید",
-  "distressCancelBiometricReason": "برای لغو هویت خود را تأیید کنید"
+  "distressCancelBiometricReason": "برای لغو هویت خود را تأیید کنید",
+  "settingsEmergencyNumberEditTitle": "شمارهٔ اضطراری",
+  "settingsEmergencyNumberFieldLabel": "شماره برای تماس",
+  "settingsEmergencyNumberPresetsLabel": "شماره‌های رایج",
+  "phoneWarnInvalidChars": "فقط ارقام، +، * و # مجاز هستند.",
+  "phoneWarnTooShort": "شماره‌های اضطراری معمولاً دست‌کم ۳ رقم دارند.",
+  "phoneWarnLooksLikeRegular": "این بیشتر شبیه یک شمارهٔ تلفن معمولی است تا شمارهٔ خدمات اضطراری.",
+  "phoneWarnEmergencyEmpty": "یک شماره وارد کنید — این فیلد نمی‌تواند خالی باشد."
 }

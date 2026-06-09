@@ -1167,6 +1167,34 @@
   "@settingsEmergencyNumberCountryPickerTitle": {
     "description": "Title of the bottom sheet for picking an emergency-number preset."
   },
+  "settingsEmergencyNumberEditTitle": "Emergency number",
+  "@settingsEmergencyNumberEditTitle": {
+    "description": "Title of the dialog for editing the emergency services number."
+  },
+  "settingsEmergencyNumberFieldLabel": "Number to dial",
+  "@settingsEmergencyNumberFieldLabel": {
+    "description": "Text-field label in the emergency-number edit dialog."
+  },
+  "settingsEmergencyNumberPresetsLabel": "Common numbers",
+  "@settingsEmergencyNumberPresetsLabel": {
+    "description": "Header above the list of preset emergency numbers in the edit dialog."
+  },
+  "phoneWarnInvalidChars": "Only digits, +, *, and # are allowed.",
+  "@phoneWarnInvalidChars": {
+    "description": "Non-blocking warning when an emergency/phone number contains disallowed characters."
+  },
+  "phoneWarnTooShort": "Emergency numbers are usually at least 3 digits.",
+  "@phoneWarnTooShort": {
+    "description": "Non-blocking warning when the emergency number has fewer than 3 digits."
+  },
+  "phoneWarnLooksLikeRegular": "This looks like a regular phone number, not an emergency services number.",
+  "@phoneWarnLooksLikeRegular": {
+    "description": "Non-blocking warning when the emergency number has more than 6 digits."
+  },
+  "phoneWarnEmergencyEmpty": "Enter a number — this can't be empty.",
+  "@phoneWarnEmergencyEmpty": {
+    "description": "Blocking hint when the emergency-number field is empty (Save is disabled)."
+  },
   "settingsRedoOnboarding": "Redo onboarding",
   "@settingsRedoOnboarding": {
     "description": "Redo onboarding row label."

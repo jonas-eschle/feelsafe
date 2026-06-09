@@ -962,5 +962,12 @@
   "sessionReminderDecoyWords": "SPÄTER,ÜBERSPRINGEN,FERTIG,ÖFFNEN,ANZEIGEN,OKAY,WEITER,MEHR,ERINNERN,SCHLIESSEN",
   "securityDistressCancelBiometric": "Biometrie zum Abbrechen des Notrufs verwenden",
   "sessionEndBiometricReason": "Bestätigen, um die Sitzung zu beenden",
-  "distressCancelBiometricReason": "Bestätige, dass du es bist, zum Abbrechen"
+  "distressCancelBiometricReason": "Bestätige, dass du es bist, zum Abbrechen",
+  "settingsEmergencyNumberEditTitle": "Notrufnummer",
+  "settingsEmergencyNumberFieldLabel": "Zu wählende Nummer",
+  "settingsEmergencyNumberPresetsLabel": "Gängige Nummern",
+  "phoneWarnInvalidChars": "Nur Ziffern, +, * und # sind erlaubt.",
+  "phoneWarnTooShort": "Notrufnummern haben meist mindestens 3 Ziffern.",
+  "phoneWarnLooksLikeRegular": "Das sieht nach einer normalen Telefonnummer aus, nicht nach einer Notrufnummer.",
+  "phoneWarnEmergencyEmpty": "Gib eine Nummer ein – dieses Feld darf nicht leer sein."
 }

@@ -1739,6 +1739,48 @@ abstract class AppLocalizations {
   /// **'Choose emergency number'**
   String get settingsEmergencyNumberCountryPickerTitle;
 
+  /// Title of the dialog for editing the emergency services number.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency number'**
+  String get settingsEmergencyNumberEditTitle;
+
+  /// Text-field label in the emergency-number edit dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Number to dial'**
+  String get settingsEmergencyNumberFieldLabel;
+
+  /// Header above the list of preset emergency numbers in the edit dialog.
+  ///
+  /// In en, this message translates to:
+  /// **'Common numbers'**
+  String get settingsEmergencyNumberPresetsLabel;
+
+  /// Non-blocking warning when an emergency/phone number contains disallowed characters.
+  ///
+  /// In en, this message translates to:
+  /// **'Only digits, +, *, and # are allowed.'**
+  String get phoneWarnInvalidChars;
+
+  /// Non-blocking warning when the emergency number has fewer than 3 digits.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency numbers are usually at least 3 digits.'**
+  String get phoneWarnTooShort;
+
+  /// Non-blocking warning when the emergency number has more than 6 digits.
+  ///
+  /// In en, this message translates to:
+  /// **'This looks like a regular phone number, not an emergency services number.'**
+  String get phoneWarnLooksLikeRegular;
+
+  /// Blocking hint when the emergency-number field is empty (Save is disabled).
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a number — this can\'t be empty.'**
+  String get phoneWarnEmergencyEmpty;
+
   /// Redo onboarding row label.
   ///
   /// In en, this message translates to:

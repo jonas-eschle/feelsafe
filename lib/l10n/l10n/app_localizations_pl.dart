@@ -915,6 +915,30 @@ class AppLocalizationsPl extends AppLocalizations {
       'Wybierz numer alarmowy';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Numer alarmowy';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Numer do wybrania';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Popularne numery';
+
+  @override
+  String get phoneWarnInvalidChars => 'Dozwolone są tylko cyfry, +, * i #.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Numery alarmowe mają zwykle co najmniej 3 cyfry.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'To wygląda na zwykły numer telefonu, a nie numer alarmowy.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Wpisz numer — to pole nie może być puste.';
+
+  @override
   String get settingsRedoOnboarding => 'Powtórz wprowadzenie';
 
   @override

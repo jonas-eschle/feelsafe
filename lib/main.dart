@@ -32,8 +32,11 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/data/seed_data.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/domain/models/emergency_numbers.dart';
 import 'package:guardianangela/features/launch_gate/launch_gate_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/router/app_router.dart';
@@ -81,11 +84,21 @@ Future<void> runBootstrap(
 
   // Step 2 — Load AppSettings. If the JSON singleton is corrupt the load()
   // call throws a FormatException or StateError; catch and run recovery.
+  //
+  // On a genuine first launch (no settings file on disk yet) the emergency
+  // number is seeded from the device region (spec 06 §Emergency Number,
+  // precedence tier 2). A returning user's value is loaded verbatim — tier 1
+  // (the user's edited value) always wins and is never overwritten.
   final AppSettings settings;
   try {
-    settings = await container.read(appSettingsRepositoryProvider).load();
+    final repo = container.read(appSettingsRepositoryProvider);
+    settings = await seedFirstLaunchSettings(
+      repo,
+      deviceLocale: Platform.localeName,
+    );
     log(
-      'AppSettings loaded (sentryEnabled=${settings.sentryEnabled})',
+      'AppSettings loaded (sentryEnabled=${settings.sentryEnabled}, '
+      'emergencyCallNumber=${settings.emergencyCallNumber})',
       name: 'main',
     );
   } catch (e, st) {
@@ -166,6 +179,44 @@ Future<void> runBootstrap(
       child: const GuardianAngelaApp(),
     ),
   );
+}
+
+/// Loads [AppSettings], seeding the emergency number on a genuine first launch.
+///
+/// Implements spec 06 §Emergency Number precedence:
+/// 1. A returning user's persisted value (file present on disk) is returned
+///    verbatim — the user's edited value always wins and is never overwritten,
+///    even if it equals the GSM fallback `'112'`.
+/// 2. On first launch (no settings file yet, [AppSettingsRepository.loadOrNull]
+///    is `null`) the emergency number is seeded from [deviceLocale]'s region
+///    via [emergencyNumberForLocale] and persisted, so the field is correct for
+///    the user's country out of the box.
+/// 3. An unmapped / region-less locale resolves to [kEmergencyFallback].
+///
+/// Throws (propagating to the caller's recovery path) only if the underlying
+/// load fails with corruption — a present-but-unreadable file. The seed
+/// resolution itself is total and never throws.
+@visibleForTesting
+Future<AppSettings> seedFirstLaunchSettings(
+  AppSettingsRepository repo, {
+  required String deviceLocale,
+}) async {
+  final AppSettings? existing = await repo.loadOrNull();
+  if (existing != null) {
+    // Returning user — respect the persisted value (precedence tier 1).
+    return existing;
+  }
+  // First launch — seed from the device region (precedence tier 2/3).
+  final AppSettings seeded = SeedData.defaultAppSettings(
+    emergencyCallNumber: emergencyNumberForLocale(deviceLocale),
+  );
+  await repo.save(seeded);
+  log(
+    'First launch — seeded emergencyCallNumber='
+    '${seeded.emergencyCallNumber} from locale "$deviceLocale"',
+    name: 'main',
+  );
+  return seeded;
 }
 
 // ---------------------------------------------------------------------------

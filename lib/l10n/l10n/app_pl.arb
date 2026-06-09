@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "PÓŹNIEJ,POMIŃ,GOTOWE,OTWÓRZ,POKAŻ,OK,DALEJ,WIĘCEJ,DRZEMKA,ZAMKNIJ",
   "securityDistressCancelBiometric": "Użyj biometrii, aby anulować alarm",
   "sessionEndBiometricReason": "Potwierdź, aby zakończyć sesję",
-  "distressCancelBiometricReason": "Potwierdź, że to Ty, aby anulować"
+  "distressCancelBiometricReason": "Potwierdź, że to Ty, aby anulować",
+  "settingsEmergencyNumberEditTitle": "Numer alarmowy",
+  "settingsEmergencyNumberFieldLabel": "Numer do wybrania",
+  "settingsEmergencyNumberPresetsLabel": "Popularne numery",
+  "phoneWarnInvalidChars": "Dozwolone są tylko cyfry, +, * i #.",
+  "phoneWarnTooShort": "Numery alarmowe mają zwykle co najmniej 3 cyfry.",
+  "phoneWarnLooksLikeRegular": "To wygląda na zwykły numer telefonu, a nie numer alarmowy.",
+  "phoneWarnEmergencyEmpty": "Wpisz numer — to pole nie może być puste."
 }

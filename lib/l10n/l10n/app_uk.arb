@@ -962,5 +962,12 @@
   "sessionReminderDecoyWords": "ПІЗНІШЕ,ПРОПУСТИТИ,ГОТОВО,ВІДКРИТИ,ПОКАЗАТИ,ОК,ДАЛІ,ЩЕ,ВІДКЛАСТИ,ЗАКРИТИ",
   "securityDistressCancelBiometric": "Використовувати біометрію для скасування тривоги",
   "sessionEndBiometricReason": "Підтвердьте, щоб завершити сеанс",
-  "distressCancelBiometricReason": "Підтвердьте, що це ви, для скасування"
+  "distressCancelBiometricReason": "Підтвердьте, що це ви, для скасування",
+  "settingsEmergencyNumberEditTitle": "Номер екстреної служби",
+  "settingsEmergencyNumberFieldLabel": "Номер для набору",
+  "settingsEmergencyNumberPresetsLabel": "Поширені номери",
+  "phoneWarnInvalidChars": "Дозволено лише цифри, +, * і #.",
+  "phoneWarnTooShort": "Номери екстрених служб зазвичай мають принаймні 3 цифри.",
+  "phoneWarnLooksLikeRegular": "Це схоже на звичайний телефонний номер, а не на номер екстреної служби.",
+  "phoneWarnEmergencyEmpty": "Введіть номер — поле не може бути порожнім."
 }

@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "ΑΡΓΟΤΕΡΑ,ΠΑΡΑΛΕΙΨΗ,ΕΓΙΝΕ,ΑΝΟΙΓΜΑ,ΠΡΟΒΟΛΗ,ΕΝΤΑΞΕΙ,ΕΠΟΜΕΝΟ,ΠΕΡΙΣΣΟΤΕΡΑ,ΑΝΑΒΟΛΗ,ΚΛΕΙΣΙΜΟ",
   "securityDistressCancelBiometric": "Χρήση βιομετρικών για ακύρωση κινδύνου",
   "sessionEndBiometricReason": "Επιβεβαιώστε για τη λήξη της συνεδρίας",
-  "distressCancelBiometricReason": "Επιβεβαιώστε ότι είστε εσείς για ακύρωση"
+  "distressCancelBiometricReason": "Επιβεβαιώστε ότι είστε εσείς για ακύρωση",
+  "settingsEmergencyNumberEditTitle": "Αριθμός έκτακτης ανάγκης",
+  "settingsEmergencyNumberFieldLabel": "Αριθμός για κλήση",
+  "settingsEmergencyNumberPresetsLabel": "Συνηθισμένοι αριθμοί",
+  "phoneWarnInvalidChars": "Επιτρέπονται μόνο ψηφία, +, * και #.",
+  "phoneWarnTooShort": "Οι αριθμοί έκτακτης ανάγκης έχουν συνήθως τουλάχιστον 3 ψηφία.",
+  "phoneWarnLooksLikeRegular": "Αυτό μοιάζει με κανονικό τηλεφωνικό αριθμό, όχι με αριθμό έκτακτης ανάγκης.",
+  "phoneWarnEmergencyEmpty": "Εισαγάγετε έναν αριθμό — δεν μπορεί να είναι κενό."
 }

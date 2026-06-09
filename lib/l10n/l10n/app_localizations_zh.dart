@@ -891,6 +891,27 @@ class AppLocalizationsZh extends AppLocalizations {
   String get settingsEmergencyNumberCountryPickerTitle => '选择紧急号码';
 
   @override
+  String get settingsEmergencyNumberEditTitle => '紧急电话号码';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => '拨打的号码';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => '常用号码';
+
+  @override
+  String get phoneWarnInvalidChars => '只允许使用数字、+、* 和 #。';
+
+  @override
+  String get phoneWarnTooShort => '紧急电话号码通常至少有 3 位数字。';
+
+  @override
+  String get phoneWarnLooksLikeRegular => '这看起来像普通电话号码，而不是紧急服务号码。';
+
+  @override
+  String get phoneWarnEmergencyEmpty => '请输入号码——此处不能为空。';
+
+  @override
   String get settingsRedoOnboarding => '重新引导';
 
   @override
@@ -3010,6 +3031,27 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get settingsEmergencyNumberCountryPickerTitle => '選擇緊急號碼';
+
+  @override
+  String get settingsEmergencyNumberEditTitle => '緊急電話號碼';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => '撥打的號碼';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => '常用號碼';
+
+  @override
+  String get phoneWarnInvalidChars => '只允許使用數字、+、* 和 #。';
+
+  @override
+  String get phoneWarnTooShort => '緊急電話號碼通常至少有 3 位數字。';
+
+  @override
+  String get phoneWarnLooksLikeRegular => '這看起來像一般電話號碼，而不是緊急服務號碼。';
+
+  @override
+  String get phoneWarnEmergencyEmpty => '請輸入號碼——此處不能空白。';
 
   @override
   String get settingsRedoOnboarding => '重新引導';

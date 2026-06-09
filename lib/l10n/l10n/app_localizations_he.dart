@@ -907,6 +907,29 @@ class AppLocalizationsHe extends AppLocalizations {
   String get settingsEmergencyNumberCountryPickerTitle => 'בחרי מספר חירום';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'מספר חירום';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'המספר לחיוג';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'מספרים נפוצים';
+
+  @override
+  String get phoneWarnInvalidChars => 'מותר להזין רק ספרות, +, * ו-#.';
+
+  @override
+  String get phoneWarnTooShort => 'מספרי חירום כוללים בדרך כלל לפחות 3 ספרות.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'זה נראה כמו מספר טלפון רגיל, לא כמו מספר חירום.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'יש להזין מספר — השדה אינו יכול להיות ריק.';
+
+  @override
   String get settingsRedoOnboarding => 'חזרה על הכניסה הראשונה';
 
   @override

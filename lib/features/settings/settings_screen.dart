@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/utils/phone_validators.dart';
+import 'package:guardianangela/core/utils/phone_warning_l10n.dart';
 import 'package:guardianangela/core/widgets/info_icon_button.dart';
 import 'package:guardianangela/core/widgets/settings_tile.dart';
 import 'package:guardianangela/core/widgets/timing_slider.dart';
@@ -235,41 +237,13 @@ class SettingsScreen extends ConsumerWidget {
     WidgetRef ref,
     String current,
   ) async {
-    final l10n = AppLocalizations.of(context);
-    // Curated list of common emergency-services numbers. Country code
-    // is shown alongside for clarity.
-    const List<(String label, String number)> presets = <(String, String)>[
-      ('International (GSM)', '112'),
-      ('United States / Canada', '911'),
-      ('United Kingdom', '999'),
-      ('Australia', '000'),
-      ('China', '110'),
-      ('Japan', '110'),
-      ('India', '112'),
-    ];
-    final selected = await showModalBottomSheet<String>(
+    // Editable free-form dialog (spec 06 §Emergency Number): the user can type
+    // any country-specific short code or carrier variant. A live, non-blocking
+    // validator warns on odd input; an empty field blocks Save (the input
+    // never persists a blank — clearing it leaves the prior value untouched).
+    final selected = await showDialog<String>(
       context: context,
-      builder: (BuildContext ctx) => SafeArea(
-        child: ListView(
-          shrinkWrap: true,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                l10n.settingsEmergencyNumberCountryPickerTitle,
-                style: Theme.of(ctx).textTheme.titleMedium,
-              ),
-            ),
-            for (final (String label, String number) in presets)
-              ListTile(
-                title: Text(label),
-                subtitle: Text(number),
-                trailing: number == current ? const Icon(Icons.check) : null,
-                onTap: () => Navigator.of(ctx).pop(number),
-              ),
-          ],
-        ),
-      ),
+      builder: (BuildContext ctx) => _EmergencyNumberDialog(initial: current),
     );
     if (selected != null) {
       await ref
@@ -391,6 +365,135 @@ class _AlarmSection extends ConsumerWidget {
               ],
             ),
           ),
+      ],
+    );
+  }
+}
+
+/// Editable emergency-services-number dialog (spec 06 §Emergency Number).
+///
+/// A free-form text field with a live, non-blocking [PhoneValidators]
+/// warning rendered below the input, a Save action that is disabled while the
+/// trimmed field is empty (the empty case blocks Save — a blank never
+/// persists), and a small list of common-number quick-fills. Returns the
+/// trimmed number via [Navigator.pop], or `null` on cancel.
+class _EmergencyNumberDialog extends StatefulWidget {
+  const _EmergencyNumberDialog({required this.initial});
+
+  final String initial;
+
+  @override
+  State<_EmergencyNumberDialog> createState() => _EmergencyNumberDialogState();
+}
+
+class _EmergencyNumberDialogState extends State<_EmergencyNumberDialog> {
+  late final TextEditingController _controller = TextEditingController(
+    text: widget.initial,
+  );
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  /// Common emergency-services numbers offered as one-tap quick-fills. Labels
+  /// are region names (kept simple, not exhaustive); the user can still type
+  /// any number directly.
+  static const List<(String label, String number)> _presets =
+      <(String, String)>[
+        ('International (GSM)', '112'),
+        ('US / Canada / Latin America', '911'),
+        ('UK / Bangladesh / Kenya', '999'),
+        ('Australia', '000'),
+        ('New Zealand', '111'),
+        ('China / Japan', '110'),
+      ];
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return AlertDialog(
+      title: Text(l10n.settingsEmergencyNumberEditTitle),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            // ValueListenableBuilder keeps the warning + Save-enabled state in
+            // sync with each keystroke without a full setState rebuild.
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: _controller,
+              builder: (BuildContext context, TextEditingValue value, _) {
+                final String trimmed = value.text.trim();
+                final PhoneNumberWarning? warning =
+                    PhoneValidators.warnEmergencyNumber(trimmed);
+                final String? message = warning == null
+                    ? null
+                    : phoneWarningMessage(l10n, warning);
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    TextField(
+                      controller: _controller,
+                      autofocus: true,
+                      keyboardType: TextInputType.phone,
+                      decoration: InputDecoration(
+                        labelText: l10n.settingsEmergencyNumberFieldLabel,
+                        // The empty-block hint is shown as an errorText (it is
+                        // the only case that disables Save); the other advisory
+                        // warnings are non-blocking helperText.
+                        errorText: warning == PhoneNumberWarning.empty
+                            ? message
+                            : null,
+                        helperText: warning == PhoneNumberWarning.empty
+                            ? null
+                            : message,
+                        helperMaxLines: 3,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      l10n.settingsEmergencyNumberPresetsLabel,
+                      style: Theme.of(context).textTheme.labelMedium,
+                    ),
+                  ],
+                );
+              },
+            ),
+            for (final (String label, String number) in _presets)
+              ListTile(
+                dense: true,
+                contentPadding: EdgeInsets.zero,
+                title: Text(label),
+                trailing: Text(
+                  number,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                onTap: () => _controller.text = number,
+              ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.commonCancel),
+        ),
+        ValueListenableBuilder<TextEditingValue>(
+          valueListenable: _controller,
+          builder: (BuildContext context, TextEditingValue value, _) {
+            final String trimmed = value.text.trim();
+            return FilledButton(
+              // Empty blocks Save (spec 06): the action is disabled, so a blank
+              // can never overwrite the stored value.
+              onPressed: trimmed.isEmpty
+                  ? null
+                  : () => Navigator.of(context).pop(trimmed),
+              child: Text(l10n.commonSave),
+            );
+          },
+        ),
       ],
     );
   }

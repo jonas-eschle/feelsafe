@@ -917,6 +917,30 @@ class AppLocalizationsDe extends AppLocalizations {
       'Notrufnummer auswählen';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Notrufnummer';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Zu wählende Nummer';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Gängige Nummern';
+
+  @override
+  String get phoneWarnInvalidChars => 'Nur Ziffern, +, * und # sind erlaubt.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Notrufnummern haben meist mindestens 3 Ziffern.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Das sieht nach einer normalen Telefonnummer aus, nicht nach einer Notrufnummer.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Gib eine Nummer ein – dieses Feld darf nicht leer sein.';
+
+  @override
   String get settingsRedoOnboarding => 'Einrichtung wiederholen';
 
   @override

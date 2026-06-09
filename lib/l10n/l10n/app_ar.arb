@@ -833,5 +833,12 @@
   "sessionReminderDecoyWords": "لاحقًا,تخطّي,تم,فتح,عرض,حسنًا,التالي,المزيد,تأجيل,إغلاق",
   "securityDistressCancelBiometric": "استخدام السمات الحيوية لإلغاء الاستغاثة",
   "sessionEndBiometricReason": "أكِّد لإنهاء الجلسة",
-  "distressCancelBiometricReason": "أكِّد هويتك للإلغاء"
+  "distressCancelBiometricReason": "أكِّد هويتك للإلغاء",
+  "settingsEmergencyNumberEditTitle": "رقم الطوارئ",
+  "settingsEmergencyNumberFieldLabel": "الرقم المطلوب الاتصال به",
+  "settingsEmergencyNumberPresetsLabel": "الأرقام الشائعة",
+  "phoneWarnInvalidChars": "يُسمح فقط بالأرقام و+ و* و#.",
+  "phoneWarnTooShort": "عادةً ما تتكوّن أرقام الطوارئ من 3 أرقام على الأقل.",
+  "phoneWarnLooksLikeRegular": "يبدو هذا رقم هاتف عادي، وليس رقم خدمات طوارئ.",
+  "phoneWarnEmergencyEmpty": "أدخل رقمًا — لا يمكن ترك هذا الحقل فارغًا."
 }

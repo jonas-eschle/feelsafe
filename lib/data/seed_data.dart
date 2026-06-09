@@ -338,11 +338,18 @@ final class SeedData {
   /// [seedDistressModeId] defaults to [defaultDistressModeId] (the
   /// canonical id used by [seedInto]); tests pass an override only when
   /// they need to point at a custom-id distress mode.
+  ///
+  /// [emergencyCallNumber] defaults to `'112'` (the GSM international
+  /// fallback, matching the [AppSettings] model default). First-launch
+  /// bootstrap passes a locale-derived seed here (spec 06 §Emergency Number,
+  /// precedence tier 2).
   static AppSettings defaultAppSettings({
     String seedDistressModeId = defaultDistressModeId,
+    String emergencyCallNumber = '112',
   }) {
     final templates = reminderTemplates();
     return AppSettings(
+      emergencyCallNumber: emergencyCallNumber,
       defaults: AppDefaults(
         templates: templates,
         defaultDistressModeId: seedDistressModeId,

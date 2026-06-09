@@ -962,5 +962,12 @@
   "sessionReminderDecoyWords": "MÁS TARDE,OMITIR,HECHO,ABRIR,VER,VALE,SIGUIENTE,MÁS,POSPONER,CERRAR",
   "securityDistressCancelBiometric": "Usar biometría para cancelar la alerta",
   "sessionEndBiometricReason": "Confirma para finalizar la sesión",
-  "distressCancelBiometricReason": "Confirma que eres tú para cancelar"
+  "distressCancelBiometricReason": "Confirma que eres tú para cancelar",
+  "settingsEmergencyNumberEditTitle": "Número de emergencia",
+  "settingsEmergencyNumberFieldLabel": "Número a marcar",
+  "settingsEmergencyNumberPresetsLabel": "Números habituales",
+  "phoneWarnInvalidChars": "Solo se permiten dígitos, +, * y #.",
+  "phoneWarnTooShort": "Los números de emergencia suelen tener al menos 3 dígitos.",
+  "phoneWarnLooksLikeRegular": "Esto parece un número de teléfono normal, no un número de emergencias.",
+  "phoneWarnEmergencyEmpty": "Introduce un número: no puede estar vacío."
 }

@@ -851,5 +851,12 @@
   "sessionReminderDecoyWords": "PLUS TARD,IGNORER,TERMINÉ,OUVRIR,VOIR,OK,SUIVANT,PLUS,RAPPELER,FERMER",
   "securityDistressCancelBiometric": "Utiliser la biométrie pour annuler la détresse",
   "sessionEndBiometricReason": "Confirmez pour terminer la session",
-  "distressCancelBiometricReason": "Confirmez votre identité pour annuler"
+  "distressCancelBiometricReason": "Confirmez votre identité pour annuler",
+  "settingsEmergencyNumberEditTitle": "Numéro d'urgence",
+  "settingsEmergencyNumberFieldLabel": "Numéro à composer",
+  "settingsEmergencyNumberPresetsLabel": "Numéros courants",
+  "phoneWarnInvalidChars": "Seuls les chiffres, +, * et # sont autorisés.",
+  "phoneWarnTooShort": "Les numéros d'urgence comportent généralement au moins 3 chiffres.",
+  "phoneWarnLooksLikeRegular": "Cela ressemble à un numéro de téléphone ordinaire, pas à un numéro d'urgence.",
+  "phoneWarnEmergencyEmpty": "Saisissez un numéro : ce champ ne peut pas être vide."
 }

@@ -913,6 +913,30 @@ class AppLocalizationsFa extends AppLocalizations {
       'انتخاب شماره اضطراری';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'شمارهٔ اضطراری';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'شماره برای تماس';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'شماره‌های رایج';
+
+  @override
+  String get phoneWarnInvalidChars => 'فقط ارقام، +، * و # مجاز هستند.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'شماره‌های اضطراری معمولاً دست‌کم ۳ رقم دارند.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'این بیشتر شبیه یک شمارهٔ تلفن معمولی است تا شمارهٔ خدمات اضطراری.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'یک شماره وارد کنید — این فیلد نمی‌تواند خالی باشد.';
+
+  @override
   String get settingsRedoOnboarding => 'راه‌اندازی مجدد';
 
   @override

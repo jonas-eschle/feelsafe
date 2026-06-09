@@ -76,6 +76,15 @@ class _FakeSettingsController extends SettingsController {
     );
   }
 
+  int setEmergencyCallNumberCalls = 0;
+  String? lastEmergencyCallNumber;
+
+  @override
+  Future<void> setEmergencyCallNumber(String number) async {
+    setEmergencyCallNumberCalls++;
+    lastEmergencyCallNumber = number;
+  }
+
   @override
   Future<void> resetOnboarding() async {
     resetOnboardingCalls++;
@@ -812,6 +821,105 @@ void main() {
       );
       expect(find.byIcon(Icons.brightness_6), findsOneWidget);
       expect(find.byIcon(Icons.language), findsOneWidget);
+    });
+  });
+
+  // ── Emergency-number dialog (spec 06 §Emergency Number) ───────────────────
+
+  group('SettingsScreen — emergency-number dialog', () {
+    Future<_FakeSettingsController> openDialog(
+      WidgetTester tester, {
+      String current = '112',
+    }) async {
+      _useTallViewport(tester);
+      final controller = _FakeSettingsController(
+        _defaultState(emergencyCallNumber: current),
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(() => controller),
+        ],
+      );
+      await tester.tap(find.text(l10n.settingsEmergencyNumberLabel));
+      await tester.pumpAndSettle();
+      return controller;
+    }
+
+    testWidgets('opens an editable dialog pre-filled with the current value', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await openDialog(tester, current: '911');
+      // The dialog is open (its field-label is unique to the dialog).
+      expect(find.text(l10n.settingsEmergencyNumberFieldLabel), findsOneWidget);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      // The text field shows the current value.
+      expect(find.widgetWithText(TextField, '911'), findsOneWidget);
+    });
+
+    testWidgets('Save persists the trimmed typed value', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final controller = await openDialog(tester);
+      await tester.enterText(find.byType(TextField), '999');
+      await tester.pump();
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+      check(controller.setEmergencyCallNumberCalls).equals(1);
+      check(controller.lastEmergencyCallNumber).equals('999');
+    });
+
+    testWidgets('an empty field disables Save (empty blocks)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final controller = await openDialog(tester);
+      await tester.enterText(find.byType(TextField), '');
+      await tester.pump();
+      // The Save FilledButton is disabled (onPressed == null).
+      final FilledButton save = tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text(l10n.commonSave),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      check(save.onPressed).isNull();
+      // Tapping it is a no-op — the setter is never called.
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+      check(controller.setEmergencyCallNumberCalls).equals(0);
+    });
+
+    testWidgets('a too-long number shows the regular-number warning but '
+        'still allows Save', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final controller = await openDialog(tester);
+      await tester.enterText(find.byType(TextField), '5551234567');
+      await tester.pump();
+      expect(find.text(l10n.phoneWarnLooksLikeRegular), findsOneWidget);
+      // Non-empty → Save still enabled (the length warning is non-blocking).
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+      check(controller.setEmergencyCallNumberCalls).equals(1);
+      check(controller.lastEmergencyCallNumber).equals('5551234567');
+    });
+
+    testWidgets('tapping a preset fills the field', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final controller = await openDialog(tester);
+      // Tap the "Australia" preset row → field becomes 000.
+      await tester.tap(find.text('Australia'));
+      await tester.pump();
+      expect(find.widgetWithText(TextField, '000'), findsOneWidget);
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+      check(controller.lastEmergencyCallNumber).equals('000');
     });
   });
 }

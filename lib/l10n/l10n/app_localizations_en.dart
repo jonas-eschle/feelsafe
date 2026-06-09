@@ -910,6 +910,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'Choose emergency number';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Emergency number';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Number to dial';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Common numbers';
+
+  @override
+  String get phoneWarnInvalidChars => 'Only digits, +, *, and # are allowed.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Emergency numbers are usually at least 3 digits.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'This looks like a regular phone number, not an emergency services number.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Enter a number — this can\'t be empty.';
+
+  @override
   String get settingsRedoOnboarding => 'Redo onboarding';
 
   @override

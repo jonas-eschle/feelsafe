@@ -915,6 +915,30 @@ class AppLocalizationsUk extends AppLocalizations {
       'Виберіть номер екстреної служби';
 
   @override
+  String get settingsEmergencyNumberEditTitle => 'Номер екстреної служби';
+
+  @override
+  String get settingsEmergencyNumberFieldLabel => 'Номер для набору';
+
+  @override
+  String get settingsEmergencyNumberPresetsLabel => 'Поширені номери';
+
+  @override
+  String get phoneWarnInvalidChars => 'Дозволено лише цифри, +, * і #.';
+
+  @override
+  String get phoneWarnTooShort =>
+      'Номери екстрених служб зазвичай мають принаймні 3 цифри.';
+
+  @override
+  String get phoneWarnLooksLikeRegular =>
+      'Це схоже на звичайний телефонний номер, а не на номер екстреної служби.';
+
+  @override
+  String get phoneWarnEmergencyEmpty =>
+      'Введіть номер — поле не може бути порожнім.';
+
+  @override
   String get settingsRedoOnboarding => 'Повторити знайомство';
 
   @override
