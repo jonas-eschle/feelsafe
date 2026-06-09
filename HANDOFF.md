@@ -1,6 +1,126 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
+**Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`; suite
+4033 green). M5 (FINAL milestone, Phase-9) STARTED — C1 (INT-001..004 + the host
+integration harness) DONE this session (`m5-int`, UNPUSHED), GATE-GREEN.** The
+whole `test/integration/` tree was greenfield (0 of 14 INT scenarios existed);
+C1 establishes the reusable harness + the first 4 end-to-end session scenarios.
+Suite now **4037** (4033 + 4 net-new INT). NEXT = **M5 C2 — INT-005..010 (reuse
+the C1 harness `test/integration/_session_harness.dart`).**
+
+---
+
+## M5 (FINAL) — START HERE
+
+### M5 DECISIONS (user, 2026-06-09)
+- **Coverage target = push to ~99% of the LOGIC surface** with an EXCLUSION
+  LIST (set in C5's coverage config): generated `lib/l10n/**`,
+  `*.g.dart` / `*.freezed.dart`, the **seven host-uncoverable `Real*Service`
+  native wrappers** (hardware_button / location / flash / call_state / contact /
+  system_ui / wakelock), `main.dart`, and protocol-only abstract files.
+- **iOS = CI-build-verified ONLY.** Mark iOS-specific spec-coverage rows
+  `(CI build-ios)`; NEVER fake device-green for iOS.
+- **Keep all 14 INT scenarios.** Rename the stale spec-07 contract-table rows to
+  the real files (C8 — the table is aspirational, names files that don't exist).
+- **Do NOT build a hosted-emulator CI job** — device-e2e stays tag-gated +
+  documented (C4 runs it locally on the Pixel_9_Pro emulator standard).
+- **Ringtone-audio + live-OS-notification = host+boot-proven** (don't fake
+  audibility).
+
+### M5 chunk plan
+- **C1 — INT-001..004 + integration harness ✓ DONE (this session).**
+- **C2 — INT-005..010** (distress-panic / duress-no-op / real-call pause+resume /
+  real-call-over-fakeCall / sim-leap / SMS-cancel-on-disarm). **Reuse the C1
+  harness.**
+- **C3 — INT-011..014 + WID-001/002** (wrongPIN→distress / interrupted-prompt /
+  smart-retention clock-advance / soft-delete restore+purge; onboarding flow +
+  language-switch widget cohort).
+- **C4 — device-e2e #11/#12 + stealth-icon hardening** (emulator; tag-gated).
+- **C5 — coverage config + the exclusion list above.**
+- **C6 — coverage: services + orphan files.**
+- **C7 — coverage: feature tail** (may split).
+- **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
+  spec-07 contract-table rows to real files).
+- **C9 — doc-sweep tail + CLAUDE.md tidy.**
+- **C10 — final cohort + push.**
+
+### M5 C1 — INT-001..004 + harness (DONE this session, `m5-int`, UNPUSHED)
+
+**Created `test/integration/`** (did not exist). Three files:
+- **`_session_harness.dart`** — the REUSABLE host harness C2/C3 import. Provides:
+  `RecordingFakes` (bundle of the established recording fakes from
+  `test/domain/orchestration/_test_fakes.dart`, re-exported), a
+  `buildIntegrationContainer({db, fakes, settings, profile})` that overrides
+  EVERY service provider with fakes + an in-memory DB + the real
+  `SimulationSessionLogRecorder` (so the SessionLog marker path runs for real),
+  and a `SessionDriver` that starts a real `SessionController` session under
+  `fakeAsync`, collects the engine event log, and exposes
+  `snapshot`/`events`/`currentStepIndex`/`isDistressChain`/`endReason`/`state`/
+  `count(event)`/`stop(async)`.
+- **`walk_mode_session_test.dart`** — INT-001 (Walk happy: hold→checkIn→re-arm at
+  step 0, no SMS), INT-002 (Walk worst: hold→release→idle → graceExpired×3 +
+  stepAdvancing×3 → `chainExhausted`; smsContact `sendMessage` + callEmergency
+  `callEmergency('112')` recorded).
+- **`date_mode_session_test.dart`** — INT-003 (Date happy: reminderFired ≥1 +
+  template surfaced, 3× checkIn, chain parked at step 0, no SMS, clean `userQuit`
+  end), INT-004 (Date worst: reminderFired×2 [initial+1 retry] + repeatMissed +
+  stepAdvancing×3 → `chainExhausted`; SMS + callEmergency recorded).
+
+Each test is tagged with its `INT-00N` id in the test NAME (grep-able for the C8
+matrix). All four drive the REAL controller/engine end-to-end (no vacuous
+assertions — they go red if the orchestration breaks).
+
+**Gate:** `flutter analyze --fatal-infos` = **0**; `flutter test --concurrency=6`
+= **4037 pass** (4033 + 4 net-new); integration dir **10/10** consecutive
+(determinism proven after fixing the jitter flake — see KEY FINDINGS);
+deferral-grep = **0**; `git status --porcelain -- OLD/` empty; no
+`expect(true,true)`/`.skip` filler. Pure-Dart/`fakeAsync` → host only, no
+emulator.
+
+**KEY FINDINGS / orchestrator-API drift reconciled (C1):**
+- **The spec-07 INT prose names DO NOT match the real API** (Hard Rule 6). Drove
+  the real methods: `engine.state`→`engine.snapshot`; the orchestrator
+  `cleanDisarm`/`registerSmsWorkId` DO NOT EXIST (the disarm path is
+  `controller.disarm()`→`engine.disarm()`); spec messaging
+  `sentMessages`/`sendToAll` → the real `MessagingServiceProtocol.sendMessage`
+  (records in `FakeMessagingService.calls`); `FakePhoneService` records
+  `call`/`callEmergency`; `EndReason` has NO `userTerminated` (→ `userQuit`).
+- **INT-002 as literally written is a spec/code contradiction (REAL FINDING,
+  reconciled — not vacuous):** it expects a `holdButton` step to "time out" when
+  the user never holds, but the engine starts **no timer** for a `holdWait`
+  phase (`_executeHoldButtonStep`, line 708) — spec **02:46** is explicit
+  ("Engine waits for first `holdStart()`. Does NOT assume user is holding"). A
+  never-touched hold step sits FOREVER and never exhausts. The faithful worst
+  case drives hold→release→idle (the post-release sensitivity→duration→grace
+  timers + `retryCount=0` advance the chain). Captured in the test header.
+- **`repeatMissed` is disguisedReminder-ONLY** (engine `_onGraceExpired` only
+  emits it when `step.type == disguisedReminder`). For Walk Mode the missed
+  signal is `graceExpired`+`stepAdvancing` (INT-002 asserts those); INT-004
+  (Date) asserts `repeatMissed`.
+- **THE JITTER FLAKE (must-know for C2/C3):** `SessionController.startSession`
+  builds its `SessionEngine` with the real `Random()` (it does NOT inject
+  `FixedRandom`). Plain steps are deterministic via `randomize: false`, BUT
+  `DisguisedReminderConfig.randomizeInterval` + `.randomizeTemplateOrder` both
+  default to **TRUE** and `ChainStep.randomize` does NOT override them — so a
+  disguisedReminder wait jitters ±20% (10s→8–12s) → a `fakeAsync` boundary flake
+  (caught at ~50% under `--concurrency=6`). FIX: set BOTH config flags to
+  `false`. Documented in the harness `_FixedRandom` contract doc-comment.
+- **`SessionDriver` cannot capture the t=0 `sessionStarted`/`stepStarted(0)`**
+  (they fire synchronously inside `engine.start()` during the same microtask
+  drain the driver flushes before it can grab the engine + subscribe). Those are
+  proven instead by the engine STATE right after start (`currentStepIndex==0` +
+  phase); every later event IS captured (fires during `async.elapse`). Documented
+  on `SessionDriver`.
+- **Reusable harness location for C2/C3:**
+  `test/integration/_session_harness.dart` (import it + add a new
+  `<scenario>_test.dart`; the recording fakes are re-exported so one import
+  suffices). **Next action = "M5 C2 — INT-005..010 (reuse the C1 harness)".**
+
+---
+
+(prior M4 snapshot retained below)
+
+**M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
 CHUNKS DONE + MILESTONE-COHORT-VERIFIED (PASS, both opus) + owner emergency-map FINAL sign-off (DE→112, ET=911/CI=111 accepted with VERIFY flags), GATE-GREEN, READY TO PUSH — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
