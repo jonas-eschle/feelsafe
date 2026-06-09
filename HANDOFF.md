@@ -4,14 +4,136 @@
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
 (INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
 C4 (device-e2e #11/#12/stealth) + C4-fix + C5 (coverage-of-logic gate +
-ratchet floor) + **C6 (coverage push: the 5 zero-coverage safety services +
-main.dart)** DONE (all UNPUSHED — HEAD = the `m5-c6` commit, ahead of
-origin/main by **10**). THIS session: **C6 — host tests for the five 0%
-safety services + main.dart; coverage-of-logic 84.49%→87.14%; floor ratcheted
-84.0→86.5; found + fixed a real `RealFlashService.stopFlash` HANG bug
-(`m5-c6`).****
+ratchet floor) + C6 (5 zero-coverage safety services + main.dart) + **C6b
+(rest of the NON-feature surface)** DONE (all UNPUSHED — HEAD = `7f4b102` the
+`m5-c6b` commit, ahead of origin/main by **11**). THIS session: **C6b — host
+tests for the remaining NON-feature surface (services + data layer +
+domain/core tails); coverage-of-logic 87.14%→89.46%; floor ratcheted
+86.5→88.8; found + fixed a real `_launchUrl`/`_dial` un-awaited-return bug
+that let an async launch rejection escape the degrade catch (`m5-c6b`).
+NEXT = C7 (the `lib/features/` tail).****
 
-**THE C6 WORK (this session):**
+---
+
+## KEY FINDINGS (C6b — new baseline + carry to C7)
+
+**Coverage-of-logic 87.14% → 89.46%** (11886 / 13286 lines; +310 covered).
+**Floor ratcheted 86.5 → 88.8** (`tool/coverage/coverage_floor.txt`, ~0.6%
+jitter headroom; gate PROVEN OK at 88.8, RED at 99.0). Suite **4173 → 4287**
+(+114 net-new), 0 failures. analyze `--fatal-infos` = 0. Host only, no emulator.
+
+**Per-file results (C6b targets, all driven by REAL host tests — real in-memory
+Drift `GuardianAngelaDatabase.memory()`, real MethodChannels via
+`TestDefaultBinaryMessenger`, `fakeAsync`, mock plugins — NOT the Sim services,
+no vacuous asserts):**
+- `recording_service` 12%→**100%** (`recording_service_real_test.dart`): mocked
+  `AudioRecorder` + path_provider; permission StateError, path construction,
+  the auto-stop cap Timer under fakeAsync, Extra-39 validation.
+- `phone_service` 69%→**100%** (real `_dial` via url_launcher mock + the
+  degrade catch — see the bug below).
+- `timing_slider` 61%→**100%** (`timing_slider_test.dart`, widget): log-scale
+  Slider commit-on-release, snap, s/m/h/d formatting, didUpdateWidget, the
+  manual-entry dialog (valid/clamp, non-numeric, Cancel, same-value).
+- feedback-history **dao+repo+table 0%→100%** (`feedback_history_test.dart`):
+  one coherent in-memory-DB test (insert/getAll-desc/deleteAll, mappers, the
+  table column DSL, every FeedbackType).
+- `contacts_repository` 44%→**100%** (`contacts_repository_test.dart`);
+  `contacts_dao` (bulkUpdate+deleteAll) / `sms_retry_jobs_dao` (hashCode) /
+  `database` (real `open()` via path_provider mock + a quoted key → the
+  `_escapePragma` path) / `pin_keypad` / `home_widget` / `chain_event` +
+  `permission_revocation` toString → **100%**.
+- `json_singleton_repository` 92%→**98.7%** (the DEFAULT path_provider-backed
+  resolveDir + the save dir-create branch).
+- `audio_service` 55%→**96%** (`audio_service_real_test.dart`): playSound /
+  playAlarmWithConfig (custom + immediate-volume + ArgumentError) /
+  playVoiceRecording (file + built-in + Layer-3) / stop / bootstrapVoiceAssets
+  (per-locale TTS synth, skip-cached, onFailure, zh BCP-47 map).
+- `messaging_service` 82%→**92.5%** (phoneCall dispatcher, Telegram https
+  fallback, `_launchUrl` degrade, iOS sms: fallback, `SmsRetryExhaustedEvent`).
+- `session_start_validator` 74%→**94.4%** (`updateCachedState` drives the real
+  permission loop + the `_toHandlerPermission` switch over all six perms + the
+  battery check; refreshed cache flips validate() outcomes).
+- `service_providers` 60%→**95.3%** (`service_providers_wiring_test.dart`):
+  every Real* provider lambda READ through a real `ProviderContainer` (in-mem
+  DB + sim-encryption overrides) so the construction runs; record/home_widget
+  channels mocked; the real `databaseProvider.open()` body covered separately.
+- `notification_service` 46%→**76%** (`isChannelEnabled` iOS branch + catch,
+  desktop `requestPermission`, `cancel`, `_onResponse`, the top-level
+  `_onBackgroundResponse` via a `@visibleForTesting` alias). The remaining 31
+  are Android/iOS `Platform.is*`-gated — device-only.
+- `permission_audit` 95%→**98.7%** (the no-perm step-type switch arms);
+  `session_engine` 97%→**98.8%** (`engine_edges_test.dart`: empty-chain
+  ArgumentErrors, grace-retry re-exec, holdWait pause/resume no-op);
+  `swipe_slider`→92% (pan-cancel test added; the `_onPanCancel` body still
+  shows uncovered — the test-arena cancel routes to `_onPanEnd`, which IS
+  covered and is functionally identical; a 7-line cosmetic gap).
+
+**PRODUCTION BUG FOUND + FIXED (`messaging._launchUrl` + `phone._dial`).** Both
+had `return launchUrl(uri, ...)` INSIDE a `try` WITHOUT `await`. Because
+`launchUrl` is async, the `try` completed normally returning the pending
+future, so the `catch (e) { log; return false; }` was DEAD for async
+rejections — a failed launch (PlatformException: no handler app / no foreground
+activity) propagated an UNHANDLED exception up the dispatch chain instead of
+degrading to `false` per the methods' documented contract. A safety app whose
+SMS/phone/url launch crashes the dispatch on a missing handler is a real
+defect. FIX: `return await launchUrl(...)` in both, so the degrade catch fires
+(host-proven red→green). Caught only because C6b drove the REAL launch.
+
+**Test seam added** (matches the C6 hardware_button pattern): a
+`@visibleForTesting notificationBackgroundResponse(...)` alias in
+`notification_service.dart` exposes the private top-level `_onBackgroundResponse`
+(`@pragma('vm:entry-point')`) so the real SharedPreferences replay-queue persist
+runs on the host.
+
+**THE DEVICE-ONLY / CODEGEN-ONLY CENSUS (for C7 host-ceiling planning).** The
+NON-feature surface that NO host test can reach (left in the denominator, NOT
+excluded — honest):
+- **Codegen-only Drift table DSLs ≈ 71 lines** — the column getters in
+  `lib/data/db/tables/*.dart` (contacts 9, session_modes 18, reminder_templates
+  15, session_logs 12, sms_retry_jobs 9, feedback_history 8). Drift's
+  `text()`/`integer()`/… DSL methods THROW `"This method should not be called
+  at runtime"` (PROVEN) — they are compile-time-only inputs to build_runner,
+  reachable by no test (host OR device). Structurally equivalent to `*.g.dart`.
+  **A future exclusion (glob `lib/data/db/tables/*.dart`) is a defensible
+  orchestrator call — flag for C8/C9** (would lift the denominator by ~71).
+- **Platform.is*-gated native service paths ≈ 96 lines** — concentrated in 5
+  files: `notification_service` (Android channel-query + Android/iOS
+  requestPermission + `_channelIdFor` ≈31), `device_info_service` (Android
+  getSimPhoneNumber channel + exception branches ≈10), `messaging_service`
+  (Android enqueueSms + cancelPending body ≈8), `hardware_button_service` (iOS
+  headphone-remote ≈21, already noted by C6), `background_session_service`
+  (`_onBackgroundStart` isolate entrypoint + iOS configure closure ≈13).
+  Covered by device-e2e (`tool/device_e2e/*.sh`) / CI build-ios, not host.
+- **Thin Sentry SDK passthrough ≈ 9 lines** — `_RealSentrySdk.init/
+  captureException/close` wrap `SentryFlutter`/`Sentry` statics; tests inject a
+  fake SDK (driving real `RealSentryService` logic), so the wrapper only runs
+  against the real network SDK.
+- **`main.dart` ≈12** (the real `runApp` entry + a few recovery edge taps) and
+  small Sim-service tails (`audio_service_sim` 2, `phone_service_sim` 4,
+  `recording_service_sim` 3) round out the non-feature remainder.
+
+**MAGNITUDE for the host-coverage ceiling:** the non-feature device/codegen-only
+floor is **≈ 185 lines** (71 codegen + ≈96 native + 9 sentry + small tails).
+**The `lib/features/` surface is overwhelmingly host-reachable** — only ~5
+`Platform.is*`-gated lines across all of `lib/features/` (about/contacts/
+fake_call/contact_form screens). So C7's 1153-missed feature surface (85.7%
+covered today) is nearly all coverable by widget + controller host tests; the
+host ceiling for the WHOLE app is high (~98–99% once C7 lands), the device-only
+floor sits almost entirely in the ~185 non-feature lines above.
+
+**Coverage tooling reminders (unchanged from C5/C6):** `flutter test --coverage
+--concurrency=6` → `LCOV_BIN=/home/jonas/lcov/bin/lcov bash
+tool/coverage/filter_coverage.sh` → `bash tool/coverage/check_floor.sh` (the
+`Coverage of LOGIC: NN.NN%` line). lcov is the vendored perl clone at
+`/home/jonas/lcov/bin/lcov` (not on PATH). Bump the floor in
+`coverage_floor.txt` AFTER the covering tests land. The exclusion list
+(`coverage_excludes.txt`) is unchanged by C6b (5 globs: l10n / `*.g.dart` /
+`*.freezed.dart` / system_ui / wakelock); the C6b "DELIBERATELY NOT EXCLUDED"
+census is recorded in its comment block.
+
+---
+
+**THE C6 WORK (the prior session):**
 - **5 priority safety services driven by REAL host tests** (NOT the
   simulations — the genuine production parse/detection/timing logic runs via
   `TestDefaultBinaryMessenger` mock channels + `fakeAsync`). +99 service tests:
@@ -777,18 +899,25 @@ and must stay.
   scripts run via perl with no root. `--rc branch_coverage=0` + `--ignore-errors
   unused` keep lcov 2.x quiet on the no-match `*.freezed.dart` glob.
 
-**[C5's next-action — now SUPERSEDED: C6 is DONE.]** C6 covered the five
-0%-but-host-testable service files (`hardware_button`/`location`/`flash`/
-`call_state`/`contact`) + main.dart and ratcheted the floor 84.0→86.5; see the
-C6 section + KEY FINDINGS at the top. **The CURRENT next-action is below.**
+**[C5's + C6's next-actions — now SUPERSEDED: C6 AND C6b are DONE.]** C6 covered
+the five 0%-but-host-testable service files + main.dart (floor 84.0→86.5); C6b
+covered the rest of the NON-feature surface (services + data layer + domain/core
+tails; floor 86.5→88.8). See the **C6b KEY FINDINGS block at the top** (new
+89.46% baseline, per-file results, the `_launchUrl`/`_dial` bug fix, and the
+DEVICE-ONLY / CODEGEN-ONLY census). **The CURRENT next-action is below.**
 
 **Next action = "M5 C7 — coverage push: `lib/features/` controllers + screens
-(may split C7a/C7b)"** — the feature tail toward ~99%-of-logic; bump
-`tool/coverage/coverage_floor.txt` as each batch lands (re-measure via
-`flutter test --coverage` → `tool/coverage/filter_coverage.sh` → the
-`Coverage of LOGIC: NN.NN%` line from `check_floor.sh`). The remaining
-NON-feature files are C6b (enumerated in the C6 KEY FINDINGS at the top — fold
-them in opportunistically or as a dedicated C6b before C7). The device-e2e
++ `app_router` (split as needed)"** — the feature tail toward ~99%-of-logic;
+bump `tool/coverage/coverage_floor.txt` as each batch lands (re-measure via
+`flutter test --coverage` → `LCOV_BIN=/home/jonas/lcov/bin/lcov bash
+tool/coverage/filter_coverage.sh` → the `Coverage of LOGIC: NN.NN%` line from
+`check_floor.sh`). C7's surface = **1153 missed across 8074 feature+router
+logic lines (85.7% covered today)**, almost entirely host-reachable (only ~5
+`Platform.is*`-gated lines in all of `lib/features/`) → widget + controller
+tests reach it. `app_router.dart` (111 lines, 0%) needs a router-build/redirect
+test and couples to feature screens (pair it with the screens or do it first).
+The NON-feature surface is now DONE (C6+C6b); the only remaining non-feature
+gaps are the device-only/codegen-only census lines above. The device-e2e
 standard + the C8 reconciliation list (below) stay intact.
 
 ### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
@@ -923,7 +1052,23 @@ Item added by C5 (coverage gate):
   target (owner mandate + D6), superseding the per-layer % rows and the codecov
   upload snippet (CI uses the floor gate, not codecov).
 
-**M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
+Items added by C6b (coverage push — for C8/C9):
+
+- **C9 candidate — exclude the codegen-only Drift table DSLs.** The column
+  getters in `lib/data/db/tables/*.dart` (~71 lines, currently 0% and IN the
+  denominator) call Drift DSL methods (`text()`/`integer()`/…) that THROW
+  `"This method should not be called at runtime"` — they are compile-time-only
+  build_runner inputs, reachable by NO test (host or device), structurally
+  identical to `*.g.dart`. C6b LEFT them in the denominator (per the brief's
+  "don't add new excludes" rule); a `lib/data/db/tables/*.dart` glob in
+  `coverage_excludes.txt` is a defensible HONESTY-CONTRACT-compliant exclusion
+  (generated-equivalent) that would lift the denominator by ~71 and raise the
+  measured %. Orchestrator decision — flag for C8/C9, not done unilaterally.
+- **The `_launchUrl`/`_dial` bug fix is BEHAVIOUR-NEUTRAL for the spec** (the
+  documented contract — log + return false on a failed launch — was always the
+  intent; the bug was that the async rejection escaped the catch). No spec
+  change needed; C8 may note in `05-services` that messaging/phone launch
+  failures degrade to `false` (now actually enforced). No new divergence.
 CHUNKS DONE + MILESTONE-COHORT-VERIFIED (PASS, both opus) + owner emergency-map FINAL sign-off (DE→112, ET=911/CI=111 accepted with VERIFY flags), GATE-GREEN, READY TO PUSH — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
