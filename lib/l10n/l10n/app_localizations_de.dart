@@ -2107,6 +2107,23 @@ class AppLocalizationsDe extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Sprachausgabe';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Klingelton';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Standardklingelton';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Eigener: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Klingelton wählen…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Standard verwenden';
+
+  @override
   String get eventDefaultsSmsChannel => 'Kanal';
 
   @override

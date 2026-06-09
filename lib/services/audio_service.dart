@@ -152,21 +152,60 @@ class RealAudioService implements AudioServiceProtocol {
     await _ensurePlayer();
     await _player.setVolume(1.0);
 
-    if (assetPath != null) {
-      if (assetPath.startsWith('assets/')) {
-        await _player.setAsset(assetPath);
-      } else {
-        await _player.setFilePath(assetPath);
-      }
-    } else {
-      // Default ringtone asset — generic ringing sound bundled with the app.
-      // WAV (not OGG): decodes on both Android and iOS/AVFoundation.
-      await _player.setAsset('assets/audio/ringtone_default.wav');
-    }
+    await _loadRingtoneSource(assetPath);
 
     await _player.setLoopMode(LoopMode.all);
     _startPlayback();
   }
+
+  /// Loads the ringtone audio source onto [_player], degrading to the bundled
+  /// default whenever a user-supplied source cannot be played (Tier-F F3).
+  ///
+  /// [source] is one of:
+  /// - `null` → the bundled default ring.
+  /// - an `assets/…` path → a Flutter asset (e.g. the default itself).
+  /// - any other string → a filesystem path to the user's imported ringtone.
+  ///
+  /// A user-supplied file that is **missing** (e.g. the source was deleted
+  /// after import, or the stored copy was cleared) or **unreadable** (corrupt,
+  /// permission error) must NEVER break the fake-call disguise: this method
+  /// falls back to [_loadDefaultRingtone] in that case. Asset-load failures of
+  /// the *default* itself propagate (a packaging bug, not user data).
+  Future<void> _loadRingtoneSource(String? source) async {
+    if (source == null) {
+      await _loadDefaultRingtone();
+      return;
+    }
+    if (source.startsWith('assets/')) {
+      await _player.setAsset(source);
+      return;
+    }
+    // User-supplied filesystem path. Guard existence first, then guard the
+    // decode/load itself — either failure degrades to the bundled default.
+    if (!File(source).existsSync()) {
+      log(
+        'playRingtone — custom file missing, using default: $source',
+        name: 'AudioService',
+      );
+      await _loadDefaultRingtone();
+      return;
+    }
+    try {
+      await _player.setFilePath(source);
+    } catch (e) {
+      log(
+        'playRingtone — custom file unreadable ($e), using default: $source',
+        name: 'AudioService',
+      );
+      await _loadDefaultRingtone();
+    }
+  }
+
+  /// Loads the bundled default ringtone asset onto [_player].
+  ///
+  /// WAV (not OGG): decodes on both Android and iOS/AVFoundation.
+  Future<void> _loadDefaultRingtone() =>
+      _player.setAsset('assets/audio/ringtone_default.wav');
 
   @override
   Future<void> playAlarm({bool alarmDndOverride = true}) =>

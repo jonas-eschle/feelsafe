@@ -2088,6 +2088,23 @@ class AppLocalizationsAr extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'الإخراج الصوتي';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'نغمة الرنين';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'النغمة الافتراضية';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'مخصص: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'اختيار نغمة…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'استخدام الافتراضي';
+
+  @override
   String get eventDefaultsSmsChannel => 'القناة';
 
   @override

@@ -2657,6 +2657,31 @@
   "@eventDefaultsFakeCallVoiceOutput": {
     "description": "Field label for FakeCallConfig.voiceOutputMode."
   },
+  "eventDefaultsFakeCallRingtone": "Ringtone",
+  "@eventDefaultsFakeCallRingtone": {
+    "description": "Section label for the fake-call ringtone picker (FakeCallConfig.customRingtonePath)."
+  },
+  "eventDefaultsFakeCallRingtoneDefault": "Default ring",
+  "@eventDefaultsFakeCallRingtoneDefault": {
+    "description": "Shown when no custom ringtone is chosen; the bundled default ring is used."
+  },
+  "eventDefaultsFakeCallRingtoneCustom": "Custom: {fileName}",
+  "@eventDefaultsFakeCallRingtoneCustom": {
+    "description": "Shown when a user-supplied ringtone file is chosen. {fileName} is the imported file name.",
+    "placeholders": {
+      "fileName": {
+        "type": "String"
+      }
+    }
+  },
+  "eventDefaultsFakeCallRingtoneChoose": "Choose ringtone…",
+  "@eventDefaultsFakeCallRingtoneChoose": {
+    "description": "Button that opens the file picker to import a user-supplied fake-call ringtone."
+  },
+  "eventDefaultsFakeCallRingtoneUseDefault": "Use default",
+  "@eventDefaultsFakeCallRingtoneUseDefault": {
+    "description": "Button that clears the custom fake-call ringtone, reverting to the bundled default ring."
+  },
   "eventDefaultsSmsChannel": "Channel",
   "@eventDefaultsSmsChannel": {
     "description": "Field label for SmsContactConfig.channel."

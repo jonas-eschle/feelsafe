@@ -2120,6 +2120,23 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Sortie vocale';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Sonnerie';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Sonnerie par défaut';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Personnalisée : $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Choisir une sonnerie…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Utiliser par défaut';
+
+  @override
   String get eventDefaultsSmsChannel => 'Canal';
 
   @override

@@ -895,5 +895,10 @@
   "sessionInterruptedJustNow": "ממש עכשיו",
   "sessionInterruptedMinutesAgo": "{count, plural, one{לפני דקה} two{לפני שתי דקות} many{לפני {count} דקות} other{לפני {count} דקות}}",
   "sessionInterruptedHoursAgo": "{count, plural, one{לפני שעה} two{לפני שעתיים} many{לפני {count} שעות} other{לפני {count} שעות}}",
-  "sessionInterruptedDaysAgo": "{count, plural, one{לפני יום} two{לפני יומיים} many{לפני {count} ימים} other{לפני {count} ימים}}"
+  "sessionInterruptedDaysAgo": "{count, plural, one{לפני יום} two{לפני יומיים} many{לפני {count} ימים} other{לפני {count} ימים}}",
+  "eventDefaultsFakeCallRingtone": "צלצול",
+  "eventDefaultsFakeCallRingtoneDefault": "צלצול ברירת מחדל",
+  "eventDefaultsFakeCallRingtoneCustom": "מותאם אישית: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "בחירת צלצול…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "השתמש בברירת המחדל"
 }

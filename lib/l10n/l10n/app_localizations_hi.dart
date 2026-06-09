@@ -2094,6 +2094,24 @@ class AppLocalizationsHi extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'वॉइस आउटपुट';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'रिंगटोन';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'डिफ़ॉल्ट रिंग';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'कस्टम: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'रिंगटोन चुनें…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault =>
+      'डिफ़ॉल्ट का उपयोग करें';
+
+  @override
   String get eventDefaultsSmsChannel => 'चैनल';
 
   @override

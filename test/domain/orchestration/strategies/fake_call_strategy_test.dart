@@ -176,41 +176,75 @@ void main() {
     });
   });
 
-  // ─── 4. ringtone is always the default ring (voice plays on answer) ─────────
-  group('executeReal — ringtone is the default ring, never the voice clip', () {
-    test('playRingtone receives null when config has no voice path', () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio);
-      await const FakeCallStrategy().executeReal(
-        _step(config: const FakeCallConfig()),
-        services,
-      );
-      final call = audio.calls.firstWhere((c) => c['method'] == 'playRingtone');
-      expect(call['assetPath'], isNull);
-    });
+  // ─── 4. ringtone source: custom path when set, default otherwise ────────────
+  group(
+    'executeReal — ringtone uses customRingtonePath, never the voice clip',
+    () {
+      test('playRingtone receives null when no custom ringtone is set '
+          '(→ bundled default ring)', () async {
+        final audio = FakeAudioService();
+        final services = buildServices(audio: audio);
+        await const FakeCallStrategy().executeReal(
+          _step(config: const FakeCallConfig()),
+          services,
+        );
+        final call = audio.calls.firstWhere(
+          (c) => c['method'] == 'playRingtone',
+        );
+        expect(call['assetPath'], isNull);
+      });
 
-    test('playRingtone still receives null when a voice path is configured — '
-        'voiceRecordingPath plays on answer, it is NOT the ringtone', () async {
-      final audio = FakeAudioService();
-      final services = buildServices(audio: audio);
-      await const FakeCallStrategy().executeReal(
-        _step(
-          config: const FakeCallConfig(
-            voiceRecordingPath: '/storage/voice.aac',
-          ),
-        ),
-        services,
+      test(
+        'playRingtone receives the user-supplied customRingtonePath when set '
+        '(Tier-F F3)',
+        () async {
+          final audio = FakeAudioService();
+          final services = buildServices(audio: audio);
+          await const FakeCallStrategy().executeReal(
+            _step(
+              config: const FakeCallConfig(
+                customRingtonePath: '/data/ringtones/mine.mp3',
+              ),
+            ),
+            services,
+          );
+          final call = audio.calls.firstWhere(
+            (c) => c['method'] == 'playRingtone',
+          );
+          expect(call['assetPath'], '/data/ringtones/mine.mp3');
+        },
       );
-      final call = audio.calls.firstWhere((c) => c['method'] == 'playRingtone');
-      expect(call['assetPath'], isNull);
-      // The strategy must not play the voice clip as the ringtone; the voice
-      // is played on answer by SessionController.answerFakeCall.
-      expect(
-        audio.calls.any((c) => c['method'] == 'playVoiceRecording'),
-        isFalse,
+
+      test(
+        'the ringtone is the customRingtonePath, NOT the voiceRecordingPath — '
+        'voiceRecordingPath plays on answer, it is NOT the ringtone',
+        () async {
+          final audio = FakeAudioService();
+          final services = buildServices(audio: audio);
+          await const FakeCallStrategy().executeReal(
+            _step(
+              config: const FakeCallConfig(
+                voiceRecordingPath: '/storage/voice.aac',
+                customRingtonePath: '/data/ringtones/mine.mp3',
+              ),
+            ),
+            services,
+          );
+          final call = audio.calls.firstWhere(
+            (c) => c['method'] == 'playRingtone',
+          );
+          // The ringtone is the custom ringtone, never the voice clip.
+          expect(call['assetPath'], '/data/ringtones/mine.mp3');
+          // The strategy must not play the voice clip as the ringtone; the voice
+          // is played on answer by SessionController.answerFakeCall.
+          expect(
+            audio.calls.any((c) => c['method'] == 'playVoiceRecording'),
+            isFalse,
+          );
+        },
       );
-    });
-  });
+    },
+  );
 
   // ─── 5. CallStyle enum variants — strategy fires all three services ──────────
   group('executeReal — all CallStyle values — wires ringtone, vib, notif', () {

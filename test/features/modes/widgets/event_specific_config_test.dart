@@ -15,12 +15,64 @@ import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/core/utils/ringtone_picker.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../../helpers/widget_test_helpers.dart';
+
+/// Fake [RingtonePicker] that returns a canned stored path (or null for a
+/// cancel) without touching `file_selector` or the filesystem.
+class _FakeRingtonePicker extends RingtonePicker {
+  _FakeRingtonePicker(this._result);
+
+  final String? _result;
+  int callCount = 0;
+
+  @override
+  Future<String?> pickAndStoreRingtone() async {
+    callCount++;
+    return _result;
+  }
+}
+
+/// Pumps a fakeCall [config] inside [EventSpecificConfig] with an injected
+/// [ringtonePicker], capturing the emitted config via [onChanged].
+Future<void> _pumpFakeCall(
+  WidgetTester tester,
+  FakeCallConfig config, {
+  required ValueChanged<FakeCallConfig> onChanged,
+  RingtonePicker? ringtonePicker,
+}) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: const <LocalizationsDelegate<Object>>[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(
+        platform: TargetPlatform.android,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: EventSpecificConfig(
+            config: config,
+            onChanged: (StepConfig c) => onChanged(c as FakeCallConfig),
+            ringtonePicker: ringtonePicker,
+          ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
 
 /// Pumps [config] inside an [EventSpecificConfig] under a [MaterialApp] whose
 /// theme reports [platform], so the iOS-gated warnings resolve against it.
@@ -204,6 +256,102 @@ void main() {
       // direct-construct clear path (copyWith cannot null the field).
       check(emitted).isNotNull();
       check(emitted!.messageTemplate).isNull();
+    });
+  });
+
+  group('EventSpecificConfig — fakeCall ringtone picker (Tier-F F3)', () {
+    testWidgets('shows "Default ring" when no custom ringtone is set', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpFakeCall(tester, const FakeCallConfig(), onChanged: (_) {});
+      expect(
+        find.text(l10n.eventDefaultsFakeCallRingtoneDefault),
+        findsOneWidget,
+      );
+      // No "Use default" clear button when already on the default.
+      expect(
+        find.text(l10n.eventDefaultsFakeCallRingtoneUseDefault),
+        findsNothing,
+      );
+    });
+
+    testWidgets('shows the file name when a custom ringtone is set', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpFakeCall(
+        tester,
+        const FakeCallConfig(customRingtonePath: '/data/ringtones/abc123.mp3'),
+        onChanged: (_) {},
+      );
+      expect(
+        find.text(l10n.eventDefaultsFakeCallRingtoneCustom('abc123.mp3')),
+        findsOneWidget,
+      );
+      // The clear button is offered once a custom ringtone is set.
+      expect(
+        find.text(l10n.eventDefaultsFakeCallRingtoneUseDefault),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('tapping Choose imports a ringtone and emits the stored path', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final picker = _FakeRingtonePicker('/data/ringtones/picked.m4a');
+      FakeCallConfig? emitted;
+      await _pumpFakeCall(
+        tester,
+        const FakeCallConfig(),
+        onChanged: (FakeCallConfig c) => emitted = c,
+        ringtonePicker: picker,
+      );
+      await tester.tap(find.text(l10n.eventDefaultsFakeCallRingtoneChoose));
+      await tester.pumpAndSettle();
+      check(picker.callCount).equals(1);
+      check(emitted).isNotNull();
+      check(emitted!.customRingtonePath).equals('/data/ringtones/picked.m4a');
+    });
+
+    testWidgets('a cancelled pick leaves the config unchanged (no emit)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final picker = _FakeRingtonePicker(null); // user cancels
+      FakeCallConfig? emitted;
+      await _pumpFakeCall(
+        tester,
+        const FakeCallConfig(),
+        onChanged: (FakeCallConfig c) => emitted = c,
+        ringtonePicker: picker,
+      );
+      await tester.tap(find.text(l10n.eventDefaultsFakeCallRingtoneChoose));
+      await tester.pumpAndSettle();
+      check(picker.callCount).equals(1);
+      check(emitted).isNull();
+    });
+
+    testWidgets('tapping Use default clears the custom ringtone to null', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      FakeCallConfig? emitted;
+      await _pumpFakeCall(
+        tester,
+        const FakeCallConfig(
+          callerName: 'Mom',
+          customRingtonePath: '/data/ringtones/x.mp3',
+        ),
+        onChanged: (FakeCallConfig c) => emitted = c,
+      );
+      await tester.tap(find.text(l10n.eventDefaultsFakeCallRingtoneUseDefault));
+      await tester.pumpAndSettle();
+      // Direct-construct clear: path null, other fields preserved.
+      check(emitted).isNotNull();
+      check(emitted!.customRingtonePath).isNull();
+      check(emitted!.callerName).equals('Mom');
     });
   });
 }

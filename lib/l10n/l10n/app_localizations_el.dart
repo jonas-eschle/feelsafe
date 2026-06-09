@@ -2124,6 +2124,23 @@ class AppLocalizationsEl extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Φωνητική έξοδος';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Ήχος κλήσης';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Προεπιλεγμένος ήχος';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Προσαρμοσμένος: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Επιλογή ήχου κλήσης…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Χρήση προεπιλογής';
+
+  @override
   String get eventDefaultsSmsChannel => 'Κανάλι';
 
   @override

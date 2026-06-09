@@ -895,5 +895,10 @@
   "sessionInterruptedJustNow": "μόλις τώρα",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{πριν από 1 λεπτό} other{πριν από {count} λεπτά}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{πριν από 1 ώρα} other{πριν από {count} ώρες}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{πριν από 1 ημέρα} other{πριν από {count} ημέρες}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{πριν από 1 ημέρα} other{πριν από {count} ημέρες}}",
+  "eventDefaultsFakeCallRingtone": "Ήχος κλήσης",
+  "eventDefaultsFakeCallRingtoneDefault": "Προεπιλεγμένος ήχος",
+  "eventDefaultsFakeCallRingtoneCustom": "Προσαρμοσμένος: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Επιλογή ήχου κλήσης…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Χρήση προεπιλογής"
 }

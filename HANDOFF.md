@@ -5,10 +5,13 @@ STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
 Session-Interrupted prompt) + C5 (Tier-F F1/F2 descope + REMOVE
-`SCHEDULE_EXACT_ALARM` + spec/doc reconciliation) DONE, GATE-GREEN, COMMITTED
-(UNPUSHED). NEXT = M4 C6 — F3: user-supplied ringtone(s) for the fake-call (a
-ringtone picker/import in the fake-call config; user provides their own audio —
-sidesteps licensing; NOT bundled per-style assets).**
+`SCHEDULE_EXACT_ALARM` + spec/doc reconciliation) + C6 (Tier-F F3: user-supplied
+fake-call ringtone + bundled-default fallback) DONE, GATE-GREEN, COMMITTED
+(UNPUSHED). NEXT = M4 C7 — F4: wire `requireLaunchAuth` / `launchAuthBiometric`
+per spec — but FIRST determine from the spec what they do BEYOND the existing
+App-PIN launch gate; if genuinely identical/redundant, surface that to the
+orchestrator rather than building a duplicate. (F5 = post-session feedback
+prompt also still TO BUILD.)**
 
 > **OWNER FINAL pre-push emergency-map review (carry to the M4 push).** The C2
 > R-8 map (`lib/domain/models/emergency_numbers.dart`, 109 countries) still
@@ -16,6 +19,140 @@ sidesteps licensing; NOT bundled per-style assets).**
 > **DE=110, ET=911, CI=111** (the orchestrator must surface the C2 "CHANGES
 > FROM THE REVIEWED DRAFT" summary before pushing M4). The count is now
 > guarded by an EXACT `== 109` test (C5), so a silent map edit fails CI.
+
+---
+
+## What's done THIS session (M4 C6 — UNPUSHED, `m4-tierF-#F3`)
+
+**Tier-F F3 — user-supplied fake-call ringtone (+ bundled-default fallback).**
+The owner reframed the original spec (5 bundled per-`CallStyle` ringtone assets
+— a trademark/licensing risk) to "let the user supply their OWN ringtone audio".
+
+**GAP verified first (confirmed):** `playRingtone` was hard-wired to the bundled
+default — `FakeCallStrategy.executeReal` called `playRingtone(null)`; there was
+NO user-supplied-ringtone field anywhere (`grep customRingtone|ringtonePath|
+file_picker|FilePicker lib/ test/` = 0). NOTE: `RealAudioService.playRingtone`
+ALREADY routed a file path → `setFilePath` vs an `assets/` path → `setAsset` (so
+the file-playback seam half-existed); the genuine gaps were (1) no config field,
+(2) no picker, (3) no copy-to-app-storage, (4) NO missing-file fallback (a
+deleted/corrupt custom file would have broken the ring).
+
+**DESIGN CHOICE (documented):** **a single user-supplied custom ringtone per
+fakeCall config** (NOT per-`CallStyle`). Rationale: the owner's intent is "allow
+different ringtones, added by the user" — one user-chosen ringtone per fakeCall
+step delivers exactly that; `CallStyle` is a purely *visual* call-sheet
+appearance (Android/iOS/WhatsApp look), orthogonal to *which audio rings* —
+coupling audio to the visual style would mean N picker fields + N stored files
+for zero user benefit. Mirrors the existing single-nullable-path
+`voiceRecordingPath` / `callerPhotoPath` pattern already in `FakeCallConfig`.
+
+**DEP DECISION — `file_selector`, NOT `file_picker` (deviation from brief, flagged
+to orchestrator).** The brief said `flutter pub add file_picker`. Per the
+dependency policy I ran `flutter pub outdated` first, then tried `file_picker`:
+the LATEST is `11.0.2`, but it resolves ONLY to the **2022-era `3.0.4`** here —
+every version ≥5.3.4 conflicts with our existing direct deps `share_plus
+^13.1.0` / `device_info_plus ^13.1.0` via a transitive `win32` constraint
+(`file_picker ≥8.3.3` needs `win32 ^5.9.0`; `share_plus ≥13.1.0` needs
+`win32 ^6.0.1`). A 5-majors-stale picker is exactly what the policy warns
+against. **`file_selector` (Flutter-team / flutter.dev verified) resolves at the
+current `1.1.0` with "No dependencies would change"** — it is ALREADY a
+transitive dep (`file_selector_android 0.5.2+6` is compiled into our build) and
+delivers the identical capability (`openFile({acceptedTypeGroups})` →
+`XFile?`). I made the call to use `file_selector`, documented it here + in the
+report. **If the orchestrator/owner insists on the literal `file_picker`, the
+only resolvable version is `3.0.4` (stale) unless `share_plus`/`device_info_plus`
+are downgraded — surface this trade-off.**
+
+**Built (all proven by host tests):**
+1. **`FakeCallConfig.customRingtonePath`** (`lib/domain/configs/step_config.dart`)
+   — nullable `String?`, `if (x != null)` toJson (omit-when-null, like the
+   sibling paths), in copyWith/`==`/`hashCode`. `copyWith` keeps `x ?? this.x`
+   (CAN'T null — KEY FINDING); clearing back to the default is a direct
+   construction (the editor's `_withCustomRingtone(null)` helper, mirroring
+   `_SmsContactForm._withTemplate`).
+2. **`RingtonePicker`** (`lib/core/utils/ringtone_picker.dart`, NEW) — opens the
+   native audio picker (`file_selector.openFile`, `XTypeGroup(extensions:
+   kRingtoneExtensions = mp3/m4a/aac/wav/ogg/flac)`), **copies the picked bytes
+   into `<app-documents>/ringtones/<uuid>.<ext>`** (a picked URI is transient;
+   the copy is durable + survives the source being moved/deleted), returns the
+   stored path (or null on cancel). Injectable seams `opener` /
+   `docsDirProvider` / `uuidGenerator` (defaults assigned in-body) → host-testable
+   without platform channels.
+3. **Picker UI** — `_RingtonePickerField` in
+   `lib/features/modes/widgets/event_specific_config.dart` (`_FakeCallForm`):
+   shows "Default ring" / "Custom: {fileName}", a "Choose ringtone…" button →
+   `RingtonePicker.pickAndStoreRingtone()` → `onChanged(copyWith(customRingtonePath:
+   stored))`, and a "Use default" clear (shown only when a custom path is set) →
+   direct-construct to null. `EventSpecificConfig` gained an optional
+   `ringtonePicker` injection (production → a default `RingtonePicker()`).
+4. **Playback** — `FakeCallStrategy.executeReal` now passes
+   `config.customRingtonePath` to `playRingtone` (was hard `null`).
+   `RealAudioService.playRingtone` refactored to `_loadRingtoneSource`: null →
+   bundled default; `assets/…` → that asset; a file path → **`File(path)
+   .existsSync()` guard, then a try/catch around `setFilePath`** — a MISSING or
+   UNREADABLE custom file degrades to `_loadDefaultRingtone()`
+   (`assets/audio/ringtone_default.wav`). A broken custom file can NEVER break
+   the fake-call disguise.
+
+**The chain, file:line:** picker
+(`ringtone_picker.dart:74 pickAndStoreRingtone` → copy to
+`<docs>/ringtones/<uuid>.<ext>`) → config field
+(`step_config.dart` `FakeCallConfig.customRingtonePath`, toJson/fromJson) → UI
+(`event_specific_config.dart` `_RingtonePickerField`) → strategy
+(`fake_call_strategy.dart:58 playRingtone(config.customRingtonePath)`) → playback
++ fallback (`audio_service.dart` `_loadRingtoneSource` / `_loadDefaultRingtone`).
+
+**Tests (net +27 → suite 4017, baseline 3990):** +12 `fake_call_config_test.dart`
+(default-null, toJson omit/include, round-trip-with-value [the picked-path →
+draft → DB proof], copyWith-replace, **copyWith CANNOT clear**, direct-construct
+clears, inequality); strategy `fake_call_strategy_test.dart` group-4 rewritten +
+extended (no-custom→null/default; **custom path → playRingtone receives it**;
+ringtone is the customRingtonePath NOT the voiceRecordingPath); +5
+`audio_service_test.dart` Tier-F group via the `_MockAudioPlayer` seam
+(null→default asset; assets/→that asset; **existing file→setFilePath**;
+**MISSING file→default**; **undecodable file [setFilePath throws]→default, no
+throw**); +8 `ringtone_picker_test.dart` (cancel→null; copy-to-`<uuid>.<ext>` +
+real bytes; **stored copy survives source deletion**; ext preserved / .mp3
+default; subdir created; audio type-group filtered; distinct UUIDs); +5
+`event_specific_config_test.dart` fakeCall picker group (Default-ring shown;
+filename shown; **tap Choose → emits stored path**; cancel → no emit; **Use
+default → clears to null, other fields preserved**).
+
+**l10n:** 5 NEW keys in `app_en.arb` (+`@meta`) — `eventDefaultsFakeCallRingtone`
+/ `…RingtoneDefault` / `…RingtoneCustom` (`{fileName}` placeholder) /
+`…RingtoneChoose` / `…RingtoneUseDefault` — + all 13 translation ARBs
+(additions-only via the C4 JSON-load→add→dump(indent=2, ensure_ascii=False)
+script; `{fileName}` preserved verbatim in every locale). `gen-l10n` 0
+untranslated; generated `.dart` strictly additions-only (**271 insertions, 0
+deletions** ×14); parity 14/14.
+
+**Gate (ALL GREEN):** analyzer `--fatal-infos` = **0**; full suite
+`flutter test --concurrency=6` = **4017 pass** (3990 + 27 net-new); **emulator
+boot-smoke PASS** on `emulator-5554` (debug APK built 31.9s + installed + "app
+boots to a MaterialApp shell" — the new `file_selector` dep LINKS; confirmed
+`FileSelectorAndroidPlugin` in the generated plugin registrant); deferral-grep
+(`grep -rnE "(Phase 8|Phase 9|Phase 10|Phase 11)" lib/features/`) = **0**;
+`git status --porcelain -- OLD/` empty; `flutter pub outdated` run + the
+`file_selector`-vs-`file_picker` decision documented above.
+
+**KEY FINDINGS (C6):**
+- **`file_picker` is unusable-current here (pinned to 2022's `3.0.4`)** — the
+  `win32` transitive conflict with `share_plus`/`device_info_plus ^13.x` blocks
+  every `file_picker ≥5.3.4`. `file_selector` (already a transitive dep, current
+  `1.1.0`, Flutter-team) is the conflict-free replacement; `openFile(
+  acceptedTypeGroups: [XTypeGroup(extensions: …)])` → `XFile?` (`.path`/`.name`/
+  `.readAsBytes()`). **A future direct-dep `win32` bump or a `share_plus`/
+  `device_info_plus` realignment would unblock `file_picker` if ever required.**
+- **The file-playback seam half-existed** — `RealAudioService.playRingtone`
+  already branched `assets/` vs file path; the missing piece was the
+  existence/decode guard, which belongs at the audio boundary (the strategy
+  stays pure — it just forwards the config path). The fallback lives in ONE
+  place (`_loadRingtoneSource`), so both the missing-file and the
+  undecodable-file cases degrade identically.
+- **`file_selector` re-exports `XFile`/`XTypeGroup`** (no `cross_file` import
+  needed; importing `cross_file` directly trips `--fatal-infos`
+  `depend_on_referenced_packages`). `XFile(path)` is the host-test constructor
+  for a fake pick.
 
 ---
 
@@ -1626,6 +1763,34 @@ stealth appearance only; stealth is configured pre-session on
   `POST_NOTIFICATIONS` prompt / deep-link UX is proven only at the host-wiring
   level (no on-device session-driving harness) — a real-device sanity of the
   prompt is M5 device-e2e territory, NOT a stub.
+- **(C6 done — residuals, NOT stubs)** F3 (user-supplied fake-call ringtone)
+  shipped + gate-green. Residuals: (a) **actual audio OUTPUT of a custom
+  ringtone is host-untestable** — the host tests prove the WIRING (path
+  round-trips config→draft→DB; playback picks the custom path; missing/undecodable
+  → bundled default) and the emulator proves the build LINKS+boots with
+  `file_selector`, but hearing the ring is M5 device-e2e. (b) **`file_picker`
+  was swapped for `file_selector`** (see the C6 dep decision + KEY FINDING) — if
+  the owner wants the literal `file_picker`, it pins to the stale `3.0.4` here
+  unless `share_plus`/`device_info_plus`/`win32` are realigned; surface before
+  the M4 push. (c) the picker is reachable from the **Mode Editor**
+  fakeCall-step config (`EventSpecificConfig` with a non-null `contacts`/editor
+  context); the global Event-Defaults context also renders it (a global default
+  ringtone is sensible) — both share the one widget, no extra path. (d) the
+  fakeCall `callerPhotoPath` / `voiceRecordingPath` fields STILL have no picker
+  UI (only `customRingtonePath` got one this chunk) — a sensible future item
+  (same `file_selector` pattern), out of C6 scope, NOT a stub.
+- **(C7 — NEXT) F4: wire `requireLaunchAuth` / `launchAuthBiometric`.** FIRST
+  read the spec to determine what these do BEYOND the existing App-PIN launch
+  gate (`launch_pin_screen.dart`); if genuinely identical/redundant, surface
+  that to the orchestrator rather than building a duplicate. THEN F5
+  (post-session feedback prompt). Both KEEP+BUILD per the M4 DECISIONS block.
+- **(orchestrator / doc-sweep, carry) stale `lib/services/*` "Phase X"
+  doc-comments + the CLAUDE.md native-files-list tidy.** C2/C5 cleared the
+  system-ui/stealth + `service_providers.dart` Phase-7 strings; a broader
+  `lib/services/*` doc-comment sweep for any remaining stale "Phase N" prose is
+  still open. CLAUDE.md's native-files list names `PhoneChannel.kt` and
+  `DeviceStateChannel.kt` which DO NOT EXIST (phone = `url_launcher` `tel:`;
+  SIM-number = `DeviceInfoChannel.kt`) — tidy the list. Neither blocks the push.
 
 ## DEFERRED — M3 (NOT stubs; carry into the M3 cohort / M4 / M5)
 

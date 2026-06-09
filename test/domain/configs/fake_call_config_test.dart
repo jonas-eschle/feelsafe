@@ -37,6 +37,12 @@ void main() {
       check(cfg.voiceRecordingPath).isNull();
     });
 
+    test('default customRingtonePath is null (Tier-F F3 — bundled default '
+        'ring is used)', () {
+      const cfg = FakeCallConfig();
+      check(cfg.customRingtonePath).isNull();
+    });
+
     test('default voiceOutputMode is VoiceOutputMode.earpiece', () {
       const cfg = FakeCallConfig();
       check(cfg.voiceOutputMode).equals(VoiceOutputMode.earpiece);
@@ -99,6 +105,34 @@ void main() {
     test('toJson includes non-null voiceRecordingPath', () {
       const cfg = FakeCallConfig(voiceRecordingPath: '/path/to/audio.m4a');
       check(cfg.toJson()['voiceRecordingPath']).equals('/path/to/audio.m4a');
+    });
+
+    test('toJson omits null customRingtonePath', () {
+      const cfg = FakeCallConfig();
+      check(cfg.toJson().containsKey('customRingtonePath')).isFalse();
+    });
+
+    test('toJson includes non-null customRingtonePath', () {
+      const cfg = FakeCallConfig(customRingtonePath: '/data/ringtones/abc.mp3');
+      check(
+        cfg.toJson()['customRingtonePath'],
+      ).equals('/data/ringtones/abc.mp3');
+    });
+
+    test('round-trip preserves a custom ringtone path through draft→DB '
+        '(Tier-F F3 picked path persists)', () {
+      const original = FakeCallConfig(
+        callerName: 'Mom',
+        customRingtonePath: '/data/ringtones/picked.m4a',
+      );
+      final restored = StepConfig.fromJson(
+        ChainStepType.fakeCall,
+        original.toJson(),
+      );
+      check(restored).equals(original);
+      check(
+        (restored as FakeCallConfig).customRingtonePath,
+      ).equals('/data/ringtones/picked.m4a');
     });
 
     test('round-trip preserves default values', () {
@@ -238,6 +272,39 @@ void main() {
       check(updated.voiceRecordingPath).equals('/new/audio.m4a');
     });
 
+    test('copyWith replaces customRingtonePath', () {
+      const cfg = FakeCallConfig();
+      final updated = cfg.copyWith(
+        customRingtonePath: '/data/ringtones/new.mp3',
+      );
+      check(updated.customRingtonePath).equals('/data/ringtones/new.mp3');
+    });
+
+    test('copyWith CANNOT clear customRingtonePath (x ?? this.x keeps the '
+        'old value) — KEY FINDING', () {
+      const cfg = FakeCallConfig(customRingtonePath: '/data/ringtones/x.mp3');
+      // Passing null means "leave unchanged", so the path survives.
+      final updated = cfg.copyWith(callerName: 'Dad');
+      check(updated.customRingtonePath).equals('/data/ringtones/x.mp3');
+    });
+
+    test('direct construction clears customRingtonePath back to null '
+        '(the editor _withCustomRingtone path)', () {
+      const cfg = FakeCallConfig(customRingtonePath: '/data/ringtones/x.mp3');
+      final cleared = FakeCallConfig(
+        callStyle: cfg.callStyle,
+        callerName: cfg.callerName,
+        callerPhotoPath: cfg.callerPhotoPath,
+        voiceRecordingPath: cfg.voiceRecordingPath,
+        voiceOutputMode: cfg.voiceOutputMode,
+        ringDurationSeconds: cfg.ringDurationSeconds,
+        declineIsSafe: cfg.declineIsSafe,
+        declineWithDistressHoldSeconds: cfg.declineWithDistressHoldSeconds,
+        blackScreenMode: cfg.blackScreenMode,
+      );
+      check(cleared.customRingtonePath).isNull();
+    });
+
     test('copyWith replaces voiceOutputMode', () {
       const cfg = FakeCallConfig();
       final updated = cfg.copyWith(voiceOutputMode: VoiceOutputMode.speaker);
@@ -326,6 +393,12 @@ void main() {
     test('inequality on voiceRecordingPath', () {
       const a = FakeCallConfig();
       const b = FakeCallConfig(voiceRecordingPath: '/x.m4a');
+      check(a == b).isFalse();
+    });
+
+    test('inequality on customRingtonePath', () {
+      const a = FakeCallConfig();
+      const b = FakeCallConfig(customRingtonePath: '/r.mp3');
       check(a == b).isFalse();
     });
 

@@ -1024,5 +1024,10 @@
   "sessionInterruptedJustNow": "щойно",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{1 хвилину тому} few{{count} хвилини тому} many{{count} хвилин тому} other{{count} хвилини тому}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{1 годину тому} few{{count} години тому} many{{count} годин тому} other{{count} години тому}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{1 день тому} few{{count} дні тому} many{{count} днів тому} other{{count} дня тому}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{1 день тому} few{{count} дні тому} many{{count} днів тому} other{{count} дня тому}}",
+  "eventDefaultsFakeCallRingtone": "Рингтон",
+  "eventDefaultsFakeCallRingtoneDefault": "Стандартний рингтон",
+  "eventDefaultsFakeCallRingtoneCustom": "Власний: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Вибрати рингтон…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Використати стандартний"
 }

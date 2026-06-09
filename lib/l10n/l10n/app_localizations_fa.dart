@@ -2088,6 +2088,23 @@ class AppLocalizationsFa extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'خروجی صوتی';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'آهنگ زنگ';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'زنگ پیش‌فرض';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'سفارشی: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'انتخاب آهنگ زنگ…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'استفاده از پیش‌فرض';
+
+  @override
   String get eventDefaultsSmsChannel => 'کانال';
 
   @override

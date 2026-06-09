@@ -52,10 +52,14 @@ final class FakeCallStrategy implements EventStrategy {
     // Vibration: realistic incoming-call pattern. Fires in sim (local only).
     await services.vibration.fakeCallPattern();
 
-    // Ringtone: loop the default ring until FakeCallScreen answers/declines or
-    // the step ends. `voiceRecordingPath` is the *voice* clip that plays on
+    // Ringtone: loop until FakeCallScreen answers/declines or the step ends.
+    // `customRingtonePath` (Tier-F F3) is the user's own imported ringtone,
+    // stored in app-internal storage; null = the bundled default ring. A
+    // missing/unreadable custom file degrades to the default inside
+    // [RealAudioService.playRingtone] (a broken file must never break the
+    // disguise). `voiceRecordingPath` is the *voice* clip that plays on
     // answer (SessionController.answerFakeCall), NOT the ringtone.
-    await services.audio.playRingtone(null);
+    await services.audio.playRingtone(config.customRingtonePath);
 
     // Alarm escalation notification: ensures the fake call surfaces on the
     // lock screen (spec 05:880-886). Uses the alarm channel with criticalAlert

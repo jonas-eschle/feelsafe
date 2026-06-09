@@ -3839,6 +3839,36 @@ abstract class AppLocalizations {
   /// **'Voice output'**
   String get eventDefaultsFakeCallVoiceOutput;
 
+  /// Section label for the fake-call ringtone picker (FakeCallConfig.customRingtonePath).
+  ///
+  /// In en, this message translates to:
+  /// **'Ringtone'**
+  String get eventDefaultsFakeCallRingtone;
+
+  /// Shown when no custom ringtone is chosen; the bundled default ring is used.
+  ///
+  /// In en, this message translates to:
+  /// **'Default ring'**
+  String get eventDefaultsFakeCallRingtoneDefault;
+
+  /// Shown when a user-supplied ringtone file is chosen. {fileName} is the imported file name.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom: {fileName}'**
+  String eventDefaultsFakeCallRingtoneCustom(String fileName);
+
+  /// Button that opens the file picker to import a user-supplied fake-call ringtone.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose ringtone…'**
+  String get eventDefaultsFakeCallRingtoneChoose;
+
+  /// Button that clears the custom fake-call ringtone, reverting to the bundled default ring.
+  ///
+  /// In en, this message translates to:
+  /// **'Use default'**
+  String get eventDefaultsFakeCallRingtoneUseDefault;
+
   /// Field label for SmsContactConfig.channel.
   ///
   /// In en, this message translates to:

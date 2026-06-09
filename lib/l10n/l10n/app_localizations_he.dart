@@ -2069,6 +2069,23 @@ class AppLocalizationsHe extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'פלט קולי';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'צלצול';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'צלצול ברירת מחדל';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'מותאם אישית: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'בחירת צלצול…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'השתמש בברירת המחדל';
+
+  @override
   String get eventDefaultsSmsChannel => 'ערוץ';
 
   @override

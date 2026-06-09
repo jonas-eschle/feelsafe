@@ -895,5 +895,10 @@
   "sessionInterruptedJustNow": "همین الان",
   "sessionInterruptedMinutesAgo": "{count, plural, one{{count} دقیقه پیش} other{{count} دقیقه پیش}}",
   "sessionInterruptedHoursAgo": "{count, plural, one{{count} ساعت پیش} other{{count} ساعت پیش}}",
-  "sessionInterruptedDaysAgo": "{count, plural, one{{count} روز پیش} other{{count} روز پیش}}"
+  "sessionInterruptedDaysAgo": "{count, plural, one{{count} روز پیش} other{{count} روز پیش}}",
+  "eventDefaultsFakeCallRingtone": "آهنگ زنگ",
+  "eventDefaultsFakeCallRingtoneDefault": "زنگ پیش‌فرض",
+  "eventDefaultsFakeCallRingtoneCustom": "سفارشی: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "انتخاب آهنگ زنگ…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "استفاده از پیش‌فرض"
 }

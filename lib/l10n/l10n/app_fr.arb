@@ -913,5 +913,10 @@
   "sessionInterruptedJustNow": "à l’instant",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{il y a 1 minute} other{il y a {count} minutes}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{il y a 1 heure} other{il y a {count} heures}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{il y a 1 jour} other{il y a {count} jours}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{il y a 1 jour} other{il y a {count} jours}}",
+  "eventDefaultsFakeCallRingtone": "Sonnerie",
+  "eventDefaultsFakeCallRingtoneDefault": "Sonnerie par défaut",
+  "eventDefaultsFakeCallRingtoneCustom": "Personnalisée : {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Choisir une sonnerie…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Utiliser par défaut"
 }

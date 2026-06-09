@@ -2104,6 +2104,24 @@ class AppLocalizationsUk extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Голосовий вивід';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Рингтон';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Стандартний рингтон';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Власний: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Вибрати рингтон…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault =>
+      'Використати стандартний';
+
+  @override
   String get eventDefaultsSmsChannel => 'Канал';
 
   @override

@@ -1024,5 +1024,10 @@
   "sessionInterruptedJustNow": "ahora mismo",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{hace 1 minuto} other{hace {count} minutos}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{hace 1 hora} other{hace {count} horas}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{hace 1 día} other{hace {count} días}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{hace 1 día} other{hace {count} días}}",
+  "eventDefaultsFakeCallRingtone": "Tono de llamada",
+  "eventDefaultsFakeCallRingtoneDefault": "Tono predeterminado",
+  "eventDefaultsFakeCallRingtoneCustom": "Personalizado: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Elegir tono…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Usar predeterminado"
 }

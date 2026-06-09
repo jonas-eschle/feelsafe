@@ -2081,6 +2081,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Voice output';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Ringtone';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Default ring';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Custom: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Choose ringtone…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Use default';
+
+  @override
   String get eventDefaultsSmsChannel => 'Channel';
 
   @override

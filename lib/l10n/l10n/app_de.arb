@@ -1024,5 +1024,10 @@
   "sessionInterruptedJustNow": "gerade eben",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{vor 1 Minute} other{vor {count} Minuten}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{vor 1 Stunde} other{vor {count} Stunden}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{vor 1 Tag} other{vor {count} Tagen}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{vor 1 Tag} other{vor {count} Tagen}}",
+  "eventDefaultsFakeCallRingtone": "Klingelton",
+  "eventDefaultsFakeCallRingtoneDefault": "Standardklingelton",
+  "eventDefaultsFakeCallRingtoneCustom": "Eigener: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Klingelton wählen…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Standard verwenden"
 }

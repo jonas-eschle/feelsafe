@@ -895,5 +895,10 @@
   "sessionInterruptedJustNow": "अभी-अभी",
   "sessionInterruptedMinutesAgo": "{count, plural, one{{count} मिनट पहले} other{{count} मिनट पहले}}",
   "sessionInterruptedHoursAgo": "{count, plural, one{{count} घंटे पहले} other{{count} घंटे पहले}}",
-  "sessionInterruptedDaysAgo": "{count, plural, one{{count} दिन पहले} other{{count} दिन पहले}}"
+  "sessionInterruptedDaysAgo": "{count, plural, one{{count} दिन पहले} other{{count} दिन पहले}}",
+  "eventDefaultsFakeCallRingtone": "रिंगटोन",
+  "eventDefaultsFakeCallRingtoneDefault": "डिफ़ॉल्ट रिंग",
+  "eventDefaultsFakeCallRingtoneCustom": "कस्टम: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "रिंगटोन चुनें…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "डिफ़ॉल्ट का उपयोग करें"
 }

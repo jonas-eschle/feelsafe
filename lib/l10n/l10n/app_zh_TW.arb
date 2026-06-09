@@ -1024,5 +1024,10 @@
   "sessionInterruptedJustNow": "剛剛",
   "sessionInterruptedMinutesAgo": "{count, plural, other{{count} 分鐘前}}",
   "sessionInterruptedHoursAgo": "{count, plural, other{{count} 小時前}}",
-  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}"
+  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}",
+  "eventDefaultsFakeCallRingtone": "鈴聲",
+  "eventDefaultsFakeCallRingtoneDefault": "預設鈴聲",
+  "eventDefaultsFakeCallRingtoneCustom": "自訂：{fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "選擇鈴聲…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "使用預設"
 }

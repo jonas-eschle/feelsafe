@@ -1024,5 +1024,10 @@
   "sessionInterruptedJustNow": "刚刚",
   "sessionInterruptedMinutesAgo": "{count, plural, other{{count} 分钟前}}",
   "sessionInterruptedHoursAgo": "{count, plural, other{{count} 小时前}}",
-  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}"
+  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}",
+  "eventDefaultsFakeCallRingtone": "铃声",
+  "eventDefaultsFakeCallRingtoneDefault": "默认铃声",
+  "eventDefaultsFakeCallRingtoneCustom": "自定义：{fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "选择铃声…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "使用默认"
 }

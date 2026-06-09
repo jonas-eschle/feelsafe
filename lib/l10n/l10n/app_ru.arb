@@ -895,5 +895,10 @@
   "sessionInterruptedJustNow": "только что",
   "sessionInterruptedMinutesAgo": "{count, plural, =1{1 минуту назад} few{{count} минуты назад} many{{count} минут назад} other{{count} минуты назад}}",
   "sessionInterruptedHoursAgo": "{count, plural, =1{1 час назад} few{{count} часа назад} many{{count} часов назад} other{{count} часа назад}}",
-  "sessionInterruptedDaysAgo": "{count, plural, =1{1 день назад} few{{count} дня назад} many{{count} дней назад} other{{count} дня назад}}"
+  "sessionInterruptedDaysAgo": "{count, plural, =1{1 день назад} few{{count} дня назад} many{{count} дней назад} other{{count} дня назад}}",
+  "eventDefaultsFakeCallRingtone": "Рингтон",
+  "eventDefaultsFakeCallRingtoneDefault": "Стандартный рингтон",
+  "eventDefaultsFakeCallRingtoneCustom": "Свой: {fileName}",
+  "eventDefaultsFakeCallRingtoneChoose": "Выбрать рингтон…",
+  "eventDefaultsFakeCallRingtoneUseDefault": "Использовать стандартный"
 }

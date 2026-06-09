@@ -2013,6 +2013,23 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => '语音输出';
 
   @override
+  String get eventDefaultsFakeCallRingtone => '铃声';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => '默认铃声';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return '自定义：$fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => '选择铃声…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => '使用默认';
+
+  @override
   String get eventDefaultsSmsChannel => '渠道';
 
   @override
@@ -4266,6 +4283,23 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get eventDefaultsFakeCallVoiceOutput => '語音輸出';
+
+  @override
+  String get eventDefaultsFakeCallRingtone => '鈴聲';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => '預設鈴聲';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return '自訂：$fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => '選擇鈴聲…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => '使用預設';
 
   @override
   String get eventDefaultsSmsChannel => '通訊管道';

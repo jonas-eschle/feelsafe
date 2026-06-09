@@ -2112,6 +2112,23 @@ class AppLocalizationsEs extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Salida de voz';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Tono de llamada';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Tono predeterminado';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Personalizado: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Elegir tono…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Usar predeterminado';
+
+  @override
   String get eventDefaultsSmsChannel => 'Canal';
 
   @override

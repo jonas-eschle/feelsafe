@@ -2108,6 +2108,23 @@ class AppLocalizationsPl extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Odtwarzanie głosu';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Dzwonek';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Domyślny dzwonek';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Własny: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Wybierz dzwonek…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault => 'Użyj domyślnego';
+
+  @override
   String get eventDefaultsSmsChannel => 'Kanał';
 
   @override

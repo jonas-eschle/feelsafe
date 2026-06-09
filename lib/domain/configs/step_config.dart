@@ -329,12 +329,14 @@ final class FakeCallConfig extends StepConfig {
   /// at render time per spec 03 §FakeCallConfig "default: platform-native"),
   /// [callerName] = 'Angela', [voiceOutputMode] = [VoiceOutputMode.earpiece],
   /// [ringDurationSeconds] = 30, [declineIsSafe] = true,
-  /// [declineWithDistressHoldSeconds] = 5, [blackScreenMode] = false.
+  /// [declineWithDistressHoldSeconds] = 5, [customRingtonePath] = null
+  /// (use the bundled default ring), [blackScreenMode] = false.
   const FakeCallConfig({
     this.callStyle = CallStyle.platformNative,
     this.callerName = 'Angela',
     this.callerPhotoPath,
     this.voiceRecordingPath,
+    this.customRingtonePath,
     this.voiceOutputMode = VoiceOutputMode.earpiece,
     this.ringDurationSeconds = 30,
     this.declineIsSafe = true,
@@ -350,6 +352,7 @@ final class FakeCallConfig extends StepConfig {
     callerName: (json['callerName'] as String?) ?? 'Angela',
     callerPhotoPath: json['callerPhotoPath'] as String?,
     voiceRecordingPath: json['voiceRecordingPath'] as String?,
+    customRingtonePath: json['customRingtonePath'] as String?,
     voiceOutputMode: VoiceOutputMode.values.byName(
       (json['voiceOutputMode'] as String?) ?? VoiceOutputMode.earpiece.name,
     ),
@@ -375,6 +378,20 @@ final class FakeCallConfig extends StepConfig {
   /// max 2 minutes (spec 39).
   final String? voiceRecordingPath;
 
+  /// Optional path to a user-supplied ringtone audio file (Tier-F F3).
+  ///
+  /// This is the user's OWN audio, imported via the fake-call config picker
+  /// and copied into app-internal storage so the reference persists even if
+  /// the original source file is later moved or deleted. The owner reframed
+  /// the original per-`CallStyle` bundled-ringtone concept to user-supplied
+  /// audio (sidesteps trademark/licensing risk).
+  ///
+  /// Null (the default) = use the bundled `assets/audio/ringtone_default.wav`.
+  /// When set but the file is missing/unreadable at play time, playback
+  /// degrades to the bundled default — a broken custom file must NEVER break
+  /// the fake-call disguise (the fallback lives in [RealAudioService.playRingtone]).
+  final String? customRingtonePath;
+
   /// Where the voice audio plays.
   final VoiceOutputMode voiceOutputMode;
 
@@ -393,11 +410,17 @@ final class FakeCallConfig extends StepConfig {
   final bool blackScreenMode;
 
   /// Returns a copy with the specified fields replaced.
+  ///
+  /// `copyWith` cannot clear a nullable field (the `x ?? this.x` idiom treats
+  /// a `null` argument as "leave unchanged"). To clear [customRingtonePath]
+  /// back to null (= revert to the bundled default ring), construct a new
+  /// [FakeCallConfig] directly (the editor's `_withCustomRingtone` helper).
   FakeCallConfig copyWith({
     CallStyle? callStyle,
     String? callerName,
     String? callerPhotoPath,
     String? voiceRecordingPath,
+    String? customRingtonePath,
     VoiceOutputMode? voiceOutputMode,
     int? ringDurationSeconds,
     bool? declineIsSafe,
@@ -408,6 +431,7 @@ final class FakeCallConfig extends StepConfig {
     callerName: callerName ?? this.callerName,
     callerPhotoPath: callerPhotoPath ?? this.callerPhotoPath,
     voiceRecordingPath: voiceRecordingPath ?? this.voiceRecordingPath,
+    customRingtonePath: customRingtonePath ?? this.customRingtonePath,
     voiceOutputMode: voiceOutputMode ?? this.voiceOutputMode,
     ringDurationSeconds: ringDurationSeconds ?? this.ringDurationSeconds,
     declineIsSafe: declineIsSafe ?? this.declineIsSafe,
@@ -422,6 +446,7 @@ final class FakeCallConfig extends StepConfig {
     'callerName': callerName,
     if (callerPhotoPath != null) 'callerPhotoPath': callerPhotoPath,
     if (voiceRecordingPath != null) 'voiceRecordingPath': voiceRecordingPath,
+    if (customRingtonePath != null) 'customRingtonePath': customRingtonePath,
     'voiceOutputMode': voiceOutputMode.name,
     'ringDurationSeconds': ringDurationSeconds,
     'declineIsSafe': declineIsSafe,
@@ -437,6 +462,7 @@ final class FakeCallConfig extends StepConfig {
           callerName == other.callerName &&
           callerPhotoPath == other.callerPhotoPath &&
           voiceRecordingPath == other.voiceRecordingPath &&
+          customRingtonePath == other.customRingtonePath &&
           voiceOutputMode == other.voiceOutputMode &&
           ringDurationSeconds == other.ringDurationSeconds &&
           declineIsSafe == other.declineIsSafe &&
@@ -450,6 +476,7 @@ final class FakeCallConfig extends StepConfig {
     callerName,
     callerPhotoPath,
     voiceRecordingPath,
+    customRingtonePath,
     voiceOutputMode,
     ringDurationSeconds,
     declineIsSafe,

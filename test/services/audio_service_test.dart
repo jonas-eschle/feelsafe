@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
@@ -558,5 +559,107 @@ void main() {
         }
       });
     });
+  });
+
+  // -----------------------------------------------------------------------
+  // Tier-F F3: RealAudioService.playRingtone — custom ringtone source +
+  // missing-file → bundled-default fallback (a broken custom file must NEVER
+  // break the fake-call disguise).
+  // -----------------------------------------------------------------------
+  group('Tier-F F3: playRingtone source resolution + fallback', () {
+    const kDefaultAsset = 'assets/audio/ringtone_default.wav';
+
+    /// Builds a [RealAudioService] over a mock player that records every
+    /// `setAsset` / `setFilePath` call so the resolved source can be asserted.
+    (RealAudioService, List<String> assets, List<String> files) buildSvc() {
+      final mockPlayer = _MockAudioPlayer();
+      final assetCalls = <String>[];
+      final fileCalls = <String>[];
+      when(() => mockPlayer.processingState).thenReturn(ProcessingState.idle);
+      when(() => mockPlayer.setAsset(any())).thenAnswer((inv) async {
+        assetCalls.add(inv.positionalArguments[0] as String);
+        return null;
+      });
+      when(() => mockPlayer.setFilePath(any())).thenAnswer((inv) async {
+        fileCalls.add(inv.positionalArguments[0] as String);
+        return null;
+      });
+      when(
+        () => mockPlayer.setLoopMode(any()),
+      ).thenAnswer((_) => Future<void>.value());
+      when(
+        () => mockPlayer.setVolume(any()),
+      ).thenAnswer((_) => Future<void>.value());
+      when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
+      final svc = RealAudioService(player: mockPlayer, tts: _MockFlutterTts());
+      return (svc, assetCalls, fileCalls);
+    }
+
+    test('null source loads the bundled default asset', () async {
+      final (svc, assets, files) = buildSvc();
+      await svc.playRingtone(null);
+      check(assets).deepEquals(const [kDefaultAsset]);
+      check(files).isEmpty();
+    });
+
+    test('an assets/ source loads that asset directly', () async {
+      final (svc, assets, files) = buildSvc();
+      await svc.playRingtone(kDefaultAsset);
+      check(assets).deepEquals(const [kDefaultAsset]);
+      check(files).isEmpty();
+    });
+
+    test('an existing custom file path is loaded via setFilePath', () async {
+      final tmp = await Directory.systemTemp.createTemp('ga_ringtone_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+      final f = File('${tmp.path}/mine.mp3')..writeAsBytesSync(const [1, 2, 3]);
+      final (svc, assets, files) = buildSvc();
+      await svc.playRingtone(f.path);
+      check(files).deepEquals([f.path]);
+      check(assets).isEmpty();
+    });
+
+    test('a MISSING custom file degrades to the bundled default '
+        '(broken file never breaks the disguise)', () async {
+      final (svc, assets, files) = buildSvc();
+      await svc.playRingtone('/no/such/ringtone/file_12345.mp3');
+      // No file load attempted; the default asset is used instead.
+      check(files).isEmpty();
+      check(assets).deepEquals(const [kDefaultAsset]);
+    });
+
+    test(
+      'an UNREADABLE/undecodable custom file degrades to the default',
+      () async {
+        final tmp = await Directory.systemTemp.createTemp('ga_ringtone_');
+        addTearDown(() => tmp.deleteSync(recursive: true));
+        final f = File('${tmp.path}/corrupt.mp3')..writeAsBytesSync(const [0]);
+        // Make setFilePath throw to simulate an undecodable file.
+        final mockPlayer = _MockAudioPlayer();
+        final assetCalls = <String>[];
+        when(() => mockPlayer.processingState).thenReturn(ProcessingState.idle);
+        when(() => mockPlayer.setAsset(any())).thenAnswer((inv) async {
+          assetCalls.add(inv.positionalArguments[0] as String);
+          return null;
+        });
+        when(
+          () => mockPlayer.setFilePath(any()),
+        ).thenThrow(Exception('undecodable'));
+        when(
+          () => mockPlayer.setLoopMode(any()),
+        ).thenAnswer((_) => Future<void>.value());
+        when(
+          () => mockPlayer.setVolume(any()),
+        ).thenAnswer((_) => Future<void>.value());
+        when(mockPlayer.play).thenAnswer((_) => Future<void>.value());
+        final svc = RealAudioService(
+          player: mockPlayer,
+          tts: _MockFlutterTts(),
+        );
+        // Must NOT throw — it degrades to the default.
+        await svc.playRingtone(f.path);
+        check(assetCalls).deepEquals(const [kDefaultAsset]);
+      },
+    );
   });
 }

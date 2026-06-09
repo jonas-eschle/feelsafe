@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 
+import 'package:path/path.dart' as p;
+
+import 'package:guardianangela/core/utils/ringtone_picker.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
@@ -35,6 +38,7 @@ class EventSpecificConfig extends StatelessWidget {
     required this.onChanged,
     this.contacts,
     this.onManageContacts,
+    this.ringtonePicker,
   });
 
   /// The current per-step config to edit.
@@ -50,6 +54,10 @@ class EventSpecificConfig extends StatelessWidget {
   /// Called when the user wants to manage contacts (empty-state deep link).
   final VoidCallback? onManageContacts;
 
+  /// Imports a user-supplied fake-call ringtone (Tier-F F3). Injected by
+  /// tests; production leaves it null and a default [RingtonePicker] is used.
+  final RingtonePicker? ringtonePicker;
+
   @override
   Widget build(BuildContext context) => switch (config) {
     final HoldButtonConfig c => _HoldButtonForm(
@@ -64,7 +72,11 @@ class EventSpecificConfig extends StatelessWidget {
       config: c,
       onChanged: onChanged,
     ),
-    final FakeCallConfig c => _FakeCallForm(config: c, onChanged: onChanged),
+    final FakeCallConfig c => _FakeCallForm(
+      config: c,
+      onChanged: onChanged,
+      ringtonePicker: ringtonePicker,
+    ),
     final SmsContactConfig c => _SmsContactForm(
       config: c,
       onChanged: onChanged,
@@ -221,10 +233,15 @@ class _CountdownWarningForm extends StatelessWidget {
 }
 
 class _FakeCallForm extends StatelessWidget {
-  const _FakeCallForm({required this.config, required this.onChanged});
+  const _FakeCallForm({
+    required this.config,
+    required this.onChanged,
+    this.ringtonePicker,
+  });
 
   final FakeCallConfig config;
   final ValueChanged<FakeCallConfig> onChanged;
+  final RingtonePicker? ringtonePicker;
 
   @override
   Widget build(BuildContext context) {
@@ -261,6 +278,11 @@ class _FakeCallForm extends StatelessWidget {
           onChanged: (VoiceOutputMode v) =>
               onChanged(config.copyWith(voiceOutputMode: v)),
         ),
+        _RingtonePickerField(
+          config: config,
+          onChanged: onChanged,
+          ringtonePicker: ringtonePicker,
+        ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text(l10n.eventDefaultsFakeCallDeclineIsSafe),
@@ -272,6 +294,101 @@ class _FakeCallForm extends StatelessWidget {
           onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
       ],
+    );
+  }
+}
+
+/// Ringtone picker row for the fake-call config (Tier-F F3).
+///
+/// Shows the current ringtone (the bundled default, or the imported file's
+/// name) and a button to import a user-supplied audio file via
+/// [RingtonePicker]. When a custom ringtone is set, a "Use default" action
+/// clears it back to the bundled ring (via a direct construction, since
+/// `copyWith` cannot null a field).
+class _RingtonePickerField extends StatelessWidget {
+  const _RingtonePickerField({
+    required this.config,
+    required this.onChanged,
+    this.ringtonePicker,
+  });
+
+  final FakeCallConfig config;
+  final ValueChanged<FakeCallConfig> onChanged;
+  final RingtonePicker? ringtonePicker;
+
+  /// Rebuilds the config with [customRingtonePath], which may be null.
+  ///
+  /// `copyWith` cannot clear a field (`x ?? this.x`), so a direct construction
+  /// is required to set the ringtone back to null (= bundled default ring).
+  FakeCallConfig _withCustomRingtone(String? customRingtonePath) =>
+      FakeCallConfig(
+        callStyle: config.callStyle,
+        callerName: config.callerName,
+        callerPhotoPath: config.callerPhotoPath,
+        voiceRecordingPath: config.voiceRecordingPath,
+        customRingtonePath: customRingtonePath,
+        voiceOutputMode: config.voiceOutputMode,
+        ringDurationSeconds: config.ringDurationSeconds,
+        declineIsSafe: config.declineIsSafe,
+        declineWithDistressHoldSeconds: config.declineWithDistressHoldSeconds,
+        blackScreenMode: config.blackScreenMode,
+      );
+
+  Future<void> _pick(BuildContext context) async {
+    final RingtonePicker picker = ringtonePicker ?? RingtonePicker();
+    final String? stored = await picker.pickAndStoreRingtone();
+    if (stored != null) {
+      onChanged(config.copyWith(customRingtonePath: stored));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final String? path = config.customRingtonePath;
+    final String currentLabel = path == null
+        ? l10n.eventDefaultsFakeCallRingtoneDefault
+        : l10n.eventDefaultsFakeCallRingtoneCustom(p.basename(path));
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Text(
+            l10n.eventDefaultsFakeCallRingtone,
+            style: Theme.of(context).textTheme.labelLarge,
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: <Widget>[
+              const Icon(Icons.music_note_outlined, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  currentLabel,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 4),
+          Row(
+            children: <Widget>[
+              TextButton.icon(
+                onPressed: () => _pick(context),
+                icon: const Icon(Icons.upload_file_outlined),
+                label: Text(l10n.eventDefaultsFakeCallRingtoneChoose),
+              ),
+              if (path != null)
+                TextButton(
+                  onPressed: () => onChanged(_withCustomRingtone(null)),
+                  child: Text(l10n.eventDefaultsFakeCallRingtoneUseDefault),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -2112,6 +2112,24 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventDefaultsFakeCallVoiceOutput => 'Голосовой вывод';
 
   @override
+  String get eventDefaultsFakeCallRingtone => 'Рингтон';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneDefault => 'Стандартный рингтон';
+
+  @override
+  String eventDefaultsFakeCallRingtoneCustom(String fileName) {
+    return 'Свой: $fileName';
+  }
+
+  @override
+  String get eventDefaultsFakeCallRingtoneChoose => 'Выбрать рингтон…';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneUseDefault =>
+      'Использовать стандартный';
+
+  @override
   String get eventDefaultsSmsChannel => 'Канал';
 
   @override
