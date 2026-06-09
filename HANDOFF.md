@@ -12,19 +12,22 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop code commit `a18b840`,
-**+16 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4422 pass**,
-`analyze --fatal-infos` = 0, **coverage-of-logic 92.05%**, floor 91.4. M0–M4 PUSHED;
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop code commit `e98bb1a`,
+**+18 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4464 pass**,
+`analyze --fatal-infos` = 0, **coverage-of-logic 93.11%**, floor 92.5. M0–M4 PUSHED;
 M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`; the fresh
-session continues C7c→C10 then pushes the whole stack at C10.)
+session continues C7d→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7c:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7d:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
 services + main.dart) · C6b (non-feature tail) · C7a (session + fake_call feature
-tail) · **C7b (modes feature — incl. an arch systemic sweep proving the
-clear-to-null fix is the COMPLETE remediation across lib/)** — ALL architect+qa **PASS**.
+tail) · C7b (modes feature — incl. an arch systemic sweep proving the
+clear-to-null fix is the COMPLETE remediation across lib/) · **C7c (editors +
+distress + the fake-call hold de-flake; distress delete-guards verified against
+spec end-to-end; NO new bugs — clear-to-null pattern re-checked clean)** — ALL
+architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -41,21 +44,12 @@ mid-session teardown; fix = capture `_backgroundService` at session start
 → a user reverting to the regional default emergency number kept dialing the stale one;
 fix = direct-construction helpers `_withContactId`/`_withNumber` (red→green proven).
 
-**NEXT = C7c (editors + distress, 144 missed, 12 files) — plus one mandated pre-task:
-harden the known-flaky C7a test** `test/features/fake_call/fake_call_screen_test.dart`
-"holding decline … haptics at 800 ms" (races real wall-clock; flaked once in C7a's full
-run and once under C7b's coverage-instrumented load; lcov was honestly repaired via a
-green single-file re-run merged with `lcov -a`). QA prescription: inject a deterministic
-elapsed-time/ticker seam (e.g. an optional `elapsedTimeProvider` defaulting to Stopwatch,
-or fake-time the hold loop) so `--concurrency=6` + instrumentation can't race it; keep
-the 10s budget only as a backstop. Remaining slices (~150–180 missed lines per agent —
-calibration: C7a 188L/6f = 335k actual, C7b 158L/10f = 249k actual; always read the
-harness usage line, never self-reports):
-- **C7c — editors + distress (144, 12 files):** reminder_templates_screen 33/116 +
-  _controller 17/20, template_editor_screen 22/67 + reminder_template_form 5/129,
-  event_defaults_controller 10/13 + _screen 1/51, mode_editor_screen 6/248 + _controller
-  1/10, distress_modes_controller 42/45 + _screen 4/66, reminder_confirmation 3/89.
-- **C7d — history/logs (180, 7 files):** past_events_trash_screen 41/119 + _controller
+**NEXT = C7d (history/logs).** The fake-call hold flake is FIXED (C7c: `now` clock seam
+on FakeCallScreen, test lockstep-deterministic, 10s Stopwatch = backstop only). Remaining
+slices (~150–180 missed lines per agent — calibration: C7a 188L/6f = 335k actual, C7b
+158L/10f = 249k, C7c 144L/12f+pretask = 202k; always read the harness usage line, never
+self-reports):
+- **C7d — history/logs (180, 6 files):** past_events_trash_screen 41/119 + _controller
   39/43, past_events_detail_screen 38/122, past_events_controller 36/40,
   history_retention_controller 15/18 + _screen 11/73.
 - **C7e — home + post-session (170, 9 files):** home_controller 39/52, home_screen
@@ -102,12 +96,57 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 + C2 + C3 + A5 + C4 + C4-fix + C5 +
-C6 + C6b + C7a + **C7b (modes feature)** DONE + COHORT-VERIFIED (architect+qa
-PASS; all UNPUSHED — code HEAD = `a18b840` + the `m5-c7b` baton commit atop,
-ahead of origin/main by **16**). THIS session: **C7a (89.46→90.86%, bug #4) +
-C7b (90.86→92.05%, bug #5 clear-to-null) — both cohort-PASS. NEXT = C7c
-(editors + distress + the fake_call flake-hardening pre-task), then C7d..C7g
-per the re-sliced plan in the resume block.**
+C6 + C6b + C7a + C7b + **C7c (editors + distress + de-flake)** DONE +
+COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — code HEAD = `e98bb1a` + the
+`m5-c7c` baton commit atop, ahead of origin/main by **18**). THIS session:
+**C7a (89.46→90.86%, bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, fake-call
+hold test de-flaked, distress delete-guards spec-verified) — all cohort-PASS.
+NEXT = C7d (history/logs), then C7e..C7g per the resume block.**
+
+---
+
+## KEY FINDINGS (C7c — new baseline + carry to C7d..g)
+
+**Coverage-of-logic 92.05% → 93.11%** (12385 / 13302; +140 covered). **Floor
+91.4 → 92.5** (gate OK at 92.5, RED at 99.9). Suite **4422 → 4464** (+42), 0
+fail. analyze 0. distress_modes_controller 42→0, reminder_templates 50→1,
+template_editor 27→0, event_defaults 11→0, mode_editor 7→2, reminder_confirmation
+3→0.
+
+**FLAKE FIXED (the C7a haptics hold test):** `FakeCallScreen` gained an optional
+`now` clock param (`@visibleForTesting`, defaults `DateTime.now` — sole
+production caller `app_router.dart:128` omits it). Test drives a fake clock in
+lockstep with the 80ms ticker pumps → fully deterministic (42/42 in ~2s vs the
+old 10s wall-clock race; Stopwatch budget = runaway backstop only). Hang-up test
+now also pins `confirmDistressCalls == 0`. Arch verified hold semantics
+unchanged vs spec-02 §fakeCall (haptic 800ms once-window, confirm at ≥hold,
+hang-up never escalates; fakeCall stays an event-not-pause).
+
+**NO new bugs** (clear-to-null copyWith pattern explicitly re-checked on these
+surfaces — clean). RED-proofs: distress delete-default guard (controller) +
+in-use delete second-line-of-defense (screen), both directions pinned.
+
+**Remaining missed (4, honest):** mode_editor_screen:219-220 `distressNoActionStep`
+`_issueMessage` arm — defensive-unreachable (validator only emits it
+non-blocking; QA verified vs mode_draft_validator:122; exists for switch
+exhaustiveness — C9 may annotate); 2 `const …Screen({super.key})`
+const-canonicalization jitter lines (standard Dart lcov noise, absorbed by the
+−0.6 floor buffer; ALSO note C7b pinned the same phenomenon by constructing one
+instance non-const with UniqueKey — a reusable trick).
+
+**QA minor (parked):** reminder_templates_screen_test:710-727 "tapping disabled
+Delete" never taps — convert to drive `onSelected?.call('delete')` like the
+distress-modes pattern (harmless noise today).
+
+**C9 additions from C7c:** distress_modes_screen_test ~:96 orphaned doc comment
+("Records routes pushed…" belongs to _FakeNavigatorObserver); fake_call test
+header says "hold-5s" but drives a 1s configured hold; mode_editor_screen:219
+dead-arm annotation candidate.
+
+**Orchestrator calibration:** C7c = 144 missed / 12 files + pre-task → **202k
+actual, 161 tool-uses, 31 min**. Cohort: arch 61k + qa 131k. Most expensive:
+reminder_templates_screen FAB/sheet/builtin-picker modal flows (router-harness
+upgrade), then the distress_modes safety matrix.
 
 ---
 
@@ -460,10 +499,10 @@ census is recorded in its comment block.
   domain + core-widget tails) carried in the C6 KEY FINDINGS above.
 - **C7 — coverage: `lib/features/` controllers + screens — SPLIT a..g.**
   **C7a (session + fake_call) ✓ DONE** (89.46→90.86%, floor 90.2, bug #4) ·
-  **C7b (modes) ✓ DONE** (→92.05%, floor 91.4, bug #5 clear-to-null) — both
-  cohort-verified. NEXT: C7c (editors + distress + flake-hardening pre-task) →
-  C7d (history/logs) → C7e (home + post-session) → C7f (nav/entry + contacts)
-  → C7g (settings + misc); per-file slices in the resume block.
+  **C7b (modes) ✓ DONE** (→92.05%, floor 91.4, bug #5 clear-to-null) ·
+  **C7c (editors + distress + de-flake) ✓ DONE** (→93.11%, floor 92.5) — all
+  cohort-verified. NEXT: C7d (history/logs) → C7e (home + post-session) →
+  C7f (nav/entry + contacts) → C7g (settings + misc); slices in resume block.
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
