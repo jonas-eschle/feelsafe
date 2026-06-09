@@ -7,9 +7,12 @@
 #
 # RATCHET — only ever goes UP:
 #   * Set to the CURRENT measured baseline, never the final target.
-#   * Baseline measured 2026-06-09 (M5 C5) = 84.49%-of-logic
-#     (11220 / 13280 lines, after the coverage_excludes.txt filter).
-#   * Floor set to 84.0 — ~0.5% under the measurement to absorb run-to-run
+#   * M5 C5 baseline (2026-06-09) = 84.49%-of-logic (11220 / 13280 lines).
+#   * M5 C6 ratchet (2026-06-09) = 87.14%-of-logic (11576 / 13284 lines)
+#     after adding host tests for the 5 zero-coverage safety services
+#     (hardware_button / location / flash / call_state / contact — the latter
+#     four now 100%) + main.dart (76.9%→92.3%). +356 covered lines.
+#   * Floor set to 86.5 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -19,4 +22,4 @@
 # the final 99% target. Do NOT set this to 99 before the covering tests exist —
 # that would red the everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-84.0
+86.5

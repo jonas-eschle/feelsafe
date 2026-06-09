@@ -59,24 +59,29 @@ lib/services/system_ui_service.dart
 lib/services/wakelock_service.dart
 
 # ─────────────────────────────────────────────────────────────────────────────
-# DELIBERATELY NOT EXCLUDED (host-testable logic — left in the denominator as
-# C6/C7 coverage gaps, NOT hidden). Recorded here so a future reader sees the
-# decision was conscious:
+# DELIBERATELY NOT EXCLUDED (host-testable logic — left in the denominator and
+# now COVERED by M5 C6, NOT hidden). Recorded here so a future reader sees the
+# decision was conscious. The five 0% safety services are driven by real host
+# tests that exercise the production parse/detection/timing logic via
+# TestDefaultBinaryMessenger mock channels + fakeAsync (NOT the simulations):
 #
-#   lib/services/hardware_button_service.dart  (112 lines, 0%) — pure-Dart
-#     repeat-press sliding-window + long-press duration + param clamping logic.
-#   lib/services/location_service.dart         (71 lines, 0%) — fresh-vs-cached
-#     fallback decision, stale-note formatting, bounded-history eviction.
-#   lib/services/flash_service.dart            (59 lines, 0%) — SOS/continuous
-#     timing loops + graceful-degradation catch + Completer race-fix (fakeAsync-
-#     testable with a faked TorchLight).
-#   lib/services/call_state_service.dart       (32 lines, 0%) — _parseCallState
-#     string→enum switch + _onNativeEvent dispatch (also device-proven in C4).
-#   lib/services/contact_service.dart          (17 lines, 0%) — repo-backed cache
-#     (start/byId/all/stop); NO native channel at all — 100% host-testable.
-#   lib/main.dart                              (156 lines, 76.9%) — already
-#     tested (seedFirstLaunchSettings, runBootstrap, JsonRecoveryApp recovery
-#     flow). Excluding it would DROP 120 covered lines and hide real branching.
+#   lib/services/contact_service.dart          → 100% (contact_service_real_test).
+#   lib/services/call_state_service.dart       → 100% (call_state_service_real_test;
+#     drives the real EventChannel _onNativeEvent + _parseCallState switch).
+#   lib/services/flash_service.dart            → 100% (flash_service_real_test;
+#     real SOS/continuous loops under fakeAsync; surfaced + fixed a stopFlash
+#     Completer-hang production bug).
+#   lib/services/location_service.dart         → 100% (location_service_real_test;
+#     mocked geolocator channel — fallback decision, stale-note ISO formatting,
+#     1000-point eviction).
+#   lib/services/hardware_button_service.dart  → 81.6% (hardware_button_service_real_test;
+#     all Android/pure-Dart distress-trigger logic covered via a @visibleForTesting
+#     channel-subscription seam. The ~21 uncovered lines are the iOS headphone-remote
+#     path — _startIos/_onIosButtonPress/_GuardianAudioHandler — which need a real
+#     iOS audio session and are CI-build-ios / device-only, NOT host-reachable).
+#   lib/main.dart                              → 92.3% (main_bootstrap_test;
+#     bootstrap branches + GuardianAngelaApp theme/locale + recovery flow). The
+#     remaining lines are main()'s real runApp entry + a few recovery edge taps.
 #
 # Pure-abstract protocol files (lib/services/protocols/*.dart) need no exclusion:
 # 23 of 25 contribute zero instrumented lines (abstract declarations have no

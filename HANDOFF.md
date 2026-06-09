@@ -3,49 +3,124 @@
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
 (INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
-C4 (device-e2e #11/#12/stealth) + C4-fix + **C5 (coverage-of-logic gate +
-ratchet floor)** DONE (all UNPUSHED — HEAD `e385667`, ahead of origin/main by
-**8**). THIS session: **C5 — the Phase-0 0% coverage stub is replaced by an
-HONEST coverage-of-LOGIC gate + a committed ratchet floor (`m5-c5`).****
+C4 (device-e2e #11/#12/stealth) + C4-fix + C5 (coverage-of-logic gate +
+ratchet floor) + **C6 (coverage push: the 5 zero-coverage safety services +
+main.dart)** DONE (all UNPUSHED — HEAD = the `m5-c6` commit, ahead of
+origin/main by **10**). THIS session: **C6 — host tests for the five 0%
+safety services + main.dart; coverage-of-logic 84.49%→87.14%; floor ratcheted
+84.0→86.5; found + fixed a real `RealFlashService.stopFlash` HANG bug
+(`m5-c6`).****
 
-**THE FIX (this session):**
-- **#12 was a stub-in-spirit: it silently greened on host / no-stimulus.** Its
-  proof A had a silent `else` direct-drive FALLBACK (so a no-OS run still
-  asserted the clamp), and proof B asserted only bare `isSessionActive`. The CI
-  `e2e` job (`ubuntu-latest`, tag-gated, ran `flutter test integration_test/`
-  with no device + no exclusion) executed #12 on the HOST → false-green on a
-  release tag. EMPIRICALLY RE-ESTABLISHED on `emulator-5554` (3/3 runs): a real
-  OS `KEYCODE_HOME` **reliably** delivers `AppLifecycleState.paused` to the
-  integration_test engine. So #12 is now **branch A**: the silent fallback is
-  REMOVED; proof A HARD-asserts the OS-delivered clamp (200×→60× then foreground-
-  release), proof B HARD-asserts a real `paused→resumed` round-trip was OBSERVED
-  (test-local `WidgetsBindingObserver`) + the session survived it. PROVEN: on
-  host/no-stimulus #12 now FAILS RED (`osPaused=false` → red); on-device it
-  PASSES (`osClamp=true`, `B-SURVIVED roundTrip=true`, exit=0). The clamp
-  ARITHMETIC stays host-covered (`background_clamp_test.dart`,
-  `session_controller_clamp_test.dart`); the speed EFFECT is honestly sim-only.
-- **Device-e2e tag mechanism = the new standard.** All THREE device-e2e files
-  (`real_call_pause_test.dart`, `background_throttle_test.dart`,
-  `stealth_icon_switch_test.dart`) now carry `@Tags(['device-e2e'])` + `library;`;
-  the tag is declared in root `dart_test.yaml` (single per-package config; Flutter
-  reads it for `integration_test/` too). The CI `e2e` host job now runs
-  `flutter test integration_test/ --concurrency=1 --exclude-tags device-e2e` —
-  PROVEN to SKIP all 3 device files (runs only the host-safe
-  `audio_assets`/`app_boot_smoke`/`disguised_reminder` = +9). The local
-  `tool/device_e2e/*.sh` runners invoke each file by EXPLICIT PATH, which runs
-  regardless of tag — re-verified: #11 + stealth still pass on-device after the
-  tagging. Everyday gate UNCHANGED (lefthook pre-push + CI `test` run bare
-  `flutter test` → `test/` only, never `integration_test/`).
-- **NITs fixed:** `real_call_pause_test.dart` header now says the runner greps the
-  captured `flutter test` STDOUT log (not "tails logcat"); `background_throttle_test.dart`
-  header + runner now say `monkey … LAUNCHER` foreground (not `am start …
-  MainActivityAlias`).
+**THE C6 WORK (this session):**
+- **5 priority safety services driven by REAL host tests** (NOT the
+  simulations — the genuine production parse/detection/timing logic runs via
+  `TestDefaultBinaryMessenger` mock channels + `fakeAsync`). +99 service tests:
+  - `call_state_service.dart` 0%→**100%** (`call_state_service_real_test.dart`,
+    20 tests) — drives the real EventChannel via a StandardMethodCodec success
+    envelope so `_onNativeEvent` + the `_parseCallState` string→enum switch run,
+    incl. the unknown-string / non-String / stream-error / endOfStream /
+    MethodChannel-throw branches.
+  - `flash_service.dart` 0%→**100%** (`flash_service_real_test.dart`, 14 tests)
+    — real SOS morse + continuous loops under `fakeAsync` against a mocked
+    `torch_light` channel; graceful-degradation catch; the stopFlash
+    Completer-fix. **SURFACED + FIXED A REAL PRODUCTION BUG** (see below).
+  - `location_service.dart` 0%→**100%** (`location_service_real_test.dart`,
+    28 tests) — mocked `geolocator` MethodChannel + `geolocator_updates`
+    EventChannel: requestPermission (all 5 branches), fresh-vs-cached fallback,
+    stale-note ISO-8601 formatting, the 1000-point FIFO history eviction.
+  - `contact_service.dart` 0%→**100%** (`contact_service_real_test.dart`,
+    12 tests) — repo-backed cache against a real in-memory Drift DB.
+  - `hardware_button_service.dart` 0%→**81.6%** (`hardware_button_service_real_test.dart`,
+    25 tests) — the VOLUME-BUTTON DISTRESS TRIGGER. A `@visibleForTesting`
+    `subscribeNativeChannelForTest()` seam (wires the real Android EventChannel
+    regardless of host platform — `start()` gates it on `Platform.isAndroid`)
+    lets the test drive real `{action,key}` events through the channel so the
+    real `_onNativeEvent` parse + key-filter + repeat-press sliding-window +
+    long-press duration + param clamping run. Both directions of the
+    false-positive-vs-missed-trigger boundary are asserted. **The ~21
+    uncovered lines are the iOS headphone-remote path (`_startIos` /
+    `_onIosButtonPress` / `_GuardianAudioHandler`) — needs a real iOS audio
+    session, CI-build-ios / device-only, NOT host-reachable.**
+- **`main.dart` 76.9%→92.3%** (+6 tests in `main_bootstrap_test.dart`):
+  `GuardianAngelaApp.build` theme (light/dark/system) + locale resolution; the
+  runBootstrap step-4 deleted>0 + purge-failure-Sentry-capture branches; the
+  step-6 TTS-failure Sentry callback; the recovery-without-ProviderScope path.
+  Remaining 12 lines = `main()`'s real `runApp` entry (top-level, untestable
+  cleanly) + a few recovery edge taps (start-fresh actual-delete + error,
+  restore own-container fallback, restore-progress spinner) — C6b candidates.
+- **PRODUCTION BUG FOUND + FIXED (`RealFlashService.stopFlash` hangs).**
+  `stopFlash()` set `_loopDone = null` BEFORE `await done.future`; the loop's
+  `finally` did `_loopDone?.complete()` on the now-null field → a no-op → the
+  awaited completer NEVER completed → **`stopFlash()` never returned while a
+  flash loop was active** (PROVEN red in real wall-clock: a 3s timeout fired;
+  also under fakeAsync). FIX: each loop (`_sosLoop`/`_continuousLoop`) captures
+  the completer into a local at entry and the `finally` completes THAT
+  (`if (done != null && !done.isCompleted) done.complete()`), so a nulled field
+  can't strand stopFlash. Host-proven by the race-fix tests (a safety app whose
+  SOS flash can't be stopped on disarm is a real defect — caught only because
+  C6 drove the REAL loop, not the sim).
+- **Stale-comment cleanup (no-invented-deferrals):** removed the
+  `// Native channel handler lands in Phase 7` headers + the "Phase 7 not yet
+  landed" / "(Phase 7)" doc lines in `call_state_service.dart` +
+  `hardware_button_service.dart` (the channels exist; C4 fixed
+  `CallStateChannel.kt`), and the "(used by Phase 6 direct call)" note in
+  `flash_service.dart`. (`main.dart:54` "Phase 5C bootstrap" is a factual
+  historical note in a file C6 did NOT edit — left as-is.)
 
-Host suite STILL **4068** (no regression — C5 added zero tests, only the
-coverage config/scripts); whole-project analyze **0**; coverage-of-logic
-**84.49%** (floor 84.0, gate PROVEN pass/fail). NEXT = **M5 C6 — coverage push:
-services + orphan files toward ~99% of logic** (see "next action" below;
-C5 enumerated the exact 0%-but-host-testable service files to attack first).
+**KEY FINDINGS (C6) — new baseline + carry to C6b/C7:**
+- **Coverage-of-logic 84.49% → 87.14%** (11576 / 13284 lines; +356 covered).
+  **Floor ratcheted 84.0 → 86.5** (`tool/coverage/coverage_floor.txt`, ~0.6%
+  jitter headroom; gate PROVEN OK at 86.5, RED at 99.0). Per-file C6 results
+  recorded in the "DELIBERATELY NOT EXCLUDED" block of `coverage_excludes.txt`.
+- **The EventChannel host-drive recipe (reusable for any channel-backed Real
+  service):** `defaultBinaryMessenger.handlePlatformMessage(channelName,
+  StandardMethodCodec().encodeSuccessEnvelope(event), (_){})` pushes one
+  onData; `encodeErrorEnvelope(code:...)` → onError; a `null` raw message →
+  onDone (`platform_channel.dart:699`). For a service whose `start()` gates the
+  subscription on `Platform.isAndroid` (host = false), add a small
+  `@visibleForTesting` method that calls the private `_startAndroid()` so the
+  real subscription+parse runs on the host (used for hardware_button; matches
+  the repo's existing `messaging_service` channel-test pattern). The
+  `Real*Service` constructor-location rule (CI S-6) only greps
+  `Simulation.*Service(`/`Fake.*Repository(` in `lib/` — constructing
+  `Real*Service` in `test/` is NOT forbidden (the existing service tests already
+  do negative name-checks).
+- **`Geolocator` host seam:** channel `flutter.baseflow.com/geolocator`
+  (`getCurrentPosition` returns a `{latitude,longitude,timestamp(ms),accuracy,
+  …}` map for `Position.fromMap`; `checkPermission`/`requestPermission` return
+  the `LocationPermission` enum INDEX as an int — 0 denied / 1 deniedForever /
+  2 whileInUse / 3 always); the position stream is
+  `EventChannel('flutter.baseflow.com/geolocator_updates')` driven via
+  `setMockStreamHandler` + `MockStreamHandlerEventSink.success/error`.
+- **`fakeAsync` + a mock MethodChannel works** — the mock reply resolves
+  in-zone after `async.flushMicrotasks()`; a detached loop parked in a
+  `Future.delayed` needs `async.elapse(...)` (not just flushMicrotasks) to
+  resume. (Proven while debugging the flash loops.)
+- **C6b — remaining NON-feature files NOT yet covered (the next coverage
+  batch, all outside `lib/features/`):** `lib/router/app_router.dart` (111L,
+  0% — GoRouter config; needs a router-build/redirect test, couples to feature
+  screens so could pair with C7); `lib/services/notification_service.dart`
+  (69L missing), `audio_service.dart` (56L), `recording_service.dart` (37L),
+  `service_providers.dart` (35L), `messaging_service.dart` (19L),
+  `session_start_validator.dart` (23L), `background_session_service.dart`
+  (13L), `device_info_service.dart` (10L), `phone_service.dart` (5L),
+  `home_widget_service.dart` (6L), `sentry_service.dart` (7L),
+  `backup_service.dart` (4L); the data layer — `feedback_history_dao.dart`
+  (24L, 0%) + `feedback_history_repository.dart` (4L, 0%) +
+  `feedback_history_table.dart` (8L, 0%) (one coherent feedback-history test),
+  the 0% Drift `tables/*.dart` (`session_modes`/`reminder_templates`/
+  `session_logs`/`sms_retry_jobs`/`contacts` — column DSL, likely covered by
+  instantiating the schema), `contacts_dao.dart` (5L),
+  `sms_retry_jobs_dao.dart` (9L), `database.dart` (7L), `json_singleton_repository.dart`
+  (6L), `contacts_repository.dart` (4L); domain — `chain_event.dart` (4L,
+  lines 125-128), `permission_revocation.dart` (2L), `session_engine.dart`
+  (9L), `session_log.dart` (1L), `seed_data.dart` (1L), `mode_draft_validator.dart`
+  (1L), `event_services.dart` (1L), `event_strategy.dart` (1L),
+  `route_names.dart` (1L); core widgets — `timing_slider.dart` (31L),
+  `swipe_slider.dart` (7L), `pin_keypad.dart` (3L), `ringtone_picker.dart`
+  (3L), `guardian_angela_logo.dart` (2L), `info_icon_button.dart` (1L),
+  `deceptive_old_pin_dialog.dart` (2L) + the `lib/services/sim/*` partial gaps.
+  (NOTE: `lib/features/` controllers + screens are **C7**, NOT C6b.)
 
 ---
 
@@ -82,8 +157,12 @@ C5 enumerated the exact 0%-but-host-testable service files to attack first).
   DEVICE-coverable AND `CallStateChannel.kt` is now bug-fixed; C5/C8 should note
   the native-channel device-e2e coverage (it stays host-EXCLUDED for the host
   coverage floor, but the device-e2e is a real proof, not a gap).
-- **C6 — coverage: services + orphan files.**
-- **C7 — coverage: feature tail** (may split).
+- **C6 — coverage: 5 zero-coverage safety services + main.dart ✓ DONE (this
+  session, `m5-c6`)** — 84.49%→87.14%-of-logic, floor 84.0→86.5, found+fixed
+  a real flash stopFlash-hang bug. **C6b** (the remaining NON-feature files —
+  app_router, notification/audio/recording/service_providers, the data layer,
+  domain + core-widget tails) carried in the C6 KEY FINDINGS above.
+- **C7 — coverage: `lib/features/` controllers + screens** (may split C7a/C7b).
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
@@ -698,12 +777,19 @@ and must stay.
   scripts run via perl with no root. `--rc branch_coverage=0` + `--ignore-errors
   unused` keep lcov 2.x quiet on the no-match `*.freezed.dart` glob.
 
-**Next action = "M5 C6 — coverage push: services + orphan files toward ~99% of
-logic"** — start with the five 0%-but-host-testable service files enumerated
-above (`hardware_button`/`location`/`flash`/`call_state`/`contact`, 291 lines),
-then the wider service/orphan tail; bump `tool/coverage/coverage_floor.txt` as
-each batch lands (re-measure via the pipeline above). The device-e2e standard +
-the C8 reconciliation list (below) stay intact.
+**[C5's next-action — now SUPERSEDED: C6 is DONE.]** C6 covered the five
+0%-but-host-testable service files (`hardware_button`/`location`/`flash`/
+`call_state`/`contact`) + main.dart and ratcheted the floor 84.0→86.5; see the
+C6 section + KEY FINDINGS at the top. **The CURRENT next-action is below.**
+
+**Next action = "M5 C7 — coverage push: `lib/features/` controllers + screens
+(may split C7a/C7b)"** — the feature tail toward ~99%-of-logic; bump
+`tool/coverage/coverage_floor.txt` as each batch lands (re-measure via
+`flutter test --coverage` → `tool/coverage/filter_coverage.sh` → the
+`Coverage of LOGIC: NN.NN%` line from `check_floor.sh`). The remaining
+NON-feature files are C6b (enumerated in the C6 KEY FINDINGS at the top — fold
+them in opportunistically or as a dedicated C6b before C7). The device-e2e
+standard + the C8 reconciliation list (below) stay intact.
 
 ### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
 

@@ -33,6 +33,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
+import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/main.dart';
@@ -165,6 +166,89 @@ class _ThrowingSettingsRepo implements AppSettingsRepository {
   @override
   Future<AppSettings?> loadOrNull() =>
       Future.error(const FormatException('corrupt'));
+
+  @override
+  Future<void> save(AppSettings value) async {}
+
+  @override
+  Future<void> delete() async {}
+}
+
+/// A [SentryServiceProtocol] that records every captured exception.
+class _RecordingSentryService implements SentryServiceProtocol {
+  final List<Object> captured = [];
+
+  @override
+  Future<void> initialize({
+    required bool enabled,
+    String? dsn,
+    double tracesSampleRate = 0.0,
+  }) async {}
+
+  @override
+  Future<void> captureException(
+    Object error,
+    StackTrace? stack, {
+    Map<String, dynamic>? context,
+  }) async {
+    captured.add(error);
+  }
+
+  @override
+  Future<void> close() async {}
+}
+
+/// A [SessionLogRepository] whose [purgeExpiredLogs] returns a fixed non-zero
+/// count (exercises the `deleted > 0` log branch in runBootstrap step 4).
+class _PurgingSessionLogRepo extends SessionLogRepository {
+  _PurgingSessionLogRepo(super.dao);
+
+  @override
+  Future<int> purgeExpiredLogs({
+    required int retentionDays,
+    required DateTime now,
+    int trashRetentionDays = 7,
+  }) async => 3;
+}
+
+/// A [SessionLogRepository] whose [purgeExpiredLogs] throws (exercises the
+/// non-fatal catch + Sentry capture in runBootstrap step 4).
+class _ThrowingSessionLogRepo extends SessionLogRepository {
+  _ThrowingSessionLogRepo(super.dao);
+
+  @override
+  Future<int> purgeExpiredLogs({
+    required int retentionDays,
+    required DateTime now,
+    int trashRetentionDays = 7,
+  }) async => throw StateError('purge boom');
+}
+
+/// A [RealAudioService] whose [bootstrapVoiceAssets] invokes [onFailure] once
+/// (exercises the Sentry-capture failure callback wired in runBootstrap
+/// step 6).
+class _FailingAudioService extends RealAudioService {
+  @override
+  Future<void> bootstrapVoiceAssets({
+    void Function(String locale, Object error, StackTrace stack)? onFailure,
+  }) async {
+    onFailure?.call('en', StateError('tts boom'), StackTrace.current);
+  }
+}
+
+/// An [AppSettingsRepository] that returns a caller-supplied [AppSettings] from
+/// both [load] and [loadOrNull] (used to drive the GuardianAngelaApp theme +
+/// locale branches and a non-recovery runBootstrap).
+class _FixedSettingsRepo implements AppSettingsRepository {
+  _FixedSettingsRepo(this.value);
+
+  final AppSettings value;
+
+  @override
+  Future<AppSettings> load() async => value;
+
+  @override
+  Future<AppSettings?> loadOrNull() async => value;
 
   @override
   Future<void> save(AppSettings value) async {}
@@ -754,4 +838,201 @@ void main() {
       ]);
     });
   });
+
+  // --------------------------------------------------------------------------
+  // runBootstrap step-4 / step-6 branch coverage
+  // --------------------------------------------------------------------------
+
+  group('runBootstrap — purge + TTS-failure branches', () {
+    test('logs when purgeExpiredLogs reports deleted > 0', () async {
+      final db = _openDb();
+      final purgeRepo = _PurgingSessionLogRepo(db.sessionLogsDao);
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) async => db),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FixedSettingsRepo(const AppSettings()),
+          ),
+          sessionLogRepositoryProvider.overrideWith((_) async => purgeRepo),
+          notificationServiceProvider.overrideWithValue(
+            _OrderingNotificationService(<String>[]),
+          ),
+          audioServiceProvider.overrideWithValue(
+            _OrderingAudioService(<String>[]),
+          ),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await db.close();
+      });
+
+      // Reaches step 7 (the deleted>0 branch ran without aborting bootstrap).
+      Widget? root;
+      await runBootstrap(container, runner: (w) => root = w);
+      await Future<void>.delayed(Duration.zero);
+      check(root).isA<UncontrolledProviderScope>();
+    });
+
+    test('a purge failure is non-fatal and captured to Sentry', () async {
+      final db = _openDb();
+      final throwingRepo = _ThrowingSessionLogRepo(db.sessionLogsDao);
+      final sentry = _RecordingSentryService();
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) async => db),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FixedSettingsRepo(const AppSettings()),
+          ),
+          sentryServiceProvider.overrideWithValue(sentry),
+          sessionLogRepositoryProvider.overrideWith((_) async => throwingRepo),
+          notificationServiceProvider.overrideWithValue(
+            _OrderingNotificationService(<String>[]),
+          ),
+          audioServiceProvider.overrideWithValue(
+            _OrderingAudioService(<String>[]),
+          ),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await db.close();
+      });
+
+      Widget? root;
+      await runBootstrap(container, runner: (w) => root = w);
+      await Future<void>.delayed(Duration.zero);
+
+      // Bootstrap still reaches runApp; the purge exception was captured.
+      check(root).isA<UncontrolledProviderScope>();
+      check(sentry.captured).length.equals(1);
+      check(sentry.captured.first).isA<StateError>();
+    });
+
+    test('a TTS-bootstrap failure routes through the Sentry callback', () async {
+      final db = _openDb();
+      final sentry = _RecordingSentryService();
+      final container = ProviderContainer(
+        overrides: [
+          databaseProvider.overrideWith((_) async => db),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FixedSettingsRepo(const AppSettings()),
+          ),
+          sentryServiceProvider.overrideWithValue(sentry),
+          notificationServiceProvider.overrideWithValue(
+            _OrderingNotificationService(<String>[]),
+          ),
+          audioServiceProvider.overrideWithValue(_FailingAudioService()),
+        ],
+      );
+      addTearDown(() async {
+        container.dispose();
+        await db.close();
+      });
+
+      await runBootstrap(container, runner: (_) {});
+      // The unawaited bootstrapVoiceAssets fires onFailure → captureException.
+      await Future<void>.delayed(Duration.zero);
+
+      check(sentry.captured).length.equals(1);
+      check(sentry.captured.first).isA<StateError>();
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // GuardianAngelaApp root-widget build (theme + locale resolution)
+  // --------------------------------------------------------------------------
+
+  group('GuardianAngelaApp build', () {
+    Future<void> pumpApp(WidgetTester tester, AppSettings settings) async {
+      final container = ProviderContainer(
+        overrides: [
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FixedSettingsRepo(settings),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const GuardianAngelaApp(),
+        ),
+      );
+      // One settle pass lets _appSettingsLiveProvider resolve and the theme +
+      // locale maybeWhen branches read the loaded settings.
+      await tester.pump();
+      await tester.pump();
+    }
+
+    testWidgets('resolves a MaterialApp.router with the seeded theme (light)', (
+      WidgetTester tester,
+    ) async {
+      await pumpApp(tester, const AppSettings(themeMode: AppThemeMode.light));
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      check(app.themeMode).equals(ThemeMode.light);
+      check(app.title).equals('Guardian Angela');
+    });
+
+    testWidgets('maps AppThemeMode.dark → ThemeMode.dark', (
+      WidgetTester tester,
+    ) async {
+      await pumpApp(tester, const AppSettings(themeMode: AppThemeMode.dark));
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      check(app.themeMode).equals(ThemeMode.dark);
+    });
+
+    testWidgets('maps AppThemeMode.system → ThemeMode.system and sets locale', (
+      WidgetTester tester,
+    ) async {
+      // AppThemeMode.system is the AppSettings default → the system branch.
+      await pumpApp(tester, const AppSettings(languageCode: 'de'));
+      final app = tester.widget<MaterialApp>(find.byType(MaterialApp));
+      check(app.themeMode).equals(ThemeMode.system);
+      check(app.locale).equals(const Locale('de'));
+    });
+  });
+
+  // --------------------------------------------------------------------------
+  // JsonRecoveryApp restore — fallback container (no enclosing ProviderScope)
+  // --------------------------------------------------------------------------
+
+  group('JsonRecoveryApp restore without an enclosing ProviderScope', () {
+    tearDown(() => FileSelectorPlatform.instance = _FakeFileSelector());
+
+    testWidgets('an empty selected file surfaces an unreadable-file error', (
+      WidgetTester tester,
+    ) async {
+      // No UncontrolledProviderScope wrapper → ProviderScope.containerOf throws
+      // → runBootstrap's restore path builds and disposes its own container.
+      FileSelectorPlatform.instance = _FakeFileSelector(
+        file: XFile.fromData(
+          Uint8List(0),
+          name: 'empty.json',
+          mimeType: 'application/json',
+        ),
+      );
+
+      await tester.pumpWidget(const MaterialApp(home: _RecoveryHost()));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Restore from backup'));
+      await tester.pumpAndSettle();
+
+      // The empty-file guard throws a FormatException before the container is
+      // ever read, so the error is surfaced and the button remains for retry.
+      expect(find.textContaining('Restore failed:'), findsOneWidget);
+      expect(find.text('Restore from backup'), findsOneWidget);
+    });
+  });
+}
+
+/// Hosts a [JsonRecoveryApp] with NO enclosing [ProviderScope] so the restore
+/// flow exercises its own-container fallback branch.
+class _RecoveryHost extends StatelessWidget {
+  const _RecoveryHost();
+
+  @override
+  Widget build(BuildContext context) =>
+      const JsonRecoveryApp(reason: 'no-scope');
 }

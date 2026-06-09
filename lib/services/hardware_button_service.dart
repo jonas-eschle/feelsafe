@@ -1,12 +1,13 @@
-// Native channel handler lands in Phase 7
-// (Android: HardwareButtonChannel.kt / EventChannel
-//  'com.guardianangela.app/hardware_button';
-//  iOS: audio_service BaseAudioHandler _GuardianAudioHandler).
+// Native channel handlers:
+// - Android: HardwareButtonChannel.kt / EventChannel
+//   'com.guardianangela.app/hardware_button'.
+// - iOS: audio_service BaseAudioHandler (_GuardianAudioHandler).
 
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/services.dart' show EventChannel;
 
 import 'package:audio_service/audio_service.dart';
@@ -45,8 +46,8 @@ const double _kMaxLongPressDurationSeconds = 10.0;
 /// Production [HardwareButtonServiceProtocol].
 ///
 /// **Android:** Listens on [EventChannel] `com.guardianangela.app/hardware_button`
-/// which is driven by `HardwareButtonChannel.kt` (Phase 7). Volume key events
-/// are consumed by `MainActivity.dispatchKeyEvent()`.
+/// which is driven by `HardwareButtonChannel.kt`. Volume key events are
+/// consumed by `MainActivity.dispatchKeyEvent()`.
 ///
 /// **iOS (C1):** Registers a [_GuardianAudioHandler] via `audio_service` so
 /// the headphone remote (play/pause/skip buttons) drives the same press
@@ -182,6 +183,17 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
       },
     );
   }
+
+  /// Subscribes the Android [EventChannel] regardless of host platform.
+  ///
+  /// [start] only wires the channel when `Platform.isAndroid`, so on a non-
+  /// Android host the native-event parse/dispatch path is otherwise
+  /// unreachable. This exposes the real subscription so it can be driven via
+  /// `TestDefaultBinaryMessenger` (see
+  /// `test/services/hardware_button_service_real_test.dart`); it changes no
+  /// production behaviour. Call [start] first to set the config, then this.
+  @visibleForTesting
+  void subscribeNativeChannelForTest() => _startAndroid();
 
   Future<void> _startIos() async {
     // audio_service registers a BaseAudioHandler that receives headphone

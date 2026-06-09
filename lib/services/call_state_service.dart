@@ -1,7 +1,7 @@
-// Native channel handler lands in Phase 7
-// (Android: CallStateChannel.kt — READ_PHONE_STATE + PhoneStateListener
-//           MethodChannel + EventChannel 'com.guardianangela.app/call_state';
-//  iOS: CallStatePlugin.swift — CXCallObserver).
+// Native channel handlers:
+// - Android: CallStateChannel.kt — READ_PHONE_STATE + PhoneStateListener,
+//   MethodChannel + EventChannel 'com.guardianangela.app/call_state'.
+// - iOS: CallStatePlugin.swift — CXCallObserver.
 
 import 'dart:async';
 import 'dart:developer';
@@ -34,9 +34,10 @@ const EventChannel _kEventChannel = EventChannel(
 /// **iOS:** `CallStatePlugin.swift` uses `CXCallObserver`. Only reliable when
 /// audio is active (spec 10 §iOS Limitations).
 ///
-/// When the native handler is missing (Phase 7 not yet landed), calls to
-/// [start] will receive a [MissingPluginException] from the EventChannel;
-/// tests use `TestDefaultBinaryMessengerBinding` mock handlers to avoid this.
+/// Host tests drive the EventChannel directly through
+/// `TestDefaultBinaryMessengerBinding` mock handlers (see
+/// `test/services/call_state_service_real_test.dart`); the live native path is
+/// device-proven by the M5 C4 telephony e2e.
 ///
 /// **Single constructor location rule:** no `RealCallStateService()`
 /// call may appear outside `lib/services/service_providers.dart`

@@ -61,7 +61,8 @@ class RealFlashService implements FlashServiceProtocol {
 
   /// Starts a continuous fast-strobe pattern (200 ms on / 200 ms off).
   ///
-  /// Not part of [FlashServiceProtocol] (used by Phase 6 direct call).
+  /// Not part of [FlashServiceProtocol]; called directly by the screen-flash
+  /// distress path.
   Future<void> startContinuousFlash() async {
     if (_isFlashing) await stopFlash();
     log(
@@ -95,6 +96,10 @@ class RealFlashService implements FlashServiceProtocol {
 
   /// SOS: ··· −−− ···  (repeats until [_isFlashing] is false).
   Future<void> _sosLoop() async {
+    // Capture the completer up front: [stopFlash] nulls [_loopDone] before
+    // awaiting it, so the finally must complete THIS loop's completer rather
+    // than re-reading the (now null) field — otherwise stopFlash would hang.
+    final done = _loopDone;
     try {
       while (_isFlashing) {
         // S — three dots
@@ -125,12 +130,15 @@ class RealFlashService implements FlashServiceProtocol {
       await _setTorch(torchOn: false);
     } finally {
       // Signal stopFlash that the loop has exited and the torch is off.
-      _loopDone?.complete();
+      if (done != null && !done.isCompleted) done.complete();
     }
   }
 
   /// Fast strobe (200 ms on / 200 ms off) until [_isFlashing] is false.
   Future<void> _continuousLoop() async {
+    // See [_sosLoop]: capture the completer so the finally never reads a
+    // field that stopFlash may have already nulled.
+    final done = _loopDone;
     try {
       while (_isFlashing) {
         await _setTorch(torchOn: true);
@@ -141,7 +149,7 @@ class RealFlashService implements FlashServiceProtocol {
       await _setTorch(torchOn: false);
     } finally {
       // Signal stopFlash that the loop has exited and the torch is off.
-      _loopDone?.complete();
+      if (done != null && !done.isCompleted) done.complete();
     }
   }
 
