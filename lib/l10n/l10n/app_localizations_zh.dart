@@ -1111,6 +1111,42 @@ class AppLocalizationsZh extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => '启动相同模式';
+
+  @override
+  String get sessionInterruptedJustNow => '刚刚';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 分钟前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 小时前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 天前',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => '目的地';
 
   @override
@@ -3327,6 +3363,42 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String sessionInterruptedStarted(Object time) {
     return '開始時間:$time';
+  }
+
+  @override
+  String get sessionInterruptedStartSameMode => '啟動相同模式';
+
+  @override
+  String get sessionInterruptedJustNow => '剛剛';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 分鐘前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 小時前',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 天前',
+    );
+    return '$_temp0';
   }
 
   @override

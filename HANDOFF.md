@@ -3,8 +3,119 @@
 **Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4
 STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
-Active-Triggers-Summary + shared `permission_utils.dart`) DONE, GATE-GREEN,
-COMMITTED (UNPUSHED). NEXT = M4 C4 — #8 Session-Interrupted prompt.**
+Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
+Session-Interrupted prompt) DONE, GATE-GREEN, COMMITTED (UNPUSHED). NEXT =
+M4 C5 — Tier-F F1+F2 descope (spec notes + REMOVE the `SCHEDULE_EXACT_ALARM`
+permission) + `service_providers` Phase-7 doc-sweep + carried test/spec-note
+tidies.**
+
+---
+
+## What's done THIS session (M4 C4 — UNPUSHED, `m4-#8`)
+
+**GAP verified first (premise was PARTIALLY STALE — detection + an
+informational widget ALREADY existed; the task was genuinely incomplete):**
+`SessionController.build` (`session_controller.dart` ≈ :445-474) ALREADY
+detected an orphan `SessionLog` (`endedAt == null`), deleted all orphans
+(fires once), and seeded `priorInterrupted`/`priorModeName`/`priorStartedAt`;
+the marker write (≈ :598-611) ALREADY stored `modeId`+`modeName`+`startedAt`;
+an `_InterruptedPrompt` widget ALREADY rendered the 5 `sessionInterrupted*`
+keys with an Acknowledge button (so the keys were NOT orphaned — the brief was
+wrong on that). **The REAL gaps:** (1) the prompt only rendered inside
+`SessionScreen` (`/session`), which the cold launch NEVER reaches (`/` → home)
+— so **nothing surfaced it at cold launch**; (2) **no [Start same mode]** (no
+key, no button, no controller path); (3) the detector captured `modeName` but
+**not `modeId`** (needed to restart); (4) the started-line showed a **raw
+`toLocal().toString()` timestamp**, not a relative phrase; (5) **deleted-mode**
+for the restart was unhandled; (6) the spec still described a separate
+`active_session_marker.json`.
+
+**Built (all proven by host/widget tests):**
+
+1. **`SessionState.priorModeId`** (`session_controller.dart`) — added to
+   ctor/field/`copyWith` (cleared by `clearPrior`); the detector now captures
+   `orphan.modeId` (≈ :480) so the restart can target the mode.
+2. **`SessionController.startInterruptedModeAgain()` → `Future<bool>`**
+   (`session_controller.dart` :507) — clears the prompt, looks up the mode by
+   `priorModeId`, and when it still exists starts a **brand-new** real session
+   (mirrors the home start path's distress-mode resolution); returns `false`
+   (no session) when there is no id or the mode was deleted. The orphan marker
+   was already deleted at detection, so no extra marker clearing. NOT a
+   resume.
+3. **`InterruptedPrompt`** (renamed `_InterruptedPrompt` → public,
+   `session_screen.dart` ≈ :567): renders the relative-time started line
+   (`relativeTimeLabel(l10n, RelativeTime.between(startedAt))`), shows
+   **[Start same mode]** ONLY when `priorModeId != null` (deleted mode → only
+   Acknowledge; the snapshotted mode name still renders), then **[Acknowledge]**.
+   Start-same-mode → `startInterruptedModeAgain()` → routes `/session` on
+   success / home on a deleted mode; Acknowledge → `acknowledgeInterruptedPrompt`
+   → home.
+4. **Cold-launch surfacing** (`home_screen.dart` ≈ :166-180, the CORE wiring
+   gap): `HomeScreen.build` now `ref.watch(sessionControllerProvider)` (the
+   detector already runs at home mount — `didChangeDependencies` reads the
+   notifier) and, while `priorInterrupted`, **replaces the home body** with
+   `InterruptedPrompt`. An errored/absent session AsyncValue (`.value == null`)
+   cleanly falls through to the normal dashboard — so the existing home tests
+   (no DB override) are unaffected.
+5. **Relative-time helper** (pure Dart, dep-free): `core/utils/relative_time.dart`
+   (`RelativeTime.between(from, {now})` → coarse justNow/minutes/hours/days
+   bucket; future/clock-skew clamps to justNow) + `core/utils/relative_time_l10n.dart`
+   (UI glue → the new `sessionInterrupted{JustNow,MinutesAgo,HoursAgo,DaysAgo}`
+   keys, ICU-plural).
+
+**Spec reconciliation (spec 04 §Session-Interrupted Prompt):** added an
+**M4-C4 reconciliation note** — the marker is the existing SessionLog
+in-progress row, NOT a separate `active_session_marker.json` (one on-disk
+artifact, not two); rewrote the stale "Data preserved / No SessionLog entry"
+paragraph + the "Either path clears `active_session_marker.json`" line to the
+SessionLog approach; documented the deleted-mode button-hiding + the fire-once
+(detection-time delete) behaviour + the cold-launch surfacing point + the
+relative-time bucketer.
+
+**Tests (net +23 → suite 3990):** 18 REAL-controller
+`test/features/session/session_controller_interrupted_test.dart` (orphan →
+priorInterrupted w/ id+name+start; detection DELETES the orphan; newest orphan
+wins; **cleanly-ended (endedAt set) → NO prompt**; no-logs → NO prompt;
+acknowledge clears flags; start-same-mode existing → fresh session +
+`isSessionActive` + prompt cleared; **deleted mode → false, no session, cleared**;
+start-same-mode writes a NEW marker row, not the old orphan) driving the real
+`SessionController` against `GuardianAngelaDatabase.memory`; 9 pure
+`test/core/utils/relative_time_test.dart` (all bucket boundaries 1m/59m/60m/
+23h/24h + justNow + future-clamp); +5 `session_screen_test.dart` (relative-time
+rendering; Start-same-mode button shown when mode exists / hidden when deleted;
+tap Start-same-mode calls the method; the existing raw-timestamp assertion was
+REWRITTEN to the relative phrase) + the fake gained `startInterruptedModeAgain`
++ `_runningState` gained `priorModeId`; +2 `home_screen_test.dart` cold-launch
+(modal surfaces instead of the dashboard when `priorInterrupted`; normal
+dashboard otherwise) + a local `_FakeSessionController`.
+
+**l10n:** 5 NEW keys in `app_en.arb` (+`@meta`) — `sessionInterruptedStartSameMode`
++ the 3 ICU-plural relative-time keys (`…MinutesAgo`/`…HoursAgo`/`…DaysAgo`,
+`{count}` int) + `…JustNow` — and all 13 translation ARBs (additions-only via a
+JSON-load → add → dump(indent=2, ensure_ascii=False) Python script; **Slavic
+pl/ru/uk use `=1`+`few`+`many`+`other`; Arabic uses zero/one/two/few/many/other;
+Hebrew one/two/many/other; zh/zh_TW `other`-only**). `gen-l10n` 0 untranslated;
+generated `.dart` strictly additions-only (**606 insertions, 0 deletions** ×14);
+parity 14/14; locale-smoke green (all ICU plurals parse + substitute).
+
+**KEY FINDINGS (C4):**
+- **The brief's "orphaned `sessionInterrupted*` keys, no readers" was STALE** —
+  a prior session had already built the detector + the modal widget + the
+  Acknowledge path. Always grep the readers yourself: the keys had 5 readers in
+  `session_screen.dart`. The genuine gap was the **cold-launch surfacing**
+  (`_InterruptedPrompt` lived only on `/session`, which cold launch never hits)
+  + the missing **[Start same mode]** half.
+- `HomeScreen` already builds `sessionControllerProvider` at mount
+  (`didChangeDependencies` → `configureWidgetLabels` reads `.notifier`), so the
+  detector's `build()` already ran on every cold launch — only the *surfacing*
+  was missing. `ref.watch(...).value == null` (errored async, e.g. no DB in a
+  unit test) is the safe fall-through to the normal dashboard, which is why the
+  DB-less home tests didn't need a session override.
+- The SessionLog marker snapshots `modeName` at start (`modeName` column, "cached
+  even if mode later deleted"), so **deleted-mode display is free**; only the
+  restart needs the live `modeId` lookup (→ `getById` null → hide the button).
+- `copyWith` can't null a field → `clearPrior` direct-constructs the nulls; the
+  new `priorModeId` follows the same `clearPrior ? null : (… ?? this.…)` pattern.
 
 ---
 
@@ -609,20 +720,33 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M4 C4 — #8 Session-Interrupted prompt (minimal, reuse the
-SessionLog in-progress marker; [Start same mode] / [Acknowledge]).** M0–M3 are
-PUSHED (`origin/main` = `5ab69c6`); M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8
-map + `phone_validators` + locale seeding, `m4-#10`) + C3 (#16 notification
-re-ask + Active-Triggers-Summary + `permission_utils.dart`, `m4-#16`) are
-DONE+GATE-GREEN+COMMITTED (UNPUSHED). **Two owner items the orchestrator must
-surface before the M4 push:** (a) the C2 emergency map awaits the owner's FINAL
-pre-push review (the "CHANGES FROM THE REVIEWED DRAFT" summary; spot-confirm
-DE=110, ET=911, CI=111); (b) the C2-cohort test-hardening — tighten the
-emergency-map literal-count assertion to `== 109` (fold into C5). For C4 (per
-the M4 DECISIONS block near the top): build MINIMAL — reuse the existing
-SessionLog in-progress marker (NOT the spec's separate JSON file); an
-informational modal with [Start same mode] (a fresh session) / [Acknowledge];
-reconcile the spec marker text to the SessionLog approach.
+**Next action: M4 C5 — Tier-F F1+F2 descope (spec notes + REMOVE the
+`SCHEDULE_EXACT_ALARM` permission) + `service_providers` Phase-7 doc-sweep + the
+carried test/spec-note tidies.** M0–M3 are PUSHED (`origin/main` = `5ab69c6`);
+M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map + `phone_validators` + locale
+seeding, `m4-#10`) + C3 (#16 notification re-ask + Active-Triggers-Summary +
+`permission_utils.dart`, `m4-#16`) + C4 (#8 Session-Interrupted prompt, `m4-#8`)
+are DONE+GATE-GREEN+COMMITTED (UNPUSHED).
+
+**DEFERRED — C5 (and the orchestrator's pre-push) must do:**
+- **Tier-F F1 DESCOPE + F2 DESCOPE:** add the spec notes AND **REMOVE the
+  `SCHEDULE_EXACT_ALARM` permission** from `AndroidManifest.xml` (no
+  AlarmManager watchdog — user-decided 2026-06-09). C5 owns the manifest edit;
+  C2/C3/C4 deliberately did NOT touch it.
+- **`service_providers.dart` Phase-7 doc-sweep:** the remaining services'
+  stale "Phase 7" doc-comments (M3 C2 fixed only system-ui/stealth).
+- **Tighten the emergency-map literal-count assertion to `== 109`** in
+  `test/domain/models/emergency_numbers_test.dart` (C2-cohort hardening).
+- **The C3 spec-ordering one-line note** (the translation ARBs are NOT in the
+  en-template key order — gen-l10n matches by key NAME; record it where the spec
+  describes l10n if not already noted).
+- **Re-evaluate the launch-gate-brand reason** consideration (F4 KEEP+BUILD: see
+  the M4 DECISIONS block — FIRST determine from the spec whether
+  `requireLaunchAuth`/`launchAuthBiometric` do anything BEYOND the App-PIN launch
+  gate; if redundant, surface that rather than building a duplicate).
+- **Owner FINAL pre-push emergency-map review** (the orchestrator must surface
+  the C2 "CHANGES FROM THE REVIEWED DRAFT" summary before the M4 push;
+  spot-confirm **DE=110, ET=911, CI=111**).
 
 Per-chunk recipe (unchanged): verify the gap yourself → implement (serial) →
 prove (host/widget tests driving the REAL controller/screen; emulator for

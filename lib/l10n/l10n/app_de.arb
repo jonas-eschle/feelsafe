@@ -1019,5 +1019,10 @@
   "homeStartTriggersContinue": "Jetzt starten",
   "homeStartTriggersCancel": "Abbrechen",
   "homeStartBlockedNotifTitle": "Benachrichtigungen erforderlich",
-  "homeStartBlockedNotifBody": "Dieser Modus nutzt Benachrichtigungen (getarnte Erinnerungen oder Fake-Anrufe), um dich zu schützen, aber die Benachrichtigungsberechtigung ist deaktiviert. Aktiviere Benachrichtigungen, um diesen Modus zu starten."
+  "homeStartBlockedNotifBody": "Dieser Modus nutzt Benachrichtigungen (getarnte Erinnerungen oder Fake-Anrufe), um dich zu schützen, aber die Benachrichtigungsberechtigung ist deaktiviert. Aktiviere Benachrichtigungen, um diesen Modus zu starten.",
+  "sessionInterruptedStartSameMode": "Gleichen Modus starten",
+  "sessionInterruptedJustNow": "gerade eben",
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{vor 1 Minute} other{vor {count} Minuten}}",
+  "sessionInterruptedHoursAgo": "{count, plural, =1{vor 1 Stunde} other{vor {count} Stunden}}",
+  "sessionInterruptedDaysAgo": "{count, plural, =1{vor 1 Tag} other{vor {count} Tagen}}"
 }

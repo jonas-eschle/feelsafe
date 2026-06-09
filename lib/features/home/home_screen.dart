@@ -17,6 +17,7 @@ import 'package:guardianangela/features/home/widgets/active_triggers_summary.dar
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
 import 'package:guardianangela/features/home/widgets/safety_setup_checklist.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/features/session/session_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -164,6 +165,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    // Surface the Session-Interrupted Prompt at cold launch, BEFORE the home
+    // dashboard (spec 04 Extra 13). SessionController.build detects a prior
+    // session whose SessionLog marker was written at start but never finalised
+    // (a process death), capturing the mode + start time; while the flags are
+    // set the home body is replaced by the informational modal. Both modal
+    // actions clear the flags and route on, so home renders normally next.
+    final sessionAsync = ref.watch(sessionControllerProvider);
+    final priorState = sessionAsync.value;
+    if (priorState != null && priorState.priorInterrupted) {
+      return Scaffold(
+        body: SafeArea(child: InterruptedPrompt(state: priorState)),
+      );
+    }
     final stateAsync = ref.watch(homeControllerProvider);
     return Scaffold(
       appBar: AppBar(

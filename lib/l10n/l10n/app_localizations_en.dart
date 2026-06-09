@@ -1143,6 +1143,45 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'Start same mode';
+
+  @override
+  String get sessionInterruptedJustNow => 'just now';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minutes ago',
+      one: '1 minute ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'Destination';
 
   @override

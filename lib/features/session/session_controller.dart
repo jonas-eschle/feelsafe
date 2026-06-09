@@ -87,6 +87,7 @@ class SessionState {
     this.simulationSilent = true,
     this.distressConfirmRemaining,
     this.priorInterrupted = false,
+    this.priorModeId,
     this.priorModeName,
     this.priorStartedAt,
     this.lastError,
@@ -160,6 +161,12 @@ class SessionState {
 
   /// Whether the prior session was interrupted (Extra 13).
   final bool priorInterrupted;
+
+  /// Id of the prior interrupted session's mode, used by
+  /// [SessionController.startInterruptedModeAgain] to launch a fresh session
+  /// for the same mode. Null when [priorInterrupted] is false or the
+  /// interrupted mode has since been deleted.
+  final String? priorModeId;
 
   /// Name of the prior interrupted session's mode.
   final String? priorModeName;
@@ -289,6 +296,7 @@ class SessionState {
     int? distressConfirmRemaining,
     bool clearDistressConfirm = false,
     bool? priorInterrupted,
+    String? priorModeId,
     String? priorModeName,
     DateTime? priorStartedAt,
     bool clearPrior = false,
@@ -327,6 +335,7 @@ class SessionState {
         : (distressConfirmRemaining ?? this.distressConfirmRemaining),
     priorInterrupted:
         !clearPrior && (priorInterrupted ?? this.priorInterrupted),
+    priorModeId: clearPrior ? null : (priorModeId ?? this.priorModeId),
     priorModeName: clearPrior ? null : (priorModeName ?? this.priorModeName),
     priorStartedAt: clearPrior ? null : (priorStartedAt ?? this.priorStartedAt),
     lastError: clearError ? null : (lastError ?? this.lastError),
@@ -468,15 +477,56 @@ class SessionController extends AsyncNotifier<SessionState>
     );
     return const SessionState.initial().copyWith(
       priorInterrupted: true,
+      priorModeId: orphan.modeId,
       priorModeName: orphan.modeName,
       priorStartedAt: orphan.startedAt,
     );
   }
 
   /// Acknowledges the interrupted-session prompt and clears the flags.
+  ///
+  /// The orphan marker log was already deleted in [build], so clearing the
+  /// in-memory flags is all that is needed for the prompt to never fire again.
   void acknowledgeInterruptedPrompt() {
     final current = state.value ?? const SessionState.initial();
     state = AsyncData(current.copyWith(clearPrior: true));
+  }
+
+  /// Clears the interrupted-session prompt and starts a **fresh** session for
+  /// the interrupted mode (Extra 13, [Start same mode]).
+  ///
+  /// This is NOT a resume — the dead session's state is gone (in-memory-only
+  /// policy). It clears the prior-interrupted flags, looks up the mode by its
+  /// persisted [SessionState.priorModeId], and, when that mode still exists,
+  /// starts a brand-new real session at step 0 (mirroring the home start
+  /// path's distress-mode resolution). The orphan marker log was already
+  /// deleted in [build], so no further marker clearing is needed.
+  ///
+  /// Returns true when a session was started; false when there is no prior
+  /// mode id or the mode has since been deleted (the caller routes home).
+  Future<bool> startInterruptedModeAgain() async {
+    final current = state.value ?? const SessionState.initial();
+    final modeId = current.priorModeId;
+    // Always clear the prompt — either path leaves it dismissed.
+    state = AsyncData(current.copyWith(clearPrior: true));
+    if (modeId == null) {
+      return false;
+    }
+    final db = await ref.read(databaseProvider.future);
+    final mode = await db.sessionModesDao.getById(modeId);
+    if (mode == null) {
+      // The interrupted mode was deleted since the session ran; there is
+      // nothing to restart. The caller falls back to home.
+      return false;
+    }
+    final settings = await ref.read(appSettingsRepositoryProvider).load();
+    final distressId =
+        mode.distressModeId ?? settings.defaults.defaultDistressModeId;
+    final distressMode = distressId == null
+        ? null
+        : await db.sessionModesDao.getById(distressId);
+    await startSession(mode: mode, simulate: false, distressMode: distressMode);
+    return true;
   }
 
   /// Supplies pre-localised widget labels from [HomeScreen] (which has a

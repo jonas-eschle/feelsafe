@@ -1152,6 +1152,45 @@ class AppLocalizationsHi extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'वही मोड शुरू करें';
+
+  @override
+  String get sessionInterruptedJustNow => 'अभी-अभी';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count मिनट पहले',
+      one: '$count मिनट पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count घंटे पहले',
+      one: '$count घंटे पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count दिन पहले',
+      one: '$count दिन पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'गंतव्य';
 
   @override

@@ -1150,6 +1150,51 @@ class AppLocalizationsPl extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'Uruchom ten sam tryb';
+
+  @override
+  String get sessionInterruptedJustNow => 'przed chwilą';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count minuty temu',
+      many: '$count minut temu',
+      few: '$count minuty temu',
+      one: '1 minutę temu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count godziny temu',
+      many: '$count godzin temu',
+      few: '$count godziny temu',
+      one: '1 godzinę temu',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count dnia temu',
+      many: '$count dni temu',
+      few: '$count dni temu',
+      one: '1 dzień temu',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'Cel podróży';
 
   @override

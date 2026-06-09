@@ -34,6 +34,7 @@ import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
 import 'package:guardianangela/features/home/widgets/active_triggers_summary.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
@@ -196,6 +197,31 @@ Future<void> _tapStartAndProceed(
   await tester.pumpAndSettle();
   await tester.tap(find.text(l10n.homeStartTriggersContinue));
   await tester.pumpAndSettle();
+}
+
+/// Fake [SessionController] for the cold-launch interrupted-prompt tests:
+/// returns a canned [SessionState] (with or without the prior-interrupted
+/// flags) without touching the database.
+class _FakeSessionController extends SessionController {
+  _FakeSessionController(this._initial);
+
+  final SessionState _initial;
+
+  @override
+  Future<SessionState> build() async => _initial;
+
+  // The HomeScreen calls this in didChangeDependencies; no-op for the test.
+  @override
+  void configureWidgetLabels({
+    required String statusIdle,
+    required String statusSession,
+    required String statusSim,
+    required String quickExit,
+    required String fakeCall,
+    String? foregroundServiceTitle,
+    String? foregroundServiceBody,
+    String? foregroundServiceStealthBody,
+  }) {}
 }
 
 // ---------------------------------------------------------------------------
@@ -1055,5 +1081,68 @@ void main() {
         check(fake.startSessionCalls).equals(1);
       },
     );
+  });
+
+  group('HomeScreen — interrupted prompt at cold launch (Extra 13)', () {
+    testWidgets('surfaces the interrupted modal instead of the dashboard', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final session = _FakeSessionController(
+        const SessionState.initial().copyWith(
+          priorInterrupted: true,
+          priorModeId: 'mode-1',
+          priorModeName: 'Walk Mode',
+          priorStartedAt: DateTime.now().subtract(const Duration(minutes: 5)),
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[_mode('m1', 'Walk Mode')],
+                selectedModeId: 'm1',
+              ),
+            ),
+          ),
+          sessionControllerProvider.overrideWith(() => session),
+        ],
+      );
+      // The modal is shown; the normal home Start button is NOT.
+      expect(find.text(l10n.sessionInterruptedTitle), findsOneWidget);
+      expect(
+        find.text(l10n.sessionInterruptedMode('Walk Mode')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.sessionInterruptedStartSameMode), findsOneWidget);
+      expect(find.text(l10n.homeStartSession), findsNothing);
+    });
+
+    testWidgets('no prior interruption → the dashboard renders normally', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final session = _FakeSessionController(const SessionState.initial());
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[_mode('m1', 'Walk Mode')],
+                selectedModeId: 'm1',
+              ),
+            ),
+          ),
+          sessionControllerProvider.overrideWith(() => session),
+        ],
+      );
+      expect(find.text(l10n.sessionInterruptedTitle), findsNothing);
+      expect(find.text(l10n.homeStartSession), findsOneWidget);
+    });
   });
 }

@@ -1019,5 +1019,10 @@
   "homeStartTriggersContinue": "立即開始",
   "homeStartTriggersCancel": "取消",
   "homeStartBlockedNotifTitle": "需要通知",
-  "homeStartBlockedNotifBody": "此模式會使用通知（偽裝提醒或假來電）來確保你的安全，但通知權限已關閉。請啟用通知以開始此模式。"
+  "homeStartBlockedNotifBody": "此模式會使用通知（偽裝提醒或假來電）來確保你的安全，但通知權限已關閉。請啟用通知以開始此模式。",
+  "sessionInterruptedStartSameMode": "啟動相同模式",
+  "sessionInterruptedJustNow": "剛剛",
+  "sessionInterruptedMinutesAgo": "{count, plural, other{{count} 分鐘前}}",
+  "sessionInterruptedHoursAgo": "{count, plural, other{{count} 小時前}}",
+  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}"
 }

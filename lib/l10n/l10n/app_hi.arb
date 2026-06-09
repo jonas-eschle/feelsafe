@@ -890,5 +890,10 @@
   "homeStartTriggersContinue": "अभी शुरू करें",
   "homeStartTriggersCancel": "रद्द करें",
   "homeStartBlockedNotifTitle": "सूचनाएँ आवश्यक हैं",
-  "homeStartBlockedNotifBody": "यह मोड आपकी सुरक्षा के लिए सूचनाओं (छद्म रिमाइंडर या नकली कॉल) का उपयोग करता है, लेकिन सूचना अनुमति बंद है। इस मोड को शुरू करने के लिए सूचनाएँ सक्षम करें।"
+  "homeStartBlockedNotifBody": "यह मोड आपकी सुरक्षा के लिए सूचनाओं (छद्म रिमाइंडर या नकली कॉल) का उपयोग करता है, लेकिन सूचना अनुमति बंद है। इस मोड को शुरू करने के लिए सूचनाएँ सक्षम करें।",
+  "sessionInterruptedStartSameMode": "वही मोड शुरू करें",
+  "sessionInterruptedJustNow": "अभी-अभी",
+  "sessionInterruptedMinutesAgo": "{count, plural, one{{count} मिनट पहले} other{{count} मिनट पहले}}",
+  "sessionInterruptedHoursAgo": "{count, plural, one{{count} घंटे पहले} other{{count} घंटे पहले}}",
+  "sessionInterruptedDaysAgo": "{count, plural, one{{count} दिन पहले} other{{count} दिन पहले}}"
 }

@@ -1456,6 +1456,41 @@
       "time": {}
     }
   },
+  "sessionInterruptedStartSameMode": "Start same mode",
+  "@sessionInterruptedStartSameMode": {
+    "description": "CTA in the interrupted modal that starts a brand-new session for the same mode (Extra 13). Not a resume."
+  },
+  "sessionInterruptedJustNow": "just now",
+  "@sessionInterruptedJustNow": {
+    "description": "Relative-time phrase shown in the interrupted modal when the prior session started less than a minute ago."
+  },
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{1 minute ago} other{{count} minutes ago}}",
+  "@sessionInterruptedMinutesAgo": {
+    "description": "Relative-time phrase for a prior session that started a number of whole minutes ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionInterruptedHoursAgo": "{count, plural, =1{1 hour ago} other{{count} hours ago}}",
+  "@sessionInterruptedHoursAgo": {
+    "description": "Relative-time phrase for a prior session that started a number of whole hours ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "sessionInterruptedDaysAgo": "{count, plural, =1{1 day ago} other{{count} days ago}}",
+  "@sessionInterruptedDaysAgo": {
+    "description": "Relative-time phrase for a prior session that started a number of whole days ago.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "sessionGpsDestinationTitle": "Destination",
   "@sessionGpsDestinationTitle": {
     "description": "Title of the GPS destination prompt sheet."

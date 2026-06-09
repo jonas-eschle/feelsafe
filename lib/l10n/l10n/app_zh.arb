@@ -1019,5 +1019,10 @@
   "homeStartTriggersContinue": "立即开始",
   "homeStartTriggersCancel": "取消",
   "homeStartBlockedNotifTitle": "需要通知",
-  "homeStartBlockedNotifBody": "此模式使用通知（伪装提醒或假来电）来保护你的安全，但通知权限已关闭。请启用通知以开始此模式。"
+  "homeStartBlockedNotifBody": "此模式使用通知（伪装提醒或假来电）来保护你的安全，但通知权限已关闭。请启用通知以开始此模式。",
+  "sessionInterruptedStartSameMode": "启动相同模式",
+  "sessionInterruptedJustNow": "刚刚",
+  "sessionInterruptedMinutesAgo": "{count, plural, other{{count} 分钟前}}",
+  "sessionInterruptedHoursAgo": "{count, plural, other{{count} 小时前}}",
+  "sessionInterruptedDaysAgo": "{count, plural, other{{count} 天前}}"
 }

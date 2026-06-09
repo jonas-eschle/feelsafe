@@ -2159,6 +2159,36 @@ abstract class AppLocalizations {
   /// **'Started: {time}'**
   String sessionInterruptedStarted(Object time);
 
+  /// CTA in the interrupted modal that starts a brand-new session for the same mode (Extra 13). Not a resume.
+  ///
+  /// In en, this message translates to:
+  /// **'Start same mode'**
+  String get sessionInterruptedStartSameMode;
+
+  /// Relative-time phrase shown in the interrupted modal when the prior session started less than a minute ago.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get sessionInterruptedJustNow;
+
+  /// Relative-time phrase for a prior session that started a number of whole minutes ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 minute ago} other{{count} minutes ago}}'**
+  String sessionInterruptedMinutesAgo(int count);
+
+  /// Relative-time phrase for a prior session that started a number of whole hours ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String sessionInterruptedHoursAgo(int count);
+
+  /// Relative-time phrase for a prior session that started a number of whole days ago.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String sessionInterruptedDaysAgo(int count);
+
   /// Title of the GPS destination prompt sheet.
   ///
   /// In en, this message translates to:

@@ -1162,6 +1162,45 @@ class AppLocalizationsEl extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'Έναρξη ίδιας λειτουργίας';
+
+  @override
+  String get sessionInterruptedJustNow => 'μόλις τώρα';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'πριν από $count λεπτά',
+      one: 'πριν από 1 λεπτό',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'πριν από $count ώρες',
+      one: 'πριν από 1 ώρα',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'πριν από $count ημέρες',
+      one: 'πριν από 1 ημέρα',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'Προορισμός';
 
   @override

@@ -66,6 +66,12 @@ class _FakeSessionController extends SessionController {
   int holdPressedCalls = 0;
   int holdReleasedCalls = 0;
   int acknowledgeInterruptedCalls = 0;
+  int startInterruptedModeAgainCalls = 0;
+
+  /// Configurable result for [startInterruptedModeAgain]: true mimics an
+  /// existing mode (a session started → route to /session); false mimics a
+  /// deleted mode (route home).
+  bool startInterruptedModeAgainResult = true;
   int setGpsDestinationCalls = 0;
   double? lastSetGpsLat;
   double? lastSetGpsLng;
@@ -155,6 +161,16 @@ class _FakeSessionController extends SessionController {
     final s = state.value;
     if (s == null) return;
     state = AsyncData(s.copyWith(clearPrior: true));
+  }
+
+  @override
+  Future<bool> startInterruptedModeAgain() async {
+    startInterruptedModeAgainCalls++;
+    final s = state.value;
+    if (s != null) {
+      state = AsyncData(s.copyWith(clearPrior: true));
+    }
+    return startInterruptedModeAgainResult;
   }
 
   @override
@@ -288,6 +304,7 @@ SessionState _runningState({
   bool isHolding = false,
   int? distressConfirmRemaining,
   bool priorInterrupted = false,
+  String? priorModeId,
   String? priorModeName,
   DateTime? priorStartedAt,
   bool needsGpsDestinationPrompt = false,
@@ -315,6 +332,7 @@ SessionState _runningState({
     remainingSeconds: 15,
     distressConfirmRemaining: distressConfirmRemaining,
     priorInterrupted: priorInterrupted,
+    priorModeId: priorModeId,
     priorModeName: priorModeName,
     priorStartedAt: priorStartedAt,
     lastError: lastError,
@@ -1595,8 +1613,9 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(
           priorInterrupted: true,
+          priorModeId: 'mode-1',
           priorModeName: 'Walk Mode',
-          priorStartedAt: DateTime(2026, 5, 1, 10),
+          priorStartedAt: DateTime.now().subtract(const Duration(minutes: 5)),
         ),
       );
       await _pump(tester, fake);
@@ -1607,23 +1626,66 @@ void main() {
       );
     });
 
-    testWidgets('shows priorStartedAt formatted in prompt', (
+    testWidgets('renders priorStartedAt as a relative-time phrase', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      final priorAt = DateTime(2026, 5, 1, 10);
+      // 5 minutes ago → the "5 minutes ago" relative phrase, NOT a raw
+      // timestamp.
+      final priorAt = DateTime.now().subtract(const Duration(minutes: 5));
       final fake = _FakeSessionController(
         _runningState(
           priorInterrupted: true,
+          priorModeId: 'mode-1',
           priorModeName: 'Date Mode',
           priorStartedAt: priorAt,
         ),
       );
       await _pump(tester, fake);
       expect(
-        find.text(l10n.sessionInterruptedStarted(priorAt.toLocal().toString())),
+        find.text(
+          l10n.sessionInterruptedStarted(l10n.sessionInterruptedMinutesAgo(5)),
+        ),
         findsOneWidget,
       );
+    });
+
+    testWidgets('shows Start same mode button when the mode still exists', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          priorInterrupted: true,
+          priorModeId: 'mode-1',
+          priorModeName: 'Walk Mode',
+          priorStartedAt: DateTime.now().subtract(const Duration(hours: 2)),
+        ),
+      );
+      await _pump(tester, fake);
+      expect(find.text(l10n.sessionInterruptedStartSameMode), findsOneWidget);
+    });
+
+    testWidgets('hides Start same mode button when the mode was deleted', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          priorInterrupted: true,
+          // No priorModeId → the mode no longer exists.
+          priorModeName: 'Walk Mode',
+          priorStartedAt: DateTime.now().subtract(const Duration(days: 1)),
+        ),
+      );
+      await _pump(tester, fake);
+      // The snapshotted mode name still renders, but no restart button.
+      expect(
+        find.text(l10n.sessionInterruptedMode('Walk Mode')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.sessionInterruptedStartSameMode), findsNothing);
+      expect(find.text(l10n.sessionInterruptedAcknowledge), findsOneWidget);
     });
 
     testWidgets('tapping Acknowledge calls acknowledgeInterruptedPrompt', (
@@ -1633,8 +1695,9 @@ void main() {
       final fake = _FakeSessionController(
         _runningState(
           priorInterrupted: true,
+          priorModeId: 'mode-1',
           priorModeName: 'Walk Mode',
-          priorStartedAt: DateTime(2026, 5, 1, 10),
+          priorStartedAt: DateTime.now().subtract(const Duration(minutes: 5)),
         ),
       );
       // Route away requires GoRouter in the tree.
@@ -1642,6 +1705,24 @@ void main() {
       await tester.tap(find.text(l10n.sessionInterruptedAcknowledge));
       await tester.pumpAndSettle();
       check(fake.acknowledgeInterruptedCalls).equals(1);
+    });
+
+    testWidgets('tapping Start same mode calls startInterruptedModeAgain', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeSessionController(
+        _runningState(
+          priorInterrupted: true,
+          priorModeId: 'mode-1',
+          priorModeName: 'Walk Mode',
+          priorStartedAt: DateTime.now().subtract(const Duration(minutes: 5)),
+        ),
+      )..startInterruptedModeAgainResult = true;
+      await _pumpWithRouter(tester, fake);
+      await tester.tap(find.text(l10n.sessionInterruptedStartSameMode));
+      await tester.pumpAndSettle();
+      check(fake.startInterruptedModeAgainCalls).equals(1);
     });
   });
 

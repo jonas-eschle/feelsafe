@@ -908,5 +908,10 @@
   "homeStartTriggersContinue": "Démarrer",
   "homeStartTriggersCancel": "Annuler",
   "homeStartBlockedNotifTitle": "Notifications requises",
-  "homeStartBlockedNotifBody": "Ce mode utilise des notifications (rappels déguisés ou faux appels) pour assurer votre sécurité, mais l'autorisation de notification est désactivée. Activez les notifications pour démarrer ce mode."
+  "homeStartBlockedNotifBody": "Ce mode utilise des notifications (rappels déguisés ou faux appels) pour assurer votre sécurité, mais l'autorisation de notification est désactivée. Activez les notifications pour démarrer ce mode.",
+  "sessionInterruptedStartSameMode": "Démarrer le même mode",
+  "sessionInterruptedJustNow": "à l’instant",
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{il y a 1 minute} other{il y a {count} minutes}}",
+  "sessionInterruptedHoursAgo": "{count, plural, =1{il y a 1 heure} other{il y a {count} heures}}",
+  "sessionInterruptedDaysAgo": "{count, plural, =1{il y a 1 jour} other{il y a {count} jours}}"
 }

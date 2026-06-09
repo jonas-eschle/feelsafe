@@ -890,5 +890,10 @@
   "homeStartTriggersContinue": "התחל עכשיו",
   "homeStartTriggersCancel": "ביטול",
   "homeStartBlockedNotifTitle": "נדרשות התראות",
-  "homeStartBlockedNotifBody": "מצב זה משתמש בהתראות (תזכורות מוסוות או שיחות מזויפות) כדי לשמור על ביטחונך, אך הרשאת ההתראות כבויה. הפעל התראות כדי להתחיל מצב זה."
+  "homeStartBlockedNotifBody": "מצב זה משתמש בהתראות (תזכורות מוסוות או שיחות מזויפות) כדי לשמור על ביטחונך, אך הרשאת ההתראות כבויה. הפעל התראות כדי להתחיל מצב זה.",
+  "sessionInterruptedStartSameMode": "התחל אותו מצב",
+  "sessionInterruptedJustNow": "ממש עכשיו",
+  "sessionInterruptedMinutesAgo": "{count, plural, one{לפני דקה} two{לפני שתי דקות} many{לפני {count} דקות} other{לפני {count} דקות}}",
+  "sessionInterruptedHoursAgo": "{count, plural, one{לפני שעה} two{לפני שעתיים} many{לפני {count} שעות} other{לפני {count} שעות}}",
+  "sessionInterruptedDaysAgo": "{count, plural, one{לפני יום} two{לפני יומיים} many{לפני {count} ימים} other{לפני {count} ימים}}"
 }

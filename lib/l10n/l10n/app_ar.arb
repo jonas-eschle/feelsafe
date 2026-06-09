@@ -890,5 +890,10 @@
   "homeStartTriggersContinue": "ابدأ الآن",
   "homeStartTriggersCancel": "إلغاء",
   "homeStartBlockedNotifTitle": "الإشعارات مطلوبة",
-  "homeStartBlockedNotifBody": "يستخدم هذا الوضع الإشعارات (تذكيرات مموهة أو مكالمات وهمية) للحفاظ على سلامتك، لكن إذن الإشعارات معطّل. فعّل الإشعارات لبدء هذا الوضع."
+  "homeStartBlockedNotifBody": "يستخدم هذا الوضع الإشعارات (تذكيرات مموهة أو مكالمات وهمية) للحفاظ على سلامتك، لكن إذن الإشعارات معطّل. فعّل الإشعارات لبدء هذا الوضع.",
+  "sessionInterruptedStartSameMode": "بدء نفس الوضع",
+  "sessionInterruptedJustNow": "الآن",
+  "sessionInterruptedMinutesAgo": "{count, plural, zero{قبل {count} دقيقة} one{قبل دقيقة واحدة} two{قبل دقيقتين} few{قبل {count} دقائق} many{قبل {count} دقيقة} other{قبل {count} دقيقة}}",
+  "sessionInterruptedHoursAgo": "{count, plural, zero{قبل {count} ساعة} one{قبل ساعة واحدة} two{قبل ساعتين} few{قبل {count} ساعات} many{قبل {count} ساعة} other{قبل {count} ساعة}}",
+  "sessionInterruptedDaysAgo": "{count, plural, zero{قبل {count} يوم} one{قبل يوم واحد} two{قبل يومين} few{قبل {count} أيام} many{قبل {count} يومًا} other{قبل {count} يوم}}"
 }

@@ -10,6 +10,8 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/pin_constants.dart';
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/utils/relative_time.dart';
+import 'package:guardianangela/core/utils/relative_time_l10n.dart';
 import 'package:guardianangela/core/widgets/deceptive_old_pin_dialog.dart';
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/core/widgets/swipe_slider.dart';
@@ -283,7 +285,7 @@ class _SessionRootState extends ConsumerState<_SessionRoot> {
   Widget build(BuildContext context) {
     final state = widget.state;
     if (state.priorInterrupted) {
-      return _InterruptedPrompt(state: state);
+      return InterruptedPrompt(state: state);
     }
     if (state.distressConfirmRemaining != null) {
       return _DistressConfirmationOverlay(state: state);
@@ -564,10 +566,45 @@ class _ErrorBanner extends StatelessWidget {
   }
 }
 
-class _InterruptedPrompt extends ConsumerWidget {
-  const _InterruptedPrompt({required this.state});
+/// Informational modal shown at cold launch when a prior session was
+/// interrupted by a process death (spec 04 Extra 13).
+///
+/// Detection + the orphan-marker cleanup live in [SessionController.build];
+/// this widget renders the captured `priorModeName`/`priorStartedAt` and
+/// offers two dismiss paths, both of which leave the prompt cleared so it
+/// never fires again:
+///
+/// - **Start same mode** — only shown when the interrupted mode still exists
+///   ([SessionState.priorModeId] non-null). Starts a *brand-new* session for
+///   that mode (not a resume — the dead session's state is gone) and routes to
+///   `/session`. A deleted mode hides the button (the modal then shows only a
+///   generic acknowledgement) — the snapshotted mode name still renders.
+/// - **Acknowledge** — clears the prompt and routes home.
+///
+/// Rendered both inside [SessionScreen] (legacy path) and as a barrier dialog
+/// surfaced by `HomeScreen` at cold launch, so it is public.
+class InterruptedPrompt extends ConsumerWidget {
+  /// Creates an [InterruptedPrompt] for [state].
+  const InterruptedPrompt({required this.state, super.key});
 
+  /// The session state carrying the captured prior-interrupted fields.
   final SessionState state;
+
+  Future<void> _onAcknowledge(BuildContext context, WidgetRef ref) async {
+    ref.read(sessionControllerProvider.notifier).acknowledgeInterruptedPrompt();
+    if (!context.mounted) return;
+    context.goNamed(RouteNames.home);
+  }
+
+  Future<void> _onStartSameMode(BuildContext context, WidgetRef ref) async {
+    final started = await ref
+        .read(sessionControllerProvider.notifier)
+        .startInterruptedModeAgain();
+    if (!context.mounted) return;
+    // A started session goes to the session screen; a deleted mode (started
+    // == false) falls back to home. Either way the prompt is cleared.
+    context.goNamed(started ? RouteNames.session : RouteNames.home);
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -592,17 +629,22 @@ class _InterruptedPrompt extends ConsumerWidget {
             if (state.priorStartedAt != null)
               Text(
                 l10n.sessionInterruptedStarted(
-                  state.priorStartedAt!.toLocal().toString(),
+                  relativeTimeLabel(
+                    l10n,
+                    RelativeTime.between(state.priorStartedAt!),
+                  ),
                 ),
               ),
             const SizedBox(height: 24),
-            FilledButton(
-              onPressed: () {
-                ref
-                    .read(sessionControllerProvider.notifier)
-                    .acknowledgeInterruptedPrompt();
-                context.goNamed(RouteNames.home);
-              },
+            if (state.priorModeId != null) ...[
+              FilledButton(
+                onPressed: () => _onStartSameMode(context, ref),
+                child: Text(l10n.sessionInterruptedStartSameMode),
+              ),
+              const SizedBox(height: 8),
+            ],
+            OutlinedButton(
+              onPressed: () => _onAcknowledge(context, ref),
               child: Text(l10n.sessionInterruptedAcknowledge),
             ),
           ],

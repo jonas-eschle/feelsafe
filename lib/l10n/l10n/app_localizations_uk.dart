@@ -1151,6 +1151,51 @@ class AppLocalizationsUk extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'Запустити той самий режим';
+
+  @override
+  String get sessionInterruptedJustNow => 'щойно';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count хвилини тому',
+      many: '$count хвилин тому',
+      few: '$count хвилини тому',
+      one: '1 хвилину тому',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count години тому',
+      many: '$count годин тому',
+      few: '$count години тому',
+      one: '1 годину тому',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count дня тому',
+      many: '$count днів тому',
+      few: '$count дні тому',
+      one: '1 день тому',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'Пункт призначення';
 
   @override

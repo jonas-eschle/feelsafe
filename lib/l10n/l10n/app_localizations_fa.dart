@@ -1147,6 +1147,45 @@ class AppLocalizationsFa extends AppLocalizations {
   }
 
   @override
+  String get sessionInterruptedStartSameMode => 'شروع همان حالت';
+
+  @override
+  String get sessionInterruptedJustNow => 'همین الان';
+
+  @override
+  String sessionInterruptedMinutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count دقیقه پیش',
+      one: '$count دقیقه پیش',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedHoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count ساعت پیش',
+      one: '$count ساعت پیش',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String sessionInterruptedDaysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count روز پیش',
+      one: '$count روز پیش',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get sessionGpsDestinationTitle => 'مقصد';
 
   @override

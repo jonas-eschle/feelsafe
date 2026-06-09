@@ -1019,5 +1019,10 @@
   "homeStartTriggersContinue": "Empezar ahora",
   "homeStartTriggersCancel": "Cancelar",
   "homeStartBlockedNotifTitle": "Se requieren notificaciones",
-  "homeStartBlockedNotifBody": "Este modo usa notificaciones (recordatorios disfrazados o llamadas falsas) para mantenerte a salvo, pero el permiso de notificaciones está desactivado. Activa las notificaciones para iniciar este modo."
+  "homeStartBlockedNotifBody": "Este modo usa notificaciones (recordatorios disfrazados o llamadas falsas) para mantenerte a salvo, pero el permiso de notificaciones está desactivado. Activa las notificaciones para iniciar este modo.",
+  "sessionInterruptedStartSameMode": "Iniciar el mismo modo",
+  "sessionInterruptedJustNow": "ahora mismo",
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{hace 1 minuto} other{hace {count} minutos}}",
+  "sessionInterruptedHoursAgo": "{count, plural, =1{hace 1 hora} other{hace {count} horas}}",
+  "sessionInterruptedDaysAgo": "{count, plural, =1{hace 1 día} other{hace {count} días}}"
 }

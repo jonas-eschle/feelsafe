@@ -962,10 +962,30 @@ Stealth mode is orthogonal to PIN configuration. If a PIN is required to disarm 
 ### Session-Interrupted Prompt (Extra 13)
 
 If the process died with a session active (force-stop, OOM, OS kill),
-the next cold launch detects the `active_session_marker.json` file
-(written atomically at `engine.start()`, cleared atomically at
-`engine.endSession()`). When the marker exists, the app surfaces an
-informational modal before the home screen renders.
+the next cold launch detects an **in-progress `SessionLog` marker
+row** — a log written at `SessionController.startSession` (carrying the
+`modeId`, the snapshotted `modeName`, and `startedAt`) whose `endedAt`
+is still null because the clean-end finaliser never ran. When such a
+row exists, the app surfaces an informational modal before the home
+screen renders.
+
+> **Reconciliation note (M4 C4): one persistence path, not two.** Earlier
+> drafts of this section described a separate `active_session_marker.json`
+> file written/cleared in lockstep with the engine. The implementation
+> reuses the **existing SessionLog in-progress row** as the marker instead
+> (`SessionController.startSession` upserts it at start; `endSession`
+> deletes it on a clean end — `session_controller.dart`), so there is a
+> single on-disk artifact, not a parallel JSON file. Detection lives in
+> `SessionController.build` (it finds the newest orphan `SessionLog`,
+> captures its `modeId`/`modeName`/`startedAt`, and **deletes all orphan
+> rows immediately** so the prompt fires exactly once). The marker is for
+> DETECTION + the informational prompt + a fresh restart only — never a
+> session resume (session state is in-memory only, lessons-learned §5.2).
+> The cold-launch surfacing point is `HomeScreen` (the `/` landing route):
+> while `SessionState.priorInterrupted` is set, the home body is replaced
+> by the modal. The relative-time line is rendered via a coarse
+> dependency-free bucketer (`core/utils/relative_time.dart`, localised by
+> the `sessionInterrupted{JustNow,MinutesAgo,HoursAgo,DaysAgo}` keys).
 
 **Layout:**
 ```
@@ -988,17 +1008,19 @@ informational modal before the home screen renders.
 └─────────────────────────────────┘
 ```
 
-**Data preserved on disk:** ONLY `modeId` and `startedAt` (the
-marker's two fields). **NOT preserved:** chain state, miss counts,
-GPS history, in-progress phase timers, SessionLog for the dead
-session — per lessons-learned §5.2, session state is in-memory
-only. No `SessionLog` entry is created for the killed session.
+**Data surfaced from the marker:** the `modeId`, the snapshotted
+`modeName` (so the mode name still renders even if the mode was later
+deleted), and `startedAt`. **NOT preserved:** chain state, miss
+counts, GPS history, in-progress phase timers, the dead session's
+event list — per lessons-learned §5.2, session state is in-memory
+only. The marker row carries an **empty event list**; it is not a
+record of what the killed session did, only that one was running.
 
 **Behavior:**
 - No PIN gate — the modal is informational and does not perform any safety-relevant action.
-- **Start same mode:** clears the marker, then opens the regular session-start flow for the same `modeId` (brand-new session, step 0, fresh `SessionLog`; this is NOT a resume).
-- **Acknowledge:** clears the marker and routes to home.
-- Either path clears `active_session_marker.json` so the prompt does not fire again.
+- **Start same mode:** clears the prompt, then opens the regular session-start flow for the same `modeId` (brand-new session, step 0, fresh marker; this is NOT a resume). Shown **only when the mode still exists**; if the interrupted mode was deleted, the button is hidden and only **Acknowledge** is offered (the snapshotted mode name still renders).
+- **Acknowledge:** clears the prompt and routes to home.
+- The orphan marker row is deleted at **detection time** (in `SessionController.build`), so the prompt fires exactly once regardless of which button the user taps; a cleanly-ended session (whose marker was already deleted at `endSession`) never triggers it.
 
 ---
 

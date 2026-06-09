@@ -1019,5 +1019,10 @@
   "homeStartTriggersContinue": "Почати зараз",
   "homeStartTriggersCancel": "Скасувати",
   "homeStartBlockedNotifTitle": "Потрібні сповіщення",
-  "homeStartBlockedNotifBody": "Цей режим використовує сповіщення (замасковані нагадування або фальшиві дзвінки) для вашої безпеки, але дозвіл на сповіщення вимкнено. Увімкніть сповіщення, щоб запустити цей режим."
+  "homeStartBlockedNotifBody": "Цей режим використовує сповіщення (замасковані нагадування або фальшиві дзвінки) для вашої безпеки, але дозвіл на сповіщення вимкнено. Увімкніть сповіщення, щоб запустити цей режим.",
+  "sessionInterruptedStartSameMode": "Запустити той самий режим",
+  "sessionInterruptedJustNow": "щойно",
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{1 хвилину тому} few{{count} хвилини тому} many{{count} хвилин тому} other{{count} хвилини тому}}",
+  "sessionInterruptedHoursAgo": "{count, plural, =1{1 годину тому} few{{count} години тому} many{{count} годин тому} other{{count} години тому}}",
+  "sessionInterruptedDaysAgo": "{count, plural, =1{1 день тому} few{{count} дні тому} many{{count} днів тому} other{{count} дня тому}}"
 }

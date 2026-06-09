@@ -890,5 +890,10 @@
   "homeStartTriggersContinue": "Rozpocznij teraz",
   "homeStartTriggersCancel": "Anuluj",
   "homeStartBlockedNotifTitle": "Wymagane powiadomienia",
-  "homeStartBlockedNotifBody": "Ten tryb używa powiadomień (zamaskowanych przypomnień lub fałszywych połączeń), aby zapewnić Ci bezpieczeństwo, ale uprawnienie do powiadomień jest wyłączone. Włącz powiadomienia, aby uruchomić ten tryb."
+  "homeStartBlockedNotifBody": "Ten tryb używa powiadomień (zamaskowanych przypomnień lub fałszywych połączeń), aby zapewnić Ci bezpieczeństwo, ale uprawnienie do powiadomień jest wyłączone. Włącz powiadomienia, aby uruchomić ten tryb.",
+  "sessionInterruptedStartSameMode": "Uruchom ten sam tryb",
+  "sessionInterruptedJustNow": "przed chwilą",
+  "sessionInterruptedMinutesAgo": "{count, plural, =1{1 minutę temu} few{{count} minuty temu} many{{count} minut temu} other{{count} minuty temu}}",
+  "sessionInterruptedHoursAgo": "{count, plural, =1{1 godzinę temu} few{{count} godziny temu} many{{count} godzin temu} other{{count} godziny temu}}",
+  "sessionInterruptedDaysAgo": "{count, plural, =1{1 dzień temu} few{{count} dni temu} many{{count} dni temu} other{{count} dnia temu}}"
 }
