@@ -2,6 +2,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Default asset path for the countdown warning sound.
 ///
@@ -35,7 +36,10 @@ final class CountdownWarningStrategy implements EventStrategy {
   /// this layer — countdown is local-only per spec 02 §Simulation behavior
   /// summary.
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     final config = step.config is CountdownWarningConfig
         ? step.config! as CountdownWarningConfig
         : const CountdownWarningConfig();
@@ -49,6 +53,8 @@ final class CountdownWarningStrategy implements EventStrategy {
     if (config.sound) {
       await services.audio.playSound(_kCountdownWarningSoundAsset);
     }
+    // No SMS enqueued — nothing for the orchestrator to cancel (A5).
+    return const [];
   }
 
   /// Returns `null` — the actual countdown UI and vibration fire normally

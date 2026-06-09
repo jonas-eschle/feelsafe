@@ -139,17 +139,24 @@ final class RecordingFakes {
   ///
   /// [contacts] seeds the [FakeContactService] so the `smsContact` strategy has
   /// recipients to resolve (an empty contact list makes `sendMessage` a no-op).
-  RecordingFakes({List<EmergencyContact>? contacts})
-    : audio = FakeAudioService(),
-      vibration = FakeVibrationService(),
-      messaging = FakeMessagingService(),
-      phone = FakePhoneService(),
-      location = FakeLocationService(),
-      recording = FakeRecordingService(),
-      flash = FakeFlashService(),
-      screenFlash = FakeScreenFlashService(),
-      notification = FakeNotificationService(),
-      contacts = FakeContactService(contacts ?? const []);
+  /// [messaging] lets a scenario inject a pre-configured [FakeMessagingService]
+  /// (e.g. `FakeMessagingService(workIds: [...])` so SMS sends return a
+  /// deterministic WorkManager id) — used by the A5 cancel-on-disarm scenario
+  /// (INT-010) to assert the accumulated ids reach [FakeMessagingService.cancelPending].
+  /// When omitted a fresh recorder returning null work-ids is used.
+  RecordingFakes({
+    List<EmergencyContact>? contacts,
+    FakeMessagingService? messaging,
+  }) : audio = FakeAudioService(),
+       vibration = FakeVibrationService(),
+       messaging = messaging ?? FakeMessagingService(),
+       phone = FakePhoneService(),
+       location = FakeLocationService(),
+       recording = FakeRecordingService(),
+       flash = FakeFlashService(),
+       screenFlash = FakeScreenFlashService(),
+       notification = FakeNotificationService(),
+       contacts = FakeContactService(contacts ?? const []);
 
   /// Recording audio service (alarm / ringtone / voice-clip calls).
   final FakeAudioService audio;

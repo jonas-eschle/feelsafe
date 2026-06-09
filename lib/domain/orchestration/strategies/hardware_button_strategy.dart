@@ -1,6 +1,7 @@
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Strategy for [ChainStepType.hardwareButton] steps.
 ///
@@ -27,8 +28,10 @@ final class HardwareButtonStrategy implements EventStrategy {
   /// The simulation guard is omitted because there are no real actions
   /// to block; the step is UI/platform-driven.
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) =>
-      Future<void>.value();
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async => const [];
 
   /// Returns the raw English simulation feedback text.
   ///

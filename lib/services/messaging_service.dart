@@ -174,6 +174,7 @@ class RealMessagingService implements MessagingServiceProtocol {
   ///
   /// iOS no-op. Called by the session orchestrator on disarm (A5) to prevent
   /// delayed messages arriving after the user has confirmed safety.
+  @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async {
     if (!Platform.isAndroid) return;
     if (workIds.isEmpty) return;

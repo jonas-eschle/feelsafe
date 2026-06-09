@@ -28,4 +28,23 @@ abstract interface class MessagingServiceProtocol {
     required String message,
     bool isSimulation = false,
   });
+
+  /// Cancels all queued WorkManager SMS jobs identified by [workIds] (A5).
+  ///
+  /// The session orchestrator ([SessionController]) accumulates every
+  /// non-null [MessageWorkId] returned by [sendMessage] over the session and
+  /// passes the list here when the user signals safety — on disarm (the
+  /// "I'm safe" slider) and on a clean session end (correct End-PIN /
+  /// explicit quit). This retracts a distress SMS that the Android retry
+  /// queue had deferred (no signal at send time) so it never arrives at the
+  /// emergency contacts after the user is already safe (spec 05 §A5).
+  ///
+  /// Cancellation is NOT performed on distress / escalation ends
+  /// (`chainExhausted` / `hardwarePanic` / `duressPin` / `wrongPinExhausted`
+  /// / `distressConfirmTimeout`) — there the message must still go out.
+  ///
+  /// Android-only effect (calls `WorkManager.cancelWorkById` per id via the
+  /// SMS MethodChannel). iOS / an empty [workIds] / non-SMS channels are a
+  /// no-op (those channels have no cancellable background job).
+  Future<void> cancelPending(List<MessageWorkId> workIds);
 }

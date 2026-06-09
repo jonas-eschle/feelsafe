@@ -261,16 +261,26 @@ class MessagingService {
 
 Each `smsContact` chain step calls `sendMessage()` once per contact using only the **single channel** configured on that step (`SmsContactConfig.channel`). The strategy passes a single-channel `EmergencyContact.copyWith(channels: [channel])` to `sendMessage()`, preventing multi-channel dispatch from a single step.
 
-### Cancel Pending SMS on Disarm (A5)
+### Cancel Pending SMS on Disarm (A5) — BUILT
 
-**`cancelPending(List<MessageWorkId> workIds)`**
+**`MessagingServiceProtocol.cancelPending(List<MessageWorkId> workIds)`**
 
-Cancels all queued WorkManager SMS jobs that have not yet been delivered. Called by `SessionOrchestrator.cleanDisarm()` when the user disarms a session.
+Cancels all queued WorkManager SMS jobs that have not yet been delivered. Called by `SessionController` when the user signals safety.
 
-- **Purpose:** Prevents unexpected SMS messages arriving minutes or hours after the user disarmed (e.g., when the phone had no signal at the time of the step and SMS was queued for retry).
-- **Implementation:** Iterates the list and calls `WorkManager.getInstance().cancelWorkById(id)` for each ID via MethodChannel.
-- **iOS:** No-op (iOS does not have a persistent WorkManager SMS queue).
-- **Work ID tracking:** The `SessionOrchestrator` accumulates all `MessageWorkId` values returned by `sendMessage()` during the session. On `cleanDisarm()`, the accumulated list is passed to `cancelPending()`.
+- **Purpose:** Prevents an unexpected distress SMS arriving minutes or hours after the user is safe (e.g., when the phone had no signal at send time and the SMS was queued for retry — see §SMS Retry Queue, up to 10 retries with exponential backoff).
+- **Implementation:** Iterates the list and calls `WorkManager.getInstance().cancelWorkById(id)` for each ID via the `com.guardianangela.app/sms` MethodChannel (`SmsChannel.cancelWork`).
+- **iOS:** No-op (iOS has no persistent WorkManager SMS queue). An empty `workIds` list and non-SMS channels are also no-ops (those channels return `null` from `sendMessage`, so no id is ever accumulated for them).
+
+**Work-ID flow (as wired):**
+
+1. `EventStrategy.executeReal()` returns `Future<List<MessageWorkId>>` — the SMS-sending strategies (`SmsContactStrategy`, and `CallEmergencyStrategy` when `sendLocationSmsFirst` is set) return the non-null `MessageWorkId`s of the jobs they enqueued; every other strategy and every short-circuit path returns `const []`.
+2. `SessionController._dispatchStep()` accumulates each step's returned ids into a session-scoped `_smsWorkIds` list.
+3. The controller passes that list to `cancelPending()` when **— and only when —** the user signals safety:
+   - **`SessionController.disarm()`** (the "I'm safe" slider / hardware-button disarm) cancels immediately, then re-arms the engine to step 0 and clears the tracked list (a re-armed step that re-sends is tracked afresh).
+   - A **clean session end** — `EndReason.disarm` (correct End-PIN) or `EndReason.userQuit` (explicit quit) — cancels via the safe-end branch of `SessionController._finaliseLog()`.
+   - It is **NOT** cancelled on distress / escalation ends (`chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`, `distressConfirmTimeout`): there the user is in danger and the message must still go out.
+
+(There is no separate `SessionOrchestrator` / `cleanDisarm` / `registerSmsWorkId` type — the session orchestration is `SessionController`, and work-id capture is implicit in the `executeReal` return rather than a register call.)
 
 ### Channel Dispatch
 

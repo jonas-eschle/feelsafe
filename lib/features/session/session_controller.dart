@@ -31,6 +31,7 @@ import 'package:guardianangela/domain/orchestration/reminder_template_selector.d
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/session_log_recorder.dart';
 
@@ -399,6 +400,17 @@ class SessionController extends AsyncNotifier<SessionState>
   /// when that call ends (spec 01 §Real Phone Call During Fake Call,
   /// Extra-24/25).
   bool _disarmOnRealCallEnd = false;
+
+  /// WorkManager job ids for every distress SMS enqueued this session (A5).
+  ///
+  /// Accumulated from each [EventStrategy.executeReal] return in
+  /// [_dispatchStep]. Passed to [MessagingServiceProtocol.cancelPending] when
+  /// the user signals safety — on [disarm] (the "I'm safe" slider) and on a
+  /// safe clean end (correct End-PIN / explicit quit, via [_cancelPendingSms]
+  /// in [_finaliseLog]) — so a still-queued retry SMS never reaches the
+  /// emergency contacts after the user is already safe (spec 05 §A5). NOT
+  /// cancelled on distress / escalation ends. Android-only effect; iOS no-ops.
+  final List<MessageWorkId> _smsWorkIds = [];
 
   /// True while this controller is registered as a [WidgetsBindingObserver]
   /// for the active session (G-013 background clamp). Lets
@@ -892,8 +904,32 @@ class SessionController extends AsyncNotifier<SessionState>
   }
 
   /// Called when the user disarms (taps "I'm safe" / completes the slider).
+  ///
+  /// Re-arms the engine to step 0 and cancels any distress SMS still queued in
+  /// the Android WorkManager retry queue — the user has signalled safety, so a
+  /// deferred SMS must not reach the emergency contacts (A5, spec 05 §Cancel
+  /// Pending SMS on Disarm). Disarm does NOT end the session (the chain re-arms
+  /// and may enqueue fresh SMS), so the accumulated id list is cleared after
+  /// the cancel; any re-armed step's new SMS is tracked from scratch.
   void disarm() {
+    _cancelPendingSms();
     _engine?.disarm();
+  }
+
+  /// Cancels every accumulated distress-SMS WorkManager job, then clears the
+  /// tracked id list (A5).
+  ///
+  /// Fire-and-forget: cancellation must never block the disarm/end UI, and a
+  /// channel failure is swallowed inside [MessagingServiceProtocol.cancelPending]
+  /// (iOS / empty list / non-SMS are already no-ops). No-op when no ids were
+  /// accumulated or the session's [EventServices] bundle is gone.
+  void _cancelPendingSms() {
+    if (_smsWorkIds.isEmpty) return;
+    final messaging = _eventServices?.messaging;
+    if (messaging == null) return;
+    final ids = List<MessageWorkId>.of(_smsWorkIds);
+    _smsWorkIds.clear();
+    unawaited(messaging.cancelPending(ids));
   }
 
   /// Called when the user taps a disguised reminder during its wait phase —
@@ -1318,7 +1354,21 @@ class SessionController extends AsyncNotifier<SessionState>
   /// Exposed for the session-end overlay and for tests; not persisted.
   int get wrongPinAttempts => _wrongPinAttempts;
 
+  /// End reasons that mean the user is SAFE — a clean end where any queued
+  /// distress SMS must be retracted (A5). Distress / escalation ends
+  /// (`chainExhausted`, `hardwarePanic`, `duressPin`, `wrongPinExhausted`,
+  /// `distressConfirmTimeout`) are deliberately excluded so the message still
+  /// goes out.
+  static bool _isSafeEnd(EndReason reason) =>
+      reason == EndReason.disarm || reason == EndReason.userQuit;
+
   Future<void> _finaliseLog(EndReason reason) async {
+    // Retract any still-queued distress SMS when the user signalled safety
+    // (correct End-PIN / explicit quit). Done before _eventServices is nulled
+    // below; a no-op on distress/escalation ends (A5, spec 05 §A5).
+    if (_isSafeEnd(reason)) {
+      _cancelPendingSms();
+    }
     final recorder = _recorder;
     if (recorder == null) return;
     try {
@@ -1475,9 +1525,13 @@ class SessionController extends AsyncNotifier<SessionState>
         ? services.copyWith(selectedReminderTemplate: _activeReminderTemplate)
         : services;
     try {
-      await const EventStrategyRegistry()
+      final workIds = await const EventStrategyRegistry()
           .forStep(step)
           .executeReal(step, dispatchServices);
+      // Accumulate any enqueued SMS WorkManager ids so a clean end / disarm can
+      // cancel a still-queued distress SMS before it reaches the contacts (A5,
+      // spec 05 §Cancel Pending SMS on Disarm). Non-SMS steps return const [].
+      _smsWorkIds.addAll(workIds);
     } catch (error) {
       engine.notifyStepExecutionFailed(index, error);
     }

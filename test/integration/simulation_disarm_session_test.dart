@@ -3,10 +3,27 @@
 /// INT-009 drives the **real** [SessionController] simulation `leap()` (the
 /// "skip to next event" time-compression, decision D2) under `fakeAsync`,
 /// proving the engine collapses the current phase timer and transitions cleanly
-/// without leaking a stale remaining time. INT-010 drives the **real** disarm
-/// path against a chain that has already queued an SMS, asserting the genuine
-/// disarm behavior — and documenting a real spec/code divergence for the C8
-/// spec-07 reconciliation (decision A5).
+/// without leaking a stale remaining time.
+///
+/// INT-010 drives the **real** A5 SMS-cancel-on-disarm wiring end-to-end: a
+/// `smsContact` step enqueues an SMS whose `FakeMessagingService` returns a
+/// deterministic WorkManager id; the controller accumulates it
+/// (`_dispatchStep` → `_smsWorkIds`) and, when the user signals safety, passes
+/// it to `MessagingServiceProtocol.cancelPending`. Three cases:
+///   - **disarm** (the "I'm safe" slider, `controller.disarm()`) cancels the
+///     queued id immediately (and the chain re-arms to step 0, never escalates);
+///   - a **clean end** (`endSession(reason: userQuit)`) cancels it;
+///   - a **distress / escalation end** (`chainExhausted`) does NOT cancel — the
+///     distress SMS must still go out.
+///
+/// **A5 is now BUILT (this milestone, m5-A5).** Earlier (C2) INT-010 documented
+/// the gap: `MessagingServiceProtocol` declared only `sendMessage`,
+/// `EventStrategy.executeReal` returned `Future<void>` (discarding the work-id),
+/// and `SessionController.disarm()` was a bare `engine.disarm()`. That gap is
+/// closed: `cancelPending` is on the protocol, `executeReal` returns the SMS
+/// work-ids, and the controller accumulates + cancels them on disarm/clean-end.
+/// This test is the RED proof — remove the `_cancelPendingSms()` call from
+/// `disarm()` (or `_finaliseLog`) and the relevant assertion fails.
 ///
 /// **Orchestrator-API reconciliations (Hard Rule 6):**
 /// - INT-009's bare `engine.leap()` → the wired entry point is
@@ -15,31 +32,14 @@
 ///   session `SessionController._dispatchStep` is a Layer-1 no-op, so the fake
 ///   services record nothing — INT-009 asserts the engine *state*/*phase*
 ///   transition, exactly what decision D2 specifies.
-///
-/// - **INT-010 is a genuine spec-vs-code divergence (REAL FINDING, reconciled —
-///   not vacuous; flagged for C8).** The spec sketch has the orchestrator
-///   capture the `MessageWorkId` returned by `sendMessage` via
-///   `registerSmsWorkId`, then on disarm call an orchestrator `cleanDisarm()`
-///   that invokes `MessagingServiceProtocol.cancelPending(workIds)`. In the
-///   real code **none of that wiring exists**:
-///     * `MessagingServiceProtocol` declares ONLY `sendMessage`; `cancelPending`
-///       lives only on the concrete `RealMessagingService` /
-///       `SimulationMessagingService`, NOT on the interface the orchestrator
-///       holds.
-///     * `EventStrategy.executeReal` returns `Future<void>`, so the
-///       `MessageWorkId` from `sendMessage` is **discarded at the strategy
-///       boundary** — the controller never sees or stores it.
-///     * `SessionController.disarm()` is just `engine.disarm()`; there is no
-///       `cleanDisarm` / `registerSmsWorkId` / `cancelPending` call anywhere in
-///       the session flow (grep of `lib/features/` = 0).
-///   So a queued Android SMS WorkManager job is **not** cancelled on disarm
-///   today. This test therefore asserts the *faithful* real disarm behavior
-///   (the SMS genuinely fired; disarm re-arms to step 0 and emits exactly one
-///   `userDisarmed`; the chain does not advance to callEmergency) and proves no
-///   `cancelPending` mechanism is reachable from the controller. The A5
-///   SMS-cancel-on-disarm feature is unbuilt — carried to the C8 spec-07
-///   reconciliation list.
+/// - The spec sketch's `SessionOrchestrator.cleanDisarm()` + `registerSmsWorkId`
+///   map to the real `SessionController`: work-id capture is automatic in
+///   `_dispatchStep` (the strategy return), and the cancel fires from
+///   `disarm()` + the safe-end branch of `_finaliseLog` (there is no separate
+///   `cleanDisarm`/`registerSmsWorkId` method).
 library;
+
+import 'dart:async';
 
 import 'package:checks/checks.dart';
 import 'package:fake_async/fake_async.dart';
@@ -50,9 +50,11 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/engine/chain_event.dart';
 import 'package:guardianangela/domain/engine/engine_state.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 import '_session_harness.dart';
 
 EmergencyContact _bob() => EmergencyContact(
@@ -85,6 +87,13 @@ ChainStep _emergencyStep() => ChainStep(
   randomize: false,
   config: const CallEmergencyConfig(),
 );
+
+/// The deterministic WorkManager id the fake `sendMessage` returns for the SMS.
+const _kSmsWorkId = 'wm-sms-job-1';
+
+/// All `cancelPending` work-id lists recorded by the messaging fake, flattened.
+List<MessageWorkId> _allCancelled(FakeMessagingService messaging) =>
+    messaging.cancelledWorkIds.expand((ids) => ids).toList();
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -143,10 +152,11 @@ void main() {
     });
   });
 
-  test('INT-010 disarm after a queued SMS re-arms to step 0 and does not '
-      'escalate (A5 cancel-on-disarm is unimplemented — see header)', () {
+  test('INT-010 disarm cancels the queued distress SMS (A5) and re-arms to '
+      'step 0 without escalating', () {
     fakeAsync((async) {
-      final fakes = RecordingFakes(contacts: [_bob()]);
+      final messaging = FakeMessagingService(workIds: [_kSmsWorkId]);
+      final fakes = RecordingFakes(contacts: [_bob()], messaging: messaging);
       final container = buildIntegrationContainer(db: db, fakes: fakes);
       final mode = SessionMode(
         id: 'disarm-sms',
@@ -161,21 +171,29 @@ void main() {
       );
 
       // The smsContact step (index 0) executes immediately — its sendMessage
-      // returns a (discarded) MessageWorkId.
+      // returns _kSmsWorkId, which the controller accumulates in _smsWorkIds.
       async.elapse(const Duration(seconds: 1));
       check(driver.currentStepIndex).equals(0);
-      check(fakes.messaging.calls).isNotEmpty();
-      check(fakes.messaging.calls.first['method']).equals('sendMessage');
-      final smsBeforeDisarm = fakes.messaging.calls.length;
+      final sendCalls = messaging.calls.where(
+        (c) => c['method'] == 'sendMessage',
+      );
+      check(sendCalls).isNotEmpty();
+      check(sendCalls.first['workId']).equals(_kSmsWorkId);
+      // Nothing cancelled yet — the user has not signalled safety.
+      check(messaging.cancelledWorkIds).isEmpty();
 
-      // User checks in (disarm). The real disarm only re-arms the engine to
-      // step 0 — it does NOT cancel the queued SMS WorkManager job (no
-      // cancelPending is reachable from the controller; see the header).
+      // User checks in (the "I'm safe" slider). disarm() retracts the queued
+      // SMS via cancelPending BEFORE re-arming the engine to step 0 (A5).
       driver.controller.disarm();
       async.flushMicrotasks();
 
-      // Exactly one userDisarmed, the chain is re-armed at step 0, and it never
-      // advanced to the callEmergency step.
+      // A5 proof: the accumulated work-id reached cancelPending.
+      check(messaging.cancelledWorkIds).isNotEmpty();
+      check(_allCancelled(messaging)).contains(_kSmsWorkId);
+
+      // Honest disarm behaviour (carried from the prior INT-010): exactly one
+      // userDisarmed, the chain re-armed at step 0, never advanced to the
+      // callEmergency step.
       check(driver.count(ChainEvent.userDisarmed)).equals(1);
       check(driver.currentStepIndex).equals(0);
       check(driver.count(ChainEvent.stepAdvancing)).equals(0);
@@ -184,11 +202,77 @@ void main() {
       );
       check(emergencyCalls).isEmpty();
 
-      // The disarm re-executed step 0, so the smsContact fires again (the
-      // re-armed step genuinely re-sends — there is no cancellation). This
-      // documents the real behavior: disarm re-arms, it does not retract a
-      // sent/queued SMS.
-      check(fakes.messaging.calls.length).isGreaterThan(smsBeforeDisarm);
+      driver.stop(async);
+    });
+  });
+
+  test('INT-010 a clean end (correct End-PIN → disarm) cancels the queued '
+      'distress SMS (A5)', () {
+    fakeAsync((async) {
+      final messaging = FakeMessagingService(workIds: [_kSmsWorkId]);
+      final fakes = RecordingFakes(contacts: [_bob()], messaging: messaging);
+      final container = buildIntegrationContainer(db: db, fakes: fakes);
+      final mode = SessionMode(
+        id: 'cleanend-sms',
+        name: 'Walk Mode',
+        chainSteps: [_smsStep(dur: 30, grace: 10), _emergencyStep()],
+      );
+
+      final driver = SessionDriver.start(
+        async,
+        container: container,
+        mode: mode,
+      );
+
+      // SMS fires and its work-id is accumulated.
+      async.elapse(const Duration(seconds: 1));
+      check(
+        messaging.calls.where((c) => c['method'] == 'sendMessage'),
+      ).isNotEmpty();
+      check(messaging.cancelledWorkIds).isEmpty();
+
+      // The user ends the session via the correct End-PIN (a safe end) — the
+      // queued SMS is cancelled via the safe-end branch of _finaliseLog.
+      unawaited(driver.controller.endSession(reason: EndReason.disarm));
+      async.flushMicrotasks();
+
+      check(driver.endReason).equals(EndReason.disarm);
+      check(_allCancelled(messaging)).contains(_kSmsWorkId);
+
+      driver.stop(async);
+    });
+  });
+
+  test('INT-010 a distress end (chainExhausted) does NOT cancel the SMS (A5 — '
+      'the message must still go out)', () {
+    fakeAsync((async) {
+      final messaging = FakeMessagingService(workIds: [_kSmsWorkId]);
+      final fakes = RecordingFakes(contacts: [_bob()], messaging: messaging);
+      final container = buildIntegrationContainer(db: db, fakes: fakes);
+      // A short single-step SMS chain that exhausts (escalates) on its own when
+      // the user never checks in — the user is NOT safe, so the queued distress
+      // SMS must NOT be cancelled.
+      final mode = SessionMode(
+        id: 'exhaust-sms',
+        name: 'Walk Mode',
+        chainSteps: [_smsStep(dur: 1, grace: 1)],
+      );
+
+      final driver = SessionDriver.start(
+        async,
+        container: container,
+        mode: mode,
+      );
+
+      // Run past the duration + grace so the lone step exhausts the chain.
+      async.elapse(const Duration(seconds: 5));
+
+      check(driver.endReason).equals(EndReason.chainExhausted);
+      check(
+        messaging.calls.where((c) => c['method'] == 'sendMessage'),
+      ).isNotEmpty();
+      // A5 gating: an escalation end never cancels — the distress SMS stands.
+      check(messaging.cancelledWorkIds).isEmpty();
 
       driver.stop(async);
     });

@@ -1,6 +1,7 @@
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Strategy for [ChainStepType.holdButton] steps.
 ///
@@ -22,8 +23,10 @@ final class HoldButtonStrategy implements EventStrategy {
   /// The simulation guard is omitted here because there are no real actions
   /// to block; calling this method in simulation is already harmless.
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) =>
-      Future<void>.value();
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async => const [];
 
   /// Returns `null` — the UI shows the hold button identically in both
   /// real and simulation modes; no `[SIM]` card is needed.

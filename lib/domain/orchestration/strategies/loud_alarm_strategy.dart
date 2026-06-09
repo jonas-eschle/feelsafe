@@ -4,6 +4,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Unique notification ID for the loud-alarm escalation notification.
 ///
@@ -44,7 +45,10 @@ final class LoudAlarmStrategy implements EventStrategy {
   const LoudAlarmStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     final config = step.config is LoudAlarmConfig
         ? step.config! as LoudAlarmConfig
         : const LoudAlarmConfig();
@@ -102,6 +106,8 @@ final class LoudAlarmStrategy implements EventStrategy {
         await services.screenFlash.startScreenFlash(speed: speed);
       }
     }
+    // No SMS enqueued — nothing for the orchestrator to cancel (A5).
+    return const [];
   }
 
   /// Returns the simulation card text.

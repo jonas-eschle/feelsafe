@@ -2,16 +2,20 @@
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
-(INT-005..010) + C3 (INT-011..014 + WID-001/002) ALL DONE (`m5-int`, UNPUSHED),
-each GATE-GREEN.** The whole `test/integration/` tree was greenfield; C1 built
-the reusable harness + 4 scenarios, C2 added 6, **C3 added the final 4 INT + the
-2 WID scenarios this session** (wrongPIN→distress / cold-launch
-interrupted-prompt / smart-retention clock-advance / soft-delete restore+purge;
-onboarding full-flow + language-switch). **ALL 14 INT + 2 WID scenarios are now
-BUILT.** Suite now **4066** (4043 + 23 net-new C3 tests). `test/integration/` =
-**33/33**, determinism proven (3× the 6 new files under `--concurrency=6`, no
-flake). NEXT = **M5 C4 — device-e2e #11 (adb-gsm) + #12 (background-throttle) +
-stealth-icon per-preset hardening (EMULATOR)**.
+(INT-005..010) + C3 (INT-011..014 + WID-001/002) DONE; the integration suite was
+ROBUSTLY stabilized at `f22ea41` (onboarding-teardown segfault fixed, 25/25
+clean) and an earlier two-agent collision on the integration tests was RESOLVED
+by the orchestrator (`f22ea41` restored, tree clean); then THIS session **A5
+SMS-cancel-on-disarm BUILT + proven + spec reconciled** (`m5-A5`, UNPUSHED).**
+The A5 gap (a queued distress SMS not retracted when the user signals safe) is
+now closed: `MessagingServiceProtocol.cancelPending` is on the interface,
+`EventStrategy.executeReal` returns the SMS `MessageWorkId`s (cross-cutting — all
+9 strategies updated), and `SessionController` accumulates them + cancels on
+`disarm()` AND on a safe clean end (NOT on distress/escalation). Suite **4068**
+(4066 + 2 net-new INT-010 cancel cases). `test/integration/` = **35/35**,
+flake-free reconfirmed (5× under `--concurrency=6`, no segfault — the
+`closeIntegrationDb` drain is intact). NEXT = **M5 C4 — device-e2e #11 (adb-gsm) +
+#12 (background-throttle) + stealth-icon per-preset hardening (EMULATOR)**.
 
 ---
 
@@ -47,6 +51,96 @@ stealth-icon per-preset hardening (EMULATOR)**.
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
 - **C10 — final cohort + push.**
+
+### M5 A5 — SMS-cancel-on-disarm (DONE this session, `m5-A5`, UNPUSHED)
+
+**The verified gap (now closed):** a distress SMS is sent via a background
+WorkManager job with up to 10 retries (minutes/hours on poor signal). Disarming
+after the SMS step fired did NOT cancel that queued job → a false-alarm distress
+SMS could reach the emergency contacts AFTER the user was safe. The native cancel
+already existed + was device-tested (`SmsChannel.cancelWork` →
+`WorkManager.cancelWorkById`; `RealMessagingService.cancelPending`
+`messaging_service.dart:177`; both concrete `cancelPending` + the native
+`cancelWork` host unit tests in `messaging_service_test.dart:497-514`). Only the
+Dart plumbing was missing.
+
+**The 3 plumbing links built (SERIAL — signature first, then propagate, then
+controller):**
+1. **Protocol widened.** Added `Future<void> cancelPending(List<MessageWorkId>
+   workIds)` to `MessagingServiceProtocol`
+   (`lib/services/protocols/messaging_service_protocol.dart:33`). Both concretes
+   already implemented it → added `@override` (`messaging_service.dart:177`,
+   `messaging_service_sim.dart:116`).
+2. **`executeReal` returns the work-ids (CROSS-CUTTING).** Changed
+   `EventStrategy.executeReal` `Future<void>` → `Future<List<MessageWorkId>>`
+   (`event_strategy.dart:43`). **All 9 strategies updated:** the 7 non-SMS ones
+   return `const []` (every short-circuit path too); `SmsContactStrategy`
+   (`sms_contact_strategy.dart:107` — `Future.wait(sends).whereType<MessageWorkId>()`)
+   AND `CallEmergencyStrategy` (`call_emergency_strategy.dart:40` + `_sendPreCallSms`
+   — **second SMS source**, fires when `sendLocationSmsFirst`) return their real
+   work-ids. Behavior unchanged except the return → all 448 strategy/dispatch
+   tests stayed green (the `await stmt;` test call-sites are source-compatible).
+3. **Controller accumulate + cancel.** New session-scoped `_smsWorkIds`
+   (`session_controller.dart:~410`); `_dispatchStep` appends each step's returned
+   ids (`:~1490`). `_cancelPendingSms()` (`:926`) passes the list to
+   `messaging.cancelPending` (fire-and-forget) then clears it. Called from
+   **`disarm()`** (`:915`, the "I'm safe" slider — cancels then re-arms to step 0)
+   AND from the **safe-end branch of `_finaliseLog`** (`:1369`, gated on
+   `_isSafeEnd(reason)` = `disarm`|`userQuit`). **NOT** cancelled on
+   distress/escalation ends (`chainExhausted`/`hardwarePanic`/`duressPin`/
+   `wrongPinExhausted`/`distressConfirmTimeout`) — the message must still go out.
+
+**The cancel-proof test (`test/integration/simulation_disarm_session_test.dart`,
+INT-010 rewritten + 2 net-new cases, RED-proven):** drives the REAL controller
+with `FakeMessagingService(workIds: ['wm-sms-job-1'])` (the fake now records
+`cancelPending` in `cancelledWorkIds` + returns a deterministic work-id).
+Case 1: smsContact fires → `disarm()` → assert `cancelledWorkIds` contains the id
++ one `userDisarmed` + re-armed at step 0 + no escalation. Case 2: clean end via
+`endSession(reason: disarm)` → id cancelled. Case 3 (NEGATIVE gating): a lone
+exhausting smsContact (`chainExhausted`) → SMS fired but `cancelledWorkIds`
+EMPTY. **RED-proven both points:** removing `_cancelPendingSms()` from `disarm()`
+fails case 1; removing the safe-end branch from `_finaliseLog` fails case 2
+(independent paths).
+
+**Spec reconciled:** `05-services §A5` (now "BUILT" — documents the
+`executeReal`-return → `_smsWorkIds` → `cancelPending` flow + the safe-end gating
++ that there is NO `SessionOrchestrator`/`cleanDisarm`/`registerSmsWorkId`);
+`07-test-plan` INT-010 (rewritten to the real wiring + 3 cases + RED proof), the
+coverage-matrix row ("BUILT"), and the stale INT-001 `cleanDisarm`-invoked-once
+expected-outcome (→ the empty-list no-op note). The C8 "A5 unbuilt" list entry is
+removed (see below).
+
+**Gate (ALL GREEN):** `flutter analyze --fatal-infos` = **0** (whole project);
+`flutter test --concurrency=6` = **4068 pass** (4066 + 2 net-new); `test/integration/`
+= **35/35**, flake-free **5×** under `--concurrency=6` (no segfault — the
+`closeIntegrationDb` drain is UNCHANGED + reused by the new cases); deferral-grep
+= **0**; `git status --porcelain -- OLD/` empty; no stub markers in changed lib.
+Host only (the native cancel is already device-tested) — no emulator.
+
+**KEY FINDINGS (A5) — carry to C4/C8:**
+- **TWO SMS sources, not one.** `CallEmergencyStrategy._sendPreCallSms` (when
+  `sendLocationSmsFirst`) ALSO enqueues SMS via `sendMessage` and was discarding
+  the work-ids — it now collects + returns them alongside `SmsContactStrategy`.
+  Any future SMS-enqueuing path MUST return its ids through `executeReal`.
+- **`_finaliseLog` is the single universal termination funnel** — called by both
+  `controller.endSession()` (:1266) AND the engine-driven `sessionEnded` event
+  handler (:1628, e.g. `chainExhausted`/distress self-end). Gating the cancel
+  there on `_isSafeEnd` covers clean-end correctly while never touching
+  distress/escalation ends. The double-call (endSession path fires the event
+  THEN awaits `_finaliseLog`) is idempotent — `_smsWorkIds.isEmpty` /
+  `_eventServices == null` guards make the 2nd call a no-op.
+- **`disarm()` does NOT end the session** (it re-arms to step 0 and may re-send),
+  so its cancel runs against the still-live `_eventServices.messaging` and clears
+  `_smsWorkIds` so the re-armed step's fresh SMS is tracked from scratch.
+- **The `executeReal` return-type change is source-compatible for every existing
+  test** — all 200+ strategy-test call-sites are `await x.executeReal(...);`
+  statements (none assign/inspect the return), so awaiting a `Future<List<…>>`
+  needs zero test edits. Only `FakeMessagingService` needed the new
+  `cancelPending` impl (protocol now requires it) + a `workIds` knob.
+- **`lib/domain/orchestration/` already depends on the messaging protocol**
+  (`event_services.dart` imports it) — adding `MessageWorkId` imports to the
+  strategies follows the established layering (the protocol is the domain-facing
+  contract), no new `lib/domain`→`lib/services` violation.
 
 ### M5 C1 — INT-001..004 + harness (DONE this session, `m5-int`, UNPUSHED)
 
@@ -357,23 +451,17 @@ far (C1 + C2):
   `SimulationCallStateService.setState(...)` driving the controller's wired
   `_onCallStateChanged`; `FixedRandom` → `randomize:false` at source;
   `sentMessages` → `calls`.
-- **INT-010 (A5 — GENUINE UNBUILT FEATURE, highest-priority reconciliation):**
-  spec has the orchestrator capture the `sendMessage` `MessageWorkId` via
-  `registerSmsWorkId` and a `cleanDisarm()` that calls `cancelPending(workIds)`.
-  In the real code **none of this exists**: `MessagingServiceProtocol` declares
-  only `sendMessage` (`cancelPending` is only on the concrete Real/Sim classes,
-  not the interface); `EventStrategy.executeReal` returns `Future<void>` so the
-  work-id is DISCARDED at the strategy boundary; `SessionController.disarm()` is
-  just `engine.disarm()` (no `cleanDisarm`/`registerSmsWorkId`/`cancelPending`
-  anywhere in `lib/features/`). So **SMS-cancel-on-disarm (A5) is NOT
-  implemented** — a queued Android SMS WorkManager job is not retracted on
-  disarm today. INT-010 was reconciled to the faithful real disarm behavior
-  (SMS fired; disarm re-arms to step 0 + one `userDisarmed`; no advance to
-  callEmergency; the re-armed step 0 re-sends). **C8 decision needed:** either
-  (a) re-spec A5 as unbuilt/descoped with rationale, or (b) flag A5 for a future
-  build chunk (capture the work-id through the strategy/orchestrator + wire
-  `cancelPending` into the disarm path). NOT a stub — the test asserts real
-  behavior and would go red if disarm regressed.
+- **INT-010 (A5) — NOW BUILT (`m5-A5`, this session). Reconciliation COMPLETE,
+  no longer a C8 open item.** A5 SMS-cancel-on-disarm is wired + proven; the spec
+  (`05-services §A5`, `07-test-plan` INT-010 + the coverage-matrix row + the
+  INT-001 `cleanDisarm` note) is reconciled to the BUILT wiring with the real
+  method names. The old gap (interface lacked `cancelPending`, `executeReal`
+  returned `Future<void>` discarding the work-id, `disarm()` was bare
+  `engine.disarm()`) is closed. See the **"M5 A5 — DONE"** section above for the
+  3 plumbing links + the RED-proven test. C8 has nothing left to do for A5 beyond
+  what is already in the spec; the spec no longer names any
+  `SessionOrchestrator`/`cleanDisarm`/`registerSmsWorkId` API (only notes they do
+  not exist).
 
 Items added by C3 (INT-011..014 + WID):
 

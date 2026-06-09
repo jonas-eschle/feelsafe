@@ -4,6 +4,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Unique ID base for disguised-reminder notifications.
 ///
@@ -34,7 +35,10 @@ final class DisguisedReminderStrategy implements EventStrategy {
   const DisguisedReminderStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     final config = step.config is DisguisedReminderConfig
         ? step.config! as DisguisedReminderConfig
         : const DisguisedReminderConfig();
@@ -70,6 +74,8 @@ final class DisguisedReminderStrategy implements EventStrategy {
       body: body,
       stealth: services.notificationStealth,
     );
+    // No SMS enqueued — nothing for the orchestrator to cancel (A5).
+    return const [];
   }
 
   /// Returns `null` — the actual reminder overlay fires identically in

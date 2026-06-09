@@ -4,6 +4,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Unique notification ID for the fake-call alarm escalation.
 ///
@@ -38,7 +39,10 @@ final class FakeCallStrategy implements EventStrategy {
   const FakeCallStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     final config = step.config is FakeCallConfig
         ? step.config! as FakeCallConfig
         : const FakeCallConfig();
@@ -69,6 +73,8 @@ final class FakeCallStrategy implements EventStrategy {
       title: 'Incoming call from ${config.callerName}',
       body: 'Guardian Angela fake call.',
     );
+    // No SMS enqueued — nothing for the orchestrator to cancel (A5).
+    return const [];
   }
 
   /// Returns `null` — the call screen and ringtone fire normally in

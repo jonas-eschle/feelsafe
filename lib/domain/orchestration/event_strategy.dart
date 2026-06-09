@@ -1,5 +1,6 @@
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Abstract interface for step-type execution strategies.
 ///
@@ -35,7 +36,18 @@ abstract interface class EventStrategy {
   /// their own doc comments.
   ///
   /// Called by the [SessionController] on a `stepFired` engine event.
-  Future<void> executeReal(ChainStep step, EventServices services);
+  ///
+  /// Returns the list of [MessageWorkId]s enqueued by this step that the
+  /// orchestrator may later cancel on disarm / clean end (A5,
+  /// spec 05 §Cancel Pending SMS on Disarm). Only the SMS-sending strategies
+  /// ([SmsContactStrategy], [CallEmergencyStrategy] when
+  /// `sendLocationSmsFirst`) return ids — every other strategy and every
+  /// short-circuit path (simulation guard, no eligible contacts, non-SMS
+  /// channels) returns `const []`.
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  );
 
   /// Returns a short description for the simulation `[SIM]` card.
   ///

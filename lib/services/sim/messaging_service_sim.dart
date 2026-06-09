@@ -113,6 +113,7 @@ class SimulationMessagingService implements MessagingServiceProtocol {
   bool canAutoSend(MessageChannel channel) => false;
 
   /// No-op in simulation — no WorkManager jobs exist.
+  @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async {
     log(
       '[SIM] cancelPending(${workIds.length}) — no-op',

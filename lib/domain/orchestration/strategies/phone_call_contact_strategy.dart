@@ -5,6 +5,7 @@ import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Strategy for [ChainStepType.phoneCallContact] steps.
 ///
@@ -31,10 +32,13 @@ final class PhoneCallContactStrategy implements EventStrategy {
   const PhoneCallContactStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     if (services.isSimulation) {
       log('phoneCallContact blocked in simulation', name: 'sim_blocked');
-      return;
+      return const [];
     }
 
     final config = step.config is PhoneCallContactConfig
@@ -47,10 +51,12 @@ final class PhoneCallContactStrategy implements EventStrategy {
         'phoneCallContact: no contact resolved; skipping call',
         name: 'PhoneCallContactStrategy',
       );
-      return;
+      return const [];
     }
 
     await services.phone.call(contact.phoneNumber);
+    // Dialling a personal contact enqueues no SMS — nothing to cancel (A5).
+    return const [];
   }
 
   @override

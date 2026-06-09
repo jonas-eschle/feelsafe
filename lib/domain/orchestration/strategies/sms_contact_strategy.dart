@@ -9,6 +9,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
 import 'package:guardianangela/domain/orchestration/resolve_sms_targets.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Default message template used when [SmsContactConfig.messageTemplate]
 /// is `null`.
@@ -34,10 +35,13 @@ final class SmsContactStrategy implements EventStrategy {
   const SmsContactStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     if (services.isSimulation) {
       log('smsContact blocked in simulation', name: 'sim_blocked');
-      return;
+      return const [];
     }
 
     final config = step.config is SmsContactConfig
@@ -54,7 +58,7 @@ final class SmsContactStrategy implements EventStrategy {
         'smsContact: no contacts with channel ${config.channel.name}',
         name: 'SmsContactStrategy',
       );
-      return;
+      return const [];
     }
 
     // Start audio recording in parallel (fire-and-forget) if configured.
@@ -99,7 +103,12 @@ final class SmsContactStrategy implements EventStrategy {
       );
     });
 
-    await Future.wait(sends);
+    // Collect the WorkManager job ids so the orchestrator can cancel the
+    // queued distress SMS if the user disarms / cleanly ends before delivery
+    // (A5, spec 05 §Cancel Pending SMS on Disarm). Non-SMS channels return
+    // null (no cancellable background job) and are filtered out.
+    final workIds = await Future.wait(sends);
+    return workIds.whereType<MessageWorkId>().toList();
   }
 
   @override

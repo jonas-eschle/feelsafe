@@ -7,6 +7,7 @@ import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy.dart';
+import 'package:guardianangela/services/protocols/messaging_service_protocol.dart';
 
 /// Unique notification ID for the call-emergency alarm escalation.
 ///
@@ -36,10 +37,13 @@ final class CallEmergencyStrategy implements EventStrategy {
   const CallEmergencyStrategy();
 
   @override
-  Future<void> executeReal(ChainStep step, EventServices services) async {
+  Future<List<MessageWorkId>> executeReal(
+    ChainStep step,
+    EventServices services,
+  ) async {
     if (services.isSimulation) {
       log('callEmergency blocked in simulation', name: 'sim_blocked');
-      return;
+      return const [];
     }
 
     final config = step.config is CallEmergencyConfig
@@ -55,9 +59,11 @@ final class CallEmergencyStrategy implements EventStrategy {
       );
     }
 
-    if (config.sendLocationSmsFirst) {
-      await _sendPreCallSms(number, services);
-    }
+    // The optional pre-call location SMS enqueues WorkManager jobs whose ids
+    // the orchestrator must be able to cancel on disarm / clean end (A5).
+    final workIds = config.sendLocationSmsFirst
+        ? await _sendPreCallSms(number, services)
+        : const <MessageWorkId>[];
 
     // Alarm escalation notification: surfaces the emergency on the lock screen
     // before the call is placed (spec 05:880-886). Critical on iOS.
@@ -68,6 +74,7 @@ final class CallEmergencyStrategy implements EventStrategy {
     );
 
     await services.phone.callEmergency(number);
+    return workIds;
   }
 
   @override
@@ -86,14 +93,19 @@ final class CallEmergencyStrategy implements EventStrategy {
   /// Sends a pre-call location SMS to all SMS-capable emergency contacts.
   ///
   /// The message informs contacts that an emergency call is about to be
-  /// made. Sends are awaited in parallel via [Future.wait].
-  Future<void> _sendPreCallSms(String number, EventServices services) async {
+  /// made. Sends are awaited in parallel via [Future.wait]. Returns the
+  /// non-null [MessageWorkId]s of the enqueued SMS jobs so the orchestrator
+  /// can cancel them on disarm / clean end (A5).
+  Future<List<MessageWorkId>> _sendPreCallSms(
+    String number,
+    EventServices services,
+  ) async {
     final smsCandidates = services.contacts.all
         .where((c) => c.channels.contains(MessageChannel.sms))
         .toList();
 
     if (smsCandidates.isEmpty) {
-      return;
+      return const [];
     }
 
     final location =
@@ -115,6 +127,7 @@ final class CallEmergencyStrategy implements EventStrategy {
       );
     });
 
-    await Future.wait(sends);
+    final workIds = await Future.wait(sends);
+    return workIds.whereType<MessageWorkId>().toList();
   }
 }

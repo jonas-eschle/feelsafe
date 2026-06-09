@@ -1126,10 +1126,11 @@ end-to-end timer-driven flows. These scenarios close that gap.
   - Event stream contains `stepStarted` (for step 0), `userDisarmed`,
     then another `stepStarted` (for step 0 again — disarm resets).
   - `engine.currentStepIndex == 0` after disarm.
-  - `FakeMessagingService.sentMessages` is empty (no SMS fired).
-  - Orchestrator `cleanDisarm` is invoked exactly once.
+  - `FakeMessagingService.calls` has no `sendMessage` entry (no SMS fired),
+    so there are no work-ids to cancel (the A5 cancel path no-ops on an
+    empty list — A5 cancel-on-SMS is proven separately in INT-010).
 - **Reference:** `01-chain-engine.md` §Hold button lifecycle;
-  decision A5 (disarm cancels pending SMS).
+  decision A5 (disarm cancels pending SMS, INT-010).
 
 ### INT-002 — Walk Mode worst case (all check-ins missed → chain exhausted)
 
@@ -1296,23 +1297,34 @@ end-to-end timer-driven flows. These scenarios close that gap.
   - No stale "30s remaining" leaks through `engine.state`.
 - **Reference:** decision D2.
 
-### INT-010 — SMS WorkManager IDs cancelled on disarm (A5)
+### INT-010 — SMS WorkManager IDs cancelled on disarm / clean end (A5) — BUILT
 
-- **Preconditions:** Chain that queues an SMS: `smsContact → callEmergency`.
-  Real engine. Orchestrator wired with `FakeMessagingService`.
-  `FakeMessagingService.sendMessage` returns a `MessageWorkId` which
-  the orchestrator registers via `registerSmsWorkId`.
-- **Actions (fakeAsync):**
-  1. `engine.start()`.
-  2. `async.elapse(Duration(seconds: 6))` so the smsContact strategy
-     executes and returns a work ID.
-  3. `engine.disarm()`.
-  4. `await` orchestrator.cleanDisarm().
-- **Expected outcomes:**
-  - `FakeMessagingService.calls` contains at least one
-    `sendMessage:*` entry.
-  - After `cleanDisarm`, `calls` also contains
-    `cancelPending:<n>` with the expected count.
+File: `test/integration/simulation_disarm_session_test.dart` (alongside INT-009).
+Drives the **real** `SessionController`; A5 is wired (see 05-services §Cancel
+Pending SMS on Disarm). `executeReal` returns the SMS `MessageWorkId`s, the
+controller accumulates them in `_smsWorkIds` during `_dispatchStep`, and cancels
+them via `MessagingServiceProtocol.cancelPending` on disarm / clean end. There is
+no `registerSmsWorkId` / `cleanDisarm` call — capture is implicit in the strategy
+return.
+
+- **Preconditions:** Chain that queues an SMS (`smsContact → callEmergency`, or a
+  lone exhausting `smsContact`). Real controller/engine under `fakeAsync` via the
+  integration harness. `FakeMessagingService(workIds: ['wm-sms-job-1'])` so the
+  SMS send returns a deterministic WorkManager id; `cancelPending` is recorded in
+  `FakeMessagingService.cancelledWorkIds`.
+- **Cases / expected outcomes:**
+  1. **Disarm cancels** — drive the session so the `smsContact` fires (send
+     records the work-id), then `controller.disarm()`. After disarm:
+     `cancelledWorkIds` contains `wm-sms-job-1`; exactly one `userDisarmed`; the
+     chain re-armed at step 0 and never advanced to `callEmergency`.
+  2. **Clean end cancels** — fire the SMS, then `controller.endSession(reason:
+     EndReason.disarm)` (correct End-PIN). `cancelledWorkIds` contains the id;
+     `endReason == disarm`.
+  3. **Distress end does NOT cancel** — a lone `smsContact` chain left to exhaust
+     (`chainExhausted`). The SMS fired, `cancelledWorkIds` is **empty** — an
+     escalation end must not retract the distress SMS.
+- **RED proof:** removing `_cancelPendingSms()` from `disarm()` fails case 1;
+  removing the safe-end branch from `_finaliseLog` fails case 2.
 - **Reference:** decision A5.
 
 ### Coverage matrix (scope list → existing vs. new)
@@ -1328,7 +1340,7 @@ end-to-end timer-driven flows. These scenarios close that gap.
 | Real call → pause → resume (A2) | No | **INT-007** |
 | Real call over fakeCall (29, 30) | No | **INT-008** |
 | Simulation leap to next event (D2) | Partial | **INT-009** |
-| Disarm cancels queued SMS (A5) | Partial (orchestrator cleanDisarm no-op) | **INT-010** |
+| Disarm / clean end cancels queued SMS (A5) | **BUILT** (controller `_cancelPendingSms`) | **INT-010** |
 | Distress via wrongPinThreshold (A3) | Settings round-trip only | **INT-011** (in Phase 9 cohort) |
 | Session-Interrupted prompt (Extra 13, informational) | No | **INT-012** (Phase 9 — seed an in-progress (orphan) `SessionLog` row (no `endedAt`), assert prompt + Acknowledge path) |
 | Smart retention (B8) | No | **INT-013** (Phase 9 — clock-advance test) |

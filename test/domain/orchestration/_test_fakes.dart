@@ -121,13 +121,18 @@ final class FakeVibrationService implements VibrationServiceProtocol {
 /// Fake [MessagingServiceProtocol] that records every call.
 ///
 /// Optionally accepts a [sendHook] to inject custom behaviour (e.g., to
-/// simulate delivery failures or return specific [MessageWorkId] values).
+/// simulate delivery failures or return specific [MessageWorkId] values), or
+/// a fixed [workIds] queue so `sendMessage` returns a deterministic
+/// WorkManager id without a hook (used by the A5 cancel-on-disarm scenario to
+/// prove the controller accumulates the id and passes it to [cancelPending]).
 final class FakeMessagingService implements MessagingServiceProtocol {
   /// Creates a [FakeMessagingService].
   ///
-  /// [sendHook] — optional callback invoked instead of the default no-op.
-  /// Receives the same named parameters passed to [sendMessage].
-  FakeMessagingService({this.sendHook});
+  /// [sendHook] — optional callback invoked instead of the default behaviour.
+  /// Receives the same named parameters passed to [sendMessage]. When omitted,
+  /// `sendMessage` returns the next value from [workIds] (cycling), or null
+  /// when [workIds] is null/empty.
+  FakeMessagingService({this.sendHook, this.workIds});
 
   /// Optional hook injected for tests that need custom `sendMessage` behaviour.
   final Future<MessageWorkId?> Function({
@@ -137,8 +142,21 @@ final class FakeMessagingService implements MessagingServiceProtocol {
   })?
   sendHook;
 
+  /// Fixed WorkManager ids returned by successive `sendMessage` calls (cycled).
+  ///
+  /// Only consulted when [sendHook] is null. Defaults to null → returns null
+  /// (no cancellable job), matching the prior no-op behaviour.
+  final List<MessageWorkId>? workIds;
+
+  int _workIdIndex = 0;
+
   /// All calls recorded in the order they occurred.
+  ///
+  /// Each entry has a `'method'` key (`'sendMessage'` or `'cancelPending'`).
   final List<Map<String, Object?>> calls = [];
+
+  /// Every work-id list passed to [cancelPending], in call order (A5 proof).
+  final List<List<MessageWorkId>> cancelledWorkIds = [];
 
   @override
   Future<MessageWorkId?> sendMessage({
@@ -146,20 +164,41 @@ final class FakeMessagingService implements MessagingServiceProtocol {
     required String message,
     bool isSimulation = false,
   }) async {
+    if (sendHook != null) {
+      final hookResult = await sendHook!(
+        contact: contact,
+        message: message,
+        isSimulation: isSimulation,
+      );
+      calls.add({
+        'method': 'sendMessage',
+        'contact': contact,
+        'message': message,
+        'isSimulation': isSimulation,
+        'workId': hookResult,
+      });
+      return hookResult;
+    }
+    MessageWorkId? workId;
+    final ids = workIds;
+    if (ids != null && ids.isNotEmpty) {
+      workId = ids[_workIdIndex % ids.length];
+      _workIdIndex++;
+    }
     calls.add({
       'method': 'sendMessage',
       'contact': contact,
       'message': message,
       'isSimulation': isSimulation,
+      'workId': workId,
     });
-    if (sendHook != null) {
-      return sendHook!(
-        contact: contact,
-        message: message,
-        isSimulation: isSimulation,
-      );
-    }
-    return null;
+    return workId;
+  }
+
+  @override
+  Future<void> cancelPending(List<MessageWorkId> workIds) async {
+    calls.add({'method': 'cancelPending', 'workIds': workIds});
+    cancelledWorkIds.add(workIds);
   }
 }
 
