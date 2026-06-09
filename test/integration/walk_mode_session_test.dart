@@ -190,7 +190,8 @@ void main() {
       // walks 0 → 1 → 2 → exhausted.
       async.elapse(const Duration(seconds: 40));
 
-      // The chain advanced exactly twice (0→1, 1→2) before exhausting.
+      // Three stepAdvancing: 0→1, 1→2, then the terminal exhaustion advance
+      // off the last step (2→end) which fires sessionEnded.
       check(driver.count(ChainEvent.stepAdvancing)).equals(3);
       check(driver.count(ChainEvent.graceExpired)).equals(3);
 

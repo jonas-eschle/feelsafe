@@ -1,12 +1,16 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`; suite
-4033 green). M5 (FINAL milestone, Phase-9) STARTED — C1 (INT-001..004 + the host
-integration harness) DONE this session (`m5-int`, UNPUSHED), GATE-GREEN.** The
-whole `test/integration/` tree was greenfield (0 of 14 INT scenarios existed);
-C1 establishes the reusable harness + the first 4 end-to-end session scenarios.
-Suite now **4037** (4033 + 4 net-new INT). NEXT = **M5 C2 — INT-005..010 (reuse
-the C1 harness `test/integration/_session_harness.dart`).**
+**Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
+(FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) DONE
+(`m5-int`, UNPUSHED) + C2 (INT-005..010) DONE this session (`m5-int`, UNPUSHED),
+both GATE-GREEN.** The whole `test/integration/` tree was greenfield (0 of 14 INT
+scenarios existed); C1 built the reusable harness + 4 scenarios, C2 added 6 more
+(distress-panic / duress-no-op / real-call pause+resume / real-call-over-fakeCall
+/ sim-leap / SMS-disarm) reusing the harness verbatim. Suite now **4043** (4037 +
+6 net-new INT-005..010). `test/integration/` = **10/10**, determinism proven (5×
+full dir + 6× the new-files stress, no jitter flake). NEXT = **M5 C3 —
+INT-011..014 + WID-001/002 (reuse the C1 harness
+`test/integration/_session_harness.dart`).**
 
 ---
 
@@ -28,10 +32,9 @@ the C1 harness `test/integration/_session_harness.dart`).**
   audibility).
 
 ### M5 chunk plan
-- **C1 — INT-001..004 + integration harness ✓ DONE (this session).**
-- **C2 — INT-005..010** (distress-panic / duress-no-op / real-call pause+resume /
-  real-call-over-fakeCall / sim-leap / SMS-cancel-on-disarm). **Reuse the C1
-  harness.**
+- **C1 — INT-001..004 + integration harness ✓ DONE.**
+- **C2 — INT-005..010 ✓ DONE (this session)** (distress-panic / duress-no-op /
+  real-call pause+resume / real-call-over-fakeCall / sim-leap / SMS-disarm).
 - **C3 — INT-011..014 + WID-001/002** (wrongPIN→distress / interrupted-prompt /
   smart-retention clock-advance / soft-delete restore+purge; onboarding flow +
   language-switch widget cohort).
@@ -114,7 +117,143 @@ emulator.
 - **Reusable harness location for C2/C3:**
   `test/integration/_session_harness.dart` (import it + add a new
   `<scenario>_test.dart`; the recording fakes are re-exported so one import
-  suffices). **Next action = "M5 C2 — INT-005..010 (reuse the C1 harness)".**
+  suffices). **Next action = "M5 C3 — INT-011..014 + WID-001/002 (reuse the
+  C1 harness)".**
+
+### M5 C2 — INT-005..010 (DONE this session, `m5-int`, UNPUSHED)
+
+**Three new files** under `test/integration/`, each scenario tagged with its
+`INT-00N` id in the test NAME (grep-able for the C8 matrix), all driving the
+REAL controller/engine end-to-end via the C1 `SessionDriver` + recording fakes
+(every one fails RED on a wiring regression — red-proven for INT-005/006 [remove
+the `confirmDistress` call → both fail] and INT-007/008 [remove the call-state
+`ringing` event → both fail]):
+
+- **`distress_session_test.dart`** — INT-005 (distress via panic: real
+  `controller.confirmDistress()` → `engine.replaceWithDistressChain(chain:
+  distressMode.chainSteps, triggerReason: hardwarePanic)`; `isDistressChain`
+  true + `currentStepIndex==0` immediately; one `distressTriggered`; distress
+  chain smsContact+callEmergency fire [`sendMessage` + `callEmergency('112')`
+  recorded]; terminal `distressCompleted` → `sessionEnded(hardwarePanic)`),
+  INT-006 (A4: a SECOND `confirmDistress(duressPin)` while distress is active is
+  a NO-OP — engine guard `if (_isDistressChain) return`, line 519; still ONE
+  `distressTriggered`, no re-arm, SMS count unchanged, session still ends with
+  the FIRST trigger's `hardwarePanic` not `duressPin`).
+- **`call_state_session_test.dart`** — INT-007 (real call pause/resume: inject a
+  controllable `SimulationCallStateService`, `setState(CallState.ringing)` →
+  controller `_onCallStateChanged` → `engine.pause(incomingCall)`; chain does
+  NOT advance over a 60s pause; `setState(CallState.idle)` → `engine.resume()`;
+  the saved `remaining` is EXACTLY 20s preserved across the pause; the chain
+  advances only after the preserved timer elapses), INT-008 (real call over a
+  fakeCall step: `holdButton → fakeCall` chain, real call during the fakeCall →
+  `sessionPaused(incomingCall)` + fake-call cancelled [`audio.stop()` recorded +
+  `fakeCallCancelNonce` bumped]; call-end → `sessionResumed` + auto-`userDisarmed`
+  → step 0, `isHolding==false`, no SMS).
+- **`simulation_disarm_session_test.dart`** — INT-009 (sim `leap()`: SIMULATION
+  session, `controller.leap()` → `engine.leap()` collapses the 30s duration
+  timer → transitions to `grace` phase with `remaining` reflecting the 10s grace,
+  NOT a stale 30s; chain not advanced by the leap), INT-010 (the A5 gap — see
+  the C8 reconciliation list: faithful disarm-after-queued-SMS behavior, NOT a
+  cancel test).
+
+**Harness extension (minimal):** `buildIntegrationContainer` gained an optional
+`callState: SimulationCallStateService?` param so a scenario can inject its own
+controllable instance and drive `setState(...)` (the sim service already exposes
+`setState`/`isStarted`/`dispose`). When omitted, a fresh no-op instance is used
+(unchanged for C1's files). Plus the C1 freebie comment fix at
+`walk_mode_session_test.dart:193` (the `equals(3)` was always right; the comment
+now explains the 3rd `stepAdvancing` is the terminal exhaustion advance).
+
+**Gate:** analyzer `--fatal-infos` = **0** (whole project); full suite
+`flutter test --concurrency=6` = **4043 pass** (4037 + 6 net-new);
+`test/integration/` **10/10** (5× consecutive full-dir + 6× the new-files
+stress, no jitter flake); deferral-grep = **0**; `git status --porcelain --
+OLD/` empty; no `expect(true,true)`/`.skip` filler. Pure-Dart/`fakeAsync` → host
+only, no emulator.
+
+**KEY FINDINGS (C2) — carry to C3:**
+- **The C1 harness API is exactly right for C2** — `SessionDriver` already
+  accepted `simulate` + `distressMode` params; INT-005/009 needed nothing new
+  except the one optional `callState` injection. C3 should reuse it the same
+  way.
+- **Real distress path = `controller.confirmDistress({reason})`** (NOT a bare
+  `engine.replaceWithDistressChain`); it resolves `_distressMode` (supplied via
+  `startSession`/`SessionDriver.start(distressMode:)`) and forwards
+  `dist.chainSteps`. The distress chain self-ends via `_advanceToNext` →
+  `endSession(reason: _distressTriggerReason)` which emits `distressCompleted`
+  THEN `sessionEnded(<triggerReason>)`. `EndReason.duressPin` (NOT `duress`).
+- **A4 no-op is enforced AT THE ENGINE** (`replaceWithDistressChain` line 519:
+  `if (_isDistressChain) return`). The controller has no duress-PIN entry point
+  that bypasses it — the duress PIN routes through the same replacement, so the
+  engine guard is the single A4 source of truth. (Re-armed/duplicate distress is
+  structurally impossible at the engine.)
+- **Real-call path is fully wired in the controller** (`_onCallStateChanged`
+  :1157 → `_onRealCallStarted`/`_onRealCallEnded`): active(`!=idle`) →
+  `engine.pause(incomingCall)` + `_pausedByRealCall`; on a fakeCall step ALSO
+  `audio.stop()` + `_disarmOnRealCallEnd` + `fakeCallCancelNonce++`; idle →
+  `engine.resume()` then (if flagged) `engine.disarm()`. The `SimulationCallStateService`
+  (`lib/services/sim/call_state_service_sim.dart`) `setState(CallState)` is the
+  HOST seam (no native channel). Broadcast-stream delivery needs an
+  `async.flushMicrotasks()` after each `setState`.
+- **`engine.leap()` requires `_isSimulation`** (throws otherwise) → INT-009 MUST
+  use `simulate: true`. In a sim session `SessionController._dispatchStep` is a
+  Layer-1 no-op (`if (... services.isSimulation) return`, :1467) → the fakes
+  record NOTHING in sim; assert engine STATE/phase only (which is all D2
+  specifies). `leap()` cancels the phase timer and fires `_fireCurrentPhase()`
+  SYNCHRONOUSLY (so duration→grace happens within the same call). `EngineRunning.remaining`
+  is the value set at `_startPhaseTimer` (not live-recomputed) — so it reads the
+  fresh phase's full duration, never a stale prior-phase value.
+- **`EngineRunning.remaining` is only recomputed on `pause`** (`_computeRemaining`
+  from wall-clock). Otherwise the snapshot carries the duration set when the
+  phase timer started. So INT-007's "remaining ≈1s" is proven via the PRESERVED
+  `EnginePaused.snapshot.remaining` (exactly 20s) + the timer firing after the
+  matching elapse — not via a live remaining read.
+
+### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
+
+The spec-07 §Integration Test Scenarios prose has drifted from the real API in
+several places. Each INT scenario reconciles to the FAITHFUL real behavior and
+documents it in its test header; C8 must fold these into the spec-07 rewrite
+(and rename the aspirational contract-table rows to the real files). Items so
+far (C1 + C2):
+
+- **INT-002** — spec expects a never-touched `holdButton` to "time out"; the
+  engine starts NO timer for `holdWait` (spec 02:46 — waits for the first
+  `holdStart()`, does not assume holding), so a never-touched hold sits forever.
+  Reconciled to hold→release→miss→advance→exhaust.
+- **INT-002/004** — spec says `repeatMissed` "per step"; the engine emits it
+  ONLY for `disguisedReminder` steps (`_onGraceExpired`). Walk-Mode worst case
+  asserts `graceExpired`+`stepAdvancing`; Date-Mode asserts `repeatMissed`.
+- **INT-003** — terminal reason `userTerminated` does NOT exist in `EndReason`;
+  the deliberate user-quit value is `userQuit`.
+- **INT-005** — `hw.simulatePanic()` + a hand-written engine subscriber → real
+  wired path is `controller.confirmDistress()` → `replaceWithDistressChain(chain,
+  triggerReason)`; `engine.chainSteps`-is-distress → assert `isDistressChain` +
+  `currentStepIndex==0`; `sendToAll` → `sendMessage`.
+- **INT-006** — "the orchestrator must debounce re-entry" → the A4 no-op is
+  enforced AT THE ENGINE (`replaceWithDistressChain` early-return on
+  `_isDistressChain`); there is no separate orchestrator debounce layer.
+- **INT-007/008** — `FakeIncomingCallService` → use the injected
+  `SimulationCallStateService.setState(...)` driving the controller's wired
+  `_onCallStateChanged`; `FixedRandom` → `randomize:false` at source;
+  `sentMessages` → `calls`.
+- **INT-010 (A5 — GENUINE UNBUILT FEATURE, highest-priority reconciliation):**
+  spec has the orchestrator capture the `sendMessage` `MessageWorkId` via
+  `registerSmsWorkId` and a `cleanDisarm()` that calls `cancelPending(workIds)`.
+  In the real code **none of this exists**: `MessagingServiceProtocol` declares
+  only `sendMessage` (`cancelPending` is only on the concrete Real/Sim classes,
+  not the interface); `EventStrategy.executeReal` returns `Future<void>` so the
+  work-id is DISCARDED at the strategy boundary; `SessionController.disarm()` is
+  just `engine.disarm()` (no `cleanDisarm`/`registerSmsWorkId`/`cancelPending`
+  anywhere in `lib/features/`). So **SMS-cancel-on-disarm (A5) is NOT
+  implemented** — a queued Android SMS WorkManager job is not retracted on
+  disarm today. INT-010 was reconciled to the faithful real disarm behavior
+  (SMS fired; disarm re-arms to step 0 + one `userDisarmed`; no advance to
+  callEmergency; the re-armed step 0 re-sends). **C8 decision needed:** either
+  (a) re-spec A5 as unbuilt/descoped with rationale, or (b) flag A5 for a future
+  build chunk (capture the work-id through the strategy/orchestrator + wire
+  `cancelPending` into the disarm path). NOT a stub — the test asserts real
+  behavior and would go red if disarm regressed.
 
 ---
 

@@ -199,11 +199,16 @@ final class RecordingFakes {
 /// The container is registered for disposal via [addTearDown]. End the session
 /// inside the `fakeAsync` body before the callback returns so no engine timer
 /// outlives the test (fakeAsync asserts a clean timer queue on exit).
+/// [callState] lets a scenario inject its own [SimulationCallStateService] so
+/// it can drive `setState(CallState.ringing/idle)` and exercise the real
+/// controller pause/resume-on-real-call wiring (INT-007/INT-008). When omitted
+/// a fresh no-op instance is used (the call-state path is never triggered).
 ProviderContainer buildIntegrationContainer({
   required GuardianAngelaDatabase db,
   required RecordingFakes fakes,
   AppSettings settings = const AppSettings(),
   UserProfile profile = const UserProfile(),
+  SimulationCallStateService? callState,
 }) {
   final container = ProviderContainer(
     overrides: [
@@ -238,7 +243,9 @@ ProviderContainer buildIntegrationContainer({
       homeWidgetServiceProvider.overrideWithValue(
         SimulationHomeWidgetService(),
       ),
-      callStateServiceProvider.overrideWithValue(SimulationCallStateService()),
+      callStateServiceProvider.overrideWithValue(
+        callState ?? SimulationCallStateService(),
+      ),
       backgroundSessionServiceProvider.overrideWithValue(
         SimulationBackgroundSessionService(),
       ),
