@@ -100,19 +100,17 @@ jobs:
         run: flutter analyze --fatal-infos
 
   # ─────────────────────────────────────────────────────────────────────────────
-  # 5. Tests + coverage gate
-  # NOTE: Coverage gate is temporarily 0% until Phase 1 lands.
-  # The gate ratchets per phase:
-  #   Phase 0  →  0%  (skeleton only)
-  #   Phase 1  → 30%  (domain models)
-  #   Phase 2  → 50%  (engine)
-  #   Phase 3  → 55%
-  #   Phase 4  → 65%
-  #   Phase 5  → 75%
-  #   Phase 6  → 85%
-  #   Phase 7  → 90%
-  #   Phase 8  → 92%
-  #   Phase 9  → 99%  (final gate per D6)
+  # 5. Tests + coverage-of-LOGIC ratchet gate
+  # The gate measures coverage of the LOGIC surface: `flutter test --coverage`
+  # then tool/coverage/filter_coverage.sh removes the non-logic records listed
+  # in tool/coverage/coverage_excludes.txt (generated l10n + *.g.dart + the two
+  # host-unreachable platform passthroughs), and tool/coverage/check_floor.sh
+  # fails if coverage-of-logic drops below the committed floor in
+  # tool/coverage/coverage_floor.txt. The floor is a RATCHET set to the current
+  # measured baseline (M5 C5 = 84.49%-of-logic → floor 84.0); C6/C7 raise it
+  # toward the ~99%-of-logic target (owner M5 mandate + D6) as their tests land.
+  # The SAME two scripts run locally (vendored perl lcov via LCOV_BIN) so the
+  # measurement is identical on a dev box and in CI.
   # ─────────────────────────────────────────────────────────────────────────────
   test:
     name: Flutter test + coverage
@@ -130,27 +128,16 @@ jobs:
       - name: Generate Drift adapters (build_runner)
         run: dart run build_runner build --delete-conflicting-outputs
       - name: Run tests with coverage
-        # Lines: 30-39
         run: flutter test --coverage --concurrency=6
       - name: Install lcov
+        # lcov powers the `--remove` filter in filter_coverage.sh.
         run: sudo apt-get install -y lcov
-      - name: Coverage gate (Phase 0 = 0%; ratchets to 99% by Phase 9)
-        # Lines: 40-50 — TEMPORARY: Phase 0 floor is 0%.
-        # Update COVERAGE_FLOOR when each phase lands:
-        # Phase 1→30, Phase 2→50, Phase 3→55, Phase 4→65,
-        # Phase 5→75, Phase 6→85, Phase 7→90, Phase 8→92, Phase 9→99
-        run: |
-          COVERAGE_FLOOR=0
-          if [ -f coverage/lcov.info ]; then
-            LINES_TOTAL=$(lcov --summary coverage/lcov.info 2>&1 | grep -E 'lines\.\.\.' | grep -oP '\d+\.\d+(?=%)' | head -1)
-            echo "Line coverage: ${LINES_TOTAL}%  (floor: ${COVERAGE_FLOOR}%)"
-            if [ "$(echo "$LINES_TOTAL < $COVERAGE_FLOOR" | bc -l)" = "1" ]; then
-              echo "FAIL: coverage ${LINES_TOTAL}% is below floor ${COVERAGE_FLOOR}%"
-              exit 1
-            fi
-          else
-            echo "No lcov.info found — coverage check skipped (no .dart files yet)"
-          fi
+      - name: Filter coverage to the LOGIC surface
+        # Removes the non-logic records (coverage_excludes.txt) → lcov.filtered.info.
+        run: bash tool/coverage/filter_coverage.sh
+      - name: Coverage-of-logic ratchet gate
+        # Fails if coverage-of-logic drops below tool/coverage/coverage_floor.txt.
+        run: bash tool/coverage/check_floor.sh
 
   # ─────────────────────────────────────────────────────────────────────────────
   # 6. Discontinued dependency audit

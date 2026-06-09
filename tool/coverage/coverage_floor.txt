@@ -1,0 +1,22 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# coverage_floor.txt — the committed coverage-of-LOGIC ratchet floor (percent).
+#
+# The single number below is the MINIMUM acceptable line coverage of the
+# filtered (logic-only) lcov report. tool/coverage/check_floor.sh reads it and
+# FAILS CI if coverage-of-logic drops beneath it.
+#
+# RATCHET — only ever goes UP:
+#   * Set to the CURRENT measured baseline, never the final target.
+#   * Baseline measured 2026-06-09 (M5 C5) = 84.49%-of-logic
+#     (11220 / 13280 lines, after the coverage_excludes.txt filter).
+#   * Floor set to 84.0 — ~0.5% under the measurement to absorb run-to-run
+#     widget-test line jitter so the everyday gate never falsely reds. The
+#     gate PASSES at the baseline today.
+#
+# TARGET = ~99%-of-logic (owner M5 mandate + CLAUDE.md "ratchets to 99% by
+# Phase 9 (D6)"). C6 (services + orphan files) and C7 (feature tail) raise
+# actual coverage toward it and BUMP this number as their tests land; C10 sets
+# the final 99% target. Do NOT set this to 99 before the covering tests exist —
+# that would red the everyday CI with no code change.
+# ─────────────────────────────────────────────────────────────────────────────
+84.0
