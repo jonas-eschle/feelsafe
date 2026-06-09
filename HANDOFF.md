@@ -12,21 +12,22 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop code commit `e98bb1a`,
-**+18 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4464 pass**,
-`analyze --fatal-infos` = 0, **coverage-of-logic 93.11%**, floor 92.5. M0–M4 PUSHED;
-M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`; the fresh
-session continues C7d→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `39042e5`
+(atop `971ce7d`), **+22 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
+Suite **4502 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 94.48%**, floor
+93.8. M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a
+`/clear`; the fresh session continues C7e→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7d:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7e:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
 services + main.dart) · C6b (non-feature tail) · C7a (session + fake_call feature
 tail) · C7b (modes feature — incl. an arch systemic sweep proving the
-clear-to-null fix is the COMPLETE remediation across lib/) · **C7c (editors +
-distress + the fake-call hold de-flake; distress delete-guards verified against
-spec end-to-end; NO new bugs — clear-to-null pattern re-checked clean)** — ALL
+clear-to-null fix is the COMPLETE remediation across lib/) · C7c (editors +
+distress + the fake-call hold de-flake) · **C7d (history/logs tests: qa-PASS;
+arch found BLOCKER bug #6 → C7d-fix `39042e5` re-cohort PASS×2 — incl. UTC
+recovery-window math + cannot-pass-under-old-semantics proof)** — ALL
 architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
@@ -42,16 +43,26 @@ mid-session teardown; fix = capture `_backgroundService` at session start
 `_PhoneCallContactForm`/`_CallEmergencyForm` cleared contactId/emergencyNumber via
 `copyWith(null)`, silently swallowed by the `?? this.x` idiom (`step_config.dart:699/:921`)
 → a user reverting to the regional default emergency number kept dialing the stale one;
-fix = direct-construction helpers `_withContactId`/`_withNumber` (red→green proven).
+fix = direct-construction helpers `_withContactId`/`_withNumber` (red→green proven);
+(6) **C7d-cohort BLOCKER (the biggest find of the run)** — the age-based auto-purge
+HARD-deleted live non-critical session logs instead of soft-deleting them into the
+recoverable trash (spec 03 §B8 step 5 two-stage lifecycle), AND (second facet, found by
+the fix agent) it scanned ALL rows so it also hard-deleted rows already IN the trash
+inside their recovery window → silent evidence destruction both ways; INT-013 was
+under-constrained (passed under both semantics) which is how C3 missed it. Fix
+(`m5-c7d-fix` `39042e5`): DAO `deleteOlderThan`→`softDeleteOlderThan(cutoff, nowMs,
+keepCritical)` — live-only candidates, UPDATE stamps `deletedAtMs=nowMs` re-guarded
+`IS NULL` (no re-stamp, trash clock preserved); `purgeExpiredLogs` returns
+`PurgeResult = ({movedToTrash, hardDeleted})` (compile-breaking BY DESIGN so no consumer
+count silently changed meaning — all consumers reconciled); INT-013 strengthened so the
+suite CANNOT pass under single-stage semantics; + evidence-export JSON corruption fixed
+(`_toEvidenceJson` hand-rolled interpolation → jsonEncode; hostile-modeName round-trip
+test). Both red→green proven; re-cohort PASS×2.
 
-**NEXT = C7d (history/logs).** The fake-call hold flake is FIXED (C7c: `now` clock seam
-on FakeCallScreen, test lockstep-deterministic, 10s Stopwatch = backstop only). Remaining
-slices (~150–180 missed lines per agent — calibration: C7a 188L/6f = 335k actual, C7b
-158L/10f = 249k, C7c 144L/12f+pretask = 202k; always read the harness usage line, never
-self-reports):
-- **C7d — history/logs (180, 6 files):** past_events_trash_screen 41/119 + _controller
-  39/43, past_events_detail_screen 38/122, past_events_controller 36/40,
-  history_retention_controller 15/18 + _screen 11/73.
+**NEXT = C7e (home + post-session).** Remaining slices (~150–180 missed lines per
+agent — calibration: C7a 188L/6f = 335k actual, C7b 158L/10f = 249k, C7c
+144L/12f+pretask = 202k, C7d 180L/6f = 165k + fix-agent 217k; always read the harness
+usage line, never self-reports):
 - **C7e — home + post-session (170, 9 files):** home_controller 39/52, home_screen
   28/195, chain_summary 12/102, safety_setup_checklist 10/224, simulation_summary_screen
   29/199 + _controller 26/49, gps_logging_controller 24/27, feedback_form_screen 2/80.
@@ -96,12 +107,61 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 + C2 + C3 + A5 + C4 + C4-fix + C5 +
-C6 + C6b + C7a + C7b + **C7c (editors + distress + de-flake)** DONE +
-COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — code HEAD = `e98bb1a` + the
-`m5-c7c` baton commit atop, ahead of origin/main by **18**). THIS session:
-**C7a (89.46→90.86%, bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, fake-call
-hold test de-flaked, distress delete-guards spec-verified) — all cohort-PASS.
-NEXT = C7d (history/logs), then C7e..C7g per the resume block.**
+C6 + C6b + C7a + C7b + C7c + **C7d + C7d-fix (history/logs + the two-stage
+purge BLOCKER fix)** DONE + COHORT-VERIFIED (architect+qa PASS; all UNPUSHED —
+code HEAD = `39042e5` + the `m5-c7d` baton commit atop, ahead of origin/main
+by **20**). THIS session: **C7a (89.46→90.86%, bug #4) + C7b (→92.05%, bug #5)
++ C7c (→93.11%, de-flake) + C7d (→94.48%, BLOCKER bug #6: age purge hard-deleted
+recoverable evidence — fixed two-stage, PurgeResult; + evidence-JSON corruption
+fixed) — all cohort-PASS. NEXT = C7e (home + post-session), then C7f/C7g per
+the resume block.**
+
+---
+
+## KEY FINDINGS (C7d + C7d-fix — new baseline + carry to C7e..g)
+
+**Coverage-of-logic 93.11% → 94.48%** (12566 / 13300; +181). **Floor 92.5 →
+93.8** (gate OK at 93.8, RED at 99.9). Suite **4464 → 4502** (+34 C7d, +4 fix),
+0 fail. analyze 0. All 6 history/trash/retention files at **ZERO missed**.
+C7d itself = pure tests (zero lib edits); the fix commit touched dao/repo/3
+consumers/main.dart + spec-07 INT-013 row.
+
+**BUG #6 (BLOCKER, fixed `39042e5`):** full description in the resume-block bug
+ledger. KEY LESSONS: (a) an integration test that passes under BOTH the right
+and wrong semantics is worse than none — INT-013 asserted live-list absence,
+true under hard-delete AND soft-delete; the fix strengthened it to pin trash
+membership + PurgeResult counts so the old semantics CANNOT pass; (b) the
+arch-cohort instruction "adversarially verify the implementer's no-bugs claim
+by reading the production surface end-to-end against spec" is what caught it —
+keep that instruction for every remaining chunk; (c) when changing a return
+contract, make it COMPILE-BREAKING (`PurgeResult` named record) so every
+consumer is forced to re-state its meaning.
+
+**RED proofs (C7d tests, qa-verified):** trashRetentionDays hardcode → red;
+softDelete→deleteById mutation (evidence-destruction regression) → red. Safety
+invariants pinned both directions (restore survives sibling-purge; emptyTrash
+kills CRITICAL trash but spares live; list-delete never hard-destroys CRITICAL).
+PDF export proven REAL (`%PDF-` magic bytes through the net.nfet.printing
+channel mock; share path via dev.fluttercommunity.plus/share).
+
+**Parked minors (non-blocking):** repo `now.toUtc()` pre-normalization
+inconsistency (behaviorally identical, leave); the "Purged {count} logs"
+snackbar string survives the count-meaning widening (revisit only if copy ever
+specializes to "Deleted"); past_events_trash_controller.dart:72-74 comment now
+slightly stale (cosmetic — C9); DateTime.now() fixtures with ≥1-day margins
+(acceptable, pre-existing pattern); fake settings-repo tempdirs never cleaned
+(pre-existing pattern, no correctness impact).
+
+**C9 additions from C7d:** past_events_trash_controller.dart:62-64 doc quotes
+spec as "HistoryController.build" — no such class (verify the spec quote);
+`endedAt: ''`-for-null kept in evidence JSON for shape compat (note for any
+future schema pass); a few doc comments cite "spec 03:970" with drifted line
+numbers (pre-existing).
+
+**Orchestrator calibration:** C7d = 180 missed / 6 files → **165k actual, 67
+tool-uses, 31 min** (cheapest yet — the INT-013/014 domain context in the
+prompt paid off). C7d-fix = **217k, 123 tool-uses, 23 min**. Cohorts: C7d arch
+78k + qa 96k; re-cohort arch 68k + qa 68k.
 
 ---
 
@@ -500,9 +560,11 @@ census is recorded in its comment block.
 - **C7 — coverage: `lib/features/` controllers + screens — SPLIT a..g.**
   **C7a (session + fake_call) ✓ DONE** (89.46→90.86%, floor 90.2, bug #4) ·
   **C7b (modes) ✓ DONE** (→92.05%, floor 91.4, bug #5 clear-to-null) ·
-  **C7c (editors + distress + de-flake) ✓ DONE** (→93.11%, floor 92.5) — all
-  cohort-verified. NEXT: C7d (history/logs) → C7e (home + post-session) →
-  C7f (nav/entry + contacts) → C7g (settings + misc); slices in resume block.
+  **C7c (editors + distress + de-flake) ✓ DONE** (→93.11%, floor 92.5) ·
+  **C7d + C7d-fix (history/logs) ✓ DONE** (→94.48%, floor 93.8, BLOCKER bug #6
+  two-stage purge + evidence-JSON fix) — all cohort-verified. NEXT: C7e (home +
+  post-session) → C7f (nav/entry + contacts) → C7g (settings + misc); slices
+  in resume block.
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
