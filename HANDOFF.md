@@ -3,9 +3,10 @@
 **Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 (INT-001..004 + harness) + C2
 (INT-005..010) + C3 (INT-011..014 + WID-001/002) + A5 (SMS-cancel-on-disarm) +
-C4 (device-e2e #11/#12/stealth) DONE (all UNPUSHED). THIS session: **C4-fix —
-the C4-review-cohort honesty defect on #12 is FIXED + the device-e2e tag
-mechanism is now the standard** (`m5-c4fix`, UNPUSHED).**
+C4 (device-e2e #11/#12/stealth) + C4-fix + **C5 (coverage-of-logic gate +
+ratchet floor)** DONE (all UNPUSHED — HEAD `e385667`, ahead of origin/main by
+**8**). THIS session: **C5 — the Phase-0 0% coverage stub is replaced by an
+HONEST coverage-of-LOGIC gate + a committed ratchet floor (`m5-c5`).****
 
 **THE FIX (this session):**
 - **#12 was a stub-in-spirit: it silently greened on host / no-stimulus.** Its
@@ -40,10 +41,11 @@ mechanism is now the standard** (`m5-c4fix`, UNPUSHED).**
   header + runner now say `monkey … LAUNCHER` foreground (not `am start …
   MainActivityAlias`).
 
-Host suite STILL **4068** (no regression — device tests live in
-`integration_test/`, excluded from the host run); whole-project analyze **0**;
-the 3 device runs PASS on `emulator-5554` (exit=0 each). NEXT = **M5 C5 —
-coverage exclusion config + the floor mechanism** (see "next action" below).
+Host suite STILL **4068** (no regression — C5 added zero tests, only the
+coverage config/scripts); whole-project analyze **0**; coverage-of-logic
+**84.49%** (floor 84.0, gate PROVEN pass/fail). NEXT = **M5 C6 — coverage push:
+services + orphan files toward ~99% of logic** (see "next action" below;
+C5 enumerated the exact 0%-but-host-testable service files to attack first).
 
 ---
 
@@ -592,16 +594,116 @@ device-tested per project convention).
   reclaims space; uninstalling GA frees the APK. Trim before each device run if
   tight (a failed reinstall SIGKILLs the test → exit 137 mid-run).
 
-**Next action = "M5 C5 — coverage exclusion config + the floor mechanism"**
-(exclude generated `lib/l10n/**`, `*.g.dart`/`*.freezed.dart`, the seven
-host-uncoverable `Real*Service` native wrappers — note C4 makes `call_state`
-device-e2e-proven but it stays host-EXCLUDED for the host coverage floor —
-`main.dart`, and protocol-only abstract files; set up the gate; per the owner's
-99%-of-logic target). To re-run the C4 device proofs:
-`bash tool/device_e2e/run_real_call_pause.sh`, `run_background_throttle.sh`,
-`run_stealth_per_preset.sh` (each wraps `timeout`; needs `emulator-5554` up +
-`ANDROID_HOME`/PATH exported per the Emulator standard below; `pm trim-caches 5G`
-first if `/data` is tight).
+To re-run the C4 device proofs: `bash tool/device_e2e/run_real_call_pause.sh`,
+`run_background_throttle.sh`, `run_stealth_per_preset.sh` (each wraps `timeout`;
+needs `emulator-5554` up + `ANDROID_HOME`/PATH exported per the Emulator standard
+below; `pm trim-caches 5G` first if `/data` is tight).
+
+### M5 C5 — coverage-of-logic gate + ratchet floor (DONE this session, `m5-c5`, UNPUSHED)
+
+Replaced the inert Phase-0 `COVERAGE_FLOOR=0` stub in `ci.yml` with an HONEST
+coverage-of-LOGIC gate. **NO `lib/` or test change** — config/scripts only
+(`ci.yml` + new `tool/coverage/`), so the host suite stays **4068** and analyze
+stays **0**.
+
+**The pipeline (identical local + CI):** `flutter test --coverage` →
+`tool/coverage/filter_coverage.sh` (lcov `--remove` over the exclusion globs →
+`coverage/lcov.filtered.info`) → `tool/coverage/check_floor.sh` (pure-awk
+coverage-of-logic %, fails below `tool/coverage/coverage_floor.txt`). CI uses
+system `lcov` (apt); locally the script falls back to a vendored perl `lcov` via
+`LCOV_BIN` — **proven to give the identical 84.49%** on both paths.
+`coverage/` is gitignored, so only the scripts are committed.
+
+**THE EXCLUSION LIST (`tool/coverage/coverage_excludes.txt`, 23 files / 13425
+lines removed) — each defended:**
+- `lib/l10n/*` — **14 generated `AppLocalizations*.dart`, 10862 lines.** flutter
+  gen-l10n output (emitted into the arb-dir; `l10n.yaml` has no `output-dir`).
+  Pure generated message getters. Mirrors `analysis_options.yaml` exclude.
+- `*.g.dart` — **7 Drift adapters, 2534 lines** (`database.g.dart` alone = 2499).
+  build_runner output; CI hard-fails on a stale diff. Mirrors analyzer exclude.
+- `*.freezed.dart` — **0 files today** (future-proof glob; `--ignore-errors
+  unused` tolerates the no-match). Mirrors analyzer exclude.
+- `lib/services/system_ui_service.dart` — **16 lines, thin passthrough.** Both
+  methods are `if(!Platform.isAndroid){return;} try{invokeMethod}catch{log}`; on
+  the Linux host only the iOS-no-op return is reachable, the rest is Android
+  channel plumbing. Device-proven (`stealth_icon_switch_test.dart`).
+- `lib/services/wakelock_service.dart` — **13 lines, thin passthrough.**
+  `if(_isEnabled)return; await WakelockPlus.enable()/disable()` idempotency
+  wrapper around a static plugin that throws off-device.
+
+**THE BASELINE (measured 2026-06-09, 4068 host tests):** RAW = 53.33%
+(14241/26705, **50.2% of all instrumented lines are generated**) → **coverage-of-
+logic = 84.49% (11220/13280, 204 files)**. **FLOOR set to 84.0**
+(`coverage_floor.txt`) = baseline − ~0.5% jitter headroom; the everyday gate
+PASSES today. **Gate PROVEN:** floor 84.0 → OK exit 0; floor 99.0 → FAIL exit 1;
+exact boundary 84.49 → OK / 84.50 → FAIL. Target stays ~99%-of-logic (owner
+mandate + D6); the floor is a ratchet C6/C7 bump as tests land, C10 sets 99%.
+
+**HONESTY DEVIATION FROM THE M5-DECISION DRAFT (orchestrator must note) — the
+draft listed all 7 `Real*Service` wrappers + `main.dart` for exclusion; C5
+excludes only 2 of the 7 and NOT `main.dart`, because the orchestrator's C5
+brief OVERRIDES: "a file with host-testable logic must NOT be excluded — it must
+be tested (flag it for C6/C7)." Line-by-line verified, these 6 hold real
+host-testable logic and are LEFT IN the denominator as explicit C6 targets (the
+exact files C6 attacks first):**
+- `hardware_button_service.dart` — **112 lines, 0%.** Pure-Dart repeat-press
+  sliding-window + long-press duration + param clamping (the doc-comment itself
+  says "implemented in pure Dart so it is testable without platform").
+- `location_service.dart` — **71 lines, 0%.** Fresh-vs-cached fallback decision,
+  stale-note ISO formatting, bounded-history eviction at 1000.
+- `flash_service.dart` — **59 lines, 0%.** SOS/continuous timing loops +
+  graceful-degradation catch + Completer race-fix (fakeAsync + faked TorchLight).
+- `call_state_service.dart` — **32 lines, 0%.** `_parseCallState` string→enum
+  switch + `_onNativeEvent` dispatch (also device-proven in C4; host-testable via
+  the `TestDefaultBinaryMessenger` mock-channel seam the file's doc names).
+- `contact_service.dart` — **17 lines, 0%.** Repo-backed cache (start/byId/all/
+  stop); **NO native channel at all** — 100% host-testable (injected
+  `ContactsRepository`). Calling it a "native wrapper" was wrong.
+- `main.dart` — **156 lines, 76.9% ALREADY covered** (`seedFirstLaunchSettings`,
+  `runBootstrap`, `JsonRecoveryApp` recovery flow all have tests). Blanket-
+  excluding it would DROP 120 covered lines AND hide 36 uncovered branching lines.
+
+**Protocol-only abstracts = NO exclusion needed (M5-draft no-op):** 23 of 25
+`lib/services/protocols/*.dart` contribute ZERO instrumented lines (abstract
+declarations have no executable lines → already absent from the denominator);
+the 2 that appear (`location_service_protocol.dart`,
+`device_info_service_protocol.dart`) hold concrete, well-covered data classes
+and must stay.
+
+**KEY FINDINGS (C5) — carry to C6/C7:**
+- **C6 highest-yield targets (0%-but-host-testable, in descending line count):**
+  `hardware_button` (112) > `location` (71) > `flash` (59) > `call_state` (32) >
+  `contact` (17). These 291 lines are the single biggest cheap win toward 99% —
+  all host-testable; none need a device. The 4 existing `*_service_test.dart`
+  for hardware_button/location/call_state/system_ui only NAME-CHECK the Real
+  class in a negative assertion; they exercise the Sim, so the Real classes are
+  0%. C6 should add Real-class host tests (mock the geolocator/EventChannel/
+  TorchLight/`TestDefaultBinaryMessenger`).
+- **The gate denominator = whatever the host suite LOADS.** lcov only emits
+  records for loaded files; 204 logic files appear today. As C6/C7 add tests
+  that import currently-unloaded files, the denominator can GROW — `check_floor.sh`
+  recomputes from the live filtered report each run, so a freshly-loaded 0% file
+  can briefly DIP the %. Bump the floor only after the covering tests land
+  (the ratchet rule), and add the new file's tests in the same commit.
+- **To bump the floor:** edit the single number in
+  `tool/coverage/coverage_floor.txt` to the new measured baseline (run
+  `flutter test --coverage` → `bash tool/coverage/filter_coverage.sh` → the
+  `Coverage of LOGIC: NN.NN%` line printed by `check_floor.sh`). Keep ~0.5%
+  headroom under the measurement.
+- **To add/adjust an exclusion:** add a glob line to `coverage_excludes.txt`
+  with a one-sentence defense (HONESTY CONTRACT: generated or host-unreachable
+  ONLY). The filter reads it directly — no script edit needed.
+- **lcov is REQUIRED.** The CI `test` job installs it (apt). Locally, clone
+  `linux-test-project/lcov` (v2.0) and `export LCOV_BIN=/path/to/bin/lcov`; the
+  scripts run via perl with no root. `--rc branch_coverage=0` + `--ignore-errors
+  unused` keep lcov 2.x quiet on the no-match `*.freezed.dart` glob.
+
+**Next action = "M5 C6 — coverage push: services + orphan files toward ~99% of
+logic"** — start with the five 0%-but-host-testable service files enumerated
+above (`hardware_button`/`location`/`flash`/`call_state`/`contact`, 291 lines),
+then the wider service/orphan tail; bump `tool/coverage/coverage_floor.txt` as
+each batch lands (re-measure via the pipeline above). The device-e2e standard +
+the C8 reconciliation list (below) stay intact.
 
 ### C8 spec-07 reconciliation list (CARRY — grows each INT chunk)
 
@@ -722,9 +824,18 @@ must fold these into the spec-07 rewrite):
   path is build-verified, not driven on this Linux box. Per the M5 decision, iOS
   spec-coverage rows are CI-build-verified only.
 
----
+Item added by C5 (coverage gate):
 
-(prior M4 snapshot retained below)
+- **spec-07 §Target Coverage table is stale vs the C5 gate.** It says "Overall
+  ≥85% via `coverage` package / Whole codebase" and "engine ≥95% / models ≥90%
+  / repos ≥85%". The real gate (C5) is **coverage-of-LOGIC** (whole-codebase
+  minus generated + 2 thin passthroughs) with a committed ratchet floor
+  (`tool/coverage/coverage_floor.txt`, 84.0 today → ~99% target). C8/C10 should
+  reconcile the spec-07 table to: (a) the coverage-of-logic definition + the
+  exclusion list source (`tool/coverage/coverage_excludes.txt`), (b) the ratchet
+  floor mechanism (the two `tool/coverage/*.sh`), (c) the ~99%-of-logic final
+  target (owner mandate + D6), superseding the per-layer % rows and the codecov
+  upload snippet (CI uses the floor gate, not codecov).
 
 **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
 CHUNKS DONE + MILESTONE-COHORT-VERIFIED (PASS, both opus) + owner emergency-map FINAL sign-off (DE→112, ET=911/CI=111 accepted with VERIFY flags), GATE-GREEN, READY TO PUSH — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
