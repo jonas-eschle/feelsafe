@@ -39,7 +39,20 @@
 #     now captured at session start). The 4 remaining lines in these files
 #     are defensive-unreachable (null-state timer guards, a dead stealth
 #     ternary branch — C9 candidate, and an EngineRunning(-1) pattern arm).
-#   * Floor set to 90.2 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7b ratchet (2026-06-09) = 92.05%-of-logic (12245 / 13302 lines)
+#     after covering the lib/features/modes/ surface — ALL 10 files now 0
+#     missed: event_specific_config (51→0), safety_options_section (31→0),
+#     modes_controller (25→0, real ProviderContainer + in-memory Drift),
+#     mode_event_defaults (12→0, parametrised per-ChainStepType _replace
+#     routing), stealth_config_fields (11→0), modes_screen (10→0),
+#     step_config_panel (6→0), gps_logging_fields (5→0), sms_contact_grid
+#     (4→0), config_fields (3→0). +168 covered lines. Found + fixed a real
+#     clear-to-null bug (red→green proven): _PhoneCallContactForm and
+#     _CallEmergencyForm cleared their nullable field via copyWith(null),
+#     which `x ?? this.x`-keeps the old value — clearing a previously-set
+#     emergency number / primary contact silently did nothing; both now use
+#     the file's documented direct-construction pattern.
+#   * Floor set to 91.4 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -49,4 +62,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-90.2
+91.4

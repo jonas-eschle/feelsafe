@@ -903,4 +903,80 @@ void main() {
       expect(dup.enabled, isTrue);
     });
   });
+
+  // ── Swipe-to-delete (Dismissible confirm flow) ─────────────────────────────
+
+  group('ModesScreen — swipe-to-delete', () {
+    testWidgets('swipe + confirm deletes the custom mode', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'My Walk')]),
+      );
+      // Non-const construction (runtime key) so the constructor executes at
+      // runtime — a const ModesScreen() is canonicalised at compile time.
+      await pumpScreen(
+        tester,
+        ModesScreen(key: UniqueKey()),
+        overrides: _overrideWith(fake),
+      );
+      await tester.drag(find.text('My Walk'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      // confirmDismiss raises the shared confirmation dialog.
+      expect(find.text(l10n.modesDeleteConfirmTitle), findsOneWidget);
+      await tester.tap(find.widgetWithText(FilledButton, l10n.commonDelete));
+      await tester.pumpAndSettle();
+      check(fake.deleteCalls).equals(1);
+      check(fake.lastDeletedId).equals('m1');
+      expect(find.text('My Walk'), findsNothing);
+    });
+
+    testWidgets('swipe + cancel keeps the mode and does NOT delete', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'My Walk')]),
+      );
+      await pumpScreen(
+        tester,
+        const ModesScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.drag(find.text('My Walk'), const Offset(-500, 0));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonCancel));
+      await tester.pumpAndSettle();
+      check(fake.deleteCalls).equals(0);
+      expect(find.text('My Walk'), findsOneWidget);
+    });
+  });
+
+  // ── Create sheet — From template ───────────────────────────────────────────
+
+  group('ModesScreen — create sheet From template', () {
+    testWidgets('tapping a template row duplicates it and opens the editor', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final observer = _FakeNavigatorObserver();
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'Walk Mode')]),
+      );
+      await _pumpWithRouter(tester, fake: fake, observer: observer);
+      await tester.tap(find.byType(FloatingActionButton));
+      await tester.pumpAndSettle();
+      final countBefore = observer.pushed.length;
+
+      await tester.tap(find.text(l10n.modesNewPickerFromTemplate('Walk Mode')));
+      await tester.pumpAndSettle();
+
+      check(fake.duplicateCalls).equals(1);
+      check(fake.lastDuplicateId).equals('m1');
+      // The sheet closed and the editor route was pushed for the copy.
+      expect(find.text(l10n.modesNewPickerBlank), findsNothing);
+      check(observer.pushed.length).isGreaterThan(countBefore);
+    });
+  });
 }

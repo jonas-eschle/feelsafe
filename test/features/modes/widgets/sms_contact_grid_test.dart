@@ -249,4 +249,84 @@ void main() {
       check(c.contactIds!).isEmpty();
     });
   });
+
+  group('SmsContactGrid — selection resolution edge cases', () {
+    testWidgets(
+      'legacy allContacts + explicit ids resolves as the specific ids',
+      (WidgetTester tester) async {
+        // Mirrors the runtime resolver: a legacy config that says allContacts
+        // but still carries ids must select ONLY those ids (spec 02 §SMS
+        // recipient resolution).
+        await pumpScreen(
+          tester,
+          _GridHost(
+            contacts: <EmergencyContact>[
+              _contact('a', 'Alice'),
+              _contact('b', 'Bob', sortOrder: 1),
+            ],
+            initial: _config(
+              SmsContactSelection.allContacts,
+              ids: <String>['a'],
+            ),
+          ),
+        );
+        check(
+          tester
+              .widget<FilterChip>(find.widgetWithText(FilterChip, 'Alice'))
+              .selected,
+        ).isTrue();
+        check(
+          tester
+              .widget<FilterChip>(find.widgetWithText(FilterChip, 'Bob'))
+              .selected,
+        ).isFalse();
+      },
+    );
+
+    testWidgets('firstContact selects only the lowest-sortOrder capable chip', (
+      WidgetTester tester,
+    ) async {
+      await pumpScreen(
+        tester,
+        _GridHost(
+          contacts: <EmergencyContact>[
+            // Out of insertion order on purpose — sortOrder must decide.
+            _contact('b', 'Bob', sortOrder: 1),
+            _contact('a', 'Alice'),
+          ],
+          initial: _config(SmsContactSelection.firstContact),
+        ),
+      );
+      check(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Alice'))
+            .selected,
+      ).isTrue();
+      check(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Bob'))
+            .selected,
+      ).isFalse();
+    });
+
+    testWidgets('firstContact with no capable contact selects nothing', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        _GridHost(
+          contacts: <EmergencyContact>[
+            _contact(
+              'c',
+              'Carol',
+              channels: const <MessageChannel>[MessageChannel.whatsapp],
+            ),
+          ],
+          initial: _config(SmsContactSelection.firstContact),
+        ),
+      );
+      expect(find.text(l10n.smsContactSummaryNone), findsOneWidget);
+    });
+  });
 }

@@ -1282,4 +1282,415 @@ void main() {
       expect(find.text(l10n.eventDefaultsCheckInHeader), findsNothing);
     });
   });
+
+  // T7 — distress-trigger pattern fields (press count / hold duration) ------
+  group('SafetyOptions — distress-trigger pattern fields', () {
+    testWidgets('incrementing the press count persists pressCount + 1', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final summary = find.text(
+        l10n.safetyOptionsTriggerHardwareRepeat(
+          l10n.safetyOptionsButtonVolumeUp,
+          '5',
+        ),
+      );
+      await _scrollTo(tester, summary);
+      await tester.tap(summary);
+      await tester.pumpAndSettle();
+      // The repeat pattern reveals the press-count spinner; tap its +.
+      await _scrollTo(tester, find.text(l10n.safetyOptionsTriggerPressCount));
+      await tester.tap(find.byIcon(Icons.add_circle_outline).first);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final trigger =
+          saved!.distressTriggers.single as HardwareButtonDistressTrigger;
+      check(trigger.pressCount).equals(6);
+      check(trigger.pattern).equals(PressPattern.repeatPress);
+    });
+
+    testWidgets('dragging the hold-duration slider persists a new duration', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(
+              pattern: PressPattern.longPress,
+              durationSeconds: 2.0,
+            ),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final summary = find.text(
+        l10n.safetyOptionsTriggerHardwareLong(
+          l10n.safetyOptionsButtonVolumeUp,
+          '2.0',
+        ),
+      );
+      await _scrollTo(tester, summary);
+      await tester.tap(summary);
+      await tester.pumpAndSettle();
+      // The longPress pattern reveals the hold-duration slider; drag it.
+      final slider = find.byType(Slider).first;
+      await _scrollTo(tester, slider);
+      await tester.drag(slider, const Offset(150, 0));
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final trigger =
+          saved!.distressTriggers.single as HardwareButtonDistressTrigger;
+      check(trigger.pattern).equals(PressPattern.longPress);
+      check(trigger.durationSeconds).isNotNull();
+      check(trigger.durationSeconds!).isGreaterThan(2.0);
+      check(trigger.durationSeconds!).isLessOrEqual(10.0);
+    });
+
+    testWidgets('changing the pattern back to repeat normalises duration', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          distressTriggers: const <DistressTrigger>[
+            HardwareButtonDistressTrigger(
+              pattern: PressPattern.longPress,
+              durationSeconds: 2.0,
+            ),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final summary = find.text(
+        l10n.safetyOptionsTriggerHardwareLong(
+          l10n.safetyOptionsButtonVolumeUp,
+          '2.0',
+        ),
+      );
+      await _scrollTo(tester, summary);
+      await tester.tap(summary);
+      await tester.pumpAndSettle();
+      // Pattern dropdown (current = "long") → "repeat".
+      final patternValue = find.text(l10n.safetyOptionsPatternLong);
+      await _scrollTo(tester, patternValue);
+      await tester.tap(patternValue);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.safetyOptionsPatternRepeat).last);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final trigger =
+          saved!.distressTriggers.single as HardwareButtonDistressTrigger;
+      check(trigger.pattern).equals(PressPattern.repeatPress);
+      // repeat ⇒ duration normalised back to null (save-time validation).
+      check(trigger.durationSeconds).isNull();
+      check(trigger.pressCount).equals(5);
+    });
+  });
+
+  // T8 — Timer disarm: hour-scale duration label + slider --------------------
+  group('SafetyOptions — timer disarm duration', () {
+    testWidgets('a 1 h duration renders the hours/minutes label', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[
+            TimerDisarmTrigger(durationSeconds: 3600),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final label = find.text(
+        '${l10n.safetyOptionsTimerDuration}: '
+        '${l10n.safetyOptionsDurationHoursMinutes('1', '0')}',
+      );
+      await _scrollTo(tester, label);
+      expect(label, findsOneWidget);
+    });
+
+    testWidgets('a 1 h 30 min duration renders hours AND minutes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[
+            TimerDisarmTrigger(durationSeconds: 5400),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final label = find.text(
+        '${l10n.safetyOptionsTimerDuration}: '
+        '${l10n.safetyOptionsDurationHoursMinutes('1', '30')}',
+      );
+      await _scrollTo(tester, label);
+      expect(label, findsOneWidget);
+    });
+
+    testWidgets('dragging the timer slider persists a 5-min-snapped duration', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Walk',
+          chainSteps: <ChainStep>[_step('s0')],
+          disarmTriggers: const <DisarmTrigger>[
+            TimerDisarmTrigger(durationSeconds: 1800),
+          ],
+        ),
+      );
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      // The timer slider is the only Slider (no GPS trigger seeded).
+      final slider = find.byType(Slider).first;
+      await _scrollTo(tester, slider);
+      await tester.drag(slider, const Offset(200, 0));
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final timer = saved!.disarmTriggers
+          .whereType<TimerDisarmTrigger>()
+          .single;
+      check(timer.durationSeconds).not((it) => it.equals(1800));
+      // onChanged snaps to 5-minute steps.
+      check(timer.durationSeconds % 300).equals(0);
+    });
+  });
+
+  // T9 — Stealth Off + inline stealth field passthrough ----------------------
+  group('SafetyOptions — stealth Off and inline fields', () {
+    testWidgets('selecting Off persists a disabled stealth override', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsStealthTitle));
+      // The stealth selector's "Off" is the second tri-state in the section.
+      await tester.tap(find.text(l10n.safetyOptionsTriStateOff).at(1));
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides?.stealth).isNotNull();
+      check(saved.overrides!.stealth!.enabled).isFalse();
+    });
+
+    testWidgets('toggling lock-task under Custom round-trips', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsStealthTitle));
+      await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).at(1));
+      await tester.pumpAndSettle();
+      // The inline StealthConfigFields appear; toggle lock-task (off → on).
+      final lockTask = find.widgetWithText(
+        SwitchListTile,
+        l10n.stealthLockTaskLabel,
+      );
+      await _scrollTo(tester, lockTask);
+      await tester.tap(lockTask);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides?.stealth?.enabled).equals(true);
+      check(saved.overrides?.stealth?.lockTaskMode).equals(true);
+    });
+  });
+
+  // T10 — Event-defaults inline editor passthrough ---------------------------
+  group('SafetyOptions — event-defaults inline editor', () {
+    testWidgets('editing a per-type default under Custom persists it', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      await _scrollTo(tester, find.text(l10n.safetyOptionsEventDefaultsTitle));
+      await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).last);
+      await tester.pumpAndSettle();
+      // Expand the loudAlarm tile (unique text — the chain has no such step)
+      // and flip its black-screen default.
+      final tile = find.text(l10n.chainStepNameLoudAlarm);
+      await _scrollTo(tester, tile);
+      await tester.tap(tile);
+      await tester.pumpAndSettle();
+      final blackScreen = find.widgetWithText(
+        SwitchListTile,
+        l10n.eventDefaultsBlackScreen,
+      );
+      await _scrollTo(tester, blackScreen);
+      await tester.tap(blackScreen);
+      await tester.pumpAndSettle();
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      final defaults = saved!.overrides?.eventDefaults;
+      check(defaults).isNotNull();
+      check(defaults!.loudAlarm.blackScreenMode).isTrue();
+      // Sibling defaults are untouched.
+      check(defaults.holdButton.blackScreenMode).isFalse();
+    });
+  });
+
+  // T11 — Local template sheet: invalid save + cancel ------------------------
+  group('SafetyOptions — local template sheet validation', () {
+    testWidgets('saving an empty template shows the snackbar, stays open', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final addBtn = find.text(l10n.safetyOptionsAddTemplate);
+      await _scrollTo(tester, addBtn);
+      await tester.tap(addBtn);
+      await tester.pumpAndSettle();
+      // Save with all required fields empty → inline snackbar, no pop.
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonSave));
+      await tester.pump();
+      expect(find.text('Name, title, and body required.'), findsOneWidget);
+      expect(find.text(l10n.templatesCreateTitle), findsOneWidget);
+      await tester.pumpAndSettle();
+    });
+
+    testWidgets('cancelling the sheet stages nothing', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      final mode = await _seedMode(db, _mode());
+      await _pump(
+        tester,
+        ModeEditorScreen(modeId: mode.id, isDistress: false),
+        _overrides(db),
+      );
+      await _openSafetyOptions(tester, l10n);
+      final addBtn = find.text(l10n.safetyOptionsAddTemplate);
+      await _scrollTo(tester, addBtn);
+      await tester.tap(addBtn);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, l10n.commonCancel));
+      await tester.pumpAndSettle();
+      // Back in the editor; no template staged.
+      expect(find.text(l10n.templatesCreateTitle), findsNothing);
+      await _tapSave(tester, l10n);
+
+      final saved = await db.sessionModesDao.getById('m1');
+      check(saved!.overrides).isNull();
+    });
+  });
 }

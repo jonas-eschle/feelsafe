@@ -511,6 +511,18 @@ class _PhoneCallContactForm extends StatelessWidget {
   final PhoneCallContactConfig config;
   final ValueChanged<PhoneCallContactConfig> onChanged;
 
+  /// Rebuilds the config with [contactId], which may be null.
+  ///
+  /// `copyWith` cannot clear a field (`x ?? this.x`), so a direct construction
+  /// is required to set the contact back to null (= no primary contact).
+  PhoneCallContactConfig _withContactId(String? contactId) =>
+      PhoneCallContactConfig(
+        contactId: contactId,
+        alternativeContactIds: config.alternativeContactIds,
+        logGps: config.logGps,
+        blackScreenMode: config.blackScreenMode,
+      );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -521,7 +533,7 @@ class _PhoneCallContactForm extends StatelessWidget {
           label: l10n.eventDefaultsPhonePrimaryContact,
           value: config.contactId ?? '',
           onChanged: (String v) =>
-              onChanged(config.copyWith(contactId: v.isEmpty ? null : v)),
+              onChanged(_withContactId(v.isEmpty ? null : v)),
         ),
         _BlackScreenSwitch(
           value: config.blackScreenMode,
@@ -592,6 +604,19 @@ class _CallEmergencyForm extends StatelessWidget {
   final CallEmergencyConfig config;
   final ValueChanged<CallEmergencyConfig> onChanged;
 
+  /// Rebuilds the config with [emergencyNumber], which may be null.
+  ///
+  /// `copyWith` cannot clear a field (`x ?? this.x`), so a direct construction
+  /// is required to set the number back to null (= the regional default).
+  CallEmergencyConfig _withNumber(String? emergencyNumber) =>
+      CallEmergencyConfig(
+        emergencyNumber: emergencyNumber,
+        sendLocationSmsFirst: config.sendLocationSmsFirst,
+        showConfirmation: config.showConfirmation,
+        confirmationDurationSeconds: config.confirmationDurationSeconds,
+        blackScreenMode: config.blackScreenMode,
+      );
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -604,8 +629,7 @@ class _CallEmergencyForm extends StatelessWidget {
         LabeledTextField(
           label: l10n.eventDefaultsCallEmergencyNumber,
           value: config.emergencyNumber ?? '',
-          onChanged: (String v) =>
-              onChanged(config.copyWith(emergencyNumber: v.isEmpty ? null : v)),
+          onChanged: (String v) => onChanged(_withNumber(v.isEmpty ? null : v)),
         ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,

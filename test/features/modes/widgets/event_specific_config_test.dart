@@ -17,7 +17,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/core/utils/ringtone_picker.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
+import 'package:guardianangela/domain/enums/button_type.dart';
+import 'package:guardianangela/domain/enums/call_style.dart';
+import 'package:guardianangela/domain/enums/countdown_style.dart';
+import 'package:guardianangela/domain/enums/hold_style.dart';
+import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
+import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -354,4 +361,393 @@ void main() {
       check(emitted!.callerName).equals('Mom');
     });
   });
+
+  // ── Per-type field interactions (spec 02 §per-type config) ───────────────
+  //
+  // Each test drives a real control of one per-type form and asserts the
+  // emitted config carries exactly that change.
+
+  group('EventSpecificConfig — holdButton fields', () {
+    testWidgets('hold-style dropdown and sensitivity slider emit changes', (
+      WidgetTester tester,
+    ) async {
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const HoldButtonConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _pickEnum(
+        tester,
+        HoldStyle.largeButton.name,
+        HoldStyle.fullScreen.name,
+      );
+      check(emitted).isA<HoldButtonConfig>();
+      check(
+        (emitted! as HoldButtonConfig).holdStyle,
+      ).equals(HoldStyle.fullScreen);
+
+      await tester.drag(find.byType(Slider), const Offset(80, 0));
+      await tester.pumpAndSettle();
+      check(
+        (emitted! as HoldButtonConfig).releaseSensitivity,
+      ).not((it) => it.equals(1.0));
+    });
+  });
+
+  group('EventSpecificConfig — disguisedReminder fields', () {
+    testWidgets('randomize-interval and randomize-template toggles emit', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _toggleSwitch(tester, l10n.eventDefaultsReminderRandomInterval);
+      check((emitted! as DisguisedReminderConfig).randomizeInterval).isFalse();
+
+      await _toggleSwitch(tester, l10n.eventDefaultsReminderRandomTemplate);
+      check(
+        (emitted! as DisguisedReminderConfig).randomizeTemplateOrder,
+      ).isFalse();
+    });
+  });
+
+  group('EventSpecificConfig — countdownWarning fields', () {
+    testWidgets('style dropdown and vibrate toggle emit changes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const CountdownWarningConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _pickEnum(
+        tester,
+        CountdownStyle.fullScreen.name,
+        CountdownStyle.minimal.name,
+      );
+      check(
+        (emitted! as CountdownWarningConfig).style,
+      ).equals(CountdownStyle.minimal);
+
+      await _toggleSwitch(tester, l10n.eventDefaultsCountdownVibrate);
+      check((emitted! as CountdownWarningConfig).vibrate).isFalse();
+    });
+  });
+
+  group('EventSpecificConfig — fakeCall fields', () {
+    testWidgets('call style, ring duration, and voice output emit changes', (
+      WidgetTester tester,
+    ) async {
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const FakeCallConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _pickEnum(
+        tester,
+        CallStyle.platformNative.name,
+        CallStyle.signal.name,
+      );
+      check((emitted! as FakeCallConfig).callStyle).equals(CallStyle.signal);
+
+      await _tapSpinnerPlus(tester);
+      check((emitted! as FakeCallConfig).ringDurationSeconds).equals(31);
+
+      await _pickEnum(
+        tester,
+        VoiceOutputMode.earpiece.name,
+        VoiceOutputMode.speaker.name,
+      );
+      check(
+        (emitted! as FakeCallConfig).voiceOutputMode,
+      ).equals(VoiceOutputMode.speaker);
+    });
+
+    testWidgets('caller name commits; an empty name falls back to Angela', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const FakeCallConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _commitText(tester, l10n.eventDefaultsFakeCallCallerName, 'Mom');
+      check((emitted! as FakeCallConfig).callerName).equals('Mom');
+
+      await _commitText(tester, l10n.eventDefaultsFakeCallCallerName, '');
+      check((emitted! as FakeCallConfig).callerName).equals('Angela');
+    });
+  });
+
+  group('EventSpecificConfig — smsContact fields', () {
+    testWidgets('channel dropdown, include-medical, and record duration emit', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      // autoRecordAudio: true so the record-duration spinner is shown.
+      await _pumpForm(
+        tester,
+        const SmsContactConfig(autoRecordAudio: true),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _pickEnum(
+        tester,
+        MessageChannel.sms.name,
+        MessageChannel.telegram.name,
+      );
+      check(
+        (emitted! as SmsContactConfig).channel,
+      ).equals(MessageChannel.telegram);
+
+      await _toggleSwitch(tester, l10n.eventDefaultsSmsIncludeMedical);
+      check((emitted! as SmsContactConfig).includeMedicalInfo).isTrue();
+
+      await _tapSpinnerPlus(tester);
+      check((emitted! as SmsContactConfig).recordDurationSeconds).equals(31);
+    });
+  });
+
+  group('EventSpecificConfig — phoneCallContact fields', () {
+    testWidgets('primary contact commits; clearing it emits null', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const PhoneCallContactConfig(contactId: 'c1'),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _commitText(tester, l10n.eventDefaultsPhonePrimaryContact, 'c9');
+      check((emitted! as PhoneCallContactConfig).contactId).equals('c9');
+
+      // Clearing the field must clear the id (null = no primary contact) —
+      // a plain copyWith would silently keep the old id.
+      await _commitText(tester, l10n.eventDefaultsPhonePrimaryContact, '');
+      check((emitted! as PhoneCallContactConfig).contactId).isNull();
+    });
+  });
+
+  group('EventSpecificConfig — loudAlarm fields', () {
+    testWidgets('volume slider and sound dropdown emit changes', (
+      WidgetTester tester,
+    ) async {
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(volume: 0.5),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await tester.drag(find.byType(Slider), const Offset(80, 0));
+      await tester.pumpAndSettle();
+      check((emitted! as LoudAlarmConfig).volume).not((it) => it.equals(0.5));
+
+      await _pickEnum(
+        tester,
+        LoudAlarmSound.siren.name,
+        LoudAlarmSound.custom.name,
+      );
+      check(
+        (emitted! as LoudAlarmConfig).soundChoice,
+      ).equals(LoudAlarmSound.custom);
+    });
+
+    testWidgets('flash-screen and flash-light toggles emit changes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _toggleSwitch(tester, l10n.eventDefaultsLoudAlarmFlashScreen);
+      check((emitted! as LoudAlarmConfig).flashScreen).isTrue();
+
+      await _toggleSwitch(tester, l10n.eventDefaultsLoudAlarmFlashLight);
+      check((emitted! as LoudAlarmConfig).flashLight).isFalse();
+    });
+  });
+
+  group('EventSpecificConfig — callEmergency fields', () {
+    testWidgets('number commits; clearing it emits null (use default)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const CallEmergencyConfig(emergencyNumber: '911'),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _commitText(tester, l10n.eventDefaultsCallEmergencyNumber, '112');
+      check((emitted! as CallEmergencyConfig).emergencyNumber).equals('112');
+
+      // Clearing must revert to null (regional default number) — a plain
+      // copyWith would silently keep the old number.
+      await _commitText(tester, l10n.eventDefaultsCallEmergencyNumber, '');
+      check((emitted! as CallEmergencyConfig).emergencyNumber).isNull();
+    });
+
+    testWidgets('confirmation duration spinner and confirm toggle emit', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const CallEmergencyConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _tapSpinnerPlus(tester);
+      check(
+        (emitted! as CallEmergencyConfig).confirmationDurationSeconds,
+      ).equals(6);
+
+      await _toggleSwitch(tester, l10n.eventDefaultsCallEmergencyConfirm);
+      check((emitted! as CallEmergencyConfig).showConfirmation).isFalse();
+    });
+  });
+
+  group('EventSpecificConfig — hardwareButton fields', () {
+    testWidgets('button + pattern dropdowns and press-count spinner emit', (
+      WidgetTester tester,
+    ) async {
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const HardwareButtonConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await _pickEnum(
+        tester,
+        ButtonType.volumeUp.name,
+        ButtonType.volumeDown.name,
+      );
+      check(
+        (emitted! as HardwareButtonConfig).buttonType,
+      ).equals(ButtonType.volumeDown);
+
+      await _tapSpinnerPlus(tester);
+      check((emitted! as HardwareButtonConfig).pressCount).equals(6);
+
+      await _pickEnum(
+        tester,
+        PressPattern.repeatPress.name,
+        PressPattern.longPress.name,
+      );
+      check(
+        (emitted! as HardwareButtonConfig).pressPattern,
+      ).equals(PressPattern.longPress);
+    });
+
+    testWidgets('long-press duration slider emits under longPress pattern', (
+      WidgetTester tester,
+    ) async {
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const HardwareButtonConfig(pressPattern: PressPattern.longPress),
+        onChanged: (StepConfig c) => emitted = c,
+      );
+
+      await tester.drag(find.byType(Slider), const Offset(80, 0));
+      await tester.pumpAndSettle();
+      check(
+        (emitted! as HardwareButtonConfig).longPressDurationSeconds,
+      ).not((it) => it.equals(2.0));
+    });
+  });
+}
+
+// ─── Interaction helpers for the per-type field tests ───────────────────────
+
+/// Pumps [config] inside [EventSpecificConfig] (Event-Defaults context:
+/// no contacts grid) and captures every emitted config via [onChanged].
+Future<void> _pumpForm(
+  WidgetTester tester,
+  StepConfig config, {
+  required ValueChanged<StepConfig> onChanged,
+}) async {
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: const <LocalizationsDelegate<Object>>[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(
+        platform: TargetPlatform.android,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        body: SingleChildScrollView(
+          child: EventSpecificConfig(config: config, onChanged: onChanged),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Opens the enum dropdown currently showing [current] and picks [next].
+Future<void> _pickEnum(WidgetTester tester, String current, String next) async {
+  final Finder button = find.text(current);
+  await tester.ensureVisible(button);
+  await tester.tap(button);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(next).last);
+  await tester.pumpAndSettle();
+}
+
+/// Taps the [SwitchListTile] labelled [title].
+Future<void> _toggleSwitch(WidgetTester tester, String title) async {
+  final Finder tile = find.widgetWithText(SwitchListTile, title);
+  await tester.ensureVisible(tile);
+  await tester.tap(tile);
+  await tester.pumpAndSettle();
+}
+
+/// Taps the single [IntSpinnerField]'s + button in the current form.
+Future<void> _tapSpinnerPlus(WidgetTester tester) async {
+  final Finder plus = find.byIcon(Icons.add_circle_outline);
+  await tester.ensureVisible(plus);
+  await tester.tap(plus);
+  await tester.pumpAndSettle();
+}
+
+/// Commits [text] into the [TextField] labelled [label].
+Future<void> _commitText(WidgetTester tester, String label, String text) async {
+  final Finder field = find.widgetWithText(TextField, label);
+  await tester.ensureVisible(field);
+  await tester.enterText(field, text);
+  await tester.testTextInput.receiveAction(TextInputAction.done);
+  await tester.pumpAndSettle();
 }
