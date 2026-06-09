@@ -63,13 +63,17 @@ void main() {
       },
     );
 
-    test('a different region seeds a different number', () async {
+    test('a different region seeds its own number', () async {
+      // UK → 999 (distinct from the US 911 default and the 112 fallback, so this
+      // genuinely proves region-specific seeding). NB: DE now seeds 112 (= the
+      // fallback) after the owner's final map review, so it can't demonstrate
+      // a region-distinct seed here.
       final repo = _FakeSettingsRepo();
       final settings = await seedFirstLaunchSettings(
         repo,
-        deviceLocale: 'de_DE',
+        deviceLocale: 'en_GB',
       );
-      check(settings.emergencyCallNumber).equals('110');
+      check(settings.emergencyCallNumber).equals('999');
     });
 
     test('an unmapped / region-less locale seeds the 112 fallback', () async {

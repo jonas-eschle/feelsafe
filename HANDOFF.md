@@ -1,7 +1,7 @@
 # Guardian Angela v3 — Session Hand-off
 
 **Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
-CHUNKS DONE (UNPUSHED) — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
+CHUNKS DONE + MILESTONE-COHORT-VERIFIED (PASS, both opus) + owner emergency-map FINAL sign-off (DE→112, ET=911/CI=111 accepted with VERIFY flags), GATE-GREEN, READY TO PUSH — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
 Session-Interrupted prompt) + C5 (Tier-F F1/F2 descope + REMOVE

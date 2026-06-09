@@ -69,10 +69,10 @@ const Map<String, String> emergencyNumbers = <String, String>{
   'CD': '112', // DR Congo — 112.
   'TR': '112', // Turkey — unified.
   'IR': '110', // Iran — split; police line.
-  // Germany — POLICE line 110. Adjusted from the draft's 112 per the owner's
-  // explicit decision (110 is the police number; 112 is the EU fire/ambulance
-  // and pan-EU line). Verified: Wikipedia (DE police 110).
-  'DE': '110',
+  // Germany — 112 (EU unified all-services). Owner final review 2026-06-09 chose
+  // 112 over the police line 110: the 112 control centre dispatches all services
+  // (police/fire/ambulance), so it is Germany's unified emergency number.
+  'DE': '112',
   'TH': '191', // Thailand — split; police line.
   // ── Large European / other ───────────────────────────────────────────
   'GB': '999', // United Kingdom — unified (999; 112 also works).

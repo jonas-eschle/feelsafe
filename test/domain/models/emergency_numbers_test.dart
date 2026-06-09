@@ -4,7 +4,7 @@
 /// This is safety-critical data — the app dials the resolved number — so the
 /// suite asserts: (1) the map is well-formed (valid ISO keys, dialable
 /// numbers, no accidental duplicate-key shadowing); (2) the owner-mandated
-/// adjustments landed (PK=15, DE=110) and the re-confirmed entries are present
+/// adjustments landed (PK=15, DE=112) and the re-confirmed entries are present
 /// (CO=123, ZA=112, ET=911, CI=111); (3) the locale resolver maps a device
 /// region to its number and falls back to '112' for unmapped / region-less
 /// input.
@@ -44,8 +44,8 @@ void main() {
       check(emergencyNumbers['PK']).equals('15');
     });
 
-    test('Germany is the police line 110', () {
-      check(emergencyNumbers['DE']).equals('110');
+    test('Germany is the EU unified line 112', () {
+      check(emergencyNumbers['DE']).equals('112');
     });
 
     test('South Africa keeps 112 (mobile all-services route)', () {
@@ -104,13 +104,13 @@ void main() {
   group('emergencyNumberForLocale — region resolution', () {
     test('lang_REGION maps to the region number', () {
       check(emergencyNumberForLocale('en_US')).equals('911');
-      check(emergencyNumberForLocale('de_DE')).equals('110');
+      check(emergencyNumberForLocale('de_DE')).equals('112');
       check(emergencyNumberForLocale('en_GB')).equals('999');
       check(emergencyNumberForLocale('en_PK')).equals('15');
     });
 
     test('lang-REGION (hyphen form) is handled', () {
-      check(emergencyNumberForLocale('de-DE')).equals('110');
+      check(emergencyNumberForLocale('de-DE')).equals('112');
       check(emergencyNumberForLocale('pt-BR')).equals('190');
     });
 
@@ -138,7 +138,7 @@ void main() {
 
     test('region matching is case-insensitive', () {
       check(emergencyNumberForLocale('en_us')).equals('911');
-      check(emergencyNumberForLocale('de_de')).equals('110');
+      check(emergencyNumberForLocale('de_de')).equals('112');
     });
 
     test('always returns a non-empty dialable number', () {
