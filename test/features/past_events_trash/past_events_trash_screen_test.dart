@@ -34,8 +34,20 @@ class _FakeTrashController extends PastEventsTrashController {
   int deletePermanentlyCalls = 0;
   String? lastDeletedId;
 
+  int emptyTrashCalls = 0;
+
+  /// Value returned by the [emptyTrash] override (the purged-row count
+  /// surfaced in the success SnackBar).
+  int emptyTrashResult = 0;
+
   @override
   Future<PastEventsTrashState> build() async => _initial;
+
+  @override
+  Future<int> emptyTrash() async {
+    emptyTrashCalls++;
+    return emptyTrashResult;
+  }
 
   @override
   Future<void> restore(String id) async {
@@ -98,9 +110,12 @@ void main() {
     ) async {
       final fake = _FakeTrashController(_state());
       final l10n = await loadL10n(const Locale('en'));
+      // Deliberately NON-const so the constructor line executes at
+      // runtime — a const instance is canonicalized and its DA line
+      // flickers in full-suite lcov runs.
       await pumpScreen(
         tester,
-        const PastEventsTrashScreen(),
+        PastEventsTrashScreen(key: UniqueKey()),
         overrides: _overrides(fake),
       );
       expect(find.text(l10n.pastEventsTrashTitle), findsWidgets);
@@ -623,6 +638,120 @@ void main() {
       );
       expect(find.byTooltip(l10n.pastEventsRestore), findsNWidgets(3));
     });
+  });
+
+  // -------------------------------------------------------------------------
+  group('PastEventsTrashScreen — empty trash action', () {
+    /// Opens the AppBar overflow menu and taps "Empty trash", landing on
+    /// the typed-confirmation dialog.
+    Future<void> openEmptyTrashDialog(WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsTrashEmptyAll));
+      await tester.pumpAndSettle();
+    }
+
+    /// Returns the dialog's confirm [FilledButton] (the one labelled
+    /// "Empty trash" inside the AlertDialog).
+    Finder confirmButton() => find.descendant(
+      of: find.byType(AlertDialog),
+      matching: find.byType(FilledButton),
+    );
+
+    testWidgets('menu action opens the typed-confirmation dialog', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeTrashController(
+        _state(logs: <PastEventsTrashLog>[_log(id: 'a')]),
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const PastEventsTrashScreen(),
+        overrides: _overrides(fake),
+      );
+      await openEmptyTrashDialog(tester);
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(
+        find.text(l10n.pastEventsTrashEmptyAllConfirmTitle),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.pastEventsTrashEmptyAllConfirmBody),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byType(AlertDialog),
+          matching: find.byType(TextField),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('confirm stays disabled until the exact phrase is typed', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeTrashController(_state());
+      await pumpScreen(
+        tester,
+        const PastEventsTrashScreen(),
+        overrides: _overrides(fake),
+      );
+      await openEmptyTrashDialog(tester);
+      // Disabled on open.
+      check(tester.widget<FilledButton>(confirmButton()).onPressed).isNull();
+      // Still disabled on a near-miss.
+      await tester.enterText(find.byType(TextField), 'empty trash');
+      await tester.pumpAndSettle();
+      check(tester.widget<FilledButton>(confirmButton()).onPressed).isNull();
+      // Enabled once the phrase matches verbatim.
+      await tester.enterText(find.byType(TextField), 'EMPTY TRASH');
+      await tester.pumpAndSettle();
+      check(tester.widget<FilledButton>(confirmButton()).onPressed).isNotNull();
+    });
+
+    testWidgets('cancelling the dialog does NOT call emptyTrash', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeTrashController(_state());
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const PastEventsTrashScreen(),
+        overrides: _overrides(fake),
+      );
+      await openEmptyTrashDialog(tester);
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      check(fake.emptyTrashCalls).equals(0);
+    });
+
+    testWidgets(
+      'typing the phrase and confirming calls emptyTrash and shows the '
+      'purged-count SnackBar',
+      (WidgetTester tester) async {
+        final fake = _FakeTrashController(_state())..emptyTrashResult = 3;
+        final l10n = await loadL10n(const Locale('en'));
+        await pumpScreen(
+          tester,
+          const PastEventsTrashScreen(),
+          overrides: _overrides(fake),
+        );
+        await openEmptyTrashDialog(tester);
+        await tester.enterText(find.byType(TextField), 'EMPTY TRASH');
+        await tester.pumpAndSettle();
+        await tester.tap(confirmButton());
+        await tester.pumpAndSettle();
+        check(fake.emptyTrashCalls).equals(1);
+        expect(
+          find.text(l10n.pastEventsTrashEmptyAllSuccess(3)),
+          findsOneWidget,
+        );
+      },
+    );
   });
 }
 

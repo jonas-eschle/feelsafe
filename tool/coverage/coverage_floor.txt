@@ -73,7 +73,27 @@
 #     non-blocking; the arm exists for switch exhaustiveness — C9 candidate)
 #     and 2 const-constructor lines that flip with const-canonicalization
 #     jitter (DistressModesScreen/ReminderTemplatesScreen `super.key` lines).
-#   * Floor set to 92.5 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7d ratchet (2026-06-09) = 94.47%-of-logic (12566 / 13302 lines)
+#     after covering the session-log history/trash/retention surface — ALL
+#     6 files now 0 missed: past_events_trash_screen (41→0, overflow-menu →
+#     typed "EMPTY TRASH" confirm dialog → emptyTrash + SnackBar),
+#     past_events_trash_controller (39→0, real ProviderContainer + in-memory
+#     Drift + recording settings repo; on-open purge honours
+#     trashRetentionDays BOTH ways, restore un-trashes so a later purge
+#     spares it while its still-trashed sibling dies, emptyTrash kills
+#     critical trash but spares live rows, purge-failure non-fatal),
+#     past_events_detail_screen (38→0, sharePdf via mocked net.nfet.printing
+#     channel asserting real %PDF bytes + log-id filename, delete-confirm →
+#     SOFT delete + pop), past_events_controller (36→0, outcomeFromEndReason
+#     all 8 arms + soft/undo/hard delete: list delete NEVER destroys a
+#     CRITICAL log — red→green proven against a deleteById mutation),
+#     history_retention_controller (15→0, setters persist without clobbering
+#     the sibling window), history_retention_screen (11→0, Purge-now drives
+#     the real repo purge end-to-end → count SnackBar). +181 covered lines.
+#     No production bugs found in this surface. The trash-screen super.key
+#     const line is pinned with a non-const UniqueKey() construction
+#     (C7b's de-jitter trick).
+#   * Floor set to 93.8 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -83,4 +103,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-92.5
+93.8

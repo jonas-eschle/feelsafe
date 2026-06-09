@@ -9,6 +9,8 @@
 /// Spec refs: 06-settings.md §History & Retention Screen.
 library;
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
@@ -16,8 +18,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/data/db/database.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/data/repositories/session_log_repository.dart';
+import 'package:guardianangela/domain/enums/end_reason.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/domain/models/session_log.dart';
+import 'package:guardianangela/domain/models/session_log_event.dart';
 import 'package:guardianangela/features/history_retention/history_retention_controller.dart';
 import 'package:guardianangela/features/history_retention/history_retention_screen.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -68,6 +78,22 @@ class _AsyncErrorController extends HistoryRetentionController {
   @override
   Future<HistoryRetentionState> build() async =>
       throw Exception('settings load failed');
+}
+
+/// Recording fake [AppSettingsRepository] for the Purge-now flow (the
+/// button reads the REAL settings repo, not the faked controller).
+class _FakeAppSettingsRepository extends AppSettingsRepository {
+  _FakeAppSettingsRepository(this._current)
+    : super(
+        keyProvider: () async => '00' * 32,
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('history_retention_scr_'),
+      );
+
+  final AppSettings _current;
+
+  @override
+  Future<AppSettings> load() async => _current;
 }
 
 // ---------------------------------------------------------------------------
@@ -624,6 +650,84 @@ void main() {
         check(fake.lastTrashRetentionDays!).isGreaterOrEqual(1);
         check(fake.lastTrashRetentionDays!).isLessOrEqual(90);
       }
+    });
+  });
+
+  // ── Purge now ─────────────────────────────────────────────────────────────
+
+  group('HistoryRetentionScreen — purge now', () {
+    /// Pumps the screen with a REAL in-memory Drift DB behind
+    /// `sessionLogRepositoryProvider` plus a fake settings repo, so the
+    /// Purge-now button drives the real purge end-to-end.
+    Future<GuardianAngelaDatabase> pumpWithDb(WidgetTester tester) async {
+      final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+      addTearDown(db.close);
+      await pumpScreen(
+        tester,
+        const HistoryRetentionScreen(),
+        overrides: <Override>[
+          historyRetentionControllerProvider.overrideWith(
+            () => _FakeHistoryRetentionController(_defaultState()),
+          ),
+          databaseProvider.overrideWith((_) async => db),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _FakeAppSettingsRepository(const AppSettings()),
+          ),
+        ],
+      );
+      return db;
+    }
+
+    Future<void> tapPurgeNow(WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final button = find.text(l10n.historyRetentionPurgeNow);
+      await tester.ensureVisible(button);
+      await tester.tap(button);
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets(
+      'purges an expired trashed log and reports the count in a SnackBar',
+      (WidgetTester tester) async {
+        final db = await pumpWithDb(tester);
+        final repo = SessionLogRepository(db.sessionLogsDao);
+        final now = DateTime.now().toUtc();
+        final started = now.subtract(const Duration(days: 30));
+        await repo.upsert(
+          SessionLog(
+            id: 'expired-trash',
+            modeId: 'walk-mode',
+            modeName: 'Walk Mode',
+            startedAt: started,
+            endedAt: started.add(const Duration(minutes: 5)),
+            endReason: EndReason.userQuit,
+            isSimulation: false,
+            events: const <SessionLogEvent>[],
+          ),
+        );
+        // Trashed 10 days ago > default 7-day trash window → purgeable.
+        await repo.softDelete(
+          'expired-trash',
+          now: now.subtract(const Duration(days: 10)),
+        );
+        final l10n = await loadL10n(const Locale('en'));
+
+        await tapPurgeNow(tester);
+
+        expect(find.text(l10n.historyRetentionPurged(1)), findsOneWidget);
+        check(await repo.getById('expired-trash')).isNull();
+      },
+    );
+
+    testWidgets('reports 0 purged on an empty database', (
+      WidgetTester tester,
+    ) async {
+      await pumpWithDb(tester);
+      final l10n = await loadL10n(const Locale('en'));
+
+      await tapPurgeNow(tester);
+
+      expect(find.text(l10n.historyRetentionPurged(0)), findsOneWidget);
     });
   });
 }

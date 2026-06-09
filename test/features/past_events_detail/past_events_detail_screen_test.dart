@@ -72,6 +72,46 @@ void _removeShareMock() {
 }
 
 // ---------------------------------------------------------------------------
+// Printing channel mock (Share as PDF)
+// ---------------------------------------------------------------------------
+
+/// The MethodChannel name used by the `printing` plugin.
+const _kPrintingChannel = 'net.nfet.printing';
+
+/// PDF bytes captured from the most recent `sharePdf` channel call.
+List<int>? _capturedPdfBytes;
+
+/// Filename captured from the most recent `sharePdf` channel call.
+String? _capturedPdfName;
+
+/// Installs a mock handler on [_kPrintingChannel] that captures the
+/// `sharePdf` document bytes and filename without invoking any platform
+/// binary. The PDF itself is built in pure Dart by `package:pdf`, so the
+/// captured bytes are the REAL document produced by the screen.
+void _installPrintingMock() {
+  _capturedPdfBytes = null;
+  _capturedPdfName = null;
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(const MethodChannel(_kPrintingChannel), (
+        MethodCall call,
+      ) async {
+        if (call.method == 'sharePdf') {
+          final args = call.arguments as Map<Object?, Object?>;
+          _capturedPdfBytes = args['doc'] as List<int>?;
+          _capturedPdfName = args['name'] as String?;
+          return 1;
+        }
+        return 0;
+      });
+}
+
+/// Removes the printing mock handler, restoring default behaviour.
+void _removePrintingMock() {
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(const MethodChannel(_kPrintingChannel), null);
+}
+
+// ---------------------------------------------------------------------------
 // Database helpers
 // ---------------------------------------------------------------------------
 
@@ -672,5 +712,157 @@ void main() {
       );
       expect(find.text('A11y Walk'), findsOneWidget);
     });
+  });
+
+  // ── Share as PDF ───────────────────────────────────────────────────────────
+
+  group('PastEventsDetailScreen — Share PDF action', () {
+    setUp(_installPrintingMock);
+    tearDown(_removePrintingMock);
+
+    testWidgets('PDF menu item builds a non-empty PDF and shares it under the '
+        'log-id filename', (WidgetTester tester) async {
+      final db = _openDb();
+      addTearDown(db.close);
+      await db.sessionLogsDao.upsert(_log());
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'log-1'),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailSharePdf));
+      await tester.pumpAndSettle();
+      check(_capturedPdfName).equals('guardian_angela_log-1.pdf');
+      check(_capturedPdfBytes).isNotNull();
+      check(_capturedPdfBytes!).isNotEmpty();
+      // A real PDF document starts with the %PDF magic header.
+      check(String.fromCharCodes(_capturedPdfBytes!.take(5))).equals('%PDF-');
+    });
+
+    testWidgets('PDF export works for an in-progress log (endedAt null)', (
+      WidgetTester tester,
+    ) async {
+      final db = _openDb();
+      addTearDown(db.close);
+      // endReason must be null when endedAt is null (model invariant).
+      await db.sessionLogsDao.upsert(
+        SessionLog(
+          id: 'log-open',
+          modeId: 'mode-1',
+          modeName: 'Walk Mode',
+          startedAt: _base,
+          isSimulation: false,
+          events: <SessionLogEvent>[_event()],
+        ),
+      );
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'log-open'),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byIcon(Icons.share));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.pastEventsDetailSharePdf));
+      await tester.pumpAndSettle();
+      check(_capturedPdfName).equals('guardian_angela_log-open.pdf');
+      check(_capturedPdfBytes).isNotNull();
+    });
+  });
+
+  // ── Delete action ──────────────────────────────────────────────────────────
+
+  group('PastEventsDetailScreen — Delete action', () {
+    testWidgets('Delete icon opens the confirmation dialog', (
+      WidgetTester tester,
+    ) async {
+      final db = _openDb();
+      addTearDown(db.close);
+      await db.sessionLogsDao.upsert(_log());
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'log-1'),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsOneWidget);
+      expect(find.text(l10n.pastEventsDeleteConfirm), findsOneWidget);
+    });
+
+    testWidgets('cancelling keeps the log live (not trashed)', (
+      WidgetTester tester,
+    ) async {
+      final db = _openDb();
+      addTearDown(db.close);
+      await db.sessionLogsDao.upsert(_log());
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'log-1'),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.byIcon(Icons.delete_outline));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      // Screen stays put and the row is untouched.
+      expect(find.byType(PastEventsDetailScreen), findsOneWidget);
+      check(await db.sessionLogsDao.getTrashed()).isEmpty();
+    });
+
+    testWidgets(
+      'confirming soft-deletes the log (restorable trash row) and pops '
+      'back to the previous screen',
+      (WidgetTester tester) async {
+        final db = _openDb();
+        addTearDown(db.close);
+        await db.sessionLogsDao.upsert(_log());
+        // Mount via a pushed route so the screen has somewhere to pop to.
+        await pumpScreen(
+          tester,
+          Builder(
+            builder: (BuildContext context) => Scaffold(
+              body: Center(
+                child: TextButton(
+                  onPressed: () => Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) =>
+                          const PastEventsDetailScreen(logId: 'log-1'),
+                    ),
+                  ),
+                  child: const Text('open detail'),
+                ),
+              ),
+            ),
+          ),
+          overrides: <Override>[_dbOverride(db)],
+        );
+        await tester.tap(find.text('open detail'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.byIcon(Icons.delete_outline));
+        await tester.pumpAndSettle();
+        // Confirm with the dialog's FilledButton ("Delete").
+        await tester.tap(
+          find.descendant(
+            of: find.byType(AlertDialog),
+            matching: find.byType(FilledButton),
+          ),
+        );
+        await tester.pumpAndSettle();
+        // Detail screen popped back to the host scaffold.
+        expect(find.byType(PastEventsDetailScreen), findsNothing);
+        expect(find.text('open detail'), findsOneWidget);
+        // SOFT delete: row still exists, now in the trash (restorable).
+        final trashed = await db.sessionLogsDao.getTrashed();
+        check(trashed.map((l) => l.id)).deepEquals(<String>['log-1']);
+        check(await db.sessionLogsDao.getById('log-1')).isNotNull();
+      },
+    );
   });
 }
