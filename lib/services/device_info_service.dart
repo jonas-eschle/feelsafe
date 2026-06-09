@@ -1,7 +1,7 @@
-// Native channel handler lands in Phase 7
-// (Android: DeviceInfoChannel.kt — 'com.guardianangela.app/device_info';
-//  iOS / web / desktop: no platform support — protocol returns
-//  SimNumberUnsupported without ever invoking the channel).
+// Native channel handler: Android DeviceInfoChannel.kt
+// ('com.guardianangela.app/device_info', registered in MainActivity.kt).
+// iOS / web / desktop: no platform support — the protocol returns
+// SimNumberUnsupported without ever invoking the channel.
 
 import 'dart:developer';
 import 'dart:io';
@@ -55,7 +55,7 @@ class RealDeviceInfoService implements DeviceInfoServiceProtocol {
       }
       return SimNumberUnavailable(e.message);
     } on MissingPluginException catch (_) {
-      // Phase 7 has not landed the native side yet.
+      // Defensive: the native handler is unavailable (e.g. an older build).
       return const SimNumberUnsupported();
     }
   }

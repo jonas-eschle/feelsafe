@@ -1,8 +1,9 @@
-// Phase 7 native dependency: SMS on Android uses
-// MethodChannel('com.guardianangela.app/sms') — SmsChannel.kt + SmsWorker.kt.
-// The Dart side calls enqueueSms / cancelWork and listens for smsRetryExhausted
-// events. WhatsApp and Telegram use url_launcher (no custom channel).
-// iOS SMS falls back to url_launcher with sms: URI.
+// Native dependency: SMS on Android uses
+// MethodChannel('com.guardianangela.app/sms') — SmsChannel.kt + SmsWorker.kt
+// (registered in MainActivity.kt). The Dart side calls enqueueSms / cancelWork
+// and listens for smsRetryExhausted events. WhatsApp and Telegram use
+// url_launcher (no custom channel). iOS SMS falls back to url_launcher with a
+// sms: URI.
 
 import 'dart:async';
 import 'dart:developer';
@@ -71,7 +72,7 @@ final class SmsRetryExhaustedEvent {
 /// Channel dispatch per spec 05 §Channel Dispatch:
 /// - **SMS / Android:** MethodChannel `com.guardianangela.app/sms`.
 ///   Returns the WorkManager [MessageWorkId] for later cancellation.
-///   Native code (Phase 7) handles persistent retry queue.
+///   Native code (SmsWorker.kt) handles the persistent retry queue.
 /// - **SMS / iOS:** `url_launcher` with `sms:` URI (pre-fills Messages app).
 ///   User must press Send. Returns `null`.
 /// - **WhatsApp:** `url_launcher` with `wa.me` deep link. Returns `null`.
@@ -348,7 +349,12 @@ class RealMessagingService implements MessagingServiceProtocol {
 
   Future<bool> _launchUrl(Uri uri) async {
     try {
-      return launchUrl(uri, mode: LaunchMode.externalApplication);
+      // Must `await` so a rejected launch (PlatformException, e.g. no handler
+      // app or no foreground activity) is caught here and degraded to `false`
+      // per this method's contract. A bare `return launchUrl(...)` would
+      // return the pending future and let an async rejection escape the
+      // catch, propagating an unhandled exception up the dispatch chain.
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       log('launchUrl error for $uri: $e', name: 'MessagingService');
       return false;

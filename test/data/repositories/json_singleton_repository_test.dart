@@ -8,13 +8,17 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:flutter/services.dart';
+
 import 'package:checks/checks.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:test/test.dart';
 
 import 'package:guardianangela/data/repositories/json_singleton_repository.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   late Directory tempDir;
 
   setUp(() async {
@@ -188,6 +192,53 @@ void main() {
       // Act + Assert — GCM tag mismatch surfaces as a throw, never as
       // a silently-corrupted decryption.
       await check(r.load()).throws<Object>();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // C6b: the DEFAULT resolveDir (path_provider-backed) — the other tests
+  // inject resolveDir; here we exercise _defaultResolveDir + the
+  // save() dir-creation branch against a mocked path_provider channel.
+  // -------------------------------------------------------------------------
+  group('JsonSingletonRepository — default resolveDir (path_provider)', () {
+    late Directory docsDir;
+
+    setUp(() async {
+      docsDir = await Directory.systemTemp.createTemp('ga_docs_');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/path_provider'),
+            (call) async => call.method == 'getApplicationDocumentsDirectory'
+                ? docsDir.path
+                : null,
+          );
+    });
+
+    tearDown(() async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/path_provider'),
+            null,
+          );
+      await docsDir.delete(recursive: true);
+    });
+
+    test('save creates the json_store dir under documents and round-trips '
+        'via the default resolver', () async {
+      final r = JsonSingletonRepository<Map<String, dynamic>>(
+        fileName: 'pref.json',
+        fromJson: (j) => j,
+        toJson: (v) => v,
+        keyProvider: () async => fixedHexKey(),
+        random: _SeededRandom(7),
+        // resolveDir intentionally omitted → _defaultResolveDir runs.
+      );
+      await r.save({'hello': 'world'});
+      // The json_store subdir was created under the mocked documents dir.
+      check(
+        Directory(p.join(docsDir.path, 'json_store')).existsSync(),
+      ).isTrue();
+      check(await r.load()).isNotNull().deepEquals({'hello': 'world'});
     });
   });
 }

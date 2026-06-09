@@ -124,6 +124,24 @@ void main() {
         check(confirmCount).equals(1);
       },
     );
+
+    testWidgets(
+      'a cancelled drag below the threshold resets the knob without firing '
+      '(onPanCancel path)',
+      (WidgetTester tester) async {
+        var confirmCount = 0;
+        await _pump(tester, onConfirm: () => confirmCount++);
+        final slider = find.byType(SwipeSlider);
+        final gesture = await tester.startGesture(tester.getCenter(slider));
+        // Move partway (below threshold) then CANCEL the gesture.
+        await gesture.moveBy(const Offset(40, 0));
+        await tester.pump();
+        await gesture.cancel();
+        await tester.pumpAndSettle();
+        // No confirm; the knob animated back from its dragged position.
+        check(confirmCount).equals(0);
+      },
+    );
   });
 
   group('SwipeSlider — haptic feedback', () {

@@ -87,4 +87,42 @@ lib/services/wakelock_service.dart
 # 23 of 25 contribute zero instrumented lines (abstract declarations have no
 # executable lines); the 2 that appear (location_service_protocol.dart,
 # device_info_service_protocol.dart) hold concrete, well-covered data classes.
+#
+# M5 C6b (2026-06-09) covered the rest of the NON-feature surface (services +
+# data layer + domain/core tails), 87.14%→89.46%-of-logic, WITHOUT adding any
+# exclusion. Real host tests drive the production logic (real in-memory Drift,
+# real MethodChannels via TestDefaultBinaryMessenger, fakeAsync, mock plugins):
+#   recording_service → 100%; phone_service → 100%; timing_slider → 100%;
+#   feedback_history dao+repo+table 0%→100%; contacts_repository → 100%;
+#   contacts_dao / sms_retry_jobs_dao / database (real open()) → 100%;
+#   json_singleton (default resolveDir) → 98.7%; audio_service 55→96%;
+#   messaging_service 82→92.5%; session_start_validator 74→94.4%;
+#   service_providers (every Real* lambda read) 60→95.3%; home_widget → 100%;
+#   permission_audit → 98.7%; chain_event / permission_revocation toString →
+#   100%; session_engine edges 97→98.8%; pin_keypad / deceptive-dialog / logo.
+#   FOUND+FIXED a real bug: messaging._launchUrl / phone._dial used a bare
+#   `return launchUrl(...)` inside a try, so an async launch rejection escaped
+#   the catch (unhandled exception on a failed SMS/phone/url launch). Now
+#   `await`ed → the degrade-to-false catch fires per the documented contract.
+#
+# DEVICE-ONLY / CODEGEN-ONLY remainder LEFT IN the denominator (honest, NOT
+# excluded — these are the host-coverage ceiling, NOT coverage gaps to hide):
+#   * Platform.is*-gated native service paths (~96 lines): notification_service
+#     (Android channel-query + iOS/Android requestPermission + _channelIdFor),
+#     device_info_service (Android getSimPhoneNumber channel + its exception
+#     branches), messaging_service (Android enqueueSms + cancelPending body),
+#     hardware_button_service (iOS headphone-remote path — already noted by C6),
+#     background_session_service (_onBackgroundStart isolate entrypoint + the
+#     iOS configure closure). Device-e2e / CI build-ios cover these, not host.
+#   * Codegen-only Drift table DSLs (~71 lines): the column getters in
+#     lib/data/db/tables/*.dart (contacts 9, session_modes 18, reminder_
+#     templates 15, session_logs 12, sms_retry_jobs 9, feedback_history 8).
+#     Drift's text()/integer()/… DSL methods THROW "should not be called at
+#     runtime" — they are compile-time-only inputs to build_runner, reachable
+#     by NO test (host or device). Structurally equivalent to *.g.dart; a
+#     future exclusion is a defensible orchestrator call (flagged for C8/C9).
+#   * Thin Sentry SDK passthrough (~9 lines): _RealSentrySdk.init/
+#     captureException/close wrap the SentryFlutter/Sentry statics; the tests
+#     inject a fake SDK (driving the real RealSentryService logic), so the
+#     thin wrapper itself only runs against the real network SDK.
 # ─────────────────────────────────────────────────────────────────────────────

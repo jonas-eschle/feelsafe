@@ -12,14 +12,31 @@
 #     after adding host tests for the 5 zero-coverage safety services
 #     (hardware_button / location / flash / call_state / contact — the latter
 #     four now 100%) + main.dart (76.9%→92.3%). +356 covered lines.
-#   * Floor set to 86.5 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C6b ratchet (2026-06-09) = 89.46%-of-logic (11886 / 13286 lines)
+#     after covering the rest of the NON-feature surface: recording (→100%),
+#     phone (→100%), timing_slider (→100%), the feedback-history dao+repo+table
+#     (0%→100%), contacts_repo / contacts_dao bulkUpdate+deleteAll / sms_retry
+#     hashCode / database.open() / json_singleton default-resolveDir (→~100%),
+#     audio (55→96%), messaging (82→92.5%), session_start_validator (74→94%),
+#     service_providers wiring (60→95%), notification host branches (46→76%),
+#     home_widget (→100%), permission_audit (→99%), chain_event /
+#     permission_revocation toString (→100%), session_engine edges (97→99%),
+#     pin_keypad / deceptive-dialog / logo tails. +310 covered lines. Found +
+#     fixed a real _launchUrl/_dial bug (un-awaited return-in-try swallowed no
+#     async rejection → an unhandled exception on a failed SMS/phone/url launch;
+#     now `await`ed so the degrade-to-false catch fires). The remaining
+#     non-feature gaps are device-only (Platform.is*-gated native paths in
+#     notification/device_info/messaging/hardware_button/background_session ≈
+#     96 lines), codegen-only Drift table DSLs (≈71 lines, throw at runtime),
+#     and the thin Sentry SDK passthrough (≈9 lines) — left in the denominator.
+#   * Floor set to 88.8 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
 # TARGET = ~99%-of-logic (owner M5 mandate + CLAUDE.md "ratchets to 99% by
-# Phase 9 (D6)"). C6 (services + orphan files) and C7 (feature tail) raise
-# actual coverage toward it and BUMP this number as their tests land; C10 sets
-# the final 99% target. Do NOT set this to 99 before the covering tests exist —
-# that would red the everyday CI with no code change.
+# Phase 9 (D6)"). C7 (the lib/features/ tail) raises actual coverage toward it
+# and BUMPS this number as its tests land; C10 sets the final 99% target. Do
+# NOT set this to 99 before the covering tests exist — that would red the
+# everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-86.5
+88.8

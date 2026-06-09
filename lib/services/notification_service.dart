@@ -5,6 +5,8 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart' show visibleForTesting;
+
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -557,3 +559,13 @@ Future<void> _onBackgroundResponse(NotificationResponse response) async {
     );
   }
 }
+
+/// Test-only entry point for the top-level background-response handler.
+///
+/// The real handler [_onBackgroundResponse] is a `@pragma('vm:entry-point')`
+/// top-level function (required by `flutter_local_notifications`) and is
+/// private; this `@visibleForTesting` alias lets a host test drive the real
+/// persist-to-[SharedPreferences] replay-queue logic.
+@visibleForTesting
+Future<void> notificationBackgroundResponse(NotificationResponse response) =>
+    _onBackgroundResponse(response);

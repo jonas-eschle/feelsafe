@@ -285,5 +285,46 @@ void main() {
         throwsA(isA<ArgumentError>()),
       );
     });
+
+    // ----- real _dial path (launchUrl) -----
+
+    test('call() dials a sanitized tel: URI via url_launcher', () async {
+      final result = await svc.call('+1 (555) 123-4567');
+      // The url_launcher returns true → the real _dial returns it.
+      check(result).isTrue();
+      final launched = mock.calls
+          .where((c) => c.method == 'launchUrl' || c.method == 'launch')
+          .toList();
+      check(launched).isNotEmpty();
+      check(launched.first.arguments.toString()).contains('tel:+15551234567');
+    });
+
+    test('callEmergency() dials the emergency number as a tel: URI', () async {
+      final result = await svc.callEmergency('112');
+      check(result).isTrue();
+      final launched = mock.calls.where(
+        (c) =>
+            (c.method == 'launchUrl' || c.method == 'launch') &&
+            c.arguments.toString().contains('tel:112'),
+      );
+      check(launched).isNotEmpty();
+    });
+
+    test('_dial returns false (never throws) when launchUrl errors', () async {
+      // Register a handler that throws to exercise the _dial try/catch.
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/url_launcher'),
+            (call) async => throw PlatformException(code: 'no_activity'),
+          );
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/url_launcher_android'),
+            (call) async => throw PlatformException(code: 'no_activity'),
+          );
+      // Must degrade to false, not propagate.
+      final result = await svc.call('+15551234567');
+      check(result).isFalse();
+    });
   });
 }

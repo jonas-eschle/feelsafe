@@ -169,4 +169,29 @@ void main() {
       check(first.single.workId).equals('work-1');
     });
   });
+
+  // C6b: SmsRetryJob value-type hashCode (equal jobs hash equal; a field
+  // change re-hashes). Exercises the hashCode getter directly.
+  group('SmsRetryJob value type', () {
+    SmsRetryJob job({int attemptCount = 0, String? lastError}) => SmsRetryJob(
+      workId: 'wk',
+      contactId: 'c1',
+      phoneNumber: '+15550000000',
+      message: 'Help',
+      attemptCount: attemptCount,
+      enqueuedAt: t0,
+      lastError: lastError,
+    );
+
+    test('equal jobs share a hashCode and collapse in a Set', () {
+      final set = {job(), job()};
+      check(set).length.equals(1);
+      check(job().hashCode).equals(job().hashCode);
+    });
+
+    test('a differing field changes equality (distinct Set entries)', () {
+      final set = {job(), job(attemptCount: 5), job(lastError: 'No service')};
+      check(set).length.equals(3);
+    });
+  });
 }

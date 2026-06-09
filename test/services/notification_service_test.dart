@@ -21,6 +21,10 @@ class _CapturingPlugin extends Mock implements FlutterLocalNotificationsPlugin {
   /// All (id, title, body, details) tuples captured by [show].
   final List<(int, String?, String?, NotificationDetails?)> shown = [];
 
+  /// The foreground response callback captured at [initialize] so tests can
+  /// drive a notification tap through the real `_onResponse` handler.
+  void Function(NotificationResponse)? lastOnResponse;
+
   @override
   Future<void> show({
     required int id,
@@ -38,7 +42,10 @@ class _CapturingPlugin extends Mock implements FlutterLocalNotificationsPlugin {
     void Function(NotificationResponse)? onDidReceiveNotificationResponse,
     void Function(NotificationResponse)?
     onDidReceiveBackgroundNotificationResponse,
-  }) async => true;
+  }) async {
+    lastOnResponse = onDidReceiveNotificationResponse;
+    return true;
+  }
 
   @override
   T? resolvePlatformSpecificImplementation<
@@ -118,6 +125,33 @@ _makeCapturingServiceWithAndroid() async {
 
 class _MockFlutterLocalNotificationsPlugin extends Mock
     implements FlutterLocalNotificationsPlugin {}
+
+/// Mock iOS platform plugin for the iOS isChannelEnabled branch (the only
+/// platform branch reachable on the non-Android, non-iOS host).
+class _MockIOSPlugin extends Mock
+    implements IOSFlutterLocalNotificationsPlugin {}
+
+/// A [_CapturingPlugin] that resolves a caller-supplied iOS platform mock so
+/// the iOS branch of RealNotificationService.isChannelEnabled runs on the
+/// host. Also records [cancel] calls.
+class _PlatformRoutingPlugin extends _CapturingPlugin {
+  _PlatformRoutingPlugin({this.ios});
+
+  final IOSFlutterLocalNotificationsPlugin? ios;
+  final List<int> cancelled = [];
+
+  @override
+  T? resolvePlatformSpecificImplementation<
+    T extends FlutterLocalNotificationsPlatform
+  >() {
+    if (T == IOSFlutterLocalNotificationsPlugin) return ios as T?;
+    return null;
+  }
+
+  @override
+  Future<void> cancel({required int id, String? tag}) async =>
+      cancelled.add(id);
+}
 
 /// Fake [InitializationSettings] for mocktail fallback registration.
 class _FakeInitializationSettings extends Fake
@@ -775,6 +809,203 @@ void main() {
         check(second).isEmpty();
       },
     );
+  });
+
+  // =========================================================================
+  // C6b: RealNotificationService host-reachable branches
+  //
+  // On the Linux host Platform.isAndroid == false and Platform.isIOS == false.
+  // So isChannelEnabled takes its `!isAndroid` (iOS-impl) branch, openChannel-
+  // Settings early-returns, requestPermission falls through to the desktop
+  // `return true`, and cancel / _onResponse / the top-level _onBackground-
+  // Response run unconditionally. The Android-gated branches (channel-query,
+  // _channelIdFor) and the iOS requestPermissions branch are device-only and
+  // covered on-device / via CI build, not here.
+  // =========================================================================
+
+  group('RealNotificationService — host branches (C6b)', () {
+    tearDown(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
+    test('requestPermission falls through to true on the desktop/host '
+        'branch (neither Android nor iOS)', () async {
+      final (svc, _) = await _makeCapturingService();
+      check(await svc.requestPermission()).isTrue();
+    });
+
+    test('isChannelEnabled queries the iOS impl and maps isEnabled', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final ios = _MockIOSPlugin();
+      when(ios.checkPermissions).thenAnswer(
+        (_) async => const NotificationsEnabledOptions(
+          isEnabled: false,
+          isSoundEnabled: false,
+          isAlertEnabled: false,
+          isBadgeEnabled: false,
+          isProvisionalEnabled: false,
+          isCriticalEnabled: false,
+          isProvidesAppNotificationSettingsEnabled: false,
+        ),
+      );
+      final plugin = _PlatformRoutingPlugin(ios: ios);
+      final svc = RealNotificationService(
+        plugin: plugin,
+        prefsFactory: () async => prefs,
+      );
+      await svc.init();
+      check(await svc.isChannelEnabled(NotificationChannelKey.alarm)).isFalse();
+    });
+
+    test('isChannelEnabled returns true (conservative) when the iOS impl '
+        'throws', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final ios = _MockIOSPlugin();
+      when(ios.checkPermissions).thenThrow(Exception('os error'));
+      final plugin = _PlatformRoutingPlugin(ios: ios);
+      final svc = RealNotificationService(
+        plugin: plugin,
+        prefsFactory: () async => prefs,
+      );
+      await svc.init();
+      check(
+        await svc.isChannelEnabled(NotificationChannelKey.reminder),
+      ).isTrue();
+    });
+
+    test('openChannelSettings is a no-op on the non-Android host', () async {
+      final (svc, _) = await _makeCapturingService();
+      // Must complete without throwing (the caller falls back to
+      // permission_handler.openAppSettings on iOS/desktop).
+      await svc.openChannelSettings(NotificationChannelKey.alarm);
+    });
+
+    test('showSmsRetryExhaustedNotification shows a high-importance retry '
+        'notification with a prefixed Retry action', () async {
+      final (svc, plugin) = await _makeCapturingService();
+      await svc.showSmsRetryExhaustedNotification(
+        contactName: 'Ivan',
+        actionPayload: 'wm-42',
+      );
+      check(plugin.shown).length.equals(1);
+      final (id, title, _, details) = plugin.shown.first;
+      check(id).equals('wm-42'.hashCode);
+      check(title!).contains('Ivan');
+      final action = details!.android!.actions!.single;
+      check(action.id).equals('${kActionRetrySmsPrefix}wm-42');
+      check(details.android!.importance).equals(Importance.high);
+    });
+
+    test('cancel forwards the id to the plugin', () async {
+      SharedPreferences.setMockInitialValues({});
+      final prefs = await SharedPreferences.getInstance();
+      final plugin = _PlatformRoutingPlugin();
+      final svc = RealNotificationService(
+        plugin: plugin,
+        prefsFactory: () async => prefs,
+      );
+      await svc.init();
+      await svc.cancel(7);
+      check(plugin.cancelled).deepEquals([7]);
+    });
+
+    test(
+      'a foreground notification response is forwarded to actionTaps',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        final received = <String>[];
+        final sub = svc.actionTaps.listen(received.add);
+        addTearDown(sub.cancel);
+        // Invoke the captured onDidReceiveNotificationResponse callback.
+        plugin.lastOnResponse?.call(
+          const NotificationResponse(
+            notificationResponseType:
+                NotificationResponseType.selectedNotificationAction,
+            actionId: 'ga_retry_sms_job-1',
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        check(received).deepEquals(['ga_retry_sms_job-1']);
+      },
+    );
+
+    test(
+      'a response with neither actionId nor payload emits nothing',
+      () async {
+        final (svc, plugin) = await _makeCapturingService();
+        final received = <String>[];
+        final sub = svc.actionTaps.listen(received.add);
+        addTearDown(sub.cancel);
+        plugin.lastOnResponse?.call(
+          const NotificationResponse(
+            notificationResponseType:
+                NotificationResponseType.selectedNotification,
+          ),
+        );
+        await Future<void>.delayed(Duration.zero);
+        check(received).isEmpty();
+      },
+    );
+  });
+
+  // =========================================================================
+  // C6b: top-level background-response handler persists to SharedPreferences
+  // =========================================================================
+
+  group('notificationBackgroundResponse (top-level handler)', () {
+    tearDown(() => SharedPreferences.setMockInitialValues({}));
+
+    test(
+      'appends the actionId to the persisted pending list (ordered)',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'pending_notification_actions': ['first'],
+        });
+        await notificationBackgroundResponse(
+          const NotificationResponse(
+            notificationResponseType:
+                NotificationResponseType.selectedNotificationAction,
+            actionId: 'second',
+          ),
+        );
+        final prefs = await SharedPreferences.getInstance();
+        check(
+          prefs.getStringList('pending_notification_actions'),
+        ).isNotNull().deepEquals(['first', 'second']);
+      },
+    );
+
+    test(
+      'falls back to payload and seeds an empty list when none exists',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        await notificationBackgroundResponse(
+          const NotificationResponse(
+            notificationResponseType:
+                NotificationResponseType.selectedNotification,
+            payload: 'background:pause',
+          ),
+        );
+        final prefs = await SharedPreferences.getInstance();
+        check(
+          prefs.getStringList('pending_notification_actions'),
+        ).isNotNull().deepEquals(['background:pause']);
+      },
+    );
+
+    test('a null/empty action id persists nothing', () async {
+      SharedPreferences.setMockInitialValues({});
+      await notificationBackgroundResponse(
+        const NotificationResponse(
+          notificationResponseType:
+              NotificationResponseType.selectedNotification,
+        ),
+      );
+      final prefs = await SharedPreferences.getInstance();
+      check(prefs.getStringList('pending_notification_actions')).isNull();
+    });
   });
 
   // -------------------------------------------------------------------------

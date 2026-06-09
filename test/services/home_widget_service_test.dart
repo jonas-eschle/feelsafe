@@ -404,4 +404,60 @@ void main() {
       },
     );
   });
+
+  // -------------------------------------------------------------------------
+  // C6b: error-degradation catches + the top-level background callback.
+  // A widget-update failure must NEVER throw out of the session lifecycle.
+  // -------------------------------------------------------------------------
+  group('RealHomeWidgetService — degradation + background callback', () {
+    test('publishStatus swallows a channel error (never throws)', () async {
+      // Channel handler that succeeds for setAppGroupId (constructor) but
+      // throws for saveWidgetData/updateWidget so the catch block runs.
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(const MethodChannel('home_widget'), (
+            call,
+          ) async {
+            if (call.method == 'setAppGroupId') return null;
+            throw PlatformException(code: 'widget_error');
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(const MethodChannel('home_widget'), null),
+      );
+      final svc = RealHomeWidgetService();
+      // Must complete without throwing.
+      await svc.publishStatus(
+        status: HomeWidgetStatus.sessionActive,
+        statusText: 'Active',
+        quickExitLabel: 'Quick Exit',
+        fakeCallLabel: 'Fake Call',
+      );
+    });
+
+    test('registerCallback swallows a channel error (never throws)', () async {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(const MethodChannel('home_widget'), (
+            call,
+          ) async {
+            if (call.method == 'setAppGroupId') return null;
+            throw PlatformException(code: 'no_callback');
+          });
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(const MethodChannel('home_widget'), null),
+      );
+      final svc = RealHomeWidgetService();
+      await svc.registerCallback();
+    });
+
+    test(
+      'homeWidgetCallback logs and returns without routing (no throw)',
+      () async {
+        // The background isolate callback must be a harmless no-op (it must not
+        // try to push routes on a non-existent navigator).
+        await homeWidgetCallback(Uri.parse('guardianangela://quick-exit'));
+        await homeWidgetCallback(null);
+      },
+    );
+  });
 }

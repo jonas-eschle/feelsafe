@@ -1,4 +1,4 @@
-// Phase 7 native dependency: url_launcher handles tel: URIs cross-platform.
+// Native dependency: url_launcher handles tel: URIs cross-platform.
 // Android ACTION_CALL intent (CALL_PHONE permission) auto-dials without
 // confirmation. iOS tel: always shows a system confirmation dialog.
 // No custom MethodChannel — url_launcher covers all PhoneService needs.
@@ -74,7 +74,12 @@ class RealPhoneService implements PhoneServiceProtocol {
       name: 'PhoneService',
     );
     try {
-      return launchUrl(uri, mode: LaunchMode.externalApplication);
+      // Must `await` so a rejected dial (PlatformException, e.g. no dialer or
+      // no foreground activity) is caught here and degraded to `false` per
+      // this method's contract. A bare `return launchUrl(...)` would return
+      // the pending future and let an async rejection escape the catch,
+      // propagating an unhandled exception to the caller.
+      return await launchUrl(uri, mode: LaunchMode.externalApplication);
     } catch (e) {
       log('dial error for $number: $e', name: 'PhoneService');
       return false;

@@ -118,6 +118,30 @@ void main() {
       check(updates).isNotEmpty();
       check(updates.last).deepEquals(['c-0', 'c-1']);
     });
+
+    // C6b: bulkUpdate (transactional) + deleteAll.
+    test('bulkUpdate writes every contact in one transaction', () async {
+      await db.contactsDao.bulkUpdate([
+        _contact('b-0'),
+        _contact('b-1', sortOrder: 1, name: 'Bob'),
+        _contact('b-2', sortOrder: 2, name: 'Cara'),
+      ]);
+      final ids = (await db.contactsDao.getAll()).map((c) => c.id).toList();
+      check(ids).deepEquals(['b-0', 'b-1', 'b-2']);
+    });
+
+    test('bulkUpdate replaces existing rows with the same id', () async {
+      await db.contactsDao.upsert(_contact('b-0', name: 'Old'));
+      await db.contactsDao.bulkUpdate([_contact('b-0', name: 'New')]);
+      check((await db.contactsDao.getById('b-0'))!.name).equals('New');
+    });
+
+    test('deleteAll removes every contact row', () async {
+      await db.contactsDao.upsert(_contact('c-0'));
+      await db.contactsDao.upsert(_contact('c-1', sortOrder: 1));
+      await db.contactsDao.deleteAll();
+      check(await db.contactsDao.getAll()).isEmpty();
+    });
   });
 }
 

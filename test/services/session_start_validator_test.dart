@@ -500,6 +500,106 @@ void main() {
     );
   });
 
+  // -------------------------------------------------------------------------
+  // C6b: updateCachedState — refreshes the cache the controller reads before
+  // the synchronous validate(). Drives the real per-permission loop (and the
+  // _toHandlerPermission switch over all six AppPermission values) plus the
+  // battery-optimization check, then proves the refreshed cache changes the
+  // validate() outcome.
+  // -------------------------------------------------------------------------
+  group('RealSessionStartValidator — updateCachedState()', () {
+    test('queries every AppPermission via the injected checker '
+        '(exercises the _toHandlerPermission switch for all six)', () async {
+      final queried = <Permission>[];
+      final v = RealSessionStartValidator(
+        permissionChecker: (p) async {
+          queried.add(p);
+          return PermissionStatus.granted;
+        },
+        batteryOptChecker: () async => true,
+      );
+      await v.updateCachedState(
+        contactCount: 2,
+        emergencyNumber: '112',
+        requiredPermissions: AppPermission.values.toSet(),
+      );
+      // Every AppPermission was mapped to its handler permission and checked.
+      check(queried).contains(Permission.sms);
+      check(queried).contains(Permission.phone);
+      check(queried).contains(Permission.location);
+      check(queried).contains(Permission.microphone);
+      check(queried).contains(Permission.camera);
+      check(queried).contains(Permission.notification);
+    });
+
+    test(
+      'a granted refresh clears a prior notification error in validate()',
+      () async {
+        // Start with notification denied → validate() errors.
+        final v = RealSessionStartValidator(
+          cachedPermissions: const {AppPermission.notification: false},
+          cachedBatteryOptimizationExempt: true,
+          permissionChecker: (_) async => PermissionStatus.granted,
+          batteryOptChecker: () async => true,
+        );
+        check(v.validate(_modeWith()).isValid).isFalse();
+
+        // Refresh: now everything is granted.
+        await v.updateCachedState(
+          contactCount: 1,
+          emergencyNumber: '112',
+          requiredPermissions: const {AppPermission.notification},
+        );
+        // The notification error is gone (battery exempt → no warning either).
+        check(v.validate(_modeWith()).isValid).isTrue();
+      },
+    );
+
+    test(
+      'a denied refresh re-introduces the SMS error for an SMS mode',
+      () async {
+        final v = RealSessionStartValidator(
+          cachedPermissions: {for (final p in AppPermission.values) p: true},
+          cachedBatteryOptimizationExempt: true,
+          permissionChecker: (_) async => PermissionStatus.denied,
+          batteryOptChecker: () async => true,
+        );
+        final smsMode = _modeWith(
+          steps: [_step('sms', ChainStepType.smsContact)],
+        );
+        // Refresh to all-denied.
+        await v.updateCachedState(
+          contactCount: 1,
+          emergencyNumber: '112',
+          requiredPermissions: AppPermission.values.toSet(),
+        );
+        final result = v.validate(smsMode);
+        check(result.isValid).isFalse();
+        // The SMS-permission error title is present.
+        check(
+          result.errors.any((e) => e.title.contains('SMS permission')),
+        ).isTrue();
+      },
+    );
+
+    test('a non-exempt battery refresh adds the battery warning', () async {
+      final v = RealSessionStartValidator(
+        cachedPermissions: {for (final p in AppPermission.values) p: true},
+        permissionChecker: (_) async => PermissionStatus.granted,
+        batteryOptChecker: () async => false,
+      );
+      await v.updateCachedState(
+        contactCount: 1,
+        emergencyNumber: '112',
+        requiredPermissions: const {AppPermission.notification},
+      );
+      final warnings = v.validate(_modeWith()).warnings;
+      check(
+        warnings.any((w) => w.title.contains('Battery optimization')),
+      ).isTrue();
+    });
+  });
+
   group('SimulationSessionStartValidator', () {
     test('returns valid by default', () {
       final v = SimulationSessionStartValidator();

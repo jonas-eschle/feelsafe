@@ -516,5 +516,130 @@ void main() {
         }
       },
     );
+
+    // -----------------------------------------------------------------------
+    // C6b: dispatch paths not yet exercised (phoneCall channel, Telegram
+    // https fallback, iOS sms: URI fallback, _launchUrl error degradation).
+    // These exercise the real _dispatch switch + _launchUrl on the host.
+    // -----------------------------------------------------------------------
+
+    test('phoneCall channel delegates to the injected dispatcher with the '
+        'sanitized number, returns null work-id', () async {
+      final dialled = <String>[];
+      final svcWithDispatcher = RealMessagingService(
+        notification: notif,
+        phoneCallDispatcher: (number) async {
+          dialled.add(number);
+          return true;
+        },
+      );
+      addTearDown(svcWithDispatcher.dispose);
+      final id = await svcWithDispatcher.sendMessage(
+        contact: _contact(channel: MessageChannel.phoneCall, phone: '+1 555 7'),
+        message: 'ignored for phone channel',
+      );
+      // phoneCall returns no WorkManager id.
+      check(id).isNull();
+      // The dispatcher saw the sanitized number.
+      check(dialled).deepEquals(['+15557']);
+    });
+
+    test('phoneCall channel with no dispatcher is a safe no-op', () async {
+      // Default svc has a null dispatcher (constructed without one in setUp).
+      final id = await svc.sendMessage(
+        contact: _contact(channel: MessageChannel.phoneCall),
+        message: 'x',
+      );
+      check(id).isNull();
+    });
+
+    test('Telegram falls back to https://t.me when the tg:// deep link '
+        'cannot launch', () async {
+      // Replace the url_launcher handler: tg:// fails, t.me succeeds.
+      final launched = <String>[];
+      Future<dynamic> handler(MethodCall call) async {
+        if (call.method == 'launchUrl' || call.method == 'launch') {
+          final url = call.arguments.toString();
+          launched.add(url);
+          // Fail the tg:// attempt; succeed everything else.
+          return !url.contains('tg://');
+        }
+        return null;
+      }
+
+      for (final ch in const [
+        'plugins.flutter.io/url_launcher_android',
+        'plugins.flutter.io/url_launcher_ios',
+        'plugins.flutter.io/url_launcher',
+      ]) {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(MethodChannel(ch), handler);
+      }
+
+      await svc.sendMessage(
+        contact: _contact(channel: MessageChannel.telegram),
+        message: 'help',
+      );
+
+      // Both the tg:// attempt and the https fallback were tried, in order.
+      check(launched.any((u) => u.contains('tg://'))).isTrue();
+      check(launched.any((u) => u.contains('t.me'))).isTrue();
+    });
+
+    test('_launchUrl degrades to false (never throws) when the platform '
+        'channel errors — a failed WhatsApp launch must not crash', () async {
+      // Make url_launcher throw.
+      for (final ch in const [
+        'plugins.flutter.io/url_launcher_android',
+        'plugins.flutter.io/url_launcher_ios',
+        'plugins.flutter.io/url_launcher',
+      ]) {
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+              MethodChannel(ch),
+              (call) async => throw PlatformException(code: 'boom'),
+            );
+      }
+      // Must complete without throwing.
+      final id = await svc.sendMessage(
+        contact: _contact(channel: MessageChannel.whatsapp),
+        message: 'hi',
+      );
+      check(id).isNull();
+    });
+
+    test(
+      'SMS on non-Android falls back to a sms: URI via url_launcher',
+      () async {
+        if (Platform.isAndroid) {
+          // On Android the native enqueue path is taken (device-tested); the
+          // iOS/host sms: fallback is unreachable here.
+          return;
+        }
+        await svc.sendMessage(contact: _contact(), message: 'meet me');
+        final smsUriLaunch = urlMock.calls.where(
+          (c) =>
+              (c.method == 'launchUrl' || c.method == 'launch') &&
+              c.arguments.toString().contains('sms:'),
+        );
+        check(smsUriLaunch).isNotEmpty();
+      },
+    );
+  });
+
+  // -------------------------------------------------------------------------
+  // SmsRetryExhaustedEvent value type
+  // -------------------------------------------------------------------------
+  group('SmsRetryExhaustedEvent', () {
+    test('toString carries the workId and contact name', () {
+      const e = SmsRetryExhaustedEvent(
+        workId: 'wm-9',
+        phoneNumber: '+15550000000',
+        contactName: 'Heidi',
+        message: 'SOS',
+      );
+      check(e.toString()).contains('wm-9');
+      check(e.toString()).contains('Heidi');
+    });
   });
 }

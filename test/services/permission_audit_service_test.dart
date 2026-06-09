@@ -84,6 +84,25 @@ void main() {
       check(result.missing).isEmpty();
     });
 
+    test('a mode of only no-permission step types adds no extra permission '
+        '(covers the disguisedReminder, countdownWarning, fakeCall, '
+        'hardwareButton switch arms)', () async {
+      final svc = _makeService();
+      final mode = _modeWith(
+        steps: [
+          _step('s1', ChainStepType.disguisedReminder),
+          _step('s2', ChainStepType.countdownWarning),
+          _step('s3', ChainStepType.fakeCall),
+          _step('s4', ChainStepType.hardwareButton),
+        ],
+      );
+      final result = await svc.auditForMode(mode);
+      // None of these step types require a system permission beyond the
+      // baseline notification permission.
+      check(result.allGranted).isTrue();
+      check(result.missing).isEmpty();
+    });
+
     test('all permissions granted returns allGranted = true', () async {
       final svc = _makeService();
       final mode = _modeWith(

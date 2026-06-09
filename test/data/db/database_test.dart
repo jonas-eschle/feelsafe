@@ -1,13 +1,18 @@
 import 'dart:async';
+import 'dart:io';
+
+import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
 import 'package:drift/native.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/seed_data.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('GuardianAngelaDatabase', () {
     test(
       'schemaVersion is 4 (Phase 6 fix-b6 — added feedback_history table)',
@@ -44,6 +49,42 @@ void main() {
       await check(
         GuardianAngelaDatabase.open(encryptionKey: ''),
       ).throws<ArgumentError>();
+    });
+
+    test('open() creates an encrypted on-disk DB under documents and the '
+        'PRAGMA-key path works (escapes embedded quotes)', () async {
+      final docsDir = await Directory.systemTemp.createTemp('ga_db_open_');
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(
+            const MethodChannel('plugins.flutter.io/path_provider'),
+            (call) async => call.method == 'getApplicationDocumentsDirectory'
+                ? docsDir.path
+                : null,
+          );
+      // A key containing a single quote forces the _escapePragma path.
+      const key = "abc'def-key-with-quote";
+      GuardianAngelaDatabase? db;
+      try {
+        db = await GuardianAngelaDatabase.open(encryptionKey: key);
+        // Force the lazy connection to open + run the PRAGMA + seed.
+        final modes = await db.sessionModesDao.getAll();
+        check(modes).isNotEmpty();
+        // The file was created (under the mocked documents dir) using the
+        // canonical filename.
+        check(
+          File(
+            '${docsDir.path}/${GuardianAngelaDatabase.fileName}',
+          ).existsSync(),
+        ).isTrue();
+      } finally {
+        await db?.close();
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(
+              const MethodChannel('plugins.flutter.io/path_provider'),
+              null,
+            );
+        await docsDir.delete(recursive: true);
+      }
     });
 
     test(
