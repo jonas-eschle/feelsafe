@@ -33,6 +33,7 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/validation_result.dart';
 import 'package:guardianangela/features/home/home_checklist_repository.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/services/protocols/session_start_validator_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -241,6 +242,33 @@ void main() {
       check(await controller().startSession(simulate: false)).isTrue();
       check(session.starts.single.mode.id).equals('m1');
     });
+
+    test(
+      'deleting the selected mode via ModesController re-anchors home',
+      () async {
+        // The real in-app delete flow for spec 04 §Mode Selector ("If
+        // selected mode deleted: Auto-select another mode"): Home stays
+        // mounted beneath /modes and homeControllerProvider is keep-alive,
+        // so the build-time heal above is unreachable on pop-back unless
+        // ModesController.delete invalidates home. Without that, the
+        // cached state keeps the dead selection and Start silently
+        // dead-ends.
+        await db.sessionModesDao.upsert(_mode('m1', 'Walk'));
+        await db.sessionModesDao.upsert(_mode('m2', 'Date'));
+        buildContainer();
+        await state();
+        await controller().selectMode('m2');
+        check((await state()).selectedModeId).equals('m2');
+
+        await container.read(modesControllerProvider.notifier).delete('m2');
+
+        final HomeState s = await state();
+        check(s.selectedModeId).equals('m1');
+        check(s.modes.map((m) => m.id)).deepEquals(<String>['m1']);
+        check(await controller().startSession(simulate: false)).isTrue();
+        check(session.starts.single.mode.id).equals('m1');
+      },
+    );
   });
 
   group('HomeController.selectMode', () {
@@ -279,11 +307,17 @@ void main() {
       check(session.starts).isEmpty();
     });
 
-    test('returns false when the selected mode row vanished', () async {
+    test('returns false when the mode row vanished out-of-band', () async {
       await db.sessionModesDao.upsert(_mode('m1', 'Walk'));
       buildContainer();
       await state();
-      // The mode is deleted behind home's back AFTER build resolved.
+      // Raw DAO delete behind every controller's back AFTER build
+      // resolved — no invalidation can fire, so home's cached selection
+      // is unrecoverably stale until the next rebuild. The guard must
+      // fail the start silently rather than crash. In-app deletes go
+      // through ModesController.delete, which invalidates home and
+      // re-anchors the selection (see 'deleting the selected mode via
+      // ModesController re-anchors home').
       await db.sessionModesDao.deleteById('m1');
 
       check(await controller().startSession(simulate: false)).isFalse();

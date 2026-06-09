@@ -67,8 +67,13 @@ class HomeController extends AsyncNotifier<HomeState> {
     // Why the existence check: deleting a mode does not rewrite
     // appSettings.selectedModeId, so the persisted id can go stale. Keeping
     // it would render no selected chip while startSession dead-ends with a
-    // silent `mode == null → false` — a dead Start button. Re-anchor to the
-    // first mode instead so the user can always start.
+    // silent `mode == null → false` — a dead Start button. Re-anchor to
+    // the first mode (stable sort order) instead. This heal is in-memory
+    // only: the stale persisted id stays on disk until the user next taps
+    // a chip (selectMode persists it), and every rebuild re-anchors the
+    // same way. In-app deletes reach this code because
+    // ModesController.delete invalidates this provider; for out-of-band
+    // staleness (e.g. a restored backup) it runs on the next cold build.
     final persisted = settings.selectedModeId;
     final selected = persisted != null && modes.any((m) => m.id == persisted)
         ? persisted

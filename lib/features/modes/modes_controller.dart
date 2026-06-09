@@ -6,6 +6,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable state for the modes list.
@@ -68,9 +69,18 @@ class ModesController extends AsyncNotifier<ModesState> {
   }
 
   /// Deletes [id] and refreshes the list.
+  ///
+  /// Also invalidates the home controller: home is keep-alive and stays
+  /// mounted beneath the modes screen, so without this its cached state
+  /// keeps the deleted mode — a stale chip list and, when [id] was the
+  /// selected mode, a silently dead Start button. Rebuilding lets home's
+  /// `build()` re-anchor the selection to an existing mode (spec 04
+  /// §Mode Selector: "If selected mode deleted: Auto-select another
+  /// mode").
   Future<void> delete(String id) async {
     final db = await ref.read(databaseProvider.future);
     await db.sessionModesDao.deleteById(id);
+    ref.invalidate(homeControllerProvider);
     ref.invalidateSelf();
   }
 }
