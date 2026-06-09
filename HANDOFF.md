@@ -12,23 +12,26 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `39042e5`
-(atop `971ce7d`), **+22 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
-Suite **4502 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 94.48%**, floor
-93.8. M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a
-`/clear`; the fresh session continues C7e→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `9bcfd44`
+(atop `78fa259`), **+25 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
+Suite **4566 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 95.74%**, floor
+95.1. M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a
+`/clear`; the fresh session continues C7f→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7e:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7f:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
 services + main.dart) · C6b (non-feature tail) · C7a (session + fake_call feature
 tail) · C7b (modes feature — incl. an arch systemic sweep proving the
 clear-to-null fix is the COMPLETE remediation across lib/) · C7c (editors +
-distress + the fake-call hold de-flake) · **C7d (history/logs tests: qa-PASS;
+distress + the fake-call hold de-flake) · C7d (history/logs tests: qa-PASS;
 arch found BLOCKER bug #6 → C7d-fix `39042e5` re-cohort PASS×2 — incl. UTC
-recovery-window math + cannot-pass-under-old-semantics proof)** — ALL
-architect+qa **PASS**.
+recovery-window math + cannot-pass-under-old-semantics proof) · **C7e (home +
+post-session: qa-PASS; arch found the bug-#7 fix UNREACHABLE on the real flow →
+C7e-fix `9bcfd44` re-cohort PASS×2 — riverpod flush() semantics verified
+race-free; arch ruled the modes-staleness observation SPEC-MANDATED = bug #9,
+fix mandated as the C7f pre-task)** — ALL architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -57,22 +60,40 @@ keepCritical)` — live-only candidates, UPDATE stamps `deletedAtMs=nowMs` re-gu
 count silently changed meaning — all consumers reconciled); INT-013 strengthened so the
 suite CANNOT pass under single-stage semantics; + evidence-export JSON corruption fixed
 (`_toEvidenceJson` hand-rolled interpolation → jsonEncode; hostile-modeName round-trip
-test). Both red→green proven; re-cohort PASS×2.
+test). Both red→green proven; re-cohort PASS×2; (7) C7e — a persisted `selectedModeId`
+whose mode was deleted dead-ended the Start button SILENTLY (no chip, ChainSummary
+showed a different mode via `orElse`, startSession returned false with zero errors).
+First fix (build()-time re-anchor) was cohort-PROVEN UNREACHABLE on the real
+delete-then-return flow (keep-alive provider + pushed /modes route + invalidateSelf-only)
+— completed in `m5-c7e-fix` `9bcfd44`: `ModesController.delete` now
+`ref.invalidate(homeControllerProvider)` (spec 04:426 "auto-select another mode";
+real-flow red→green; raw-DAO out-of-band delete kept as a documented-limitation test);
+(8) C7e — simulation-summary share IconButton rendered with `log == null`
+(pinUnlocked-only gate) → tapping null-asserted `…!.log!` and crashed; gate now also
+requires a non-null log (red→green, arch-verified the IconButton is the sole entry);
+(9) **IDENTIFIED, fix = C7f PRE-TASK (cohort-ruled SPEC-MANDATED, 04:422-426 +
+:1518-1521)** — the home chip list (`HomeState.modes`, keep-alive cache) goes stale on
+`createBlank`/`duplicate` (modes_controller.dart:53/:67 — invalidateSelf only), on
+editor save (mode_editor_screen.dart:201-204 — bare upsert routes around BOTH
+controllers), and on backup restore (`BackupService.importFromJson`
+backup_service.dart:153, invoked from backup_restore_screen.dart:118 — invalidates
+NOTHING after wiping+re-inserting sessionModes) → new/renamed/restored modes invisible
+on home until app restart.
 
-**NEXT = C7e (home + post-session).** Remaining slices (~150–180 missed lines per
-agent — calibration: C7a 188L/6f = 335k actual, C7b 158L/10f = 249k, C7c
-144L/12f+pretask = 202k, C7d 180L/6f = 165k + fix-agent 217k; always read the harness
-usage line, never self-reports):
-- **C7e — home + post-session (170, 9 files):** home_controller 39/52, home_screen
-  28/195, chain_summary 12/102, safety_setup_checklist 10/224, simulation_summary_screen
-  29/199 + _controller 26/49, gps_logging_controller 24/27, feedback_form_screen 2/80.
-- **C7f — nav/entry + contacts (159, 8 files):** app_router 60/111, contacts_screen
+**NEXT = C7f (nav/entry + contacts) — plus the MANDATED bug-#9 pre-task** (cohort-ruled
+spec-mandated; exact targets in bug-ledger entry 9: invalidate `homeControllerProvider`
+in `createBlank`/`duplicate`, invalidate home+modes after editor save and after a
+successful backup `importFromJson`; red→green each path; observation-only credit to the
+C7e-fix agent). Remaining slices (calibration: C7a 188L/6f = 335k actual, C7b 158L/10f
+= 249k, C7c 144L/12f+pretask = 202k, C7d 180L/6f = 165k + fix 217k, C7e 170L/8f = 257k
++ fix 93k; always read the harness usage line, never self-reports):
+- **C7f — nav/entry + contacts (159, 7 files):** app_router 60/111, contacts_screen
   29/131 + _controller 27/30, onboarding_screen 26/190 + _controller 5/31,
   contact_form_screen 6/157, launch_pin_screen 6/120.
-- **C7g — settings + misc (155, 11 files):** settings_security_controller 55/75 +
+- **C7g — settings + misc (154, 12 files):** settings_security_controller 55/75 +
   _screen 7/117 + remove_pin_dialog 5/77, settings_screen 21/235 + _controller 15/50,
   backup_restore_screen 22/122, profile_controller 10/13 + _screen 5/137,
-  settings_stealth_controller 9/41 + _screen 1/89, about_screen 4/72, pin_setup_screen
+  settings_stealth_controller 9/41 + _screen 1/89, about_screen 3/72, pin_setup_screen
   1/90.
 Only ~5 of these lines are `Platform.is*` device-only (about/contacts/contact_form;
 fake_call's were host-covered by C7a). Implementer lessons now baked into prompts: pipe
@@ -105,16 +126,59 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 
 ---
 
-**Snapshot:** 2026-06-09 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
+**Snapshot:** 2026-06-10 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
 (FINAL milestone, Phase-9) IN PROGRESS — C1 + C2 + C3 + A5 + C4 + C4-fix + C5 +
-C6 + C6b + C7a + C7b + C7c + **C7d + C7d-fix (history/logs + the two-stage
-purge BLOCKER fix)** DONE + COHORT-VERIFIED (architect+qa PASS; all UNPUSHED —
-code HEAD = `39042e5` + the `m5-c7d` baton commit atop, ahead of origin/main
-by **20**). THIS session: **C7a (89.46→90.86%, bug #4) + C7b (→92.05%, bug #5)
-+ C7c (→93.11%, de-flake) + C7d (→94.48%, BLOCKER bug #6: age purge hard-deleted
-recoverable evidence — fixed two-stage, PurgeResult; + evidence-JSON corruption
-fixed) — all cohort-PASS. NEXT = C7e (home + post-session), then C7f/C7g per
-the resume block.**
+C6 + C6b + C7a + C7b + C7c + C7d + C7d-fix + **C7e + C7e-fix (home +
+post-session + the reachable re-anchor)** DONE + COHORT-VERIFIED (architect+qa
+PASS; all UNPUSHED — code HEAD = `9bcfd44` + the `m5-c7e` baton commit atop,
+ahead of origin/main by **25**). THIS session (2026-06-09/10): **C7a (→90.86%,
+bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, de-flake) + C7d (→94.48%,
+BLOCKER bug #6) + C7e (→95.74%, bugs #7+#8 fixed, bug #9 identified) — all
+cohort-PASS. NEXT = C7f (nav/entry + contacts + the bug-#9 pre-task), then
+C7g per the resume block.**
+
+---
+
+## KEY FINDINGS (C7e + C7e-fix — new baseline + carry to C7f/g)
+
+**Coverage-of-logic 94.48% → 95.74%** (12736 / 13303; +170). **Floor 93.8 →
+95.1** (gate OK, RED at 99.9 proven). Suite **4502 → 4566** (+63 C7e, +1 fix),
+0 fail. analyze 0. home_controller/chain_summary/safety_setup_checklist/
+simulation_summary×2/gps_logging_controller/feedback_form at **ZERO missed**;
+home_screen at 2 (the :65-66 defensive sync-listen catch — qa-verified
+unreachable on host: EventChannel listen never throws synchronously).
+
+**BUGS #7/#8 fixed, #9 identified** — full stories in the resume-block bug
+ledger. KEY LESSONS: (a) a fix that's correct AT THE WRONG LAYER can be
+unreachable — the cohort traced provider lifetimes + route topology
+(keep-alive AsyncNotifier + pushed route = cached build() never re-runs) to
+prove the first #7 fix dead; ALWAYS red-prove on the REAL user flow, not a
+fresh-container reconstruction; (b) riverpod-3 `container.read(provider.future)`
+after `ref.invalidate` is race-free (invalidate sets _mustRecomputeState; flush()
+rebuilds synchronously on next read — qa verified against riverpod source);
+(c) cross-feature `ref.invalidate` has repo precedent
+(past_events_trash_controller.dart:134) — features→features one-directional
+import is the established wiring.
+
+**RED proofs (qa-verified):** stale-selection re-anchor (real-flow 'Actual: m2'
+pre-fix), share-button findsNothing pre-fix, + the C7e suite's home deep-link
+race-kill verified deterministic (emit-after-settle; no residual timing).
+
+**Parked minors:** home_screen tests don't override homeWidgetServiceProvider
+(matches repo convention — defensive try/catch swallows real channel calls);
+RTL/dark smoke tests minimal-but-not-vacuous; out-of-band raw-DAO mode deletes
+remain a documented limitation (test retitled, unrecoverable by design until
+next rebuild).
+
+**C9 additions from C7e:** home_screen_test library doc has HTML-escaped
+`&lt;feature&gt;` literals; `session_start_validator.dart:160` variable typo
+`hasSmsSte`; simulation_summary_screen_test header claims share_plus never
+mocked (now is, one group).
+
+**Orchestrator calibration:** C7e = 170 missed / 8 files → **257k actual, 139
+tool-uses, 50 min** (the home deep-link harness ≈6x per-line cost). C7e-fix =
+**93k, 51 tool-uses, 13 min**. Cohorts: C7e arch 59k + qa 120k; re-cohort arch
+48k + qa 41k.
 
 ---
 
@@ -562,9 +626,10 @@ census is recorded in its comment block.
   **C7b (modes) ✓ DONE** (→92.05%, floor 91.4, bug #5 clear-to-null) ·
   **C7c (editors + distress + de-flake) ✓ DONE** (→93.11%, floor 92.5) ·
   **C7d + C7d-fix (history/logs) ✓ DONE** (→94.48%, floor 93.8, BLOCKER bug #6
-  two-stage purge + evidence-JSON fix) — all cohort-verified. NEXT: C7e (home +
-  post-session) → C7f (nav/entry + contacts) → C7g (settings + misc); slices
-  in resume block.
+  two-stage purge + evidence-JSON fix) · **C7e + C7e-fix (home + post-session)
+  ✓ DONE** (→95.74%, floor 95.1, bugs #7/#8 fixed, #9 identified) — all
+  cohort-verified. NEXT: C7f (nav/entry + contacts + bug-#9 pre-task) → C7g
+  (settings + misc); slices in resume block.
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
