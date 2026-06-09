@@ -2850,5 +2850,107 @@
   "settingsAlarmRampInfo": "How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.",
   "@settingsAlarmRampInfo": {
     "description": "Info-sheet body explaining the ramp-duration slider."
+  },
+  "permissionNotifRationaleTitle": "Allow notifications?",
+  "@permissionNotifRationaleTitle": {
+    "description": "Title of the rationale dialog shown before re-requesting the Android notification permission (Extra 42)."
+  },
+  "permissionNotifRationaleBody": "Guardian Angela uses notifications to alert you and your contacts during a safety session, including disguised reminders that wake your locked phone. Please allow notifications so the app can reach you.",
+  "@permissionNotifRationaleBody": {
+    "description": "Body of the rationale dialog explaining why notification permission is needed before re-requesting."
+  },
+  "permissionNotifDeniedTitle": "Notifications are blocked",
+  "@permissionNotifDeniedTitle": {
+    "description": "Title of the dialog shown when the notification permission is permanently denied and a system-settings deep-link is offered."
+  },
+  "permissionNotifDeniedBody": "Notifications are turned off for Guardian Angela. Open system settings to turn them back on so the app can alert you during a session.",
+  "@permissionNotifDeniedBody": {
+    "description": "Body of the permanently-denied dialog directing the user to system settings."
+  },
+  "permissionNotifAllow": "Allow",
+  "@permissionNotifAllow": {
+    "description": "Confirm button on the notification-permission rationale dialog; proceeds to the OS prompt."
+  },
+  "permissionNotifOpenSettings": "Open settings",
+  "@permissionNotifOpenSettings": {
+    "description": "Button on the permanently-denied dialog that deep-links to the app's system notification settings."
+  },
+  "permissionNotifNotNow": "Not now",
+  "@permissionNotifNotNow": {
+    "description": "Dismiss button on the notification-permission dialogs; declines without granting."
+  },
+  "homeStartTriggersSummaryTitle": "Before you start",
+  "@homeStartTriggersSummaryTitle": {
+    "description": "Title of the Active Triggers Summary dialog shown when the user taps Start (spec 04 §Start Session Button — On tap)."
+  },
+  "homeStartTriggersDistressHeading": "Distress trigger",
+  "@homeStartTriggersDistressHeading": {
+    "description": "Section heading for the configured distress trigger in the Active Triggers Summary."
+  },
+  "homeStartTriggersDisarmHeading": "Auto-disarm trigger",
+  "@homeStartTriggersDisarmHeading": {
+    "description": "Section heading for the configured disarm trigger in the Active Triggers Summary."
+  },
+  "homeStartTriggersNone": "None configured",
+  "@homeStartTriggersNone": {
+    "description": "Shown under a trigger heading when the mode has no trigger of that kind configured."
+  },
+  "homeStartTriggerButtonRepeat": "Press {button} {count} times",
+  "@homeStartTriggerButtonRepeat": {
+    "description": "Brief detail for a repeat-press hardware-button distress trigger.",
+    "placeholders": {
+      "button": { "type": "String", "example": "Volume up" },
+      "count": { "type": "String", "example": "5" }
+    }
+  },
+  "homeStartTriggerButtonLong": "Hold {button} for {seconds}s",
+  "@homeStartTriggerButtonLong": {
+    "description": "Brief detail for a long-press hardware-button distress trigger.",
+    "placeholders": {
+      "button": { "type": "String", "example": "Volume up" },
+      "seconds": { "type": "String", "example": "2" }
+    }
+  },
+  "homeStartTriggerButtonVolumeUp": "Volume up",
+  "@homeStartTriggerButtonVolumeUp": {
+    "description": "Name of the volume-up button in a trigger summary detail."
+  },
+  "homeStartTriggerButtonVolumeDown": "Volume down",
+  "@homeStartTriggerButtonVolumeDown": {
+    "description": "Name of the volume-down button in a trigger summary detail."
+  },
+  "homeStartTriggerGpsArrival": "Ends on arrival within {radius} m of your destination",
+  "@homeStartTriggerGpsArrival": {
+    "description": "Brief detail for a GPS-arrival disarm trigger.",
+    "placeholders": {
+      "radius": { "type": "String", "example": "200" }
+    }
+  },
+  "homeStartTriggerGpsPrompt": "You'll be asked for the destination after starting",
+  "@homeStartTriggerGpsPrompt": {
+    "description": "Note appended to a GPS-arrival disarm trigger whose destination is prompted at session start (stays in-session per decision D4)."
+  },
+  "homeStartTriggerTimer": "Ends automatically after {minutes} min",
+  "@homeStartTriggerTimer": {
+    "description": "Brief detail for a timer disarm trigger.",
+    "placeholders": {
+      "minutes": { "type": "String", "example": "30" }
+    }
+  },
+  "homeStartTriggersContinue": "Start now",
+  "@homeStartTriggersContinue": {
+    "description": "Confirm button on the Active Triggers Summary dialog; proceeds to start the session."
+  },
+  "homeStartTriggersCancel": "Cancel",
+  "@homeStartTriggersCancel": {
+    "description": "Cancel button on the Active Triggers Summary dialog; aborts the start."
+  },
+  "homeStartBlockedNotifTitle": "Notifications required",
+  "@homeStartBlockedNotifTitle": {
+    "description": "Title of the inline warning shown when start is blocked because the chain needs notifications but the permission was denied (Extra 42)."
+  },
+  "homeStartBlockedNotifBody": "This mode uses notifications (disguised reminders or fake calls) to keep you safe, but notification permission is off. Enable notifications to start this mode.",
+  "@homeStartBlockedNotifBody": {
+    "description": "Body of the inline warning shown when start is blocked due to missing notification permission for a notification-dependent chain."
   }
 }

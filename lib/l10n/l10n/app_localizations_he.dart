@@ -2195,4 +2195,81 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'כמה זמן לוקח להתרעה להגיע לעוצמה מלאה מאפס, בעלייה אחידה לאורך זמן זה. אין לכך השפעה כשהעוצמה ההדרגתית כבויה.';
+
+  @override
+  String get permissionNotifRationaleTitle => 'לאפשר התראות?';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      '‏Guardian Angela משתמש בהתראות כדי להתריע לך ולאנשי הקשר שלך במהלך מפגש בטיחות, כולל תזכורות מוסוות שמעירות את הטלפון הנעול. אפשר התראות כדי שהאפליקציה תוכל ליצור איתך קשר.';
+
+  @override
+  String get permissionNotifDeniedTitle => 'ההתראות חסומות';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'ההתראות כבויות עבור Guardian Angela. פתח את הגדרות המערכת כדי להפעיל אותן מחדש, כדי שהאפליקציה תוכל להתריע לך במהלך מפגש.';
+
+  @override
+  String get permissionNotifAllow => 'אפשר';
+
+  @override
+  String get permissionNotifOpenSettings => 'פתח הגדרות';
+
+  @override
+  String get permissionNotifNotNow => 'לא עכשיו';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'לפני שמתחילים';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'טריגר מצוקה';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'טריגר סיום אוטומטי';
+
+  @override
+  String get homeStartTriggersNone => 'לא הוגדר';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return 'לחץ על $button $count פעמים';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return 'החזק את $button למשך $seconds שניות';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'הגברת עוצמה';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'החלשת עוצמה';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'מסתיים בהגעה למרחק $radius מ\' מהיעד';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt => 'תתבקש להזין את היעד לאחר ההתחלה';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return 'מסתיים אוטומטית לאחר $minutes דקות';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'התחל עכשיו';
+
+  @override
+  String get homeStartTriggersCancel => 'ביטול';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'נדרשות התראות';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'מצב זה משתמש בהתראות (תזכורות מוסוות או שיחות מזויפות) כדי לשמור על ביטחונך, אך הרשאת ההתראות כבויה. הפעל התראות כדי להתחיל מצב זה.';
 }

@@ -4120,6 +4120,138 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.'**
   String get settingsAlarmRampInfo;
+
+  /// Title of the rationale dialog shown before re-requesting the Android notification permission (Extra 42).
+  ///
+  /// In en, this message translates to:
+  /// **'Allow notifications?'**
+  String get permissionNotifRationaleTitle;
+
+  /// Body of the rationale dialog explaining why notification permission is needed before re-requesting.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Angela uses notifications to alert you and your contacts during a safety session, including disguised reminders that wake your locked phone. Please allow notifications so the app can reach you.'**
+  String get permissionNotifRationaleBody;
+
+  /// Title of the dialog shown when the notification permission is permanently denied and a system-settings deep-link is offered.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked'**
+  String get permissionNotifDeniedTitle;
+
+  /// Body of the permanently-denied dialog directing the user to system settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are turned off for Guardian Angela. Open system settings to turn them back on so the app can alert you during a session.'**
+  String get permissionNotifDeniedBody;
+
+  /// Confirm button on the notification-permission rationale dialog; proceeds to the OS prompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get permissionNotifAllow;
+
+  /// Button on the permanently-denied dialog that deep-links to the app's system notification settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get permissionNotifOpenSettings;
+
+  /// Dismiss button on the notification-permission dialogs; declines without granting.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get permissionNotifNotNow;
+
+  /// Title of the Active Triggers Summary dialog shown when the user taps Start (spec 04 §Start Session Button — On tap).
+  ///
+  /// In en, this message translates to:
+  /// **'Before you start'**
+  String get homeStartTriggersSummaryTitle;
+
+  /// Section heading for the configured distress trigger in the Active Triggers Summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Distress trigger'**
+  String get homeStartTriggersDistressHeading;
+
+  /// Section heading for the configured disarm trigger in the Active Triggers Summary.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-disarm trigger'**
+  String get homeStartTriggersDisarmHeading;
+
+  /// Shown under a trigger heading when the mode has no trigger of that kind configured.
+  ///
+  /// In en, this message translates to:
+  /// **'None configured'**
+  String get homeStartTriggersNone;
+
+  /// Brief detail for a repeat-press hardware-button distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Press {button} {count} times'**
+  String homeStartTriggerButtonRepeat(String button, String count);
+
+  /// Brief detail for a long-press hardware-button distress trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold {button} for {seconds}s'**
+  String homeStartTriggerButtonLong(String button, String seconds);
+
+  /// Name of the volume-up button in a trigger summary detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume up'**
+  String get homeStartTriggerButtonVolumeUp;
+
+  /// Name of the volume-down button in a trigger summary detail.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume down'**
+  String get homeStartTriggerButtonVolumeDown;
+
+  /// Brief detail for a GPS-arrival disarm trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends on arrival within {radius} m of your destination'**
+  String homeStartTriggerGpsArrival(String radius);
+
+  /// Note appended to a GPS-arrival disarm trigger whose destination is prompted at session start (stays in-session per decision D4).
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll be asked for the destination after starting'**
+  String get homeStartTriggerGpsPrompt;
+
+  /// Brief detail for a timer disarm trigger.
+  ///
+  /// In en, this message translates to:
+  /// **'Ends automatically after {minutes} min'**
+  String homeStartTriggerTimer(String minutes);
+
+  /// Confirm button on the Active Triggers Summary dialog; proceeds to start the session.
+  ///
+  /// In en, this message translates to:
+  /// **'Start now'**
+  String get homeStartTriggersContinue;
+
+  /// Cancel button on the Active Triggers Summary dialog; aborts the start.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get homeStartTriggersCancel;
+
+  /// Title of the inline warning shown when start is blocked because the chain needs notifications but the permission was denied (Extra 42).
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications required'**
+  String get homeStartBlockedNotifTitle;
+
+  /// Body of the inline warning shown when start is blocked due to missing notification permission for a notification-dependent chain.
+  ///
+  /// In en, this message translates to:
+  /// **'This mode uses notifications (disguised reminders or fake calls) to keep you safe, but notification permission is off. Enable notifications to start this mode.'**
+  String get homeStartBlockedNotifBody;
 }
 
 class _AppLocalizationsDelegate

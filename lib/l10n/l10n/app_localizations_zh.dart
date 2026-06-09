@@ -2144,6 +2144,83 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get settingsAlarmRampInfo => '警报从零达到最大音量所需的时间，在此时间内均匀增大。关闭渐进音量时无效。';
+
+  @override
+  String get permissionNotifRationaleTitle => '允许通知？';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela 使用通知在安全会话期间提醒你和你的联系人，包括会唤醒锁屏手机的伪装提醒。请允许通知，以便应用能够联系到你。';
+
+  @override
+  String get permissionNotifDeniedTitle => '通知已被阻止';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'Guardian Angela 的通知已关闭。请打开系统设置重新开启，以便应用在会话期间提醒你。';
+
+  @override
+  String get permissionNotifAllow => '允许';
+
+  @override
+  String get permissionNotifOpenSettings => '打开设置';
+
+  @override
+  String get permissionNotifNotNow => '暂不';
+
+  @override
+  String get homeStartTriggersSummaryTitle => '开始之前';
+
+  @override
+  String get homeStartTriggersDistressHeading => '求救触发器';
+
+  @override
+  String get homeStartTriggersDisarmHeading => '自动结束触发器';
+
+  @override
+  String get homeStartTriggersNone => '未配置';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return '按 $button $count 次';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return '按住 $button $seconds 秒';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => '音量+';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => '音量-';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return '到达目的地 $radius 米范围内时结束';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt => '开始后将提示你输入目的地';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return '$minutes 分钟后自动结束';
+  }
+
+  @override
+  String get homeStartTriggersContinue => '立即开始';
+
+  @override
+  String get homeStartTriggersCancel => '取消';
+
+  @override
+  String get homeStartBlockedNotifTitle => '需要通知';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      '此模式使用通知（伪装提醒或假来电）来保护你的安全，但通知权限已关闭。请启用通知以开始此模式。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -4286,4 +4363,81 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get settingsAlarmRampInfo => '警報從零達到最大音量所需的時間，在此期間均勻增大。關閉漸進音量時無效。';
+
+  @override
+  String get permissionNotifRationaleTitle => '允許通知？';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela 會使用通知在安全工作階段期間提醒你和你的聯絡人，包括會喚醒鎖定手機的偽裝提醒。請允許通知，讓應用程式能夠聯絡到你。';
+
+  @override
+  String get permissionNotifDeniedTitle => '通知已被封鎖';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'Guardian Angela 的通知已關閉。請開啟系統設定重新開啟，讓應用程式在工作階段期間提醒你。';
+
+  @override
+  String get permissionNotifAllow => '允許';
+
+  @override
+  String get permissionNotifOpenSettings => '開啟設定';
+
+  @override
+  String get permissionNotifNotNow => '暫不';
+
+  @override
+  String get homeStartTriggersSummaryTitle => '開始之前';
+
+  @override
+  String get homeStartTriggersDistressHeading => '求救觸發器';
+
+  @override
+  String get homeStartTriggersDisarmHeading => '自動結束觸發器';
+
+  @override
+  String get homeStartTriggersNone => '未設定';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return '按 $button $count 次';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return '按住 $button $seconds 秒';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => '音量+';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => '音量-';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return '抵達目的地 $radius 公尺範圍內時結束';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt => '開始後會提示你輸入目的地';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return '$minutes 分鐘後自動結束';
+  }
+
+  @override
+  String get homeStartTriggersContinue => '立即開始';
+
+  @override
+  String get homeStartTriggersCancel => '取消';
+
+  @override
+  String get homeStartBlockedNotifTitle => '需要通知';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      '此模式會使用通知（偽裝提醒或假來電）來確保你的安全，但通知權限已關閉。請啟用通知以開始此模式。';
 }

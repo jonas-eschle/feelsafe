@@ -31,6 +31,12 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// [themeMode] defaults to [ThemeMode.light]; pass [ThemeMode.dark]
 /// for dark-mode tests.
 ///
+/// [platform] overrides `ThemeData.platform` for both the light and dark
+/// themes. Defaults to null (Flutter's default for the host, normally
+/// Android in the test VM). Pass [TargetPlatform.iOS] to exercise
+/// platform-gated UI such as `ensureNotificationPermission`'s iOS no-op
+/// branch (which reads `Theme.of(context).platform`).
+///
 /// [navigatorObservers] are forwarded to the inner `MaterialApp` so
 /// tests can assert on push / pop transitions.
 ///
@@ -44,6 +50,7 @@ Future<void> pumpScreen(
   List<Override> overrides = const <Override>[],
   Locale locale = const Locale('en'),
   ThemeMode themeMode = ThemeMode.light,
+  TargetPlatform? platform,
   List<NavigatorObserver> navigatorObservers = const <NavigatorObserver>[],
   bool settle = true,
 }) async {
@@ -63,6 +70,7 @@ Future<void> pumpScreen(
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
           useMaterial3: true,
+          platform: platform,
         ),
         darkTheme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
@@ -70,6 +78,7 @@ Future<void> pumpScreen(
             brightness: Brightness.dark,
           ),
           useMaterial3: true,
+          platform: platform,
         ),
         navigatorObservers: navigatorObservers,
         home: screen,

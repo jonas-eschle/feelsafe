@@ -2228,4 +2228,82 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'अलार्म को शून्य से पूरी आवाज़ तक पहुँचने में कितना समय लगता है, इस अवधि में समान रूप से बढ़ते हुए। क्रमिक आवाज़ बंद होने पर इसका कोई प्रभाव नहीं पड़ता।';
+
+  @override
+  String get permissionNotifRationaleTitle => 'सूचनाएँ अनुमति दें?';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela सुरक्षा सत्र के दौरान आपको और आपके संपर्कों को सचेत करने के लिए सूचनाओं का उपयोग करता है, जिसमें छद्म रिमाइंडर शामिल हैं जो आपके लॉक फ़ोन को जगाते हैं। कृपया सूचनाओं की अनुमति दें ताकि ऐप आप तक पहुँच सके।';
+
+  @override
+  String get permissionNotifDeniedTitle => 'सूचनाएँ अवरुद्ध हैं';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'Guardian Angela के लिए सूचनाएँ बंद हैं। सिस्टम सेटिंग्स खोलें और उन्हें वापस चालू करें ताकि ऐप सत्र के दौरान आपको सचेत कर सके।';
+
+  @override
+  String get permissionNotifAllow => 'अनुमति दें';
+
+  @override
+  String get permissionNotifOpenSettings => 'सेटिंग्स खोलें';
+
+  @override
+  String get permissionNotifNotNow => 'अभी नहीं';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'शुरू करने से पहले';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'संकट ट्रिगर';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'स्वतः-समाप्ति ट्रिगर';
+
+  @override
+  String get homeStartTriggersNone => 'कोई कॉन्फ़िगर नहीं';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return '$button को $count बार दबाएँ';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return '$button को $seconds सेकंड तक दबाए रखें';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'वॉल्यूम बढ़ाएँ';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'वॉल्यूम घटाएँ';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'आपके गंतव्य के $radius मीटर के भीतर पहुँचने पर समाप्त होता है';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt =>
+      'शुरू करने के बाद आपसे गंतव्य पूछा जाएगा';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return '$minutes मिनट बाद स्वतः समाप्त होता है';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'अभी शुरू करें';
+
+  @override
+  String get homeStartTriggersCancel => 'रद्द करें';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'सूचनाएँ आवश्यक हैं';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'यह मोड आपकी सुरक्षा के लिए सूचनाओं (छद्म रिमाइंडर या नकली कॉल) का उपयोग करता है, लेकिन सूचना अनुमति बंद है। इस मोड को शुरू करने के लिए सूचनाएँ सक्षम करें।';
 }

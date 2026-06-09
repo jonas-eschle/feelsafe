@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "चरण: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "प्रतीक्षा: {seconds} सेकंड",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "सक्रिय: {seconds} सेकंड",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "छूट अवधि: {seconds} सेकंड",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "पुनःप्रयास: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "अगला चरण: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "अगला चरण: चेन समाप्त",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "सब तैयार — आप सुरक्षित हैं!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "केवल अंक, +, * और # की अनुमति है।",
   "phoneWarnTooShort": "आपातकालीन नंबर आमतौर पर कम से कम 3 अंकों के होते हैं।",
   "phoneWarnLooksLikeRegular": "यह एक सामान्य फ़ोन नंबर जैसा लगता है, आपातकालीन सेवा नंबर नहीं।",
-  "phoneWarnEmergencyEmpty": "एक नंबर दर्ज करें — यह खाली नहीं हो सकता।"
+  "phoneWarnEmergencyEmpty": "एक नंबर दर्ज करें — यह खाली नहीं हो सकता।",
+  "permissionNotifRationaleTitle": "सूचनाएँ अनुमति दें?",
+  "permissionNotifRationaleBody": "Guardian Angela सुरक्षा सत्र के दौरान आपको और आपके संपर्कों को सचेत करने के लिए सूचनाओं का उपयोग करता है, जिसमें छद्म रिमाइंडर शामिल हैं जो आपके लॉक फ़ोन को जगाते हैं। कृपया सूचनाओं की अनुमति दें ताकि ऐप आप तक पहुँच सके।",
+  "permissionNotifDeniedTitle": "सूचनाएँ अवरुद्ध हैं",
+  "permissionNotifDeniedBody": "Guardian Angela के लिए सूचनाएँ बंद हैं। सिस्टम सेटिंग्स खोलें और उन्हें वापस चालू करें ताकि ऐप सत्र के दौरान आपको सचेत कर सके।",
+  "permissionNotifAllow": "अनुमति दें",
+  "permissionNotifOpenSettings": "सेटिंग्स खोलें",
+  "permissionNotifNotNow": "अभी नहीं",
+  "homeStartTriggersSummaryTitle": "शुरू करने से पहले",
+  "homeStartTriggersDistressHeading": "संकट ट्रिगर",
+  "homeStartTriggersDisarmHeading": "स्वतः-समाप्ति ट्रिगर",
+  "homeStartTriggersNone": "कोई कॉन्फ़िगर नहीं",
+  "homeStartTriggerButtonRepeat": "{button} को {count} बार दबाएँ",
+  "homeStartTriggerButtonLong": "{button} को {seconds} सेकंड तक दबाए रखें",
+  "homeStartTriggerButtonVolumeUp": "वॉल्यूम बढ़ाएँ",
+  "homeStartTriggerButtonVolumeDown": "वॉल्यूम घटाएँ",
+  "homeStartTriggerGpsArrival": "आपके गंतव्य के {radius} मीटर के भीतर पहुँचने पर समाप्त होता है",
+  "homeStartTriggerGpsPrompt": "शुरू करने के बाद आपसे गंतव्य पूछा जाएगा",
+  "homeStartTriggerTimer": "{minutes} मिनट बाद स्वतः समाप्त होता है",
+  "homeStartTriggersContinue": "अभी शुरू करें",
+  "homeStartTriggersCancel": "रद्द करें",
+  "homeStartBlockedNotifTitle": "सूचनाएँ आवश्यक हैं",
+  "homeStartBlockedNotifBody": "यह मोड आपकी सुरक्षा के लिए सूचनाओं (छद्म रिमाइंडर या नकली कॉल) का उपयोग करता है, लेकिन सूचना अनुमति बंद है। इस मोड को शुरू करने के लिए सूचनाएँ सक्षम करें।"
 }

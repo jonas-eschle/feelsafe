@@ -2216,4 +2216,82 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'How long the alarm takes to reach full volume from zero, ramping evenly over this time. Has no effect when gradual volume is off.';
+
+  @override
+  String get permissionNotifRationaleTitle => 'Allow notifications?';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela uses notifications to alert you and your contacts during a safety session, including disguised reminders that wake your locked phone. Please allow notifications so the app can reach you.';
+
+  @override
+  String get permissionNotifDeniedTitle => 'Notifications are blocked';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'Notifications are turned off for Guardian Angela. Open system settings to turn them back on so the app can alert you during a session.';
+
+  @override
+  String get permissionNotifAllow => 'Allow';
+
+  @override
+  String get permissionNotifOpenSettings => 'Open settings';
+
+  @override
+  String get permissionNotifNotNow => 'Not now';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'Before you start';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'Distress trigger';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'Auto-disarm trigger';
+
+  @override
+  String get homeStartTriggersNone => 'None configured';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return 'Press $button $count times';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return 'Hold $button for ${seconds}s';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'Volume up';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'Volume down';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'Ends on arrival within $radius m of your destination';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt =>
+      'You\'ll be asked for the destination after starting';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return 'Ends automatically after $minutes min';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'Start now';
+
+  @override
+  String get homeStartTriggersCancel => 'Cancel';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'Notifications required';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'This mode uses notifications (disguised reminders or fake calls) to keep you safe, but notification permission is off. Enable notifications to start this mode.';
 }

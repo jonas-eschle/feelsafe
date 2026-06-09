@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "Βήμα: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "Αναμονή: {seconds} δευτ.",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "Ενεργό: {seconds} δευτ.",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "Περίοδος χάριτος: {seconds} δευτ.",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "Επαναλήψεις: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "Επόμενο βήμα: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "Επόμενο βήμα: τέλος αλυσίδας",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "Έτοιμα — προστατεύεσαι!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "Επιτρέπονται μόνο ψηφία, +, * και #.",
   "phoneWarnTooShort": "Οι αριθμοί έκτακτης ανάγκης έχουν συνήθως τουλάχιστον 3 ψηφία.",
   "phoneWarnLooksLikeRegular": "Αυτό μοιάζει με κανονικό τηλεφωνικό αριθμό, όχι με αριθμό έκτακτης ανάγκης.",
-  "phoneWarnEmergencyEmpty": "Εισαγάγετε έναν αριθμό — δεν μπορεί να είναι κενό."
+  "phoneWarnEmergencyEmpty": "Εισαγάγετε έναν αριθμό — δεν μπορεί να είναι κενό.",
+  "permissionNotifRationaleTitle": "Να επιτρέπονται οι ειδοποιήσεις;",
+  "permissionNotifRationaleBody": "Το Guardian Angela χρησιμοποιεί ειδοποιήσεις για να ειδοποιεί εσάς και τις επαφές σας κατά τη διάρκεια μιας συνεδρίας ασφαλείας, συμπεριλαμβανομένων μεταμφιεσμένων υπενθυμίσεων που ξυπνούν το κλειδωμένο τηλέφωνό σας. Επιτρέψτε τις ειδοποιήσεις ώστε η εφαρμογή να μπορεί να σας προσεγγίσει.",
+  "permissionNotifDeniedTitle": "Οι ειδοποιήσεις είναι αποκλεισμένες",
+  "permissionNotifDeniedBody": "Οι ειδοποιήσεις είναι απενεργοποιημένες για το Guardian Angela. Ανοίξτε τις ρυθμίσεις συστήματος για να τις ενεργοποιήσετε ξανά, ώστε η εφαρμογή να μπορεί να σας ειδοποιεί κατά τη διάρκεια μιας συνεδρίας.",
+  "permissionNotifAllow": "Να επιτρέπεται",
+  "permissionNotifOpenSettings": "Άνοιγμα ρυθμίσεων",
+  "permissionNotifNotNow": "Όχι τώρα",
+  "homeStartTriggersSummaryTitle": "Πριν ξεκινήσετε",
+  "homeStartTriggersDistressHeading": "Ενεργοποιητής κινδύνου",
+  "homeStartTriggersDisarmHeading": "Ενεργοποιητής αυτόματης λήξης",
+  "homeStartTriggersNone": "Κανένας ρυθμισμένος",
+  "homeStartTriggerButtonRepeat": "Πατήστε {button} {count} φορές",
+  "homeStartTriggerButtonLong": "Κρατήστε το {button} για {seconds} δευτ.",
+  "homeStartTriggerButtonVolumeUp": "Αύξηση έντασης",
+  "homeStartTriggerButtonVolumeDown": "Μείωση έντασης",
+  "homeStartTriggerGpsArrival": "Λήγει με την άφιξη εντός {radius} μ. από τον προορισμό σας",
+  "homeStartTriggerGpsPrompt": "Θα σας ζητηθεί ο προορισμός μετά την έναρξη",
+  "homeStartTriggerTimer": "Λήγει αυτόματα μετά από {minutes} λεπτά",
+  "homeStartTriggersContinue": "Έναρξη τώρα",
+  "homeStartTriggersCancel": "Ακύρωση",
+  "homeStartBlockedNotifTitle": "Απαιτούνται ειδοποιήσεις",
+  "homeStartBlockedNotifBody": "Αυτή η λειτουργία χρησιμοποιεί ειδοποιήσεις (μεταμφιεσμένες υπενθυμίσεις ή ψεύτικες κλήσεις) για την ασφάλειά σας, αλλά η άδεια ειδοποιήσεων είναι απενεργοποιημένη. Ενεργοποιήστε τις ειδοποιήσεις για να ξεκινήσετε αυτή τη λειτουργία."
 }

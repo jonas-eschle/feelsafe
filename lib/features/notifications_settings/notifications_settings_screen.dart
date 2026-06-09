@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'package:guardianangela/core/utils/permission_utils.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -52,7 +53,15 @@ class _NotificationsSettingsScreenState
   }
 
   Future<void> _request() async {
-    final s = await Permission.notification.request();
+    // Delegate the re-ask (rationale dialog + OS prompt, or a deep-link into
+    // system settings for permanent denial) to the shared
+    // [ensureNotificationPermission] helper so this screen, the home start
+    // flow, and the Safety-Setup-Checklist share one implementation
+    // (spec 04:461 + 10:90, Extra 42).
+    await ensureNotificationPermission(context);
+    if (!mounted) return;
+    // Re-read the resulting status so the status row reflects the new state.
+    final s = await Permission.notification.status;
     if (!mounted) return;
     setState(() => _status = s);
   }

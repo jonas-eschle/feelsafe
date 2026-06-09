@@ -153,19 +153,30 @@ void main() {
       expect(find.text(l10n.notificationsRequest), findsOneWidget);
     });
 
-    testWidgets('tapping Request permission invokes platform', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      final r = await _pump(
-        tester,
-        status: PermissionStatus.denied,
-        requestResult: PermissionStatus.granted,
-      );
-      await tester.tap(find.text(l10n.notificationsRequest));
-      await tester.pumpAndSettle();
-      check(r.perm.requestPermissionsCalls).equals(1);
-    });
+    testWidgets(
+      'tapping Request permission delegates to the shared helper: shows the '
+      'rationale dialog, then requests on Allow',
+      (WidgetTester tester) async {
+        // The Request button now routes through
+        // `ensureNotificationPermission`, so a denied (not permanent) status
+        // first shows the shared rationale dialog; tapping Allow reaches the
+        // OS request. This proves the DRY delegation (spec 04:461).
+        final l10n = await loadL10n(const Locale('en'));
+        final r = await _pump(
+          tester,
+          status: PermissionStatus.denied,
+          requestResult: PermissionStatus.granted,
+        );
+        await tester.tap(find.text(l10n.notificationsRequest));
+        await tester.pumpAndSettle();
+        // The shared helper's rationale dialog is on screen.
+        expect(find.text(l10n.permissionNotifRationaleTitle), findsOneWidget);
+        check(r.perm.requestPermissionsCalls).equals(0);
+        await tester.tap(find.text(l10n.permissionNotifAllow));
+        await tester.pumpAndSettle();
+        check(r.perm.requestPermissionsCalls).equals(1);
+      },
+    );
 
     testWidgets('Open system settings button is present', (
       WidgetTester tester,

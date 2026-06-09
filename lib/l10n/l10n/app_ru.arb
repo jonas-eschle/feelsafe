@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "Шаг: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "Ожидание: {seconds} с",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "Активно: {seconds} с",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "Льготный период: {seconds} с",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "Повторов: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "Следующий шаг: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "Следующий шаг: конец цепочки",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "Готово — вы под защитой!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "Допустимы только цифры, +, * и #.",
   "phoneWarnTooShort": "Номера экстренных служб обычно состоят минимум из 3 цифр.",
   "phoneWarnLooksLikeRegular": "Похоже на обычный телефонный номер, а не на номер экстренной службы.",
-  "phoneWarnEmergencyEmpty": "Введите номер — поле не может быть пустым."
+  "phoneWarnEmergencyEmpty": "Введите номер — поле не может быть пустым.",
+  "permissionNotifRationaleTitle": "Разрешить уведомления?",
+  "permissionNotifRationaleBody": "Guardian Angela использует уведомления, чтобы предупреждать вас и ваши контакты во время сеанса безопасности, включая замаскированные напоминания, которые пробуждают заблокированный телефон. Разрешите уведомления, чтобы приложение могло с вами связаться.",
+  "permissionNotifDeniedTitle": "Уведомления заблокированы",
+  "permissionNotifDeniedBody": "Уведомления отключены для Guardian Angela. Откройте системные настройки, чтобы снова их включить, и приложение сможет предупреждать вас во время сеанса.",
+  "permissionNotifAllow": "Разрешить",
+  "permissionNotifOpenSettings": "Открыть настройки",
+  "permissionNotifNotNow": "Не сейчас",
+  "homeStartTriggersSummaryTitle": "Перед запуском",
+  "homeStartTriggersDistressHeading": "Триггер тревоги",
+  "homeStartTriggersDisarmHeading": "Триггер автозавершения",
+  "homeStartTriggersNone": "Не настроено",
+  "homeStartTriggerButtonRepeat": "Нажмите {button} {count} раз",
+  "homeStartTriggerButtonLong": "Удерживайте {button} {seconds} с",
+  "homeStartTriggerButtonVolumeUp": "Громкость +",
+  "homeStartTriggerButtonVolumeDown": "Громкость -",
+  "homeStartTriggerGpsArrival": "Завершается по прибытии в пределах {radius} м от пункта назначения",
+  "homeStartTriggerGpsPrompt": "Пункт назначения спросят после запуска",
+  "homeStartTriggerTimer": "Завершается автоматически через {minutes} мин",
+  "homeStartTriggersContinue": "Начать сейчас",
+  "homeStartTriggersCancel": "Отмена",
+  "homeStartBlockedNotifTitle": "Требуются уведомления",
+  "homeStartBlockedNotifBody": "Этот режим использует уведомления (замаскированные напоминания или фальшивые звонки) для вашей безопасности, но разрешение на уведомления отключено. Включите уведомления, чтобы запустить этот режим."
 }

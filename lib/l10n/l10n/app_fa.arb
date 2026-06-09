@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "مرحله: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "انتظار: {seconds} ثانیه",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "فعال: {seconds} ثانیه",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "مهلت: {seconds} ثانیه",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "تلاش‌های مجدد: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "مرحلهٔ بعد: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "مرحلهٔ بعد: پایان زنجیره",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "همه چیز آماده است — تو در امانی!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "فقط ارقام، +، * و # مجاز هستند.",
   "phoneWarnTooShort": "شماره‌های اضطراری معمولاً دست‌کم ۳ رقم دارند.",
   "phoneWarnLooksLikeRegular": "این بیشتر شبیه یک شمارهٔ تلفن معمولی است تا شمارهٔ خدمات اضطراری.",
-  "phoneWarnEmergencyEmpty": "یک شماره وارد کنید — این فیلد نمی‌تواند خالی باشد."
+  "phoneWarnEmergencyEmpty": "یک شماره وارد کنید — این فیلد نمی‌تواند خالی باشد.",
+  "permissionNotifRationaleTitle": "اعلان‌ها مجاز باشند؟",
+  "permissionNotifRationaleBody": "Guardian Angela از اعلان‌ها برای هشدار به شما و مخاطبانتان در طول یک جلسه ایمنی استفاده می‌کند، از جمله یادآوری‌های استتارشده که گوشی قفل‌شده شما را بیدار می‌کنند. لطفاً اعلان‌ها را مجاز کنید تا برنامه بتواند با شما تماس بگیرد.",
+  "permissionNotifDeniedTitle": "اعلان‌ها مسدود هستند",
+  "permissionNotifDeniedBody": "اعلان‌ها برای Guardian Angela خاموش هستند. تنظیمات سیستم را باز کنید تا دوباره آن‌ها را روشن کنید و برنامه بتواند در طول جلسه به شما هشدار دهد.",
+  "permissionNotifAllow": "اجازه دادن",
+  "permissionNotifOpenSettings": "باز کردن تنظیمات",
+  "permissionNotifNotNow": "اکنون نه",
+  "homeStartTriggersSummaryTitle": "پیش از شروع",
+  "homeStartTriggersDistressHeading": "محرک اضطرار",
+  "homeStartTriggersDisarmHeading": "محرک پایان خودکار",
+  "homeStartTriggersNone": "هیچ‌کدام پیکربندی نشده",
+  "homeStartTriggerButtonRepeat": "{button} را {count} بار فشار دهید",
+  "homeStartTriggerButtonLong": "{button} را به مدت {seconds} ثانیه نگه دارید",
+  "homeStartTriggerButtonVolumeUp": "افزایش صدا",
+  "homeStartTriggerButtonVolumeDown": "کاهش صدا",
+  "homeStartTriggerGpsArrival": "با رسیدن به فاصله {radius} متری مقصد پایان می‌یابد",
+  "homeStartTriggerGpsPrompt": "پس از شروع، مقصد از شما پرسیده می‌شود",
+  "homeStartTriggerTimer": "پس از {minutes} دقیقه به‌طور خودکار پایان می‌یابد",
+  "homeStartTriggersContinue": "اکنون شروع کن",
+  "homeStartTriggersCancel": "لغو",
+  "homeStartBlockedNotifTitle": "اعلان‌ها لازم است",
+  "homeStartBlockedNotifBody": "این حالت برای ایمنی شما از اعلان‌ها (یادآوری‌های استتارشده یا تماس‌های ساختگی) استفاده می‌کند، اما مجوز اعلان خاموش است. برای شروع این حالت، اعلان‌ها را فعال کنید."
 }

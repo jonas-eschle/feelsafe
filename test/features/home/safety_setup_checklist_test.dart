@@ -16,6 +16,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
@@ -114,6 +116,40 @@ class _FakeAppSettingsRepository extends AppSettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async => _current = value;
+}
+
+/// Permission platform fake used to prove item 6 delegates to the shared
+/// `ensureNotificationPermission` helper (its rationale dialog appears).
+class _FakePermissionHandlerPlatform extends PermissionHandlerPlatform
+    with MockPlatformInterfaceMixin {
+  _FakePermissionHandlerPlatform({required this.status});
+
+  final PermissionStatus status;
+  int requestPermissionsCalls = 0;
+
+  @override
+  Future<PermissionStatus> checkPermissionStatus(Permission permission) async =>
+      status;
+
+  @override
+  Future<Map<Permission, PermissionStatus>> requestPermissions(
+    List<Permission> permissions,
+  ) async {
+    requestPermissionsCalls++;
+    return {for (final p in permissions) p: status};
+  }
+
+  @override
+  Future<bool> openAppSettings() async => true;
+
+  @override
+  Future<bool> shouldShowRequestPermissionRationale(
+    Permission permission,
+  ) async => false;
+
+  @override
+  Future<ServiceStatus> checkServiceStatus(Permission permission) async =>
+      ServiceStatus.enabled;
 }
 
 // ---------------------------------------------------------------------------
@@ -593,4 +629,70 @@ void main() {
       check(bar.value).isNotNull().equals(2 / 6);
     });
   });
+
+  // ── Item 6 delegates to the shared ensureNotificationPermission helper ──
+  group('SafetySetupChecklist — item 6 DRY delegation', () {
+    testWidgets(
+      'tapping item 6 (no injected requester) routes through the shared '
+      'helper: its rationale dialog appears, then requests on Allow',
+      (WidgetTester tester) async {
+        // Mount directly so the real `permissionRequester` default runs
+        // (which delegates to `ensureNotificationPermission`). The platform
+        // is swapped to a denied (not permanent) status so the shared
+        // helper's rationale dialog surfaces — proving the delegation
+        // (spec 04:504 item 6).
+        final perm = _FakePermissionHandlerPlatform(
+          status: PermissionStatus.denied,
+        );
+        final original = PermissionHandlerPlatform.instance;
+        PermissionHandlerPlatform.instance = perm;
+        addTearDown(() => PermissionHandlerPlatform.instance = original);
+
+        final l10n = await loadL10n(const Locale('en'));
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: <Override>[
+              homeChecklistRepositoryProvider.overrideWithValue(
+                _FakeChecklistRepository(),
+              ),
+              appSettingsRepositoryProvider.overrideWithValue(
+                _FakeAppSettingsRepository(),
+              ),
+            ],
+            child: const MaterialApp(
+              localizationsDelegates: <LocalizationsDelegate<Object>>[
+                AppLocalizations.delegate,
+                GlobalMaterialLocalizations.delegate,
+                GlobalWidgetsLocalizations.delegate,
+                GlobalCupertinoLocalizations.delegate,
+              ],
+              supportedLocales: AppLocalizations.supportedLocales,
+              home: Material(
+                // permissionLookup forces item 6 incomplete; NO
+                // permissionRequester → the real default (shared helper).
+                child: SafetySetupChecklist(
+                  contacts: <EmergencyContact>[],
+                  modes: <SessionMode>[],
+                  permissionLookup: _alwaysFalse,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.homeChecklistItem6Title));
+        await tester.pumpAndSettle();
+        // The shared helper's rationale dialog is on screen.
+        expect(find.text(l10n.permissionNotifRationaleTitle), findsOneWidget);
+        check(perm.requestPermissionsCalls).equals(0);
+        await tester.tap(find.text(l10n.permissionNotifAllow));
+        await tester.pumpAndSettle();
+        check(perm.requestPermissionsCalls).equals(1);
+      },
+    );
+  });
 }
+
+/// Top-level lookup that always reports the notification permission as
+/// not-granted (keeps checklist item 6 incomplete).
+Future<bool> _alwaysFalse() async => false;

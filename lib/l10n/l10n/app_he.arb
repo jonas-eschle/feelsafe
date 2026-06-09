@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "שלב: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "המתנה: {seconds} שניות",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "פעיל: {seconds} שניות",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "תקופת חסד: {seconds} שניות",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "ניסיונות חוזרים: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "השלב הבא: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "השלב הבא: סוף השרשרת",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "הכל מוכן — את מוגנת!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "מותר להזין רק ספרות, +, * ו-#.",
   "phoneWarnTooShort": "מספרי חירום כוללים בדרך כלל לפחות 3 ספרות.",
   "phoneWarnLooksLikeRegular": "זה נראה כמו מספר טלפון רגיל, לא כמו מספר חירום.",
-  "phoneWarnEmergencyEmpty": "יש להזין מספר — השדה אינו יכול להיות ריק."
+  "phoneWarnEmergencyEmpty": "יש להזין מספר — השדה אינו יכול להיות ריק.",
+  "permissionNotifRationaleTitle": "לאפשר התראות?",
+  "permissionNotifRationaleBody": "‏Guardian Angela משתמש בהתראות כדי להתריע לך ולאנשי הקשר שלך במהלך מפגש בטיחות, כולל תזכורות מוסוות שמעירות את הטלפון הנעול. אפשר התראות כדי שהאפליקציה תוכל ליצור איתך קשר.",
+  "permissionNotifDeniedTitle": "ההתראות חסומות",
+  "permissionNotifDeniedBody": "ההתראות כבויות עבור Guardian Angela. פתח את הגדרות המערכת כדי להפעיל אותן מחדש, כדי שהאפליקציה תוכל להתריע לך במהלך מפגש.",
+  "permissionNotifAllow": "אפשר",
+  "permissionNotifOpenSettings": "פתח הגדרות",
+  "permissionNotifNotNow": "לא עכשיו",
+  "homeStartTriggersSummaryTitle": "לפני שמתחילים",
+  "homeStartTriggersDistressHeading": "טריגר מצוקה",
+  "homeStartTriggersDisarmHeading": "טריגר סיום אוטומטי",
+  "homeStartTriggersNone": "לא הוגדר",
+  "homeStartTriggerButtonRepeat": "לחץ על {button} {count} פעמים",
+  "homeStartTriggerButtonLong": "החזק את {button} למשך {seconds} שניות",
+  "homeStartTriggerButtonVolumeUp": "הגברת עוצמה",
+  "homeStartTriggerButtonVolumeDown": "החלשת עוצמה",
+  "homeStartTriggerGpsArrival": "מסתיים בהגעה למרחק {radius} מ' מהיעד",
+  "homeStartTriggerGpsPrompt": "תתבקש להזין את היעד לאחר ההתחלה",
+  "homeStartTriggerTimer": "מסתיים אוטומטית לאחר {minutes} דקות",
+  "homeStartTriggersContinue": "התחל עכשיו",
+  "homeStartTriggersCancel": "ביטול",
+  "homeStartBlockedNotifTitle": "נדרשות התראות",
+  "homeStartBlockedNotifBody": "מצב זה משתמש בהתראות (תזכורות מוסוות או שיחות מזויפות) כדי לשמור על ביטחונך, אך הרשאת ההתראות כבויה. הפעל התראות כדי להתחיל מצב זה."
 }

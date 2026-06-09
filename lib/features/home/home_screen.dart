@@ -9,9 +9,11 @@ import 'package:home_widget/home_widget.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
+import 'package:guardianangela/core/utils/permission_utils.dart';
 import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/home/widgets/active_triggers_summary.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
 import 'package:guardianangela/features/home/widgets/safety_setup_checklist.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
@@ -271,11 +273,48 @@ class _HomeBody extends ConsumerWidget {
     );
   }
 
+  /// Selected mode for [state], or null if nothing is selected / found.
+  SessionMode? _selectedMode() {
+    final id = state.selectedModeId;
+    if (id == null) return null;
+    for (final m in state.modes) {
+      if (m.id == id) return m;
+    }
+    return null;
+  }
+
+  /// Drives the on-tap start flow (spec 04 §Start Session Button — On tap):
+  /// 1. show the Active Triggers Summary (distress + disarm config);
+  /// 2. re-ask the Android notification permission via
+  ///    [ensureNotificationPermission] (Extra 42) and, when it is denied for
+  ///    a chain that needs notifications, block with an inline warning;
+  /// 3. otherwise start the session and navigate to `/session`.
+  ///
+  /// The GPS-destination prompt stays in-session (decision D4) — the summary
+  /// only notes that a prompt-at-start trigger will ask for its destination.
   Future<void> _onStart(
     BuildContext context,
     WidgetRef ref, {
     required bool simulate,
   }) async {
+    final mode = _selectedMode();
+    if (mode == null) return;
+
+    // Step 1 — Active Triggers Summary. Cancelling aborts the start.
+    final proceed = await ActiveTriggersSummaryDialog.show(context, mode);
+    if (!proceed || !context.mounted) return;
+
+    // Step 2 — notification permission re-ask (Extra 42). A denial blocks
+    // the start only when the chain genuinely needs notifications; a chain
+    // with no notification-dependent step starts regardless (spec 04:466).
+    final notifOk = await ensureNotificationPermission(context);
+    if (!context.mounted) return;
+    if (!notifOk && chainNeedsNotifications(mode)) {
+      await _showNotifBlocked(context);
+      return;
+    }
+
+    // Step 3 — start.
     final ok = await ref
         .read(homeControllerProvider.notifier)
         .startSession(simulate: simulate);
@@ -288,6 +327,23 @@ class _HomeBody extends ConsumerWidget {
     if (errors != null && errors.isNotEmpty) {
       await _showStartErrors(context, ref, errors);
     }
+  }
+
+  Future<void> _showNotifBlocked(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    await showDialog<void>(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: Text(l10n.homeStartBlockedNotifTitle),
+        content: Text(l10n.homeStartBlockedNotifBody),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.commonOk),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _showStartErrors(

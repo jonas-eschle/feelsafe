@@ -5,6 +5,7 @@ import 'package:meta/meta.dart';
 
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/domain/enums/app_permission.dart';
+import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/validation_result.dart';
@@ -159,4 +160,24 @@ class HomeController extends AsyncNotifier<HomeState> {
 /// Provides [HomeController].
 final homeControllerProvider = AsyncNotifierProvider<HomeController, HomeState>(
   HomeController.new,
+);
+
+/// Whether [mode]'s chain contains a step whose delivery is a user-facing
+/// notification — a disguised-reminder check-in or a fake-call escalation.
+///
+/// Used by the session-start flow (spec 04:466-468): a `false` result from
+/// `ensureNotificationPermission` blocks the start **only** for such a
+/// chain. A mode whose chain has no notification-dependent step (e.g.
+/// holdButton + loudAlarm) starts even when notifications are denied, in
+/// keeping with the false-positive-minimising philosophy.
+///
+/// - [ChainStepType.disguisedReminder] posts the silent check-in
+///   notification that must wake a locked device (the "session-notification"
+///   case the spec names).
+/// - [ChainStepType.fakeCall] posts an alarm-escalation notification so the
+///   incoming-call surfaces on the lock screen (spec 05:880-886).
+bool chainNeedsNotifications(SessionMode mode) => mode.chainSteps.any(
+  (step) =>
+      step.type == ChainStepType.disguisedReminder ||
+      step.type == ChainStepType.fakeCall,
 );

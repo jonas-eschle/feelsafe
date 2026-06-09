@@ -22,6 +22,8 @@ import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:permission_handler_platform_interface/permission_handler_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -30,7 +32,9 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/validation_result.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/home/home_screen.dart';
+import 'package:guardianangela/features/home/widgets/active_triggers_summary.dart';
 import 'package:guardianangela/features/home/widgets/chain_summary.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -74,6 +78,40 @@ class _FakeHomeController extends HomeController {
   void clearValidationErrors() {
     clearErrorsCalls++;
   }
+}
+
+/// Permission platform fake for the on-tap notification re-ask flow.
+/// Reports a fixed status; counts requests.
+class _FakePermissionHandlerPlatform extends PermissionHandlerPlatform
+    with MockPlatformInterfaceMixin {
+  _FakePermissionHandlerPlatform({required this.status});
+
+  final PermissionStatus status;
+  int requestPermissionsCalls = 0;
+
+  @override
+  Future<PermissionStatus> checkPermissionStatus(Permission permission) async =>
+      status;
+
+  @override
+  Future<Map<Permission, PermissionStatus>> requestPermissions(
+    List<Permission> permissions,
+  ) async {
+    requestPermissionsCalls++;
+    return {for (final p in permissions) p: status};
+  }
+
+  @override
+  Future<bool> openAppSettings() async => true;
+
+  @override
+  Future<bool> shouldShowRequestPermissionRationale(
+    Permission permission,
+  ) async => false;
+
+  @override
+  Future<ServiceStatus> checkServiceStatus(Permission permission) async =>
+      ServiceStatus.enabled;
 }
 
 // ---------------------------------------------------------------------------
@@ -137,6 +175,28 @@ HomeState _state({
   selectedModeId: selectedModeId,
   lastValidationErrors: errors,
 );
+
+/// Installs a granted permission platform for the test so the on-tap
+/// `ensureNotificationPermission` short-circuits to `true` without dialogs.
+/// Restored on teardown.
+void _installGrantedPerm(WidgetTester tester) {
+  final original = PermissionHandlerPlatform.instance;
+  PermissionHandlerPlatform.instance = _FakePermissionHandlerPlatform(
+    status: PermissionStatus.granted,
+  );
+  addTearDown(() => PermissionHandlerPlatform.instance = original);
+}
+
+/// Taps Start, then proceeds past the Active Triggers Summary dialog.
+Future<void> _tapStartAndProceed(
+  WidgetTester tester,
+  AppLocalizations l10n,
+) async {
+  await tester.tap(find.text(l10n.homeStartSession));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(l10n.homeStartTriggersContinue));
+  await tester.pumpAndSettle();
+}
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -423,6 +483,7 @@ void main() {
     testWidgets('tapping Start Session calls startSession(simulate: false)', (
       WidgetTester tester,
     ) async {
+      _installGrantedPerm(tester);
       final fake = _FakeHomeController(
         _state(modes: <SessionMode>[_mode('m1', 'Walk')], selectedModeId: 'm1'),
         startSessionResult: false,
@@ -433,8 +494,8 @@ void main() {
         const HomeScreen(),
         overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
       );
-      await tester.tap(find.text(l10n.homeStartSession));
-      await tester.pumpAndSettle();
+      // Start now goes through the Active Triggers Summary (spec 04:456).
+      await _tapStartAndProceed(tester, l10n);
       check(fake.startSessionCalls).equals(1);
       check(fake.lastStartSimulate).equals(false);
     });
@@ -442,6 +503,7 @@ void main() {
     testWidgets('tapping Simulate calls startSession(simulate: true)', (
       WidgetTester tester,
     ) async {
+      _installGrantedPerm(tester);
       final fake = _FakeHomeController(
         _state(modes: <SessionMode>[_mode('m1', 'Walk')], selectedModeId: 'm1'),
         startSessionResult: false,
@@ -452,7 +514,10 @@ void main() {
         const HomeScreen(),
         overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
       );
+      // Simulate also goes through the summary + notif re-ask (spec 04:472).
       await tester.tap(find.text(l10n.homeSimulate));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.homeStartTriggersContinue));
       await tester.pumpAndSettle();
       check(fake.startSessionCalls).equals(1);
       check(fake.lastStartSimulate).equals(true);
@@ -522,6 +587,7 @@ void main() {
       'Start with failing validation surfaces error dialog with each issue '
       'title',
       (WidgetTester tester) async {
+        _installGrantedPerm(tester);
         final l10n = await loadL10n(const Locale('en'));
         final fake = _FakeHomeController(
           _state(
@@ -547,8 +613,7 @@ void main() {
             homeControllerProvider.overrideWith(() => fake),
           ],
         );
-        await tester.tap(find.text(l10n.homeStartSession));
-        await tester.pumpAndSettle();
+        await _tapStartAndProceed(tester, l10n);
         expect(find.text(l10n.sessionStartFailedTitle), findsOneWidget);
         expect(find.textContaining('No contacts configured'), findsOneWidget);
         expect(
@@ -561,6 +626,7 @@ void main() {
     testWidgets(
       'Dismissing the start-failed dialog calls clearValidationErrors',
       (WidgetTester tester) async {
+        _installGrantedPerm(tester);
         final l10n = await loadL10n(const Locale('en'));
         final fake = _FakeHomeController(
           _state(
@@ -582,8 +648,7 @@ void main() {
             homeControllerProvider.overrideWith(() => fake),
           ],
         );
-        await tester.tap(find.text(l10n.homeStartSession));
-        await tester.pumpAndSettle();
+        await _tapStartAndProceed(tester, l10n);
         await tester.tap(find.text(l10n.commonOk));
         await tester.pumpAndSettle();
         check(fake.clearErrorsCalls).equals(1);
@@ -841,5 +906,154 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(ChainStepTimingSheet), findsNothing);
     });
+  });
+
+  // ── On-tap flow: Active Triggers Summary + notif re-ask (spec 04:456-468) ─
+  group('HomeScreen — on-tap start flow', () {
+    /// Swaps the permission platform for the duration of the test so the
+    /// real `ensureNotificationPermission` (invoked by `_onStart`) sees a
+    /// pinned status. The home screen renders on Android by default in the
+    /// test VM, so the helper's Android branch runs.
+    _FakePermissionHandlerPlatform installPerm(PermissionStatus status) {
+      final perm = _FakePermissionHandlerPlatform(status: status);
+      final original = PermissionHandlerPlatform.instance;
+      PermissionHandlerPlatform.instance = perm;
+      addTearDown(() => PermissionHandlerPlatform.instance = original);
+      return perm;
+    }
+
+    SessionMode notifMode() => _mode(
+      'm1',
+      'Walk',
+      chainSteps: <ChainStep>[_step('s0', ChainStepType.disguisedReminder)],
+    );
+
+    testWidgets('tapping Start shows the Active Triggers Summary first', (
+      WidgetTester tester,
+    ) async {
+      installPerm(PermissionStatus.granted);
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeHomeController(
+        _state(modes: <SessionMode>[notifMode()], selectedModeId: 'm1'),
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
+      );
+      await tester.tap(find.text(l10n.homeStartSession));
+      await tester.pumpAndSettle();
+      expect(find.byType(ActiveTriggersSummaryDialog), findsOneWidget);
+      // The summary appears BEFORE the session starts.
+      check(fake.startSessionCalls).equals(0);
+    });
+
+    testWidgets('cancelling the summary aborts the start', (
+      WidgetTester tester,
+    ) async {
+      final perm = installPerm(PermissionStatus.granted);
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeHomeController(
+        _state(modes: <SessionMode>[notifMode()], selectedModeId: 'm1'),
+      );
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[homeControllerProvider.overrideWith(() => fake)],
+      );
+      await tester.tap(find.text(l10n.homeStartSession));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.homeStartTriggersCancel));
+      await tester.pumpAndSettle();
+      check(fake.startSessionCalls).equals(0);
+      check(perm.requestPermissionsCalls).equals(0);
+    });
+
+    testWidgets(
+      'granted permission → summary Start now → startSession is called',
+      (WidgetTester tester) async {
+        installPerm(PermissionStatus.granted);
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeHomeController(
+          _state(modes: <SessionMode>[notifMode()], selectedModeId: 'm1'),
+          startSessionResult: false,
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text(l10n.homeStartSession));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.homeStartTriggersContinue));
+        await tester.pumpAndSettle();
+        check(fake.startSessionCalls).equals(1);
+        // No block dialog when permission is granted.
+        expect(find.text(l10n.homeStartBlockedNotifTitle), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'denied permission + notification-dependent chain → BLOCKED (no start)',
+      (WidgetTester tester) async {
+        installPerm(PermissionStatus.permanentlyDenied);
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeHomeController(
+          _state(modes: <SessionMode>[notifMode()], selectedModeId: 'm1'),
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text(l10n.homeStartSession));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.homeStartTriggersContinue));
+        await tester.pumpAndSettle();
+        // The permanently-denied dialog shows; declining it leaves perm off.
+        await tester.tap(find.text(l10n.permissionNotifNotNow));
+        await tester.pumpAndSettle();
+        // Start is blocked with the inline warning; session never starts.
+        expect(find.text(l10n.homeStartBlockedNotifTitle), findsOneWidget);
+        check(fake.startSessionCalls).equals(0);
+      },
+    );
+
+    testWidgets(
+      'denied permission + notification-free chain → ALLOWED (starts anyway)',
+      (WidgetTester tester) async {
+        installPerm(PermissionStatus.permanentlyDenied);
+        final l10n = await loadL10n(const Locale('en'));
+        // Default _mode() chain is holdButton only — needs no notifications.
+        final fake = _FakeHomeController(
+          _state(
+            modes: <SessionMode>[_mode('m1', 'Walk')],
+            selectedModeId: 'm1',
+          ),
+          startSessionResult: false,
+        );
+        await pumpScreen(
+          tester,
+          const HomeScreen(),
+          overrides: <Override>[
+            homeControllerProvider.overrideWith(() => fake),
+          ],
+        );
+        await tester.tap(find.text(l10n.homeStartSession));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.homeStartTriggersContinue));
+        await tester.pumpAndSettle();
+        // Permanently-denied dialog still shows (the helper always re-asks),
+        // but a holdButton-only chain is NOT blocked by a denial.
+        await tester.tap(find.text(l10n.permissionNotifNotNow));
+        await tester.pumpAndSettle();
+        expect(find.text(l10n.homeStartBlockedNotifTitle), findsNothing);
+        check(fake.startSessionCalls).equals(1);
+      },
+    );
   });
 }

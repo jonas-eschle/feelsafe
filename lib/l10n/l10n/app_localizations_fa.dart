@@ -2223,4 +2223,82 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'مدت‌زمانی که طول می‌کشد آژیر از صفر به حداکثر صدا برسد و در این مدت به‌طور یکنواخت بالا می‌رود. وقتی افزایش تدریجی خاموش باشد هیچ تأثیری ندارد.';
+
+  @override
+  String get permissionNotifRationaleTitle => 'اعلان‌ها مجاز باشند؟';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela از اعلان‌ها برای هشدار به شما و مخاطبانتان در طول یک جلسه ایمنی استفاده می‌کند، از جمله یادآوری‌های استتارشده که گوشی قفل‌شده شما را بیدار می‌کنند. لطفاً اعلان‌ها را مجاز کنید تا برنامه بتواند با شما تماس بگیرد.';
+
+  @override
+  String get permissionNotifDeniedTitle => 'اعلان‌ها مسدود هستند';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'اعلان‌ها برای Guardian Angela خاموش هستند. تنظیمات سیستم را باز کنید تا دوباره آن‌ها را روشن کنید و برنامه بتواند در طول جلسه به شما هشدار دهد.';
+
+  @override
+  String get permissionNotifAllow => 'اجازه دادن';
+
+  @override
+  String get permissionNotifOpenSettings => 'باز کردن تنظیمات';
+
+  @override
+  String get permissionNotifNotNow => 'اکنون نه';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'پیش از شروع';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'محرک اضطرار';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'محرک پایان خودکار';
+
+  @override
+  String get homeStartTriggersNone => 'هیچ‌کدام پیکربندی نشده';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return '$button را $count بار فشار دهید';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return '$button را به مدت $seconds ثانیه نگه دارید';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'افزایش صدا';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'کاهش صدا';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'با رسیدن به فاصله $radius متری مقصد پایان می‌یابد';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt =>
+      'پس از شروع، مقصد از شما پرسیده می‌شود';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return 'پس از $minutes دقیقه به‌طور خودکار پایان می‌یابد';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'اکنون شروع کن';
+
+  @override
+  String get homeStartTriggersCancel => 'لغو';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'اعلان‌ها لازم است';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'این حالت برای ایمنی شما از اعلان‌ها (یادآوری‌های استتارشده یا تماس‌های ساختگی) استفاده می‌کند، اما مجوز اعلان خاموش است. برای شروع این حالت، اعلان‌ها را فعال کنید.';
 }

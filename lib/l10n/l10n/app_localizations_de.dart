@@ -2245,4 +2245,82 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'Wie lange der Alarm braucht, um von null auf volle Lautstärke anzusteigen, gleichmäßig über diese Zeit. Hat keine Wirkung, wenn die schrittweise Erhöhung aus ist.';
+
+  @override
+  String get permissionNotifRationaleTitle => 'Benachrichtigungen erlauben?';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'Guardian Angela nutzt Benachrichtigungen, um dich und deine Kontakte während einer Sicherheitssitzung zu warnen, einschließlich getarnter Erinnerungen, die dein gesperrtes Telefon aufwecken. Bitte erlaube Benachrichtigungen, damit die App dich erreichen kann.';
+
+  @override
+  String get permissionNotifDeniedTitle => 'Benachrichtigungen sind blockiert';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'Benachrichtigungen sind für Guardian Angela deaktiviert. Öffne die Systemeinstellungen, um sie wieder einzuschalten, damit die App dich während einer Sitzung warnen kann.';
+
+  @override
+  String get permissionNotifAllow => 'Erlauben';
+
+  @override
+  String get permissionNotifOpenSettings => 'Einstellungen öffnen';
+
+  @override
+  String get permissionNotifNotNow => 'Nicht jetzt';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'Bevor du startest';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'Notfall-Auslöser';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'Auto-Beenden-Auslöser';
+
+  @override
+  String get homeStartTriggersNone => 'Keiner konfiguriert';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return '$button $count-mal drücken';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return '$button $seconds s lang halten';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'Lauter';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'Leiser';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'Endet bei Ankunft innerhalb von $radius m deines Ziels';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt =>
+      'Du wirst nach dem Start nach dem Ziel gefragt';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return 'Endet automatisch nach $minutes Min.';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'Jetzt starten';
+
+  @override
+  String get homeStartTriggersCancel => 'Abbrechen';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'Benachrichtigungen erforderlich';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'Dieser Modus nutzt Benachrichtigungen (getarnte Erinnerungen oder Fake-Anrufe), um dich zu schützen, aber die Benachrichtigungsberechtigung ist deaktiviert. Aktiviere Benachrichtigungen, um diesen Modus zu starten.';
 }

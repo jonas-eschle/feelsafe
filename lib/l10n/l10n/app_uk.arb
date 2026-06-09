@@ -351,32 +351,56 @@
   "homeChainSummaryTimingTitle": "Крок: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "Очікування: {seconds} с",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "Активно: {seconds} с",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "Пільговий період: {seconds} с",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "Повторів: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "Наступний крок: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "Наступний крок: кінець ланцюга",
   "@homeChainSummaryNextStepNone": {
@@ -442,8 +466,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "Готово — ви під захистом!",
@@ -969,5 +997,27 @@
   "phoneWarnInvalidChars": "Дозволено лише цифри, +, * і #.",
   "phoneWarnTooShort": "Номери екстрених служб зазвичай мають принаймні 3 цифри.",
   "phoneWarnLooksLikeRegular": "Це схоже на звичайний телефонний номер, а не на номер екстреної служби.",
-  "phoneWarnEmergencyEmpty": "Введіть номер — поле не може бути порожнім."
+  "phoneWarnEmergencyEmpty": "Введіть номер — поле не може бути порожнім.",
+  "permissionNotifRationaleTitle": "Дозволити сповіщення?",
+  "permissionNotifRationaleBody": "Guardian Angela використовує сповіщення, щоб попереджати вас і ваші контакти під час сеансу безпеки, зокрема замасковані нагадування, які пробуджують заблокований телефон. Дозвольте сповіщення, щоб застосунок міг із вами зв’язатися.",
+  "permissionNotifDeniedTitle": "Сповіщення заблоковано",
+  "permissionNotifDeniedBody": "Сповіщення вимкнено для Guardian Angela. Відкрийте системні налаштування, щоб знову їх увімкнути, аби застосунок міг попереджати вас під час сеансу.",
+  "permissionNotifAllow": "Дозволити",
+  "permissionNotifOpenSettings": "Відкрити налаштування",
+  "permissionNotifNotNow": "Не зараз",
+  "homeStartTriggersSummaryTitle": "Перш ніж почати",
+  "homeStartTriggersDistressHeading": "Тригер тривоги",
+  "homeStartTriggersDisarmHeading": "Тригер автозавершення",
+  "homeStartTriggersNone": "Не налаштовано",
+  "homeStartTriggerButtonRepeat": "Натисніть {button} {count} разів",
+  "homeStartTriggerButtonLong": "Утримуйте {button} {seconds} с",
+  "homeStartTriggerButtonVolumeUp": "Гучність +",
+  "homeStartTriggerButtonVolumeDown": "Гучність -",
+  "homeStartTriggerGpsArrival": "Завершується після прибуття в межах {radius} м від пункту призначення",
+  "homeStartTriggerGpsPrompt": "Пункт призначення запитають після запуску",
+  "homeStartTriggerTimer": "Завершується автоматично через {minutes} хв",
+  "homeStartTriggersContinue": "Почати зараз",
+  "homeStartTriggersCancel": "Скасувати",
+  "homeStartBlockedNotifTitle": "Потрібні сповіщення",
+  "homeStartBlockedNotifBody": "Цей режим використовує сповіщення (замасковані нагадування або фальшиві дзвінки) для вашої безпеки, але дозвіл на сповіщення вимкнено. Увімкніть сповіщення, щоб запустити цей режим."
 }

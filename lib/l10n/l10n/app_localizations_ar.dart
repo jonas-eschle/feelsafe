@@ -2211,4 +2211,81 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get settingsAlarmRampInfo =>
       'المدة التي يستغرقها الإنذار للوصول إلى أقصى مستوى صوت بدءًا من الصفر، متصاعدًا بانتظام خلال هذا الوقت. لا تأثير لها عند إيقاف التصاعد التدريجي.';
+
+  @override
+  String get permissionNotifRationaleTitle => 'السماح بالإشعارات؟';
+
+  @override
+  String get permissionNotifRationaleBody =>
+      'يستخدم Guardian Angela الإشعارات لتنبيهك أنت وجهات اتصالك أثناء جلسة الأمان، بما في ذلك التذكيرات المموهة التي توقظ هاتفك المقفل. يُرجى السماح بالإشعارات حتى يتمكن التطبيق من الوصول إليك.';
+
+  @override
+  String get permissionNotifDeniedTitle => 'الإشعارات محظورة';
+
+  @override
+  String get permissionNotifDeniedBody =>
+      'الإشعارات معطّلة لتطبيق Guardian Angela. افتح إعدادات النظام لإعادة تشغيلها حتى يتمكن التطبيق من تنبيهك أثناء الجلسة.';
+
+  @override
+  String get permissionNotifAllow => 'السماح';
+
+  @override
+  String get permissionNotifOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String get permissionNotifNotNow => 'ليس الآن';
+
+  @override
+  String get homeStartTriggersSummaryTitle => 'قبل أن تبدأ';
+
+  @override
+  String get homeStartTriggersDistressHeading => 'مُشغِّل الاستغاثة';
+
+  @override
+  String get homeStartTriggersDisarmHeading => 'مُشغِّل الإنهاء التلقائي';
+
+  @override
+  String get homeStartTriggersNone => 'لا يوجد مُعَدّ';
+
+  @override
+  String homeStartTriggerButtonRepeat(String button, String count) {
+    return 'اضغط $button $count مرات';
+  }
+
+  @override
+  String homeStartTriggerButtonLong(String button, String seconds) {
+    return 'اضغط مع الاستمرار على $button لمدة $seconds ثانية';
+  }
+
+  @override
+  String get homeStartTriggerButtonVolumeUp => 'رفع الصوت';
+
+  @override
+  String get homeStartTriggerButtonVolumeDown => 'خفض الصوت';
+
+  @override
+  String homeStartTriggerGpsArrival(String radius) {
+    return 'ينتهي عند الوصول إلى مسافة $radius متر من وجهتك';
+  }
+
+  @override
+  String get homeStartTriggerGpsPrompt => 'سيُطلب منك تحديد الوجهة بعد البدء';
+
+  @override
+  String homeStartTriggerTimer(String minutes) {
+    return 'ينتهي تلقائيًا بعد $minutes دقيقة';
+  }
+
+  @override
+  String get homeStartTriggersContinue => 'ابدأ الآن';
+
+  @override
+  String get homeStartTriggersCancel => 'إلغاء';
+
+  @override
+  String get homeStartBlockedNotifTitle => 'الإشعارات مطلوبة';
+
+  @override
+  String get homeStartBlockedNotifBody =>
+      'يستخدم هذا الوضع الإشعارات (تذكيرات مموهة أو مكالمات وهمية) للحفاظ على سلامتك، لكن إذن الإشعارات معطّل. فعّل الإشعارات لبدء هذا الوضع.';
 }

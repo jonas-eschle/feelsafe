@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "الخطوة: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "الانتظار: {seconds} ث",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "نشطة: {seconds} ث",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "فترة السماح: {seconds} ث",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "المحاولات: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "الخطوة التالية: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "الخطوة التالية: نهاية السلسلة",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "كلّ شيء جاهز — أنتِ في حماية!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "يُسمح فقط بالأرقام و+ و* و#.",
   "phoneWarnTooShort": "عادةً ما تتكوّن أرقام الطوارئ من 3 أرقام على الأقل.",
   "phoneWarnLooksLikeRegular": "يبدو هذا رقم هاتف عادي، وليس رقم خدمات طوارئ.",
-  "phoneWarnEmergencyEmpty": "أدخل رقمًا — لا يمكن ترك هذا الحقل فارغًا."
+  "phoneWarnEmergencyEmpty": "أدخل رقمًا — لا يمكن ترك هذا الحقل فارغًا.",
+  "permissionNotifRationaleTitle": "السماح بالإشعارات؟",
+  "permissionNotifRationaleBody": "يستخدم Guardian Angela الإشعارات لتنبيهك أنت وجهات اتصالك أثناء جلسة الأمان، بما في ذلك التذكيرات المموهة التي توقظ هاتفك المقفل. يُرجى السماح بالإشعارات حتى يتمكن التطبيق من الوصول إليك.",
+  "permissionNotifDeniedTitle": "الإشعارات محظورة",
+  "permissionNotifDeniedBody": "الإشعارات معطّلة لتطبيق Guardian Angela. افتح إعدادات النظام لإعادة تشغيلها حتى يتمكن التطبيق من تنبيهك أثناء الجلسة.",
+  "permissionNotifAllow": "السماح",
+  "permissionNotifOpenSettings": "فتح الإعدادات",
+  "permissionNotifNotNow": "ليس الآن",
+  "homeStartTriggersSummaryTitle": "قبل أن تبدأ",
+  "homeStartTriggersDistressHeading": "مُشغِّل الاستغاثة",
+  "homeStartTriggersDisarmHeading": "مُشغِّل الإنهاء التلقائي",
+  "homeStartTriggersNone": "لا يوجد مُعَدّ",
+  "homeStartTriggerButtonRepeat": "اضغط {button} {count} مرات",
+  "homeStartTriggerButtonLong": "اضغط مع الاستمرار على {button} لمدة {seconds} ثانية",
+  "homeStartTriggerButtonVolumeUp": "رفع الصوت",
+  "homeStartTriggerButtonVolumeDown": "خفض الصوت",
+  "homeStartTriggerGpsArrival": "ينتهي عند الوصول إلى مسافة {radius} متر من وجهتك",
+  "homeStartTriggerGpsPrompt": "سيُطلب منك تحديد الوجهة بعد البدء",
+  "homeStartTriggerTimer": "ينتهي تلقائيًا بعد {minutes} دقيقة",
+  "homeStartTriggersContinue": "ابدأ الآن",
+  "homeStartTriggersCancel": "إلغاء",
+  "homeStartBlockedNotifTitle": "الإشعارات مطلوبة",
+  "homeStartBlockedNotifBody": "يستخدم هذا الوضع الإشعارات (تذكيرات مموهة أو مكالمات وهمية) للحفاظ على سلامتك، لكن إذن الإشعارات معطّل. فعّل الإشعارات لبدء هذا الوضع."
 }

@@ -351,32 +351,56 @@
   "homeChainSummaryTimingTitle": "步驟:{name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "等待:{seconds} 秒",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "進行中:{seconds} 秒",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "寬限期:{seconds} 秒",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "重試次數:{count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "下一步:{name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "下一步:鏈路結束",
   "@homeChainSummaryNextStepNone": {
@@ -442,8 +466,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "全部就緒——你已受到守護!",
@@ -969,5 +997,27 @@
   "phoneWarnInvalidChars": "只允許使用數字、+、* 和 #。",
   "phoneWarnTooShort": "緊急電話號碼通常至少有 3 位數字。",
   "phoneWarnLooksLikeRegular": "這看起來像一般電話號碼，而不是緊急服務號碼。",
-  "phoneWarnEmergencyEmpty": "請輸入號碼——此處不能空白。"
+  "phoneWarnEmergencyEmpty": "請輸入號碼——此處不能空白。",
+  "permissionNotifRationaleTitle": "允許通知？",
+  "permissionNotifRationaleBody": "Guardian Angela 會使用通知在安全工作階段期間提醒你和你的聯絡人，包括會喚醒鎖定手機的偽裝提醒。請允許通知，讓應用程式能夠聯絡到你。",
+  "permissionNotifDeniedTitle": "通知已被封鎖",
+  "permissionNotifDeniedBody": "Guardian Angela 的通知已關閉。請開啟系統設定重新開啟，讓應用程式在工作階段期間提醒你。",
+  "permissionNotifAllow": "允許",
+  "permissionNotifOpenSettings": "開啟設定",
+  "permissionNotifNotNow": "暫不",
+  "homeStartTriggersSummaryTitle": "開始之前",
+  "homeStartTriggersDistressHeading": "求救觸發器",
+  "homeStartTriggersDisarmHeading": "自動結束觸發器",
+  "homeStartTriggersNone": "未設定",
+  "homeStartTriggerButtonRepeat": "按 {button} {count} 次",
+  "homeStartTriggerButtonLong": "按住 {button} {seconds} 秒",
+  "homeStartTriggerButtonVolumeUp": "音量+",
+  "homeStartTriggerButtonVolumeDown": "音量-",
+  "homeStartTriggerGpsArrival": "抵達目的地 {radius} 公尺範圍內時結束",
+  "homeStartTriggerGpsPrompt": "開始後會提示你輸入目的地",
+  "homeStartTriggerTimer": "{minutes} 分鐘後自動結束",
+  "homeStartTriggersContinue": "立即開始",
+  "homeStartTriggersCancel": "取消",
+  "homeStartBlockedNotifTitle": "需要通知",
+  "homeStartBlockedNotifBody": "此模式會使用通知（偽裝提醒或假來電）來確保你的安全，但通知權限已關閉。請啟用通知以開始此模式。"
 }

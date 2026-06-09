@@ -456,6 +456,19 @@ The main dashboard and entry point after onboarding. Displays mode selector, qui
   1. Show Active Triggers Summary:
      - Display configured triggers (distress trigger, disarm trigger) with brief configuration details
      - If GPS disarm trigger is configured: Prompt for GPS destination (can be skipped; skipping disables trigger for this session only)
+
+     > **Reconciliation note (M4 C3 / decision D4).** The GPS-destination
+     > *prompt* itself stays **in-session**, not in this on-tap summary. It
+     > is the `_GpsDestinationPrompt` rendered by `session_screen.dart` when
+     > `SessionState.needsGpsDestinationPrompt` is true (computed at
+     > `SessionController.startSession`), and it is already M1-wired.
+     > Skipping it there disables the GPS trigger for that session only.
+     > The on-tap `ActiveTriggersSummaryDialog`
+     > (`lib/features/home/widgets/active_triggers_summary.dart`) therefore
+     > only *notes* that a prompt-at-start GPS trigger will ask for its
+     > destination after the session begins — it does not collect
+     > coordinates. The summary itself (distress + disarm config details)
+     > is the new C3 addition.
   2. Create WalkSession with selected mode
   3. Validate permissions — includes **notification permission re-ask (Extra 42)**:
      call `ensureNotificationPermission(context)` from
@@ -466,6 +479,17 @@ The main dashboard and entry point after onboarding. Displays mode selector, qui
      `false` for a chain that contains disguised-reminder or
      session-notification steps, block the start with an inline
      warning.
+
+     > **Reconciliation note (M4 C3).** "session-notification steps" maps to
+     > the two `ChainStepType`s whose delivery is a user-facing notification:
+     > `disguisedReminder` (the silent check-in that must wake a locked
+     > device) and `fakeCall` (whose alarm-escalation notification surfaces
+     > the incoming call on the lock screen). The predicate
+     > `chainNeedsNotifications(mode)`
+     > (`lib/features/home/home_controller.dart`) encodes exactly this set,
+     > so a notification-free chain (e.g. holdButton + loudAlarm) is **not**
+     > blocked by a denied permission — consistent with the
+     > false-positive-minimising philosophy.
   4. Start SessionEngine
   5. Navigate to `/session`
 

@@ -222,32 +222,56 @@
   "homeChainSummaryTimingTitle": "Krok: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "Oczekiwanie: {seconds} s",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "Aktywny: {seconds} s",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "Okres karencji: {seconds} s",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "Powtórzeń: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "Następny krok: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "Następny krok: koniec łańcucha",
   "@homeChainSummaryNextStepNone": {
@@ -313,8 +337,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "Gotowe – jesteś chroniona!",
@@ -840,5 +868,27 @@
   "phoneWarnInvalidChars": "Dozwolone są tylko cyfry, +, * i #.",
   "phoneWarnTooShort": "Numery alarmowe mają zwykle co najmniej 3 cyfry.",
   "phoneWarnLooksLikeRegular": "To wygląda na zwykły numer telefonu, a nie numer alarmowy.",
-  "phoneWarnEmergencyEmpty": "Wpisz numer — to pole nie może być puste."
+  "phoneWarnEmergencyEmpty": "Wpisz numer — to pole nie może być puste.",
+  "permissionNotifRationaleTitle": "Zezwolić na powiadomienia?",
+  "permissionNotifRationaleBody": "Guardian Angela używa powiadomień, aby ostrzegać Ciebie i Twoje kontakty podczas sesji bezpieczeństwa, w tym zamaskowanych przypomnień, które wybudzają zablokowany telefon. Zezwól na powiadomienia, aby aplikacja mogła się z Tobą skontaktować.",
+  "permissionNotifDeniedTitle": "Powiadomienia są zablokowane",
+  "permissionNotifDeniedBody": "Powiadomienia są wyłączone dla Guardian Angela. Otwórz ustawienia systemowe, aby je ponownie włączyć, by aplikacja mogła ostrzegać Cię podczas sesji.",
+  "permissionNotifAllow": "Zezwól",
+  "permissionNotifOpenSettings": "Otwórz ustawienia",
+  "permissionNotifNotNow": "Nie teraz",
+  "homeStartTriggersSummaryTitle": "Zanim zaczniesz",
+  "homeStartTriggersDistressHeading": "Wyzwalacz alarmowy",
+  "homeStartTriggersDisarmHeading": "Wyzwalacz automatycznego zakończenia",
+  "homeStartTriggersNone": "Brak skonfigurowanych",
+  "homeStartTriggerButtonRepeat": "Naciśnij {button} {count} razy",
+  "homeStartTriggerButtonLong": "Przytrzymaj {button} przez {seconds} s",
+  "homeStartTriggerButtonVolumeUp": "Głośność +",
+  "homeStartTriggerButtonVolumeDown": "Głośność -",
+  "homeStartTriggerGpsArrival": "Kończy się po dotarciu w promieniu {radius} m od celu",
+  "homeStartTriggerGpsPrompt": "Po rozpoczęciu zostaniesz poproszony o cel",
+  "homeStartTriggerTimer": "Kończy się automatycznie po {minutes} min",
+  "homeStartTriggersContinue": "Rozpocznij teraz",
+  "homeStartTriggersCancel": "Anuluj",
+  "homeStartBlockedNotifTitle": "Wymagane powiadomienia",
+  "homeStartBlockedNotifBody": "Ten tryb używa powiadomień (zamaskowanych przypomnień lub fałszywych połączeń), aby zapewnić Ci bezpieczeństwo, ale uprawnienie do powiadomień jest wyłączone. Włącz powiadomienia, aby uruchomić ten tryb."
 }

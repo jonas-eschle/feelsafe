@@ -351,32 +351,56 @@
   "homeChainSummaryTimingTitle": "Schritt: {name}",
   "@homeChainSummaryTimingTitle": {
     "description": "Title of the timing-details bottom sheet opened when the user taps a chain summary pill.",
-    "placeholders": { "name": {"example": "Fake Call"} }
+    "placeholders": {
+      "name": {
+        "example": "Fake Call"
+      }
+    }
   },
   "homeChainSummaryWait": "Warten: {seconds} s",
   "@homeChainSummaryWait": {
     "description": "Wait-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryDuration": "Aktiv: {seconds} s",
   "@homeChainSummaryDuration": {
     "description": "Active-phase duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "30"} }
+    "placeholders": {
+      "seconds": {
+        "example": "30"
+      }
+    }
   },
   "homeChainSummaryGrace": "Karenzzeit: {seconds} s",
   "@homeChainSummaryGrace": {
     "description": "Grace-period duration row in the timing-details sheet.",
-    "placeholders": { "seconds": {"example": "5"} }
+    "placeholders": {
+      "seconds": {
+        "example": "5"
+      }
+    }
   },
   "homeChainSummaryRetry": "Wiederholungen: {count}",
   "@homeChainSummaryRetry": {
     "description": "Retry-count row in the timing-details sheet.",
-    "placeholders": { "count": {"example": "0"} }
+    "placeholders": {
+      "count": {
+        "example": "0"
+      }
+    }
   },
   "homeChainSummaryNextStep": "Nächster Schritt: {name}",
   "@homeChainSummaryNextStep": {
     "description": "Next-step label in the timing-details sheet. Shown when there is at least one step after the current one.",
-    "placeholders": { "name": {"example": "SMS"} }
+    "placeholders": {
+      "name": {
+        "example": "SMS"
+      }
+    }
   },
   "homeChainSummaryNextStepNone": "Nächster Schritt: Ende der Kette",
   "@homeChainSummaryNextStepNone": {
@@ -442,8 +466,12 @@
   "@homeChecklistProgress": {
     "description": "Progress text shown next to the progress bar.",
     "placeholders": {
-      "done": {"example": "3"},
-      "total": {"example": "6"}
+      "done": {
+        "example": "3"
+      },
+      "total": {
+        "example": "6"
+      }
     }
   },
   "homeChecklistAllDoneBanner": "Alles erledigt – du bist geschützt!",
@@ -969,5 +997,27 @@
   "phoneWarnInvalidChars": "Nur Ziffern, +, * und # sind erlaubt.",
   "phoneWarnTooShort": "Notrufnummern haben meist mindestens 3 Ziffern.",
   "phoneWarnLooksLikeRegular": "Das sieht nach einer normalen Telefonnummer aus, nicht nach einer Notrufnummer.",
-  "phoneWarnEmergencyEmpty": "Gib eine Nummer ein – dieses Feld darf nicht leer sein."
+  "phoneWarnEmergencyEmpty": "Gib eine Nummer ein – dieses Feld darf nicht leer sein.",
+  "permissionNotifRationaleTitle": "Benachrichtigungen erlauben?",
+  "permissionNotifRationaleBody": "Guardian Angela nutzt Benachrichtigungen, um dich und deine Kontakte während einer Sicherheitssitzung zu warnen, einschließlich getarnter Erinnerungen, die dein gesperrtes Telefon aufwecken. Bitte erlaube Benachrichtigungen, damit die App dich erreichen kann.",
+  "permissionNotifDeniedTitle": "Benachrichtigungen sind blockiert",
+  "permissionNotifDeniedBody": "Benachrichtigungen sind für Guardian Angela deaktiviert. Öffne die Systemeinstellungen, um sie wieder einzuschalten, damit die App dich während einer Sitzung warnen kann.",
+  "permissionNotifAllow": "Erlauben",
+  "permissionNotifOpenSettings": "Einstellungen öffnen",
+  "permissionNotifNotNow": "Nicht jetzt",
+  "homeStartTriggersSummaryTitle": "Bevor du startest",
+  "homeStartTriggersDistressHeading": "Notfall-Auslöser",
+  "homeStartTriggersDisarmHeading": "Auto-Beenden-Auslöser",
+  "homeStartTriggersNone": "Keiner konfiguriert",
+  "homeStartTriggerButtonRepeat": "{button} {count}-mal drücken",
+  "homeStartTriggerButtonLong": "{button} {seconds} s lang halten",
+  "homeStartTriggerButtonVolumeUp": "Lauter",
+  "homeStartTriggerButtonVolumeDown": "Leiser",
+  "homeStartTriggerGpsArrival": "Endet bei Ankunft innerhalb von {radius} m deines Ziels",
+  "homeStartTriggerGpsPrompt": "Du wirst nach dem Start nach dem Ziel gefragt",
+  "homeStartTriggerTimer": "Endet automatisch nach {minutes} Min.",
+  "homeStartTriggersContinue": "Jetzt starten",
+  "homeStartTriggersCancel": "Abbrechen",
+  "homeStartBlockedNotifTitle": "Benachrichtigungen erforderlich",
+  "homeStartBlockedNotifBody": "Dieser Modus nutzt Benachrichtigungen (getarnte Erinnerungen oder Fake-Anrufe), um dich zu schützen, aber die Benachrichtigungsberechtigung ist deaktiviert. Aktiviere Benachrichtigungen, um diesen Modus zu starten."
 }

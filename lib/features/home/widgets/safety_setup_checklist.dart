@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/utils/permission_utils.dart';
 import 'package:guardianangela/data/seed_data.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -56,8 +57,9 @@ class SafetySetupChecklist extends ConsumerStatefulWidget {
   /// `Permission.notification.status.isGranted`. Tests inject a fake.
   final Future<bool> Function()? permissionLookup;
 
-  /// Permission requester. Defaults to `Permission.notification.request`
-  /// followed by `openAppSettings()` on permanent denial. Tests inject a
+  /// Permission requester. Defaults to the shared
+  /// [ensureNotificationPermission] helper (rationale dialog + OS prompt, or
+  /// a deep-link into system settings on permanent denial). Tests inject a
   /// fake.
   final Future<bool> Function()? permissionRequester;
 
@@ -99,14 +101,9 @@ class _SafetySetupChecklistState extends ConsumerState<SafetySetupChecklist>
   Future<bool> _requestPermission() async {
     final requester = widget.permissionRequester;
     if (requester != null) return requester();
-    final result = await Permission.notification.request();
-    if (result.isPermanentlyDenied) {
-      await openAppSettings();
-      return Permission.notification.status.then((PermissionStatus s) {
-        return s.isGranted;
-      });
-    }
-    return result.isGranted;
+    // Delegate to the shared helper (spec 04:504 item 6) so the re-ask
+    // rationale + deep-link logic lives in one place.
+    return ensureNotificationPermission(context);
   }
 
   @override

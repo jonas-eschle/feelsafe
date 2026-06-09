@@ -2,7 +2,115 @@
 
 **Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4
 STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
-`phone_validators` + locale seeding) DONE, GATE-GREEN, COMMITTED (UNPUSHED).**
+`phone_validators` + locale seeding) + C3 (#16 notification re-ask +
+Active-Triggers-Summary + shared `permission_utils.dart`) DONE, GATE-GREEN,
+COMMITTED (UNPUSHED). NEXT = M4 C4 — #8 Session-Interrupted prompt.**
+
+---
+
+## What's done THIS session (M4 C3 — UNPUSHED, `m4-#16`)
+
+**GAPS verified first (all confirmed):** `lib/core/utils/permission_utils.dart`
++ `ensureNotificationPermission` did **not** exist (spec mandates them in 3
+places: 04:461, 04:504 item 6, 10:90) — `ensureNotificationPermission`
+appeared ONLY in spec/docs, zero code refs. There was **no on-tap
+Active-Triggers-Summary** (the home `_onStart` jumped straight to
+`startSession`). There was **no notif re-ask in the start flow**. The re-ask
+logic was **duplicated** in two places: `notifications_settings_screen._request`
+(plain `Permission.notification.request()`) and
+`safety_setup_checklist._requestPermission` (request + `openAppSettings()` on
+permanent denial). The in-session GPS prompt (`_GpsDestinationPrompt`,
+`session_screen.dart:312`, gated on `SessionState.needsGpsDestinationPrompt`)
+is already M1-wired — LEFT UNTOUCHED per decision D4. Onboarding's
+`requestAllPermissions` is a bulk 6-permission `request()` (NOT the re-ask
+pattern) — correctly out of scope.
+
+**Built (all proven by host widget tests):**
+
+1. **`ensureNotificationPermission(BuildContext) → Future<bool>`**
+   (`lib/core/utils/permission_utils.dart`): iOS (gated on
+   `Theme.of(context).platform != android` — host-testable) → no-op `true`;
+   Android already-granted → `true` (no dialog); denied-not-permanent →
+   `_NotifPermissionDialog` rationale → on Allow `Permission.notification.request()`
+   → returns granted, on "Not now" → `false` (no request); permanently-denied →
+   rationale dialog offering `openAppSettings()` deep-link → re-reads status →
+   returns granted, never falls back to the OS request. Uses `permission_handler`
+   (already a dep); has `statusReader`/`requester`/`settingsOpener` test seams
+   (defaults assigned in-body, never as default params).
+2. **Start-flow wiring** (`home_screen._onStart`, `_HomeBody`): tap Start →
+   `ActiveTriggersSummaryDialog.show` (cancel aborts) →
+   `ensureNotificationPermission(context)` → if `false` AND
+   `chainNeedsNotifications(mode)` → inline `_showNotifBlocked` warning + abort;
+   else `startSession`. Both Start AND Simulate go through this flow.
+   `chainNeedsNotifications` (new top-level fn in `home_controller.dart`) =
+   chain has a `disguisedReminder` OR `fakeCall` step (the two notification-
+   delivering step types; a holdButton+loudAlarm chain is NOT blocked).
+3. **DRY refactor (the 2 spec callers now delegate):**
+   `notifications_settings_screen._request` → `ensureNotificationPermission` then
+   re-reads status for the row; `safety_setup_checklist._requestPermission`
+   default → `ensureNotificationPermission` (the duplicated request+openAppSettings
+   block is GONE; tests still inject `permissionRequester` to bypass).
+4. **Active-Triggers-Summary** (`lib/features/home/widgets/active_triggers_summary.dart`,
+   `ActiveTriggersSummaryDialog`): renders the mode's `distressTriggers`
+   (HardwareButton: repeat/long-press detail) + `disarmTriggers` (GpsArrival:
+   radius + a prompt-at-start note that the destination is asked **in-session**;
+   Timer: minutes) with "none configured" fallbacks. **GPS prompt stays
+   in-session** — the dialog only *mentions* it (D4).
+
+**Spec reconciliation (2 notes added to spec 04):** (a) the GPS-destination
+prompt stays in-session (`_GpsDestinationPrompt`); the summary only mentions a
+prompt-at-start trigger — it does not collect coords. (b) "session-notification
+steps" maps to `disguisedReminder` + `fakeCall` (the `chainNeedsNotifications`
+predicate) — a notification-free chain is not blocked.
+
+**Tests (net +23 → suite 3967):** 8 `test/core/utils/permission_utils_test.dart`
+(iOS no-op→true w/ zero perm calls; Android granted→true no dialog; denied
+rationale→Allow→request granted/denied; "Not now"→false no request;
+permanently-denied deep-link→openAppSettings→granted/denied; "Not now"→no
+settings) + 9 `test/features/home/active_triggers_summary_test.dart` (headings,
+none×2, repeat/long-press detail, GPS prompt-at-start note PRESENT [D4 proof],
+fixed omits note, timer minutes, Start-now/Cancel) + 5 home on-tap in
+`home_screen_test.dart` (summary-first; cancel aborts; granted→start;
+denied+notif-chain→BLOCKED no start; denied+notif-free→ALLOWED starts) + 1
+checklist DRY-delegation (item 6 with no injected requester → shared helper's
+rationale dialog appears → requests on Allow) + notif-settings re-ask test
+rewritten to assert the rationale dialog (DRY proof). 4 PRE-EXISTING home tests
+updated to follow code (tap Start now routes through the summary →
+`_installGrantedPerm` + `_tapStartAndProceed`). `pumpScreen` gained an optional
+`platform` arg (additions-only) for the iOS branch.
+
+**l10n:** 22 new keys in `app_en.arb` (with `@meta`) + all 13 translation ARBs
+(JSON-appended, additions-only, placeholders `{button}/{count}/{seconds}/
+{radius}/{minutes}` preserved + verified consistent across all 14). `gen-l10n`
+0 untranslated; generated `.dart` additions-only (+1225/-0); parity 22/22 × 14.
+
+**Emulator:** boot-smoke PASS on `emulator-5554` (`assembleDebug` 51.5s +
+install + "app boots to a MaterialApp shell"). `POST_NOTIFICATIONS` is declared
+in the manifest (line 69). The WIRING is proven by the 8 host tests; the live OS
+`POST_NOTIFICATIONS` prompt + the app-notification-settings deep-link are
+OS-rendered and need a user-driven denied-then-start — NOT exercised on-device
+(no session-driving integration harness). iOS no-ops (proven by host test);
+iOS is CI `build-ios`-gated — NO iOS claim.
+
+**KEY FINDINGS (C3):**
+- The translation ARBs are **NOT** in the same key order as `app_en.arb`
+  (their last key was `phoneWarnEmergencyEmpty`, not the en template's
+  `settingsAlarmRampInfo`) — gen-l10n matches by key NAME, so additions can go
+  anywhere. The C1/C2 "additions-only" keys carry **no `@meta`** in
+  translations (only the template needs `@meta`); a JSON-load → add-keys →
+  JSON-dump (indent=2, ensure_ascii=False) is the safest additions-only insert.
+- The existing notif-settings test + the checklist `_pump` helper both inject a
+  fake `permissionRequester`, so they **bypass** the real delegation — proving
+  the DRY required a NEW test that mounts the widget WITHOUT the injection (real
+  default → shared helper) and asserts the helper's rationale dialog surfaces.
+- `_FakePermissionHandlerPlatform extends PermissionHandlerPlatform with
+  MockPlatformInterfaceMixin` + swapping `PermissionHandlerPlatform.instance`
+  is the proven seam (override `checkPermissionStatus` / `requestPermissions` /
+  `openAppSettings` / `shouldShowRequestPermissionRationale`).
+
+---
+
+**(prior C1+C2 snapshot retained below)**
 C2 built the safety-critical R-8 country→emergency-number map (109 countries,
 `lib/domain/models/emergency_numbers.dart`, owner-reviewed "unified-else-police"
 rule, every adjusted entry web-verified + 2 `// VERIFY` flags), the mandated
@@ -501,19 +609,20 @@ After `/clear`, paste:
 
 > Continue from HANDOFF.md
 
-**Next action: M4 C3 — #16 notification re-ask + Active-Triggers-Summary +
-the shared `permission_utils.dart`.** M0–M3 are PUSHED (`origin/main` =
-`5ab69c6`); M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8 map +
-`phone_validators` + locale seeding, `m4-#10`) are DONE+GATE-GREEN+COMMITTED
-(UNPUSHED). **The C2 emergency map awaits the owner's FINAL pre-push review**
-(the orchestrator surfaces the "CHANGES FROM THE REVIEWED DRAFT" summary before
-the M4 push). For C3: keep the GPS-destination prompt IN-SESSION (already
-M1-wired); add ONLY (a) the on-tap Active-Triggers-Summary and (b) the
-notification re-ask via a NEW shared
-`lib/core/utils/permission_utils.dart::ensureNotificationPermission`
-(spec-mandated in 3 places; refactor the notif-settings screen + the
-Safety-Setup-Checklist item 6 to delegate to it). See the **M4 DECISIONS** block
-near the top (F2 is now DECIDED: DESCOPE + remove `SCHEDULE_EXACT_ALARM` in C5).
+**Next action: M4 C4 — #8 Session-Interrupted prompt (minimal, reuse the
+SessionLog in-progress marker; [Start same mode] / [Acknowledge]).** M0–M3 are
+PUSHED (`origin/main` = `5ab69c6`); M4 C1 (#9 biometric, `m4-#9`) + C2 (#10 R-8
+map + `phone_validators` + locale seeding, `m4-#10`) + C3 (#16 notification
+re-ask + Active-Triggers-Summary + `permission_utils.dart`, `m4-#16`) are
+DONE+GATE-GREEN+COMMITTED (UNPUSHED). **Two owner items the orchestrator must
+surface before the M4 push:** (a) the C2 emergency map awaits the owner's FINAL
+pre-push review (the "CHANGES FROM THE REVIEWED DRAFT" summary; spot-confirm
+DE=110, ET=911, CI=111); (b) the C2-cohort test-hardening — tighten the
+emergency-map literal-count assertion to `== 109` (fold into C5). For C4 (per
+the M4 DECISIONS block near the top): build MINIMAL — reuse the existing
+SessionLog in-progress marker (NOT the spec's separate JSON file); an
+informational modal with [Start same mode] (a fresh session) / [Acknowledge];
+reconcile the spec marker text to the SessionLog approach.
 
 Per-chunk recipe (unchanged): verify the gap yourself → implement (serial) →
 prove (host/widget tests driving the REAL controller/screen; emulator for
@@ -1269,6 +1378,24 @@ stealth appearance only; stealth is configured pre-session on
   doesn't open the menu. Then tap the target item `.last` (overlay copy).
 
 ---
+
+## DEFERRED — M4 (carry into the listed chunk / before the M4 push)
+
+- **(C5) C2-cohort test-hardening — tighten the emergency-map count assertion
+  to `== 109`.** `test/domain/models/emergency_numbers_test.dart` currently
+  guards the literal count loosely; fold a strict `== 109` literal-count check
+  into C5 (where the `SCHEDULE_EXACT_ALARM` manifest removal also lands).
+- **(orchestrator surfaces before the M4 push) Owner's FINAL pre-push review of
+  the C2 emergency map.** The R-8 country→emergency-number map is committed
+  locally and awaits the owner's sign-off on the "CHANGES FROM THE REVIEWED
+  DRAFT" summary — spot-confirm DE=110, ET=911 (`// VERIFY`), CI=111
+  (`// VERIFY`). Do NOT push the M4 stack until the owner confirms.
+- **(C3 done — no residual)** #16 is complete: `permission_utils.dart` +
+  the start-flow block-on-deny + the DRY refactor of the 2 callers + the
+  Active-Triggers-Summary all shipped + gate-green. The live OS
+  `POST_NOTIFICATIONS` prompt / deep-link UX is proven only at the host-wiring
+  level (no on-device session-driving harness) — a real-device sanity of the
+  prompt is M5 device-e2e territory, NOT a stub.
 
 ## DEFERRED — M3 (NOT stubs; carry into the M3 cohort / M4 / M5)
 
