@@ -69,7 +69,6 @@ void main() {
         appPinBiometricEnabled: true,
         sessionEndPinBiometricEnabled: true,
         distressCancelBiometricEnabled: true,
-        requireLaunchAuth: true,
         emergencyCallNumber: '911',
         alarmDndOverride: true,
         alarmGradualVolume: true,

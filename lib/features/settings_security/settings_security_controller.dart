@@ -105,8 +105,6 @@ class SettingsSecurityController extends AsyncNotifier<SettingsSecurityState> {
       appPinBiometricEnabled: s.appPinBiometricEnabled,
       sessionEndPinBiometricEnabled: s.sessionEndPinBiometricEnabled,
       distressCancelBiometricEnabled: s.distressCancelBiometricEnabled,
-      requireLaunchAuth: s.requireLaunchAuth,
-      launchAuthBiometric: s.launchAuthBiometric,
       emergencyCallNumber: s.emergencyCallNumber,
       alarmDndOverride: s.alarmDndOverride,
       alarmGradualVolume: s.alarmGradualVolume,

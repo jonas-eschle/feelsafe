@@ -1,22 +1,23 @@
 # Guardian Angela v3 — Session Hand-off
 
-**Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4
-STARTED — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
+**Snapshot:** 2026-06-09 — **M0–M3 PUSHED (`origin/main` = `5ab69c6`). M4 ALL
+CHUNKS DONE (UNPUSHED) — C1 (#9 biometric) + C2 (#10 R-8 emergency-number map +
 `phone_validators` + locale seeding) + C3 (#16 notification re-ask +
 Active-Triggers-Summary + shared `permission_utils.dart`) + C4 (#8
 Session-Interrupted prompt) + C5 (Tier-F F1/F2 descope + REMOVE
 `SCHEDULE_EXACT_ALARM` + spec/doc reconciliation) + C6 (Tier-F F3: user-supplied
-fake-call ringtone + bundled-default fallback) + **C8 (Tier-F F5: post-session
-feedback prompt — BUILT, GATE-GREEN, COMMITTED, UNPUSHED)** DONE, COMMITTED
-(UNPUSHED). C7 (Tier-F F4: `requireLaunchAuth` / `launchAuthBiometric`) =
-**REDUNDANT → BLOCKED for owner — NO COMMIT, tree clean** (the determine-first
-step found both fields SUPERSEDED by spec `03-data-models.md:813`; building UI +
-a consumer would duplicate the existing App-PIN gate exactly — see the C7
-section below). NEXT = **resolve the C7/F4 redundancy decision with the owner**
-(recommendation: DELETE both dead fields in a schema-cleanup), THEN the **M4
-milestone cohort + owner emergency-map review (DE=110, ET=911, CI=111) + push
-the M4 stack**. With C8 built, the only OPEN M4 item is the C7/F4 owner
-decision.**
+fake-call ringtone + bundled-default fallback) + C8 (Tier-F F5: post-session
+feedback prompt) — all BUILT + COHORT-VERIFIED + COMMITTED. **C7 (Tier-F F4:
+`requireLaunchAuth` / `launchAuthBiometric`): owner DECIDED 2026-06-09 = DELETE
+both redundant fields. DONE THIS SESSION (`m4-tierF-#F4`) — both fields removed
+from `AppSettings` (8 model sites) + the 2 `clearPin` passthrough lines + 3 test
+assertions + spec (03 field-defs + the superseded note → removal note; 08 Q18) +
+the F4 entry in the remediation tracker; GATE-GREEN, COMMITTED, UNPUSHED. The
+App-PIN gate (`appPinHash` + `appPinBiometricEnabled`) is the SOLE launch-auth,
+UNCHANGED — no behavior lost.** With F4 deleted, M4 has NO open build items.
+NEXT = **M4 milestone cohort (architect-reviewer spec-vs-code + qa-expert
+spec-vs-tests, both opus, whole M4 stack) → owner emergency-map review (DE=110,
+ET=911, CI=111) → push the M4 stack.**
 
 > **OWNER FINAL pre-push emergency-map review (carry to the M4 push).** The C2
 > R-8 map (`lib/domain/models/emergency_numbers.dart`, 109 countries) still
@@ -27,12 +28,14 @@ decision.**
 
 ---
 
-## M4 C7 (Tier-F F4) — DETERMINE-FIRST → REDUNDANT → BLOCKED for owner (NO COMMIT)
+## M4 C7 (Tier-F F4) — REDUNDANT → owner DECIDED DELETE → DONE (`m4-tierF-#F4`)
 
 **Task:** wire `requireLaunchAuth` / `launchAuthBiometric` (`AppSettings`) per
 spec — but FIRST determine whether they are DISTINCT from the existing App-PIN
-launch gate or REDUNDANT. **Finding: both are REDUNDANT (spec-confirmed dead
-fields). No code written; tree clean; this is a genuine owner decision.**
+launch gate or REDUNDANT. **Finding (prior session): both are REDUNDANT
+(spec-confirmed dead fields).** The owner DECIDED 2026-06-09 to **DELETE both**;
+that deletion is DONE this session — see "DELETION DONE" below. The evidence
+that drove the decision is retained here for the record.
 
 **STEP-1 evidence (decisive — the spec itself supersedes them):**
 - **`docs/spec/03-data-models.md:813`** (verbatim): "`requireLaunchAuth` +
@@ -69,26 +72,48 @@ fields). No code written; tree clean; this is a genuine owner decision.**
   would silently flip the coercion-safe default to biometric-on, a
   security regression; another reason not to wire it.)
 
-**Decision (STEP 2 = REDUNDANT → STOP):** building Settings UI + a consumer
-would produce dead-equivalent code that duplicates the App-PIN gate — exactly
-what the brief said NOT to do. **Committed nothing; `git status --porcelain`
-empty.**
+**Why REDUNDANT (the basis for the DELETE decision):** building Settings UI + a
+consumer would produce dead-equivalent code that duplicates the App-PIN gate —
+exactly what the brief said NOT to do. So instead of wiring, the owner chose to
+delete the two dead fields. **Alternative the owner did NOT take:** re-spec
+`requireLaunchAuth` as a *re-lock-on-resume* master (the current gate is
+cold-start-ONLY — a "lock every time the app returns to foreground" toggle WOULD
+be net-new behavior). That would have been a NEW feature; the owner chose the
+clean deletion instead.
 
-**RECOMMENDATION for the owner (orchestrator to surface):** **DELETE both
-fields** in a dedicated `AppSettings` schema-cleanup (pre-alpha = nuke-and-reseed,
-no migration). Touch points if approved: `lib/domain/models/app_settings.dart`
-(ctor default, field, fromJson, copyWith param+body, toJson, ==, hashCode — 8
-sites) + `settings_security_controller.dart:108-109` (drop the 2 passthrough
-lines in `clearPin`) + the 3 assertions in `test/domain/models/app_settings_test.dart`
-(76-83, 286-287) + `test/data/repositories/app_settings_repository_test.dart:72`
-+ the spec line `03-data-models.md:777-778`+`813` (remove the fields + the
-"superseded" note) + `08-decisions:1060` (drop from the Q18 inventory). The
-App-PIN gate remains the SOLE launch-auth (no behavior lost). **Alternative if
-the owner wants a real distinct feature:** re-spec `requireLaunchAuth` as a
-*re-lock-on-resume* master (the current gate is cold-start-ONLY — a "lock every
-time the app returns to foreground" toggle WOULD be net-new behavior) — but
-that is a NEW feature request, not "wire the existing dead field", and needs an
-owner spec decision first.
+**DELETION DONE (this session, `m4-tierF-#F4`):**
+- **Persistence model confirmed = JSON blob, no migration.**
+  `AppSettingsRepository` wraps `JsonSingletonRepository<AppSettings>`
+  (`toJson`/`fromJson`, on-disk file — "delete removes the stored file"). NOT a
+  Drift table → no column migration. A previously-saved blob with the two extra
+  keys simply has them IGNORED on load (the `fromJson` reads are gone); new
+  writes omit them. Pre-alpha nuke-and-reseed = nothing to migrate.
+- **Removed from `AppSettings`** (`lib/domain/models/app_settings.dart`) — all 8
+  sites: ctor params (was :30-31) + the two field+doc declarations (was :161-166)
+  + `fromJson` reads (was :87-88) + `copyWith` params (was :226-227) + `copyWith`
+  body (was :256-257) + `toJson` writes (was :288-289) + `==` (was :321-322) +
+  `hashCode` (was :350-351).
+- **Dropped the 2 passthrough lines** in `settings_security_controller.dart`
+  `clearPin` (was :108-109).
+- **Tests** (deletions, tests follow code): removed the dedicated
+  `requireLaunchAuth defaults … launchAuthBiometric defaults` test +
+  `test/domain/models/app_settings_test.dart` round-trip ctor args (was :286-287)
+  + `test/data/repositories/app_settings_repository_test.dart` ctor arg (was :72).
+- **Spec:** `03-data-models.md` — removed the two model-sketch field lines (was
+  :777-778) + rewrote the ":813 superseded/candidate-for-removal" bullet into a
+  REMOVAL note (the App-PIN gate is the sole launch-auth; the fields were removed
+  2026-06). `08-decisions-consolidated.md` Q18 (:1060) — dropped both from the
+  field inventory + added the removal note. `docs/rewrite/ga-wiring-remediation.md`
+  — F4 tracker item (:100) → ✅ DELETED, and the §6 open-question (:187) → RESOLVED.
+- **Gate:** analyzer `--fatal-infos` = 0; full suite `flutter test
+  --concurrency=6` = all green (baseline 4034; the suite drops by the deleted
+  assertions — exact count in the commit); `grep -rn
+  "requireLaunchAuth\|launchAuthBiometric" lib/ test/` = **0** (docs retain only
+  removal-notes); deferral-grep = 0; `git status --porcelain -- OLD/` empty.
+  Pure-Dart model + tests + spec, NO native → no emulator.
+- **App-PIN gate UNTOUCHED** (`appPinHash`, `appPinBiometricEnabled`,
+  `launch_pin_screen.dart`) — remains the sole launch-auth; no behavior changed
+  anywhere.
 
 ---
 
@@ -1155,13 +1180,12 @@ reconciliation, `m4-tierF`) + C6 (Tier-F F3 user-supplied ringtone, `m4-tierF-#F
 + **C8 (Tier-F F5 post-session feedback prompt, `m4-tierF-#F5`)** — all
 DONE+GATE-GREEN+COMMITTED (UNPUSHED).
 
-**DEFERRED — still TO DO (the C7 owner decision + the orchestrator's pre-push):**
-- **F4 = C7 BLOCKED-for-owner:** `requireLaunchAuth` / `launchAuthBiometric` are
-  REDUNDANT (spec-confirmed dead fields, no code written, tree clean — see the
-  C7 section). Owner decides: DELETE both in a schema-cleanup (recommended) OR
-  re-spec `requireLaunchAuth` as a re-lock-on-resume master (a NEW feature). DO
-  NOT touch `app_settings.dart`'s `requireLaunchAuth`/`launchAuthBiometric` or
-  `launch_auth*` fields until the owner rules.
+**DEFERRED — still TO DO (the orchestrator's pre-push items):**
+- **F4 = C7 — DONE (`m4-tierF-#F4`), no longer deferred.** Owner DECIDED
+  2026-06-09: DELETE both `requireLaunchAuth` / `launchAuthBiometric`. Deleted
+  this session (8 model sites + 2 `clearPin` lines + 3 test assertions + spec 03
+  & 08 + the remediation tracker). App-PIN gate is the sole launch-auth,
+  unchanged. See the C7 section "DELETION DONE".
 - **Owner FINAL pre-push emergency-map review** (the orchestrator must surface
   the C2 "CHANGES FROM THE REVIEWED DRAFT" summary before the M4 push;
   spot-confirm **DE=110, ET=911, CI=111**). The count is now `== 109`-guarded.

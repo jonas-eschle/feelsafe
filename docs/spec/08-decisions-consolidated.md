@@ -1057,7 +1057,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 | Q15 | `SessionLog.hadMedicalInfo` | Field added (default `false`); stamped at session start by `SessionLogRecorder`. |
 | Q16 | `WalkSession.simulationSilent` | Field added; `WalkSession.startingReal` / `startingSimulation` named ctors. |
 | Q17 | `UserProfile` shape | Medical fields are `String?` (free-form text). Added `phoneNumber`, `photoPath`, `physicalDescription`. |
-| Q18 | `AppSettings` biometric / telemetry | `appPinBiometricEnabled`, `sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`, `requireLaunchAuth`, `launchAuthBiometric`, `sentryEnabled`, `telemetryOptOut` documented explicitly. |
+| Q18 | `AppSettings` biometric / telemetry | `appPinBiometricEnabled`, `sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`, `sentryEnabled`, `telemetryOptOut` documented explicitly. (`requireLaunchAuth` + `launchAuthBiometric` were **removed 2026-06-09** as redundant with the App-PIN launch gate — `appPinHash` + `appPinBiometricEnabled` is the sole launch-auth.) |
 | Q19 | `alarmDndOverride` default | `false` (opt-in). |
 | Q20 | `StealthConfig` defaults | `fakeName = 'Music'`, `fakeIcon = StealthIconPreset.music`. |
 | Q21 | `GpsLoggingConfig` defaults | `intervalSeconds = 30`, `accuracy = high`, `format = decimal`. |

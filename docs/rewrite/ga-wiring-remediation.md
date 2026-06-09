@@ -97,7 +97,7 @@ Tracked as tasks #8–#23. Severity: 🔴 GA-blocker · 🟠 important ·
 - 🟡 System Volume Override (Android) — STREAM_ALARM already bypasses silent (05:96-98)
 - 🟡 AlarmManager watchdog — tension with "no restore from disk" policy (10:174)
 - 🟡 Call-style-specific ringtones (05:67-75)
-- 🟡 `requireLaunchAuth`/`launchAuthBiometric` dead fields — redundant w/ App-PIN gate (carried item #6)
+- ✅ `requireLaunchAuth`/`launchAuthBiometric` dead fields — **DELETED 2026-06-09** (M4 F4): redundant w/ the App-PIN gate (`appPinHash` + `appPinBiometricEnabled` is the sole launch-auth)
 - 🟡 Post-session feedback prompt (spec marks **[Optional]**)
 
 ---
@@ -186,6 +186,8 @@ the plan and then authorize each push.
 2. Tier-F descope: cut System-Volume-Override, AlarmManager watchdog,
    call-style ringtones, `requireLaunchAuth`, optional feedback prompt?
    (Each cut also needs a spec note so the spec stops mandating it.)
+   — RESOLVED: `requireLaunchAuth`/`launchAuthBiometric` DELETED 2026-06-09
+   as redundant w/ the App-PIN gate (M4 F4).
 3. R-8 emergency-number data: OK for me to source the 80+ country map
    from a citable public reference (e.g. ITU / Wikipedia emergency
    numbers) and flag it for your review?

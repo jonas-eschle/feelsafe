@@ -774,8 +774,6 @@ final class AppSettings {
   final bool appPinBiometricEnabled;       // try biometric first at app PIN
   final bool sessionEndPinBiometricEnabled;// try biometric first at session-end PIN
   final bool distressCancelBiometricEnabled;// try biometric first at distress-cancel
-  final bool requireLaunchAuth;            // gate home screen on cold start
-  final bool launchAuthBiometric;          // launch gate prefers biometric
 
   // Global behavior
   final String emergencyCallNumber;        // default: '112' (Settings has editor)
@@ -810,7 +808,7 @@ final class AppSettings {
 - `sessionEndPinHash`: When set, required to disarm or manually end a running session. Timeout configurable via `pinTimeoutSeconds` (default 15 s, max 120 s). May try biometric first via `sessionEndPinBiometricEnabled`.
 - `duressPinHash`: When entered at ANY PIN prompt, shows a fake "Session ended" screen to the attacker and silently fires the mode's selected distress mode. Must differ from the other two PINs.
 - `wrongPinThreshold`: After this many wrong attempts at a PIN prompt, silently fire distress (A3). Default 5.
-- `requireLaunchAuth` + `launchAuthBiometric`: **superseded (2026-06).** The launch gate is driven by `appPinHash != null` (trigger) + `appPinBiometricEnabled` (biometric), not by a separate toggle — see `appPinHash` above and `06-settings.md` §App PIN. These two fields are retained on the model (default off / on) but currently unused; candidate for removal in a dedicated schema-cleanup pass.
+  The App-PIN launch gate above is the **sole** launch-auth control: its trigger is `appPinHash != null` and its biometric preference is `appPinBiometricEnabled`. There is no separate launch-auth toggle. (Two former fields, `requireLaunchAuth` + `launchAuthBiometric`, were **removed 2026-06** as redundant with this gate — a "require auth on launch" master toggle is meaningless without a credential, and the credential *is* the toggle; the biometric flag duplicated `appPinBiometricEnabled` exactly. See `08-decisions-consolidated.md` Q18.)
 
 **Global behavior:**
 - `emergencyCallNumber`: defaults to `112`. Settings has an "Emergency number" editor.

@@ -27,8 +27,6 @@ final class AppSettings {
     this.appPinBiometricEnabled = false,
     this.sessionEndPinBiometricEnabled = false,
     this.distressCancelBiometricEnabled = false,
-    this.requireLaunchAuth = false,
-    this.launchAuthBiometric = true,
     this.emergencyCallNumber = '112',
     this.alarmDndOverride = false,
     this.alarmGradualVolume = false,
@@ -84,8 +82,6 @@ final class AppSettings {
         (json['sessionEndPinBiometricEnabled'] as bool?) ?? false,
     distressCancelBiometricEnabled:
         (json['distressCancelBiometricEnabled'] as bool?) ?? false,
-    requireLaunchAuth: (json['requireLaunchAuth'] as bool?) ?? false,
-    launchAuthBiometric: (json['launchAuthBiometric'] as bool?) ?? true,
     emergencyCallNumber: (json['emergencyCallNumber'] as String?) ?? '112',
     alarmDndOverride: (json['alarmDndOverride'] as bool?) ?? false,
     alarmGradualVolume: (json['alarmGradualVolume'] as bool?) ?? false,
@@ -158,13 +154,6 @@ final class AppSettings {
   /// Try biometric before the distress-cancel PIN prompt. Default false.
   final bool distressCancelBiometricEnabled;
 
-  /// Gate the home screen behind PIN or biometric on cold start. Default
-  /// false.
-  final bool requireLaunchAuth;
-
-  /// Prefer biometric at the launch auth gate. Default true.
-  final bool launchAuthBiometric;
-
   // ── Global behavior ────────────────────────────────────────────────
 
   /// Emergency services number. Default `'112'` (GSM international).
@@ -223,8 +212,6 @@ final class AppSettings {
     bool? appPinBiometricEnabled,
     bool? sessionEndPinBiometricEnabled,
     bool? distressCancelBiometricEnabled,
-    bool? requireLaunchAuth,
-    bool? launchAuthBiometric,
     String? emergencyCallNumber,
     bool? alarmDndOverride,
     bool? alarmGradualVolume,
@@ -253,8 +240,6 @@ final class AppSettings {
         sessionEndPinBiometricEnabled ?? this.sessionEndPinBiometricEnabled,
     distressCancelBiometricEnabled:
         distressCancelBiometricEnabled ?? this.distressCancelBiometricEnabled,
-    requireLaunchAuth: requireLaunchAuth ?? this.requireLaunchAuth,
-    launchAuthBiometric: launchAuthBiometric ?? this.launchAuthBiometric,
     emergencyCallNumber: emergencyCallNumber ?? this.emergencyCallNumber,
     alarmDndOverride: alarmDndOverride ?? this.alarmDndOverride,
     alarmGradualVolume: alarmGradualVolume ?? this.alarmGradualVolume,
@@ -285,8 +270,6 @@ final class AppSettings {
     'appPinBiometricEnabled': appPinBiometricEnabled,
     'sessionEndPinBiometricEnabled': sessionEndPinBiometricEnabled,
     'distressCancelBiometricEnabled': distressCancelBiometricEnabled,
-    'requireLaunchAuth': requireLaunchAuth,
-    'launchAuthBiometric': launchAuthBiometric,
     'emergencyCallNumber': emergencyCallNumber,
     'alarmDndOverride': alarmDndOverride,
     'alarmGradualVolume': alarmGradualVolume,
@@ -318,8 +301,6 @@ final class AppSettings {
               other.sessionEndPinBiometricEnabled &&
           distressCancelBiometricEnabled ==
               other.distressCancelBiometricEnabled &&
-          requireLaunchAuth == other.requireLaunchAuth &&
-          launchAuthBiometric == other.launchAuthBiometric &&
           emergencyCallNumber == other.emergencyCallNumber &&
           alarmDndOverride == other.alarmDndOverride &&
           alarmGradualVolume == other.alarmGradualVolume &&
@@ -347,8 +328,6 @@ final class AppSettings {
     appPinBiometricEnabled,
     sessionEndPinBiometricEnabled,
     distressCancelBiometricEnabled,
-    requireLaunchAuth,
-    launchAuthBiometric,
     emergencyCallNumber,
     alarmDndOverride,
     alarmGradualVolume,

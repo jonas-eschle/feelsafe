@@ -73,16 +73,6 @@ void main() {
         check(settings.distressCancelBiometricEnabled).isFalse();
       });
 
-      test('requireLaunchAuth defaults false, launchAuthBiometric defaults '
-          'true', () {
-        // Arrange + Act
-        const settings = AppSettings();
-
-        // Assert — Q14: gate is opt-in, but when on, prefer biometric.
-        check(settings.requireLaunchAuth).isFalse();
-        check(settings.launchAuthBiometric).isTrue();
-      });
-
       test('emergencyCallNumber defaults to 112 (GSM international)', () {
         const settings = AppSettings();
 
@@ -283,8 +273,6 @@ void main() {
           appPinBiometricEnabled: true,
           sessionEndPinBiometricEnabled: true,
           distressCancelBiometricEnabled: true,
-          requireLaunchAuth: true,
-          launchAuthBiometric: false,
           emergencyCallNumber: '911',
           alarmDndOverride: true,
           alarmGradualVolume: true,
