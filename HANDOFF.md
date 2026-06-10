@@ -12,13 +12,14 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `9bcfd44`
-(atop `78fa259`), **+25 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
-Suite **4566 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 95.74%**, floor
-95.1. M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a
-`/clear`; the fresh session continues C7f→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `db24ba1`
+(atop `4a3476a`), **+28 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
+Suite **4597 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 96.75%** (−0.02
+vs C7f's 96.77 = normal run jitter, inside the 0.6 buffer), floor 96.1. M0–M4 PUSHED;
+M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`; the fresh
+session continues C7g→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7f:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7g:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
@@ -31,7 +32,10 @@ recovery-window math + cannot-pass-under-old-semantics proof) · **C7e (home +
 post-session: qa-PASS; arch found the bug-#7 fix UNREACHABLE on the real flow →
 C7e-fix `9bcfd44` re-cohort PASS×2 — riverpod flush() semantics verified
 race-free; arch ruled the modes-staleness observation SPEC-MANDATED = bug #9,
-fix mandated as the C7f pre-task)** — ALL architect+qa **PASS**.
+fix mandated as the C7f pre-task) · **C7f (nav/entry + contacts + the bug-#9
+4-path pre-task: qa-PASS; arch found the 5th leg — the shared editor is ALSO the
+distress editor and stranded the distress list → C7f-fix `db24ba1` re-cohort
+PASS×2)** — ALL architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -71,25 +75,30 @@ real-flow red→green; raw-DAO out-of-band delete kept as a documented-limitatio
 (8) C7e — simulation-summary share IconButton rendered with `log == null`
 (pinUnlocked-only gate) → tapping null-asserted `…!.log!` and crashed; gate now also
 requires a non-null log (red→green, arch-verified the IconButton is the sole entry);
-(9) **IDENTIFIED, fix = C7f PRE-TASK (cohort-ruled SPEC-MANDATED, 04:422-426 +
-:1518-1521)** — the home chip list (`HomeState.modes`, keep-alive cache) goes stale on
-`createBlank`/`duplicate` (modes_controller.dart:53/:67 — invalidateSelf only), on
-editor save (mode_editor_screen.dart:201-204 — bare upsert routes around BOTH
-controllers), and on backup restore (`BackupService.importFromJson`
-backup_service.dart:153, invoked from backup_restore_screen.dart:118 — invalidates
-NOTHING after wiping+re-inserting sessionModes) → new/renamed/restored modes invisible
-on home until app restart.
+(9) **FULLY FIXED across 5 paths (C7e-fix + C7f `4a3476a` + C7f-fix `db24ba1`; cohort-
+ruled SPEC-MANDATED, 04:422-426 + :1518-1521 + :1707)** — keep-alive list-controller
+staleness after mode mutations: new/renamed/restored modes invisible on home (and the
+distress list after a distress-mode edit) until app restart. Fixed paths, each
+red→green proven: delete (C7e-fix), `createBlank` + `duplicate`
+(modes_controller.dart:58/:76), editor save → home+modes+DISTRESS lists
+(mode_editor_screen.dart:209-214 — the distress leg was the C7f-fix, found by the
+re-cohort: the SAME screen serves /distress-modes/edit), backup restore →
+screen-layer invalidation after successful importFromJson
+(backup_restore_screen.dart:121-127; service stays Riverpod-free). Raw-DAO
+out-of-band deletes remain a documented limitation (test retitled in C7e-fix).
 
-**NEXT = C7f (nav/entry + contacts) — plus the MANDATED bug-#9 pre-task** (cohort-ruled
-spec-mandated; exact targets in bug-ledger entry 9: invalidate `homeControllerProvider`
-in `createBlank`/`duplicate`, invalidate home+modes after editor save and after a
-successful backup `importFromJson`; red→green each path; observation-only credit to the
-C7e-fix agent). Remaining slices (calibration: C7a 188L/6f = 335k actual, C7b 158L/10f
-= 249k, C7c 144L/12f+pretask = 202k, C7d 180L/6f = 165k + fix 217k, C7e 170L/8f = 257k
-+ fix 93k; always read the harness usage line, never self-reports):
-- **C7f — nav/entry + contacts (159, 7 files):** app_router 60/111, contacts_screen
-  29/131 + _controller 27/30, onboarding_screen 26/190 + _controller 5/31,
-  contact_form_screen 6/157, launch_pin_screen 6/120.
+**NEXT = C7g (settings + misc, the FINAL coverage slice).** Calibration: C7a 188L/6f
+= 335k actual, C7b 158L/10f = 249k, C7c 144L/12f+pretask = 202k, C7d 180L/6f = 165k +
+fix 217k, C7e 170L/8f = 257k + fix 93k, C7f 159L/7f+pretask = 307k + fix ~270k (the
+fix agent STALLED twice by backgrounding its gate and ending its turn — subagents are
+NOT re-invoked on background completion; implementer prompts now must say: poll your
+own background gates with repeated tool calls, NEVER end the turn with work pending;
+orchestrator finished the mechanical tail itself). Always read the harness usage line.
+**Census correction from C7f (matters for the C10 denominator):** feature device-only
+lines ≈ **31** (contacts_screen 24: the `_importSupported`-gated native-picker block
+:38-41 + :148-180; contact_form :290-294 iOS SMS warning; about ~3 pending C7g) — NOT
+the ~5 the C6b census estimated. Total device-only ≈ 185 non-feature + ~31 feature;
+codegen Drift-DSL ≈ 71.
 - **C7g — settings + misc (154, 12 files):** settings_security_controller 55/75 +
   _screen 7/117 + remove_pin_dialog 5/77, settings_screen 21/235 + _controller 15/50,
   backup_restore_screen 22/122, profile_controller 10/13 + _screen 5/137,
@@ -127,15 +136,60 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 ---
 
 **Snapshot:** 2026-06-10 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
-(FINAL milestone, Phase-9) IN PROGRESS — C1 + C2 + C3 + A5 + C4 + C4-fix + C5 +
-C6 + C6b + C7a + C7b + C7c + C7d + C7d-fix + **C7e + C7e-fix (home +
-post-session + the reachable re-anchor)** DONE + COHORT-VERIFIED (architect+qa
-PASS; all UNPUSHED — code HEAD = `9bcfd44` + the `m5-c7e` baton commit atop,
-ahead of origin/main by **25**). THIS session (2026-06-09/10): **C7a (→90.86%,
-bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, de-flake) + C7d (→94.48%,
-BLOCKER bug #6) + C7e (→95.74%, bugs #7+#8 fixed, bug #9 identified) — all
-cohort-PASS. NEXT = C7f (nav/entry + contacts + the bug-#9 pre-task), then
-C7g per the resume block.**
+(FINAL milestone, Phase-9) IN PROGRESS — C1..C7e + **C7f + C7f-fix (nav/entry
++ contacts + the full bug-#9 remediation)** DONE + COHORT-VERIFIED
+(architect+qa PASS; all UNPUSHED — code HEAD = `db24ba1` + the `m5-c7f` baton
+commit atop, ahead of origin/main by **28**). THIS session (2026-06-09/10):
+**C7a (→90.86%, bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, de-flake) +
+C7d (→94.48%, BLOCKER bug #6) + C7e (→95.74%, bugs #7/#8) + C7f (→96.75%,
+bug #9 fixed on all 5 paths) — all cohort-PASS. NEXT = C7g (settings + misc,
+the FINAL coverage slice), then C8/C9/C10 per the resume block.**
+
+---
+
+## KEY FINDINGS (C7f + C7f-fix — new baseline + carry to C7g)
+
+**Coverage-of-logic 95.74% → 96.75%** (12877 / 13310; the C7f commit measured
+96.77, the fix-commit re-run 96.75 — const-canonicalization run jitter, inside
+the 0.6 buffer). **Floor 95.1 → 96.1** (gate OK, RED at 99.9 proven). Suite
+**4566 → 4597** (+30 C7f, +1 fix), 0 fail. analyze 0. app_router 60→**0**,
+contacts_controller 27→0, onboarding 31→0, launch_pin 6→0; contacts_screen
+29→24 + contact_form 6→4 = honest Platform-gated remainder (census above).
+
+**BUG #9 fully fixed (5 paths)** — see the resume-block ledger entry. KEY
+LESSONS: (a) when a fix targets a BUG CLASS, sweep for SYMMETRIC instances
+before calling it done — the distress editor leg was found by the re-cohort,
+not the implementer (same screen, second route); (b) the C7f-fix agent stall:
+subagents must NEVER end their turn with a backgrounded gate pending (they are
+not re-invoked; 3 resume round-trips wasted ~200k tokens) — bake into prompts.
+
+**New reusable infra:** `test/router/app_router_test.dart` (414L) pumps the
+REAL `goRouterProvider` with the full INT-harness fake set — all 28 routes,
+`?id=` deep-link param propagation pinned to real screen fields, redirect
+tests mutate real launch-gate state. M3 fade-forwards transitions are 800ms:
+assert only after `pumpAndSettle`; ReorderableListView drags: compute geometry
+from live finders pre-gesture.
+
+**Arch-verified safety properties (no code change needed):** deleted-contact
+dangling ids in mode steps are fail-safe at session time
+(`resolve_sms_targets._contactsByIds` skips unknown ids; strategy guards
+empty — never mis-targets); launch-gate redirect cannot loop (`!= '/launch-pin'`
+short-circuit); deep-link `?id=` garbage → `int.tryParse` null → safe empty.
+
+**Parked minors:** backup_restore pre-existing FileSelectorPlatform.instance
+swaps without addTearDown (pre-C7f, pollution risk under parallel runs — C9/C8
+note); redundant double pumpAndSettles in router tests (style).
+
+**C9 additions from C7f:** `test/widget_test.dart:6-7` "router smoke tests live
+in the widget test cohort (next stage)" now stale (they exist at
+test/router/app_router_test.dart); l10n `onboardingUseSimNumberHint` is
+literally `"{number}"` in ALL 14 locales (never-finished template — needs a
+real sentence + 13-language delta, language-agent rule applies).
+
+**Orchestrator calibration:** C7f = 159L/7f + 4-path pre-task → **307k, 123
+tool-uses, 49 min**. C7f-fix ≈ 270k total ACROSS THE STALLS (68k real work +
+3 stalled resumes + orchestrator-finished tail). Cohorts: C7f arch 63k + qa
+101k; re-cohort arch 42k + qa 28k.
 
 ---
 
@@ -627,9 +681,10 @@ census is recorded in its comment block.
   **C7c (editors + distress + de-flake) ✓ DONE** (→93.11%, floor 92.5) ·
   **C7d + C7d-fix (history/logs) ✓ DONE** (→94.48%, floor 93.8, BLOCKER bug #6
   two-stage purge + evidence-JSON fix) · **C7e + C7e-fix (home + post-session)
-  ✓ DONE** (→95.74%, floor 95.1, bugs #7/#8 fixed, #9 identified) — all
-  cohort-verified. NEXT: C7f (nav/entry + contacts + bug-#9 pre-task) → C7g
-  (settings + misc); slices in resume block.
+  ✓ DONE** (→95.74%, floor 95.1, bugs #7/#8 fixed, #9 identified) · **C7f +
+  C7f-fix (nav/entry + contacts) ✓ DONE** (→96.75%, floor 96.1, bug #9 fixed
+  on all 5 paths incl. the distress-editor leg) — all cohort-verified. NEXT:
+  C7g (settings + misc, FINAL slice); per-file list in resume block.
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
