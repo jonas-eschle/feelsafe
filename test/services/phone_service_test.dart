@@ -166,6 +166,13 @@ void main() {
       check(svc.calls.first.phoneNumber).equals('112');
     });
 
+    test('PhoneCall.toString reports number and emergency flag', () async {
+      await svc.callEmergency('112');
+      final printed = svc.calls.single.toString();
+      check(printed).contains('number=112');
+      check(printed).contains('emergency=true');
+    });
+
     test('callEmergency() returns true', () async {
       final result = await svc.callEmergency('911');
       check(result).isTrue();

@@ -212,14 +212,49 @@
 #     isLinux) and pin_setup_screen 47 (the too-short _save guard: Submit
 #     is disabled below 4 digits and _entry is frozen once confirming, so
 #     the guard is defensive-unreachable via UI — C9 candidate).
-#   * Floor set to 97.2 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C10 ratchet (2026-06-10) = 99.33%-of-logic (13039 / 13127 lines) —
+#     the FINAL denominator decision (orchestrator pre-authorized), no
+#     behaviour changes:
+#       (1) Excluded the 6 codegen-only Drift table DSL files
+#           (lib/data/db/tables/*.dart, 71 lines, 0 covered): the column
+#           getters are compile-time build_runner inputs whose text()/
+#           integer()/… DSL methods THROW "should not be called at runtime"
+#           (proven in C6b) — reachable by NO test, host or device;
+#           structurally equivalent to the already-excluded *.g.dart.
+#       (2) Wrapped 117 census-verified DEVICE-ONLY lines in in-source
+#           lcov markers (// LCOV_EXCL_START/STOP/LINE, applied by
+#           filter_coverage.sh via `lcov --filter region
+#           --rc c_file_extensions=dart`): Platform.isAndroid/isIOS-gated
+#           native paths that can NEVER execute under `flutter test` on the
+#           Linux host. Per file: notification 27, hardware_button 21 (iOS
+#           headphone remote), contacts_screen 24 (native picker),
+#           device_info 10, background_session 9 (isolate entrypoint + iOS
+#           closure), messaging 8 (WorkManager SMS), sentry 7 (live-SDK
+#           passthrough), contact_form 4 (iOS SMS warning), main 4 (the
+#           real main() entry), about 3 (macOS/Windows ternary legs). Each
+#           marker names its real proof at the code site: the emulator
+#           device-e2e suite (integration_test/app_boot_smoke_test.dart
+#           boot lcov, disguised_reminder_test.dart,
+#           tool/device_e2e/run_background_throttle.sh #12) and/or
+#           CI build-android / build-ios (owner ruled iOS =
+#           "CI-build-verified is sufficient"). Full per-block census in
+#           tool/coverage/coverage_excludes.txt.
+#       (3) Host-COVERED the 9 sim-service tails instead of wrapping them
+#           (PhoneCall.toString, sim bootstrapVoiceAssets, sim
+#           useRealDirectory path) — host-coverable lines are never
+#           laundered out of the denominator.
+#     The 88 lines still missed are the HONEST remainder, kept in the
+#     denominator on purpose: cohort-verified defensive-unreachable lines
+#     (session_controller 1136/1515, session_screen 886, mode_editor
+#     234-235, home_screen 65-66, pin_setup 50), host-coverable-in-principle
+#     edges C10 refused to wrap (notification prefs-failure catches, the
+#     background_session configure success/MissingPlugin branches, main.dart
+#     recovery edge taps), and small widget/sim tails.
+#     The M5 target "~99%-of-logic" (owner mandate + CLAUDE.md D6 "ratchets
+#     to 99% by Phase 9") is MET: 99.33% measured.
+#   * Floor set to 98.7 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
-#     gate PASSES at the baseline today.
-#
-# TARGET = ~99%-of-logic (owner M5 mandate + CLAUDE.md "ratchets to 99% by
-# Phase 9 (D6)"). C7 (the lib/features/ tail) raises actual coverage toward it
-# and BUMPS this number as its tests land; C10 sets the final 99% target. Do
-# NOT set this to 99 before the covering tests exist — that would red the
-# everyday CI with no code change.
+#     gate PASSES at the baseline today (and was demonstrated to RED at a
+#     99.95 floor).
 # ─────────────────────────────────────────────────────────────────────────────
-97.2
+98.7

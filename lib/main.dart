@@ -48,6 +48,7 @@ import 'package:guardianangela/services/service_providers.dart';
 // Entry point
 // ---------------------------------------------------------------------------
 
+// LCOV_EXCL_START — real app entry: `flutter test` never executes main(); proven on-device by integration_test/app_boot_smoke_test.dart (emulator lcov), which calls it directly
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -57,6 +58,7 @@ Future<void> main() async {
   final container = ProviderContainer();
   await runBootstrap(container);
 }
+// LCOV_EXCL_STOP
 
 /// Runs the 7-step bootstrap pipeline using [container] and calls [runner]
 /// (defaults to [runApp]) with the resolved root widget.

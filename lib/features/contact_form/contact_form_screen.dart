@@ -287,6 +287,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
                         },
                       ),
                       if (_showIosSmsWarning)
+                        // LCOV_EXCL_START — iOS-only (_showIosSmsWarning ⇒ Platform.isIOS): manual-send SMS warning (CI build-ios)
                         Padding(
                           padding: const EdgeInsets.only(top: 16),
                           child: Text(
@@ -294,6 +295,7 @@ class _ContactFormScreenState extends ConsumerState<ContactFormScreen> {
                             style: Theme.of(context).textTheme.bodySmall,
                           ),
                         ),
+                      // LCOV_EXCL_STOP
                     ],
                   ),
                 ),

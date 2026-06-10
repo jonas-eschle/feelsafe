@@ -35,11 +35,13 @@ class ContactsScreen extends ConsumerWidget {
         title: Text(l10n.contactsTitle),
         actions: <Widget>[
           if (_importSupported)
+            // LCOV_EXCL_START — device-only (_importSupported ⇒ Android/iOS): native contact-import button; the Linux test host never builds it (CI build-android/ios)
             IconButton(
               tooltip: l10n.contactsImportFromDevice,
               icon: const Icon(Icons.import_contacts),
               onPressed: () => _importFromDevice(context, ref),
             ),
+          // LCOV_EXCL_STOP
           PopupMenuButton<String>(
             onSelected: (String key) async {
               if (key == 'delete_all') {
@@ -145,6 +147,7 @@ class ContactsScreen extends ConsumerWidget {
     return Platform.isAndroid || Platform.isIOS;
   }
 
+  // LCOV_EXCL_START — device-only (Android/iOS): flutter_contacts native picker, reachable only via the _importSupported-gated button above (CI build-android/ios)
   Future<void> _importFromDevice(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);
     try {
@@ -180,6 +183,7 @@ class ContactsScreen extends ConsumerWidget {
       ).showSnackBar(SnackBar(content: Text(l10n.contactsImportNotSupported)));
     }
   }
+  // LCOV_EXCL_STOP
 
   Future<void> _confirmDeleteAll(BuildContext context, WidgetRef ref) async {
     final l10n = AppLocalizations.of(context);

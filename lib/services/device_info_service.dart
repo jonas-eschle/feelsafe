@@ -37,6 +37,7 @@ class RealDeviceInfoService implements DeviceInfoServiceProtocol {
       log('getSimPhoneNumber — unsupported platform', name: 'DeviceInfo');
       return const SimNumberUnsupported();
     }
+    // LCOV_EXCL_START — device-only (Platform.isAndroid): SIM-number query via DeviceInfoChannel.kt; the host guard above returns SimNumberUnsupported before the channel (CI build-android)
     try {
       final String? number = await _kDeviceInfoChannel.invokeMethod<String>(
         'getSimPhoneNumber',
@@ -58,5 +59,6 @@ class RealDeviceInfoService implements DeviceInfoServiceProtocol {
       // Defensive: the native handler is unavailable (e.g. an older build).
       return const SimNumberUnsupported();
     }
+    // LCOV_EXCL_STOP
   }
 }

@@ -363,6 +363,14 @@ void main() {
       });
     });
 
+    group('bootstrapVoiceAssets', () {
+      test('records the call as a no-op (no asset extraction)', () async {
+        final s = _sim();
+        await s.bootstrapVoiceAssets();
+        check(s.calls.single.method).equals('bootstrapVoiceAssets');
+      });
+    });
+
     group('playRingtone', () {
       test('records call with assetPath', () async {
         final s = _sim();

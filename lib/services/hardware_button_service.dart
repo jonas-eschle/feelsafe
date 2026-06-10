@@ -117,9 +117,9 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     _listening = true;
 
     if (Platform.isAndroid) {
-      _startAndroid();
+      _startAndroid(); // LCOV_EXCL_LINE — device-only start-wiring; the subscription body is host-covered via subscribeNativeChannelForTest
     } else if (Platform.isIOS) {
-      _startIos();
+      _startIos(); // LCOV_EXCL_LINE — iOS-only (CI build-ios)
     }
 
     log(
@@ -195,6 +195,7 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
   @visibleForTesting
   void subscribeNativeChannelForTest() => _startAndroid();
 
+  // LCOV_EXCL_START — iOS-only headphone-remote registration: needs a real iOS audio session (CI build-ios)
   Future<void> _startIos() async {
     // audio_service registers a BaseAudioHandler that receives headphone
     // remote callbacks. The handler calls _onIosButtonPress for each event.
@@ -208,6 +209,7 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     );
     log('iOS audio handler registered', name: 'HardwareButtonService');
   }
+  // LCOV_EXCL_STOP
 
   // ---------------------------------------------------------------------------
   // Event handlers
@@ -236,12 +238,14 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
     }
   }
 
+  // LCOV_EXCL_START — iOS-only (CI build-ios): invoked solely by _GuardianAudioHandler remote callbacks; _handleRepeatPress itself is host-covered
   void _onIosButtonPress() {
     // iOS headphone remote — only repeat-press pattern supported.
     if (_pattern == HardwareTriggerPattern.repeatPress) {
       _handleRepeatPress();
     }
   }
+  // LCOV_EXCL_STOP
 
   void _handleRepeatPress() {
     final now = DateTime.now();
@@ -310,6 +314,7 @@ class RealHardwareButtonService implements HardwareButtonServiceProtocol {
 /// Overrides all remote commands that iOS emits for a headphone button press
 /// and routes each into [onPress] which drives the same repeat-press counting
 /// logic used by the Android path.
+// LCOV_EXCL_START — iOS-only audio_service handler: instantiated only by _startIos under a real iOS audio session (CI build-ios)
 class _GuardianAudioHandler extends BaseAudioHandler {
   _GuardianAudioHandler({required this.onPress});
 
@@ -331,3 +336,5 @@ class _GuardianAudioHandler extends BaseAudioHandler {
   @override
   Future<void> click([MediaButton? button]) async => onPress();
 }
+
+// LCOV_EXCL_STOP

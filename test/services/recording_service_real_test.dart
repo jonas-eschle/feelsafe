@@ -19,6 +19,7 @@ import 'package:mocktail/mocktail.dart';
 import 'package:record/record.dart';
 
 import 'package:guardianangela/services/recording_service.dart';
+import 'package:guardianangela/services/sim/recording_service_sim.dart';
 
 // ---------------------------------------------------------------------------
 // Mock seams
@@ -291,6 +292,25 @@ void main() {
       await svc.dispose();
       verify(rec.dispose).called(1);
       check(svc.currentPath).isNull();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // SimulationRecordingService(useRealDirectory: true) — the only sim branch
+  // that touches path_provider, so it is exercised here where the channel is
+  // mocked (recording_service_test.dart is a pure package:test file with no
+  // Flutter binding).
+  // -------------------------------------------------------------------------
+  group('SimulationRecordingService — useRealDirectory: true', () {
+    test('writes the sentinel under the real documents directory', () async {
+      final sim = SimulationRecordingService(useRealDirectory: true);
+      final path = await sim.recordForDuration(
+        duration: const Duration(seconds: 1),
+      );
+      check(path).isNotNull().startsWith('${_tmpDir.path}/sim_recording_');
+      check(sim.createdPaths).length.equals(1);
+      check(sim.createdPaths.single).endsWith('.m4a');
+      check(File(sim.createdPaths.single).existsSync()).isTrue();
     });
   });
 }

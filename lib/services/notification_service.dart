@@ -218,11 +218,13 @@ class RealNotificationService implements NotificationServiceProtocol {
   /// allocate a separate channel for fake-call screens — the alarm
   /// channel's max-importance + full-screen-intent flags are exactly
   /// what the fake-call UI requires.
+  // LCOV_EXCL_START — device-only: sole call site is the Platform.isAndroid channel-query below; Android notifications device-proven by integration_test/disguised_reminder_test.dart (emulator)
   static String _channelIdFor(NotificationChannelKey c) => switch (c) {
     NotificationChannelKey.alarm => _kAlarmChannelId,
     NotificationChannelKey.reminder => _kRemindersChannelId,
     NotificationChannelKey.fakeCall => _kAlarmChannelId,
   };
+  // LCOV_EXCL_STOP
 
   @override
   Future<bool> isChannelEnabled(NotificationChannelKey channel) async {
@@ -241,6 +243,7 @@ class RealNotificationService implements NotificationServiceProtocol {
         return true;
       }
     }
+    // LCOV_EXCL_START — device-only (Platform.isAndroid): real channel query needs the Android notifications plugin; device-proven by integration_test/disguised_reminder_test.dart (emulator)
     try {
       final androidImpl = _plugin
           .resolvePlatformSpecificImplementation<
@@ -259,6 +262,7 @@ class RealNotificationService implements NotificationServiceProtocol {
       log('isChannelEnabled Android error: $e', name: 'NotificationService');
       return true;
     }
+    // LCOV_EXCL_STOP
   }
 
   @override
@@ -268,6 +272,7 @@ class RealNotificationService implements NotificationServiceProtocol {
       // Caller falls back to permission_handler.openAppSettings().
       return;
     }
+    // LCOV_EXCL_START — device-only (Platform.isAndroid): Android notifications-permission prompt; device-proven by integration_test/disguised_reminder_test.dart (emulator)
     try {
       final androidImpl = _plugin
           .resolvePlatformSpecificImplementation<
@@ -277,12 +282,14 @@ class RealNotificationService implements NotificationServiceProtocol {
     } catch (e) {
       log('openChannelSettings error: $e', name: 'NotificationService');
     }
+    // LCOV_EXCL_STOP
   }
 
   @override
   Future<bool> requestPermission() async {
     try {
       if (Platform.isAndroid) {
+        // LCOV_EXCL_START — device-only (Platform.isAndroid): Android permission prompt; device-proven by integration_test on the emulator (notifications post end-to-end)
         final granted = await _plugin
             .resolvePlatformSpecificImplementation<
               AndroidFlutterLocalNotificationsPlugin
@@ -293,8 +300,10 @@ class RealNotificationService implements NotificationServiceProtocol {
           name: 'NotificationService',
         );
         return granted ?? false;
+        // LCOV_EXCL_STOP
       }
       if (Platform.isIOS) {
+        // LCOV_EXCL_START — iOS-only (Platform.isIOS): CI build-ios
         final granted = await _plugin
             .resolvePlatformSpecificImplementation<
               IOSFlutterLocalNotificationsPlugin
@@ -305,12 +314,15 @@ class RealNotificationService implements NotificationServiceProtocol {
           name: 'NotificationService',
         );
         return granted ?? false;
+        // LCOV_EXCL_STOP
       }
       // Desktop / macOS — assume granted.
       return true;
     } catch (e) {
+      // LCOV_EXCL_START — device-only catch: the host path cannot throw (returns true above); only the Android/iOS plugin calls can reject
       log('requestPermission error: $e', name: 'NotificationService');
       return false;
+      // LCOV_EXCL_STOP
     }
   }
 

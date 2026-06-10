@@ -38,6 +38,16 @@ lib/l10n/*
 # in filter_coverage.sh tolerates a glob that matches nothing.
 *.freezed.dart
 
+# Drift table DSLs — 6 files, 71 codegen-only lines (contacts 9, session_modes
+# 18, reminder_templates 15, session_logs 12, sms_retry_jobs 9,
+# feedback_history 8): the column getters are compile-time inputs to
+# build_runner. Drift's text()/integer()/… DSL methods THROW "This method
+# should not be called at runtime" (proven in M5 C6b), so these lines are
+# reachable by NO test, host or device — structurally equivalent to the
+# *.g.dart they generate. 0 of the 71 instrumented lines were covered at the
+# time of exclusion (M5 C10): nothing host-covered leaves the numerator.
+lib/data/db/tables/*.dart
+
 # ── Platform passthroughs with NO host-testable logic ────────────────────────
 # Each below was line-by-line verified to contain only a platform-guard early
 # return plus a MethodChannel/static-plugin call that cannot execute on the
@@ -105,24 +115,60 @@ lib/services/wakelock_service.dart
 #   the catch (unhandled exception on a failed SMS/phone/url launch). Now
 #   `await`ed → the degrade-to-false catch fires per the documented contract.
 #
-# DEVICE-ONLY / CODEGEN-ONLY remainder LEFT IN the denominator (honest, NOT
-# excluded — these are the host-coverage ceiling, NOT coverage gaps to hide):
-#   * Platform.is*-gated native service paths (~96 lines): notification_service
-#     (Android channel-query + iOS/Android requestPermission + _channelIdFor),
-#     device_info_service (Android getSimPhoneNumber channel + its exception
-#     branches), messaging_service (Android enqueueSms + cancelPending body),
-#     hardware_button_service (iOS headphone-remote path — already noted by C6),
-#     background_session_service (_onBackgroundStart isolate entrypoint + the
-#     iOS configure closure). Device-e2e / CI build-ios cover these, not host.
-#   * Codegen-only Drift table DSLs (~71 lines): the column getters in
-#     lib/data/db/tables/*.dart (contacts 9, session_modes 18, reminder_
-#     templates 15, session_logs 12, sms_retry_jobs 9, feedback_history 8).
-#     Drift's text()/integer()/… DSL methods THROW "should not be called at
-#     runtime" — they are compile-time-only inputs to build_runner, reachable
-#     by NO test (host or device). Structurally equivalent to *.g.dart; a
-#     future exclusion is a defensible orchestrator call (flagged for C8/C9).
-#   * Thin Sentry SDK passthrough (~9 lines): _RealSentrySdk.init/
-#     captureException/close wrap the SentryFlutter/Sentry statics; the tests
-#     inject a fake SDK (driving the real RealSentryService logic), so the
-#     thin wrapper itself only runs against the real network SDK.
+# M5 C10 (2026-06-10) implemented the final denominator decision (orchestrator
+# pre-authorized): the Drift table DSL glob above, plus in-source
+# `// LCOV_EXCL_START`/`STOP`/`LINE` markers (applied by filter_coverage.sh via
+# `lcov --filter region --rc c_file_extensions=dart`) around the
+# census-verified DEVICE-ONLY blocks — 117 lines that sit behind
+# Platform.isAndroid / Platform.isIOS / _importSupported guards (or are the
+# real app entry / background-isolate entrypoint / live-Sentry passthrough)
+# and therefore can NEVER execute under `flutter test` on the Linux host.
+# Every marker carries a one-line annotation at the code site naming its real
+# proof. Per-file (wrapped line counts):
+#   notification_service 27   — Android channel-query + openChannelSettings +
+#     Android/iOS requestPermission + _channelIdFor + device-only catch;
+#     proof: integration_test/disguised_reminder_test.dart (emulator) /
+#     CI build-ios.
+#   hardware_button_service 21 — iOS headphone-remote path (_startIos /
+#     _onIosButtonPress / _GuardianAudioHandler) + the two start-wiring call
+#     lines; proof: CI build-ios; the Android subscription body stays
+#     host-covered via subscribeNativeChannelForTest.
+#   device_info_service 10    — Android getSimPhoneNumber channel + its
+#     exception branches behind the !Platform.isAndroid early return;
+#     proof: CI build-android (DeviceInfoChannel.kt).
+#   background_session_service 9 — _onBackgroundStart isolate entrypoint +
+#     iOS onBackground closure; proof:
+#     tool/device_e2e/run_background_throttle.sh (#12) / CI build-ios.
+#   messaging_service 8       — Android enqueueSms + cancelPending bodies via
+#     SmsChannel.kt/SmsWorker.kt WorkManager; the iOS URI arms + retry logic
+#     stay host-tested.
+#   sentry_service 7          — _RealSentrySdk.init/captureException/close:
+#     live-SDK passthrough; host tests inject a fake SentrySdk that drives
+#     the real RealSentryService logic.
+#   contacts_screen 24        — flutter_contacts native picker + its button
+#     behind _importSupported (Android/iOS only).
+#   contact_form_screen 4     — iOS manual-send SMS warning (CI build-ios).
+#   about_screen 3            — macOS/Windows/other ternary legs (the Linux
+#     host short-circuits at isLinux).
+#   main.dart 4               — the real main() entry; flutter test never
+#     executes it; proven on-device by
+#     integration_test/app_boot_smoke_test.dart (emulator lcov).
+#
+# DELIBERATELY NOT WRAPPED in C10 (host-coverable or defensive — stay in the
+# denominator as the honest remainder; cover, don't hide):
+#   * notification_service 186-187 + 556-557: prefs-failure catches —
+#     host-coverable via the injectable _prefsFactory /
+#     SharedPreferencesStorePlatform.
+#   * background_session_service configure() success-log + MissingPlugin
+#     catch + updateNotification fakeName cache line — host-coverable via the
+#     plugin's settable platform interface / a plain unit test.
+#   * main.dart recovery edge taps (_startFresh json_store delete + catch,
+#     no-ProviderScope fallback container, _RestoreProgress.build) —
+#     host-coverable with the existing path_provider/file_selector seams.
+#   * The cohort-verified defensive-unreachable lines (session_controller
+#     1136/1515, session_screen ~886, mode_editor dead arm, home_screen 65-66,
+#     pin_setup 50) and small tails (swipe_slider, ringtone_picker, …).
+#   * Sim-service tails (audio bootstrapVoiceAssets, PhoneCall.toString,
+#     recording useRealDirectory) were host-COVERED by C10 tests instead of
+#     wrapped.
 # ─────────────────────────────────────────────────────────────────────────────

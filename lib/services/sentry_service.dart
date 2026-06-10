@@ -28,6 +28,7 @@ abstract interface class SentrySdk {
 class _RealSentrySdk implements SentrySdk {
   const _RealSentrySdk();
 
+  // LCOV_EXCL_START — live-SDK-only passthrough: host tests inject a fake SentrySdk (sentry_service_test drives the real RealSentryService logic); these statics need the real Sentry SDK/network
   @override
   Future<void> init(
     SentryFlutterOptions Function(SentryFlutterOptions) configureFn,
@@ -41,6 +42,7 @@ class _RealSentrySdk implements SentrySdk {
 
   @override
   Future<void> close() => Sentry.close();
+  // LCOV_EXCL_STOP
 }
 
 // ---------------------------------------------------------------------------

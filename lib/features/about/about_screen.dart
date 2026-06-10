@@ -61,11 +61,13 @@ class _AboutScreenState extends State<AboutScreen> {
         ? 'iOS'
         : Platform.isLinux
         ? 'Linux'
+        // LCOV_EXCL_START — platform-only ternary legs (macOS/Windows/other): the Linux test host short-circuits at isLinux above
         : Platform.isMacOS
         ? 'macOS'
         : Platform.isWindows
         ? 'Windows'
         : Platform.operatingSystem;
+    // LCOV_EXCL_STOP
     final marked = supported
         .map((p) => p == current ? '$p (current)' : p)
         .toList();

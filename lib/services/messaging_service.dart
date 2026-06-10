@@ -178,6 +178,7 @@ class RealMessagingService implements MessagingServiceProtocol {
   @override
   Future<void> cancelPending(List<MessageWorkId> workIds) async {
     if (!Platform.isAndroid) return;
+    // LCOV_EXCL_START — device-only (Platform.isAndroid): WorkManager cancel via SmsChannel.kt; host-side SMS logic covered by messaging_service_test over the mocked channel
     if (workIds.isEmpty) return;
     log('cancelPending: ${workIds.length} jobs', name: 'MessagingService');
     try {
@@ -185,6 +186,7 @@ class RealMessagingService implements MessagingServiceProtocol {
     } catch (e) {
       log('cancelPending error: $e', name: 'MessagingService');
     }
+    // LCOV_EXCL_STOP
   }
 
   /// Broadcast stream of SMS retry-exhaustion events (spec 05:291).
@@ -296,6 +298,7 @@ class RealMessagingService implements MessagingServiceProtocol {
   }) async {
     final number = sanitizePhoneNumber(contact.phoneNumber);
     if (Platform.isAndroid) {
+      // LCOV_EXCL_START — device-only (Platform.isAndroid): auto-send enqueue via SmsChannel.kt/SmsWorker.kt WorkManager; host SMS logic (iOS URI arm below, retries) is host-tested
       log('SMS Android enqueue → $number', name: 'MessagingService');
       try {
         final workId = await _smsChannel.invokeMethod<String>('enqueueSms', {
@@ -308,6 +311,7 @@ class RealMessagingService implements MessagingServiceProtocol {
         log('enqueueSms error: $e', name: 'MessagingService');
         return null;
       }
+      // LCOV_EXCL_STOP
     } else {
       // iOS: sms: URI — user must tap Send.
       final encoded = Uri.encodeComponent(message);

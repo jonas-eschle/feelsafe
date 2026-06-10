@@ -51,6 +51,7 @@ const String kActionResume = 'background:resume';
 /// listens for the `'stop'` method emitted by the main isolate when a
 /// session ends.  All session logic still runs in the main isolate; this
 /// handler only keeps the process alive and responds to the stop signal.
+// LCOV_EXCL_START — device-only background-isolate entrypoint (@pragma vm:entry-point, invoked by the plugin's native service): proven by tool/device_e2e/run_background_throttle.sh (#12)
 @pragma('vm:entry-point')
 void _onBackgroundStart(ServiceInstance service) {
   log('Background service started', name: 'BackgroundSessionService');
@@ -69,6 +70,7 @@ void _onBackgroundStart(ServiceInstance service) {
     service.stopSelf();
   });
 }
+// LCOV_EXCL_STOP
 
 /// Production [BackgroundSessionServiceProtocol].
 ///
@@ -149,11 +151,13 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
         iosConfiguration: IosConfiguration(
           autoStart: false,
           onForeground: _onBackgroundStart,
+          // LCOV_EXCL_START — iOS-only background-fetch keep-alive closure (CI build-ios)
           onBackground: (_) async {
             // iOS background fetch: keep-alive only; no long work permitted.
             log('iOS background fetch tick', name: 'BackgroundSessionService');
             return true;
           },
+          // LCOV_EXCL_STOP
         ),
         androidConfiguration: AndroidConfiguration(
           onStart: _onBackgroundStart,
