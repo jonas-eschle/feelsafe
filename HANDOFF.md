@@ -142,7 +142,36 @@ event_specific_config.dart 595/595. Costs: impl 351k/128t, arch 76k, qa
 94k, fix 198k/114t, re-arch 62k, re-qa 57k (~840k — budget P3-size
 chunks at ~2.5× P1).
 
-**NEXT: P3b** (templateIds picker) → P4 → P5 → P5b → P6.
+**DONE: P3b** (`6d59a64`, cohort PASS×2): _TemplateIdsPicker above the
+manage-link (structural + pinned), pool truthful to the runtime
+composition (global-then-local, live-draft merge), all-stale displays as
+all-eligible matching the selector fallback, no-surprise-delete toggle,
+hidden in BOTH Event-Defaults contexts (spec 04:2004-2008), 4 keys ×14,
+suite 4687→4697, full-gate coverage 99.40%. QA minors parked: round-trip
+test asserts empty-restore via UI proxy not config value; live-merge
+(draft-added local) scenario untested; QA's 625/636 coverage figure was a
+targeted-run artifact (full-suite lcov = 636/636 — event_defaults tests
+cover the 6 toggle callbacks). Costs: impl 292k/151t, arch 89k, qa 110k.
+
+**🐛 BUG #14 CONFIRMED by the P3b arch cohort (severity HIGH,
+pre-existing): global reminder templates live in TWO unsynced stores** —
+Templates-screen CRUD writes ONLY reminderTemplatesDao
+(reminder_templates_controller.dart:39/:47, template_editor_screen.dart:95)
+while the session pool reads ONLY AppSettings.defaults.templates
+(session_controller.dart:641); no reconciliation exists; both seeded with
+the same 8 built-ins (seed_data.dart:60 DAO, :354 JSON) then diverge on
+first user CRUD → user template edits are SILENTLY INERT at runtime
+(stealth customization defeated). SECOND FACET: backup double-serializes
+templates (backup_service.dart:75 DAO top-level + :204 inside the
+settings blob) and restores to both stores → divergence propagates
+across devices. Root cause: spec contradiction (03:141/223 Drift table
+vs 02:91 + 03:90/151/239/245/727/824/1090/1117 AppDefaults JSON).
+Missed by the 99%-coverage suite because each store is individually
+tested — only the CONNECTION was never asserted (the fabricated-wiring
+lesson, one layer down: cross-store wiring needs an e2e pin).
+**USER DECISION: (A) Drift DAO is the source of truth** → fix chunk P3c.
+
+**NEXT: P3c** (bug-#14 fix) → P4 → P5 → P5b → P6.
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
