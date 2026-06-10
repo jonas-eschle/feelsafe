@@ -74,7 +74,7 @@ const Map<String, List<String>> _rNnCoverage = {
   'R-7': ['test/domain/models/app_settings_test.dart'],
   // R-8: emergency number blank ⇒ device locale ⇒ fallback '112'.
   'R-8': ['test/domain/models/emergency_numbers_test.dart'],
-  // R-9: repeatCount → retryCount rename (legacy name is a CI grep gate).
+  // R-9: repeat-count → retryCount rename (legacy name is a CI grep gate).
   'R-9': ['test/domain/models/chain_step_test.dart'],
   // R-10: simulationSilent defaults to true (Extra 49).
   'R-10': ['test/features/session/session_controller_lifecycle_test.dart'],
@@ -91,7 +91,7 @@ const Map<String, List<String>> _rNnCoverage = {
   'R-15': ['test/features/template_editor/template_editor_screen_test.dart'],
   // R-16: 3-screen onboarding.
   'R-16': ['test/integration/onboarding_flow_widget_test.dart'],
-  // R-17: SmsContactSelection enum (SmsRecipient deleted).
+  // R-17: SmsContactSelection enum (v2 sms-recipient type deleted).
   'R-17': ['test/domain/enums/exhaustiveness_test.dart'],
   // R-18: "Distress Mode(s)" terminology in UI.
   'R-18': ['test/features/distress_modes/distress_modes_screen_test.dart'],
@@ -145,8 +145,8 @@ const Map<String, List<String>> _rNnCoverage = {
   'R-36': ['test/router/app_router_test.dart'],
   // R-37: StealthIconPreset.none ⇒ no icon override.
   'R-37': ['test/domain/models/stealth_config_test.dart'],
-  // R-38: HiveRecoveryApp reference removed (Hive retired).
-  'R-38': ['(doc-edit: Hive recovery reference deleted — Hive retired)'],
+  // R-38: HiveRecoveryApp reference removed (v2 store retired).
+  'R-38': ['(doc-edit: HiveRecoveryApp reference deleted — v2 store retired)'],
   // R-39: spec-11 §DE-2/§DE-3 cross-references resolved.
   'R-39': ['(doc-edit: spec-11 DE-2/DE-3 cross-references resolved)'],
   // R-40: single SessionLog.hadMedicalInfo definition.
