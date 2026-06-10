@@ -36,6 +36,7 @@ import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
@@ -253,6 +254,27 @@ class _FixedSettingsRepo implements AppSettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async {}
+
+  @override
+  Future<void> delete() async {}
+}
+
+/// An [AppSettingsRepository] whose [save] round-trips into [load] — used to
+/// drive the REAL [SettingsController] setters against the live root widget
+/// (the fixed-value repo above cannot observe a write).
+class _MutableSettingsRepo implements AppSettingsRepository {
+  _MutableSettingsRepo(this.value);
+
+  AppSettings value;
+
+  @override
+  Future<AppSettings> load() async => value;
+
+  @override
+  Future<AppSettings?> loadOrNull() async => value;
+
+  @override
+  Future<void> save(AppSettings newValue) async => value = newValue;
 
   @override
   Future<void> delete() async {}
@@ -965,7 +987,7 @@ void main() {
           child: const GuardianAngelaApp(),
         ),
       );
-      // One settle pass lets _appSettingsLiveProvider resolve and the theme +
+      // One settle pass lets appSettingsLiveProvider resolve and the theme +
       // locale maybeWhen branches read the loaded settings.
       await tester.pump();
       await tester.pump();
@@ -997,6 +1019,43 @@ void main() {
       check(app.themeMode).equals(ThemeMode.system);
       check(app.locale).equals(const Locale('de'));
     });
+
+    testWidgets(
+      'the real SettingsController.setThemeMode re-themes the LIVE app — '
+      'MaterialApp.themeMode flips system → dark with no restart (real '
+      'controller → appSettingsLiveProvider → MaterialApp.themeMode)',
+      (WidgetTester tester) async {
+        final repo = _MutableSettingsRepo(const AppSettings());
+        final container = ProviderContainer(
+          overrides: [appSettingsRepositoryProvider.overrideWithValue(repo)],
+        );
+        addTearDown(container.dispose);
+        await tester.pumpWidget(
+          UncontrolledProviderScope(
+            container: container,
+            child: const GuardianAngelaApp(),
+          ),
+        );
+        await tester.pump();
+        await tester.pump();
+        check(
+          tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+        ).equals(ThemeMode.system);
+
+        // The wired theme-picker action (Settings → Theme). The SAME running
+        // tree must re-theme: persisted to the repo, re-read by the keep-alive
+        // settings provider, applied by the root MaterialApp.
+        await container
+            .read(settingsControllerProvider.notifier)
+            .setThemeMode(AppThemeMode.dark);
+        await tester.pump();
+        await tester.pump();
+        check(repo.value.themeMode).equals(AppThemeMode.dark);
+        check(
+          tester.widget<MaterialApp>(find.byType(MaterialApp)).themeMode,
+        ).equals(ThemeMode.dark);
+      },
+    );
   });
 
   // --------------------------------------------------------------------------

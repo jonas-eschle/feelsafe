@@ -25,11 +25,14 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:guardianangela/data/db/database.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
+import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/about/about_screen.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
 import 'package:guardianangela/features/contact_form/contact_form_screen.dart';
@@ -93,22 +96,68 @@ SessionMode _mode(String id, String name, {bool isDistress = false}) =>
       chainSteps: <ChainStep>[_step('$id-s0')],
     );
 
+/// [AppSettingsRepository] whose [save] round-trips into [load] — required by
+/// the onboarding-completion redirect test, where the REAL
+/// `OnboardingController.completeOnboarding` persists `isFirstLaunch = false`
+/// and the REAL redirect must observe it (the harness's
+/// [FakeAppSettingsRepository] always loads its fixed value).
+final class _RoundTripSettingsRepository extends AppSettingsRepository {
+  _RoundTripSettingsRepository(this.value)
+    : super(
+        keyProvider: () async => '00' * 33,
+        resolveDir: () async => throw UnimplementedError('no disk in tests'),
+      );
+
+  AppSettings value;
+
+  @override
+  Future<AppSettings> load() async => value;
+
+  @override
+  Future<AppSettings?> loadOrNull() async => value;
+
+  @override
+  Future<void> save(AppSettings newValue) async => value = newValue;
+}
+
+/// [UserProfileRepository] whose [save] round-trips in memory (the harness's
+/// [FakeUserProfileRepository] inherits the real disk-writing `save`, which
+/// `completeOnboarding` would hit).
+final class _RoundTripProfileRepository extends UserProfileRepository {
+  _RoundTripProfileRepository(this.value)
+    : super(keyProvider: () async => '00' * 32);
+
+  UserProfile value;
+
+  @override
+  Future<UserProfile> load() async => value;
+
+  @override
+  Future<void> save(UserProfile newValue) async => value = newValue;
+}
+
 // ─── Harness ─────────────────────────────────────────────────────────────────
 
 /// Mirrors `buildIntegrationContainer`'s full service-fake set, plus the
 /// biometric / start-validator sims some routed screens read lazily.
+///
+/// [settingsRepo] / [profileRepo] default to the harness fixed-value fakes;
+/// pass round-trip repositories when a flow under test must persist (e.g.
+/// onboarding completion).
 ProviderContainer _routerContainer({
   required GuardianAngelaDatabase db,
   required AppSettings settings,
+  AppSettingsRepository? settingsRepo,
+  UserProfileRepository? profileRepo,
 }) {
   final fakes = RecordingFakes();
   final container = ProviderContainer(
     overrides: [
       appSettingsRepositoryProvider.overrideWithValue(
-        FakeAppSettingsRepository(settings),
+        settingsRepo ?? FakeAppSettingsRepository(settings),
       ),
       userProfileRepositoryProvider.overrideWithValue(
-        FakeUserProfileRepository(),
+        profileRepo ?? FakeUserProfileRepository(),
       ),
       databaseProvider.overrideWith((ref) async => db),
       audioServiceProvider.overrideWithValue(fakes.audio),
@@ -377,6 +426,52 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.byType(OnboardingScreen), findsOneWidget);
       expect(find.byType(SettingsScreen), findsNothing);
+    });
+
+    testWidgets('completing onboarding for real releases the first-launch '
+        'redirect — "Get started" lands on home instead of bouncing back to '
+        '/onboarding off the stale keep-alive cache', (
+      WidgetTester tester,
+    ) async {
+      final db = newDb();
+      // Round-trip repos: the REAL OnboardingController.completeOnboarding
+      // persists isFirstLaunch=false + the profile draft, and the REAL
+      // redirect must re-read the flipped flag.
+      final settingsRepo = _RoundTripSettingsRepository(const AppSettings());
+      final container = _routerContainer(
+        db: db,
+        settings: const AppSettings(),
+        settingsRepo: settingsRepo,
+        profileRepo: _RoundTripProfileRepository(const UserProfile()),
+      );
+      await _pumpApp(tester, container);
+      final l10n = await AppLocalizations.delegate.load(const Locale('en'));
+
+      // First launch → redirected to onboarding (the firstLaunchProvider
+      // cache now holds `true`, which is exactly what must not go stale).
+      expect(find.byType(OnboardingScreen), findsOneWidget);
+
+      // Walk the real UI: welcome → profile → permissions → "Get started"
+      // (which runs completeOnboarding and then goNamed(home)).
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+      await tester.scrollUntilVisible(
+        find.text(l10n.onboardingGetStarted),
+        100,
+        scrollable: find.byType(Scrollable).last,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.onboardingGetStarted));
+      await tester.pumpAndSettle();
+
+      // The flag was persisted...
+      check(settingsRepo.value.isFirstLaunch).isFalse();
+      // ...and the redirect observed it: navigation actually leaves
+      // onboarding for home (a stale `true` would bounce straight back).
+      expect(find.byType(OnboardingScreen), findsNothing);
+      expect(find.byType(HomeScreen), findsOneWidget);
     });
 
     testWidgets('locking the launch gate routes everything to /launch-pin and '

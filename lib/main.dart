@@ -242,7 +242,7 @@ class GuardianAngelaApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(goRouterProvider);
-    final settingsAsync = ref.watch(_appSettingsLiveProvider);
+    final settingsAsync = ref.watch(appSettingsLiveProvider);
     final scheme = ColorScheme.fromSeed(seedColor: const Color(0xFF131118));
     final darkScheme = ColorScheme.fromSeed(
       seedColor: const Color(0xFF131118),
@@ -280,9 +280,15 @@ class GuardianAngelaApp extends ConsumerWidget {
 /// Live [AppSettings] provider that re-loads from disk on demand.
 ///
 /// `MaterialApp.router` reads the current theme + locale from here so
-/// that settings changes rebuild the root widget. Settings screens
-/// invalidate this provider after `appSettingsRepositoryProvider.save`.
-final _appSettingsLiveProvider = FutureProvider<AppSettings>((ref) async {
+/// that settings changes rebuild the root widget. The provider is
+/// keep-alive, so every writer that changes a field the root app
+/// consumes must `ref.invalidate(appSettingsLiveProvider)` after
+/// `appSettingsRepositoryProvider.save` — without that re-read the
+/// change would not apply until the next cold start. Current
+/// invalidators: `SettingsController.setThemeMode`,
+/// `SettingsController.setLanguage`, and the backup-restore import
+/// (which overwrites the whole settings singleton).
+final appSettingsLiveProvider = FutureProvider<AppSettings>((ref) async {
   return ref.read(appSettingsRepositoryProvider).load();
 });
 

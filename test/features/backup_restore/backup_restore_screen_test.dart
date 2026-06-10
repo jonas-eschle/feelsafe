@@ -43,6 +43,7 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -52,6 +53,7 @@ import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
@@ -89,10 +91,11 @@ class _FakeFileSelector extends FileSelectorPlatform
 /// [BackupServiceProtocol] whose [importFromJson] always throws a
 /// [FormatException] to exercise the corrupt-file error path.
 ///
-/// NOTE: The screen's [_import] has no catch block — only a finally that
-/// resets [_busy]. Tests that use this service must call
-/// `tester.takeException()` to drain the propagated error from the
-/// framework's zone error handler.
+/// The screen's `_import` catches this (`on FormatException`) and surfaces
+/// the localised `backupImportError` snackbar — the "corrupt-import
+/// surfaces a snackbar" widget test drives that branch through the real
+/// UI; nothing escapes to the framework's zone handler (no
+/// `tester.takeException()` needed).
 class _CorruptBackupService extends SimulationBackupService {
   _CorruptBackupService() : super();
 
@@ -121,6 +124,27 @@ class _StateErrorBackupService extends SimulationBackupService {
   Future<void> importFromJson(String json) async {
     importCalls.add(json);
     throw StateError('newer schema');
+  }
+}
+
+/// [BackupServiceProtocol] whose [importFromJson] overwrites the settings
+/// singleton in [repo] — mirrors the real `BackupService`, which restores
+/// `AppSettings` (including themeMode + languageCode) during an import.
+class _SettingsRestoringBackupService extends SimulationBackupService {
+  _SettingsRestoringBackupService(this.repo);
+
+  final AppSettingsRepository repo;
+
+  @override
+  Future<void> importFromJson(String json) async {
+    await super.importFromJson(json);
+    await repo.save(
+      const AppSettings(
+        themeMode: AppThemeMode.dark,
+        languageCode: 'de',
+        isFirstLaunch: false,
+      ),
+    );
   }
 }
 
@@ -658,17 +682,15 @@ void main() {
   // ---- Error handling — corrupt file ----
 
   group('BackupRestoreScreen — error handling', () {
-    // The screen's _import() has no catch block (only a finally that resets
-    // _busy). A corrupt importFromJson throws an unhandled async error that
-    // propagates through the test framework's zone handler — it cannot be
-    // consumed safely via tester.takeException() because pumpAndSettle
-    // processes and reports it before the test can drain it.
-    //
-    // Error-path widget tests therefore verify the interaction chain using
-    // the standard SimulationBackupService (which does NOT throw) so the
-    // full UI → service path is exercised without the side-effect of an
-    // unhandled future error. The throwing service contract is covered by
-    // the _CorruptBackupService unit-level assertions below.
+    // The screen's _import() catches FormatException, Exception, and Object
+    // separately and surfaces each as a localised backupImportError
+    // snackbar — no error escapes to the test framework's zone handler.
+    // Those catch branches are driven through the real UI by the
+    // corrupt-import snackbar test and the "import error snackbars" group
+    // below; this group covers the happy interaction chain (decode →
+    // importFromJson → finally resets _busy) with the non-throwing
+    // SimulationBackupService, plus the _CorruptBackupService unit-level
+    // throwing contract.
 
     testWidgets('import calls importFromJson with UTF-8-decoded file bytes', (
       WidgetTester tester,
@@ -1022,6 +1044,59 @@ void main() {
         check(
           modesAfter.modes.map((m) => m.name),
         ).deepEquals(['Restored Mode']);
+      },
+    );
+
+    testWidgets(
+      'a successful import re-reads the keep-alive live settings — the '
+      'restored themeMode + languageCode reach the root MaterialApp '
+      'without an app restart',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final repo = _InMemoryAppSettingsRepository();
+        final service = _SettingsRestoringBackupService(repo);
+        final original = FileSelectorPlatform.instance;
+        FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+        addTearDown(() => FileSelectorPlatform.instance = original);
+        await pumpScreen(
+          tester,
+          const BackupRestoreScreen(),
+          overrides: <Override>[
+            backupServiceProvider.overrideWith((_) async => service),
+            appSettingsRepositoryProvider.overrideWithValue(repo),
+          ],
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(BackupRestoreScreen)),
+          listen: false,
+        );
+        // Prime the keep-alive cache with the pre-import settings — this is
+        // the state the root MaterialApp watches beneath the backup screen.
+        final AppSettings before = await container.read(
+          appSettingsLiveProvider.future,
+        );
+        check(before.languageCode).equals('en');
+        check(before.themeMode).equals(AppThemeMode.system);
+
+        await tester.tap(
+          find.ancestor(
+            of: find.text(l10n.backupImportButton),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonConfirm));
+        await tester.pumpAndSettle();
+        check(service.importCalls).isNotEmpty();
+
+        // The import overwrote the settings singleton behind the provider's
+        // back; the screen-layer invalidation re-reads it so the restored
+        // theme + language apply live instead of on the next cold start.
+        final AppSettings after = await container.read(
+          appSettingsLiveProvider.future,
+        );
+        check(after.languageCode).equals('de');
+        check(after.themeMode).equals(AppThemeMode.dark);
       },
     );
   });

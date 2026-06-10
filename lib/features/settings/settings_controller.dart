@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable state for the settings hub.
@@ -112,6 +113,10 @@ class SettingsController extends AsyncNotifier<SettingsHubState> {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
     await repo.save(settings.copyWith(themeMode: mode));
+    // The root MaterialApp's themeMode is driven by the keep-alive
+    // [appSettingsLiveProvider]; without this re-read the picked theme
+    // would not apply until the next cold start.
+    ref.invalidate(appSettingsLiveProvider);
     ref.invalidateSelf();
   }
 
@@ -120,6 +125,10 @@ class SettingsController extends AsyncNotifier<SettingsHubState> {
     final repo = ref.read(appSettingsRepositoryProvider);
     final settings = await repo.load();
     await repo.save(settings.copyWith(languageCode: code));
+    // The root MaterialApp's locale is driven by the keep-alive
+    // [appSettingsLiveProvider]; without this re-read the picked language
+    // would not apply until the next cold start.
+    ref.invalidate(appSettingsLiveProvider);
     ref.invalidateSelf();
   }
 

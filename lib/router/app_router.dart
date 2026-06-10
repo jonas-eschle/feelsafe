@@ -47,7 +47,7 @@ import 'package:guardianangela/services/service_providers.dart';
 class _RouterRefreshListenable extends ChangeNotifier {
   _RouterRefreshListenable(this._ref) {
     _ref.listen<AsyncValue<bool>>(
-      _firstLaunchProvider,
+      firstLaunchProvider,
       (_, _) => notifyListeners(),
     );
     _ref.listen<bool>(launchGateProvider, (_, _) => notifyListeners());
@@ -58,9 +58,13 @@ class _RouterRefreshListenable extends ChangeNotifier {
 
 /// Async provider that returns whether this is the first app launch.
 ///
-/// Backed by `AppSettings.isFirstLaunch`. Phase 6 marks the flag false at
-/// the end of onboarding via `OnboardingController.completeOnboarding`.
-final _firstLaunchProvider = FutureProvider<bool>((ref) async {
+/// Backed by `AppSettings.isFirstLaunch`. The provider is keep-alive and
+/// the redirect reads its cached value, so a writer that persists a new
+/// flag value must invalidate it — `OnboardingController.completeOnboarding`
+/// does (invalidate + await the re-load) before `OnboardingScreen._finish`
+/// navigates home; otherwise the redirect would re-read the stale `true`
+/// and bounce the user straight back to /onboarding.
+final firstLaunchProvider = FutureProvider<bool>((ref) async {
   final settings = await ref.read(appSettingsRepositoryProvider).load();
   return settings.isFirstLaunch;
 });
@@ -75,7 +79,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
     initialLocation: '/',
     refreshListenable: _RouterRefreshListenable(ref),
     redirect: (BuildContext context, GoRouterState state) {
-      final firstLaunch = ref.read(_firstLaunchProvider).value;
+      final firstLaunch = ref.read(firstLaunchProvider).value;
       if (firstLaunch == true && state.matchedLocation != '/onboarding') {
         return '/onboarding';
       }

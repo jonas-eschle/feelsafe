@@ -3,6 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
+import 'package:guardianangela/router/app_router.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable in-progress state for the onboarding flow.
@@ -96,6 +97,14 @@ class OnboardingController extends Notifier<OnboardingState> {
 
     final settings = await settingsRepo.load();
     await settingsRepo.save(settings.copyWith(isFirstLaunch: false));
+    // The router's first-launch redirect reads the keep-alive
+    // [firstLaunchProvider], whose cache still holds the `true` that routed
+    // the user here. Invalidate AND await the re-load so the redirect sees
+    // `false` before `OnboardingScreen._finish` navigates home — invalidate
+    // alone keeps exposing the previous value until the new future
+    // resolves, which would bounce the navigation back to /onboarding.
+    ref.invalidate(firstLaunchProvider);
+    await ref.read(firstLaunchProvider.future);
 
     final profile = await profileRepo.load();
     final updated = profile.copyWith(

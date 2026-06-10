@@ -11,6 +11,7 @@ import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Backup & restore screen.
@@ -126,6 +127,12 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       // the screen layer — BackupService must remain Riverpod-free.
       ref.invalidate(homeControllerProvider);
       ref.invalidate(modesControllerProvider);
+      // importFromJson also overwrote the AppSettings singleton, which may
+      // carry a different themeMode / languageCode; the root MaterialApp
+      // reads both from the keep-alive appSettingsLiveProvider, so without
+      // this re-read the restored theme + language would not apply until
+      // the next cold start.
+      ref.invalidate(appSettingsLiveProvider);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.backupImportSuccess)));

@@ -1,19 +1,22 @@
 /// Widget scenario WID-002 — language-switch instant rebuild (decision 43;
 /// spec 07 §Coverage matrix "Language switch instant rebuild").
 ///
-/// Proves the real localization wiring: the root `MaterialApp.locale` is driven
-/// by `AppSettings.languageCode` (`main.dart:260` watches a settings provider
-/// and feeds `Locale(s.languageCode)`), and the real `AppLocalizations.delegate`
-/// + `supportedLocales` re-resolve every `AppLocalizations.of(context).<key>`
-/// the instant the locale value changes — no app restart. This test mirrors
-/// that exact production wiring: a Riverpod provider holds the language code, a
-/// `ConsumerWidget` feeds it to `MaterialApp.locale`, and flipping the provider
-/// value rebuilds the running tree into the new locale.
+/// Proves the REAL production wiring end-to-end, with no fabricated
+/// stand-ins: the actual root [GuardianAngelaApp] is pumped (real GoRouter,
+/// real `AppLocalizations.delegate` + `supportedLocales`), its
+/// `MaterialApp.locale` is driven by `AppSettings.languageCode` through the
+/// keep-alive `appSettingsLiveProvider` in `main.dart`, and the REAL
+/// [SettingsController.setLanguage] — the wired control behind the
+/// Settings → Language picker — persists the new code AND invalidates that
+/// provider, so the RUNNING tree re-localizes instantly (no app restart).
 ///
-/// It also drives the **real** [SettingsController.setLanguage] to prove the
-/// setter persists the new code to the repository (the control behind the
-/// Settings → Language picker), and asserts the persisted value round-trips —
-/// closing the loop from "user picks a language" to "every string rebuilds".
+/// The flip is observed on the first-launch onboarding welcome page, which
+/// renders the anchor string without any native DB: `databaseProvider` is
+/// overridden to fail fast per WID-001's teardown-stability doctrine (see
+/// `onboarding_flow_widget_test.dart`'s library doc — a native in-memory
+/// sqlite3 close racing the binding finalization under `--concurrency=6`
+/// segfaulted the host VM). `OnboardingController._watchContacts` swallows
+/// the failure; the welcome page itself never touches the DB.
 ///
 /// Assertion anchor: `homeTagline` is a stable, non-placeholder string with a
 /// distinct translation in every locale —
@@ -25,7 +28,6 @@ library;
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
@@ -34,63 +36,12 @@ import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/main.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 // Known anchor strings (must match the generated getters in app_localizations_*).
 const _enTagline = 'Your angel\'s got your back.';
 const _deTagline = 'Dein Engel passt auf dich auf.';
-
-// ─── Production-mirroring locale wiring ──────────────────────────────────────
-
-/// Holds the active language code, exactly as `AppSettings.languageCode` does
-/// in production. Flipping this is what the Settings language picker
-/// effectively does (it saves the setting; the root widget re-reads it).
-///
-/// A `Notifier` (not the legacy `StateProvider`) to match the project's
-/// Riverpod-3 idiom; `set` is the live mutation the locale watcher reacts to.
-class _LanguageCode extends Notifier<String> {
-  @override
-  String build() => 'en';
-
-  void set(String code) => state = code;
-}
-
-final _languageCodeProvider = NotifierProvider<_LanguageCode, String>(
-  _LanguageCode.new,
-);
-
-/// A faithful stand-in for the root `GuardianAngelaApp`: `MaterialApp.locale`
-/// follows the watched language code through the REAL `AppLocalizations`
-/// delegate + supportedLocales, so a code change rebuilds the whole tree.
-class _LocalizedApp extends ConsumerWidget {
-  const _LocalizedApp();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final code = ref.watch(_languageCodeProvider);
-    return MaterialApp(
-      locale: Locale(code),
-      localizationsDelegates: const <LocalizationsDelegate<Object>>[
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: const _TaglineScreen(),
-    );
-  }
-}
-
-/// Renders a single localized string so the test can observe it change.
-class _TaglineScreen extends StatelessWidget {
-  const _TaglineScreen();
-
-  @override
-  Widget build(BuildContext context) => Scaffold(
-    body: Center(child: Text(AppLocalizations.of(context).homeTagline)),
-  );
-}
 
 // ─── In-memory settings repo (round-trips save → load) ───────────────────────
 
@@ -128,78 +79,71 @@ void main() {
   });
 
   testWidgets(
-    'WID-002 flipping the language code rebuilds the running UI into the new '
-    'locale instantly (no restart) — en → de → en',
+    'WID-002 the real SettingsController.setLanguage re-localizes the LIVE '
+    'root MaterialApp instantly (real controller → appSettingsLiveProvider → '
+    'MaterialApp.locale) — en → de → en, no restart',
     (WidgetTester tester) async {
-      late ProviderContainer container;
-      await tester.pumpWidget(
-        ProviderScope(
-          child: Consumer(
-            builder: (context, ref, _) {
-              container = ProviderScope.containerOf(context);
-              return const _LocalizedApp();
-            },
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
+      // Phone-shaped viewport: the onboarding welcome page is taller than the
+      // 800×600 test default in some locales.
+      tester.view.physicalSize = const Size(1080, 2280);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
 
-      // Initial locale is English.
-      expect(find.text(_enTagline), findsOneWidget);
-      expect(find.text(_deTagline), findsNothing);
-
-      // Switch to German — the SAME widget tree rebuilds into German.
-      container.read(_languageCodeProvider.notifier).set('de');
-      await tester.pumpAndSettle();
-      expect(find.text(_deTagline), findsOneWidget);
-      expect(find.text(_enTagline), findsNothing);
-
-      // And back to English — proving it tracks the live value, not a one-shot.
-      container.read(_languageCodeProvider.notifier).set('en');
-      await tester.pumpAndSettle();
-      expect(find.text(_enTagline), findsOneWidget);
-      expect(find.text(_deTagline), findsNothing);
-    },
-  );
-
-  testWidgets(
-    'WID-002 the real SettingsController.setLanguage persists the new code '
-    '(the wiring behind the Settings language picker)',
-    (WidgetTester tester) async {
-      // Starts at 'en' (the model default languageCode).
+      // Starts at 'en' (the model default languageCode). The default
+      // isFirstLaunch=true routes the REAL router to the onboarding welcome
+      // page, which renders the anchor without any native DB.
       final repo = _RecordingSettingsRepository(const AppSettings());
       final container = ProviderContainer(
         overrides: <Override>[
           appSettingsRepositoryProvider.overrideWithValue(repo),
+          // No native DB (WID-001 doctrine — see the library doc). The only
+          // reader on this route, OnboardingController._watchContacts,
+          // swallows the failure and never surfaces it.
+          databaseProvider.overrideWith(
+            (ref) async =>
+                throw StateError('WID-002: no DB on the welcome page'),
+          ),
         ],
       );
       addTearDown(container.dispose);
 
-      // Mount the container in the tree so the controller's `invalidateSelf`
-      // rebuilds are drained by the binding (no leaked timer on teardown).
       await tester.pumpWidget(
         UncontrolledProviderScope(
           container: container,
-          child: const MaterialApp(home: SizedBox.shrink()),
+          child: const GuardianAngelaApp(),
         ),
       );
       await tester.pumpAndSettle();
 
-      // The controller's async build reflects the starting locale.
-      final initial = await container.read(settingsControllerProvider.future);
-      check(initial.languageCode).equals('en');
+      MaterialApp app() => tester.widget<MaterialApp>(find.byType(MaterialApp));
 
-      // The wired language-picker action.
+      // The live tree starts in English.
+      check(app().locale).equals(const Locale('en'));
+      expect(find.text(_enTagline), findsOneWidget);
+      expect(find.text(_deTagline), findsNothing);
+
+      // The REAL language-picker action — the SAME widget tree must rebuild
+      // into German with no restart.
       await container
           .read(settingsControllerProvider.notifier)
           .setLanguage('de');
       await tester.pumpAndSettle();
 
-      // Persisted to the repo (so the next launch / the root locale watcher
-      // reads German) and reflected in the rebuilt controller state.
+      // Persisted to the repo AND applied to the running MaterialApp.
       check(repo._value.languageCode).equals('de');
-      final after = await container.read(settingsControllerProvider.future);
-      check(after.languageCode).equals('de');
+      check(app().locale).equals(const Locale('de'));
+      expect(find.text(_deTagline), findsOneWidget);
+      expect(find.text(_enTagline), findsNothing);
+
+      // And back to English — proving it tracks the live value, not a
+      // one-shot.
+      await container
+          .read(settingsControllerProvider.notifier)
+          .setLanguage('en');
+      await tester.pumpAndSettle();
+      check(app().locale).equals(const Locale('en'));
+      expect(find.text(_enTagline), findsOneWidget);
+      expect(find.text(_deTagline), findsNothing);
     },
   );
 }
