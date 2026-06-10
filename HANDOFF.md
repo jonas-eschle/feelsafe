@@ -171,7 +171,26 @@ tested — only the CONNECTION was never asserted (the fabricated-wiring
 lesson, one layer down: cross-store wiring needs an e2e pin).
 **USER DECISION: (A) Drift DAO is the source of truth** → fix chunk P3c.
 
-**NEXT: P3c** (bug-#14 fix) → P4 → P5 → P5b → P6.
+**DONE: P3c — BUG #14 FIXED (`c4322e9`, cohort PASS×2, zero gating
+findings):** session pool + editor picker read the DAO (fresh per
+startSession, globals-then-locals preserved); AppDefaults.templates fully
+excised (lenient legacy-key ignore, loud-failure preserved in sub-model
+casts); seed JSON-half removed (DAO seed sole); backup single-store +
+old-shape two-conflicting-stores import test; 5 staleness paths
+invalidate/re-read (incl. the editor pop-back re-read — draft-safe,
+mounted-guarded); spec reconciled ×13 sites with Whys, zero residual.
+5/5 red-proofs ruled GENUINE by qa (core: pre-fix session showed the
+stale seed 'Meeting with Alex at 3 PM' instead of the user's edit).
+Arch ruled the no-isGlobal-filter design ACCEPTABLE (selector never
+branches on isGlobal; provenance label only). Suite 4697→4703, coverage
+99.41% (floor 98.7). Parked → P5b annex: import isGlobal hardening
+(arch NOTE-1) + repo no-templates-key pin + isGlobal pin strengthening
+(qa minors). Pre-existing NOTEs: databaseProvider autoDispose (inert,
+on-disk DB), spec-03 descriptive-vs-literal export labels. Costs: impl
+277k/156t, arch 72k, qa 76k.
+
+**NEXT: P4** (icon selector + per-type summaries + blackScreen move)
+→ P5 → P5b → P6.
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
