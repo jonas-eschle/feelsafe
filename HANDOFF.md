@@ -12,14 +12,15 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `db24ba1`
-(atop `4a3476a`), **+28 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
-Suite **4597 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 96.75%** (−0.02
-vs C7f's 96.77 = normal run jitter, inside the 0.6 buffer), floor 96.1. M0–M4 PUSHED;
-M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`; the fresh
-session continues C7g→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `82d4c60`
+(atop `9901002`), **+31 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
+Suite **4640 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 97.85%**
+(13031/13317), floor 97.2. **C7 (a..g + 5 fix legs) COMPLETE — the host-coverage
+campaign is DONE; ~286 missed lines remain = device-only/codegen/defensive census.**
+M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`;
+the fresh session continues C8→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C7g:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C8:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
@@ -28,14 +29,18 @@ tail) · C7b (modes feature — incl. an arch systemic sweep proving the
 clear-to-null fix is the COMPLETE remediation across lib/) · C7c (editors +
 distress + the fake-call hold de-flake) · C7d (history/logs tests: qa-PASS;
 arch found BLOCKER bug #6 → C7d-fix `39042e5` re-cohort PASS×2 — incl. UTC
-recovery-window math + cannot-pass-under-old-semantics proof) · **C7e (home +
+recovery-window math + cannot-pass-under-old-semantics proof) · C7e (home +
 post-session: qa-PASS; arch found the bug-#7 fix UNREACHABLE on the real flow →
 C7e-fix `9bcfd44` re-cohort PASS×2 — riverpod flush() semantics verified
 race-free; arch ruled the modes-staleness observation SPEC-MANDATED = bug #9,
-fix mandated as the C7f pre-task) · **C7f (nav/entry + contacts + the bug-#9
+fix mandated as the C7f pre-task) · C7f (nav/entry + contacts + the bug-#9
 4-path pre-task: qa-PASS; arch found the 5th leg — the shared editor is ALSO the
 distress editor and stranded the distress list → C7f-fix `db24ba1` re-cohort
-PASS×2)** — ALL architect+qa **PASS**.
+PASS×2) · **C7g (settings + misc, FINAL slice: qa-PASS; arch symmetry sweep
+found bug #12 theme/language live-propagation → C7g-fix `82d4c60` also proved +
+fixed bug #13 onboarding redirect bounce; re-cohort PASS×2 — await-the-future
+race-close verified deadlock-free + fail-loud, resetOnboarding ruled safe)** —
+ALL architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -85,25 +90,56 @@ red→green proven: delete (C7e-fix), `createBlank` + `duplicate`
 re-cohort: the SAME screen serves /distress-modes/edit), backup restore →
 screen-layer invalidation after successful importFromJson
 (backup_restore_screen.dart:121-127; service stays Riverpod-free). Raw-DAO
-out-of-band deletes remain a documented limitation (test retitled in C7e-fix).
+out-of-band deletes remain a documented limitation (test retitled in C7e-fix);
+(10) C7g — `pin_setup_screen._save` never invalidated
+`settingsSecurityControllerProvider` → a just-set PIN showed as NOT set and a
+just-armed DURESS PIN showed as unarmed on the Security screen (red→green,
+pin_setup_screen.dart:90); (11) C7g — `settings_stealth_controller._saveStealth`
+only invalidateSelf'd → the settings hub's stealth ON/OFF subtitle stale
+(red→green, settings_stealth_controller.dart:40); (12) **C7g-cohort (arch
+symmetry sweep)** — `MaterialApp.themeMode`/`locale` driven by a PRIVATE
+keep-alive `_appSettingsLiveProvider` whose doc CLAIMED settings screens
+invalidate it — nothing did → theme/language pickers silently no-op'd until
+restart; WID-002 missed it because its "instant rebuild" half tested a
+FABRICATED provider. Fix `m5-c7g-fix` `82d4c60`: provider exposed as
+`appSettingsLiveProvider` + invalidated from setThemeMode/setLanguage
+(settings_controller.dart:120/:133) + post-backup-import
+(backup_restore_screen.dart:135); WID-002 rewritten to the REAL wiring (real
+GuardianAngelaApp, locale en→de→en in the same tree); writer-sweep proved root
+consumes ONLY themeMode+languageCode; (13) **C7g-fix (the cohort's
+same-class suspicion proven REAL)** — completing onboarding BOUNCED back to
+onboarding (stuck until app kill): the router redirect re-read the stale
+keep-alive `_firstLaunchProvider`; old WID-001 missed it (fabricated router, no
+redirect). Fix: `firstLaunchProvider` exposed (app_router.dart:67) +
+`completeOnboarding` invalidates AND awaits `firstLaunchProvider.future` before
+navigating (onboarding_controller.dart:106-107 — the await closes the
+invalidate-exposes-null race; arch-verified deadlock-free + fail-loud).
+**BUGS #9–#13 are ALL the keep-alive-provider-staleness class — the dominant
+v3 wiring-gap pattern; cite as a family in the C10 milestone summary.**
 
-**NEXT = C7g (settings + misc, the FINAL coverage slice).** Calibration: C7a 188L/6f
-= 335k actual, C7b 158L/10f = 249k, C7c 144L/12f+pretask = 202k, C7d 180L/6f = 165k +
-fix 217k, C7e 170L/8f = 257k + fix 93k, C7f 159L/7f+pretask = 307k + fix ~270k (the
-fix agent STALLED twice by backgrounding its gate and ending its turn — subagents are
-NOT re-invoked on background completion; implementer prompts now must say: poll your
-own background gates with repeated tool calls, NEVER end the turn with work pending;
-orchestrator finished the mechanical tail itself). Always read the harness usage line.
-**Census correction from C7f (matters for the C10 denominator):** feature device-only
-lines ≈ **31** (contacts_screen 24: the `_importSupported`-gated native-picker block
-:38-41 + :148-180; contact_form :290-294 iOS SMS warning; about ~3 pending C7g) — NOT
-the ~5 the C6b census estimated. Total device-only ≈ 185 non-feature + ~31 feature;
-codegen Drift-DSL ≈ 71.
-- **C7g — settings + misc (154, 12 files):** settings_security_controller 55/75 +
-  _screen 7/117 + remove_pin_dialog 5/77, settings_screen 21/235 + _controller 15/50,
-  backup_restore_screen 22/122, profile_controller 10/13 + _screen 5/137,
-  settings_stealth_controller 9/41 + _screen 1/89, about_screen 3/72, pin_setup_screen
-  1/90.
+**NEXT = C8 — spec-coverage matrix + flip the Phase-9 assertions** (the THEN-block
+below has the accumulated item list; C8 also picks up two small test items: (a) the
+qa-prescribed pin isolating the bug-#13 await-half — assert `firstLaunchProvider`
+resolves false immediately after `completeOnboarding`, not just the route outcome;
+(b) the pre-existing `FileSelectorPlatform.instance` swaps without addTearDown in
+backup_restore_screen_test (pollution risk under parallel runs — fix mechanically).
+**C7 chunk-cost ledger (final):** C7a 335k, C7b 249k, C7c 202k, C7d 165k+217k-fix,
+C7e 257k+93k-fix, C7f 307k+~270k-fix(stalls), C7g 233k+211k-fix. Subagent rules that
+saved money: never end a turn with a backgrounded gate pending; read the harness
+usage line, not self-estimates; pipe long runs to files.
+**Device-only/codegen census (FINAL, for the C10 denominator):** ~185 non-feature
+device lines (notification/device_info/messaging/hardware_button/background_session
+`Platform.is*` paths + 9 Sentry passthrough + small sim tails) + **~31 feature device
+lines** (contacts_screen native-picker block :38-41/:148-180 ≈24, contact_form iOS SMS
+warning :290-294 ≈4, about_screen :64-68 ≈3) + **~71 codegen Drift-DSL lines**
+(`lib/data/db/tables/*.dart`, proven runtime-throw) + a handful of cohort-verified
+defensive-unreachable lines (session_controller:1136/:1515, session_screen:469
+dead-branch [C9 will delete]/:888, mode_editor_screen:219-220, home_screen:65-66,
+pin_setup_screen:47). Current 97.85% = 13031/13317; ceiling ≈ 97.9-98.0% host.
+**Post-M5 polish note (NOT a chunk):** appSettingsLiveProvider/firstLaunchProvider
+living in main.dart/app_router.dart creates benign library import cycles
+(settings_controller→main.dart) — arch suggests hoisting to a lib/core providers
+file someday; analyze-clean today, no action.
 Only ~5 of these lines are `Platform.is*` device-only (about/contacts/contact_form;
 fake_call's were host-covered by C7a). Implementer lessons now baked into prompts: pipe
 coverage-run output to a FILE, never through `tail` (a truncated log forced C7a to
@@ -136,14 +172,51 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 ---
 
 **Snapshot:** 2026-06-10 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
-(FINAL milestone, Phase-9) IN PROGRESS — C1..C7e + **C7f + C7f-fix (nav/entry
-+ contacts + the full bug-#9 remediation)** DONE + COHORT-VERIFIED
-(architect+qa PASS; all UNPUSHED — code HEAD = `db24ba1` + the `m5-c7f` baton
-commit atop, ahead of origin/main by **28**). THIS session (2026-06-09/10):
-**C7a (→90.86%, bug #4) + C7b (→92.05%, bug #5) + C7c (→93.11%, de-flake) +
-C7d (→94.48%, BLOCKER bug #6) + C7e (→95.74%, bugs #7/#8) + C7f (→96.75%,
-bug #9 fixed on all 5 paths) — all cohort-PASS. NEXT = C7g (settings + misc,
-the FINAL coverage slice), then C8/C9/C10 per the resume block.**
+(FINAL milestone, Phase-9) IN PROGRESS — C1..C7f + **C7g + C7g-fix (settings
++ misc + live-propagation + onboarding-bounce fixes) — C7 COMPLETE** — DONE +
+COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — code HEAD = `82d4c60` + the
+`m5-c7g` baton commit atop, ahead of origin/main by **31**). THIS session
+(2026-06-09/10): the WHOLE C7 campaign — **coverage-of-logic 89.46% → 97.85%
+(floor 88.8 → 97.2), suite 4287 → 4640, 10 NEW production bugs found+fixed
+(#4–#13), all red→green proven + cohort-verified; bugs #9–#13 = the
+keep-alive-staleness family.** NEXT = C8 (spec-coverage matrix), then C9, then
+C10 (denominator decision + final cohort + PUSH).**
+
+---
+
+## KEY FINDINGS (C7g + C7g-fix — C7 campaign CLOSED; carry to C8/C9/C10)
+
+**Coverage-of-logic 96.75% → 97.85%** (13031 / 13317; +152). **Floor 96.1 →
+97.2** (C7g-fix left it — +0.65 would leave only 0.05 slack). Suite **4597 →
+4640** (+41 C7g, +2 fix net), 0 fail. analyze 0. All C7g files at ZERO missed
+except the honest census lines (about :64-68, pin_setup :47).
+
+**BUGS #10–#13** — full stories in the resume-block ledger. The C7g arch
+cohort ALSO positively verified the duress surface: duress==app PIN rejected
+at hash level (unsalted SHA-256 → equal plaintexts collide correctly; no
+plaintext persisted), threshold bounds fail loud per G-010 at the MODEL layer
+(app_settings.dart:44-46 asserts; release-mode relies on the bounded slider —
+accepted), clearPin preserves the other PIN (20-field net pinned).
+
+**WID-001/WID-002 doctrine fix:** both original widget cohorts used FABRICATED
+wiring (canned controller / bespoke provider / fabricated router) and so missed
+bugs #12/#13 for three milestones. The repaired tests pump the REAL
+GuardianAngelaApp/goRouterProvider with only repo/db overrides. RULE for C8's
+matrix: a WID row only counts if it drives the real wiring — note this in the
+spec-07 annex.
+
+**QA minor parked → C8 item (a):** no test isolates the await-half of the
+bug-#13 invalidate+await pair (deleting the await alone would still pass the
+bounce test because invalidated→null→no bounce); pin
+`firstLaunchProvider.future == false` immediately after `completeOnboarding`.
+
+**C9 additions from C7g/fix:** none new beyond the ledger (the two stale
+backup-restore test comments were fixed in `82d4c60`); pin_setup_screen:47
+too-short guard = defensive-unreachable census line (C9 may annotate).
+
+**Orchestrator calibration:** C7g = 154L/12f → **233k, 130 tool-uses, 45 min**;
+C7g-fix = **211k, 80 tool-uses, 32 min**. Cohorts: arch 62k + qa 132k;
+re-cohort arch 57k + qa 79k.
 
 ---
 
@@ -683,8 +756,9 @@ census is recorded in its comment block.
   two-stage purge + evidence-JSON fix) · **C7e + C7e-fix (home + post-session)
   ✓ DONE** (→95.74%, floor 95.1, bugs #7/#8 fixed, #9 identified) · **C7f +
   C7f-fix (nav/entry + contacts) ✓ DONE** (→96.75%, floor 96.1, bug #9 fixed
-  on all 5 paths incl. the distress-editor leg) — all cohort-verified. NEXT:
-  C7g (settings + misc, FINAL slice); per-file list in resume block.
+  on all 5 paths incl. the distress-editor leg) · **C7g + C7g-fix (settings +
+  misc) ✓ DONE** (→97.85%, floor 97.2, bugs #10/#11/#12/#13) — **C7 COMPLETE,
+  all cohort-verified.**
 - **C8 — spec-coverage matrix + flip the Phase-9 assertions** (+ rename stale
   spec-07 contract-table rows to real files).
 - **C9 — doc-sweep tail + CLAUDE.md tidy.**
