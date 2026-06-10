@@ -119,7 +119,30 @@ main.dart; app_router imported only by main.dart. MINOR parked → P5b:
 2 stale test doc-strings still say "in main.dart". Costs: impl 76k,
 arch 40k, qa 66k.
 
-**NEXT: P3** (then P4 → P5 → P5b → P6).
+**DONE: P3** (`0d0f7e8` + fix `058ca8f`; qa PASS, arch FIX_REQUIRED →
+fix → re-cohort PASS×2): 39 _FieldWithInfo sites — every field in all 9
+forms has an info sheet (arch walked all 9); 3 live preview cards; the
+spec'd Manage-templates link was MISSING entirely — added (ListTile +
+info header, threaded onManageTemplates, hidden in Event Defaults per
+spec); 9 chainStepDesc* localized (2 spec drifts restored, spec won);
+event_defaults titles localized (was raw enum .name). 64+1 new keys ×14
+(896+14 entries, inline-translated; QA spot-checked de/es/fr/ru + plural
+categories + placeholder parity ×14). **2 cohort bugs fixed + red-proven
+(`058ca8f`)**: (i) MAJOR loudAlarm preview promised a gradual ramp
+out-of-box while runtime fires full-volume (master AppSettings.
+alarmGradualVolume defaults false; preview now watches
+appSettingsLiveProvider — the SAME source the session snapshot loads —
+effective-state matrix + loading→OFF conservatism + actionable hint
+key); (ii) MINOR SMS preview count ignored the runtime channel filter
+(now resolveSmsTargets + channels.contains, both count branches;
+Event-Defaults null-contacts fallback adjudicated unreachable/truthful).
+USER DECISION: templateIds picker (spec 04:1635, runtime-honored but
+UI-unreachable) → IMPLEMENT as P3b. Suite 4652→4687;
+event_specific_config.dart 595/595. Costs: impl 351k/128t, arch 76k, qa
+94k, fix 198k/114t, re-arch 62k, re-qa 57k (~840k — budget P3-size
+chunks at ~2.5× P1).
+
+**NEXT: P3b** (templateIds picker) → P4 → P5 → P5b → P6.
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
