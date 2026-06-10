@@ -755,7 +755,7 @@ class AppLocalizationsUk extends AppLocalizations {
       other: '$count повтори',
       many: '$count повторів',
       few: '$count повтори',
-      one: '1 повтор',
+      one: '$count повтор',
     );
     return '$_temp0';
   }
@@ -793,7 +793,7 @@ class AppLocalizationsUk extends AppLocalizations {
       other: '+ще $count',
       many: '+ще $count',
       few: '+ще $count',
-      one: '+ще 1',
+      one: '+ще $count',
     );
     return '$_temp0';
   }

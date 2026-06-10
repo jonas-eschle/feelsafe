@@ -90,6 +90,28 @@ void main() {
     check(AppLocalizations.supportedLocales.length).equals(14);
   });
 
+  // 21 falls in the CLDR `one` category for ru/uk (n % 10 == 1 &&
+  // n % 100 != 11), so the two plural keys must declare a real `one` arm
+  // with the declined noun. A literal `=1{…1…}` arm instead hijacks the
+  // category and renders its hard-coded "1" at 21 ("1 повтор", "+ещё 1").
+  group('ru/uk plurals use the CLDR one category (count = 21)', () {
+    test('ru renders the declined one-form at 21', () async {
+      final AppLocalizations l10n = await AppLocalizations.delegate.load(
+        const Locale('ru'),
+      );
+      check(l10n.stepSummaryRetryCount(21)).equals('21 повтор');
+      check(l10n.stepSummarySmsMore(21)).equals('+ещё 21');
+    });
+
+    test('uk renders the declined one-form at 21', () async {
+      final AppLocalizations l10n = await AppLocalizations.delegate.load(
+        const Locale('uk'),
+      );
+      check(l10n.stepSummaryRetryCount(21)).equals('21 повтор');
+      check(l10n.stepSummarySmsMore(21)).equals('+ще 21');
+    });
+  });
+
   group('every supported locale loads & substitutes placeholders', () {
     for (final Locale locale in AppLocalizations.supportedLocales) {
       test('${locale.toLanguageTag()} resolves non-empty strings', () async {

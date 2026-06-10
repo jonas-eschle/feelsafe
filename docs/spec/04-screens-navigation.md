@@ -2157,6 +2157,8 @@ steps (if randomizeTemplateOrder is enabled)"
 
 The config fields shown when a step type is expanded in Event Defaults are the same fields previously described for the detail screen, now rendered inline. The LogarithmicSlider requirement applies here:
 
+The universal `blackScreenMode` toggle (04:1614) is among these fields on both defaults surfaces (global Event Defaults and the per-mode overrides editor), rendered as a shared trailing section below the type-specific form rather than inside it. Why: the per-type default (06 per-type tables) must stay editable here while the toggle stays a single shared widget with the step panel's Retry & Advanced group.
+
 All time-based sliders MUST display the actual current value next to the slider (e.g., "30s", "2m 15s"). The Randomize toggle shows the resulting jitter range: "30s ± 6s (24–36s)". Changes auto-save on each edit (matches the implemented behaviour).
 
 A [Preview] button inside the expanded section simulates the step locally (shows the actual step UI, as in simulation mode).

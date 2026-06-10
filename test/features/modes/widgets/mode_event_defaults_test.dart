@@ -166,4 +166,57 @@ void main() {
       });
     }
   });
+
+  // The universal blackScreenMode DEFAULT stays editable per mode (spec
+  // 06:376/388/462/501; universal per 04:1614): the shared toggle renders
+  // as a sibling section below each per-type form (the form itself stays
+  // free of it — pinned in event_specific_config_test.dart) and routes
+  // through the same per-type _replace as every form field.
+  group('ModeEventDefaults — shared blackScreen toggle below each form', () {
+    for (final ChainStepType type in ChainStepType.values) {
+      testWidgets('toggling blackScreen under $type flips only that flag', (
+        WidgetTester tester,
+      ) async {
+        final l10n = await loadL10n(const Locale('en'));
+        EventDefaults? emitted;
+        await _pump(
+          tester,
+          const EventDefaults(),
+          onChanged: (EventDefaults d) => emitted = d,
+        );
+
+        // Expand the type's tile; the toggle below its form is the only
+        // blackScreen switch on screen.
+        final Finder tile = find.text(stepName(l10n, type));
+        await tester.ensureVisible(tile);
+        await tester.tap(tile);
+        await tester.pumpAndSettle();
+
+        await _tapSwitch(tester, l10n.eventDefaultsBlackScreen);
+
+        check(emitted, because: 'toggling under $type must emit').isNotNull();
+        for (final ChainStepType other in ChainStepType.values) {
+          if (other == type) {
+            check(
+              emitted!.forType(other).blackScreenMode,
+              because: 'forType($type).blackScreenMode must carry the flip',
+            ).isTrue();
+            // …and within the edited slot ONLY the flag changed.
+            check(
+              emitted!.forType(other).toJson()..remove('blackScreenMode'),
+              because: 'forType($type) non-flag fields after the toggle',
+            ).deepEquals(
+              const EventDefaults().forType(other).toJson()
+                ..remove('blackScreenMode'),
+            );
+          } else {
+            check(
+              emitted!.forType(other),
+              because: 'forType($other) after toggling $type',
+            ).equals(const EventDefaults().forType(other));
+          }
+        }
+      });
+    }
+  });
 }

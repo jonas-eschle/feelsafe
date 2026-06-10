@@ -6,6 +6,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/features/event_defaults/event_defaults_controller.dart';
+import 'package:guardianangela/features/modes/widgets/black_screen_field.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -13,7 +14,9 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// Event defaults screen.
 ///
 /// Renders an [ExpansionTile] per step type with an inline [EventSpecificConfig]
-/// editor for the typed [StepConfig] defaults. Changes auto-save through
+/// editor for the typed [StepConfig] defaults, followed by the shared
+/// [BlackScreenSwitch] so the universal per-type `blackScreenMode` default
+/// stays editable here (spec 06:376/388/462/501). Changes auto-save through
 /// [EventDefaultsController.save]. See spec 04 §Event Defaults.
 class EventDefaultsScreen extends ConsumerWidget {
   /// Creates an [EventDefaultsScreen].
@@ -89,6 +92,7 @@ class _TypeTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final StepConfig config = defaults.forType(type);
     return Card(
       child: ExpansionTile(
         leading: Icon(stepIcon(type)),
@@ -97,9 +101,23 @@ class _TypeTile extends ConsumerWidget {
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16),
-            child: EventSpecificConfig(
-              config: defaults.forType(type),
-              onChanged: (StepConfig c) => _save(ref, c),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                EventSpecificConfig(
+                  config: config,
+                  onChanged: (StepConfig c) => _save(ref, c),
+                ),
+                // The universal blackScreenMode DEFAULT stays editable here
+                // (spec 06:376/388/462/501) — the toggle shared with the
+                // step panel's Retry & Advanced group renders below the
+                // form, not inside it (single implementation).
+                BlackScreenSwitch(
+                  value: config.blackScreenMode,
+                  onChanged: (bool v) =>
+                      _save(ref, withBlackScreenMode(config, v)),
+                ),
+              ],
             ),
           ),
         ],

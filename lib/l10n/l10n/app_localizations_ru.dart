@@ -758,7 +758,7 @@ class AppLocalizationsRu extends AppLocalizations {
       other: '$count повтора',
       many: '$count повторов',
       few: '$count повтора',
-      one: '1 повтор',
+      one: '$count повтор',
     );
     return '$_temp0';
   }
@@ -796,7 +796,7 @@ class AppLocalizationsRu extends AppLocalizations {
       other: '+ещё $count',
       many: '+ещё $count',
       few: '+ещё $count',
-      one: '+ещё 1',
+      one: '+ещё $count',
     );
     return '$_temp0';
   }

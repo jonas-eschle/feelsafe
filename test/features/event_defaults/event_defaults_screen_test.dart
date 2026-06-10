@@ -352,12 +352,14 @@ void main() {
     });
 
     testWidgets(
-      'blackScreenMode switch absent from the holdButton form — it lives '
-      'in the step panel Retry & Advanced (spec 04:1592/1614)',
+      'blackScreenMode toggle present exactly once under the expanded '
+      'holdButton tile — the per-type DEFAULT stays editable here (spec '
+      '06:376) via the shared trailing section below the form; the form '
+      'itself stays free of it (pinned in event_specific_config_test)',
       (WidgetTester tester) async {
         final l10n = await loadL10n(const Locale('en'));
         await _pumpAndExpand(tester, ChainStepType.holdButton);
-        expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
+        await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
       },
     );
   });
@@ -550,11 +552,13 @@ void main() {
       );
     });
 
-    testWidgets('blackScreen switch absent from the phoneCallContact form '
-        '(spec 04:1592/1614)', (WidgetTester tester) async {
+    testWidgets('blackScreen toggle present exactly once under the expanded '
+        'phoneCallContact tile (universal capability, spec 04:1614)', (
+      WidgetTester tester,
+    ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.phoneCallContact);
-      expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
+      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
     });
   });
 
@@ -740,11 +744,27 @@ void main() {
       );
     });
 
-    testWidgets('blackScreen switch absent from the hardwareButton form '
-        '(spec 04:1592/1614)', (WidgetTester tester) async {
+    testWidgets('blackScreen toggle present exactly once under the expanded '
+        'hardwareButton tile (spec 06:501)', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.hardwareButton);
-      expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
+      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+    });
+
+    testWidgets('toggling blackScreen switch saves the hardwareButton slot', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // blackScreenMode defaults to false — toggling flips to true. The
+      // toggle is the shared trailing section below the per-type form and
+      // must write through the same per-type _replace + controller.save
+      // flow as every form field (restored capability — spec 06:501).
+      final fake = await _pumpAndExpand(tester, ChainStepType.hardwareButton);
+      await _tapSwitch(tester, l10n.eventDefaultsBlackScreen);
+      check(fake.saveCalls).equals(1);
+      check(fake.lastSaved!.hardwareButton.blackScreenMode).isTrue();
+      // Sibling slots are untouched by the per-type replace.
+      check(fake.lastSaved!.loudAlarm).equals(const LoudAlarmConfig());
     });
 
     testWidgets('press-count spinner saves the hardwareButton slot', (
