@@ -110,7 +110,16 @@ _onPanCancel REACHED via freeze-then-arena-loss (deterministic 3×) — that
 file's last gap closed. Suite 4649→4652. Costs: impl 142k/53t, arch 44k,
 qa 46k.
 
-**NEXT: P2** (then P3 → P4 → P5 → P5b → P6).
+**DONE: P2** (`ca3c81b`, cohort PASS×2): both providers hoisted VERBATIM
+(arch md5-verified byte-identity, keep-alive preserved, exactly one
+declaration each, all 5 invalidation/read sites + 7 importers on the new
+path; qa proved single-instance + 50 targeted regression tests green +
+tests changed by import-lines only). Cycles broken: zero lib/ imports of
+main.dart; app_router imported only by main.dart. MINOR parked → P5b:
+2 stale test doc-strings still say "in main.dart". Costs: impl 76k,
+arch 40k, qa 66k.
+
+**NEXT: P3** (then P4 → P5 → P5b → P6).
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
