@@ -11,13 +11,17 @@ library;
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
+import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/features/settings/settings_screen.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -128,6 +132,79 @@ void _useTallViewport(WidgetTester tester) {
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.resetPhysicalSize);
   addTearDown(tester.view.resetDevicePixelRatio);
+}
+
+/// Mounts [SettingsScreen] inside a minimal [GoRouter] whose destinations
+/// are stub screens echoing `dest:<route name>`, so every `pushNamed` /
+/// `goNamed` in the screen resolves and can be asserted on.
+Future<GoRouter> _pumpWithRouter(
+  WidgetTester tester, {
+  required _FakeSettingsController fake,
+}) async {
+  const destinations = <(String, String)>[
+    ('profile', RouteNames.profile),
+    ('security', RouteNames.settingsSecurity),
+    ('stealth', RouteNames.settingsStealth),
+    ('modes', RouteNames.modes),
+    ('distress-modes', RouteNames.distressModes),
+    ('event-defaults', RouteNames.settingsEventDefaults),
+    ('gps-logging', RouteNames.settingsGpsLogging),
+    ('reminders', RouteNames.settingsReminderTemplates),
+    ('notifications', RouteNames.settingsNotifications),
+    ('history', RouteNames.settingsHistoryRetention),
+    ('backup', RouteNames.settingsBackup),
+    ('feedback', RouteNames.settingsFeedback),
+    ('about', RouteNames.settingsAbout),
+  ];
+  final router = GoRouter(
+    initialLocation: '/settings',
+    routes: <RouteBase>[
+      GoRoute(
+        path: '/settings',
+        name: RouteNames.settings,
+        builder: (BuildContext _, GoRouterState _) => const SettingsScreen(),
+        routes: <RouteBase>[
+          for (final (path, name) in destinations)
+            GoRoute(
+              path: path,
+              name: name,
+              builder: (BuildContext _, GoRouterState state) =>
+                  Scaffold(body: Text('dest:${state.name}')),
+            ),
+        ],
+      ),
+      GoRoute(
+        path: '/onboarding',
+        name: RouteNames.onboarding,
+        builder: (BuildContext _, GoRouterState state) =>
+            Scaffold(body: Text('dest:${state.name}')),
+      ),
+    ],
+  );
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: <Override>[
+        settingsControllerProvider.overrideWith(() => fake),
+      ],
+      child: MaterialApp.router(
+        routerConfig: router,
+        locale: const Locale('en'),
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          useMaterial3: true,
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+  return router;
 }
 
 void main() {
@@ -920,6 +997,118 @@ void main() {
       await tester.tap(find.text(l10n.commonSave));
       await tester.pumpAndSettle();
       check(controller.lastEmergencyCallNumber).equals('000');
+    });
+
+    testWidgets('Cancel dismisses the dialog without persisting anything', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final controller = await openDialog(tester, current: '911');
+      // Even a typed value is discarded on Cancel.
+      await tester.enterText(find.byType(TextField), '999');
+      await tester.pump();
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+      expect(find.byType(AlertDialog), findsNothing);
+      check(controller.setEmergencyCallNumberCalls).equals(0);
+    });
+  });
+
+  // ── Row navigation through a real GoRouter ─────────────────────────────────
+
+  group('SettingsScreen — row navigation (GoRouter)', () {
+    testWidgets('every configuration and app row pushes its named route', (
+      WidgetTester tester,
+    ) async {
+      _useTallViewport(tester);
+      final l10n = await loadL10n(const Locale('en'));
+      final router = await _pumpWithRouter(
+        tester,
+        fake: _FakeSettingsController(_defaultState()),
+      );
+      final cases = <(String, String)>[
+        (l10n.settingsProfileRow, RouteNames.profile),
+        (l10n.settingsSecurityRow, RouteNames.settingsSecurity),
+        (l10n.settingsStealthRow, RouteNames.settingsStealth),
+        (l10n.settingsModesRow, RouteNames.modes),
+        (l10n.settingsDistressModesRow, RouteNames.distressModes),
+        (l10n.settingsEventDefaultsRow, RouteNames.settingsEventDefaults),
+        (l10n.settingsGpsLoggingRow, RouteNames.settingsGpsLogging),
+        (l10n.settingsRemindersRow, RouteNames.settingsReminderTemplates),
+        (l10n.settingsNotificationsRow, RouteNames.settingsNotifications),
+        (l10n.settingsHistoryRetentionRow, RouteNames.settingsHistoryRetention),
+        (l10n.settingsBackupRow, RouteNames.settingsBackup),
+        (l10n.settingsFeedbackRow, RouteNames.settingsFeedback),
+        (l10n.settingsAboutRow, RouteNames.settingsAbout),
+      ];
+      for (final (label, routeName) in cases) {
+        await tester.scrollUntilVisible(
+          find.text(label),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text(label));
+        await tester.pumpAndSettle();
+        expect(
+          find.text('dest:$routeName'),
+          findsOneWidget,
+          reason: 'tapping "$label" must push $routeName',
+        );
+        router.pop();
+        await tester.pumpAndSettle();
+      }
+    });
+
+    testWidgets(
+      'confirming Redo Onboarding resets the flag and lands on onboarding',
+      (WidgetTester tester) async {
+        _useTallViewport(tester);
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _FakeSettingsController(_defaultState());
+        await _pumpWithRouter(tester, fake: fake);
+        await tester.scrollUntilVisible(
+          find.text(l10n.settingsRedoOnboarding),
+          200,
+          scrollable: find.byType(Scrollable).first,
+        );
+        await tester.tap(find.text(l10n.settingsRedoOnboarding));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonConfirm));
+        await tester.pumpAndSettle();
+        check(fake.resetOnboardingCalls).equals(1);
+        expect(find.text('dest:${RouteNames.onboarding}'), findsOneWidget);
+      },
+    );
+  });
+
+  // ── OSS licenses ───────────────────────────────────────────────────────────
+
+  group('SettingsScreen — OSS licenses', () {
+    testWidgets('tapping the licenses row opens the LicensePage', (
+      WidgetTester tester,
+    ) async {
+      _useTallViewport(tester);
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const SettingsScreen(),
+        overrides: <Override>[
+          settingsControllerProvider.overrideWith(
+            () => _FakeSettingsController(_defaultState()),
+          ),
+        ],
+      );
+      await tester.scrollUntilVisible(
+        find.text(l10n.settingsOssLicenses),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text(l10n.settingsOssLicenses));
+      // LicensePage streams licenses; pump fixed frames instead of settling.
+      await tester.pump();
+      await tester.pump(const Duration(seconds: 1));
+      expect(find.byType(LicensePage), findsOneWidget);
+      expect(find.text('Guardian Angela'), findsWidgets);
     });
   });
 }

@@ -932,4 +932,23 @@ void main() {
       expect(find.text(l10n.stealthLockTaskInfo), findsOneWidget);
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Construction
+  // -------------------------------------------------------------------------
+  group('SettingsStealthScreen — construction', () {
+    testWidgets('a non-const construction with an explicit key renders', (
+      WidgetTester tester,
+    ) async {
+      // Every other test uses `const SettingsStealthScreen()`, which the
+      // compiler canonicalises away from the constructor's line table.
+      await pumpScreen(
+        tester,
+        SettingsStealthScreen(key: UniqueKey()),
+        overrides: _overrides(_FakeStealthController(_stateWith())),
+      );
+      expect(find.byType(SettingsStealthScreen), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
+    });
+  });
 }

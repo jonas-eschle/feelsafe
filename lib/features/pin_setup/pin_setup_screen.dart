@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/widgets/pin_keypad.dart';
+import 'package:guardianangela/features/settings_security/settings_security_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -83,6 +84,10 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
       return;
     }
     await repo.save(updated);
+    // The save bypassed the keep-alive security controller; without a
+    // rebuild the Security screen we pop back to would keep claiming the
+    // PIN is not set (no Change/Remove actions, duress shown unarmed).
+    ref.invalidate(settingsSecurityControllerProvider);
     if (!mounted) return;
     ScaffoldMessenger.of(
       context,

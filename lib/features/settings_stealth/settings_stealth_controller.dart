@@ -5,6 +5,7 @@ import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable state for the stealth settings screen.
@@ -33,6 +34,10 @@ class SettingsStealthController extends AsyncNotifier<SettingsStealthState> {
     );
     await repo.save(updated);
     await _applyLauncherIcon(stealth);
+    // The settings hub (keep-alive) renders the stealth ON/OFF subtitle;
+    // without a rebuild it would keep showing the pre-toggle summary
+    // after navigating back from this submenu.
+    ref.invalidate(settingsControllerProvider);
     ref.invalidateSelf();
   }
 

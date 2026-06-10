@@ -1045,6 +1045,88 @@ void main() {
       );
     });
   });
+
+  // ── Slider interaction ─────────────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — slider interaction', () {
+    // Tall viewport so both sliders are fully onstage and hittable —
+    // at 800×600 the slider below a scrolled-to label is clipped at the
+    // scroll edge and `drag` misses its center.
+    void useTallViewport(WidgetTester tester) {
+      tester.view.physicalSize = const Size(800, 2400);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+    }
+
+    testWidgets('dragging the threshold slider to the right end calls '
+        'setWrongPinThreshold(10)', (WidgetTester tester) async {
+      useTallViewport(tester);
+      final fake = _FakeSettingsSecurityController(_secState());
+      await _pump(tester, fake: fake);
+      // The threshold slider sits below the cards, after the
+      // session-end card's timeout slider in tree order.
+      await tester.drag(find.byType(Slider).last, const Offset(600, 0));
+      await tester.pumpAndSettle();
+      check(fake.wrongPinThresholdCalls).isGreaterOrEqual(1);
+      check(fake.lastWrongPinThreshold).equals(10);
+    });
+
+    testWidgets(
+      'dragging the timeout slider to the right end calls setPinTimeout(120)',
+      (WidgetTester tester) async {
+        useTallViewport(tester);
+        final fake = _FakeSettingsSecurityController(_secState());
+        await _pump(tester, fake: fake);
+        // The timeout slider lives inside the Session End PIN card and
+        // precedes the threshold slider in tree order.
+        await tester.drag(find.byType(Slider).first, const Offset(600, 0));
+        await tester.pumpAndSettle();
+        check(fake.pinTimeoutCalls).isGreaterOrEqual(1);
+        check(fake.lastPinTimeout).equals(120);
+      },
+    );
+  });
+
+  // ── Construction ───────────────────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — construction', () {
+    testWidgets('a non-const construction with an explicit key renders', (
+      WidgetTester tester,
+    ) async {
+      // Every other test uses `const SettingsSecurityScreen()`, which the
+      // compiler canonicalises away from the constructor's line table.
+      await pumpScreen(
+        tester,
+        SettingsSecurityScreen(key: UniqueKey()),
+        overrides: <Override>[
+          settingsSecurityControllerProvider.overrideWith(
+            () => _FakeSettingsSecurityController(_secState()),
+          ),
+        ],
+      );
+      expect(find.byType(SettingsSecurityScreen), findsOneWidget);
+      expect(find.byType(AppBar), findsOneWidget);
+    });
+  });
+
+  // ── Info dialog dismissal ──────────────────────────────────────────────────
+
+  group('SettingsSecurityScreen — info dialog dismissal', () {
+    testWidgets('the Close button dismisses the explanatory dialog', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pump(tester, fake: _FakeSettingsSecurityController(_secState()));
+      await tester.tap(find.byIcon(Icons.info_outline).first);
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.securityAppPinInfo), findsOneWidget);
+
+      await tester.tap(find.text(l10n.commonClose));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.securityAppPinInfo), findsNothing);
+    });
+  });
 }
 
 // ---------------------------------------------------------------------------

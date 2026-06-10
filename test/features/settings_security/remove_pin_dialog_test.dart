@@ -150,4 +150,39 @@ void main() {
     await _enterDigits(tester, <int>[5, 6, 7, 8]);
     check(results).deepEquals(<bool>[true]);
   });
+
+  testWidgets('backspace removes the last digit so a mistyped entry can be '
+      'corrected', (WidgetTester tester) async {
+    final results = await _open(
+      tester,
+      settings: const AppSettings().copyWith(appPinHash: _hash('1234')),
+      type: PinType.app,
+    );
+    // A 4-digit mistype neither resolves nor wipes the entry …
+    await _enterDigits(tester, <int>[1, 2, 3, 9]);
+    check(results).isEmpty();
+    // … backspace drops the 9, and completing with 4 verifies '1234'.
+    await tester.tap(find.byIcon(Icons.backspace_outlined));
+    await tester.pumpAndSettle();
+    await _enterDigits(tester, <int>[4]);
+    check(results).deepEquals(<bool>[true]);
+  });
+
+  testWidgets('backspace on an empty entry is a harmless no-op', (
+    WidgetTester tester,
+  ) async {
+    final results = await _open(
+      tester,
+      settings: const AppSettings().copyWith(appPinHash: _hash('1234')),
+      type: PinType.app,
+    );
+    await tester.tap(find.byIcon(Icons.backspace_outlined));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.byType(RemovePinDialog), findsOneWidget);
+    check(results).isEmpty();
+    // Entry is still pristine: the correct PIN verifies on exactly 4 digits.
+    await _enterDigits(tester, <int>[1, 2, 3, 4]);
+    check(results).deepEquals(<bool>[true]);
+  });
 }

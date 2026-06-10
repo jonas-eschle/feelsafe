@@ -19,10 +19,12 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
+import 'package:guardianangela/domain/enums/stealth_timer_display.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/features/settings/settings_controller.dart';
 import 'package:guardianangela/features/settings_stealth/settings_stealth_controller.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/system_ui_service_sim.dart';
@@ -303,5 +305,115 @@ void main() {
       final saved = await repo.load();
       check(saved.defaults.stealth.fakeIcon).equals(StealthIconPreset.podcast);
     });
+  });
+
+  group('SettingsStealthController — sub-option setters', () {
+    test(
+      'setNotificationDisguise(false) persists and keeps siblings',
+      () async {
+        final repo = _InMemorySettingsRepo(
+          _settingsWithStealth(
+            const StealthConfig(enabled: true, fakeName: 'Notes'),
+          ),
+        );
+        final container = _container(
+          repo: repo,
+          sysUi: SimulationSystemUiService(),
+        );
+
+        await container.read(settingsStealthControllerProvider.future);
+        await container
+            .read(settingsStealthControllerProvider.notifier)
+            .setNotificationDisguise(false);
+
+        final saved = (await repo.load()).defaults.stealth;
+        check(saved.notificationDisguise).isFalse();
+        check(saved.enabled).isTrue();
+        check(saved.fakeName).equals('Notes');
+        final state = await container.read(
+          settingsStealthControllerProvider.future,
+        );
+        check(state.config.notificationDisguise).isFalse();
+      },
+    );
+
+    test('setSessionScreenStealth(false) persists and surfaces', () async {
+      final repo = _InMemorySettingsRepo(
+        _settingsWithStealth(const StealthConfig(enabled: true)),
+      );
+      final container = _container(
+        repo: repo,
+        sysUi: SimulationSystemUiService(),
+      );
+
+      await container.read(settingsStealthControllerProvider.future);
+      await container
+          .read(settingsStealthControllerProvider.notifier)
+          .setSessionScreenStealth(false);
+
+      check(
+        (await repo.load()).defaults.stealth.sessionScreenStealth,
+      ).isFalse();
+      final state = await container.read(
+        settingsStealthControllerProvider.future,
+      );
+      check(state.config.sessionScreenStealth).isFalse();
+    });
+
+    test('setTimerDisplay(none) persists and surfaces', () async {
+      final repo = _InMemorySettingsRepo(
+        _settingsWithStealth(const StealthConfig(enabled: true)),
+      );
+      final container = _container(
+        repo: repo,
+        sysUi: SimulationSystemUiService(),
+      );
+
+      await container.read(settingsStealthControllerProvider.future);
+      await container
+          .read(settingsStealthControllerProvider.notifier)
+          .setTimerDisplay(StealthTimerDisplay.none);
+
+      check(
+        (await repo.load()).defaults.stealth.timerDisplay,
+      ).equals(StealthTimerDisplay.none);
+      final state = await container.read(
+        settingsStealthControllerProvider.future,
+      );
+      check(state.config.timerDisplay).equals(StealthTimerDisplay.none);
+    });
+  });
+
+  group('SettingsStealthController — settings-hub refresh', () {
+    test(
+      'setEnabled(true) refreshes the keep-alive settings hub state',
+      () async {
+        final repo = _InMemorySettingsRepo(
+          _settingsWithStealth(const StealthConfig()),
+        );
+        final sysUi = SimulationSystemUiService();
+        final container = _container(repo: repo, sysUi: sysUi);
+
+        // Materialise the hub FIRST — the Settings screen renders its
+        // stealth ON/OFF subtitle from this keep-alive provider before the
+        // user drills into the stealth submenu.
+        final hubBefore = await container.read(
+          settingsControllerProvider.future,
+        );
+        check(hubBefore.stealthEnabled).isFalse();
+
+        await container.read(settingsStealthControllerProvider.future);
+        await container
+            .read(settingsStealthControllerProvider.notifier)
+            .setEnabled(true);
+
+        // Returning to the hub must show "Stealth: On" — not the cached
+        // pre-toggle summary.
+        final hubAfter = await container.read(
+          settingsControllerProvider.future,
+        );
+        check(hubAfter.stealthEnabled).isTrue();
+      },
+    );
   });
 }

@@ -50,6 +50,8 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
+import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
@@ -101,6 +103,48 @@ class _CorruptBackupService extends SimulationBackupService {
   }
 }
 
+/// [BackupServiceProtocol] whose [importFromJson] throws a plain
+/// [Exception] — exercises the screen's generic-Exception snackbar branch.
+class _ExceptionBackupService extends SimulationBackupService {
+  @override
+  Future<void> importFromJson(String json) async {
+    importCalls.add(json);
+    throw Exception('backup exploded');
+  }
+}
+
+/// [BackupServiceProtocol] whose [importFromJson] throws a [StateError]
+/// (forward-incompatible schema) — exercises the broad `on Object` branch
+/// the screen keeps because `avoid_catching_errors` forbids narrowing.
+class _StateErrorBackupService extends SimulationBackupService {
+  @override
+  Future<void> importFromJson(String json) async {
+    importCalls.add(json);
+    throw StateError('newer schema');
+  }
+}
+
+/// [SessionController] stub that reports a running session, so the
+/// active-session banner / lock-out rendering can be exercised.
+class _ActiveSessionController extends SessionController {
+  @override
+  Future<SessionState> build() async => const SessionState.initial().copyWith(
+    phase: SessionPhase.wait,
+    activeChain: <ChainStep>[
+      ChainStep(
+        id: 'step-0',
+        type: ChainStepType.holdButton,
+        order: 0,
+        waitSeconds: 0,
+        durationSeconds: 30,
+        gracePeriodSeconds: 5,
+        retryCount: 0,
+        randomize: false,
+      ),
+    ],
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -128,6 +172,23 @@ class _InMemoryAppSettingsRepository extends AppSettingsRepository {
 
   @override
   Future<void> save(AppSettings value) async => _current = value;
+}
+
+/// [AppSettingsRepository] whose [load] always throws, driving the
+/// screen's last-backup lookup down its catch branch.
+class _ThrowingSettingsRepo extends AppSettingsRepository {
+  _ThrowingSettingsRepo()
+    : super(
+        keyProvider: () async =>
+            '0102030405060708090a0b0c0d0e0f'
+            '101112131415161718191a1b1c1d1e1f20',
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('backup_throw_test_'),
+      );
+
+  @override
+  Future<AppSettings> load() async =>
+      throw StateError('settings storage unavailable');
 }
 
 /// Bundles every override the screen needs to render: the
@@ -963,6 +1024,142 @@ void main() {
         ).deepEquals(['Restored Mode']);
       },
     );
+  });
+
+  // ---- Import error branches (caught + surfaced as snackbars) ----
+
+  group('BackupRestoreScreen — import error snackbars', () {
+    /// Taps Import and confirms the overwrite dialog.
+    Future<void> runImport(WidgetTester tester, AppLocalizations l10n) async {
+      await tester.tap(
+        find.ancestor(
+          of: find.text(l10n.backupImportButton),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+    }
+
+    /// Swaps in a canned file picker and restores the original afterwards.
+    void useFakePicker(XFile? file) {
+      final original = FileSelectorPlatform.instance;
+      addTearDown(() => FileSelectorPlatform.instance = original);
+      FileSelectorPlatform.instance = _FakeFileSelector(file: file);
+    }
+
+    testWidgets(
+      'a generic Exception from importFromJson surfaces the error snackbar',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final fake = _ExceptionBackupService();
+        useFakePicker(_xFile());
+        await pumpScreen(
+          tester,
+          const BackupRestoreScreen(),
+          overrides: _backupOverride(fake),
+        );
+        await runImport(tester, l10n);
+        check(fake.importCalls).isNotEmpty();
+        expect(
+          find.text(l10n.backupImportError('Exception: backup exploded')),
+          findsOneWidget,
+        );
+        // finally{} ran — the Import button is enabled again.
+        final btn = tester.widget<OutlinedButton>(
+          find.ancestor(
+            of: find.text(l10n.backupImportButton),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        check(btn.onPressed).isNotNull();
+      },
+    );
+
+    testWidgets('a StateError (forward-incompatible schema) surfaces the error '
+        'snackbar instead of crashing', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _StateErrorBackupService();
+      useFakePicker(_xFile());
+      await pumpScreen(
+        tester,
+        const BackupRestoreScreen(),
+        overrides: _backupOverride(fake),
+      );
+      await runImport(tester, l10n);
+      check(fake.importCalls).isNotEmpty();
+      expect(
+        find.text(l10n.backupImportError('Bad state: newer schema')),
+        findsOneWidget,
+      );
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  // ---- last-backup lookup resilience ----
+
+  group('BackupRestoreScreen — last-backup lookup failure', () {
+    testWidgets('a failing settings load still completes the lookup and shows '
+        '"never exported"', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const BackupRestoreScreen(),
+        overrides: <Override>[
+          backupServiceProvider.overrideWith(
+            (_) async => SimulationBackupService(),
+          ),
+          appSettingsRepositoryProvider.overrideWithValue(
+            _ThrowingSettingsRepo(),
+          ),
+        ],
+      );
+      // The catch marked the lookup finished with no timestamp — the
+      // screen renders rather than hanging on a never-loaded tile.
+      expect(find.text(l10n.backupNeverExportedLabel), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+  });
+
+  // ---- Active-session lock-out ----
+
+  group('BackupRestoreScreen — active session', () {
+    testWidgets('a running session shows the warning banner and disables all '
+        'backup actions', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const BackupRestoreScreen(),
+        overrides: <Override>[
+          ..._backupOverride(SimulationBackupService()),
+          sessionControllerProvider.overrideWith(_ActiveSessionController.new),
+        ],
+      );
+      expect(find.text(l10n.backupActiveSessionBanner), findsOneWidget);
+
+      final exportBtn = tester.widget<FilledButton>(
+        find.ancestor(
+          of: find.text(l10n.backupExportButton),
+          matching: find.byType(FilledButton),
+        ),
+      );
+      check(exportBtn.onPressed).isNull();
+      final importBtn = tester.widget<OutlinedButton>(
+        find.ancestor(
+          of: find.text(l10n.backupImportButton),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      check(importBtn.onPressed).isNull();
+      final logsTile = tester.widget<SwitchListTile>(
+        find.ancestor(
+          of: find.text(l10n.backupIncludeLogs),
+          matching: find.byType(SwitchListTile),
+        ),
+      );
+      check(logsTile.onChanged).isNull();
+    });
   });
 }
 

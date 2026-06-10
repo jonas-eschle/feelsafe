@@ -24,6 +24,7 @@ import 'package:guardianangela/core/widgets/pin_keypad.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/features/pin_setup/pin_setup_screen.dart';
+import 'package:guardianangela/features/settings_security/settings_security_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
@@ -676,6 +677,46 @@ void main() {
           reason: 'digit $d must appear on keypad',
         );
       }
+    });
+  });
+
+  // ── Keep-alive security-controller refresh ────────────────────────────────
+
+  group('PinSetupScreen — security controller refresh', () {
+    testWidgets('saving a duress PIN refreshes the keep-alive '
+        'settingsSecurityControllerProvider so the Security screen shows it '
+        'as set', (WidgetTester tester) async {
+      final repo = _FakeAppSettingsRepository();
+      await _pumpWithRouter(
+        tester,
+        pinType: 'duress',
+        overrides: _overrides(repo),
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(PinSetupScreen)),
+      );
+      // Materialise the keep-alive provider BEFORE the save, exactly as
+      // the Security screen does before pushing this route.
+      final before = await container.read(
+        settingsSecurityControllerProvider.future,
+      );
+      check(before.duressPinSet).isFalse();
+
+      await _enterDigits(tester, <int>[7, 3, 1, 5]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      await _enterDigits(tester, <int>[7, 3, 1, 5]);
+      await _tapSubmit(tester);
+      await tester.pumpAndSettle();
+      check(repo.lastSaved?.duressPinHash).isNotNull();
+
+      // The cached state must now report the duress PIN as armed — a
+      // stale `duressPinSet == false` after arming distress protection
+      // makes the Security screen lie about the user's safety net.
+      final after = await container.read(
+        settingsSecurityControllerProvider.future,
+      );
+      check(after.duressPinSet).isTrue();
     });
   });
 }

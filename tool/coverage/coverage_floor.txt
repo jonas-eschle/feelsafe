@@ -165,7 +165,54 @@
 #     are the census host-unreachables: contacts_screen 38-41 + 148-180
 #     (Platform.isAndroid/iOS-gated flutter_contacts device import) and
 #     contact_form_screen 290-294 (Platform.isIOS SMS manual-send warning).
-#   * Floor set to 96.1 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7g ratchet (2026-06-10) = 97.84%-of-logic (13024 / 13312 lines)
+#     after covering the settings + misc surface — 10 of 12 files now 0
+#     missed: settings_security_controller (55→0, real ProviderContainer +
+#     round-trip settings repo; clearPin clears EXACTLY the requested hash
+#     per PinType with the survivors pinned verbatim + a 20-field
+#     preservation net over the hand-rolled reconstruction — the
+#     duress-stays-armed guard red-proven via a temporary prod mutation;
+#     wrongPinThreshold/pinTimeout bounds BOTH ways: legal edges persist,
+#     out-of-range throws AssertionError and persists NOTHING — the
+#     silent-clamp regression red-proven too), settings_screen (21→0,
+#     GoRouter stub-destination harness: all 13 configuration/app rows
+#     push their named route, redo-onboarding CONFIRM resets the flag and
+#     lands on onboarding, OSS licenses opens LicensePage, emergency-number
+#     Cancel persists nothing), backup_restore_screen (22→0, importFromJson
+#     Exception + StateError branches surface the error snackbar and the
+#     finally re-enables Import, a throwing settings load still completes
+#     the "never exported" lookup, active-session banner shown with
+#     export/import/toggles all disabled), settings_controller (15→0, new
+#     mirror test file: emergency number / theme / resetOnboarding
+#     round-trips that keep siblings), profile_controller (10→0, new
+#     mirror test file: real patch persists exactly the supplied fields,
+#     keeps the rest, republishes state), settings_stealth_controller
+#     (9→0, notificationDisguise / sessionScreenStealth / timerDisplay
+#     setters round-trip), settings_security_screen (7→0, threshold +
+#     timeout slider drags reach the controller with their max values,
+#     info-dialog Close dismisses; the super.key const line pinned with
+#     the UniqueKey trick), remove_pin_dialog (5→0,
+#     backspace corrects a mistyped digit into a successful verify + is a
+#     no-op on empty), profile_screen (5→0, description blur-patch +
+#     submit), settings_stealth_screen (1→0, UniqueKey pin). +145 covered
+#     lines. Found + fixed TWO real production bugs (both the C7f bug-#9
+#     keep-alive-staleness class, both red→green proven): (1)
+#     PinSetupScreen._save wrote the new hash straight to the repo and
+#     popped — the keep-alive settingsSecurityControllerProvider was never
+#     rebuilt, so the Security screen showed a just-set PIN as NOT set (no
+#     Change/Remove actions; the duress card claimed distress was unarmed
+#     right after arming it) — _save now invalidates the security
+#     controller. (2) SettingsStealthController._saveStealth only
+#     invalidated itself — the settings hub's stealth ON/OFF subtitle
+#     stayed stale after toggling stealth; the save now invalidates
+#     settingsControllerProvider too. The 4 lines left in this slice are
+#     census host-unreachables/defensive: about_screen 64/66/68 (the
+#     Platform.isMacOS / isWindows / operatingSystem ternary legs of the
+#     supported-platforms string — the Linux test host short-circuits at
+#     isLinux) and pin_setup_screen 47 (the too-short _save guard: Submit
+#     is disabled below 4 digits and _entry is frozen once confirming, so
+#     the guard is defensive-unreachable via UI — C9 candidate).
+#   * Floor set to 97.2 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -175,4 +222,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-96.1
+97.2

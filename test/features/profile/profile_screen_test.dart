@@ -384,6 +384,47 @@ void main() {
       );
       expect(find.widgetWithText(TextField, 'Tall, red hair'), findsOneWidget);
     });
+
+    testWidgets('submitting description calls patch with physicalDescription', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeProfileController(_emptyState());
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ProfileScreen(),
+        overrides: _override(fake),
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, l10n.profileFieldDescription),
+        'Buzz cut, glasses',
+      );
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+      check(fake.patchCalls).isGreaterOrEqual(1);
+      check(fake.lastPatchedDescription).equals('Buzz cut, glasses');
+    });
+
+    testWidgets('losing focus on the description field patches it', (
+      WidgetTester tester,
+    ) async {
+      // Blur (not submit) is how most edits leave a multiline field.
+      final fake = _FakeProfileController(_emptyState());
+      final l10n = await loadL10n(const Locale('en'));
+      await pumpScreen(
+        tester,
+        const ProfileScreen(),
+        overrides: _override(fake),
+      );
+      await tester.enterText(
+        find.widgetWithText(TextField, l10n.profileFieldDescription),
+        'Green jacket',
+      );
+      // Move focus to the name field → the description blur listener fires.
+      await tester.tap(find.widgetWithText(TextField, l10n.profileFieldName));
+      await tester.pumpAndSettle();
+      check(fake.lastPatchedDescription).equals('Green jacket');
+    });
   });
 
   // -------------------------------------------------------------------------
