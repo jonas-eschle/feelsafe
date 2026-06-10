@@ -609,7 +609,9 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -634,7 +636,9 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -658,7 +662,9 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
       // Return null to simulate user cancelling the picker.
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector();
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -697,7 +703,9 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -723,7 +731,9 @@ void main() {
       // Uses the non-throwing service.
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -771,7 +781,9 @@ void main() {
       // Equivalent to an aborted import (Cancel path) — no snackbar.
       final l10n = await loadL10n(const Locale('en'));
       final fake = SimulationBackupService();
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector();
+      addTearDown(() => FileSelectorPlatform.instance = original);
       await pumpScreen(
         tester,
         const BackupRestoreScreen(),
@@ -946,7 +958,9 @@ void main() {
     testWidgets('corrupt-import surfaces a snackbar with the FormatException', (
       WidgetTester tester,
     ) async {
+      final original = FileSelectorPlatform.instance;
       FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
       final l10n = await loadL10n(const Locale('en'));
       final fake = _CorruptBackupService();
       await pumpScreen(

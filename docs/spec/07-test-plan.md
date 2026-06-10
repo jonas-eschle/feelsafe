@@ -111,7 +111,7 @@ test/
 flutter test
 
 # Run tests in parallel
-pytest -s -n auto
+flutter test --concurrency=6
 
 # Run single test file
 flutter test test/features/session/session_engine_test.dart
@@ -120,7 +120,7 @@ flutter test test/features/session/session_engine_test.dart
 flutter test --name "hold button"
 
 # Integration tests (real device or emulator)
-flutter test integration_test/app_test.dart
+flutter test integration_test/app_boot_smoke_test.dart
 ```
 
 ---
@@ -692,10 +692,10 @@ lcov --list coverage/lcov.info
 flutter test --name "disarm"
 
 # Run integration tests on emulator/device
-flutter test integration_test/app_test.dart
+flutter test integration_test/app_boot_smoke_test.dart
 
 # Run tests in parallel
-pytest -s -n auto
+flutter test --concurrency=6
 ```
 
 ### CI/CD Pipeline
@@ -920,179 +920,191 @@ This test plan provides a comprehensive roadmap for validating Guardian Angela a
 
 This table maps all critical spec requirements to their corresponding test cases, ensuring comprehensive traceability and 100% coverage of safety-critical features.
 
+> **Reconciled to reality (M5/C8, Phase 9).** Why: the original table
+> predated the build and named aspirational files; every row below now
+> names a path that exists and a test that runs. Conventions:
+> paths are repo-root-relative; rows marked `device-e2e` run only via
+> `tool/device_e2e/*.sh` on a real device/emulator and are NEVER marked
+> host-green; iOS-specific native rows are proven by the CI `build-ios`
+> job only — `(CI build-ios)` — never faked as device-green; rows with
+> no mechanical oracle say so explicitly instead of naming a fake file.
+> The INT-/WID-/device-row halves of this contract are enforced
+> mechanically by `test/spec_coverage_test.dart` (Phase-9 assertions).
+
 ### Session Engine Core (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Hold button: brief release ignored (< sensitivity threshold) | TC-42 | session_engine_test.dart | P1 |
-| Hold button: re-hold during grace triggers disarm | TC-15 | session_engine_test.dart | P1 |
-| Disarm resets chain to step 0 and clears miss count | TC-7, TC-8 | session_engine_test.dart | P1 |
-| Grace period expires without disarm: advance to next step | TC-5, TC-6 | session_engine_test.dart | P1 |
-| Miss count increments on grace expiry | TC-12, TC-13 | session_engine_test.dart | P1 |
-| retryCount: N retries = N+1 total attempts | TC-9, TC-10, TC-11 | session_engine_test.dart | P1 |
-| Pause/resume preserves exact remaining time | TC-74 | session_engine_test.dart | P1 |
-| Speed multiplier divides all durations | TC-18, TC-19 | session_engine_test.dart | P1 |
-| Jitter: ±20% randomization on timing | TC-22, TC-23 | session_engine_test.dart | P1 |
-| Fake call decline counts as miss | TC-49, TC-50 | fake_call_scenarios_test.dart | P1 |
-| Fake call answer: engine keeps running until hang-up (Pivot 2) | TC-47, TC-48 | fake_call_scenarios_test.dart | P1 |
-| Real phone call detection auto-pauses session | TC-25 | session_engine_test.dart | P1 |
-| chainExhausted emitted when last step grace expires | TC-4 | session_engine_test.dart | P1 |
-| sessionEnded idempotent (safe to call multiple times) | TC-34, TC-35 | session_engine_test.dart | P1 |
-| All 9 step types fire in order | TC-37 | integration_test.dart | P1 |
+| Hold button: brief release ignored (< sensitivity threshold) | TC-42 | test/domain/engine/hold_button_state_machine_test.dart | P1 |
+| Hold button: re-hold during grace triggers disarm | TC-15 | test/domain/engine/hold_button_state_machine_test.dart | P1 |
+| Disarm resets chain to step 0 and clears miss count | TC-7, TC-8 | test/domain/engine/invariants_test.dart | P1 |
+| Grace period expires without disarm: advance to next step | TC-5, TC-6 | test/domain/engine/three_phase_timing_test.dart | P1 |
+| Miss count increments on grace expiry | TC-12, TC-13 | test/domain/engine/three_phase_timing_test.dart | P1 |
+| retryCount: N retries = N+1 total attempts | TC-9, TC-10, TC-11 | test/domain/engine/three_phase_timing_test.dart | P1 |
+| Pause/resume preserves exact remaining time | TC-74 | test/domain/engine/pause_resume_test.dart | P1 |
+| Speed multiplier divides all durations | TC-18, TC-19 | test/domain/engine/speed_multiplier_test.dart | P1 |
+| Jitter: ±20% randomization on timing | TC-22, TC-23 | test/domain/engine/jitter_bounds_test.dart | P1 |
+| Fake call decline counts as miss (`declineIsSafe=false`) | TC-49, TC-50 | test/domain/engine/fake_call_is_event_test.dart | P1 |
+| Fake call answer: engine keeps running until hang-up (Pivot 2) | TC-47, TC-48 | test/domain/engine/fake_call_is_event_test.dart | P1 |
+| Real phone call detection auto-pauses session (host half) | TC-25, INT-007 | test/integration/call_state_session_test.dart | P1 |
+| Real phone call pause/resume on-device (adb gsm) | #11 | integration_test/real_call_pause_test.dart — device-e2e | P1 |
+| chainExhausted emitted when last step grace expires | TC-4 | test/domain/engine/state_machine_test.dart | P1 |
+| sessionEnded idempotent (safe to call multiple times) | TC-34, TC-35 | test/domain/engine/invariants_test.dart | P1 |
+| All 9 step types execute via the sealed strategy registry | TC-37 | test/domain/orchestration/event_strategy_registry_test.dart | P1 |
 
 ### Disguised Reminders (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Disguised reminder: fires after waitSeconds | TC-9 | disguised_reminder_test.dart | P1 |
-| Reminder fires again after grace if user misses | TC-10, TC-44 | disguised_reminder_test.dart | P1 |
-| User confirms reminder during duration or grace: disarm | TC-8 | disguised_reminder_test.dart | P1 |
-| retryCount misses trigger advance to next step | TC-11, TC-45 | disguised_reminder_test.dart | P1 |
-| Template rotation avoids same template twice in a row | TC-58 | reminder_template_test.dart | P2 |
+| Disguised reminder: fires after waitSeconds | TC-9, INT-003 | test/integration/date_mode_session_test.dart | P1 |
+| Reminder fires again after grace if user misses | TC-10, TC-44, INT-004 | test/integration/date_mode_session_test.dart | P1 |
+| User confirms reminder during duration or grace: disarm | TC-8, INT-003 | test/integration/date_mode_session_test.dart | P1 |
+| retryCount misses trigger advance to next step | TC-11, TC-45, INT-004 | test/integration/date_mode_session_test.dart | P1 |
+| Template rotation avoids same template twice in a row | TC-58 | test/domain/orchestration/reminder_template_selector_test.dart | P2 |
 
 ### Fake Call (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Fake call: decline counts as miss toward retryCount | TC-49 | fake_call_scenarios_test.dart | P1 |
-| Fake call decline: grace → re-ring | TC-48, TC-50 | fake_call_scenarios_test.dart | P1 |
-| Fake call answer: engine keeps running, disarm on hang-up (Pivot 2) | TC-47 | fake_call_scenarios_test.dart | P1 |
-| Fake call: max retryCount rings before advancing | TC-49, TC-50, TC-51 | fake_call_scenarios_test.dart | P1 |
+| Fake call: decline counts as miss toward retryCount (`declineIsSafe=false`) | TC-49 | test/domain/engine/fake_call_is_event_test.dart | P1 |
+| Fake call decline: grace → re-ring | TC-48, TC-50 | test/domain/engine/fake_call_is_event_test.dart | P1 |
+| Fake call answer: engine keeps running, disarm on hang-up (Pivot 2) | TC-47 | test/domain/engine/fake_call_is_event_test.dart, test/features/fake_call/fake_call_screen_test.dart | P1 |
+| Fake call: max retryCount rings before advancing | TC-49, TC-50, TC-51 | test/domain/engine/fake_call_is_event_test.dart | P1 |
 
 ### Email/SMS Contact (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| SMS sends to all selected contacts | TC-52 | sms_contact_test.dart | P1 |
-| SMS includes location when available | TC-53 | sms_contact_test.dart | P1 |
-| SMS delivery retries indefinitely when offline | TC-54 | messaging_service_test.dart | P1 |
-| Empty contact list: message says "owner of this phone" | TC-55 | sms_contact_test.dart | P2 |
+| SMS sends to all selected contacts | TC-52 | test/domain/orchestration/strategies/sms_contact_strategy_test.dart | P1 |
+| SMS includes location when available | TC-53 | test/domain/orchestration/strategies/sms_contact_strategy_test.dart | P1 |
+| SMS delivery retries indefinitely when offline | TC-54 | test/services/messaging_service_test.dart | P1 |
+| Empty contact list: message says "owner of this phone" | TC-55 | test/domain/orchestration/strategies/sms_contact_strategy_test.dart | P2 |
 
 ### Phone Call Contact (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Phone call contact auto-dials (Android) or shows dialog (iOS) | TC-56 | phone_call_test.dart | P1 |
-| Pre-SMS before calling enabled by default | TC-57 | phone_call_test.dart | P1 |
-| retryCount respects retry attempts | TC-58 | phone_call_test.dart | P1 |
+| Phone call contact auto-dials (Android); iOS dialog half is (CI build-ios) | TC-56 | test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart, test/services/phone_service_test.dart | P1 |
+| Pre-SMS before calling enabled by default | TC-57 | test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart | P1 |
+| retryCount respects retry attempts | TC-58 | test/domain/orchestration/strategies/phone_call_contact_strategy_test.dart | P1 |
 
 ### Emergency Call (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Emergency call dials 112/911 (locale-aware) | TC-59 | emergency_call_test.dart | P1 |
-| Emergency call shows 5s confirmation countdown (default) | TC-60 | emergency_call_test.dart | P1 |
-| Emergency call confirmation can be disabled | TC-61 | emergency_call_test.dart | P2 |
-| Emergency number: 80+ countries mapped | TC-62 | locale_test.dart | P2 |
+| Emergency call dials 112/911 (locale-aware) | TC-59 | test/domain/orchestration/strategies/call_emergency_strategy_test.dart | P1 |
+| Emergency call shows 5s confirmation countdown (default) | TC-60 | test/features/session/widgets/emergency_confirm_overlay_test.dart | P1 |
+| Emergency call confirmation can be disabled | TC-61 | test/domain/configs/call_emergency_config_test.dart | P2 |
+| Emergency number: 80+ countries mapped | TC-62 | test/domain/models/emergency_numbers_test.dart | P2 |
 
 ### Loud Alarm (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Loud alarm plays at max volume | TC-63 | loud_alarm_test.dart | P1 |
-| Loud alarm always disarmable (no canDisarm=false option) | TC-64 | loud_alarm_test.dart | P1 |
-| Gradual volume increase: linear ramp (configurable duration) | TC-65 | loud_alarm_test.dart | P2 |
-| Camera flash SOS pattern plays (if enabled) | TC-66 | flash_service_test.dart | P2 |
-| Screen flash: slow (1000ms, default) or fast (500ms) | TC-67 | screen_flash_test.dart | P2 |
+| Loud alarm plays at max volume | TC-63 | test/domain/orchestration/strategies/loud_alarm_strategy_test.dart | P1 |
+| Loud alarm always disarmable (v3 model has no canDisarm field; engine disarm is unconditional — Invariant 2) | TC-64 | test/domain/engine/invariants_test.dart | P1 |
+| Gradual volume increase: linear ramp (configurable duration) | TC-65 | test/domain/orchestration/strategies/loud_alarm_strategy_test.dart | P2 |
+| Camera flash SOS pattern plays (if enabled) | TC-66 | test/services/flash_service_test.dart | P2 |
+| Screen flash: slow (1000ms, default) or fast (500ms) | TC-67 | test/services/screen_flash_service_test.dart | P2 |
 
 ### Countdown Warning (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Countdown warning displays before escalation | TC-68 | countdown_warning_test.dart | P2 |
-| Countdown warning vibration and optional sound | TC-69 | countdown_warning_test.dart | P2 |
+| Countdown warning displays before escalation | TC-68 | test/domain/orchestration/strategies/countdown_warning_strategy_test.dart | P2 |
+| Countdown warning vibration and optional sound | TC-69 | test/domain/orchestration/strategies/countdown_warning_strategy_test.dart | P2 |
 
 ### Session Modes & Chain Defaults (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Walk Mode: holdButton check-in, escalates via fakeCall → alarm | TC-38 | walk_mode_integration_test.dart | P1 |
-| Date Mode: disguisedReminder check-in, escalates via fakeCall → alarm | TC-43, TC-45 | date_mode_integration_test.dart | P1 |
-| All steps have waitSeconds, durationSeconds, gracePeriodSeconds, retryCount | TC-56 | chain_step_test.dart | P1 |
-| Timing defaults table: correct per event type | TC-54, TC-55 | event_defaults_test.dart | P1 |
+| Walk Mode: holdButton check-in, escalates via fakeCall → alarm | TC-38, INT-001, INT-002 | test/integration/walk_mode_session_test.dart | P1 |
+| Date Mode: disguisedReminder check-in, escalates via fakeCall → alarm | TC-43, TC-45, INT-003, INT-004 | test/integration/date_mode_session_test.dart | P1 |
+| All steps have waitSeconds, durationSeconds, gracePeriodSeconds, retryCount | TC-56 | test/domain/models/chain_step_test.dart | P1 |
+| Timing defaults table: correct per event type | TC-54, TC-55 | test/domain/models/event_defaults_test.dart | P1 |
 
 ### Mode Editor UI (P1 - User-Facing)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Duplicate step button copies step with all config | TC-70 | mode_editor_test.dart | P1 |
-| Timing section collapsible in step editor | TC-71 | mode_editor_test.dart | P1 |
-| Each step can be reordered by drag-and-drop | TC-72 | mode_editor_test.dart | P2 |
+| Duplicate step button copies step with all config | TC-70 | test/features/mode_editor/mode_editor_screen_test.dart | P1 |
+| Timing section collapsible in step editor | TC-71 | test/features/modes/widgets/step_config_panel_test.dart | P1 |
+| Each step can be reordered by drag-and-drop | TC-72 | test/features/mode_editor/mode_editor_screen_test.dart | P2 |
 
 ### Settings & Global Defaults (P2 - Configuration)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Event Defaults screen shows all 9 step types | TC-73 | settings_event_defaults_test.dart | P2 |
-| Stealth mode hides progress bar, missed indicators, grace visuals | TC-51, TC-52, TC-53 | stealth_mode_test.dart | P2 |
-| Stealth mode: exit silently on chain exhaustion | TC-51 | stealth_mode_test.dart | P2 |
-| Stealth notification disguised (e.g., "Music playing") | TC-53 | stealth_mode_test.dart | P2 |
+| Event Defaults screen shows all 9 step types | TC-73 | test/features/event_defaults/event_defaults_screen_test.dart | P2 |
+| Stealth mode hides progress bar, missed indicators, grace visuals | TC-51, TC-52, TC-53 | test/features/session/session_screen_test.dart | P2 |
+| Stealth mode: exit silently on chain exhaustion | TC-51 | test/features/session/session_controller_lifecycle_test.dart | P2 |
+| Stealth notification disguised (e.g., "Music playing") | TC-53 | test/services/notification_service_test.dart | P2 |
 
 ### Data Models (P2 - Persistence)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| ChainStep field: `retryCount` (renamed from legacy `repeatCount` per R-9; legacy name is a CI grep gate) | TC-54, TC-55, TC-56 | chain_step_test.dart | P1 |
-| SessionMode: chainSteps ordered by order field | TC-74 | session_mode_test.dart | P2 |
-| SessionLog: all events timestamped and categorized | TC-62, TC-63, TC-64, TC-65 | session_log_test.dart | P2 |
-| Drift / JSON encryption always-on (no opt-out) | TC-75 | encryption_test.dart | P1 |
-| Drift schema: tables present and PK collision-free; `MigrationStrategy` round-trips | TC-61 | drift_schema_test.dart | P1 |
+| ChainStep field: `retryCount` (renamed from legacy `repeatCount` per R-9; legacy name is a CI grep gate) | TC-54, TC-55, TC-56 | test/domain/models/chain_step_test.dart | P1 |
+| SessionMode: chainSteps ordered by order field | TC-74 | test/domain/models/session_mode_test.dart | P2 |
+| SessionLog: all events timestamped and categorized | TC-62, TC-63, TC-64, TC-65 | test/domain/models/session_log_test.dart, test/services/session_log_recorder_test.dart | P2 |
+| Drift / JSON encryption always-on (no opt-out) | TC-75 | test/services/encryption_service_test.dart, test/data/db/database_test.dart | P1 |
+| Drift schema: tables present and PK collision-free; `MigrationStrategy` round-trips | TC-61 | test/data/db/database_test.dart, test/data/db/schema/tables_direct_test.dart | P1 |
 
 ### Localization (P2 - User-Facing)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| 14 languages: en, de, es, fr, ru, zh_CN, zh_TW, hi, fa, uk, pl, el, ar, he | TC-77 | localization_test.dart | P2 |
-| Locale-aware emergency numbers: 80+ countries | TC-62 | locale_test.dart | P2 |
-| ARB format strings correctly translated | TC-78 | translation_test.dart | P2 |
+| 14 languages: en, de, es, fr, ru, zh_CN, zh_TW, hi, fa, uk, pl, el, ar, he | TC-77 | test/l10n/parity_test.dart | P2 |
+| Locale-aware emergency numbers: 80+ countries | TC-62 | test/domain/models/emergency_numbers_test.dart | P2 |
+| ARB format strings correctly translated | TC-78 | test/l10n/locale_smoke_test.dart | P2 |
 | Native speaker review completed per language | (manual verification) | (QA signoff) | P2 |
 
 ### Accessibility (P2 - Compliance)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Text contrast ≥ 4.5:1 (normal), ≥ 3:1 (large) | TC-79 | contrast_test.dart | P2 |
-| Semantics labels on all interactive elements | TC-80 | semantics_test.dart | P2 |
-| One-hand operation: all critical buttons in bottom third | TC-81 | button_position_test.dart | P2 |
-| Font scaling: UI remains usable under 200% scaling | TC-82 | font_scaling_test.dart | P2 |
+| Text contrast ≥ 4.5:1 (normal), ≥ 3:1 (large) | TC-79 | (manual design review — theme tokens; no mechanical host oracle exists in-repo. Why: contrast is a ColorScheme property, reviewed at design sign-off, not a widget-test assertion) | P2 |
+| Semantics labels on all interactive elements | TC-80 | test/core/widgets/swipe_slider_test.dart (plus per-screen Semantics assertions across widget tests) | P2 |
+| One-hand operation: all critical buttons in bottom third | TC-81 | (manual design review — layout property; no mechanical host oracle. Why: geometry varies per device; verified on hardware at QA sign-off) | P2 |
+| Font scaling: UI remains usable under 200% scaling | TC-82 | test/features/about/about_screen_test.dart (textScaleFactor 1.5/2.0) | P2 |
 
 ### Real Phone Call Detection (P1 - Safety Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Real phone call pauses session automatically | TC-25 | real_call_detection_test.dart | P1 |
-| Session resumes from exact point on call end | TC-26 | real_call_detection_test.dart | P1 |
-| Android: PhoneStateListener implementation | TC-25 (Android) | platform_specific_test.dart | P1 |
-| iOS: CXCallObserver implementation | TC-25 (iOS) | platform_specific_test.dart | P1 |
+| Real phone call pauses session automatically (host half) | TC-25, INT-007 | test/integration/call_state_session_test.dart | P1 |
+| Session resumes from exact point on call end | TC-26, INT-007 | test/integration/call_state_session_test.dart | P1 |
+| Android: PhoneStateListener end-to-end (adb gsm call) | TC-25 (Android), #11 | integration_test/real_call_pause_test.dart — device-e2e via tool/device_e2e/run_real_call_pause.sh; never host-green | P1 |
+| iOS: CXCallObserver implementation | TC-25 (iOS) | (CI build-ios) | P1 |
 
 ### Permissions & Onboarding (P1 - Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Notification permission required upfront | TC-83 | onboarding_test.dart | P1 |
-| SMS/call permissions checked before smsContact/callEmergency | TC-84, TC-85 | session_start_validation_test.dart | P1 |
-| No emergency contacts → error dialog with "Add Contact" button | TC-86 | session_start_validation_test.dart | P1 |
-| Whatsapp/Telegram not installed → error dialog | TC-87 | session_start_validation_test.dart | P1 |
+| Notification permission required upfront | TC-83, WID-001 | test/integration/onboarding_flow_widget_test.dart | P1 |
+| SMS/call permissions checked before smsContact/callEmergency | TC-84, TC-85 | test/services/session_start_validator_test.dart | P1 |
+| No emergency contacts → error dialog with "Add Contact" button | TC-86 | test/services/session_start_validator_test.dart | P1 |
+| Whatsapp/Telegram not installed → error dialog | TC-87 | test/services/session_start_validator_test.dart | P1 |
 
 ### Integration Tests (P1 - End-to-End)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Onboarding → home → start session → escalate → end | TC-88 | onboarding_to_session_integration_test.dart | P1 |
-| Walk mode: hold 5min, release, re-hold, hold 10min, end | TC-38 | walk_mode_integration_test.dart | P1 |
-| Date mode: 3 reminders all confirmed → end clean | TC-43 | date_mode_integration_test.dart | P1 |
-| Fake call: answer → disarm → reset to step 0 | TC-47 | fake_call_integration_test.dart | P1 |
-| Simulation: 10x speed, leap button, summary shown | TC-89 | simulation_integration_test.dart | P1 |
+| Onboarding → home → start session → escalate → end | TC-88, WID-001, INT-002 | test/integration/onboarding_flow_widget_test.dart, test/integration/walk_mode_session_test.dart | P1 |
+| Walk mode: hold 5min, release, re-hold, hold 10min, end | TC-38, INT-001 | test/integration/walk_mode_session_test.dart | P1 |
+| Date mode: 3 reminders all confirmed → end clean | TC-43, INT-003 | test/integration/date_mode_session_test.dart | P1 |
+| Fake call: answer → disarm → reset to step 0 | TC-47 | test/features/fake_call/fake_call_screen_test.dart | P1 |
+| Simulation: 10x speed, leap button, summary shown | TC-89, INT-009 | test/integration/simulation_disarm_session_test.dart, test/features/simulation_summary/simulation_summary_controller_test.dart | P1 |
 
 ### Platform-Specific (P1 - Critical)
 
 | Spec Requirement | Test Case | Test File | Priority |
 |---|---|---|---|
-| Android: SMS auto-send via SmsManager | TC-52 (Android) | sms_service_test.dart | P1 |
-| iOS: SMS opens Messages app (user taps Send) | TC-52 (iOS) | sms_service_test.dart | P1 |
-| Android: Call auto-dials without confirmation | TC-56 (Android) | phone_call_test.dart | P1 |
-| iOS: Call shows confirmation dialog (user taps) | TC-56 (iOS) | phone_call_test.dart | P1 |
-| Android: Volume button detection | TC-90 | volume_button_test.dart | P1 (Android only) |
+| Android: SMS auto-send via SmsManager | TC-52 (Android) | test/services/messaging_service_test.dart | P1 |
+| iOS: SMS opens Messages app (user taps Send) | TC-52 (iOS) | (CI build-ios) | P1 |
+| Android: Call auto-dials without confirmation | TC-56 (Android) | test/services/phone_service_test.dart | P1 |
+| iOS: Call shows confirmation dialog (user taps) | TC-56 (iOS) | (CI build-ios) | P1 |
+| Android: Volume button detection | TC-90 | test/services/hardware_button_service_real_test.dart | P1 (Android only) |
 
 ---
 
@@ -1327,29 +1339,75 @@ return.
   removing the safe-end branch from `_finaliseLog` fails case 2.
 - **Reference:** decision A5.
 
-### Coverage matrix (scope list → existing vs. new)
+### Coverage matrix (scope list → live test file)
 
-| Scope scenario | Covered today? | New INT-### |
+All rows are BUILT as of M5; the file column names the live test.
+Why one row per ID: `test/spec_coverage_test.dart` (Phase 9) asserts
+mechanically that each ID below is embedded in a test name in its file,
+and that this list and the matrix stay in sync — a stale row fails CI.
+Rows tagged `device-e2e` run only on a device/emulator via
+`tool/device_e2e/*.sh` and are never marked host-green.
+
+| Scope scenario | Live test file | INT-### |
 |---|---|---|
-| Walk Mode happy path (hold → release → grace → SMS) | Partial (API no-ops) | **INT-001** |
-| Walk Mode worst case (all miss) | Partial (sim lifecycle only) | **INT-002** |
-| Date Mode happy path | No | **INT-003** |
-| Date Mode worst case | No | **INT-004** |
-| Distress via hardware panic (5× vol) | Structural only | **INT-005** |
-| Duress PIN no-op during distress (A4) | No | **INT-006** |
-| Real call → pause → resume (A2) | No | **INT-007** |
-| Real call over fakeCall (29, 30) | No | **INT-008** |
-| Simulation leap to next event (D2) | Partial | **INT-009** |
-| Disarm / clean end cancels queued SMS (A5) | **BUILT** (controller `_cancelPendingSms`) | **INT-010** |
-| Distress via wrongPinThreshold (A3) | Settings round-trip only | **INT-011** (in Phase 9 cohort) |
-| Session-Interrupted prompt (Extra 13, informational) | No | **INT-012** (Phase 9 — seed an in-progress (orphan) `SessionLog` row (no `endedAt`), assert prompt + Acknowledge path) |
-| Smart retention (B8) | No | **INT-013** (Phase 9 — clock-advance test; two-stage per 03-data-models B8 step 5 + Extra-11: the age pass SOFT-deletes aged non-critical logs into the recoverable trash, hard-delete only after `trashRetentionDays` via the trash pass; critical logs stay live forever) |
-| Soft-delete log (Extra 11) | No | **INT-014** (Phase 9 — restore + hard-purge transitions) |
-| Onboarding full flow | No | **WID-001** (Phase 6 widget cohort) |
-| Language switch instant rebuild (43) | No | **WID-002** (Phase 6 widget cohort) |
+| Walk Mode happy path (hold → release → grace → SMS) | test/integration/walk_mode_session_test.dart | **INT-001** |
+| Walk Mode worst case (all miss) | test/integration/walk_mode_session_test.dart | **INT-002** |
+| Date Mode happy path | test/integration/date_mode_session_test.dart | **INT-003** |
+| Date Mode worst case | test/integration/date_mode_session_test.dart | **INT-004** |
+| Distress via hardware panic (5× vol) | test/integration/distress_session_test.dart | **INT-005** |
+| Duress PIN no-op during distress (A4) | test/integration/distress_session_test.dart | **INT-006** |
+| Real call → pause → resume (A2) — host harness (fake call-state stream) | test/integration/call_state_session_test.dart | **INT-007** |
+| Real call → pause → resume — on-device (adb gsm; real `CallStateChannel`) | integration_test/real_call_pause_test.dart — device-e2e via tool/device_e2e/run_real_call_pause.sh | **#11** (device half of INT-007) |
+| Real call over fakeCall (29, 30) | test/integration/call_state_session_test.dart | **INT-008** |
+| Simulation leap to next event (D2) | test/integration/simulation_disarm_session_test.dart | **INT-009** |
+| Disarm / clean end cancels queued SMS (A5; controller `_cancelPendingSms`) | test/integration/simulation_disarm_session_test.dart | **INT-010** |
+| Distress via wrongPinThreshold (A3) | test/integration/wrong_pin_distress_session_test.dart | **INT-011** |
+| Session-Interrupted prompt (Extra 13, informational — seed an in-progress (orphan) `SessionLog` row (no `endedAt`), assert prompt + Acknowledge path) | test/integration/interrupted_prompt_session_test.dart | **INT-012** |
+| Smart retention (B8) (clock-advance test; two-stage per 03-data-models B8 step 5 + Extra-11: the age pass SOFT-deletes aged non-critical logs into the recoverable trash, hard-delete only after `trashRetentionDays` via the trash pass; critical logs stay live forever) | test/integration/log_retention_test.dart | **INT-013** |
+| Soft-delete log (Extra 11 — restore + hard-purge transitions) | test/integration/log_soft_delete_test.dart | **INT-014** |
+| Onboarding full flow | test/integration/onboarding_flow_widget_test.dart | **WID-001** |
+| Language switch instant rebuild (43) | test/integration/language_switch_widget_test.dart | **WID-002** |
+| #12 background-throttle survival (real OS background → 60x clamp + real-session round-trip) | integration_test/background_throttle_test.dart — device-e2e via tool/device_e2e/run_background_throttle.sh | **#12-A / #12-B** |
+| Stealth launcher-alias swap (each preset becomes the launcher resolver) | integration_test/stealth_icon_switch_test.dart — device-e2e via tool/device_e2e/run_stealth_per_preset.sh | **per-preset** |
 
 ---
 
-**Document Status:** Complete test plan with comprehensive traceability ready for implementation  
-**Last Updated:** 2026-04-14  
-**Next Steps:** Implement Phase 1 (P1) tests first, then Phase 2–4 in parallel
+## Annex — M5 coverage host-tests (C6–C7g)
+
+Why this annex exists: the M5 coverage campaign (commits `m5-c6` …
+`m5-c7g`) raised coverage-of-logic from 84.49% to 97.85% with host
+tests that carry no INT-/WID- IDs. This annex maps each cohort's test
+files to the spec sections they pin, so the traceability story does
+not end at the contract table. Files are repo-root-relative; all run
+in the host suite.
+
+> **Real-wiring doctrine (binding for every WID/widget row).** A
+> widget/WID row only counts as coverage if the test drives the REAL
+> wiring — real `GoRouter` from `lib/router/app_router.dart`, real
+> Riverpod providers, real controllers — with fakes only at the
+> platform seams. Why: the original WID-001/WID-002 used fabricated
+> routers/providers; they stayed green while bugs #12 (onboarding
+> redirect bounce) and #13 (firstLaunch staleness) shipped undetected
+> for three milestones. Both tests were repaired onto the real wiring
+> in `82d4c60`. A green widget test against a fake router proves
+> nothing about the app.
+
+| Cohort | Test files | Spec sections pinned |
+|---|---|---|
+| C6 | test/services/call_state_service_real_test.dart, test/services/flash_service_real_test.dart, test/services/location_service_real_test.dart, test/services/contact_service_real_test.dart, test/services/hardware_button_service_real_test.dart | 05 §CallStateService / §FlashService / §LocationService / §ContactService / §HardwareButtonService (Real channel wrappers, mocked `MethodChannel` seam) |
+| C6 | test/main_bootstrap_test.dart | 00 §Architecture + 05 bootstrap order (DB key → Drift open → seed → providers) |
+| C6b | test/services/recording_service_real_test.dart, test/services/audio_service_real_test.dart, test/services/messaging_service_test.dart, test/services/notification_service_test.dart, test/services/phone_service_test.dart, test/services/service_providers_wiring_test.dart | 05 §RecordingService / §AudioService / §MessagingService / §NotificationService / §PhoneService / §Service Providers (single-owner rule) |
+| C6b | test/data/db/feedback_history_test.dart, test/data/repositories/contacts_repository_test.dart, test/core/widgets/timing_slider_test.dart, test/domain/engine/engine_edges_test.dart | 03 §Persistence; 04 TimingSlider (DE-1); 01 engine edge cases |
+| C7a | test/features/session/session_controller_lifecycle_test.dart (+ session_screen_test, fake_call_screen_test, session_elapsed_clock_test additions) | 01 §Pause/Resume + §Simulation; 04 §Distress Confirmation Window; 05 §BackgroundSessionService; 06 §Wrong PIN; Extra 22 |
+| C7b | test/features/modes/modes_controller_test.dart, test/features/modes/widgets/*_test.dart | TC-70/71/73 vicinity; 04 §Mode editing; 02:287-304 (per-step config panels) |
+| C7c | test/features/distress_modes/distress_modes_controller_test.dart, test/features/reminder_templates/reminder_templates_controller_test.dart, test/features/template_editor/template_editor_screen_test.dart, test/features/event_defaults/event_defaults_controller_test.dart, test/features/mode_editor/mode_editor_controller_test.dart | 04 §Templates / §Distress Modes / §Fake Call config; TC-70–72 vicinity; #136–139 |
+| C7d | test/features/past_events/past_events_controller_test.dart, test/features/past_events_trash/past_events_trash_controller_test.dart, test/features/history_retention/history_retention_controller_test.dart | 04 §Past Events / §Trash / §Detail (04:2455-2550); 06 §History & Retention; B8 |
+| C7e | test/features/home/home_controller_test.dart, test/features/home/home_screen_test.dart, test/features/home/chain_summary_test.dart, test/features/home/safety_setup_checklist_test.dart, test/features/simulation_summary/simulation_summary_controller_test.dart, test/features/gps_logging/gps_logging_controller_test.dart, test/features/feedback_form/feedback_form_screen_test.dart | 04 §Home / §Simulation Summary (04:1202-1288); 05 §SessionStartValidator; 06 §GPS |
+| C7f | test/router/app_router_test.dart, test/features/contacts/contacts_controller_test.dart, test/features/onboarding/onboarding_controller_test.dart, test/features/contact_form/contact_form_screen_test.dart, test/features/launch_gate/launch_pin_screen_test.dart | 04 §Navigation & Deep Linking; 06 §App PIN; 04:422-426; 04:1518-1521 |
+| C7g | test/features/settings_security/settings_security_controller_test.dart, test/features/settings/settings_controller_test.dart, test/features/backup_restore/backup_restore_screen_test.dart, test/features/profile/profile_controller_test.dart, test/features/settings_stealth/settings_stealth_controller_test.dart | 04 §Security Submenu (04:1785-1833); 06 §Security / §Duress PIN (G-010, R-27); 04 §Backup & Restore (04:2358-2402, R-39); 06 §Stealth |
+
+---
+
+**Document Status:** Complete test plan; contract table reconciled to live tests and enforced by `test/spec_coverage_test.dart` (Phase 9)  
+**Last Updated:** 2026-06-10  
+**Next Steps:** Keep the contract table and `test/spec_coverage_test.dart` in lockstep — the suite fails on drift

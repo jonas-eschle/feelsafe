@@ -335,6 +335,21 @@ Attempts deep link `tg://msg?to={phoneNumber}&text={encodedMessage}`. Falls back
 
 Dispatched to `PhoneService.call()` (see Phone Service section).
 
+> **Load-bearing invariant (M5/C6b launchUrl-degrade fix).** Every
+> URL-launching helper in MessagingService and PhoneService has the
+> contract "degrade to `false`, never throw" — a failed launch must
+> surface as an undeliverable channel, not an exception up the dispatch
+> chain (non-blocking execution). That requires `return await
+> launchUrl(...)` INSIDE the `try`: a bare `return launchUrl(...)`
+> returns the pending future out of the `try`, so an async rejection
+> escapes the `catch` and the contract silently breaks. Why this is
+> documented: the `await` looks redundant and lint-tempting to remove;
+> it is the entire error boundary. Pinned by
+> `lib/services/messaging_service.dart` (`_launchUrl`),
+> `lib/services/phone_service.dart`, and their tests
+> (`test/services/messaging_service_test.dart`,
+> `test/services/phone_service_test.dart`).
+
 ### Phone Number Cleanup
 
 All phone numbers are sanitized before use:
@@ -381,6 +396,10 @@ Dials a regular phone number via `tel:` URI. Behavior matches emergency calls (c
 ### Phone Number Handling
 
 Phone numbers are cleaned by removing non-digit characters while preserving the `+` prefix (same as MessagingService).
+
+Both `call` methods follow the same degrade-to-`false` `return await`
+invariant as MessagingService (see §MessagingService — Channel
+Dispatch, "Load-bearing invariant").
 
 ### Voice Call Deep Links
 
@@ -635,6 +654,18 @@ Alternative strobe pattern (fast alternating flashes) for maximum attention-grab
 Stops the flash loop and releases the camera. Awaits the loop to exit before disposing the controller to prevent calling methods on a disposed resource.
 
 Safe to call when not flashing.
+
+> **Load-bearing invariant (M5/C6 stopFlash-hang fix).** The
+> loop-exit handshake uses a `Completer` field (`_loopDone`):
+> `stopFlash()` nulls the field FIRST and then awaits the completer it
+> captured, while each flash loop must capture the completer into a
+> LOCAL at loop start and complete that local in its `finally` — never
+> re-read the field. Why: the loop's `finally` runs after `stopFlash()`
+> has already nulled the field; re-reading it completes nothing and
+> `stopFlash()` awaits forever (the C6 hang). Do not "simplify" the
+> local captures away — `RealFlashService` (`lib/services/flash_service.dart`,
+> comments at `_sosLoop`/`_continuousLoop`) and
+> `test/services/flash_service_real_test.dart` pin this behavior.
 
 ### Graceful Degradation
 
