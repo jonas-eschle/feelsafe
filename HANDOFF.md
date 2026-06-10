@@ -9,23 +9,90 @@ background, **SOLE committer** on the tree) → per-chunk **cohort** (architect-
 spec-vs-code + qa-expert spec-vs-tests, both Opus, parallel, READ-ONLY) → on
 FIX_REQUIRED a fresh fix agent → re-cohort the delta → advance. Do a cheap
 orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. **ONE
-committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
-run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
+committing agent on the tree at a time.** Auto-chain is pre-authorized; **NEVER
+push** (standing rule below); interrupt the user ONLY for a genuine BLOCKED
+value/spec decision.
 
-## ✅ M0–M5 COMPLETE — PUSHED (origin/main = `9531e27`, 2026-06-10).
-## THE v3 WIRING REMEDIATION IS DONE. There is no next chunk.
+## ✅ M0–M5 COMPLETE (baseline) · ▶ M6 POST-GA POLISH IN PROGRESS (2026-06-10)
 
-(Remote tip `9531e27` is a superseded "push blocked" bookkeeping note pushed
-with the stack; the full M5 stack through `95a1791` is on the remote. The
-local final-HANDOFF commit was rebased onto it 2026-06-10 — fast-forward
+(M5 stack pushed: origin/main = `9531e27`, a superseded "push blocked"
+bookkeeping note that went up with the stack; full M5 code = `95a1791`. Local
+was rebase-reconciled onto it 2026-06-10 (`3c8f945`) — fast-forward
 push-ready, no code divergence.)
 
 **STANDING RULE (user, 2026-06-10): never push, never ask for or wait on a
 push, never plan a milestone ending around one — work stays LOCAL; the user
 pushes at their own discretion.** Verified local commits are the deliverable.
-(Recorded in memory `feedback_orchestration_handoff_baton`.) Fresh session:
-there is nothing to resume from this plan; post-GA polish notes are parked in
-the KEY FINDINGS sections below.
+(Recorded in memory `feedback_orchestration_handoff_baton`.)
+
+---
+
+## ▶ M6 — POST-GA POLISH (user-authorized 2026-06-10; auto-chain approved)
+
+**Baseline (M5 final):** suite 4649 pass · analyze 0 · coverage-of-logic
+99.33% floor **98.7** · l10n parity 28/28 · NO-STUBS OK. Coverage excludes:
+5 globs + in-source LCOV_EXCL (see `tool/coverage/coverage_excludes.txt`) —
+ALL new lib/ code lands in the denominator and must arrive host-tested.
+
+**P0 scout VERIFIED the parked-item list (2026-06-10; full report in the P0
+agent transcript). Already DONE — do NOT redo:** onboardingUseSimNumberHint
+translations (all 13 non-EN real sentences); backup_restore addTearDown
+restores (11/11).
+
+**USER DECISIONS (AskUserQuestion, 2026-06-10):**
+1. **GPS #22 → TRIM** `includeInSms`/`format`/`historyRetentionDays` from
+   `GpsLoggingConfig` + both editing UIs + spec tables (06:525-545 rows/
+   tooltips, 03:1123-1135 model; fixes the 06 "address" vs 03
+   "openLocationCode" enum mismatch). No runtime consumer exists for any of
+   the three; per-step `SmsContactConfig.includeLocation` keeps the feature.
+2. **blackScreenMode → MOVE to Retry & Advanced, KEEP all 9 types**: move the
+   toggle from `EventSpecificConfig` (9 render sites, shared widget
+   event_specific_config.dart:769) into `step_config_panel.dart:110-123`
+   group 3; AMEND spec 04:1614 scope line ("3 types") to all types, with a
+   Why line.
+
+**CHUNKS (one committing implementer at a time → arch+qa cohort each):**
+- **P1 (trivial):** spec 06:268 ramp "0–60"→"1–60" (+ widget-name nit);
+  l10n key for hard-coded snackbar 'Name, title, and body required.'
+  (safety_options_section.dart:837 + template_editor_screen.dart:89, ×14
+  ARBs); copy-hop value test (session_controller.dart:767-770 →
+  session_controller_dispatch_test.dart, non-default AppSettings values);
+  reminder_templates_screen_test.dart:710-727 disabled-Delete real tap;
+  swipe_slider _onPanCancel:149-156 genuine-reach attempt (revert if
+  host-unreachable — honest gap, no LCOV_EXCL). No net-new lib logic →
+  coverage run NOT required this chunk (P6 runs the authoritative gate).
+- **P2 (hoist):** move `appSettingsLiveProvider` (main.dart:293) +
+  `firstLaunchProvider` (app_router.dart:67) to NEW
+  `lib/services/app_state_providers.dart` (scout: zero new layer edges vs
+  core→services edge of a lib/core home). Retarget 5 lib + 7 test importers.
+  Keep-alive + invalidation semantics IDENTICAL (bugs #12/#13 surface).
+- **P3 (event-config UX, spec 04:1591/1635/1621-1630):** per-field
+  InfoIconButtons + 3 preview cards (fakeCall/smsContact/loudAlarm) in
+  event_specific_config.dart (zero exist today; building block
+  lib/core/widgets/info_icon_button.dart) + templates-link InfoIconButton
+  (04:1635); localized step descriptions — 9 `chainStepDesc*` keys (EN
+  sentences from spec 04:1621-1630), `stepDescription(l10n, type)` signature,
+  event_defaults_screen.dart:94 title → `stepName(l10n, type)` (+ _tileName
+  test update). ONE language-agent batch for ALL new P3 keys.
+- **P4 (mode-editor polish, spec 04:1479/1483/1487/1539-1540/1631):** wire
+  `SessionMode.iconName` (model/table/seeds exist; modes_screen.dart:42
+  hard-codes directions_walk) — tree-shake-safe name↔IconData map, render in
+  modes list + home selector, picker row in editor; per-type collapsed-header
+  key-config summaries replacing generic stepTimingSummary
+  (mode_editor_screen.dart:449-455; live-updating; truncate long contact
+  lists "+N more" as an impl detail); blackScreenMode MOVE per decision 2.
+  Language batch for new keys.
+- **P5 (GPS trim per decision 1):** model + gps_logging_screen.dart:78-94 +
+  controller:68 + gps_logging_fields.dart:77-95 + spec 06/03 + orphaned l10n
+  keys removed across ALL 14 ARBs (parity!) + affected tests. `GpsFormat`
+  enum: delete if format was its only consumer. Pre-alpha: nuke-and-reseed,
+  no migrations.
+- **P6 (finale):** authoritative full gate (analyze 0; full suite; coverage
+  ≥98.7 via LCOV_BIN=/home/jonas/lcov/bin/lcov filter+check; parity 28/28;
+  NO-STUBS S-1..S-12; format lib test; import_sorter) + MILESTONE cohort over
+  the whole M6 diff + baton close. NEVER push.
+
+**NEXT: P1** (then P2 → P3 → P4 → P5 → P6).
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
