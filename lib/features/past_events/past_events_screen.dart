@@ -43,7 +43,8 @@ class PastEventsScreen extends ConsumerWidget {
         ),
         body: stateAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (Object e, _) => Center(child: Text('Error: $e')),
+          error: (Object e, _) =>
+              Center(child: Text(l10n.commonErrorWithDetail(e))),
           data: (state) {
             final real = state.logs.where((s) => !s.isSimulation).toList();
             final sim = state.logs.where((s) => s.isSimulation).toList();

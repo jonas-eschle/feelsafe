@@ -220,7 +220,13 @@ void main() {
           eventDefaultsControllerProvider.overrideWith(() => fake),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(
+          l10n.commonErrorWithDetail('Exception: controller build error'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 

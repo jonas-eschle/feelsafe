@@ -367,19 +367,7 @@ void main() {
       expect(find.text('SIM'), findsNothing);
     });
 
-    testWidgets('renders "Start:" label in body', (WidgetTester tester) async {
-      final db = _openDb();
-      addTearDown(db.close);
-      await db.sessionLogsDao.upsert(_log());
-      await pumpScreen(
-        tester,
-        const PastEventsDetailScreen(logId: 'log-1'),
-        overrides: <Override>[_dbOverride(db)],
-      );
-      expect(find.textContaining('Start:'), findsOneWidget);
-    });
-
-    testWidgets('renders "End:" label when endedAt is set', (
+    testWidgets('renders the localized start-timestamp row in body', (
       WidgetTester tester,
     ) async {
       final db = _openDb();
@@ -390,7 +378,30 @@ void main() {
         const PastEventsDetailScreen(logId: 'log-1'),
         overrides: <Override>[_dbOverride(db)],
       );
-      expect(find.textContaining('End:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.pastEventsDetailStart(_base)), findsOneWidget);
+    });
+
+    testWidgets('renders the localized end-timestamp row when endedAt is set', (
+      WidgetTester tester,
+    ) async {
+      final db = _openDb();
+      addTearDown(db.close);
+      await db.sessionLogsDao.upsert(_log());
+      await pumpScreen(
+        tester,
+        const PastEventsDetailScreen(logId: 'log-1'),
+        overrides: <Override>[_dbOverride(db)],
+      );
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(
+          l10n.pastEventsDetailEnd(
+            _base.add(const Duration(minutes: 5, seconds: 23)),
+          ),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('Divider separates header from event timeline', (

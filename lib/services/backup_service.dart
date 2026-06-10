@@ -174,13 +174,21 @@ class RealBackupService implements BackupServiceProtocol {
         }
       }
 
-      // Restore reminder templates.
+      // Restore reminder templates. A top-level `templates` row is BY
+      // DEFINITION global — exportToJson only ever writes the Drift DAO
+      // rows here, and every DAO row is global (bug #14 invariant;
+      // mode-locals travel inside each mode's overrides JSON). A
+      // hand-edited/corrupted `isGlobal: false` is therefore coerced to
+      // `true` rather than rejected: restore is the recovery path of a
+      // safety app and follows the same lenient self-owned-data posture
+      // as the legacy-key handling above, and coercion (unlike a throw)
+      // keeps the invariant total without bricking the import.
       final templatesRaw = payload['templates'];
       if (templatesRaw is List) {
         for (final item in templatesRaw) {
           if (item is Map<String, dynamic>) {
             await _db.reminderTemplatesDao.upsert(
-              ReminderTemplate.fromJson(item),
+              ReminderTemplate.fromJson(item).copyWith(isGlobal: true),
             );
           }
         }

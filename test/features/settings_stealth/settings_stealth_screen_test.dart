@@ -249,7 +249,11 @@ void main() {
       // Inject an error after the widget is mounted.
       fake.state = AsyncError(Exception('db fail'), StackTrace.empty);
       await tester.pumpAndSettle();
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: db fail')),
+        findsOneWidget,
+      );
       expect(find.textContaining('db fail'), findsOneWidget);
     });
   });

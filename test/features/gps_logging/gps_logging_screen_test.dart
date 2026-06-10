@@ -154,7 +154,11 @@ void main() {
       // Force error state after initial load.
       fake.state = AsyncError(Exception('boom'), StackTrace.empty);
       await tester.pump();
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: boom')),
+        findsOneWidget,
+      );
     });
   });
 

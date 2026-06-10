@@ -274,7 +274,13 @@ void main() {
           settingsControllerProvider.overrideWith(() => controller),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(
+          l10n.commonErrorWithDetail('Exception: settings load failed'),
+        ),
+        findsOneWidget,
+      );
     });
   });
 

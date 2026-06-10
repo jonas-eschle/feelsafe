@@ -495,6 +495,33 @@ void main() {
       check(reEmitted.containsKey('includeInSms')).isFalse();
       check(reEmitted.containsKey('historyRetentionDays')).isFalse();
     });
+
+    test('a hand-crafted top-level template row with isGlobal:false is '
+        'COERCED to global on import — a payload[templates] row is by '
+        'definition global (bug #14 invariant), so the DAO never gains a '
+        'non-global row through restore', () async {
+      final env = await _make();
+      addTearDown(() => _cleanup(env));
+
+      final tampered = _template(id: 'tpl-tampered').toJson()
+        ..['isGlobal'] = false;
+      final json = jsonEncode(<String, dynamic>{
+        '_schemaVersion': 1,
+        'contacts': <dynamic>[],
+        'modes': <dynamic>[],
+        'templates': <dynamic>[tampered],
+        'settings': const AppSettings().toJson(),
+        'profile': const UserProfile().toJson(),
+      });
+
+      await env.service.importFromJson(json);
+
+      final restored = await env.db.reminderTemplatesDao.getById(
+        'tpl-tampered',
+      );
+      check(restored).isNotNull();
+      check(restored!.isGlobal).isTrue();
+    });
   });
 
   // --------------------------------------------------------------------------

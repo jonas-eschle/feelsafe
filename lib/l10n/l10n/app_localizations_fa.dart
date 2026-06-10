@@ -2785,4 +2785,28 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'این حالت برای ایمنی شما از اعلان‌ها (یادآوری‌های استتارشده یا تماس‌های ساختگی) استفاده می‌کند، اما مجوز اعلان خاموش است. برای شروع این حالت، اعلان‌ها را فعال کنید.';
+
+  @override
+  String get timingSliderEnterDuration => 'مدت را وارد کنید (ثانیه)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'خطا: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'شروع: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'پایان: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'آژیر';
+
+  @override
+  String get loudAlarmNotificationBody => 'آژیر Guardian Angela فعال است.';
 }

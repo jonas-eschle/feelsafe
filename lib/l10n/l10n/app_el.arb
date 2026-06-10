@@ -1003,5 +1003,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "Χρήση προεπιλογής",
   "sessionCompletedFeedbackPrompt": "Πώς ήταν η εμπειρία σας;",
   "sessionCompletedFeedbackSend": "Αποστολή σχολίων",
-  "sessionCompletedFeedbackSkip": "Παράλειψη"
+  "sessionCompletedFeedbackSkip": "Παράλειψη",
+  "timingSliderEnterDuration": "Εισαγωγή διάρκειας (δευτερόλεπτα)",
+  "commonErrorWithDetail": "Σφάλμα: {detail}",
+  "pastEventsDetailStart": "Έναρξη: {timestamp}",
+  "pastEventsDetailEnd": "Λήξη: {timestamp}",
+  "loudAlarmNotificationTitle": "Συναγερμός",
+  "loudAlarmNotificationBody": "Ο συναγερμός του Guardian Angela είναι ενεργός."
 }

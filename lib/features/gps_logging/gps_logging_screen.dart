@@ -22,7 +22,8 @@ class GpsLoggingScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.settingsGpsLoggingRow)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) {
           final cfg = state.config;
           final notifier = ref.read(gpsLoggingControllerProvider.notifier);

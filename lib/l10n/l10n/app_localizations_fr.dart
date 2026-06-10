@@ -2828,4 +2828,29 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Ce mode utilise des notifications (rappels déguisés ou faux appels) pour assurer votre sécurité, mais l\'autorisation de notification est désactivée. Activez les notifications pour démarrer ce mode.';
+
+  @override
+  String get timingSliderEnterDuration => 'Saisir la durée (secondes)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Erreur : $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Début : $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Fin : $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Alarme';
+
+  @override
+  String get loudAlarmNotificationBody =>
+      'L\'alarme de Guardian Angela est active.';
 }

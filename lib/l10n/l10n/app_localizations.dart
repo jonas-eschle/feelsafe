@@ -4930,6 +4930,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This mode uses notifications (disguised reminders or fake calls) to keep you safe, but notification permission is off. Enable notifications to start this mode.'**
   String get homeStartBlockedNotifBody;
+
+  /// Title of the TimingSlider manual-entry dialog opened from the numeric chip.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter duration (seconds)'**
+  String get timingSliderEnterDuration;
+
+  /// Generic error body for AsyncValue.error builders; {detail} is the raw exception text.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {detail}'**
+  String commonErrorWithDetail(Object detail);
+
+  /// Session start-timestamp row on the Session Log Detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'Start: {timestamp}'**
+  String pastEventsDetailStart(Object timestamp);
+
+  /// Session end-timestamp row on the Session Log Detail screen.
+  ///
+  /// In en, this message translates to:
+  /// **'End: {timestamp}'**
+  String pastEventsDetailEnd(Object timestamp);
+
+  /// Title of the loud-alarm escalation notification (lock screen, spec 05:880-886). Resolved once at session start in the user's app language and carried to LoudAlarmStrategy via EventServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Alarm'**
+  String get loudAlarmNotificationTitle;
+
+  /// Body of the loud-alarm escalation notification.
+  ///
+  /// In en, this message translates to:
+  /// **'Guardian Angela alarm is active.'**
+  String get loudAlarmNotificationBody;
 }
 
 class _AppLocalizationsDelegate

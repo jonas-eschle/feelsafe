@@ -24,7 +24,8 @@ class SettingsStealthScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.settingsStealthRow)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (s) {
           final notifier = ref.read(settingsStealthControllerProvider.notifier);
           return ListView(

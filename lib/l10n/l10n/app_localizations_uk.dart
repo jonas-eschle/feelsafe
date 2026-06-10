@@ -2814,4 +2814,28 @@ class AppLocalizationsUk extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Цей режим використовує сповіщення (замасковані нагадування або фальшиві дзвінки) для вашої безпеки, але дозвіл на сповіщення вимкнено. Увімкніть сповіщення, щоб запустити цей режим.';
+
+  @override
+  String get timingSliderEnterDuration => 'Введіть тривалість (секунди)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Помилка: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Початок: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Завершення: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Тривога';
+
+  @override
+  String get loudAlarmNotificationBody => 'Тривога Guardian Angela активна.';
 }

@@ -32,6 +32,12 @@ import '../../helpers/widget_test_helpers.dart';
 // Test fakes
 // ---------------------------------------------------------------------------
 
+/// Controller whose build throws — drives the AsyncValue error branch.
+class _ErrorModesController extends ModesController {
+  @override
+  Future<ModesState> build() async => throw Exception('db failure');
+}
+
 class _FakeModesController extends ModesController {
   _FakeModesController(this._initial);
 
@@ -344,24 +350,26 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
-    testWidgets('error state renders "Error:" text', (
+    testWidgets('error state renders the localized error message', (
       WidgetTester tester,
     ) async {
+      // A build()-throwing controller drives the REAL AsyncError branch.
+      // (Assigning AsyncError to a just-constructed notifier inside the
+      // override factory never arrived — the screen rendered Riverpod's
+      // "uninitialized state" error instead, which the old
+      // textContaining('Error:') assert matched vacuously.)
       await pumpScreen(
         tester,
         const ModesScreen(),
         overrides: <Override>[
-          modesControllerProvider.overrideWith(() {
-            final ctrl = _FakeModesController(_state());
-            ctrl.state = AsyncError<ModesState>(
-              Exception('db failure'),
-              StackTrace.empty,
-            );
-            return ctrl;
-          }),
+          modesControllerProvider.overrideWith(_ErrorModesController.new),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: db failure')),
+        findsOneWidget,
+      );
     });
   });
 

@@ -9,9 +9,12 @@
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/core/widgets/timing_slider.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import '../../helpers/widget_test_helpers.dart';
 
 Future<void> _pump(
   WidgetTester tester, {
@@ -23,6 +26,15 @@ Future<void> _pump(
 }) async {
   await tester.pumpWidget(
     MaterialApp(
+      // The manual-entry dialog resolves its title / actions through
+      // AppLocalizations, so the harness carries the real delegates.
+      localizationsDelegates: const <LocalizationsDelegate<Object>>[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
       home: Scaffold(
         body: Center(
           child: TimingSlider(
@@ -154,6 +166,7 @@ void main() {
     testWidgets('Save with a valid number commits the clamped value', (
       tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final commits = <int>[];
       await _pump(
         tester,
@@ -164,11 +177,11 @@ void main() {
       // Open the dialog via the chip.
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
-      expect(find.text('Enter duration (seconds)'), findsOneWidget);
+      expect(find.text(l10n.timingSliderEnterDuration), findsOneWidget);
 
       // Enter a value over the max → it must clamp to maxSeconds (3600).
       await tester.enterText(find.byType(TextField), '99999');
-      await tester.tap(find.text('Save'));
+      await tester.tap(find.text(l10n.commonSave));
       await tester.pumpAndSettle();
       check(commits).deepEquals([3600]);
     });
@@ -176,39 +189,42 @@ void main() {
     testWidgets('Save with a non-numeric value cancels (no commit)', (
       tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final commits = <int>[];
       await _pump(tester, valueSeconds: 60, onChanged: commits.add);
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), 'not a number');
-      await tester.tap(find.text('Save'));
+      await tester.tap(find.text(l10n.commonSave));
       await tester.pumpAndSettle();
       check(commits).isEmpty();
       // Dialog dismissed.
-      expect(find.text('Enter duration (seconds)'), findsNothing);
+      expect(find.text(l10n.timingSliderEnterDuration), findsNothing);
     });
 
     testWidgets('Cancel closes the dialog without committing', (tester) async {
+      final l10n = await loadL10n(const Locale('en'));
       final commits = <int>[];
       await _pump(tester, valueSeconds: 60, onChanged: commits.add);
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Cancel'));
+      await tester.tap(find.text(l10n.commonCancel));
       await tester.pumpAndSettle();
       check(commits).isEmpty();
-      expect(find.text('Enter duration (seconds)'), findsNothing);
+      expect(find.text(l10n.timingSliderEnterDuration), findsNothing);
     });
 
     testWidgets('entering the same value does not fire onChanged', (
       tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final commits = <int>[];
       await _pump(tester, valueSeconds: 42, onChanged: commits.add);
       await tester.tap(find.byType(ActionChip));
       await tester.pumpAndSettle();
       // Re-enter the current value → no change → no commit.
       await tester.enterText(find.byType(TextField), '42');
-      await tester.tap(find.text('Save'));
+      await tester.tap(find.text(l10n.commonSave));
       await tester.pumpAndSettle();
       check(commits).isEmpty();
     });

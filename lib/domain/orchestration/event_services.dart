@@ -42,6 +42,8 @@ final class EventServices {
     this.alarmDndOverride = false,
     this.alarmGradualVolume = false,
     this.alarmGradualVolumeDurationSeconds = 5,
+    this.alarmNotificationTitle = 'Alarm',
+    this.alarmNotificationBody = 'Guardian Angela alarm is active.',
     this.notificationStealth = false,
     this.selectedReminderTemplate,
     this.isCancelled,
@@ -140,6 +142,21 @@ final class EventServices {
   /// Applied only when the ramp is active.
   final int alarmGradualVolumeDurationSeconds;
 
+  /// Title of the loud-alarm escalation notification (spec 05:880-886).
+  ///
+  /// The domain layer has no BuildContext, so the [SessionController]
+  /// resolves `loudAlarmNotificationTitle` ONCE at session start in the
+  /// user's app language (`AppSettings.languageCode`) and carries it here —
+  /// the same copy-hop as [alarmDndOverride] /
+  /// [alarmGradualVolumeDurationSeconds]. The default is the English value,
+  /// used only when no localized copy was injected (e.g. bare test bundles).
+  final String alarmNotificationTitle;
+
+  /// Body of the loud-alarm escalation notification.
+  ///
+  /// See [alarmNotificationTitle] for the localization copy-hop contract.
+  final String alarmNotificationBody;
+
   /// Whether out-of-app notifications adopt the disguised (generic channel +
   /// neutral icon) appearance.
   ///
@@ -198,6 +215,8 @@ final class EventServices {
         alarmDndOverride: alarmDndOverride,
         alarmGradualVolume: alarmGradualVolume,
         alarmGradualVolumeDurationSeconds: alarmGradualVolumeDurationSeconds,
+        alarmNotificationTitle: alarmNotificationTitle,
+        alarmNotificationBody: alarmNotificationBody,
         notificationStealth: notificationStealth,
         selectedReminderTemplate:
             selectedReminderTemplate ?? this.selectedReminderTemplate,

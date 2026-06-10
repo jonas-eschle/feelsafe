@@ -29,6 +29,7 @@ import 'package:guardianangela/domain/orchestration/event_services.dart';
 import 'package:guardianangela/domain/orchestration/event_strategy_registry.dart';
 import 'package:guardianangela/domain/orchestration/reminder_template_selector.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/protocols/background_session_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/location_service_protocol.dart';
@@ -753,6 +754,14 @@ class SessionController extends AsyncNotifier<SessionState>
     // same resolved contact list and profile data without re-reading providers
     // inside hot paths. Stored in _eventServices and nulled out in the finalize
     // path alongside _engine and _recorder.
+    //
+    // User-visible notification copy is resolved ONCE here in the user's app
+    // language — strategies run in the domain layer with no BuildContext, so
+    // localized strings hop through EventServices exactly like the alarm
+    // settings above (spec 02 §Event Execution).
+    final l10n = lookupAppLocalizations(
+      _localeForLanguageCode(settings.languageCode),
+    );
     final contactService = await ref.read(contactServiceProvider.future);
     _eventServices = EventServices(
       audio: ref.read(audioServiceProvider),
@@ -774,6 +783,8 @@ class SessionController extends AsyncNotifier<SessionState>
       alarmGradualVolume: settings.alarmGradualVolume,
       alarmGradualVolumeDurationSeconds:
           settings.alarmGradualVolumeDurationSeconds,
+      alarmNotificationTitle: l10n.loudAlarmNotificationTitle,
+      alarmNotificationBody: l10n.loudAlarmNotificationBody,
       notificationStealth: stealth.enabled && stealth.notificationDisguise,
       isCancelled: () {
         final e = _engine;
@@ -1762,6 +1773,19 @@ class SessionController extends AsyncNotifier<SessionState>
     final db = await ref.read(databaseProvider.future);
     return (await ContactsRepository(db.contactsDao).getAll()).length;
   }
+}
+
+/// Builds the [Locale] for a stored [AppSettings.languageCode].
+///
+/// The settings picker stores plain codes (`'en'`, `'de'`, …) plus the one
+/// underscore form `'zh_TW'`. `lookupAppLocalizations(Locale('zh_TW'))`
+/// would throw (no such language code), so the country part must be split
+/// into the [Locale] constructor's second argument.
+Locale _localeForLanguageCode(String languageCode) {
+  final parts = languageCode.split('_');
+  return parts.length >= 2
+      ? Locale(parts.first, parts[1])
+      : Locale(languageCode);
 }
 
 /// Provides the [SessionController].

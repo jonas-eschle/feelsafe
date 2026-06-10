@@ -209,6 +209,7 @@ class _LogBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -216,9 +217,16 @@ class _LogBody extends StatelessWidget {
         Text(log.modeName, style: textTheme.titleLarge),
         if (log.isSimulation) const Chip(label: Text('SIM')),
         const SizedBox(height: 8),
-        Text('Start: ${log.startedAt}', style: textTheme.bodyMedium),
+        Text(
+          l10n.pastEventsDetailStart(log.startedAt),
+          style: textTheme.bodyMedium,
+        ),
         if (log.endedAt != null)
-          Text('End: ${log.endedAt}', style: textTheme.bodyMedium),
+          // endedAt is provably non-null under the guard (no field promotion).
+          Text(
+            l10n.pastEventsDetailEnd(log.endedAt!),
+            style: textTheme.bodyMedium,
+          ),
         const Divider(),
         for (final e in log.events)
           ListTile(

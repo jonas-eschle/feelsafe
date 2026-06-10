@@ -143,7 +143,8 @@ class _SessionScreenState extends ConsumerState<SessionScreen> {
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (SessionState s) => _SessionRoot(state: s),
       ),
     );

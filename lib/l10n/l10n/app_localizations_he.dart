@@ -2765,4 +2765,28 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'מצב זה משתמש בהתראות (תזכורות מוסוות או שיחות מזויפות) כדי לשמור על ביטחונך, אך הרשאת ההתראות כבויה. הפעל התראות כדי להתחיל מצב זה.';
+
+  @override
+  String get timingSliderEnterDuration => 'הזן משך (שניות)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'שגיאה: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'התחלה: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'סיום: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'אזעקה';
+
+  @override
+  String get loudAlarmNotificationBody => 'האזעקה של Guardian Angela פעילה.';
 }

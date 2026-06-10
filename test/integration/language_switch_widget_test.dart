@@ -5,7 +5,8 @@
 /// stand-ins: the actual root [GuardianAngelaApp] is pumped (real GoRouter,
 /// real `AppLocalizations.delegate` + `supportedLocales`), its
 /// `MaterialApp.locale` is driven by `AppSettings.languageCode` through the
-/// keep-alive `appSettingsLiveProvider` in `main.dart`, and the REAL
+/// keep-alive `appSettingsLiveProvider` in
+/// `lib/services/app_state_providers.dart`, and the REAL
 /// [SettingsController.setLanguage] — the wired control behind the
 /// Settings → Language picker — persists the new code AND invalidates that
 /// provider, so the RUNNING tree re-localizes instantly (no app restart).

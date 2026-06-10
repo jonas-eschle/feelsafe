@@ -36,7 +36,8 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.homeMenuSettings)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) => ListView(
           children: <Widget>[
             _SectionHeader(text: l10n.settingsGeneralHeader),

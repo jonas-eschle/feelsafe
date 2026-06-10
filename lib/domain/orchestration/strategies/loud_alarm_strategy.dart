@@ -81,11 +81,14 @@ final class LoudAlarmStrategy implements EventStrategy {
 
     // Alarm escalation notification: surfaces the alarm on the lock screen
     // (spec 05:880-886). Fires in real mode only (bystander-attracting).
+    // The strings were resolved in the user's app language at session start
+    // by the SessionController (see EventServices.alarmNotificationTitle) —
+    // the domain layer stays l10n-free.
     if (!services.isSimulation) {
       await services.notification.showAlarmEscalation(
         id: _kLoudAlarmNotificationId,
-        title: 'Alarm',
-        body: 'Guardian Angela alarm is active.',
+        title: services.alarmNotificationTitle,
+        body: services.alarmNotificationBody,
       );
     }
 

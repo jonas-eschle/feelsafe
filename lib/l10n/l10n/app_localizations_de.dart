@@ -2808,4 +2808,29 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Dieser Modus nutzt Benachrichtigungen (getarnte Erinnerungen oder Fake-Anrufe), um dich zu schützen, aber die Benachrichtigungsberechtigung ist deaktiviert. Aktiviere Benachrichtigungen, um diesen Modus zu starten.';
+
+  @override
+  String get timingSliderEnterDuration => 'Dauer eingeben (Sekunden)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Fehler: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Beginn: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Ende: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Alarm';
+
+  @override
+  String get loudAlarmNotificationBody =>
+      'Der Alarm von Guardian Angela ist aktiv.';
 }

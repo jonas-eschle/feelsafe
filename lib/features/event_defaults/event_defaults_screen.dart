@@ -30,7 +30,8 @@ class EventDefaultsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.eventDefaultsTitle)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) => ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[

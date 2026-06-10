@@ -2830,4 +2830,29 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Αυτή η λειτουργία χρησιμοποιεί ειδοποιήσεις (μεταμφιεσμένες υπενθυμίσεις ή ψεύτικες κλήσεις) για την ασφάλειά σας, αλλά η άδεια ειδοποιήσεων είναι απενεργοποιημένη. Ενεργοποιήστε τις ειδοποιήσεις για να ξεκινήσετε αυτή τη λειτουργία.';
+
+  @override
+  String get timingSliderEnterDuration => 'Εισαγωγή διάρκειας (δευτερόλεπτα)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Σφάλμα: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Έναρξη: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Λήξη: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Συναγερμός';
+
+  @override
+  String get loudAlarmNotificationBody =>
+      'Ο συναγερμός του Guardian Angela είναι ενεργός.';
 }

@@ -1132,5 +1132,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "使用預設",
   "sessionCompletedFeedbackPrompt": "您的體驗如何？",
   "sessionCompletedFeedbackSend": "傳送意見回饋",
-  "sessionCompletedFeedbackSkip": "略過"
+  "sessionCompletedFeedbackSkip": "略過",
+  "timingSliderEnterDuration": "輸入時長（秒）",
+  "commonErrorWithDetail": "錯誤:{detail}",
+  "pastEventsDetailStart": "開始:{timestamp}",
+  "pastEventsDetailEnd": "結束:{timestamp}",
+  "loudAlarmNotificationTitle": "警報",
+  "loudAlarmNotificationBody": "Guardian Angela 警報正在作響。"
 }

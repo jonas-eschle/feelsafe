@@ -583,7 +583,11 @@ void main() {
           ),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Bad state: injected test error')),
+        findsOneWidget,
+      );
     });
   });
 

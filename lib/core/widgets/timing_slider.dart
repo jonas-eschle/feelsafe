@@ -2,6 +2,8 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+
 /// Snap-stops applied to the logarithmic [TimingSlider].
 ///
 /// Mirrors spec 04 §TimingSlider — 1s, 5s, 30s, 1min, 5min, 30min, 1h,
@@ -129,11 +131,12 @@ class _TimingSliderState extends State<TimingSlider> {
   }
 
   Future<void> _editManually() async {
+    final l10n = AppLocalizations.of(context);
     final controller = TextEditingController(text: '${widget.valueSeconds}');
     final newValue = await showDialog<int>(
       context: context,
       builder: (BuildContext dialogCtx) => AlertDialog(
-        title: const Text('Enter duration (seconds)'),
+        title: Text(l10n.timingSliderEnterDuration),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -143,7 +146,7 @@ class _TimingSliderState extends State<TimingSlider> {
         actions: <Widget>[
           TextButton(
             onPressed: () => Navigator.of(dialogCtx).pop(),
-            child: const Text('Cancel'),
+            child: Text(l10n.commonCancel),
           ),
           FilledButton(
             onPressed: () {
@@ -156,7 +159,7 @@ class _TimingSliderState extends State<TimingSlider> {
                 dialogCtx,
               ).pop(parsed.clamp(widget.minSeconds, widget.maxSeconds));
             },
-            child: const Text('Save'),
+            child: Text(l10n.commonSave),
           ),
         ],
       ),

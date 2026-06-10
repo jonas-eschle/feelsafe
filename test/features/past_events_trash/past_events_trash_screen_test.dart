@@ -159,7 +159,11 @@ void main() {
         const PastEventsTrashScreen(),
         overrides: <Override>[provider],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: db-failure')),
+        findsOneWidget,
+      );
     });
   });
 

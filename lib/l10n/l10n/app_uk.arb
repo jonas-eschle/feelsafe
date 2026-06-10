@@ -1132,5 +1132,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "Використати стандартний",
   "sessionCompletedFeedbackPrompt": "Як усе пройшло?",
   "sessionCompletedFeedbackSend": "Надіслати відгук",
-  "sessionCompletedFeedbackSkip": "Пропустити"
+  "sessionCompletedFeedbackSkip": "Пропустити",
+  "timingSliderEnterDuration": "Введіть тривалість (секунди)",
+  "commonErrorWithDetail": "Помилка: {detail}",
+  "pastEventsDetailStart": "Початок: {timestamp}",
+  "pastEventsDetailEnd": "Завершення: {timestamp}",
+  "loudAlarmNotificationTitle": "Тривога",
+  "loudAlarmNotificationBody": "Тривога Guardian Angela активна."
 }

@@ -3539,5 +3539,38 @@
   "homeStartBlockedNotifBody": "This mode uses notifications (disguised reminders or fake calls) to keep you safe, but notification permission is off. Enable notifications to start this mode.",
   "@homeStartBlockedNotifBody": {
     "description": "Body of the inline warning shown when start is blocked due to missing notification permission for a notification-dependent chain."
+  },
+  "timingSliderEnterDuration": "Enter duration (seconds)",
+  "@timingSliderEnterDuration": {
+    "description": "Title of the TimingSlider manual-entry dialog opened from the numeric chip."
+  },
+  "commonErrorWithDetail": "Error: {detail}",
+  "@commonErrorWithDetail": {
+    "description": "Generic error body for AsyncValue.error builders; {detail} is the raw exception text.",
+    "placeholders": {
+      "detail": { "example": "Bad state: boom" }
+    }
+  },
+  "pastEventsDetailStart": "Start: {timestamp}",
+  "@pastEventsDetailStart": {
+    "description": "Session start-timestamp row on the Session Log Detail screen.",
+    "placeholders": {
+      "timestamp": { "example": "2026-01-01 10:00:00.000Z" }
+    }
+  },
+  "pastEventsDetailEnd": "End: {timestamp}",
+  "@pastEventsDetailEnd": {
+    "description": "Session end-timestamp row on the Session Log Detail screen.",
+    "placeholders": {
+      "timestamp": { "example": "2026-01-01 11:00:00.000Z" }
+    }
+  },
+  "loudAlarmNotificationTitle": "Alarm",
+  "@loudAlarmNotificationTitle": {
+    "description": "Title of the loud-alarm escalation notification (lock screen, spec 05:880-886). Resolved once at session start in the user's app language and carried to LoudAlarmStrategy via EventServices."
+  },
+  "loudAlarmNotificationBody": "Guardian Angela alarm is active.",
+  "@loudAlarmNotificationBody": {
+    "description": "Body of the loud-alarm escalation notification."
   }
 }

@@ -2672,6 +2672,30 @@ class AppLocalizationsZh extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       '此模式使用通知（伪装提醒或假来电）来保护你的安全，但通知权限已关闭。请启用通知以开始此模式。';
+
+  @override
+  String get timingSliderEnterDuration => '输入时长（秒）';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return '错误：$detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return '开始：$timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return '结束：$timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => '警报';
+
+  @override
+  String get loudAlarmNotificationBody => 'Guardian Angela 警报正在响起。';
 }
 
 /// The translations for Chinese, as used in Taiwan (`zh_TW`).
@@ -5344,4 +5368,28 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get homeStartBlockedNotifBody =>
       '此模式會使用通知（偽裝提醒或假來電）來確保你的安全，但通知權限已關閉。請啟用通知以開始此模式。';
+
+  @override
+  String get timingSliderEnterDuration => '輸入時長（秒）';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return '錯誤:$detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return '開始:$timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return '結束:$timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => '警報';
+
+  @override
+  String get loudAlarmNotificationBody => 'Guardian Angela 警報正在作響。';
 }

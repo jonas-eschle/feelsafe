@@ -23,7 +23,8 @@ class SettingsSecurityScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.settingsSecurityRow)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (s) => ListView(
           padding: const EdgeInsets.all(16),
           children: <Widget>[

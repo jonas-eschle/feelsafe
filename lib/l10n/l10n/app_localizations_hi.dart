@@ -2792,4 +2792,28 @@ class AppLocalizationsHi extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'यह मोड आपकी सुरक्षा के लिए सूचनाओं (छद्म रिमाइंडर या नकली कॉल) का उपयोग करता है, लेकिन सूचना अनुमति बंद है। इस मोड को शुरू करने के लिए सूचनाएँ सक्षम करें।';
+
+  @override
+  String get timingSliderEnterDuration => 'अवधि दर्ज करें (सेकंड)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'त्रुटि: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'प्रारंभ: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'समाप्ति: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'अलार्म';
+
+  @override
+  String get loudAlarmNotificationBody => 'Guardian Angela अलार्म सक्रिय है।';
 }

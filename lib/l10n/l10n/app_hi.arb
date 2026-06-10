@@ -1003,5 +1003,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "डिफ़ॉल्ट का उपयोग करें",
   "sessionCompletedFeedbackPrompt": "आपका अनुभव कैसा रहा?",
   "sessionCompletedFeedbackSend": "प्रतिक्रिया भेजें",
-  "sessionCompletedFeedbackSkip": "छोड़ें"
+  "sessionCompletedFeedbackSkip": "छोड़ें",
+  "timingSliderEnterDuration": "अवधि दर्ज करें (सेकंड)",
+  "commonErrorWithDetail": "त्रुटि: {detail}",
+  "pastEventsDetailStart": "प्रारंभ: {timestamp}",
+  "pastEventsDetailEnd": "समाप्ति: {timestamp}",
+  "loudAlarmNotificationTitle": "अलार्म",
+  "loudAlarmNotificationBody": "Guardian Angela अलार्म सक्रिय है।"
 }

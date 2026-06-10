@@ -284,7 +284,13 @@ void main() {
           ),
         ],
       );
-      expect(find.textContaining('contacts table unreadable'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(
+          l10n.commonErrorWithDetail('Bad state: contacts table unreadable'),
+        ),
+        findsOneWidget,
+      );
       expect(find.byType(ListTile), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });

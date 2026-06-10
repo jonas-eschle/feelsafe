@@ -203,7 +203,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (HomeState state) => _HomeBody(state: state),
       ),
     );

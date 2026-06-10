@@ -13,6 +13,7 @@
 library;
 
 import 'dart:io';
+import 'dart:ui' show Locale;
 
 import 'package:checks/checks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -38,6 +39,7 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 import 'package:guardianangela/services/protocols/call_state_service_protocol.dart';
 import 'package:guardianangela/services/protocols/notification_service_protocol.dart';
@@ -212,7 +214,12 @@ final class _RecordingNotificationService
     required String title,
     required String body,
     String sound = 'critical_alert.wav',
-  }) async => calls.add({'method': 'showAlarmEscalation'});
+  }) async => calls.add({
+    'method': 'showAlarmEscalation',
+    'id': id,
+    'title': title,
+    'body': body,
+  });
 
   @override
   Future<void> cancel(int id) async =>
@@ -590,6 +597,86 @@ void main() {
       // default 5) when the global gradual-volume toggle is off.
       check(call['rampSeconds']).equals(0);
       check(call['alarmDndOverride']).equals(true);
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+  });
+
+  // ─── AppSettings.languageCode → EventServices localized-copy hop ─────────────
+  //
+  // The loud-alarm escalation notification (lock screen, spec 05:880-886) is
+  // posted from the DOMAIN layer (LoudAlarmStrategy), which has no
+  // BuildContext. session_controller.startSession resolves the user's app
+  // language ONCE via lookupAppLocalizations and carries the two strings into
+  // EventServices (same copy-hop as rampSeconds / alarmDndOverride above).
+  // These tests seed a NON-ENGLISH language whose strings ALL differ from the
+  // EventServices defaults (the English values), so a dropped or mis-wired
+  // hop cannot pass vacuously.
+  group('AppSettings.languageCode → localized alarm-notification arrival', () {
+    test('languageCode=es: the SPANISH title and body arrive at the '
+        'notification service (not the English EventServices '
+        'defaults)', () async {
+      final es = lookupAppLocalizations(const Locale('es'));
+      final en = lookupAppLocalizations(const Locale('en'));
+      // Guards the test's premise: if a future ARB edit makes the Spanish
+      // strings equal the English defaults, this fails loudly rather than
+      // the hop test silently passing.
+      check(
+        es.loudAlarmNotificationTitle,
+      ).not((it) => it.equals(en.loudAlarmNotificationTitle));
+      check(
+        es.loudAlarmNotificationBody,
+      ).not((it) => it.equals(en.loudAlarmNotificationBody));
+
+      final notification = _RecordingNotificationService();
+      final container = _container(
+        db,
+        notification: notification,
+        settings: const AppSettings(languageCode: 'es'),
+      );
+      await container.read(sessionControllerProvider.future);
+
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final call = notification.calls.firstWhere(
+        (c) => c['method'] == 'showAlarmEscalation',
+      );
+      check(call['title']).equals(es.loudAlarmNotificationTitle);
+      check(call['body']).equals(es.loudAlarmNotificationBody);
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+
+    test('languageCode=zh_TW (underscore country code): session start does '
+        'not crash and the zh-TW strings arrive', () async {
+      // 'zh_TW' is a stored languageCode (settings_screen picker), but
+      // lookupAppLocalizations(Locale('zh_TW')) would THROW — the hop must
+      // split it into Locale('zh', 'TW').
+      final zhTw = lookupAppLocalizations(const Locale('zh', 'TW'));
+
+      final notification = _RecordingNotificationService();
+      final container = _container(
+        db,
+        notification: notification,
+        settings: const AppSettings(languageCode: 'zh_TW'),
+      );
+      await container.read(sessionControllerProvider.future);
+
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(mode: _loudAlarmMode(), simulate: false);
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final call = notification.calls.firstWhere(
+        (c) => c['method'] == 'showAlarmEscalation',
+      );
+      check(call['title']).equals(zhTw.loudAlarmNotificationTitle);
+      check(call['body']).equals(zhTw.loudAlarmNotificationBody);
 
       await container.read(sessionControllerProvider.notifier).endSession();
     });

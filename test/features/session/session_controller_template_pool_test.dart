@@ -12,6 +12,7 @@
 /// session.
 library;
 
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:checks/checks.dart';
@@ -306,10 +307,10 @@ void main() {
       await container.read(sessionControllerProvider.notifier).endSession();
     });
 
-    test('isGlobal pin: every row in the DAO is global — seed and the '
-        'Templates-screen write paths only ever store isGlobal=true, so the '
-        'pool read needs no filter (mode-locals live in the mode JSON '
-        'only)', () async {
+    test('isGlobal pin: every row in the DAO is global — seed, the '
+        'Templates-screen write paths, AND the backup-import path only ever '
+        'store isGlobal=true, so the pool read needs no filter (mode-locals '
+        'live in the mode JSON only)', () async {
       // Seed rows.
       final seeded = await db.reminderTemplatesDao.getAll();
       check(seeded.length).equals(8);
@@ -322,8 +323,43 @@ void main() {
       // The list screen's duplicate copies a DAO row, preserving isGlobal.
       final copy = seeded.first.copyWith(id: 'tmpl-copy', isCustom: true);
       await db.reminderTemplatesDao.upsert(copy);
-      final all = await db.reminderTemplatesDao.getAll();
-      check(all.every((t) => t.isGlobal)).isTrue();
+      check(
+        (await db.reminderTemplatesDao.getAll()).every((t) => t.isGlobal),
+      ).isTrue();
+
+      // The LAST write path into the table: backup restore. Export the
+      // current DB, tamper ONE top-level template row to isGlobal:false
+      // (hand-edited backup), and re-import — the import coerces the row
+      // back to global, so the invariant is total by construction.
+      final tmp = Directory.systemTemp.createTempSync('tpl_pin_import_');
+      addTearDown(() => tmp.deleteSync(recursive: true));
+      final backup = RealBackupService(
+        db: db,
+        contacts: ContactsRepository(db.contactsDao),
+        appSettings: AppSettingsRepository(
+          keyProvider: () async => '00' * 32,
+          resolveDir: () async => tmp,
+        ),
+        userProfile: UserProfileRepository(
+          keyProvider: () async => '00' * 32,
+          resolveDir: () async => tmp,
+        ),
+        sessionLogs: SessionLogRepository(db.sessionLogsDao),
+      );
+      final payload =
+          jsonDecode(await backup.exportToJson()) as Map<String, dynamic>;
+      final templates = payload['templates'] as List<dynamic>;
+      (templates.first as Map<String, dynamic>)['isGlobal'] = false;
+      await backup.importFromJson(jsonEncode(payload));
+
+      final restored = await db.reminderTemplatesDao.getAll();
+      check(restored.length).equals(seeded.length + 1);
+      for (final t in restored) {
+        check(
+          t.isGlobal,
+          because: '${t.id} must stay global after import',
+        ).isTrue();
+      }
     });
   });
 

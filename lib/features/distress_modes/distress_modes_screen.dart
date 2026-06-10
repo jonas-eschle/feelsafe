@@ -38,7 +38,8 @@ class DistressModesScreen extends ConsumerWidget {
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) {
           if (state.modes.isEmpty) {
             return Center(child: Text(l10n.distressModesEmpty));

@@ -33,6 +33,12 @@ import '../../helpers/widget_test_helpers.dart';
 // Test fakes
 // ---------------------------------------------------------------------------
 
+/// Controller whose build throws — drives the AsyncValue error branch.
+class _ErrorReminderTemplatesController extends ReminderTemplatesController {
+  @override
+  Future<ReminderTemplatesState> build() async => throw Exception('db failure');
+}
+
 class _FakeReminderTemplatesController extends ReminderTemplatesController {
   _FakeReminderTemplatesController(this._initial);
 
@@ -431,22 +437,25 @@ void main() {
     testWidgets('error state renders error message', (
       WidgetTester tester,
     ) async {
+      // A build()-throwing controller drives the REAL AsyncError branch.
+      // (Assigning AsyncError to a just-constructed notifier inside the
+      // override factory never arrived — the screen rendered Riverpod's
+      // "uninitialized state" error instead, which the old
+      // textContaining('Error:') assert matched vacuously.)
       await pumpScreen(
         tester,
         const ReminderTemplatesScreen(),
         overrides: <Override>[
-          reminderTemplatesControllerProvider.overrideWith(() {
-            final ctrl = _FakeReminderTemplatesController(_state());
-            // Force the provider into an error state immediately.
-            ctrl.state = AsyncError<ReminderTemplatesState>(
-              Exception('db failure'),
-              StackTrace.empty,
-            );
-            return ctrl;
-          }),
+          reminderTemplatesControllerProvider.overrideWith(
+            _ErrorReminderTemplatesController.new,
+          ),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: db failure')),
+        findsOneWidget,
+      );
     });
   });
 

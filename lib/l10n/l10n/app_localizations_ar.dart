@@ -2792,4 +2792,28 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'يستخدم هذا الوضع الإشعارات (تذكيرات مموهة أو مكالمات وهمية) للحفاظ على سلامتك، لكن إذن الإشعارات معطّل. فعّل الإشعارات لبدء هذا الوضع.';
+
+  @override
+  String get timingSliderEnterDuration => 'أدخل المدة (بالثواني)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'خطأ: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'البداية: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'النهاية: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'إنذار';
+
+  @override
+  String get loudAlarmNotificationBody => 'إنذار Guardian Angela نشط الآن.';
 }

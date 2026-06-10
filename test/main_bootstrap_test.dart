@@ -987,7 +987,8 @@ void main() {
           child: const GuardianAngelaApp(),
         ),
       );
-      // One settle pass lets appSettingsLiveProvider resolve and the theme +
+      // One settle pass lets appSettingsLiveProvider (declared in
+      // lib/services/app_state_providers.dart) resolve and the theme +
       // locale maybeWhen branches read the loaded settings.
       await tester.pump();
       await tester.pump();
@@ -1023,7 +1024,8 @@ void main() {
     testWidgets(
       'the real SettingsController.setThemeMode re-themes the LIVE app — '
       'MaterialApp.themeMode flips system → dark with no restart (real '
-      'controller → appSettingsLiveProvider → MaterialApp.themeMode)',
+      "controller → app_state_providers.dart's appSettingsLiveProvider → "
+      'MaterialApp.themeMode)',
       (WidgetTester tester) async {
         final repo = _MutableSettingsRepo(const AppSettings());
         final container = ProviderContainer(

@@ -32,7 +32,8 @@ class ReminderTemplatesScreen extends ConsumerWidget {
       ),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) {
           if (state.templates.isEmpty) {
             return _EmptyState(

@@ -53,6 +53,18 @@ void main() {
       check(loaded).equals(defaults);
     });
 
+    test('a save/load round-trip emits NO templates key — the settings '
+        'blob never re-grows the pre-#14 AppDefaults.templates copy '
+        '(Drift DAO is the single template store)', () async {
+      // Arrange
+      final repo = newRepo();
+      // Act
+      await repo.save(SeedData.defaultAppSettings());
+      final loaded = await repo.load();
+      // Assert — the re-serialized defaults blob carries no templates key.
+      check(loaded.defaults.toJson().containsKey('templates')).isFalse();
+    });
+
     test('round-trips a customised settings instance', () async {
       // Arrange
       final repo = newRepo();

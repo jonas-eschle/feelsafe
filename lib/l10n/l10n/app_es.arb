@@ -1132,5 +1132,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "Usar predeterminado",
   "sessionCompletedFeedbackPrompt": "¿Cómo fue tu experiencia?",
   "sessionCompletedFeedbackSend": "Enviar comentarios",
-  "sessionCompletedFeedbackSkip": "Omitir"
+  "sessionCompletedFeedbackSkip": "Omitir",
+  "timingSliderEnterDuration": "Introducir duración (segundos)",
+  "commonErrorWithDetail": "Error: {detail}",
+  "pastEventsDetailStart": "Inicio: {timestamp}",
+  "pastEventsDetailEnd": "Fin: {timestamp}",
+  "loudAlarmNotificationTitle": "Alarma",
+  "loudAlarmNotificationBody": "La alarma de Guardian Angela está activa."
 }

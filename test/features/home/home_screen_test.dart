@@ -1233,7 +1233,11 @@ void main() {
       );
       await tester.pump();
       await tester.pump();
-      expect(find.textContaining('home db unavailable'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Bad state: home db unavailable')),
+        findsOneWidget,
+      );
     });
   });
 

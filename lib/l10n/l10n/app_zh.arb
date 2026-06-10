@@ -1132,5 +1132,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "使用默认",
   "sessionCompletedFeedbackPrompt": "您的体验如何？",
   "sessionCompletedFeedbackSend": "发送反馈",
-  "sessionCompletedFeedbackSkip": "跳过"
+  "sessionCompletedFeedbackSkip": "跳过",
+  "timingSliderEnterDuration": "输入时长（秒）",
+  "commonErrorWithDetail": "错误：{detail}",
+  "pastEventsDetailStart": "开始：{timestamp}",
+  "pastEventsDetailEnd": "结束：{timestamp}",
+  "loudAlarmNotificationTitle": "警报",
+  "loudAlarmNotificationBody": "Guardian Angela 警报正在响起。"
 }

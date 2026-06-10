@@ -271,7 +271,11 @@ void main() {
           pastEventsControllerProvider.overrideWith(() => errorCtrl),
         ],
       );
-      expect(find.textContaining('Error:'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(
+        find.text(l10n.commonErrorWithDetail('Exception: db failure')),
+        findsOneWidget,
+      );
     });
   });
 

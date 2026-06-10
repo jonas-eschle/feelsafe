@@ -2815,4 +2815,28 @@ class AppLocalizationsPl extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Ten tryb używa powiadomień (zamaskowanych przypomnień lub fałszywych połączeń), aby zapewnić Ci bezpieczeństwo, ale uprawnienie do powiadomień jest wyłączone. Włącz powiadomienia, aby uruchomić ten tryb.';
+
+  @override
+  String get timingSliderEnterDuration => 'Wprowadź czas trwania (sekundy)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Błąd: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Początek: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Koniec: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Alarm';
+
+  @override
+  String get loudAlarmNotificationBody => 'Alarm Guardian Angela jest aktywny.';
 }

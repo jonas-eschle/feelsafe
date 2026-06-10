@@ -2820,4 +2820,29 @@ class AppLocalizationsEs extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Este modo usa notificaciones (recordatorios disfrazados o llamadas falsas) para mantenerte a salvo, pero el permiso de notificaciones está desactivado. Activa las notificaciones para iniciar este modo.';
+
+  @override
+  String get timingSliderEnterDuration => 'Introducir duración (segundos)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Error: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Inicio: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Fin: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Alarma';
+
+  @override
+  String get loudAlarmNotificationBody =>
+      'La alarma de Guardian Angela está activa.';
 }

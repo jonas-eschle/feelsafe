@@ -1003,5 +1003,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "Использовать стандартный",
   "sessionCompletedFeedbackPrompt": "Как всё прошло?",
   "sessionCompletedFeedbackSend": "Отправить отзыв",
-  "sessionCompletedFeedbackSkip": "Пропустить"
+  "sessionCompletedFeedbackSkip": "Пропустить",
+  "timingSliderEnterDuration": "Введите длительность (секунды)",
+  "commonErrorWithDetail": "Ошибка: {detail}",
+  "pastEventsDetailStart": "Начало: {timestamp}",
+  "pastEventsDetailEnd": "Окончание: {timestamp}",
+  "loudAlarmNotificationTitle": "Тревога",
+  "loudAlarmNotificationBody": "Тревога Guardian Angela активна."
 }

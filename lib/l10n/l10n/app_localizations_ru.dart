@@ -2823,4 +2823,28 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get homeStartBlockedNotifBody =>
       'Этот режим использует уведомления (замаскированные напоминания или фальшивые звонки) для вашей безопасности, но разрешение на уведомления отключено. Включите уведомления, чтобы запустить этот режим.';
+
+  @override
+  String get timingSliderEnterDuration => 'Введите длительность (секунды)';
+
+  @override
+  String commonErrorWithDetail(Object detail) {
+    return 'Ошибка: $detail';
+  }
+
+  @override
+  String pastEventsDetailStart(Object timestamp) {
+    return 'Начало: $timestamp';
+  }
+
+  @override
+  String pastEventsDetailEnd(Object timestamp) {
+    return 'Окончание: $timestamp';
+  }
+
+  @override
+  String get loudAlarmNotificationTitle => 'Тревога';
+
+  @override
+  String get loudAlarmNotificationBody => 'Тревога Guardian Angela активна.';
 }

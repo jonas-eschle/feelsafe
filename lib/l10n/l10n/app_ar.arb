@@ -1003,5 +1003,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "استخدام الافتراضي",
   "sessionCompletedFeedbackPrompt": "كيف كانت تجربتك؟",
   "sessionCompletedFeedbackSend": "إرسال التعليقات",
-  "sessionCompletedFeedbackSkip": "تخطي"
+  "sessionCompletedFeedbackSkip": "تخطي",
+  "timingSliderEnterDuration": "أدخل المدة (بالثواني)",
+  "commonErrorWithDetail": "خطأ: {detail}",
+  "pastEventsDetailStart": "البداية: {timestamp}",
+  "pastEventsDetailEnd": "النهاية: {timestamp}",
+  "loudAlarmNotificationTitle": "إنذار",
+  "loudAlarmNotificationBody": "إنذار Guardian Angela نشط الآن."
 }

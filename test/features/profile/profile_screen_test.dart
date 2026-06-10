@@ -190,7 +190,8 @@ void main() {
         StackTrace.empty,
       );
       await tester.pumpAndSettle();
-      expect(find.textContaining('Error'), findsOneWidget);
+      final l10n = await loadL10n(const Locale('en'));
+      expect(find.text(l10n.commonErrorWithDetail('boom')), findsOneWidget);
     });
   });
 

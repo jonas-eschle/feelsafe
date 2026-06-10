@@ -1003,5 +1003,11 @@
   "eventDefaultsFakeCallRingtoneUseDefault": "استفاده از پیش‌فرض",
   "sessionCompletedFeedbackPrompt": "تجربه شما چطور بود؟",
   "sessionCompletedFeedbackSend": "ارسال بازخورد",
-  "sessionCompletedFeedbackSkip": "رد کردن"
+  "sessionCompletedFeedbackSkip": "رد کردن",
+  "timingSliderEnterDuration": "مدت را وارد کنید (ثانیه)",
+  "commonErrorWithDetail": "خطا: {detail}",
+  "pastEventsDetailStart": "شروع: {timestamp}",
+  "pastEventsDetailEnd": "پایان: {timestamp}",
+  "loudAlarmNotificationTitle": "آژیر",
+  "loudAlarmNotificationBody": "آژیر Guardian Angela فعال است."
 }

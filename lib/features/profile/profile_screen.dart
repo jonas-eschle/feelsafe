@@ -139,7 +139,8 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen> {
       appBar: AppBar(title: Text(l10n.profileTitle)),
       body: stateAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (Object e, _) => Center(child: Text('Error: $e')),
+        error: (Object e, _) =>
+            Center(child: Text(l10n.commonErrorWithDetail(e))),
         data: (state) {
           if (!_initialised) {
             _nameCtl.text = state.profile.name ?? '';
