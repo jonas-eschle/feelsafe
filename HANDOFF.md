@@ -227,31 +227,47 @@ INFOs: ModeOverrides legacy path covered by construction (same fromJson);
 docs/architecture-sketch.md:1261 historical mention left (outside spec
 canon). Costs: impl 175k/125t, arch 56k, qa 65k.
 
-**P5b IMPLEMENTED (`0eacb52`) — COHORT PENDING (re-run on resume).**
-Impl report: 6 items done — timing-dialog keys; 16 error builders →
-commonErrorWithDetail (exact-assert upgrade EXPOSED 2 vacuous tests:
-modes_screen + reminder_templates error tests matched Riverpod's
-uninitialized-notifier message, not the screen branch — restructured to
-build()-throwing controllers); pastEventsDetailStart/End keys
-(_toTextSummary export labels deliberately left raw — export format);
-localized alarm notification via EventServices copy-hop (2 fields,
-resolved ONCE at startSession via lookupAppLocalizations; red-proven
-es+zh_TW: 'Expected Alarma / Actual Alarm'; **implementer found+fixed a
-zh_TW Locale() crash in its own new path — _localeForLanguageCode
-underscore-split, session_controller.dart:~1779**); 2 stale doc-strings;
-P3c annex (backup import force isGlobal:true + tamper test; repo
-no-templates-key pin; isGlobal pin extended to 4 write paths). 6 keys
-×14 (parity 807), suite 4756→4760, analyze 0, coverage 99.42%.
-**BOTH P5b cohort agents died on the SESSION LIMIT (resets 8:40pm
-Europe/Dublin) with NO verdict. ON RESUME: (1) re-dispatch the P5b
-cohort — arch must ALSO run the zh_TW sweep over every other
-`Locale(`-from-languageCode site in lib/ (main.dart MaterialApp locale
-path above all — a silent zh→zh_TW fallback there would be bug #15);
-qa re-derives the es/zh_TW value-arrival red-proofs + the premise guard
-+ the de-fabricated error tests; (2) then P6 finale** (authoritative
-full gate + MILESTONE cohort over the whole M6 diff + baton close).
+**DONE: P5b** (`0eacb52` + fix `d7244a8`; cohort FIX_REQUIRED×2 → fix →
+re-cohort PASS×2, 2026-06-10): all 6 impl items verified GENUINE — timing
+dialog; 16 error builders → commonErrorWithDetail (exactly 16 sites, zero
+residual `Text('Error: $e')`; the 2 de-fabricated tests render the REAL
+screen error branch; other 14 audited non-vacuous); pastEventsDetail
+Start/End (raw-English export labels AFFIRMED against spec 04:2531 —
+portable third-party artifacts; micro-doc bullet added closes the parked
+descriptive-vs-literal NOTE); alarm-notification copy-hop (domain grep
+Flutter-free; EventServices snapshot contract matches siblings; es/zh_TW
+red-proofs RE-DERIVED on a pre-image worktree — fail on value-arrival for
+the right reason; zh_TW premise guard discriminates: split-revert kills
+zh_TW only, es alone would miss it); P3c annex pins real (tamper → DAO
+isGlobal==true; no-templates-key; 4 write paths). Parity 807 real keys
+×14 both directions.
+**🐛 BUG #15 CONFIRMED+FIXED (`d7244a8`) — exactly where the baton
+predicted, found by BOTH halves independently:** `main.dart:269` built
+single-arg `Locale('zh_TW')` from the stored code → no supported-locale
+match → `basicLocaleListResolution` silently fell back (QA runtime probe:
+**Arabic**, the first supportedLocale) — a Traditional-Chinese user got
+the whole UI in the wrong language; PRE-EXISTING (ee73b62), invisible to
+the suite (language tests covered en/de only); P5b had fixed the same
+class in the session path but missed the primary MaterialApp path. Fix:
+NEW shared `lib/core/utils/locale_utils.dart` `localeForLanguageCode`
+(splits `[_-]`, hyphen-defensive) — now the SOLE Locale-from-stored-code
+funnel in lib/ (sweep-proven; semantics identical for every reachable
+session-path input); main.dart + session_controller routed through it;
++4 unit +2 integration zh_TW arms red-proven on the LIVE flow (real
+setLanguage → appSettingsLiveProvider → MaterialApp; resolution layer
+independently pinned — anchor 你的天使,守護有你。 fails to render under
+the bug; mutation kill-matrix exact: 4 kills across 3 layers). Also:
+zh_TW 3-key fullwidth-colon fix (gen-l10n regenerated). Suite
+4760→4766, analyze 0. Parked (non-gating): 19 more zh_TW ASCII-colon
+values where zh uses ：(+7 homeChainSummary* ASCII in BOTH zh+zh_TW) —
+cosmetic l10n-polish pass; underscore-vs-hyphen stored-code convention
+(settings 'zh_TW' vs contact 'zh-TW' toLanguageTag — helper robust to
+both; standardize someday); fix-commit-msg "933" figure cosmetic (real
+count 807). Costs: impl (prior session, unrecorded — killed); cohort
+arch 92k/53t + qa 106k/54t; fix 98k/51t; re-cohort arch 65k + qa 101k.
 
-**NEXT: P5b cohort re-run → P6 (finale).**
+**NEXT: P6 (finale): authoritative full gate → MILESTONE cohort over the
+whole M6 diff (`3c8f945..HEAD`) → baton close. NEVER push.**
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
