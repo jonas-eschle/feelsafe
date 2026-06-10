@@ -189,8 +189,30 @@ branches on isGlobal; provenance label only). Suite 4697→4703, coverage
 on-disk DB), spec-03 descriptive-vs-literal export labels. Costs: impl
 277k/156t, arch 72k, qa 76k.
 
-**NEXT: P4** (icon selector + per-type summaries + blackScreen move)
-→ P5 → P5b → P6.
+**DONE: P4** (`34b1c26` + fix `097329d`; qa PASS, arch FIX_REQUIRED →
+fix → re-cohort PASS×2): 16-icon const map (tree-shake-safe; null→shield,
+stale→help_outline+log, labeler throws only on picker vocabulary — arch
+proved no crash path); icons rendered in modes tiles + home chips +
+editor picker (red-proven, golden regenerated = chip avatars only);
+9 per-type step summaries replacing the generic timing subtitle (spec
+04:1599/1631 fold timing in; each byte-faithful to its strategy
+resolution incl. loudAlarm master-gating + smsContact channel filter);
+blackScreen → shared BlackScreenSwitch (black_screen_field.dart) in the
+panel's Retry & Advanced (all 9 types, spec 1614 amended w/ Why).
+**ARCH MAJOR fixed (`097329d`)**: the move had silently removed
+spec-06-documented blackScreen DEFAULT editing from BOTH Event-Defaults
+surfaces — restored via sibling composition (form stays toggle-free, the
+9 form-absence pins stay valid; 15 red-proven pre-fix failures; restored
+save test strictly stronger). **QA find upgraded**: ru/uk `=1{...}`
+plurals — gen_l10n compiles =1 into the `one:` arm, so n=21 rendered a
+hard-coded WRONG NUMBER ("1 повтор"); fixed to CLDR one-category with
+n=21 content pinned; arch proved the bug unique to ru/uk (other locales'
+rules never route >1 to one). Suite 4703→4776, coverage 99.38%.
+Parked LOWs: modeIcon() log-call unpinned; golden lacks a
+non-default-icon chip scenario (behavioral tests cover it). Costs:
+impl 358k/165t, arch 85k, qa 128k, fix 135k/56t, re-arch 74k, re-qa 52k.
+
+**NEXT: P5** (GPS trim) → P5b → P6.
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
