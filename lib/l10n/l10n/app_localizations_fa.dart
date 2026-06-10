@@ -2258,6 +2258,21 @@ class AppLocalizationsFa extends AppLocalizations {
       'اگر پیش از فعال شدن یادآور اعلام حضور کنید، زمان‌سنج به‌جای حفظ برنامهٔ قبلی، از بازهٔ کامل دوباره شروع می‌شود.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'الگوهای مجاز';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'محدود می‌کند که این مرحله کدام الگوهای یادآوری را می‌تواند نشان دهد. اگر هیچ‌کدام انتخاب نشده باشد، همهٔ الگوهای مجموعه مجازند — الگوهای سراسری و الگوهای محلی این حالت. الگوی انتخاب‌شده‌ای که بعداً حذف شود به‌سادگی نادیده گرفته می‌شود؛ اگر هیچ‌یک از الگوهای انتخاب‌شده دیگر وجود نداشته باشد، دوباره همهٔ الگوها مجاز می‌شوند.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'همهٔ الگوها مجازند';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'مجاز: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'الگوهای یادآوری';
 
   @override

@@ -10,6 +10,7 @@ import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/validation/mode_draft_validator.dart';
 import 'package:guardianangela/features/distress_modes/distress_modes_controller.dart';
@@ -55,6 +56,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
   SessionMode? _draft;
   EventDefaults _defaults = const EventDefaults();
   List<EmergencyContact> _contacts = const <EmergencyContact>[];
+  List<ReminderTemplate> _globalTemplates = const <ReminderTemplate>[];
   List<SessionMode> _distressModes = const <SessionMode>[];
   String? _defaultDistressModeId;
 
@@ -79,6 +81,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       _draft = mode;
       _defaults = settings.defaults.eventDefaults;
       _contacts = contacts;
+      _globalTemplates = settings.defaults.templates;
       // A distress mode never references itself in the picker.
       _distressModes = <SessionMode>[
         for (final SessionMode m in distressModes)
@@ -361,6 +364,16 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                             canDelete: draft.chainSteps.length > 1,
                             contacts: _contacts,
                             onManageContacts: _manageContacts,
+                            // The pool a disguisedReminder filters at runtime
+                            // (session_controller startSession): global
+                            // AppDefaults.templates + this mode's local
+                            // templates. Built from the LIVE draft so local
+                            // templates added below in Safety Options appear
+                            // in the picker immediately.
+                            templates: <ReminderTemplate>[
+                              ..._globalTemplates,
+                              ...?draft.overrides?.localTemplates,
+                            ],
                             onManageTemplates: _manageTemplates,
                             onChanged: (ChainStep s) => _updateStep(index, s),
                             onDuplicate: () => _duplicateStep(index),
@@ -412,6 +425,7 @@ class _StepTile extends StatelessWidget {
     required this.canDelete,
     required this.contacts,
     required this.onManageContacts,
+    required this.templates,
     required this.onManageTemplates,
     required this.onChanged,
     required this.onDuplicate,
@@ -425,6 +439,7 @@ class _StepTile extends StatelessWidget {
   final bool canDelete;
   final List<EmergencyContact> contacts;
   final VoidCallback onManageContacts;
+  final List<ReminderTemplate> templates;
   final VoidCallback onManageTemplates;
   final ValueChanged<ChainStep> onChanged;
   final VoidCallback onDuplicate;
@@ -464,6 +479,7 @@ class _StepTile extends StatelessWidget {
             canDelete: canDelete,
             contacts: contacts,
             onManageContacts: onManageContacts,
+            templates: templates,
             onManageTemplates: onManageTemplates,
             onChanged: onChanged,
             onDuplicate: onDuplicate,

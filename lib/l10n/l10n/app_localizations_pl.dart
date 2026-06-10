@@ -2282,6 +2282,22 @@ class AppLocalizationsPl extends AppLocalizations {
       'Jeśli zameldujesz się przed przypomnieniem, licznik startuje od pełnego interwału, zamiast trzymać się starego harmonogramu.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Dozwolone szablony';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Ogranicza, które szablony przypomnień może pokazywać ten krok. Gdy nic nie wybrano, dozwolony jest każdy szablon z puli — globalne i lokalne szablony tego trybu. Wybrany szablon, który później usunięto, jest po prostu ignorowany; jeśli żaden z wybranych już nie istnieje, znów dozwolone są wszystkie szablony.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll =>
+      'Dozwolone wszystkie szablony';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Dozwolone: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Szablony przypomnień';
 
   @override

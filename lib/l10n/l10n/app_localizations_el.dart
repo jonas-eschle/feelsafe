@@ -2300,6 +2300,22 @@ class AppLocalizationsEl extends AppLocalizations {
       'Αν δηλώσετε ασφάλεια πριν ενεργοποιηθεί η υπενθύμιση, το χρονόμετρο ξεκινά ξανά από το πλήρες διάστημα αντί να κρατήσει το παλιό του πρόγραμμα.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Επιτρεπόμενα πρότυπα';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Περιορίζει ποια πρότυπα υπενθύμισης μπορεί να εμφανίσει αυτό το βήμα. Αν δεν επιλεγεί κανένα, επιτρέπεται κάθε πρότυπο της δεξαμενής — τα καθολικά και τα τοπικά αυτής της λειτουργίας. Ένα επιλεγμένο πρότυπο που διαγράφηκε αργότερα απλώς αγνοείται· αν δεν υπάρχει πια κανένα από τα επιλεγμένα, επιτρέπονται ξανά όλα τα πρότυπα.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll =>
+      'Επιτρέπονται όλα τα πρότυπα';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Επιτρέπονται: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Πρότυπα υπενθύμισης';
 
   @override

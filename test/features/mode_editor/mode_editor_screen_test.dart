@@ -27,13 +27,18 @@ import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
+import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/models/mode_overrides.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
@@ -62,6 +67,30 @@ class _FakeAppSettingsRepository extends AppSettingsRepository {
 
   @override
   Future<AppSettings> load() async => const AppSettings();
+}
+
+/// Builds a minimal [ReminderTemplate] for the templateIds picker tests.
+ReminderTemplate _reminderTemplate(String id, String name) => ReminderTemplate(
+  id: id,
+  name: name,
+  title: 'Title $name',
+  body: 'Body $name',
+  confirmationType: ConfirmationType.dismiss,
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.subtle,
+  isGlobal: true,
+);
+
+/// Settings whose defaults carry ONE global reminder template — the global
+/// half of the runtime template pool (`startSession` merges
+/// `settings.defaults.templates` with `mode.overrides?.localTemplates`).
+class _GlobalTemplateSettingsRepository extends _FakeAppSettingsRepository {
+  @override
+  Future<AppSettings> load() async => AppSettings(
+    defaults: AppDefaults(
+      templates: <ReminderTemplate>[_reminderTemplate('tpl_g', 'Global Tpl')],
+    ),
+  );
 }
 
 /// Opens an empty in-memory database (no seed data).
@@ -1538,5 +1567,64 @@ void main() {
           saved!.chainSteps.first.config! as SmsContactConfig;
       check(config.messageTemplate).equals('{location}');
     });
+  });
+
+  group('ModeEditorScreen — templateIds picker pool (spec 04:1635)', () {
+    testWidgets(
+      'the picker offers the runtime pool — global defaults templates plus '
+      "the mode's local templates — and a selection persists through save",
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final db = _emptyDb();
+        addTearDown(db.close);
+        await _seedMode(
+          db,
+          SessionMode(
+            id: 'm1',
+            name: 'Walk',
+            chainSteps: <ChainStep>[
+              _step('s0', type: ChainStepType.disguisedReminder),
+            ],
+            overrides: ModeOverrides(
+              localTemplates: <ReminderTemplate>[
+                _reminderTemplate('tpl_l', 'Local Tpl'),
+              ],
+            ),
+          ),
+        );
+        await _pumpWithRouter(
+          tester,
+          const ModeEditorScreen(modeId: 'm1', isDistress: false),
+          <Override>[
+            databaseProvider.overrideWith((_) async => db),
+            appSettingsRepositoryProvider.overrideWithValue(
+              _GlobalTemplateSettingsRepository(),
+            ),
+          ],
+        );
+        await _expandStep(tester, l10n.chainStepNameDisguisedReminder);
+
+        // BOTH halves of the runtime pool are offered: `startSession`
+        // merges `settings.defaults.templates` with
+        // `mode.overrides?.localTemplates`, and the picker must offer the
+        // exact pool that merge produces.
+        final Finder globalChip = find.widgetWithText(FilterChip, 'Global Tpl');
+        await _scrollTo(tester, globalChip);
+        expect(globalChip, findsOneWidget);
+        expect(find.widgetWithText(FilterChip, 'Local Tpl'), findsOneWidget);
+
+        // Selecting the mode-local template stages into the draft and
+        // persists through Save.
+        await tester.tap(find.widgetWithText(FilterChip, 'Local Tpl'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonSave));
+        await tester.pumpAndSettle();
+
+        final saved = await db.sessionModesDao.getById('m1');
+        final DisguisedReminderConfig config =
+            saved!.chainSteps.first.config! as DisguisedReminderConfig;
+        check(config.templateIds).deepEquals(<String>['tpl_l']);
+      },
+    );
   });
 }

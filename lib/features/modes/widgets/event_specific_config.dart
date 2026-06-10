@@ -16,6 +16,7 @@ import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/orchestration/resolve_sms_targets.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
 import 'package:guardianangela/features/modes/widgets/config_fields.dart';
@@ -50,6 +51,7 @@ class EventSpecificConfig extends StatelessWidget {
     required this.onChanged,
     this.contacts,
     this.onManageContacts,
+    this.templates,
     this.onManageTemplates,
     this.ringtonePicker,
   });
@@ -68,6 +70,16 @@ class EventSpecificConfig extends StatelessWidget {
   /// Called when the user wants to manage contacts (empty-state deep link).
   final VoidCallback? onManageContacts;
 
+  /// The reminder-template pool a `disguisedReminder` step draws from at
+  /// runtime — global `AppDefaults.templates` plus the mode's local
+  /// templates, the exact merge `startSession` hands the selector. Non-null
+  /// only in the Mode Editor context, where it backs the per-step
+  /// `templateIds` eligibility picker (spec 04:1635). Null in the Event
+  /// Defaults context: templates are not part of that screen (spec 04:2004)
+  /// and the mode-local half of the pool is unknown there, so the picker is
+  /// hidden — mirroring the [contacts] grid.
+  final List<ReminderTemplate>? templates;
+
   /// Opens the global reminder-templates screen from a `disguisedReminder`
   /// form (spec 04:1635). Null in the Event Defaults context (no link shown).
   final VoidCallback? onManageTemplates;
@@ -85,6 +97,7 @@ class EventSpecificConfig extends StatelessWidget {
     final DisguisedReminderConfig c => _DisguisedReminderForm(
       config: c,
       onChanged: onChanged,
+      templates: templates,
       onManageTemplates: onManageTemplates,
     ),
     final CountdownWarningConfig c => _CountdownWarningForm(
@@ -421,16 +434,19 @@ class _DisguisedReminderForm extends StatelessWidget {
   const _DisguisedReminderForm({
     required this.config,
     required this.onChanged,
+    this.templates,
     this.onManageTemplates,
   });
 
   final DisguisedReminderConfig config;
   final ValueChanged<DisguisedReminderConfig> onChanged;
+  final List<ReminderTemplate>? templates;
   final VoidCallback? onManageTemplates;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final List<ReminderTemplate>? templates = this.templates;
     final VoidCallback? onManageTemplates = this.onManageTemplates;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -472,8 +488,104 @@ class _DisguisedReminderForm extends StatelessWidget {
           value: config.blackScreenMode,
           onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
+        if (templates != null)
+          _TemplateIdsPicker(
+            config: config,
+            pool: templates,
+            onChanged: onChanged,
+          ),
         if (onManageTemplates != null)
           _ManageTemplatesLink(onManageTemplates: onManageTemplates),
+      ],
+    );
+  }
+}
+
+/// Per-step template-eligibility picker of a `disguisedReminder` form — the
+/// templateIds field of spec 04:1635 ("template choice
+/// (Calendar/Duolingo/etc.)", the field the manage-templates link sits
+/// below).
+///
+/// One [FilterChip] per template in [pool] — the exact global + mode-local
+/// merge the runtime hands [selectReminderTemplate] — mirroring the
+/// [SmsContactGrid] recipient picker. The summary line mirrors the
+/// selector's semantics: an empty [DisguisedReminderConfig.templateIds] —
+/// and equally a selection whose ids all match nothing (selector step 2
+/// falls back to the full pool) — leaves EVERY template eligible, so both
+/// states render the all-eligible line. Stale ids never crash the display
+/// and are dropped on the next toggle write, exactly as the SMS grid drops
+/// ghost contact ids.
+class _TemplateIdsPicker extends StatelessWidget {
+  const _TemplateIdsPicker({
+    required this.config,
+    required this.pool,
+    required this.onChanged,
+  });
+
+  final DisguisedReminderConfig config;
+  final List<ReminderTemplate> pool;
+  final ValueChanged<DisguisedReminderConfig> onChanged;
+
+  /// The stored selection resolved against [pool] — a stale id matches no
+  /// template and contributes nothing, exactly like the runtime filter.
+  Set<String> _resolvedSelection() {
+    final Set<String> poolIds = <String>{
+      for (final ReminderTemplate t in pool) t.id,
+    };
+    return config.templateIds.toSet().intersection(poolIds);
+  }
+
+  void _toggle(String id) {
+    final Set<String> next = <String>{..._resolvedSelection()};
+    if (!next.remove(id)) next.add(id);
+    onChanged(config.copyWith(templateIds: next.toList()..sort()));
+  }
+
+  /// One-line eligibility summary. Names are listed in POOL order — the
+  /// order the runtime's first-eligible pick walks — not selection order.
+  String _summary(AppLocalizations l10n, Set<String> selected) {
+    if (selected.isEmpty) return l10n.eventDefaultsReminderTemplateIdsAll;
+    final String names = pool
+        .where((ReminderTemplate t) => selected.contains(t.id))
+        .map((ReminderTemplate t) => t.name)
+        .join(', ');
+    return l10n.eventDefaultsReminderTemplateIdsSelected(names);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final Set<String> selected = _resolvedSelection();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        _FieldWithInfo(
+          title: l10n.eventDefaultsReminderTemplateIds,
+          body: l10n.eventDefaultsReminderTemplateIdsInfo,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Text(l10n.eventDefaultsReminderTemplateIds),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Text(
+            _summary(l10n, selected),
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 4,
+          children: <Widget>[
+            for (final ReminderTemplate t in pool)
+              FilterChip(
+                label: Text(t.name),
+                selected: selected.contains(t.id),
+                onSelected: (_) => _toggle(t.id),
+              ),
+          ],
+        ),
       ],
     );
   }

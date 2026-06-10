@@ -2265,6 +2265,21 @@ class AppLocalizationsHi extends AppLocalizations {
       'यदि आप रिमाइंडर बजने से पहले चेक-इन करते हैं, तो टाइमर पुराना कार्यक्रम रखने के बजाय पूरे अंतराल से फिर शुरू होता है।';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'योग्य टेम्पलेट';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'सीमित करता है कि यह चरण कौन से रिमाइंडर टेम्पलेट दिखा सकता है। कुछ भी चुना न होने पर पूल का हर टेम्पलेट योग्य है — वैश्विक और इस मोड के स्थानीय टेम्पलेट। चुना हुआ टेम्पलेट बाद में हटा दिए जाने पर बस अनदेखा कर दिया जाता है; अगर चुने हुए टेम्पलेट में से कोई भी नहीं बचा, तो सभी टेम्पलेट फिर से योग्य हो जाते हैं।';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'सभी टेम्पलेट योग्य हैं';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'योग्य: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'रिमाइंडर टेम्पलेट';
 
   @override

@@ -2280,6 +2280,21 @@ class AppLocalizationsDe extends AppLocalizations {
       'Wenn du vor der Erinnerung eincheckst, startet der Timer wieder beim vollen Intervall, statt seinen alten Zeitplan zu behalten.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Zugelassene Vorlagen';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Schränkt ein, welche Erinnerungsvorlagen dieser Schritt anzeigen darf. Ist nichts ausgewählt, kommt jede Vorlage des Pools infrage — die globalen und die lokalen dieses Modus. Eine ausgewählte Vorlage, die später gelöscht wird, wird einfach ignoriert; existiert keine der ausgewählten Vorlagen mehr, kommen wieder alle Vorlagen infrage.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'Alle Vorlagen zugelassen';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Zugelassen: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Erinnerungsvorlagen';
 
   @override

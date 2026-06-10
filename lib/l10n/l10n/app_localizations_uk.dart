@@ -2280,6 +2280,21 @@ class AppLocalizationsUk extends AppLocalizations {
       'Якщо ви відмітитеся до спрацювання нагадування, таймер перезапуститься з повного інтервалу, а не збереже попередній розклад.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Дозволені шаблони';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Обмежує, які шаблони нагадувань може показувати цей крок. Якщо нічого не вибрано, дозволено будь-який шаблон пулу — глобальні та локальні шаблони цього режиму. Вибраний шаблон, який згодом видалили, просто ігнорується; якщо жодного з вибраних більше немає, знову дозволені всі шаблони.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'Дозволені всі шаблони';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Дозволені: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Шаблони нагадувань';
 
   @override

@@ -11,7 +11,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../../helpers/widget_test_helpers.dart';
@@ -201,6 +204,76 @@ void main() {
         await tester.ensureVisible(link);
         await tester.tap(link);
         check(tapped).equals(1);
+      },
+    );
+
+    testWidgets(
+      'a disguisedReminder step threads the template pool to the picker; '
+      'a chip toggle materialises the step config with the new templateIds',
+      (WidgetTester tester) async {
+        ChainStep? emitted;
+        // config: null → the picker edits the seeded default, and the first
+        // toggle must materialise a concrete per-step config (spec 04:1594).
+        final ChainStep step = ChainStep(
+          id: 's1',
+          type: ChainStepType.disguisedReminder,
+          order: 0,
+          waitSeconds: 5,
+          durationSeconds: 30,
+          gracePeriodSeconds: 10,
+          retryCount: 0,
+          randomize: false,
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: const <LocalizationsDelegate<Object>>[
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: StepConfigPanel(
+                  step: step,
+                  defaultConfig: const DisguisedReminderConfig(),
+                  onChanged: (ChainStep s) => emitted = s,
+                  onDuplicate: () {},
+                  onReset: () {},
+                  onDelete: () {},
+                  templates: <ReminderTemplate>[
+                    ReminderTemplate(
+                      id: 'tpl_cal',
+                      name: 'Calendar',
+                      title: 'Meeting in 15 min',
+                      body: 'Conference Room B',
+                      confirmationType: ConfirmationType.dismiss,
+                      isCustom: false,
+                      displayStyle: ReminderDisplayStyle.subtle,
+                      isGlobal: true,
+                    ),
+                  ],
+                  onManageTemplates: () {},
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder chip = find.widgetWithText(FilterChip, 'Calendar');
+        expect(chip, findsOneWidget);
+        await tester.ensureVisible(chip);
+        await tester.tap(chip);
+        await tester.pumpAndSettle();
+
+        check(emitted).isNotNull();
+        final StepConfig? config = emitted!.config;
+        check(config).isA<DisguisedReminderConfig>();
+        check(
+          (config! as DisguisedReminderConfig).templateIds,
+        ).deepEquals(<String>['tpl_cal']);
       },
     );
   });

@@ -2251,6 +2251,21 @@ class AppLocalizationsEn extends AppLocalizations {
       'If you check in before the reminder fires, the timer restarts at the full interval instead of keeping its old schedule.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Eligible templates';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Limits which reminder templates this step may show. With none selected, every template in the pool — global and this mode\'s local ones — is eligible. A selected template that is later deleted is simply ignored; if none of the selected templates exists anymore, every template becomes eligible again.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'All templates eligible';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Eligible: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Reminder templates';
 
   @override

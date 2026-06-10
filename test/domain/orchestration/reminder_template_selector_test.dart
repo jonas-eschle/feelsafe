@@ -68,6 +68,17 @@ void main() {
       );
       check(chosen.id).equals('a');
     });
+
+    test('a stale id mixed with a valid one is ignored — the valid id still '
+        'filters (the per-step picker mirrors this)', () {
+      final chosen = selectReminderTemplate(
+        pool: pool,
+        templateIds: const ['ghost', 'b'],
+        randomizeTemplateOrder: false,
+        nowMillis: 0,
+      );
+      check(chosen.id).equals('b');
+    });
   });
 
   group('randomizeTemplateOrder = true (time-based index)', () {

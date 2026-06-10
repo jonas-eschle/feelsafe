@@ -4133,6 +4133,30 @@ abstract class AppLocalizations {
   /// **'If you check in before the reminder fires, the timer restarts at the full interval instead of keeping its old schedule.'**
   String get eventDefaultsReminderResetOnEarlyInfo;
 
+  /// Label of the per-step templateIds multi-select picker in the disguisedReminder form (spec 04:1635).
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible templates'**
+  String get eventDefaultsReminderTemplateIds;
+
+  /// Info-sheet body for the templateIds picker, mirroring the runtime selector semantics (empty selection = all eligible; all-stale selection falls back to the full pool).
+  ///
+  /// In en, this message translates to:
+  /// **'Limits which reminder templates this step may show. With none selected, every template in the pool — global and this mode\'s local ones — is eligible. A selected template that is later deleted is simply ignored; if none of the selected templates exists anymore, every template becomes eligible again.'**
+  String get eventDefaultsReminderTemplateIdsInfo;
+
+  /// Summary line of the templateIds picker when no template is selected (and when the selection resolves to nothing) — every template in the pool is eligible.
+  ///
+  /// In en, this message translates to:
+  /// **'All templates eligible'**
+  String get eventDefaultsReminderTemplateIdsAll;
+
+  /// Summary line of the templateIds picker listing the selected template names.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible: {names}'**
+  String eventDefaultsReminderTemplateIdsSelected(Object names);
+
   /// Header above the manage-reminder-templates link in the disguisedReminder form (spec 04:1635).
   ///
   /// In en, this message translates to:

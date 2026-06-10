@@ -2298,6 +2298,22 @@ class AppLocalizationsFr extends AppLocalizations {
       'Si vous pointez avant le déclenchement du rappel, le minuteur repart sur l\'intervalle complet au lieu de conserver son ancien horaire.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Modèles autorisés';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Limite les modèles de rappel que cette étape peut afficher. Si aucun n\'est sélectionné, tous les modèles du pool — les globaux et les locaux de ce mode — sont autorisés. Un modèle sélectionné puis supprimé est simplement ignoré ; si plus aucun des modèles sélectionnés n\'existe, tous les modèles redeviennent autorisés.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll =>
+      'Tous les modèles autorisés';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Autorisés : $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Modèles de rappel';
 
   @override

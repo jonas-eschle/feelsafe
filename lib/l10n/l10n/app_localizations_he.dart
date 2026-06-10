@@ -2237,6 +2237,21 @@ class AppLocalizationsHe extends AppLocalizations {
       'אם תבצעי צ\'ק-אין לפני שהתזכורת מופעלת, הטיימר מתחיל מחדש מהמרווח המלא במקום לשמור על לוח הזמנים הישן.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'תבניות מורשות';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'מגביל אילו תבניות תזכורת השלב הזה רשאי להציג. כשלא נבחרה אף תבנית, כל תבנית במאגר מורשית — הגלובליות והמקומיות של מצב זה. תבנית שנבחרה ונמחקה לאחר מכן פשוט מנוטרלת מהבחירה; אם אף אחת מהתבניות שנבחרו כבר לא קיימת, כל התבניות שוב מורשות.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'כל התבניות מורשות';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'מורשות: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'תבניות תזכורת';
 
   @override

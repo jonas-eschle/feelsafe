@@ -2169,6 +2169,21 @@ class AppLocalizationsZh extends AppLocalizations {
       '如果你在提醒触发前签到，计时器会从完整间隔重新开始，而不是沿用旧的时间表。';
 
   @override
+  String get eventDefaultsReminderTemplateIds => '可用模板';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      '限制此步骤可显示哪些提醒模板。未选择任何模板时，模板池中所有模板均可用——包括全局模板和此模式的本地模板。已选模板若之后被删除会被直接忽略；若所选模板均已不存在，则所有模板重新变为可用。';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => '所有模板均可用';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return '可用：$names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => '提醒模板';
 
   @override
@@ -4691,6 +4706,21 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   @override
   String get eventDefaultsReminderResetOnEarlyInfo =>
       '如果你在提醒觸發前報平安，計時器會從完整間隔重新開始，而不是沿用舊的時間表。';
+
+  @override
+  String get eventDefaultsReminderTemplateIds => '可用範本';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      '限制此步驟可顯示哪些提醒範本。未選擇任何範本時，範本庫中所有範本均可用——包括全域範本與此模式的本機範本。已選範本若之後被刪除會被直接忽略；若所選範本均已不存在，則所有範本重新變為可用。';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => '所有範本均可用';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return '可用：$names';
+  }
 
   @override
   String get eventDefaultsReminderTemplatesTitle => '提醒範本';

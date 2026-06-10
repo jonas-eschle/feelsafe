@@ -26,15 +26,18 @@ import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/countdown_style.dart';
 import 'package:guardianangela/domain/enums/hold_style.dart';
 import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -1028,6 +1031,214 @@ void main() {
     });
   });
 
+  // ── templateIds picker (spec 04:1635) ─────────────────────────────────────
+  //
+  // "disguisedReminder: … template choice (Calendar/Duolingo/etc.) … Below
+  // the templateIds field the form renders a 'Manage reminder templates'
+  // ListTile". The picker offers the SAME pool the runtime selector filters
+  // (global + mode-local, threaded from the mode editor) and mirrors
+  // selectReminderTemplate's semantics: an empty selection — and equally a
+  // selection whose ids all match nothing (selector step 2 falls back to the
+  // full pool) — leaves EVERY template eligible.
+
+  group('EventSpecificConfig — templateIds picker (spec 04:1635)', () {
+    final List<ReminderTemplate> pool = <ReminderTemplate>[
+      _template('tpl_cal', 'Calendar'),
+      _template('tpl_duo', 'Duolingo'),
+      _template('tpl_fit', 'Fitness'),
+    ];
+
+    testWidgets('renders a chip per pool template; selecting one writes '
+        'templateIds through onChanged', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(),
+        onChanged: (StepConfig c) => emitted = c,
+        templates: pool,
+      );
+      expect(find.text(l10n.eventDefaultsReminderTemplateIds), findsOneWidget);
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplateIdsAll),
+        findsOneWidget,
+      );
+      for (final String name in <String>['Calendar', 'Duolingo', 'Fitness']) {
+        expect(find.widgetWithText(FilterChip, name), findsOneWidget);
+      }
+      final Finder chip = find.widgetWithText(FilterChip, 'Duolingo');
+      await tester.ensureVisible(chip);
+      await tester.tap(chip);
+      await tester.pumpAndSettle();
+      check(emitted).isA<DisguisedReminderConfig>();
+      check(
+        (emitted! as DisguisedReminderConfig).templateIds,
+      ).deepEquals(<String>['tpl_duo']);
+    });
+
+    testWidgets('empty → selected → empty round-trip restores the '
+        'all-eligible state', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const DisguisedReminderConfig(),
+        templates: pool,
+      );
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplateIdsAll),
+        findsOneWidget,
+      );
+
+      // Select in reverse pool order — the summary must list names in POOL
+      // order (the order the runtime's first-eligible pick walks), not in
+      // selection order.
+      await tester.tap(find.widgetWithText(FilterChip, 'Duolingo'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, 'Calendar'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(
+          l10n.eventDefaultsReminderTemplateIdsSelected('Calendar, Duolingo'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventDefaultsReminderTemplateIdsAll), findsNothing);
+
+      // Deselect both → first-class empty state again.
+      await tester.tap(find.widgetWithText(FilterChip, 'Calendar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilterChip, 'Duolingo'));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplateIdsAll),
+        findsOneWidget,
+      );
+      expect(
+        find.text(
+          l10n.eventDefaultsReminderTemplateIdsSelected('Calendar, Duolingo'),
+        ),
+        findsNothing,
+      );
+      final FilterChip calChip = tester.widget<FilterChip>(
+        find.widgetWithText(FilterChip, 'Calendar'),
+      );
+      check(calChip.selected).isFalse();
+    });
+
+    testWidgets('a selection of only stale ids renders as all-eligible '
+        '(selector fallback) and the next toggle drops the ghosts', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      StepConfig? emitted;
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(templateIds: <String>['ghost']),
+        onChanged: (StepConfig c) => emitted = c,
+        templates: pool,
+      );
+      // selectReminderTemplate step 2: a filter matching nothing falls back
+      // to the FULL pool — the display must say so, not crash.
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplateIdsAll),
+        findsOneWidget,
+      );
+      for (final String name in <String>['Calendar', 'Duolingo', 'Fitness']) {
+        final FilterChip chip = tester.widget<FilterChip>(
+          find.widgetWithText(FilterChip, name),
+        );
+        check(chip.selected).isFalse();
+      }
+      // Toggling writes only resolvable ids — the ghost is dropped, exactly
+      // like the SMS grid drops ids with no matching contact.
+      await tester.tap(find.widgetWithText(FilterChip, 'Calendar'));
+      await tester.pumpAndSettle();
+      check(
+        (emitted! as DisguisedReminderConfig).templateIds,
+      ).deepEquals(<String>['tpl_cal']);
+    });
+
+    testWidgets('a partially stale selection shows only the resolved name', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(
+          templateIds: <String>['ghost', 'tpl_duo'],
+        ),
+        onChanged: (_) {},
+        templates: pool,
+      );
+      // The runtime filter matches only Duolingo; the ghost contributes
+      // nothing and must not invent an "All eligible" claim either.
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplateIdsSelected('Duolingo')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventDefaultsReminderTemplateIdsAll), findsNothing);
+      check(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Duolingo'))
+            .selected,
+      ).isTrue();
+      check(
+        tester
+            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Calendar'))
+            .selected,
+      ).isFalse();
+    });
+
+    testWidgets('hidden in the Event Defaults context (no pool threaded)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.eventDefaultsReminderTemplateIds), findsNothing);
+      expect(find.text(l10n.eventDefaultsReminderTemplateIdsAll), findsNothing);
+      expect(find.byType(FilterChip), findsNothing);
+    });
+
+    testWidgets('the field has an info icon whose sheet explains the '
+        'eligibility semantics', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const DisguisedReminderConfig(),
+        templates: pool,
+      );
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsReminderTemplateIds,
+        body: l10n.eventDefaultsReminderTemplateIdsInfo,
+      );
+    });
+
+    testWidgets('sits above the manage-templates link (spec 04:1635: the '
+        'link is below the templateIds field)', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const DisguisedReminderConfig(),
+        templates: pool,
+        onManageTemplates: () {},
+      );
+      final double pickerY = tester
+          .getTopLeft(find.text(l10n.eventDefaultsReminderTemplateIds))
+          .dy;
+      final double linkY = tester
+          .getTopLeft(
+            find.widgetWithText(ListTile, l10n.safetyOptionsManageTemplates),
+          )
+          .dy;
+      check(pickerY).isLessThan(linkY);
+    });
+  });
+
   // ── Preview cards (spec 04:1591) ──────────────────────────────────────────
   //
   // "Three step types (fakeCall, smsContact, loudAlarm) render a preview
@@ -1499,6 +1710,7 @@ Future<void> _pumpForm(
   WidgetTester tester,
   StepConfig config, {
   required ValueChanged<StepConfig> onChanged,
+  List<ReminderTemplate>? templates,
   AppSettingsRepository? settingsRepo,
 }) async {
   await tester.pumpWidget(
@@ -1519,7 +1731,11 @@ Future<void> _pumpForm(
         ),
         home: Scaffold(
           body: SingleChildScrollView(
-            child: EventSpecificConfig(config: config, onChanged: onChanged),
+            child: EventSpecificConfig(
+              config: config,
+              onChanged: onChanged,
+              templates: templates,
+            ),
           ),
         ),
       ),
@@ -1581,6 +1797,18 @@ EmergencyContact _contact(
   channels: channels ?? const <MessageChannel>[MessageChannel.sms],
 );
 
+/// Builds a minimal [ReminderTemplate] for the templateIds picker tests.
+ReminderTemplate _template(String id, String name) => ReminderTemplate(
+  id: id,
+  name: name,
+  title: 'Title $name',
+  body: 'Body $name',
+  confirmationType: ConfirmationType.dismiss,
+  isCustom: false,
+  displayStyle: ReminderDisplayStyle.subtle,
+  isGlobal: true,
+);
+
 /// Pumps [initial] inside [EventSpecificConfig] with the emitted config fed
 /// back into the widget — the same rebuild-on-change loop both production
 /// callers implement — so preview cards can be asserted to live-update.
@@ -1591,6 +1819,7 @@ Future<void> _pumpStateful(
   WidgetTester tester,
   StepConfig initial, {
   List<EmergencyContact>? contacts,
+  List<ReminderTemplate>? templates,
   VoidCallback? onManageTemplates,
   AppSettingsRepository? settingsRepo,
 }) async {
@@ -1619,6 +1848,7 @@ Future<void> _pumpStateful(
                     config: config,
                     onChanged: (StepConfig c) => setState(() => config = c),
                     contacts: contacts,
+                    templates: templates,
                     onManageTemplates: onManageTemplates,
                   ),
                 ),

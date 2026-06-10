@@ -2288,6 +2288,22 @@ class AppLocalizationsEs extends AppLocalizations {
       'Si confirmas antes de que salte el recordatorio, el temporizador vuelve a empezar con el intervalo completo en lugar de mantener su horario anterior.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Plantillas elegibles';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Limita qué plantillas de recordatorio puede mostrar este paso. Sin ninguna seleccionada, todas las plantillas del conjunto — las globales y las locales de este modo — son elegibles. Una plantilla seleccionada que luego se elimine se ignora sin más; si ya no existe ninguna de las seleccionadas, todas las plantillas vuelven a ser elegibles.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll =>
+      'Todas las plantillas elegibles';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Elegibles: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle =>
       'Plantillas de recordatorio';
 

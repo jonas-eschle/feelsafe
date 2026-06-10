@@ -2258,6 +2258,21 @@ class AppLocalizationsAr extends AppLocalizations {
       'إذا سجّلتِ وصولك قبل انطلاق التذكير، يبدأ المؤقّت من جديد بالفاصل الكامل بدلاً من الإبقاء على جدوله القديم.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'القوالب المسموح بها';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'يحدّد قوالب التذكير التي يمكن لهذه الخطوة عرضها. إذا لم يُحدَّد أي قالب، يكون كل قالب في المجموعة مسموحًا به — القوالب العامة وقوالب هذا الوضع المحلية. القالب المحدد الذي يُحذف لاحقًا يُتجاهل ببساطة؛ وإذا لم يعد أي من القوالب المحددة موجودًا، تصبح كل القوالب مسموحًا بها من جديد.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'كل القوالب مسموح بها';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'المسموح بها: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'قوالب التذكير';
 
   @override

@@ -2289,6 +2289,21 @@ class AppLocalizationsRu extends AppLocalizations {
       'Если вы отметитесь до срабатывания напоминания, таймер перезапустится с полного интервала, а не сохранит прежнее расписание.';
 
   @override
+  String get eventDefaultsReminderTemplateIds => 'Допустимые шаблоны';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsInfo =>
+      'Ограничивает, какие шаблоны напоминаний может показывать этот шаг. Если ничего не выбрано, допустим любой шаблон пула — глобальные и локальные шаблоны этого режима. Выбранный шаблон, который позже удалили, просто игнорируется; если ни одного из выбранных больше нет, снова допустимы все шаблоны.';
+
+  @override
+  String get eventDefaultsReminderTemplateIdsAll => 'Допустимы все шаблоны';
+
+  @override
+  String eventDefaultsReminderTemplateIdsSelected(Object names) {
+    return 'Допустимы: $names';
+  }
+
+  @override
   String get eventDefaultsReminderTemplatesTitle => 'Шаблоны напоминаний';
 
   @override

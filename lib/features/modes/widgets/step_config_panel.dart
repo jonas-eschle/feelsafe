@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/modes/widgets/config_fields.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -34,6 +35,7 @@ class StepConfigPanel extends StatelessWidget {
     this.canDelete = true,
     this.contacts,
     this.onManageContacts,
+    this.templates,
     this.onManageTemplates,
   });
 
@@ -52,6 +54,10 @@ class StepConfigPanel extends StatelessWidget {
 
   /// Called when the user wants to manage contacts (empty-state deep link).
   final VoidCallback? onManageContacts;
+
+  /// The merged reminder-template pool (global + mode-local) backing a
+  /// `disguisedReminder` step's `templateIds` picker (spec 04:1635).
+  final List<ReminderTemplate>? templates;
 
   /// Opens the global reminder-templates screen from a `disguisedReminder`
   /// step's form (spec 04:1635).
@@ -108,6 +114,7 @@ class StepConfigPanel extends StatelessWidget {
               onChanged: (StepConfig c) => onChanged(step.copyWith(config: c)),
               contacts: contacts,
               onManageContacts: onManageContacts,
+              templates: templates,
               onManageTemplates: onManageTemplates,
             ),
           ],
