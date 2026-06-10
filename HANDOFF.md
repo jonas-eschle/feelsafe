@@ -1,19 +1,14 @@
 # Guardian Angela v3 — Session Hand-off
 
-## ⇒ ORCHESTRATOR RESUME — READ THIS FIRST (fresh-session entry point)
+## ⇒ FRESH-SESSION ENTRY POINT
 
-**Run AS ORCHESTRATOR, not implementer** (memory `feedback_orchestration_handoff_baton`):
-stay lean, delegate ALL spec/source reading to fresh Opus sub-agents, consume only
-this baton + each agent's final report. Per chunk: fresh implementer (Opus,
-background, **SOLE committer** on the tree) → per-chunk **cohort** (architect-reviewer
-spec-vs-code + qa-expert spec-vs-tests, both Opus, parallel, READ-ONLY) → on
-FIX_REQUIRED a fresh fix agent → re-cohort the delta → advance. Do a cheap
-orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. **ONE
-committing agent on the tree at a time.** Auto-chain is pre-authorized; **NEVER
-push** (standing rule below); interrupt the user ONLY for a genuine BLOCKED
-value/spec decision.
+**NO ACTIVE MILESTONE.** M0–M6 are COMPLETE and milestone-cohort-verified
+(M6 closed 2026-06-10, final state below). Work stays LOCAL — the user
+pushes at their own discretion. For any future milestone, run the
+orchestrator + handoff-baton + per-chunk-cohort workflow recorded in
+memory `feedback_orchestration_handoff_baton`.
 
-## ✅ M0–M5 COMPLETE (baseline) · ▶ M6 POST-GA POLISH IN PROGRESS (2026-06-10)
+## ✅ M0–M6 COMPLETE (M6 POST-GA POLISH closed 2026-06-10)
 
 (M5 stack pushed: origin/main = `9531e27`, a superseded "push blocked"
 bookkeeping note that went up with the stack; full M5 code = `95a1791`. Local
@@ -266,10 +261,81 @@ both; standardize someday); fix-commit-msg "933" figure cosmetic (real
 count 807). Costs: impl (prior session, unrecorded — killed); cohort
 arch 92k/53t + qa 106k/54t; fix 98k/51t; re-cohort arch 65k + qa 101k.
 
-**NEXT: P6 (finale): authoritative full gate → MILESTONE cohort over the
-whole M6 diff (`3c8f945..HEAD`) → baton close. NEVER push.**
+**DONE: P6 (finale)** (gate at `17abe72` + fix `b83f0d8`; MILESTONE cohort
+PASS×2 2026-06-10): authoritative full gate GREEN — suite **4766** pass ·
+analyze 0 · coverage **99.39%** (13428/13510, floor 98.7, excludes frozen
++ unmodified) · parity 807 real keys ×14 · NO-STUBS S-1..S-12 OK ·
+dep-audit 74/0 · old-import OK · assets-exist 20/20 · debug APK builds
+(native channels compile+link). Skipped host-impossible only: build-ios
+(Linux), e2e (tag-gated; device-e2e proofs live separately). Gate found
+ONE pre-existing red: CI legacy-id-grep tripped on 4 doc comments in
+test/spec_coverage_test.dart (M5-C8's own rename-history notes used the
+bare banned tokens) → orchestrator reword `b83f0d8` (comments/rationale
+strings only, row referents kept, greps untouched, matrix 6/6) — all 12
+checks now OK locally; milestone arch confirmed load-bearing + lossless.
+**MILESTONE cohort over `3c8f945..HEAD` PASS×2:** arch — ledger truthful
+×12 commits, both user decisions implemented as ruled (nothing
+resurrected), seams clean (single provider declarations; zero
+AppDefaults.templates residual; locale funnel SOLE at HEAD; gen-l10n
+zero-diff in worktree), spec edits all carry Whys, D-DATA-22 in all 3
+tables, hygiene clean (OLD/ untouched, zero new deps). qa — suite
+arithmetic 4649→4766 reconciled per-chunk, ALL net test removals
+attributed to audited P3c/P5 trims + strengthening renames (zero
+unaudited deletions; zero skips; matchers strengthened 144-added vs
+25-removed, never downgraded), all 6 bug regression-pin families re-run
+green + discrimination re-read, 3 riskiest seams traced e2e on real
+flows, l10n scripted (placeholder integrity 11,298 pairs / 0 faults;
+identical-to-EN scan 1-4/111 per locale = real translations). Costs:
+gate 85k/34t, ms-arch 96k/55t, ms-qa 140k/73t.
 
-**FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
+---
+
+## ✅ M6 FINAL STATE (authoritative, supersedes the M5 block below)
+
+Suite **4766 pass** · `analyze --fatal-infos` 0 · **coverage-of-logic
+99.39%** (13428/13510, floor 98.7, excludes frozen) · l10n parity **807
+real keys ×14 ARBs** both directions · NO-STUBS S-1..S-12 +
+legacy-id-grep + old-import + assets-exist + dep-audit ALL OK · debug
+APK builds · OLD/ untouched · tree clean at `b83f0d8` · NOT pushed
+(standing rule — user pushes at own discretion; origin/main is still
+the M5 stack at `9531e27`).
+
+**M6 scope shipped (all cohort-verified PASS×2 per chunk):** P1 ramp/
+snackbar-l10n/copy-hop-tests/dialog-tap/_onPanCancel · P2 provider hoist
+to app_state_providers.dart · P3 39 info sheets + 3 live preview cards +
+manage-templates link + localized step names/descriptions (+2 cohort
+bugs fixed) · P3b template-ids picker · P3c **BUG #14** dual template
+stores → DAO single source · P4 mode icons + per-type collapsed
+summaries + blackScreen move (decision 2; + Event-Defaults restoration +
+ru/uk plural fix) · P5 GPS trim (decision 1, D-DATA-22) · P5b l10n debt
+sweep + P3c annex + **BUG #15** zh_TW MaterialApp locale fallback →
+shared localeForLanguageCode funnel · P6 gate + legacy-id-grep reword.
+
+**M6 production-bug ledger (all red-proven + cohort-verified):** #14
+global reminder templates lived in TWO unsynced stores — user edits
+silently inert at runtime (HIGH; DAO now sole source). #15 stored
+'zh_TW' fed MaterialApp a single-arg Locale → whole UI silently resolved
+to the wrong language (MAJOR; QA probe showed Arabic). Plus cohort-caught
+fixes: loudAlarm preview promised a ramp the runtime wouldn't fire; SMS
+preview count ignored the channel filter; P4's move silently deleted
+spec'd blackScreen DEFAULT editing (restored); ru/uk `=1{...}` plurals
+rendered a hard-coded wrong number at n=21.
+
+**PARKED (consolidated, all non-gating; pre-existing marked ⓟ):**
+ⓟ databaseProvider autoDispose (inert, on-disk DB) · ⓟ raw-DAO
+out-of-band mode deletes (documented limitation) · ⓟ disguised_reminder
+blackScreen true-arm value un-pinned (line-covered, M5-era) ·
+glossary/00-overview/03:796 prose still says "templates" in the
+AppDefaults bundle (authoritative 03:1088 model def is correct+explicit)
+· P3b round-trip asserts via UI proxy; live-merge draft-local scenario
+untested · P4 modeIcon() log-call unpinned; golden lacks non-default-icon
+chip arm · P5 architecture-sketch.md:1261 historical GPS mention (outside
+canon) · 19 zh_TW ASCII-colon values (+7 homeChainSummary* in zh+zh_TW)
+cosmetic · underscore-vs-hyphen stored-code convention (helper robust to
+both) · P5b fix-commit-msg "933" figure (real count 807).
+
+**M5 FINAL STATE (historical — superseded by the M6 block above):**
+Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
 exclusion list" mandate MET — globs in `coverage_excludes.txt` + 117
 device-only lines in code-site-annotated `LCOV_EXCL` markers, each naming its
