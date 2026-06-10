@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/utils/mode_icons.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -39,7 +40,8 @@ class ModesScreen extends ConsumerWidget {
             itemBuilder: (BuildContext ctx, int i) {
               final m = state.modes[i];
               final tile = ListTile(
-                leading: const Icon(Icons.directions_walk),
+                // Per-mode icon (spec 04:1479-1487 "[Walk icon] Walk Mode").
+                leading: Icon(modeIcon(m.iconName)),
                 title: Row(
                   children: <Widget>[
                     Expanded(child: Text(m.name)),

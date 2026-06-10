@@ -610,6 +610,57 @@ class AppLocalizationsZh extends AppLocalizations {
   String get modeEditorTitleEdit => '编辑模式';
 
   @override
+  String get modeFieldIcon => '图标';
+
+  @override
+  String get modeIconLabelShield => '盾牌';
+
+  @override
+  String get modeIconLabelFavorite => '爱心';
+
+  @override
+  String get modeIconLabelLock => '锁';
+
+  @override
+  String get modeIconLabelDirectionsWalk => '步行';
+
+  @override
+  String get modeIconLabelRestaurant => '用餐';
+
+  @override
+  String get modeIconLabelWarning => '警告';
+
+  @override
+  String get modeIconLabelNightlife => '夜生活';
+
+  @override
+  String get modeIconLabelDirectionsRun => '跑步';
+
+  @override
+  String get modeIconLabelDirectionsBike => '骑行';
+
+  @override
+  String get modeIconLabelHome => '家';
+
+  @override
+  String get modeIconLabelWork => '工作';
+
+  @override
+  String get modeIconLabelSchool => '学校';
+
+  @override
+  String get modeIconLabelLocalTaxi => '出租车';
+
+  @override
+  String get modeIconLabelFlight => '旅行';
+
+  @override
+  String get modeIconLabelHiking => '远足';
+
+  @override
+  String get modeIconLabelCelebration => '聚会';
+
+  @override
   String get modeFieldName => '名称';
 
   @override
@@ -661,6 +712,102 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String get stepDuplicate => '复制步骤';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return '按住：$style，宽限 $grace 秒';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return '间隔 $interval，$retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次重试',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count 分钟';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count 秒';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return '倒计时 $duration 秒，$style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return '响铃 $ring 秒，宽限 $grace 秒';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return '发给：$names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => '未选择收件人';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return '呼叫 $name';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => '没有可呼叫的联系人';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return '音量 $volume%，$sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return '音量 $volume%，$sound，渐强';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return '呼叫 $number';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return '呼叫 $number，先发位置短信';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button，按住 $seconds 秒';
+  }
 
   @override
   String get stepResetDefaults => '重置为默认值';
@@ -3148,6 +3295,57 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
   String get modeEditorTitleEdit => '編輯模式';
 
   @override
+  String get modeFieldIcon => '圖示';
+
+  @override
+  String get modeIconLabelShield => '盾牌';
+
+  @override
+  String get modeIconLabelFavorite => '愛心';
+
+  @override
+  String get modeIconLabelLock => '鎖';
+
+  @override
+  String get modeIconLabelDirectionsWalk => '步行';
+
+  @override
+  String get modeIconLabelRestaurant => '用餐';
+
+  @override
+  String get modeIconLabelWarning => '警告';
+
+  @override
+  String get modeIconLabelNightlife => '夜生活';
+
+  @override
+  String get modeIconLabelDirectionsRun => '跑步';
+
+  @override
+  String get modeIconLabelDirectionsBike => '騎車';
+
+  @override
+  String get modeIconLabelHome => '家';
+
+  @override
+  String get modeIconLabelWork => '工作';
+
+  @override
+  String get modeIconLabelSchool => '學校';
+
+  @override
+  String get modeIconLabelLocalTaxi => '計程車';
+
+  @override
+  String get modeIconLabelFlight => '旅行';
+
+  @override
+  String get modeIconLabelHiking => '健行';
+
+  @override
+  String get modeIconLabelCelebration => '聚會';
+
+  @override
   String get modeFieldName => '名稱';
 
   @override
@@ -3199,6 +3397,102 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get stepDuplicate => '複製步驟';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return '按住：$style，寬限 $grace 秒';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return '間隔 $interval，$retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count 次重試',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count 分鐘';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count 秒';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return '倒數 $duration 秒，$style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return '響鈴 $ring 秒，寬限 $grace 秒';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return '傳給：$names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count 人',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => '未選擇收件人';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return '撥打給 $name';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => '沒有可撥打的聯絡人';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return '音量 $volume%，$sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return '音量 $volume%，$sound，漸強';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return '撥打 $number';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return '撥打 $number，先傳位置簡訊';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button，按住 $seconds 秒';
+  }
 
   @override
   String get stepResetDefaults => '重設為預設值';

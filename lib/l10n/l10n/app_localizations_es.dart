@@ -634,6 +634,57 @@ class AppLocalizationsEs extends AppLocalizations {
   String get modeEditorTitleEdit => 'Editar modo';
 
   @override
+  String get modeFieldIcon => 'Icono';
+
+  @override
+  String get modeIconLabelShield => 'Escudo';
+
+  @override
+  String get modeIconLabelFavorite => 'Corazón';
+
+  @override
+  String get modeIconLabelLock => 'Candado';
+
+  @override
+  String get modeIconLabelDirectionsWalk => 'Caminar';
+
+  @override
+  String get modeIconLabelRestaurant => 'Cena';
+
+  @override
+  String get modeIconLabelWarning => 'Advertencia';
+
+  @override
+  String get modeIconLabelNightlife => 'Vida nocturna';
+
+  @override
+  String get modeIconLabelDirectionsRun => 'Correr';
+
+  @override
+  String get modeIconLabelDirectionsBike => 'Ciclismo';
+
+  @override
+  String get modeIconLabelHome => 'Casa';
+
+  @override
+  String get modeIconLabelWork => 'Trabajo';
+
+  @override
+  String get modeIconLabelSchool => 'Escuela';
+
+  @override
+  String get modeIconLabelLocalTaxi => 'Taxi';
+
+  @override
+  String get modeIconLabelFlight => 'Viaje';
+
+  @override
+  String get modeIconLabelHiking => 'Senderismo';
+
+  @override
+  String get modeIconLabelCelebration => 'Fiesta';
+
+  @override
   String get modeFieldName => 'Nombre';
 
   @override
@@ -686,6 +737,104 @@ class AppLocalizationsEs extends AppLocalizations {
 
   @override
   String get stepDuplicate => 'Duplicar paso';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return 'Mantener: $style, $grace s de gracia';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return 'Intervalo de $interval, $retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reintentos',
+      one: '1 reintento',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count min';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count s';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return 'Cuenta atrás de $duration s, $style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return 'Tono de $ring s, $grace s de gracia';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return 'Para: $names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count más',
+      one: '+1 más',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => 'Ningún destinatario seleccionado';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return 'Llama a $name';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => 'Ningún contacto al que llamar';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return 'Volumen $volume %, $sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return 'Volumen $volume %, $sound, gradual';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return 'Llama al $number';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return 'Llama al $number, antes SMS de ubicación';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button, mantener $seconds s';
+  }
 
   @override
   String get stepResetDefaults => 'Restablecer valores predeterminados';

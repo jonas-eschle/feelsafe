@@ -1611,7 +1611,7 @@ Default values come from `AppDefaults.eventDefaults`. When a step's `config` is 
 - Per-field randomization toggles (randomizeInterval, randomizeRingDuration, etc.)
 - Custom sound paths (customSoundPath, voiceRecordingPath)
 - Sensitivity for hold button (releaseSensitivity)
-- blackScreenMode toggle (for holdButton, disguisedReminder, hardwareButton)
+- blackScreenMode toggle (all step types — rendered in the Retry & Advanced group). Why: the stealth benefit (the phone looks dead/locked while the step runs) applies to any step, so the capability is kept universal (user ruling 2026-06-10).
 
 **Step Type Preview (shown in every step tile header, in both Mode Editor and Event Defaults):**
 

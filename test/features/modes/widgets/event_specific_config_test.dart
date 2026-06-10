@@ -752,7 +752,7 @@ void main() {
   // and opens at least one sheet to verify the right l10n body renders.
 
   group('EventSpecificConfig — per-field info icons (spec 04:1591)', () {
-    testWidgets('holdButton: all 5 fields, holdStyle sheet opens', (
+    testWidgets('holdButton: all 4 fields, holdStyle sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -762,7 +762,6 @@ void main() {
         l10n.eventDefaultsHoldSensitivity,
         l10n.eventDefaultsHoldVibrate,
         l10n.eventDefaultsHoldSound,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -771,7 +770,7 @@ void main() {
       );
     });
 
-    testWidgets('disguisedReminder: all 4 fields, resetOnEarly sheet opens', (
+    testWidgets('disguisedReminder: all 3 fields, resetOnEarly sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -784,7 +783,6 @@ void main() {
         l10n.eventDefaultsReminderRandomInterval,
         l10n.eventDefaultsReminderRandomTemplate,
         l10n.eventDefaultsReminderResetOnEarly,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -793,7 +791,7 @@ void main() {
       );
     });
 
-    testWidgets('countdownWarning: all 4 fields, style sheet opens', (
+    testWidgets('countdownWarning: all 3 fields, style sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -806,7 +804,6 @@ void main() {
         l10n.eventDefaultsCountdownStyle,
         l10n.eventDefaultsCountdownVibrate,
         l10n.eventDefaultsCountdownSound,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -815,7 +812,7 @@ void main() {
       );
     });
 
-    testWidgets('fakeCall: all 7 fields, declineIsSafe sheet opens', (
+    testWidgets('fakeCall: all 6 fields, declineIsSafe sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -827,7 +824,6 @@ void main() {
         l10n.eventDefaultsFakeCallVoiceOutput,
         l10n.eventDefaultsFakeCallRingtone,
         l10n.eventDefaultsFakeCallDeclineIsSafe,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -836,7 +832,7 @@ void main() {
       );
     });
 
-    testWidgets('smsContact: all 7 fields, template sheet shows the literal '
+    testWidgets('smsContact: all 6 fields, template sheet shows the literal '
         'placeholder tokens', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       // autoRecordAudio: true so the record-duration field is rendered too.
@@ -852,7 +848,6 @@ void main() {
         l10n.eventDefaultsSmsIncludeMedical,
         l10n.eventDefaultsSmsAutoRecord,
         l10n.eventDefaultsSmsRecordDuration,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -877,7 +872,7 @@ void main() {
       );
     });
 
-    testWidgets('phoneCallContact: both fields, primary-contact sheet opens', (
+    testWidgets('phoneCallContact: its field, primary-contact sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -886,10 +881,7 @@ void main() {
         const PhoneCallContactConfig(),
         onChanged: (_) {},
       );
-      _expectInfoButtons(<String>[
-        l10n.eventDefaultsPhonePrimaryContact,
-        l10n.eventDefaultsBlackScreen,
-      ]);
+      _expectInfoButtons(<String>[l10n.eventDefaultsPhonePrimaryContact]);
       await _openInfoSheet(
         tester,
         title: l10n.eventDefaultsPhonePrimaryContact,
@@ -897,7 +889,7 @@ void main() {
       );
     });
 
-    testWidgets('loudAlarm: all 6 fields, flash-screen sheet opens', (
+    testWidgets('loudAlarm: all 5 fields, flash-screen sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -908,7 +900,6 @@ void main() {
         l10n.eventDefaultsLoudAlarmFlashScreen,
         l10n.eventDefaultsLoudAlarmFlashLight,
         l10n.eventDefaultsLoudAlarmGradual,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -917,7 +908,7 @@ void main() {
       );
     });
 
-    testWidgets('callEmergency: all 5 fields, confirm sheet opens', (
+    testWidgets('callEmergency: all 4 fields, confirm sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -928,7 +919,6 @@ void main() {
         l10n.eventDefaultsCallEmergencySmsFirst,
         l10n.eventDefaultsCallEmergencyConfirm,
         l10n.eventDefaultsCallEmergencyConfirmDuration,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -937,7 +927,7 @@ void main() {
       );
     });
 
-    testWidgets('hardwareButton (repeat): all 4 fields, button sheet opens', (
+    testWidgets('hardwareButton (repeat): all 3 fields, button sheet opens', (
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
@@ -946,7 +936,6 @@ void main() {
         l10n.eventDefaultsHardwareButton,
         l10n.eventDefaultsHardwarePattern,
         l10n.eventDefaultsHardwarePressCount,
-        l10n.eventDefaultsBlackScreen,
       ]);
       await _openInfoSheet(
         tester,
@@ -1696,6 +1685,37 @@ void main() {
       // runtime never messages "ghost", so the preview must not count it.
       expect(find.text(l10n.eventPreviewSmsToCount(1, 'sms')), findsOneWidget);
     });
+  });
+
+  // ── blackScreen moved to Retry & Advanced (spec 04:1592/1614) ─────────────
+  //
+  // The toggle lives in StepConfigPanel's group 3 for ALL step types (user
+  // ruling 2026-06-10); no event form may render its own copy.
+
+  group('EventSpecificConfig — no blackScreen toggle in any event form '
+      '(spec 04:1592/1614)', () {
+    const List<StepConfig> configs = <StepConfig>[
+      HoldButtonConfig(),
+      DisguisedReminderConfig(),
+      CountdownWarningConfig(),
+      FakeCallConfig(),
+      SmsContactConfig(),
+      PhoneCallContactConfig(),
+      LoudAlarmConfig(),
+      CallEmergencyConfig(),
+      HardwareButtonConfig(),
+    ];
+
+    for (final StepConfig config in configs) {
+      testWidgets('${config.runtimeType} form renders no blackScreen field', (
+        WidgetTester tester,
+      ) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pumpForm(tester, config, onChanged: (_) {});
+        expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
+        expect(find.byTooltip(l10n.eventDefaultsBlackScreen), findsNothing);
+      });
+    }
   });
 }
 

@@ -1,27 +1,53 @@
-/// Widget tests for [StepConfigPanel]'s timing / retry / randomize editors
-/// (spec 04 §Step Expansion): each field change must emit an updated
-/// [ChainStep] via `onChanged` with only that field replaced.
+/// Widget tests for [StepConfigPanel]'s timing / retry / randomize /
+/// black-screen editors (spec 04 §Step Expansion): each field change must
+/// emit an updated [ChainStep] via `onChanged` with only that field
+/// replaced.
 library;
+
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../../helpers/widget_test_helpers.dart';
 
-ChainStep _step({int retryCount = 0, bool randomize = false}) => ChainStep(
+/// Fake [AppSettingsRepository] serving out-of-box [AppSettings]; backs
+/// `appSettingsLiveProvider` for the loudAlarm form's preview card.
+class _FakeSettingsRepo extends AppSettingsRepository {
+  _FakeSettingsRepo()
+    : super(
+        keyProvider: () async => '00' * 32,
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('panel_test_'),
+      );
+
+  @override
+  Future<AppSettings> load() async => const AppSettings();
+}
+
+ChainStep _step({
+  ChainStepType type = ChainStepType.holdButton,
+  int retryCount = 0,
+  bool randomize = false,
+}) => ChainStep(
   id: 's1',
-  type: ChainStepType.holdButton,
+  type: type,
   order: 0,
   waitSeconds: 5,
   durationSeconds: 30,
@@ -34,25 +60,31 @@ Future<void> _pump(
   WidgetTester tester,
   ChainStep step, {
   required ValueChanged<ChainStep> onChanged,
+  StepConfig defaultConfig = const HoldButtonConfig(),
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      localizationsDelegates: const <LocalizationsDelegate<Object>>[
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    ProviderScope(
+      overrides: <Override>[
+        appSettingsRepositoryProvider.overrideWithValue(_FakeSettingsRepo()),
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: StepConfigPanel(
-            step: step,
-            defaultConfig: const HoldButtonConfig(),
-            onChanged: onChanged,
-            onDuplicate: () {},
-            onReset: () {},
-            onDelete: () {},
+      child: MaterialApp(
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: StepConfigPanel(
+              step: step,
+              defaultConfig: defaultConfig,
+              onChanged: onChanged,
+              onDuplicate: () {},
+              onReset: () {},
+              onDelete: () {},
+            ),
           ),
         ),
       ),
@@ -276,5 +308,78 @@ void main() {
         ).deepEquals(<String>['tpl_cal']);
       },
     );
+  });
+
+  // ── blackScreenMode in Retry & Advanced (spec 04:1592/1614) ────────────────
+  //
+  // Group 3 "Retry & Advanced — retryCount, ±20% randomisation jitter,
+  // black-screen mode": for EVERY step type the toggle lives in the
+  // initially-collapsed advanced group (not the event form), toggling it
+  // materialises the resolved config with `blackScreenMode` flipped through
+  // the same step.copyWith(config:) path the event form uses, and its
+  // relocated InfoIconButton still opens the explanation sheet (04:1591).
+
+  group('StepConfigPanel — blackScreenMode in Retry & Advanced '
+      '(spec 04:1592/1614)', () {
+    const List<(ChainStepType, StepConfig)> cases =
+        <(ChainStepType, StepConfig)>[
+          (ChainStepType.holdButton, HoldButtonConfig()),
+          (ChainStepType.disguisedReminder, DisguisedReminderConfig()),
+          (ChainStepType.countdownWarning, CountdownWarningConfig()),
+          (ChainStepType.fakeCall, FakeCallConfig()),
+          (ChainStepType.smsContact, SmsContactConfig()),
+          (ChainStepType.phoneCallContact, PhoneCallContactConfig()),
+          (ChainStepType.loudAlarm, LoudAlarmConfig()),
+          (ChainStepType.callEmergency, CallEmergencyConfig()),
+          (ChainStepType.hardwareButton, HardwareButtonConfig()),
+        ];
+
+    for (final (ChainStepType type, StepConfig defaultConfig) in cases) {
+      testWidgets(
+        '${type.name}: hidden until Advanced expands; toggling writes '
+        'blackScreenMode; info sheet opens',
+        (WidgetTester tester) async {
+          final l10n = await loadL10n(const Locale('en'));
+          ChainStep? emitted;
+          await _pump(
+            tester,
+            _step(type: type),
+            defaultConfig: defaultConfig,
+            onChanged: (ChainStep s) => emitted = s,
+          );
+
+          final Finder toggle = find.widgetWithText(
+            SwitchListTile,
+            l10n.eventDefaultsBlackScreen,
+          );
+          // Initially-collapsed group 3 owns the toggle — it must NOT
+          // render with the (initially expanded) event form.
+          expect(toggle, findsNothing);
+
+          await _openAdvanced(tester, l10n);
+          expect(toggle, findsOneWidget);
+
+          // Write path: same field, same step.copyWith(config:) route —
+          // a null step.config materialises from the resolved default.
+          await tester.ensureVisible(toggle);
+          await tester.tap(toggle);
+          await tester.pumpAndSettle();
+          check(emitted).isNotNull();
+          final StepConfig? written = emitted!.config;
+          check(written).isNotNull();
+          check(written!.runtimeType).equals(defaultConfig.runtimeType);
+          check(written.blackScreenMode).isTrue();
+
+          // The info button relocated with the field (m6-p3 rule).
+          final Finder info = find.byTooltip(l10n.eventDefaultsBlackScreen);
+          await tester.ensureVisible(info);
+          await tester.tap(info);
+          await tester.pumpAndSettle();
+          expect(find.text(l10n.eventDefaultsBlackScreenInfo), findsOneWidget);
+          await tester.tap(find.text(l10n.commonGotIt));
+          await tester.pumpAndSettle();
+        },
+      );
+    }
   });
 }

@@ -421,10 +421,6 @@ class _HoldButtonForm extends StatelessWidget {
                 onChanged(config.copyWith(soundOnRelease: v)),
           ),
         ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
-        ),
       ],
     );
   }
@@ -483,10 +479,6 @@ class _DisguisedReminderForm extends StatelessWidget {
             onChanged: (bool v) =>
                 onChanged(config.copyWith(resetOnEarlyCheckIn: v)),
           ),
-        ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
         if (templates != null)
           _TemplateIdsPicker(
@@ -679,10 +671,6 @@ class _CountdownWarningForm extends StatelessWidget {
             onChanged: (bool v) => onChanged(config.copyWith(sound: v)),
           ),
         ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
-        ),
       ],
     );
   }
@@ -771,10 +759,6 @@ class _FakeCallForm extends StatelessWidget {
             value: config.declineIsSafe,
             onChanged: (bool v) => onChanged(config.copyWith(declineIsSafe: v)),
           ),
-        ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
       ],
     );
@@ -1018,10 +1002,6 @@ class _SmsContactForm extends StatelessWidget {
                   onChanged(config.copyWith(recordDurationSeconds: v)),
             ),
           ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
-        ),
       ],
     );
   }
@@ -1060,10 +1040,6 @@ class _PhoneCallContactForm extends StatelessWidget {
             onChanged: (String v) =>
                 onChanged(_withContactId(v.isEmpty ? null : v)),
           ),
-        ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
       ],
     );
@@ -1135,10 +1111,6 @@ class _LoudAlarmForm extends StatelessWidget {
             value: config.gradualVolume,
             onChanged: (bool v) => onChanged(config.copyWith(gradualVolume: v)),
           ),
-        ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
         ),
       ],
     );
@@ -1217,10 +1189,6 @@ class _CallEmergencyForm extends StatelessWidget {
                   onChanged(config.copyWith(confirmationDurationSeconds: v)),
             ),
           ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
-        ),
       ],
     );
   }
@@ -1288,10 +1256,6 @@ class _HardwareButtonForm extends StatelessWidget {
                   onChanged(config.copyWith(longPressDurationSeconds: v)),
             ),
           ),
-        _BlackScreenSwitch(
-          value: config.blackScreenMode,
-          onChanged: (bool v) => onChanged(config.copyWith(blackScreenMode: v)),
-        ),
       ],
     );
   }
@@ -1339,30 +1303,6 @@ class _PlatformWarning extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-// ─── Black-screen toggle (shared across all step types) ────────────────────
-
-class _BlackScreenSwitch extends StatelessWidget {
-  const _BlackScreenSwitch({required this.value, required this.onChanged});
-
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
-    return _FieldWithInfo(
-      title: l10n.eventDefaultsBlackScreen,
-      body: l10n.eventDefaultsBlackScreenInfo,
-      child: SwitchListTile(
-        contentPadding: EdgeInsets.zero,
-        title: Text(l10n.eventDefaultsBlackScreen),
-        value: value,
-        onChanged: onChanged,
       ),
     );
   }

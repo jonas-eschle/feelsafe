@@ -101,9 +101,11 @@ SessionMode _mode(
   String name, {
   List<ChainStep>? steps,
   bool isBuiltIn = false,
+  String? iconName,
 }) => SessionMode(
   id: id,
   name: name,
+  iconName: iconName,
   isBuiltIn: isBuiltIn,
   chainSteps: steps ?? <ChainStep>[_step('$id-s0', ChainStepType.holdButton)],
 );
@@ -977,6 +979,67 @@ void main() {
       // The sheet closed and the editor route was pushed for the copy.
       expect(find.text(l10n.modesNewPickerBlank), findsNothing);
       check(observer.pushed.length).isGreaterThan(countBefore);
+    });
+  });
+
+  // ── Per-mode icons (spec 04:1479-1487) ─────────────────────────────────────
+  //
+  // "[Walk icon] Walk Mode / [Date icon] Date Mode / [Custom icon] Night Out"
+  // — every tile renders ITS mode's persisted iconName, not a shared icon.
+
+  group('ModesScreen — per-mode icons (spec 04:1479-1487)', () {
+    testWidgets('each tile renders its own persisted icon', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[
+            _mode('m1', 'Walk Mode', iconName: 'directions_walk'),
+            _mode('m2', 'Alert Mode', iconName: 'warning'),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake: fake,
+        observer: _FakeNavigatorObserver(),
+      );
+
+      // Pre-fix this screen hard-coded Icons.directions_walk for every
+      // tile, so the warning-seeded mode also rendered a walk icon.
+      expect(find.byIcon(Icons.directions_walk), findsOneWidget);
+      expect(find.byIcon(Icons.warning), findsOneWidget);
+    });
+
+    testWidgets('a null iconName renders the shield default', (
+      WidgetTester tester,
+    ) async {
+      final fake = _FakeModesController(
+        _state(modes: <SessionMode>[_mode('m1', 'No Icon Yet')]),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake: fake,
+        observer: _FakeNavigatorObserver(),
+      );
+      expect(find.byIcon(Icons.shield), findsOneWidget);
+      expect(find.byIcon(Icons.directions_walk), findsNothing);
+    });
+
+    testWidgets('an unknown persisted iconName renders the deliberate fallback '
+        'instead of crashing', (WidgetTester tester) async {
+      final fake = _FakeModesController(
+        _state(
+          modes: <SessionMode>[_mode('m1', 'Stale', iconName: 'gone_icon')],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        fake: fake,
+        observer: _FakeNavigatorObserver(),
+      );
+      expect(find.byIcon(Icons.help_outline), findsOneWidget);
+      expect(find.text('Stale'), findsOneWidget);
     });
   });
 }

@@ -5,8 +5,10 @@ import 'package:go_router/go_router.dart';
 import 'package:uuid/uuid.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
+import 'package:guardianangela/core/utils/mode_icons.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
@@ -21,6 +23,7 @@ import 'package:guardianangela/features/modes/widgets/safety_options_section.dar
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
 import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Mode editor screen.
@@ -356,6 +359,16 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                           ),
                           const SizedBox(height: 16),
                           Text(
+                            l10n.modeFieldIcon,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          _IconPicker(
+                            selected: draft.iconName,
+                            onSelected: (String name) =>
+                                _updateDraft(draft.copyWith(iconName: name)),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
                             l10n.modeChainHeader,
                             style: Theme.of(context).textTheme.titleMedium,
                           ),
@@ -478,12 +491,10 @@ class _StepTile extends StatelessWidget {
             Expanded(child: Text(stepName(l10n, step.type))),
           ],
         ),
-        subtitle: Text(
-          l10n.stepTimingSummary(
-            step.waitSeconds.toString(),
-            step.durationSeconds.toString(),
-            step.gracePeriodSeconds.toString(),
-          ),
+        subtitle: _StepSummary(
+          step: step,
+          config: step.config ?? defaultConfig,
+          contacts: contacts,
         ),
         childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
         children: <Widget>[
@@ -569,4 +580,83 @@ class _SheetHeader extends StatelessWidget {
     padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
     child: Text(text, style: Theme.of(context).textTheme.titleSmall),
   );
+}
+
+/// Horizontal mode-icon selector (spec 04:1483-1487, 1539-1540
+/// "Icon Selector / [Shield] [Heart] [Lock] (choose icon)").
+///
+/// One outlined toggle button per [kModeIcons] entry; the selection state
+/// is rendered by the Material 3 selected-toggle fill, and each button
+/// carries its localized label as tooltip + semantics. Tapping stages
+/// `iconName` into the draft via [onSelected].
+class _IconPicker extends StatelessWidget {
+  const _IconPicker({required this.selected, required this.onSelected});
+
+  /// The draft's current `iconName` (null when never chosen).
+  final String? selected;
+
+  /// Called with the persisted icon name of the tapped icon.
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: Row(
+        children: <Widget>[
+          for (final MapEntry<String, IconData> entry in kModeIcons.entries)
+            IconButton.outlined(
+              tooltip: modeIconLabel(l10n, entry.key),
+              isSelected: selected == entry.key,
+              onPressed: () => onSelected(entry.key),
+              icon: Icon(entry.value),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Live per-type key-config subtitle of a step tile (spec 04:1631).
+///
+/// Pure presentation over [stepConfigSummary]; the parent list rebuilds it
+/// with the updated step on every draft mutation, so it "updates live as
+/// settings change". The two app-settings resolution layers the summary
+/// needs (gradual-volume master, default emergency number) are watched via
+/// [appSettingsLiveProvider] — the same live source the loudAlarm preview
+/// card reads and every settings writer invalidates. While it loads, the
+/// out-of-box [AppSettings] stands in (one conservative frame: never show
+/// a ramp or number that cannot be confirmed).
+class _StepSummary extends ConsumerWidget {
+  const _StepSummary({
+    required this.step,
+    required this.config,
+    required this.contacts,
+  });
+
+  final ChainStep step;
+
+  /// The step's RESOLVED config (`step.config ?? defaultConfig`) — the
+  /// same resolution the expanded form edits.
+  final StepConfig config;
+
+  final List<EmergencyContact> contacts;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AppSettings settings = ref
+        .watch(appSettingsLiveProvider)
+        .maybeWhen(data: (AppSettings s) => s, orElse: AppSettings.new);
+    return Text(
+      stepConfigSummary(
+        AppLocalizations.of(context),
+        step: step,
+        config: config,
+        contacts: contacts,
+        masterGradualVolume: settings.alarmGradualVolume,
+        defaultEmergencyNumber: settings.emergencyCallNumber,
+      ),
+    );
+  }
 }

@@ -630,6 +630,57 @@ class AppLocalizationsAr extends AppLocalizations {
   String get modeEditorTitleEdit => 'تعديل الوضع';
 
   @override
+  String get modeFieldIcon => 'أيقونة';
+
+  @override
+  String get modeIconLabelShield => 'درع';
+
+  @override
+  String get modeIconLabelFavorite => 'قلب';
+
+  @override
+  String get modeIconLabelLock => 'قفل';
+
+  @override
+  String get modeIconLabelDirectionsWalk => 'مشي';
+
+  @override
+  String get modeIconLabelRestaurant => 'عشاء';
+
+  @override
+  String get modeIconLabelWarning => 'تحذير';
+
+  @override
+  String get modeIconLabelNightlife => 'حياة ليلية';
+
+  @override
+  String get modeIconLabelDirectionsRun => 'جري';
+
+  @override
+  String get modeIconLabelDirectionsBike => 'ركوب الدراجة';
+
+  @override
+  String get modeIconLabelHome => 'منزل';
+
+  @override
+  String get modeIconLabelWork => 'عمل';
+
+  @override
+  String get modeIconLabelSchool => 'مدرسة';
+
+  @override
+  String get modeIconLabelLocalTaxi => 'تاكسي';
+
+  @override
+  String get modeIconLabelFlight => 'سفر';
+
+  @override
+  String get modeIconLabelHiking => 'تنزه';
+
+  @override
+  String get modeIconLabelCelebration => 'حفلة';
+
+  @override
   String get modeFieldName => 'الاسم';
 
   @override
@@ -682,6 +733,112 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get stepDuplicate => 'تكرار الخطوة';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return 'إمساك: $style، سماح $grace ث';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return 'فاصل $interval، $retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count محاولة',
+      many: '$count محاولة',
+      few: '$count محاولات',
+      two: 'محاولتان',
+      one: 'محاولة واحدة',
+      zero: 'بدون محاولات',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count د';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count ث';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return 'عد تنازلي $duration ث، $style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return 'رنين $ring ث، سماح $grace ث';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return 'إلى: $names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count آخرين',
+      many: '+$count آخرين',
+      few: '+$count آخرين',
+      two: '+اثنان آخران',
+      one: '+واحد آخر',
+      zero: '+$count آخرين',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => 'لم يتم اختيار مستلمين';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return 'يتصل بـ$name';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => 'لا توجد جهة اتصال للاتصال بها';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return 'مستوى الصوت $volume%، $sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return 'مستوى الصوت $volume%، $sound، تصاعدي';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return 'يتصل بالرقم $number';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return 'يتصل بالرقم $number، رسالة الموقع أولاً';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button، ضغط مطوّل $seconds ث';
+  }
 
   @override
   String get stepResetDefaults => 'إعادة التعيين إلى الافتراضيات';

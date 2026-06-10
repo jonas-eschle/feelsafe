@@ -637,6 +637,57 @@ class AppLocalizationsEl extends AppLocalizations {
   String get modeEditorTitleEdit => 'Επεξεργασία λειτουργίας';
 
   @override
+  String get modeFieldIcon => 'Εικονίδιο';
+
+  @override
+  String get modeIconLabelShield => 'Ασπίδα';
+
+  @override
+  String get modeIconLabelFavorite => 'Καρδιά';
+
+  @override
+  String get modeIconLabelLock => 'Κλειδαριά';
+
+  @override
+  String get modeIconLabelDirectionsWalk => 'Περπάτημα';
+
+  @override
+  String get modeIconLabelRestaurant => 'Δείπνο';
+
+  @override
+  String get modeIconLabelWarning => 'Προειδοποίηση';
+
+  @override
+  String get modeIconLabelNightlife => 'Νυχτερινή ζωή';
+
+  @override
+  String get modeIconLabelDirectionsRun => 'Τρέξιμο';
+
+  @override
+  String get modeIconLabelDirectionsBike => 'Ποδηλασία';
+
+  @override
+  String get modeIconLabelHome => 'Σπίτι';
+
+  @override
+  String get modeIconLabelWork => 'Εργασία';
+
+  @override
+  String get modeIconLabelSchool => 'Σχολείο';
+
+  @override
+  String get modeIconLabelLocalTaxi => 'Ταξί';
+
+  @override
+  String get modeIconLabelFlight => 'Ταξίδι';
+
+  @override
+  String get modeIconLabelHiking => 'Πεζοπορία';
+
+  @override
+  String get modeIconLabelCelebration => 'Πάρτι';
+
+  @override
   String get modeFieldName => 'Όνομα';
 
   @override
@@ -689,6 +740,104 @@ class AppLocalizationsEl extends AppLocalizations {
 
   @override
   String get stepDuplicate => 'Διπλασιασμός βήματος';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return 'Κράτημα: $style, χάρη $grace δ.';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return 'Διάστημα $interval, $retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count επαναλήψεις',
+      one: '1 επανάληψη',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count λεπ.';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count δ.';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return 'Αντίστροφη μέτρηση $duration δ., $style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return 'Κουδούνισμα $ring δ., χάρη $grace δ.';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return 'Προς: $names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count ακόμη',
+      one: '+1 ακόμη',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => 'Δεν επιλέχθηκαν παραλήπτες';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return 'Καλεί: $name';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => 'Δεν υπάρχει επαφή για κλήση';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return 'Ένταση $volume %, $sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return 'Ένταση $volume %, $sound, σταδιακά';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return 'Καλεί το $number';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return 'Καλεί το $number, πρώτα SMS τοποθεσίας';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button, κράτημα $seconds δ.';
+  }
 
   @override
   String get stepResetDefaults => 'Επαναφορά στις προεπιλογές';

@@ -16,8 +16,10 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// Calls every placeholder-bearing localization method with dummy
 /// arguments. A malformed translation (dropped/renamed placeholder or
 /// broken ICU) then surfaces as a thrown exception or an empty result.
-/// No message uses ICU plurals today, but exercising every parameterized
-/// method preserves the guarantee if one is added later.
+/// ICU plural messages (stepSummaryRetryCount, stepSummarySmsMore) are
+/// exercised at several counts so every CLDR category arm of every
+/// locale (ru/uk few+many, ar zero/one/two/few/many, he one/two/many)
+/// actually evaluates.
 List<String> _allParameterizedStrings(AppLocalizations l) => <String>[
   l.onboardingUseSimNumberHint('+15550100'),
   l.homeChainSummaryTimingTitle('Walk'),
@@ -38,6 +40,24 @@ List<String> _allParameterizedStrings(AppLocalizations l) => <String>[
   l.contactDeleteBody('Alex'),
   l.modesNewPickerFromTemplate('Walk'),
   l.stepTimingSummary(5, 30, 5),
+  l.stepSummaryHoldButton('largeButton', 5),
+  l.stepSummaryDisguisedReminder('30 min', l.stepSummaryRetryCount(3)),
+  for (final int count in <int>[0, 1, 2, 3, 5, 11, 21, 100])
+    l.stepSummaryRetryCount(count),
+  l.stepSummaryMinutes(30),
+  l.stepSummarySeconds(45),
+  l.stepSummaryCountdown(10, 'fullScreen'),
+  l.stepSummaryFakeCall(30, 5),
+  l.stepSummarySmsTo('Alice, Bob'),
+  for (final int count in <int>[1, 2, 3, 5, 11, 21, 100])
+    l.stepSummarySmsMore(count),
+  l.stepSummaryPhoneCall('Alex'),
+  l.stepSummaryLoudAlarm(80, 'siren'),
+  l.stepSummaryLoudAlarmRamp(80, 'siren'),
+  l.stepSummaryCallEmergency('112'),
+  l.stepSummaryCallEmergencySmsFirst('112'),
+  l.stepSummaryHardwareRepeat('volumeUp', 3),
+  l.stepSummaryHardwareLong('volumeUp', '2'),
   l.aboutVersion('3.0.0'),
   l.sessionInterruptedMode('Walk'),
   l.sessionInterruptedStarted('12:00'),

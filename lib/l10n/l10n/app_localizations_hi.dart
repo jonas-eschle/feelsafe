@@ -635,6 +635,57 @@ class AppLocalizationsHi extends AppLocalizations {
   String get modeEditorTitleEdit => 'मोड संपादित करें';
 
   @override
+  String get modeFieldIcon => 'आइकॉन';
+
+  @override
+  String get modeIconLabelShield => 'ढाल';
+
+  @override
+  String get modeIconLabelFavorite => 'दिल';
+
+  @override
+  String get modeIconLabelLock => 'ताला';
+
+  @override
+  String get modeIconLabelDirectionsWalk => 'पैदल चलना';
+
+  @override
+  String get modeIconLabelRestaurant => 'भोजन';
+
+  @override
+  String get modeIconLabelWarning => 'चेतावनी';
+
+  @override
+  String get modeIconLabelNightlife => 'नाइटलाइफ़';
+
+  @override
+  String get modeIconLabelDirectionsRun => 'दौड़ना';
+
+  @override
+  String get modeIconLabelDirectionsBike => 'साइकिल चलाना';
+
+  @override
+  String get modeIconLabelHome => 'घर';
+
+  @override
+  String get modeIconLabelWork => 'काम';
+
+  @override
+  String get modeIconLabelSchool => 'स्कूल';
+
+  @override
+  String get modeIconLabelLocalTaxi => 'टैक्सी';
+
+  @override
+  String get modeIconLabelFlight => 'यात्रा';
+
+  @override
+  String get modeIconLabelHiking => 'हाइकिंग';
+
+  @override
+  String get modeIconLabelCelebration => 'पार्टी';
+
+  @override
   String get modeFieldName => 'नाम';
 
   @override
@@ -687,6 +738,104 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get stepDuplicate => 'चरण की प्रतिलिपि बनाएँ';
+
+  @override
+  String stepSummaryHoldButton(Object style, int grace) {
+    return 'होल्ड: $style, $grace से छूट';
+  }
+
+  @override
+  String stepSummaryDisguisedReminder(Object interval, Object retries) {
+    return '$interval अंतराल, $retries';
+  }
+
+  @override
+  String stepSummaryRetryCount(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count पुनःप्रयास',
+      one: '1 पुनःप्रयास',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String stepSummaryMinutes(int count) {
+    return '$count मिनट';
+  }
+
+  @override
+  String stepSummarySeconds(int count) {
+    return '$count से';
+  }
+
+  @override
+  String stepSummaryCountdown(int duration, Object style) {
+    return '$duration से की उलटी गिनती, $style';
+  }
+
+  @override
+  String stepSummaryFakeCall(int ring, int grace) {
+    return '$ring से रिंग, $grace से छूट';
+  }
+
+  @override
+  String stepSummarySmsTo(Object names) {
+    return 'प्रति: $names';
+  }
+
+  @override
+  String stepSummarySmsMore(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '+$count और',
+      one: '+1 और',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get stepSummarySmsNone => 'कोई प्राप्तकर्ता चयनित नहीं';
+
+  @override
+  String stepSummaryPhoneCall(Object name) {
+    return '$name को कॉल करता है';
+  }
+
+  @override
+  String get stepSummaryPhoneCallNone => 'कॉल करने के लिए कोई संपर्क नहीं';
+
+  @override
+  String stepSummaryLoudAlarm(int volume, Object sound) {
+    return 'वॉल्यूम $volume%, $sound';
+  }
+
+  @override
+  String stepSummaryLoudAlarmRamp(int volume, Object sound) {
+    return 'वॉल्यूम $volume%, $sound, धीरे-धीरे बढ़ता है';
+  }
+
+  @override
+  String stepSummaryCallEmergency(Object number) {
+    return '$number पर कॉल करता है';
+  }
+
+  @override
+  String stepSummaryCallEmergencySmsFirst(Object number) {
+    return '$number पर कॉल करता है, पहले लोकेशन SMS';
+  }
+
+  @override
+  String stepSummaryHardwareRepeat(Object button, int count) {
+    return '$button × $count';
+  }
+
+  @override
+  String stepSummaryHardwareLong(Object button, Object seconds) {
+    return '$button, $seconds से दबाए रखें';
+  }
 
   @override
   String get stepResetDefaults => 'डिफ़ॉल्ट पर रीसेट करें';

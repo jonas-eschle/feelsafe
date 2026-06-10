@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:guardianangela/core/widgets/info_icon_button.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -15,8 +16,9 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// 1. **Timing** — wait / duration / grace (initially expanded).
 /// 2. **Event configuration** — the type-specific [EventSpecificConfig]
 ///    (initially expanded).
-/// 3. **Retry & Advanced** — retry count and timing randomisation
-///    (initially collapsed).
+/// 3. **Retry & Advanced** — retry count, timing randomisation, and the
+///    black-screen mode toggle, for every step type (initially collapsed;
+///    spec 04:1592/1614).
 ///
 /// When [step].config is null the form displays [defaultConfig] (resolved
 /// from `AppDefaults.eventDefaults`); editing any field materialises a
@@ -135,6 +137,12 @@ class StepConfigPanel extends StatelessWidget {
               value: step.randomize,
               onChanged: (bool v) => onChanged(step.copyWith(randomize: v)),
             ),
+            _BlackScreenSwitch(
+              value: effective.blackScreenMode,
+              onChanged: (bool v) => onChanged(
+                step.copyWith(config: _withBlackScreenMode(effective, v)),
+              ),
+            ),
           ],
         ),
         const SizedBox(height: 8),
@@ -164,6 +172,60 @@ class StepConfigPanel extends StatelessWidget {
               ],
             ),
           ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Returns [config] with `blackScreenMode` set to [value].
+///
+/// The sealed [StepConfig] base intentionally has no `copyWith`, so the
+/// shared toggle dispatches over the subtypes — adding a step type is a
+/// compile error here until its arm exists, mirroring the registry rule.
+StepConfig _withBlackScreenMode(StepConfig config, bool value) =>
+    switch (config) {
+      final HoldButtonConfig c => c.copyWith(blackScreenMode: value),
+      final DisguisedReminderConfig c => c.copyWith(blackScreenMode: value),
+      final CountdownWarningConfig c => c.copyWith(blackScreenMode: value),
+      final FakeCallConfig c => c.copyWith(blackScreenMode: value),
+      final SmsContactConfig c => c.copyWith(blackScreenMode: value),
+      final PhoneCallContactConfig c => c.copyWith(blackScreenMode: value),
+      final LoudAlarmConfig c => c.copyWith(blackScreenMode: value),
+      final CallEmergencyConfig c => c.copyWith(blackScreenMode: value),
+      final HardwareButtonConfig c => c.copyWith(blackScreenMode: value),
+    };
+
+/// Black-screen mode toggle — a Retry & Advanced field for EVERY step type
+/// (spec 04:1592/1614; user ruling 2026-06-10: the stealth benefit applies
+/// to any step, so the capability is universal).
+///
+/// Carries its [InfoIconButton] like every config field (spec 04:1591);
+/// the button relocated here together with the toggle when it moved out of
+/// the per-type event forms.
+class _BlackScreenSwitch extends StatelessWidget {
+  const _BlackScreenSwitch({required this.value, required this.onChanged});
+
+  final bool value;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Expanded(
+          child: SwitchListTile(
+            contentPadding: EdgeInsets.zero,
+            title: Text(l10n.eventDefaultsBlackScreen),
+            value: value,
+            onChanged: onChanged,
+          ),
+        ),
+        InfoIconButton(
+          title: l10n.eventDefaultsBlackScreen,
+          body: l10n.eventDefaultsBlackScreenInfo,
         ),
       ],
     );

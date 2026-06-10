@@ -3,9 +3,10 @@
 /// must emit an [EventDefaults] with ONLY that type's config replaced.
 ///
 /// Parametrised over every [ChainStepType] — each case expands the type's
-/// tile, toggles the shared black-screen switch, and asserts the per-type
+/// tile, mutates one of its own form fields, and asserts the per-type
 /// `_replace` routing (a wrong switch arm would corrupt a sibling config
-/// and go RED here).
+/// and go RED here): the edited slot differs from the seed default, every
+/// sibling slot is still exactly the seed default.
 library;
 
 import 'package:flutter/material.dart';
@@ -59,6 +60,57 @@ Future<void> _pump(
   await tester.pumpAndSettle();
 }
 
+/// Taps the [SwitchListTile] labelled [label] inside the expanded form.
+Future<void> _tapSwitch(WidgetTester tester, String label) async {
+  final Finder toggle = find.widgetWithText(SwitchListTile, label);
+  await tester.ensureVisible(toggle);
+  await tester.tap(toggle);
+  await tester.pumpAndSettle();
+}
+
+/// Mutates one type-specific field of [type]'s expanded form.
+///
+/// Each form exposes a different field set, so the mutation is per type:
+/// a boolean switch where one exists, the press-count spinner for
+/// hardwareButton, and the primary-contact text field for
+/// phoneCallContact (its only field).
+Future<void> _mutateForm(
+  WidgetTester tester,
+  AppLocalizations l10n,
+  ChainStepType type,
+) async {
+  switch (type) {
+    case ChainStepType.holdButton:
+      await _tapSwitch(tester, l10n.eventDefaultsHoldVibrate);
+    case ChainStepType.disguisedReminder:
+      await _tapSwitch(tester, l10n.eventDefaultsReminderRandomInterval);
+    case ChainStepType.countdownWarning:
+      await _tapSwitch(tester, l10n.eventDefaultsCountdownVibrate);
+    case ChainStepType.fakeCall:
+      await _tapSwitch(tester, l10n.eventDefaultsFakeCallDeclineIsSafe);
+    case ChainStepType.smsContact:
+      await _tapSwitch(tester, l10n.eventDefaultsSmsIncludeLocation);
+    case ChainStepType.phoneCallContact:
+      final Finder field = find.widgetWithText(
+        TextField,
+        l10n.eventDefaultsPhonePrimaryContact,
+      );
+      await tester.ensureVisible(field);
+      await tester.enterText(field, 'c9');
+      await tester.testTextInput.receiveAction(TextInputAction.done);
+      await tester.pumpAndSettle();
+    case ChainStepType.loudAlarm:
+      await _tapSwitch(tester, l10n.eventDefaultsLoudAlarmFlashScreen);
+    case ChainStepType.callEmergency:
+      await _tapSwitch(tester, l10n.eventDefaultsCallEmergencySmsFirst);
+    case ChainStepType.hardwareButton:
+      final Finder plus = find.byIcon(Icons.add_circle_outline);
+      await tester.ensureVisible(plus);
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
+  }
+}
+
 void main() {
   group('ModeEventDefaults — per-type _replace routing', () {
     testWidgets('renders one tile per step type', (WidgetTester tester) async {
@@ -74,7 +126,7 @@ void main() {
     });
 
     for (final ChainStepType type in ChainStepType.values) {
-      testWidgets('black-screen toggle under $type replaces only that config', (
+      testWidgets('a field edit under $type replaces only that config', (
         WidgetTester tester,
       ) async {
         final l10n = await loadL10n(const Locale('en'));
@@ -85,28 +137,31 @@ void main() {
           onChanged: (EventDefaults d) => emitted = d,
         );
 
-        // Expand the type's tile; only its form is built, so the shared
-        // black-screen switch label is unique on screen.
+        // Expand the type's tile; only its form is built, so its field
+        // labels are unique on screen.
         final Finder tile = find.text(stepName(l10n, type));
         await tester.ensureVisible(tile);
         await tester.tap(tile);
         await tester.pumpAndSettle();
 
-        final Finder blackScreen = find.widgetWithText(
-          SwitchListTile,
-          l10n.eventDefaultsBlackScreen,
-        );
-        await tester.ensureVisible(blackScreen);
-        await tester.tap(blackScreen);
-        await tester.pumpAndSettle();
+        await _mutateForm(tester, l10n, type);
 
-        check(emitted, because: 'toggling under $type must emit').isNotNull();
-        // The edited type's config — and ONLY it — carries the change.
+        check(emitted, because: 'editing under $type must emit').isNotNull();
+        // The edited type's config — and ONLY it — changed (config types
+        // implement value equality, so any cross-slot corruption trips
+        // the sibling comparison).
         for (final ChainStepType other in ChainStepType.values) {
-          check(
-            emitted!.forType(other).blackScreenMode,
-            because: 'forType($other) after editing $type',
-          ).equals(other == type);
+          if (other == type) {
+            check(
+              emitted!.forType(other),
+              because: 'forType($type) must carry the edit',
+            ).not((it) => it.equals(const EventDefaults().forType(other)));
+          } else {
+            check(
+              emitted!.forType(other),
+              because: 'forType($other) after editing $type',
+            ).equals(const EventDefaults().forType(other));
+          }
         }
       });
     }

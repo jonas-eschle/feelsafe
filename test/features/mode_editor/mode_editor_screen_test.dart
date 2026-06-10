@@ -29,6 +29,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
+import 'package:guardianangela/domain/enums/hold_style.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
@@ -346,9 +347,8 @@ void main() {
       expect(find.text(l10n.chainStepNameLoudAlarm), findsOneWidget);
     });
 
-    testWidgets('each tile shows a timing summary subtitle', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('each tile shows a per-type key-config subtitle '
+        '(spec 04:1631)', (WidgetTester tester) async {
       final db = _emptyDb();
       addTearDown(db.close);
       final mode = await _seedMode(
@@ -374,7 +374,12 @@ void main() {
         overrides: _overrides(db),
       );
       final l10n = await loadL10n(const Locale('en'));
-      expect(find.text(l10n.stepTimingSummary('0', '30', '5')), findsOneWidget);
+      // config: null → resolved default HoldButtonConfig (largeButton),
+      // grace from the step itself.
+      expect(
+        find.text(l10n.stepSummaryHoldButton(HoldStyle.largeButton.name, 5)),
+        findsOneWidget,
+      );
     });
 
     testWidgets('renders a drag handle per step', (WidgetTester tester) async {
@@ -1612,5 +1617,196 @@ void main() {
         check(config.templateIds).deepEquals(<String>['tpl_l']);
       },
     );
+  });
+
+  // ── Icon selector (spec 04:1483-1487, 1539-1540) ───────────────────────────
+  //
+  // "Icon Selector / [Shield] [Heart] [Lock] (choose icon)" — a horizontal
+  // icon row under the name field that stages `iconName` into the draft and
+  // persists through Save.
+
+  group('ModeEditorScreen — icon selector (spec 04:1539-1540)', () {
+    testWidgets(
+      'tapping an icon stages iconName into the draft and Save persists '
+      'it to the DB',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final db = _emptyDb();
+        addTearDown(db.close);
+        final mode = await _seedMode(db, _mode()); // iconName: null
+        await _pumpWithRouter(
+          tester,
+          ModeEditorScreen(modeId: mode.id, isDistress: false),
+          _overrides(db),
+        );
+
+        expect(find.text(l10n.modeFieldIcon), findsOneWidget);
+        final Finder shield = find.byTooltip(l10n.modeIconLabelShield);
+        expect(shield, findsOneWidget);
+        await tester.tap(shield);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonSave));
+        await tester.pumpAndSettle();
+
+        final saved = await db.sessionModesDao.getById(mode.id);
+        check(saved!.iconName).equals('shield');
+      },
+    );
+
+    testWidgets('the persisted icon renders as selected', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        SessionMode(
+          id: 'm1',
+          name: 'Dinner',
+          iconName: 'restaurant',
+          chainSteps: <ChainStep>[_step('s0')],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+
+      // IconButton wraps its child in a Tooltip, so the button is the
+      // tooltip's ancestor.
+      final IconButton restaurant = tester.widget<IconButton>(
+        find.ancestor(
+          of: find.byTooltip(l10n.modeIconLabelRestaurant),
+          matching: find.byType(IconButton),
+        ),
+      );
+      final IconButton shield = tester.widget<IconButton>(
+        find.ancestor(
+          of: find.byTooltip(l10n.modeIconLabelShield),
+          matching: find.byType(IconButton),
+        ),
+      );
+      check(restaurant.isSelected).equals(true);
+      check(shield.isSelected).equals(false);
+    });
+  });
+
+  // ── Per-type step summaries (spec 04:1631) ─────────────────────────────────
+  //
+  // "Key config summary (e.g., '30s ring, 5s grace' or 'Contacts: Alice,
+  // Bob') — updates live as settings change." The subtitle must come from
+  // the step's RESOLVED config (step.config ?? AppDefaults default — the
+  // same resolution the expanded form edits), not a generic timing line.
+
+  group('ModeEditorScreen — per-type step summaries (spec 04:1631)', () {
+    testWidgets('a fakeCall tile shows "30s ring, 5s grace" from the resolved '
+        'default config and drops the generic timing summary', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      // config: null → the summary must read the resolved default
+      // (FakeCallConfig.ringDurationSeconds = 30), grace from the step.
+      await _seedMode(
+        db,
+        _mode(steps: <ChainStep>[_step('s0', type: ChainStepType.fakeCall)]),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+
+      expect(find.text(l10n.stepSummaryFakeCall(30, 5)), findsOneWidget);
+      // The pre-P4 generic subtitle (wait 0s / duration 10s / grace 5s)
+      // is gone — per-type key config replaced it (spec 04:1599/1631).
+      expect(find.text(l10n.stepTimingSummary('0', '10', '5')), findsNothing);
+    });
+
+    testWidgets('an smsContact tile lists runtime-resolved recipient names, '
+        'truncated with a +N more suffix', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      for (final (int i, String name) in <String>[
+        'Alice',
+        'Bob',
+        'Carol',
+        'Dave',
+      ].indexed) {
+        await db.contactsDao.upsert(
+          EmergencyContact(
+            id: 'c$i',
+            name: name,
+            phoneNumber: '+155500000$i',
+            sortOrder: i,
+          ),
+        );
+      }
+      await _seedMode(
+        db,
+        _mode(
+          steps: <ChainStep>[
+            _step('s0', type: ChainStepType.smsContact).copyWith(
+              config: const SmsContactConfig(
+                contactSelection: SmsContactSelection.specificIds,
+                contactIds: <String>['c0', 'c1', 'c2', 'c3'],
+              ),
+            ),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+
+      expect(
+        find.text(
+          l10n.stepSummarySmsTo('Alice, Bob ${l10n.stepSummarySmsMore(2)}'),
+        ),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('the summary updates live as a setting changes', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(
+        db,
+        _mode(
+          steps: <ChainStep>[
+            _step(
+              's0',
+              type: ChainStepType.fakeCall,
+            ).copyWith(config: const FakeCallConfig()),
+          ],
+        ),
+      );
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(modeId: 'm1', isDistress: false),
+        _overrides(db),
+      );
+      expect(find.text(l10n.stepSummaryFakeCall(30, 5)), findsOneWidget);
+
+      await _expandStep(tester, l10n.chainStepNameFakeCall);
+      // The fakeCall form's only visible spinner is the ring duration
+      // (Retry & Advanced stays collapsed): + bumps 30 → 31.
+      final Finder plus = find.byIcon(Icons.add_circle_outline);
+      await _scrollTo(tester, plus);
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.stepSummaryFakeCall(31, 5)), findsOneWidget);
+      expect(find.text(l10n.stepSummaryFakeCall(30, 5)), findsNothing);
+    });
   });
 }

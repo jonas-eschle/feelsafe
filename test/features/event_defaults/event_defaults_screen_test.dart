@@ -351,13 +351,15 @@ void main() {
       check(fake.lastSaved!.holdButton.vibrateOnRelease).isFalse();
     });
 
-    testWidgets('blackScreenMode switch present in holdButton form', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pumpAndExpand(tester, ChainStepType.holdButton);
-      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
-    });
+    testWidgets(
+      'blackScreenMode switch absent from the holdButton form — it lives '
+      'in the step panel Retry & Advanced (spec 04:1592/1614)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        await _pumpAndExpand(tester, ChainStepType.holdButton);
+        expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
+      },
+    );
   });
 
   // ── disguisedReminder form ────────────────────────────────────────────────
@@ -506,8 +508,8 @@ void main() {
       final l10n = await loadL10n(const Locale('en'));
       // autoRecordAudio defaults to false.
       await _pumpAndExpand(tester, ChainStepType.smsContact);
-      // Scroll all the way through the form to confirm it's truly absent.
-      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+      // Scroll to the form's last field to confirm it's truly absent.
+      await _assertText(tester, find.text(l10n.eventDefaultsSmsAutoRecord));
       expect(find.text(l10n.eventDefaultsSmsRecordDuration), findsNothing);
     });
 
@@ -548,12 +550,11 @@ void main() {
       );
     });
 
-    testWidgets('blackScreen switch present in phoneCallContact form', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('blackScreen switch absent from the phoneCallContact form '
+        '(spec 04:1592/1614)', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.phoneCallContact);
-      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+      expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
     });
   });
 
@@ -649,8 +650,12 @@ void main() {
           ChainStepType.callEmergency,
           defaults: initial,
         );
-        // Scroll to blackScreen to ensure the form is fully rendered.
-        await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+        // Scroll to the confirm toggle (the form's last field when the
+        // duration spinner is hidden) to ensure it is fully rendered.
+        await _assertText(
+          tester,
+          find.text(l10n.eventDefaultsCallEmergencyConfirm),
+        );
         expect(
           find.text(l10n.eventDefaultsCallEmergencyConfirmDuration),
           findsNothing,
@@ -735,23 +740,35 @@ void main() {
       );
     });
 
-    testWidgets('blackScreen switch present in hardwareButton form', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('blackScreen switch absent from the hardwareButton form '
+        '(spec 04:1592/1614)', (WidgetTester tester) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.hardwareButton);
-      await _assertText(tester, find.text(l10n.eventDefaultsBlackScreen));
+      expect(find.text(l10n.eventDefaultsBlackScreen), findsNothing);
     });
 
-    testWidgets('toggling blackScreen switch saves the hardwareButton slot', (
+    testWidgets('press-count spinner saves the hardwareButton slot', (
       WidgetTester tester,
     ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      // blackScreenMode defaults to false — toggling flips to true.
+      // pressCount defaults to 5 — the + button bumps it to 6.
       final fake = await _pumpAndExpand(tester, ChainStepType.hardwareButton);
-      await _tapSwitch(tester, l10n.eventDefaultsBlackScreen);
+      final Finder plus = find.byIcon(Icons.add_circle_outline);
+      await _scrollUntilVisible(tester, plus);
+      await tester.scrollUntilVisible(
+        plus,
+        100,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
       check(fake.saveCalls).equals(1);
-      check(fake.lastSaved!.hardwareButton.blackScreenMode).isTrue();
+      check(fake.lastSaved!.hardwareButton.pressCount).equals(6);
       // Sibling slots are untouched by the per-type replace.
       check(fake.lastSaved!.loudAlarm).equals(const LoudAlarmConfig());
     });

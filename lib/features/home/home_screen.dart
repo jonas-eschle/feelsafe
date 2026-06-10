@@ -9,6 +9,7 @@ import 'package:home_widget/home_widget.dart';
 
 import 'package:guardianangela/core/constants/route_names.dart';
 import 'package:guardianangela/core/theme/guardian_angela_logo.dart';
+import 'package:guardianangela/core/utils/mode_icons.dart';
 import 'package:guardianangela/core/utils/permission_utils.dart';
 import 'package:guardianangela/domain/enums/home_widget_status.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
@@ -411,6 +412,9 @@ class _ModeSelector extends ConsumerWidget {
       children: <Widget>[
         for (final mode in state.modes)
           ChoiceChip(
+            // The chip shows mode identity, so it carries the mode's
+            // persisted icon too (spec 04:1479-1487).
+            avatar: Icon(modeIcon(mode.iconName)),
             label: Text(mode.name),
             selected: state.selectedModeId == mode.id,
             onSelected: (bool s) {

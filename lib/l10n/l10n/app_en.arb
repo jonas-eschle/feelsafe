@@ -795,6 +795,74 @@
   "@modeEditorTitleEdit": {
     "description": "Title when editing a mode."
   },
+  "modeFieldIcon": "Icon",
+  "@modeFieldIcon": {
+    "description": "Header of the mode icon selector in the mode editor (spec 04:1483)."
+  },
+  "modeIconLabelShield": "Shield",
+  "@modeIconLabelShield": {
+    "description": "Accessibility label for the Shield mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelFavorite": "Heart",
+  "@modeIconLabelFavorite": {
+    "description": "Accessibility label for the Favorite mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelLock": "Lock",
+  "@modeIconLabelLock": {
+    "description": "Accessibility label for the Lock mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelDirectionsWalk": "Walking",
+  "@modeIconLabelDirectionsWalk": {
+    "description": "Accessibility label for the DirectionsWalk mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelRestaurant": "Dining",
+  "@modeIconLabelRestaurant": {
+    "description": "Accessibility label for the Restaurant mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelWarning": "Warning",
+  "@modeIconLabelWarning": {
+    "description": "Accessibility label for the Warning mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelNightlife": "Nightlife",
+  "@modeIconLabelNightlife": {
+    "description": "Accessibility label for the Nightlife mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelDirectionsRun": "Running",
+  "@modeIconLabelDirectionsRun": {
+    "description": "Accessibility label for the DirectionsRun mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelDirectionsBike": "Cycling",
+  "@modeIconLabelDirectionsBike": {
+    "description": "Accessibility label for the DirectionsBike mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelHome": "Home",
+  "@modeIconLabelHome": {
+    "description": "Accessibility label for the Home mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelWork": "Work",
+  "@modeIconLabelWork": {
+    "description": "Accessibility label for the Work mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelSchool": "School",
+  "@modeIconLabelSchool": {
+    "description": "Accessibility label for the School mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelLocalTaxi": "Taxi",
+  "@modeIconLabelLocalTaxi": {
+    "description": "Accessibility label for the LocalTaxi mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelFlight": "Travel",
+  "@modeIconLabelFlight": {
+    "description": "Accessibility label for the Flight mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelHiking": "Hiking",
+  "@modeIconLabelHiking": {
+    "description": "Accessibility label for the Hiking mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
+  "modeIconLabelCelebration": "Party",
+  "@modeIconLabelCelebration": {
+    "description": "Accessibility label for the Celebration mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539)."
+  },
   "modeFieldName": "Name",
   "@modeFieldName": {
     "description": "Mode name field."
@@ -867,6 +935,156 @@
   "stepDuplicate": "Duplicate step",
   "@stepDuplicate": {
     "description": "Action to duplicate the current chain step."
+  },
+  "stepSummaryHoldButton": "Hold: {style}, {grace}s grace",
+  "@stepSummaryHoldButton": {
+    "description": "Collapsed step-tile key-config summary for a holdButton step. {style} is the raw HoldStyle enum name.",
+    "placeholders": {
+      "style": {},
+      "grace": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSummaryDisguisedReminder": "{interval} interval, {retries}",
+  "@stepSummaryDisguisedReminder": {
+    "description": "Collapsed step-tile key-config summary for a disguisedReminder step (spec 04:1599 example: '30 min interval, 3 retries'). {interval} is a pre-formatted duration; {retries} comes from stepSummaryRetryCount.",
+    "placeholders": {
+      "interval": {},
+      "retries": {}
+    }
+  },
+  "stepSummaryRetryCount": "{count, plural, =1{1 retry} other{{count} retries}}",
+  "@stepSummaryRetryCount": {
+    "description": "Retry-count fragment of stepSummaryDisguisedReminder.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "stepSummaryMinutes": "{count} min",
+  "@stepSummaryMinutes": {
+    "description": "Compact whole-minutes duration used inside step summaries.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSummarySeconds": "{count}s",
+  "@stepSummarySeconds": {
+    "description": "Compact seconds duration used inside step summaries.",
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSummaryCountdown": "{duration}s countdown, {style}",
+  "@stepSummaryCountdown": {
+    "description": "Collapsed step-tile key-config summary for a countdownWarning step. {style} is the raw CountdownStyle enum name.",
+    "placeholders": {
+      "duration": {
+        "type": "int"
+      },
+      "style": {}
+    }
+  },
+  "stepSummaryFakeCall": "{ring}s ring, {grace}s grace",
+  "@stepSummaryFakeCall": {
+    "description": "Collapsed step-tile key-config summary for a fakeCall step (spec 04:1599/1631 example: '30s ring, 5s grace').",
+    "placeholders": {
+      "ring": {
+        "type": "int"
+      },
+      "grace": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSummarySmsTo": "To: {names}",
+  "@stepSummarySmsTo": {
+    "description": "Collapsed step-tile recipients summary for an smsContact step (spec 04:1631 example: 'Contacts: Alice, Bob'). {names} is the truncated name list, optionally ending with stepSummarySmsMore.",
+    "placeholders": {
+      "names": {}
+    }
+  },
+  "stepSummarySmsMore": "{count, plural, =1{+1 more} other{+{count} more}}",
+  "@stepSummarySmsMore": {
+    "description": "Truncation suffix appended to stepSummarySmsTo when more recipients exist than are named ('Alice, Bob +3 more').",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      }
+    }
+  },
+  "stepSummarySmsNone": "No recipients selected",
+  "@stepSummarySmsNone": {
+    "description": "Collapsed step-tile summary for an smsContact step that currently resolves to zero reachable recipients."
+  },
+  "stepSummaryPhoneCall": "Calls {name}",
+  "@stepSummaryPhoneCall": {
+    "description": "Collapsed step-tile summary for a phoneCallContact step. {name} is the contact the runtime would dial.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "stepSummaryPhoneCallNone": "No contact to call",
+  "@stepSummaryPhoneCallNone": {
+    "description": "Collapsed step-tile summary for a phoneCallContact step when no contact resolves (the runtime would skip the call)."
+  },
+  "stepSummaryLoudAlarm": "{volume}% volume, {sound}",
+  "@stepSummaryLoudAlarm": {
+    "description": "Collapsed step-tile key-config summary for a loudAlarm step. {sound} is the raw LoudAlarmSound enum name.",
+    "placeholders": {
+      "volume": {
+        "type": "int"
+      },
+      "sound": {}
+    }
+  },
+  "stepSummaryLoudAlarmRamp": "{volume}% volume, {sound}, ramps up",
+  "@stepSummaryLoudAlarmRamp": {
+    "description": "loudAlarm summary variant when the volume ramp is effective (step flag AND app-wide master both on).",
+    "placeholders": {
+      "volume": {
+        "type": "int"
+      },
+      "sound": {}
+    }
+  },
+  "stepSummaryCallEmergency": "Calls {number}",
+  "@stepSummaryCallEmergency": {
+    "description": "Collapsed step-tile summary for a callEmergency step. {number} is the resolved number (per-step override or app-wide default).",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "stepSummaryCallEmergencySmsFirst": "Calls {number}, location SMS first",
+  "@stepSummaryCallEmergencySmsFirst": {
+    "description": "callEmergency summary variant when a location SMS is sent before dialling.",
+    "placeholders": {
+      "number": {}
+    }
+  },
+  "stepSummaryHardwareRepeat": "{button} × {count}",
+  "@stepSummaryHardwareRepeat": {
+    "description": "Collapsed step-tile summary for a hardwareButton step with a repeat-press pattern. {button} is the raw ButtonType enum name.",
+    "placeholders": {
+      "button": {},
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "stepSummaryHardwareLong": "{button}, hold {seconds}s",
+  "@stepSummaryHardwareLong": {
+    "description": "Collapsed step-tile summary for a hardwareButton step with a long-press pattern. {seconds} is pre-formatted (trailing .0 trimmed).",
+    "placeholders": {
+      "button": {},
+      "seconds": {}
+    }
   },
   "stepResetDefaults": "Reset to defaults",
   "@stepResetDefaults": {

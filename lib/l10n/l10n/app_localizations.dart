@@ -1229,6 +1229,108 @@ abstract class AppLocalizations {
   /// **'Edit mode'**
   String get modeEditorTitleEdit;
 
+  /// Header of the mode icon selector in the mode editor (spec 04:1483).
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get modeFieldIcon;
+
+  /// Accessibility label for the Shield mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Shield'**
+  String get modeIconLabelShield;
+
+  /// Accessibility label for the Favorite mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Heart'**
+  String get modeIconLabelFavorite;
+
+  /// Accessibility label for the Lock mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Lock'**
+  String get modeIconLabelLock;
+
+  /// Accessibility label for the DirectionsWalk mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Walking'**
+  String get modeIconLabelDirectionsWalk;
+
+  /// Accessibility label for the Restaurant mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Dining'**
+  String get modeIconLabelRestaurant;
+
+  /// Accessibility label for the Warning mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get modeIconLabelWarning;
+
+  /// Accessibility label for the Nightlife mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Nightlife'**
+  String get modeIconLabelNightlife;
+
+  /// Accessibility label for the DirectionsRun mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Running'**
+  String get modeIconLabelDirectionsRun;
+
+  /// Accessibility label for the DirectionsBike mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Cycling'**
+  String get modeIconLabelDirectionsBike;
+
+  /// Accessibility label for the Home mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get modeIconLabelHome;
+
+  /// Accessibility label for the Work mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get modeIconLabelWork;
+
+  /// Accessibility label for the School mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'School'**
+  String get modeIconLabelSchool;
+
+  /// Accessibility label for the LocalTaxi mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi'**
+  String get modeIconLabelLocalTaxi;
+
+  /// Accessibility label for the Flight mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Travel'**
+  String get modeIconLabelFlight;
+
+  /// Accessibility label for the Hiking mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Hiking'**
+  String get modeIconLabelHiking;
+
+  /// Accessibility label for the Celebration mode icon in the mode-editor icon selector and anywhere a mode icon needs a spoken name (spec 04:1539).
+  ///
+  /// In en, this message translates to:
+  /// **'Party'**
+  String get modeIconLabelCelebration;
+
   /// Mode name field.
   ///
   /// In en, this message translates to:
@@ -1330,6 +1432,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Duplicate step'**
   String get stepDuplicate;
+
+  /// Collapsed step-tile key-config summary for a holdButton step. {style} is the raw HoldStyle enum name.
+  ///
+  /// In en, this message translates to:
+  /// **'Hold: {style}, {grace}s grace'**
+  String stepSummaryHoldButton(Object style, int grace);
+
+  /// Collapsed step-tile key-config summary for a disguisedReminder step (spec 04:1599 example: '30 min interval, 3 retries'). {interval} is a pre-formatted duration; {retries} comes from stepSummaryRetryCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{interval} interval, {retries}'**
+  String stepSummaryDisguisedReminder(Object interval, Object retries);
+
+  /// Retry-count fragment of stepSummaryDisguisedReminder.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 retry} other{{count} retries}}'**
+  String stepSummaryRetryCount(num count);
+
+  /// Compact whole-minutes duration used inside step summaries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} min'**
+  String stepSummaryMinutes(int count);
+
+  /// Compact seconds duration used inside step summaries.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}s'**
+  String stepSummarySeconds(int count);
+
+  /// Collapsed step-tile key-config summary for a countdownWarning step. {style} is the raw CountdownStyle enum name.
+  ///
+  /// In en, this message translates to:
+  /// **'{duration}s countdown, {style}'**
+  String stepSummaryCountdown(int duration, Object style);
+
+  /// Collapsed step-tile key-config summary for a fakeCall step (spec 04:1599/1631 example: '30s ring, 5s grace').
+  ///
+  /// In en, this message translates to:
+  /// **'{ring}s ring, {grace}s grace'**
+  String stepSummaryFakeCall(int ring, int grace);
+
+  /// Collapsed step-tile recipients summary for an smsContact step (spec 04:1631 example: 'Contacts: Alice, Bob'). {names} is the truncated name list, optionally ending with stepSummarySmsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'To: {names}'**
+  String stepSummarySmsTo(Object names);
+
+  /// Truncation suffix appended to stepSummarySmsTo when more recipients exist than are named ('Alice, Bob +3 more').
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{+1 more} other{+{count} more}}'**
+  String stepSummarySmsMore(num count);
+
+  /// Collapsed step-tile summary for an smsContact step that currently resolves to zero reachable recipients.
+  ///
+  /// In en, this message translates to:
+  /// **'No recipients selected'**
+  String get stepSummarySmsNone;
+
+  /// Collapsed step-tile summary for a phoneCallContact step. {name} is the contact the runtime would dial.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls {name}'**
+  String stepSummaryPhoneCall(Object name);
+
+  /// Collapsed step-tile summary for a phoneCallContact step when no contact resolves (the runtime would skip the call).
+  ///
+  /// In en, this message translates to:
+  /// **'No contact to call'**
+  String get stepSummaryPhoneCallNone;
+
+  /// Collapsed step-tile key-config summary for a loudAlarm step. {sound} is the raw LoudAlarmSound enum name.
+  ///
+  /// In en, this message translates to:
+  /// **'{volume}% volume, {sound}'**
+  String stepSummaryLoudAlarm(int volume, Object sound);
+
+  /// loudAlarm summary variant when the volume ramp is effective (step flag AND app-wide master both on).
+  ///
+  /// In en, this message translates to:
+  /// **'{volume}% volume, {sound}, ramps up'**
+  String stepSummaryLoudAlarmRamp(int volume, Object sound);
+
+  /// Collapsed step-tile summary for a callEmergency step. {number} is the resolved number (per-step override or app-wide default).
+  ///
+  /// In en, this message translates to:
+  /// **'Calls {number}'**
+  String stepSummaryCallEmergency(Object number);
+
+  /// callEmergency summary variant when a location SMS is sent before dialling.
+  ///
+  /// In en, this message translates to:
+  /// **'Calls {number}, location SMS first'**
+  String stepSummaryCallEmergencySmsFirst(Object number);
+
+  /// Collapsed step-tile summary for a hardwareButton step with a repeat-press pattern. {button} is the raw ButtonType enum name.
+  ///
+  /// In en, this message translates to:
+  /// **'{button} × {count}'**
+  String stepSummaryHardwareRepeat(Object button, int count);
+
+  /// Collapsed step-tile summary for a hardwareButton step with a long-press pattern. {seconds} is pre-formatted (trailing .0 trimmed).
+  ///
+  /// In en, this message translates to:
+  /// **'{button}, hold {seconds}s'**
+  String stepSummaryHardwareLong(Object button, Object seconds);
 
   /// Action to reset a step's configuration to the global defaults.
   ///

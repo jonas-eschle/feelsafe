@@ -23,6 +23,7 @@ import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
@@ -1616,26 +1617,28 @@ void main() {
       await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).last);
       await tester.pumpAndSettle();
       // Expand the loudAlarm tile (unique text — the chain has no such step)
-      // and flip its black-screen default.
+      // and flip its flash-screen default (blackScreenMode is no longer an
+      // event-form field — it lives in the step panel's Retry & Advanced,
+      // spec 04:1592/1614).
       final tile = find.text(l10n.chainStepNameLoudAlarm);
       await _scrollTo(tester, tile);
       await tester.tap(tile);
       await tester.pumpAndSettle();
-      final blackScreen = find.widgetWithText(
+      final flashScreen = find.widgetWithText(
         SwitchListTile,
-        l10n.eventDefaultsBlackScreen,
+        l10n.eventDefaultsLoudAlarmFlashScreen,
       );
-      await _scrollTo(tester, blackScreen);
-      await tester.tap(blackScreen);
+      await _scrollTo(tester, flashScreen);
+      await tester.tap(flashScreen);
       await tester.pumpAndSettle();
       await _tapSave(tester, l10n);
 
       final saved = await db.sessionModesDao.getById('m1');
       final defaults = saved!.overrides?.eventDefaults;
       check(defaults).isNotNull();
-      check(defaults!.loudAlarm.blackScreenMode).isTrue();
+      check(defaults!.loudAlarm.flashScreen).isTrue();
       // Sibling defaults are untouched.
-      check(defaults.holdButton.blackScreenMode).isFalse();
+      check(defaults.holdButton).equals(const HoldButtonConfig());
     });
   });
 

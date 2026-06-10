@@ -125,25 +125,30 @@ class _FakePermissionHandlerPlatform extends PermissionHandlerPlatform
 // Test data factories
 // ---------------------------------------------------------------------------
 
-SessionMode _mode(String id, String name, {List<ChainStep>? chainSteps}) =>
-    SessionMode(
-      id: id,
-      name: name,
-      chainSteps:
-          chainSteps ??
-          <ChainStep>[
-            ChainStep(
-              id: '$id-step-0',
-              type: ChainStepType.holdButton,
-              order: 0,
-              waitSeconds: 0,
-              durationSeconds: 30,
-              gracePeriodSeconds: 5,
-              retryCount: 0,
-              randomize: false,
-            ),
-          ],
-    );
+SessionMode _mode(
+  String id,
+  String name, {
+  List<ChainStep>? chainSteps,
+  String? iconName,
+}) => SessionMode(
+  id: id,
+  name: name,
+  iconName: iconName,
+  chainSteps:
+      chainSteps ??
+      <ChainStep>[
+        ChainStep(
+          id: '$id-step-0',
+          type: ChainStepType.holdButton,
+          order: 0,
+          waitSeconds: 0,
+          durationSeconds: 30,
+          gracePeriodSeconds: 5,
+          retryCount: 0,
+          randomize: false,
+        ),
+      ],
+);
 
 ChainStep _step(
   String id,
@@ -339,6 +344,46 @@ void main() {
       expect(find.byType(ChoiceChip), findsNWidgets(2));
       expect(find.text('Walk'), findsOneWidget);
       expect(find.text('Date'), findsOneWidget);
+    });
+
+    testWidgets('each chip carries its mode\'s persisted icon '
+        '(spec 04:1479-1487)', (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        const HomeScreen(),
+        overrides: <Override>[
+          homeControllerProvider.overrideWith(
+            () => _FakeHomeController(
+              _state(
+                modes: <SessionMode>[
+                  _mode('m1', 'Walk', iconName: 'directions_walk'),
+                  _mode('m2', 'Date', iconName: 'restaurant'),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+      expect(
+        find.descendant(
+          of: find.ancestor(
+            of: find.text('Walk'),
+            matching: find.byType(ChoiceChip),
+          ),
+          matching: find.byIcon(Icons.directions_walk),
+        ),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.ancestor(
+            of: find.text('Date'),
+            matching: find.byType(ChoiceChip),
+          ),
+          matching: find.byIcon(Icons.restaurant),
+        ),
+        findsOneWidget,
+      );
     });
 
     testWidgets('marks the selected mode chip as selected', (
