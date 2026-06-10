@@ -5374,17 +5374,17 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String commonErrorWithDetail(Object detail) {
-    return '錯誤:$detail';
+    return '錯誤：$detail';
   }
 
   @override
   String pastEventsDetailStart(Object timestamp) {
-    return '開始:$timestamp';
+    return '開始：$timestamp';
   }
 
   @override
   String pastEventsDetailEnd(Object timestamp) {
-    return '結束:$timestamp';
+    return '結束：$timestamp';
   }
 
   @override

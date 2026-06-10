@@ -32,6 +32,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'package:guardianangela/core/utils/locale_utils.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/data/seed_data.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
@@ -266,7 +267,7 @@ class GuardianAngelaApp extends ConsumerWidget {
       theme: ThemeData(colorScheme: scheme, useMaterial3: true),
       darkTheme: ThemeData(colorScheme: darkScheme, useMaterial3: true),
       locale: settingsAsync.maybeWhen(
-        data: (s) => Locale(s.languageCode),
+        data: (s) => localeForLanguageCode(s.languageCode),
         orElse: () => null,
       ),
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[

@@ -2531,6 +2531,7 @@ Detailed view of a completed session with event timeline.
   - **Text summary:** Plain text with mode name, timestamps, duration, and event list (for messaging apps)
   - **JSON export:** Machine-readable session log (for backup/import)
   - **PDF report:** Formatted timeline with location map if GPS available (for documentation)
+  - The structural labels inside these three artifacts (the text summary's field labels, the evidence JSON keys, the PDF headings) are deliberately English-stable, not localized to the app language. **Why:** these are export/interchange formats handed to third parties — police, support services, another device's import — so a fixed, portable schema is more useful than one that varies with the sender's UI language.
   - Uses `share_plus` package for native share sheet integration
 - **Delete:** Confirmation dialog → remove from history
 

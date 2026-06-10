@@ -43,6 +43,12 @@ import 'package:guardianangela/services/service_providers.dart';
 // Known anchor strings (must match the generated getters in app_localizations_*).
 const _enTagline = 'Your angel\'s got your back.';
 const _deTagline = 'Dein Engel passt auf dich auf.';
+// Traditional Chinese — distinct from BOTH the zh-Simplified tagline (note the
+// Traditional 守護 vs Simplified 守护) and every other locale, so a wrong-locale
+// fallback (the pre-fix bug #15 resolved zh_TW to Arabic / zh-Simplified) is
+// observable as the rendered text NOT being this string.
+const _zhTwTagline = '你的天使,守護有你。';
+const _zhTagline = '你的守护天使一直在你身边。';
 
 // ─── In-memory settings repo (round-trips save → load) ───────────────────────
 
@@ -145,6 +151,76 @@ void main() {
       check(app().locale).equals(const Locale('en'));
       expect(find.text(_enTagline), findsOneWidget);
       expect(find.text(_deTagline), findsNothing);
+    },
+  );
+
+  testWidgets(
+    'WID-002 the zh_TW Traditional tagline differs from zh-Simplified (the '
+    'Traditional flip is observable, not a zh-Simplified fallback)',
+    (WidgetTester tester) async {
+      // Guards the premise of the zh_TW arm below: the Traditional and
+      // Simplified taglines must differ, else the arm could pass on a
+      // zh-Simplified fallback.
+      final zhTw = await AppLocalizations.delegate.load(
+        const Locale('zh', 'TW'),
+      );
+      final zh = await AppLocalizations.delegate.load(const Locale('zh'));
+      check(zhTw.homeTagline).equals(_zhTwTagline);
+      check(zh.homeTagline).equals(_zhTagline);
+      check(zhTw.homeTagline).not((s) => s.equals(zh.homeTagline));
+    },
+  );
+
+  testWidgets(
+    'WID-002 selecting the stored code "zh_TW" resolves the LIVE root '
+    'MaterialApp to Locale(zh, TW) and renders the Traditional tagline (bug '
+    '#15: a single-arg Locale("zh_TW") matched no supported locale and fell '
+    'back to the wrong language)',
+    (WidgetTester tester) async {
+      tester.view.physicalSize = const Size(1080, 2280);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+
+      final repo = _RecordingSettingsRepository(const AppSettings());
+      final container = ProviderContainer(
+        overrides: <Override>[
+          appSettingsRepositoryProvider.overrideWithValue(repo),
+          databaseProvider.overrideWith(
+            (ref) async =>
+                throw StateError('WID-002: no DB on the welcome page'),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: const GuardianAngelaApp(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      MaterialApp app() => tester.widget<MaterialApp>(find.byType(MaterialApp));
+
+      // Drive the REAL stored-language path to the underscore region code that
+      // the settings picker persists for Traditional Chinese.
+      await container
+          .read(settingsControllerProvider.notifier)
+          .setLanguage('zh_TW');
+      await tester.pumpAndSettle();
+
+      // Persisted verbatim AND resolved to the region-qualified locale — NOT a
+      // single-arg Locale('zh_TW') (which would match no supported locale and
+      // fall back to the wrong language).
+      check(repo._value.languageCode).equals('zh_TW');
+      check(app().locale).equals(const Locale('zh', 'TW'));
+      // The TARGET Traditional string renders (asserting the correct target,
+      // not a specific wrong fallback, so the red holds whether the pre-fix
+      // fallback was ar or zh-Simplified).
+      expect(find.text(_zhTwTagline), findsOneWidget);
+      expect(find.text(_zhTagline), findsNothing);
+      expect(find.text(_enTagline), findsNothing);
     },
   );
 }

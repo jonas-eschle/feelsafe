@@ -6,6 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
+import 'package:guardianangela/core/utils/locale_utils.dart';
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/engine/chain_event.dart';
@@ -760,7 +761,7 @@ class SessionController extends AsyncNotifier<SessionState>
     // localized strings hop through EventServices exactly like the alarm
     // settings above (spec 02 §Event Execution).
     final l10n = lookupAppLocalizations(
-      _localeForLanguageCode(settings.languageCode),
+      localeForLanguageCode(settings.languageCode),
     );
     final contactService = await ref.read(contactServiceProvider.future);
     _eventServices = EventServices(
@@ -1773,19 +1774,6 @@ class SessionController extends AsyncNotifier<SessionState>
     final db = await ref.read(databaseProvider.future);
     return (await ContactsRepository(db.contactsDao).getAll()).length;
   }
-}
-
-/// Builds the [Locale] for a stored [AppSettings.languageCode].
-///
-/// The settings picker stores plain codes (`'en'`, `'de'`, …) plus the one
-/// underscore form `'zh_TW'`. `lookupAppLocalizations(Locale('zh_TW'))`
-/// would throw (no such language code), so the country part must be split
-/// into the [Locale] constructor's second argument.
-Locale _localeForLanguageCode(String languageCode) {
-  final parts = languageCode.split('_');
-  return parts.length >= 2
-      ? Locale(parts.first, parts[1])
-      : Locale(languageCode);
 }
 
 /// Provides the [SessionController].
