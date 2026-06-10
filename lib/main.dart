@@ -40,6 +40,7 @@ import 'package:guardianangela/domain/models/emergency_numbers.dart';
 import 'package:guardianangela/features/launch_gate/launch_gate_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/router/app_router.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import 'package:guardianangela/services/audio_service.dart';
 import 'package:guardianangela/services/notification_service.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -278,21 +279,6 @@ class GuardianAngelaApp extends ConsumerWidget {
     );
   }
 }
-
-/// Live [AppSettings] provider that re-loads from disk on demand.
-///
-/// `MaterialApp.router` reads the current theme + locale from here so
-/// that settings changes rebuild the root widget. The provider is
-/// keep-alive, so every writer that changes a field the root app
-/// consumes must `ref.invalidate(appSettingsLiveProvider)` after
-/// `appSettingsRepositoryProvider.save` — without that re-read the
-/// change would not apply until the next cold start. Current
-/// invalidators: `SettingsController.setThemeMode`,
-/// `SettingsController.setLanguage`, and the backup-restore import
-/// (which overwrites the whole settings singleton).
-final appSettingsLiveProvider = FutureProvider<AppSettings>((ref) async {
-  return ref.read(appSettingsRepositoryProvider).load();
-});
 
 // ---------------------------------------------------------------------------
 // JSON Repository Corruption Recovery App (spec 10:206 — Extra 21)

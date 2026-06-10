@@ -26,7 +26,7 @@ import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
 import 'package:guardianangela/features/onboarding/onboarding_controller.dart';
-import 'package:guardianangela/router/app_router.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// [AppSettingsRepository] whose [save] round-trips into [load] — the

@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'package:guardianangela/data/repositories/contacts_repository.dart';
-import 'package:guardianangela/router/app_router.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable in-progress state for the onboarding flow.

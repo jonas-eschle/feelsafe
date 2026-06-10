@@ -3,7 +3,7 @@ import 'package:meta/meta.dart';
 
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
-import 'package:guardianangela/main.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
 /// Immutable state for the settings hub.

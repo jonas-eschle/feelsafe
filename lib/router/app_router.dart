@@ -36,7 +36,7 @@ import 'package:guardianangela/features/settings_security/settings_security_scre
 import 'package:guardianangela/features/settings_stealth/settings_stealth_screen.dart';
 import 'package:guardianangela/features/simulation_summary/simulation_summary_screen.dart';
 import 'package:guardianangela/features/template_editor/template_editor_screen.dart';
-import 'package:guardianangela/services/service_providers.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 
 /// Refresh listenable for redirect re-evaluation.
 ///
@@ -55,19 +55,6 @@ class _RouterRefreshListenable extends ChangeNotifier {
 
   final Ref _ref;
 }
-
-/// Async provider that returns whether this is the first app launch.
-///
-/// Backed by `AppSettings.isFirstLaunch`. The provider is keep-alive and
-/// the redirect reads its cached value, so a writer that persists a new
-/// flag value must invalidate it — `OnboardingController.completeOnboarding`
-/// does (invalidate + await the re-load) before `OnboardingScreen._finish`
-/// navigates home; otherwise the redirect would re-read the stale `true`
-/// and bounce the user straight back to /onboarding.
-final firstLaunchProvider = FutureProvider<bool>((ref) async {
-  final settings = await ref.read(appSettingsRepositoryProvider).load();
-  return settings.isFirstLaunch;
-});
 
 /// Provides the GoRouter instance.
 ///
