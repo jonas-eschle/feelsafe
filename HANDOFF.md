@@ -12,17 +12,19 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop C8 commit `f2054d1`,
-**+33 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4645 pass**,
-`analyze --fatal-infos` = 0, **coverage-of-logic 97.85%** (13031/13317), floor 97.2.
-**C7 COMPLETE; C8 COMPLETE (Phase-9 spec-coverage assertions LIVE + fail-loud-proven:
-45 R-rows + 49 section rows + 16 INT/WID name-grep IDs + bidirectional spec↔matrix
-sync + 4 device markers; spec-07 fully reconciled; all 7 rationale markers
-cohort-adjudicated HONEST incl. BatteryAlertConfig=superseded per 08:779).**
-M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`;
-the fresh session continues C9→C10 then pushes the whole stack at C10.)
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop C9 commit `f7de3bf`,
+**+35 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4645 pass**,
+`analyze --fatal-infos` = 0, **coverage-of-logic 97.86%** (13030/13315), floor 97.2.
+**C7 + C8 + C9 COMPLETE.** C9 swept 49 stale Phase markers (all factual-rewrite
+cohort-verified, zero inventions), tidied CLAUDE.md native list (+DeviceInfoChannel.kt,
+−2 phantoms), deleted the dead stealth ternary, kept `isCancelled` (spec 02:549-550
+mandates the field; doc now says controller-wired/unconsumed), fixed the spec-04:2444
+phantom `HistoryController` reference at the SOURCE, fixed l10n
+`onboardingUseSimNumberHint` ("Using SIM number {number}") in ALL 14 locales (parity
+green). M0–M4 PUSHED; M5 (FINAL milestone) — ONLY C10 REMAINS. (NB: local commits
+survive a `/clear`.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C9:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C10:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
@@ -46,7 +48,11 @@ race-close verified deadlock-free + fail-loud, resetOnboarding ruled safe) ·
 adjudicated all 7 rationale markers honest + spot-verified 6 renamed rows pin
 real behavior + spec-05 invariants byte-accurate; qa verified every enforcement
 mechanism fail-loud incl. the bidirectional sync + the bug-#13 await-half
-mutation pin)** — ALL architect+qa **PASS**.
+mutation pin) · **C9 (doc-sweep `f7de3bf`: arch verified every risky factual
+rewrite against code/disk — quick_exit channel exists, updateNotification drop
+correct [zero callers], audio ARB-key claim true, 5s-poll true; qa verified all
+14 ARB translations structurally + the strengthened onboarding assertion)** —
+ALL architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -123,22 +129,26 @@ invalidate-exposes-null race; arch-verified deadlock-free + fail-loud).
 **BUGS #9–#13 are ALL the keep-alive-provider-staleness class — the dominant
 v3 wiring-gap pattern; cite as a family in the C10 milestone summary.**
 
-**NEXT = C9 — doc-sweep + tidy (the accumulated list):** the ~31 stale `Phase [0-9]`
-markers across ~27 `lib/services/` files; CLAUDE.md native-files tidy (PhoneChannel.kt
-/DeviceStateChannel.kt don't exist); the per-chunk C9 items recorded in each KEY
-FINDINGS section below (C7a: dead stealth ternary session_screen.dart:464-471 —
-DELETE, removes 2 uncovered lines; `EventServices.isCancelled` no-consumer doc/API
-decision; C7c: orphaned doc comment, "hold-5s" header, mode_editor:219 dead-arm
-annotation; C7d: "HistoryController.build" phantom quote, :72-74 stale comment;
-C7e: HTML-escaped literals, `hasSmsSte` typo rename, share_plus header; C7f:
-widget_test.dart:6-7 stale pointer, **l10n `onboardingUseSimNumberHint` literally
-"{number}" in ALL 14 locales — fix EN + the 13-locale delta in the same chunk**;
-C7g: pin_setup:47 defensive annotation). THEN **C10** — denominator decision
-(orchestrator-authorized per the original baton: exclude `lib/data/db/tables/*.dart`
-codegen glob + the Platform-gated device-only files per the census; target ~99%-of-
-logic honest), final GA-readiness cohort over the whole M5 stack, authoritative full
-gate, milestone summary citing all 13 bugs (esp. the keep-alive-staleness family
-#9–#13), **PUSH**.
+**NEXT = C10 (the FINALE) — three steps:**
+1. **Denominator implementation (orchestrator-DECIDED per the pre-authorized baton
+   call):** (a) add glob `lib/data/db/tables/*.dart` to
+   `tool/coverage/coverage_excludes.txt` (codegen Drift DSL, proven runtime-throw,
+   structurally `*.g.dart`); (b) wrap the census-verified `Platform.is*` device-only
+   blocks in `// LCOV_EXCL_START`/`STOP` markers (or the filter's equivalent), EACH
+   annotated at the code site with its device-e2e/CI-build proof (the census lives in
+   this baton's earlier sections: notification ≈31, device_info ≈10, messaging ≈8,
+   hardware_button iOS ≈21, background_session ≈13, sentry passthrough 9, sim tails ≈9,
+   contacts_screen ≈24+3, contact_form ≈4, about ≈3); defensive-unreachable lines STAY
+   in the denominator (the honest <1%). Expected ≈99.5–99.9%-of-logic; set the floor to
+   (actual − 0.6) and update the floor-file comment with the final story.
+2. **Authoritative full gate:** analyze, full suite, coverage+floor, spec_coverage
+   green, l10n parity, deferral-grep (`Phase [0-9]` invented-deferral grep), NO-STUBS
+   greps, OLD/ untouched.
+3. After the orchestrator's final milestone cohort (architect+qa over the WHOLE M5
+   stack summary): **PUSH by the orchestrator** — the milestone summary cites all 13
+   bugs (the keep-alive-staleness family #9–#13 as the headline pattern, the C7d
+   evidence-destruction BLOCKER, the SOS-flash hang, the launch degrade escapes, the
+   CallStateChannel name-shadow).
 **C7 chunk-cost ledger (final):** C7a 335k, C7b 249k, C7c 202k, C7d 165k+217k-fix,
 C7e 257k+93k-fix, C7f 307k+~270k-fix(stalls), C7g 233k+211k-fix. Subagent rules that
 saved money: never end a turn with a backgrounded gate pending; read the harness
