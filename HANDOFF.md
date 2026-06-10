@@ -12,7 +12,15 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-## ✅ M5 COMPLETE — PUSHED (2026-06-10). THE v3 WIRING REMEDIATION IS DONE.
+## ✅ M5 COMPLETE — VERIFIED (2026-06-10); 38 COMMITS AWAITING THE USER'S PUSH.
+
+**ONLY REMAINING ACTION = `git push origin main`, BY THE USER** (the permission
+classifier blocks agent-initiated pushes to main regardless of baton pre-auth —
+recorded in memory `feedback_orchestration_handoff_baton`). Fresh session: run
+`git rev-list --count origin/main..HEAD` — if **0**, the push happened and
+M0–M5 are fully DONE (nothing to do); if **>0**, everything is still verified
+and green — just ask the user to push (pre-push hook re-runs analyze + the full
+suite, ~25 min). Do NOT re-verify, re-gate, or add work before the push.
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
@@ -153,11 +161,13 @@ v3 wiring-gap pattern; cite as a family in the C10 milestone summary.**
 
 **C10 (denominator + authoritative gate, `82dc239`) and C10b (4 pre-existing CI
 false positives cleared by code-side dodges, gates untouched, `045be45`) are DONE
-and milestone-cohort-verified (PASS×2). The stack was PUSHED by the orchestrator
-immediately after this baton commit. There is no next chunk — M5 and the v3 wiring
-remediation plan (M0–M5) are COMPLETE.** Post-GA polish notes parked in the KEY
-FINDINGS sections (e.g. hoisting appSettingsLiveProvider/firstLaunchProvider out of
-main.dart/app_router.dart to break benign import cycles).
+and milestone-cohort-verified (PASS×2; push authorized by both halves). The
+orchestrator's push attempt was BLOCKED by the permission classifier — the USER
+must run `git push origin main` (see the header block). There is no next chunk —
+M5 and the v3 wiring remediation plan (M0–M5) are COMPLETE pending that push.**
+Post-GA polish notes parked in the KEY FINDINGS sections (e.g. hoisting
+appSettingsLiveProvider/firstLaunchProvider out of main.dart/app_router.dart to
+break benign import cycles).
 **C7 chunk-cost ledger (final):** C7a 335k, C7b 249k, C7c 202k, C7d 165k+217k-fix,
 C7e 257k+93k-fix, C7f 307k+~270k-fix(stalls), C7g 233k+211k-fix. Subagent rules that
 saved money: never end a turn with a backgrounded gate pending; read the harness
@@ -206,16 +216,14 @@ With both handled, 99%-of-logic is reachable; the census confirms a ~98–99% ho
 
 ---
 
-**Snapshot:** 2026-06-10 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`). M5
-(FINAL milestone, Phase-9) IN PROGRESS — C1..C7f + **C7g + C7g-fix (settings
-+ misc + live-propagation + onboarding-bounce fixes) — C7 COMPLETE** — DONE +
-COHORT-VERIFIED (architect+qa PASS; all UNPUSHED — code HEAD = `82d4c60` + the
-`m5-c7g` baton commit atop, ahead of origin/main by **31**). THIS session
-(2026-06-09/10): the WHOLE C7 campaign — **coverage-of-logic 89.46% → 97.85%
-(floor 88.8 → 97.2), suite 4287 → 4640, 10 NEW production bugs found+fixed
-(#4–#13), all red→green proven + cohort-verified; bugs #9–#13 = the
-keep-alive-staleness family.** NEXT = C8 (spec-coverage matrix), then C9, then
-C10 (denominator decision + final cohort + PUSH).**
+**Snapshot:** 2026-06-10 — **M0–M4 PUSHED (`origin/main` = `f5eea2c`); M5
+(FINAL milestone, Phase-9) COMPLETE + milestone-cohort-VERIFIED — every chunk
+C1..C10b architect+qa PASS. THIS session (2026-06-09/10): coverage-of-logic
+89.46% → 99.33% (floor 88.8 → 98.7), suite 4287 → 4649, 10 NEW production
+bugs found+fixed (#4–#13; #9–#13 = the keep-alive-staleness family), the
+Phase-9 spec-coverage matrix enforced, NO-STUBS + CI false positives cleared.
+38 commits staged on main awaiting the USER's `git push origin main` — see
+the header block at the top of this file. Nothing else remains.**
 
 ---
 
