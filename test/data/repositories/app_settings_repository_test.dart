@@ -56,7 +56,7 @@ void main() {
     test('round-trips a customised settings instance', () async {
       // Arrange
       final repo = newRepo();
-      final custom = AppSettings(
+      const custom = AppSettings(
         themeMode: AppThemeMode.dark,
         languageCode: 'de',
         isFirstLaunch: false,
@@ -76,8 +76,7 @@ void main() {
         sessionLogRetentionDays: 30,
         sentryEnabled: true,
         defaults: AppDefaults(
-          templates: SeedData.reminderTemplates(),
-          eventDefaults: const EventDefaults(
+          eventDefaults: EventDefaults(
             loudAlarm: LoudAlarmConfig(volume: 0.6, flashLight: false),
           ),
           defaultDistressModeId: SeedData.defaultDistressModeId,

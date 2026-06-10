@@ -110,8 +110,10 @@ final class ReminderTemplate {
   /// How the reminder is displayed to the user.
   final ReminderDisplayStyle displayStyle;
 
-  /// Whether this template comes from [AppDefaults.templates] (global)
-  /// or [ModeOverrides.localTemplates] (mode-local).
+  /// Whether this template is global (a row in the Drift
+  /// `reminder_templates` table — the single source of truth for globals)
+  /// or mode-local ([ModeOverrides.localTemplates], stored in the mode's
+  /// JSON only).
   final bool isGlobal;
 
   /// Returns a copy with the specified fields replaced.

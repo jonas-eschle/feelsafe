@@ -87,10 +87,11 @@ For reliable cross-device migration when cloud backup may fail (e.g., keystore k
 **Export Format:** Single JSON file containing:
 - Schema version (compatibility check)
 - `appSettings` — theme, language, three PIN hashes, emergencyCallNumber, alarmDndOverride, biometric / telemetry / launch-auth toggles, alarm gradual-volume settings
-- `appDefaults` — GPS logging config, stealth config, global templates, event defaults, `defaultDistressModeId`
+- `appDefaults` — GPS logging config, stealth config, event defaults, `defaultDistressModeId` (no templates here — Why: templates ride in their own top-level list below; carrying a second copy inside the settings blob would re-import divergence)
 - `userProfile` — name, phone, description (free-form text), medical fields (each `String?`)
 - `emergencyContacts` — all contacts with channels, per-contact language
 - `sessionModes` — all custom + built-in modes (regular and distress-flagged) with chain steps, distressModeId, triggers, overrides
+- `reminderTemplates` — all global templates, exported from and restored to the Drift `reminder_templates` table (the single template carrier in a backup)
 - `sessionLogs` — all session history (optional, can be excluded)
 - Optional media:
   - Audio files (fake call recordings, alarms)
@@ -148,7 +149,7 @@ Each model is persisted in one of two places: a Drift table (relational data wit
 | ReminderDisplayStyle (enum) | — | fullScreen, subtle |
 | SessionLog | Drift table `session_logs` | mode, timestamps, events, isSimulation, hadMedicalInfo |
 | SessionLogEvent | — | part of `SessionLog.events`; serialized as JSON in the parent row |
-| AppDefaults | (in `AppSettings`) | gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId |
+| AppDefaults | (in `AppSettings`) | gpsLogging, stealth, eventDefaults, defaultDistressModeId — global templates live in the `reminder_templates` table, NOT here |
 
 The former `DistressChain` model and its dedicated Drift table are gone. Distress modes are stored alongside regular modes in the `session_modes` table and discriminated via `isDistressMode = true`.
 
@@ -236,13 +237,13 @@ class ReminderTemplate {
   String? imagePath;                    // Custom image path (optional)
   String? subtitle;                     // Optional subtitle between title/body
   ReminderDisplayStyle displayStyle;    // fullScreen or subtle
-  bool isGlobal;                        // true = from AppDefaults.templates; false = mode-local (ModeOverrides.localTemplates)
+  bool isGlobal;                        // true = global (a row in the reminder_templates table); false = mode-local (ModeOverrides.localTemplates)
 }
 ```
 
 **Key fields:**
 - **isCustom:** Built-in templates (`isCustom: false`) can be disabled but not deleted. Custom templates can be deleted freely.
-- **isGlobal:** `true` = stored in `AppDefaults.templates` (available to all modes). `false` = stored in `ModeOverrides.localTemplates` for a specific mode, appended to global templates for that mode only.
+- **isGlobal:** `true` = a global template: a row in the Drift `reminder_templates` table, the single source of truth the Templates screens edit and the session pool reads (available to all modes). `false` = stored in `ModeOverrides.localTemplates` for a specific mode (inside the mode's JSON — never in the table), appended to global templates for that mode only. Why a single store for globals: the v3 dual store (table + settings JSON) diverged on the first user edit, making template edits silently inert in sessions (bug #14).
 - **keyword:** For `ConfirmationType.tapWord`, the correct word user must tap (e.g., "SAFE"). Decoy words are generated UI-side.
 - **displayStyle:** Controls how reminder appears:
   - `fullScreen` — Takes over entire screen (like a calendar event)
@@ -723,8 +724,8 @@ final class SessionMode {
 - **Unified chain:** Every step in `chainSteps` is on equal footing. The first step simply runs first; nothing labels it as "the check-in".
 - **Distress mode by id:** `distressModeId` references another `SessionMode` (with `isDistressMode = true`) by id. `null` means "inherit `AppDefaults.defaultDistressModeId`". If neither resolves, the mode blocks at session start (validation error).
 - **Disarm during distress is configurable per mode (G-014):** `allowDisarmAsDistress` (default `true`) decides whether `disarmTriggers` (GPS arrival, timer) fire when this mode runs AS a distress chain. Default `true` lets the user configure escape conditions ("if I reach safety, stop"). Setting `false` locks the chain — only chain exhaustion or app/device shutdown stops it. This supersedes the earlier "Disarm during duress: hard-coded IGNORE" invariant. **Threat-model caveat:** allowing disarm during distress means an attacker who can coerce the user into a specific location (GPS arrival) or wait out a timer can silently stop the chain. Users opting into stricter safety should set `allowDisarmAsDistress = false` on their distress modes. The default is `true` because the typical use case is the user themselves recovering from a wrong-PIN / hardware-panic mistrigger.
-- **Inheritance:** When `overrides` is null, all per-mode settings (GPS logging, stealth, templates, event defaults) are inherited from `AppDefaults`. When `overrides` is non-null, any non-null field in `ModeOverrides` replaces the corresponding `AppDefaults` value for that mode only.
-- **Template lists:** The effective reminder template list for a mode = `AppDefaults.templates` + `ModeOverrides.localTemplates` (if any). Local templates are appended, not replacing.
+- **Inheritance:** When `overrides` is null, all per-mode settings (GPS logging, stealth, event defaults) are inherited from `AppDefaults`, and the mode's template pool is simply the global templates. When `overrides` is non-null, any non-null field in `ModeOverrides` replaces the corresponding `AppDefaults` value for that mode only.
+- **Template lists:** The effective reminder template list for a mode = the global templates (Drift `reminder_templates` table) + `ModeOverrides.localTemplates` (if any). Local templates are appended, not replacing. Why the table: it is the store the Templates screens write — the pool must read the same store or user edits never reach a session (bug #14).
 - **All modes deletable:** Every mode, including Walk Mode and Date Mode, can be deleted. There are no protected built-in modes.
 - **Seeded modes:** **Walk Mode** and **Date Mode** are seeded as real `SessionMode` records on first launch. They are not a separate "template" type — they exist as ordinary editable/deletable modes.
 - **Cannot save empty:** Must have at least 1 chain step
@@ -821,7 +822,7 @@ final class AppSettings {
 - `telemetryOptOut`: retained legacy flag.
 
 **AppDefaults:**
-- `defaults`: Holds `GpsLoggingConfig`, `StealthConfig`, global `ReminderTemplate` list, `EventDefaults`, and `defaultDistressModeId`. All modes inherit from these unless they specify a `ModeOverrides`.
+- `defaults`: Holds `GpsLoggingConfig`, `StealthConfig`, `EventDefaults`, and `defaultDistressModeId`. All modes inherit from these unless they specify a `ModeOverrides`. Global reminder templates are NOT part of `AppDefaults` — they live solely in the Drift `reminder_templates` table (Why: one writable store; a JSON copy diverged from the table on first user edit — bug #14).
 
 **Schema:**
 - On mismatch: nuke all repositories and re-seed from defaults (pre-alpha policy — no migrations).
@@ -1087,7 +1088,6 @@ There is no `DistressChain` model. A distress chain is the `chainSteps` of a `Se
 final class AppDefaults {
   final GpsLoggingConfig gpsLogging;
   final StealthConfig stealth;
-  final List<ReminderTemplate> templates;       // global reminder templates
   final EventDefaults eventDefaults;
   final String? defaultDistressModeId;          // id of a SessionMode with
                                                 // isDistressMode = true; null
@@ -1097,7 +1097,7 @@ final class AppDefaults {
 }
 ```
 
-**Purpose:** Master source for configurable defaults that modes can inherit and override. Modes inherit from `AppDefaults` unless they specify a `ModeOverrides`. The `defaultDistressModeId` field is the runtime resolution target when `SessionMode.distressModeId` is null.
+**Purpose:** Master source for configurable defaults that modes can inherit and override. Modes inherit from `AppDefaults` unless they specify a `ModeOverrides`. The `defaultDistressModeId` field is the runtime resolution target when `SessionMode.distressModeId` is null. There is deliberately NO `templates` field: global reminder templates live solely in the Drift `reminder_templates` table (Why: the table is the store the Templates screens write; a second copy here diverged on first user CRUD and made edits inert in sessions — bug #14). `fromJson` ignores a legacy `templates` key from old-shape backups (lenient, matching the rest of `fromJson`).
 
 **Accessible from:** Settings → individual subcategory screens (`/settings/gps-logging`, `/settings/event-defaults`, `/settings/reminder-templates`, `/settings/stealth`). The Default Distress Mode selector lives under Settings → Distress modes (`/distress-modes`), alongside the distress-mode list.
 
@@ -1109,12 +1109,12 @@ final class AppDefaults {
 class ModeOverrides {
   GpsLoggingConfig? gpsLogging;     // null = inherit from AppDefaults
   StealthConfig? stealth;           // null = inherit from AppDefaults
-  List<ReminderTemplate>? localTemplates; // appended to AppDefaults.templates (not replacing)
+  List<ReminderTemplate>? localTemplates; // appended to the global templates (not replacing)
   EventDefaults? eventDefaults;     // null = inherit from AppDefaults
 }
 ```
 
-**Purpose:** Per-mode optional overrides. When `ModeOverrides` is set on a mode, any non-null field replaces the corresponding `AppDefaults` value for that mode only. `localTemplates` are APPENDED to global templates — the effective template list = `AppDefaults.templates` + `localTemplates`.
+**Purpose:** Per-mode optional overrides. When `ModeOverrides` is set on a mode, any non-null field replaces the corresponding `AppDefaults` value for that mode only. `localTemplates` are APPENDED to global templates — the effective template list = the global templates (Drift `reminder_templates` table) + `localTemplates`. Local templates are stored only inside the mode's JSON; they never enter the `reminder_templates` table (Why: the table holds exactly the global set, so the session pool can read it unfiltered).
 
 **Note:** the per-mode distress selection is NOT in `ModeOverrides` — it lives directly on `SessionMode.distressModeId`.
 

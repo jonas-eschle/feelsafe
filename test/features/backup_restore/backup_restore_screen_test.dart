@@ -45,12 +45,16 @@ import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/enums/app_theme_mode.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
+import 'package:guardianangela/features/reminder_templates/reminder_templates_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/app_state_providers.dart';
@@ -143,6 +147,32 @@ class _SettingsRestoringBackupService extends SimulationBackupService {
         themeMode: AppThemeMode.dark,
         languageCode: 'de',
         isFirstLaunch: false,
+      ),
+    );
+  }
+}
+
+/// [BackupServiceProtocol] whose [importFromJson] writes a reminder
+/// template row into [db] — mirrors the real service, which wipes and
+/// re-inserts `reminder_templates` during an import (bug #14).
+class _TemplateWritingBackupService extends SimulationBackupService {
+  _TemplateWritingBackupService(this.db);
+
+  final GuardianAngelaDatabase db;
+
+  @override
+  Future<void> importFromJson(String json) async {
+    await super.importFromJson(json);
+    await db.reminderTemplatesDao.upsert(
+      ReminderTemplate(
+        id: 'tpl-imported',
+        name: 'Imported',
+        title: 'Imported title',
+        body: 'Imported body',
+        confirmationType: ConfirmationType.dismiss,
+        isCustom: true,
+        displayStyle: ReminderDisplayStyle.subtle,
+        isGlobal: true,
       ),
     );
   }
@@ -629,6 +659,52 @@ void main() {
       await tester.pumpAndSettle();
       check(fake.importCalls).isNotEmpty();
       check(fake.importCalls.first).equals(_validJson);
+    });
+
+    testWidgets('successful import invalidates the templates list controller '
+        'so it re-reads the restored DAO rows (bug #14)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+      addTearDown(db.close);
+      final fake = _TemplateWritingBackupService(db);
+      final original = FileSelectorPlatform.instance;
+      FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+      addTearDown(() => FileSelectorPlatform.instance = original);
+      await pumpScreen(
+        tester,
+        const BackupRestoreScreen(),
+        overrides: <Override>[
+          ..._backupOverride(fake),
+          databaseProvider.overrideWith((_) async => db),
+        ],
+      );
+      // Build the list controller BEFORE the import so it caches the
+      // pre-import (empty) DAO state — the exact staleness setup.
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(BackupRestoreScreen)),
+      );
+      final before = await container.read(
+        reminderTemplatesControllerProvider.future,
+      );
+      check(before.templates).isEmpty();
+
+      await tester.tap(
+        find.ancestor(
+          of: find.text(l10n.backupImportButton),
+          matching: find.byType(OutlinedButton),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+
+      // The invalidate must force a fresh DAO read exposing the import.
+      final after = await container.read(
+        reminderTemplatesControllerProvider.future,
+      );
+      check(after.templates.map((t) => t.id)).contains('tpl-imported');
     });
 
     testWidgets('successful import shows success snackbar', (

@@ -71,7 +71,7 @@ class EventSpecificConfig extends StatelessWidget {
   final VoidCallback? onManageContacts;
 
   /// The reminder-template pool a `disguisedReminder` step draws from at
-  /// runtime — global `AppDefaults.templates` plus the mode's local
+  /// runtime — the global templates (Drift table) plus the mode's local
   /// templates, the exact merge `startSession` hands the selector. Non-null
   /// only in the Mode Editor context, where it backs the per-step
   /// `templateIds` eligibility picker (spec 04:1635). Null in the Event

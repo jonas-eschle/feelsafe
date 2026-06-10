@@ -1099,6 +1099,8 @@ class BackupService {
 }
 ```
 
+The top-level `templates` list (exported from the Drift `reminder_templates` table) is the ONLY template carrier — the `settings` blob carries no templates (Why: double-serializing them let a diverged device propagate divergence through backups, bug #14).
+
 When `includeSessionLogs` is `false`, the `sessionLogs` key is omitted entirely. This produces a smaller backup with no location data, suitable for sharing settings without privacy concerns.
 
 When `includeMedia` is `false`, audio recordings and profile photos are omitted from the export.

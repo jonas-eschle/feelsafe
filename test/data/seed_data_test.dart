@@ -308,9 +308,12 @@ void main() {
       ).equals(SeedData.defaultDistressModeId);
     });
 
-    test('embeds all 8 reminder templates', () {
+    test('carries NO templates — the Drift DAO seeded by seedInto is the '
+        'single template store (bug #14)', () {
       final settings = SeedData.defaultAppSettings();
-      check(settings.defaults.templates.length).equals(8);
+      // The JSON settings blob must not duplicate the template store; a
+      // second copy diverges on the first user edit.
+      check(settings.defaults.toJson().containsKey('templates')).isFalse();
     });
 
     test('accepts an override for the distress mode id', () {

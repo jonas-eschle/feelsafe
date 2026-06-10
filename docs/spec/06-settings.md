@@ -565,10 +565,11 @@ See `04-screens-navigation.md` for full screen specs of `DistressModesScreen` an
 
 ### Reminder Templates
 
-Global `AppDefaults.templates` are managed on a dedicated screen at
-`/settings/reminder-templates` (`TemplatesScreen`). The Event Defaults
-screen has no templates section — that screen is strictly per-step-type
-timing + config defaults.
+Global reminder templates (the Drift `reminder_templates` table — the
+single source of truth the session pool also reads, bug #14) are managed
+on a dedicated screen at `/settings/reminder-templates`
+(`TemplatesScreen`). The Event Defaults screen has no templates section —
+that screen is strictly per-step-type timing + config defaults.
 
 Access:
 - Directly from **Settings → Reminder Templates** (top-level entry).
@@ -884,7 +885,9 @@ All settings stored in encrypted local storage (Drift database for relational ta
 
 **Distress modes:** Stored alongside regular modes in `modes.json` and discriminated by `SessionMode.isDistressMode = true`. The default distress mode id is on `AppDefaults.defaultDistressModeId`. Managed via Settings → Session → Distress modes (`DistressModesScreen` at `/distress-modes`); each is edited via `ModeEditorScreen(isDistress: true)` at `/distress-modes/edit?id=...`.
 
-**Reminder templates:** Stored in `AppDefaults.templates` (global) and
+**Reminder templates:** Stored in the Drift `reminder_templates` table
+(global — the single source of truth; Why: a JSON copy in `AppDefaults`
+diverged from the table on first user edit, bug #14) and
 `SessionMode.overrides.localTemplates` (mode-local, appended to global).
 
 ---

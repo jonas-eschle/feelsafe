@@ -42,8 +42,10 @@ class ReminderTemplates extends Table {
   /// `ReminderDisplayStyle.name`.
   TextColumn get displayStyle => text()();
 
-  /// True iff template comes from `AppDefaults.templates` (global) vs.
-  /// `ModeOverrides.localTemplates` (mode-local).
+  /// True iff the template is global. Every row in this table is global —
+  /// mode-local templates (`ModeOverrides.localTemplates`) live in the
+  /// mode's JSON and never enter this table; the flag distinguishes the two
+  /// kinds when they mix in an in-memory pool.
   BoolColumn get isGlobal => boolean()();
 
   @override

@@ -88,7 +88,7 @@ Wait gracePeriod for user to confirm →
 
 **Template Selection (Extra-8, C4):**
 
-The reminder strategy selects a template from the merged pool of templates available in the session context (`SessionContext.reminderTemplates`). The pool is the merge of global `AppDefaults` templates and any mode-local templates.
+The reminder strategy selects a template from the merged pool of templates available in the session context (`SessionContext.reminderTemplates`). The pool is the merge of the global templates — read at session start from the Drift `reminder_templates` table, the single source of truth the Templates screens write (Why: a second template store would silently diverge from the user's edits on first CRUD — bug #14) — and any mode-local templates (`ModeOverrides.localTemplates`), in that order (globals first, locals appended).
 
 Selection algorithm:
 1. If `templateIds` is non-empty, filter pool to only those IDs.

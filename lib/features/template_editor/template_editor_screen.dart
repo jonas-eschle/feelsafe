@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:guardianangela/domain/models/reminder_template.dart';
+import 'package:guardianangela/features/reminder_templates/reminder_templates_controller.dart';
 import 'package:guardianangela/features/template_editor/reminder_template_form.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -11,9 +12,10 @@ import 'package:guardianangela/services/service_providers.dart';
 /// Create / edit a global reminder template with live preview and a Cancel /
 /// Save action pair. See spec 04 §Template Editor (lines 2180–2254).
 ///
-/// Templates saved here are global (`isGlobal: true`, stored in
-/// `AppDefaults.templates`). The mode editor reuses the same
-/// [ReminderTemplateForm] body for mode-local templates via a separate flow.
+/// Templates saved here are global (`isGlobal: true`, stored in the Drift
+/// `reminder_templates` table — the single source of truth for globals). The
+/// mode editor reuses the same [ReminderTemplateForm] body for mode-local
+/// templates via a separate flow.
 class TemplateEditorScreen extends ConsumerStatefulWidget {
   /// Creates a [TemplateEditorScreen].
   const TemplateEditorScreen({super.key, this.templateId});
@@ -93,6 +95,10 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
     }
     final db = await ref.read(databaseProvider.future);
     await db.reminderTemplatesDao.upsert(t);
+    // The templates LIST stays mounted beneath this editor and caches its
+    // own DAO read; without this invalidate the saved name would not appear
+    // until app restart (bug #14 staleness family).
+    ref.invalidate(reminderTemplatesControllerProvider);
     if (!mounted) return;
     _dirty = false;
     context.pop();

@@ -1195,14 +1195,19 @@ context, alternatives, rationale, implications, and references.
 - **Decision:** Every `ModeOverrides` field is nullable; null = inherit.
 - **References:** spec 03; TEST-042.
 
-#### D-DATA-4: Templates = global (AppDefaults) + mode-local (appended)
+#### D-DATA-4: Templates = global (Drift table) + mode-local (appended)
 
-- **Status:** RESOLVED (C7)
-- **Decision:** Reminder templates have two scopes: global (in
-  `AppDefaults.templates`, available to every mode) and mode-local
-  (in `ModeOverrides.localTemplates`, appended to globals). The existing
-  `ReminderTemplate.isGlobal` flag distinguishes them.
-- **References:** Round-2 C7.
+- **Status:** RESOLVED (C7); AMENDED (bug #14, M6-P3c)
+- **Decision:** Reminder templates have two scopes: global (available to
+  every mode) and mode-local (in `ModeOverrides.localTemplates`, appended
+  to globals). The existing `ReminderTemplate.isGlobal` flag distinguishes
+  them. *Amendment (bug #14):* globals originally lived in
+  `AppDefaults.templates`; that JSON store and the Drift
+  `reminder_templates` table both seeded the 8 built-ins and diverged on
+  the first user edit, making template edits silently inert in sessions.
+  The Drift table is now the single source of truth for globals;
+  `AppDefaults` carries no templates.
+- **References:** Round-2 C7; bug #14 ruling (option A).
 
 #### D-DATA-5: SessionLog.hadMedicalInfo per-log flag
 

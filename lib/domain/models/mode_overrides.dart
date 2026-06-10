@@ -7,9 +7,9 @@ import 'package:guardianangela/domain/models/stealth_config.dart';
 ///
 /// When set on a [SessionMode], any non-null field replaces the
 /// corresponding [AppDefaults] value for that mode only.
-/// [localTemplates] are APPENDED to [AppDefaults.templates] — the
-/// effective template list = global templates + local templates.
-/// See spec 03 §ModeOverrides.
+/// [localTemplates] are APPENDED to the global templates (the Drift
+/// `reminder_templates` table) — the effective template list = global
+/// templates + local templates. See spec 03 §ModeOverrides.
 final class ModeOverrides {
   /// Creates a [ModeOverrides] instance.
   ///
@@ -43,7 +43,7 @@ final class ModeOverrides {
   /// Per-mode stealth config. Null = inherit [AppDefaults.stealth].
   final StealthConfig? stealth;
 
-  /// Templates appended to [AppDefaults.templates] for this mode only.
+  /// Templates appended to the global templates for this mode only.
   final List<ReminderTemplate>? localTemplates;
 
   /// Per-mode event defaults. Null = inherit [AppDefaults.eventDefaults].

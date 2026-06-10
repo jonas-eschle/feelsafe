@@ -17,9 +17,12 @@ import 'package:guardianangela/data/repositories/contacts_repository.dart';
 import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/session_log.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/models/user_profile.dart';
@@ -139,6 +142,19 @@ SessionMode _mode({String id = 'mode1', String name = 'Walk'}) => SessionMode(
     ),
   ],
 );
+
+/// A minimal valid global [ReminderTemplate] for tests.
+ReminderTemplate _template({String id = 'tpl-1', String name = 'Custom'}) =>
+    ReminderTemplate(
+      id: id,
+      name: name,
+      title: 'Yoga class',
+      body: 'Mat session at 7',
+      confirmationType: ConfirmationType.dismiss,
+      isCustom: true,
+      displayStyle: ReminderDisplayStyle.subtle,
+      isGlobal: true,
+    );
 
 // ---------------------------------------------------------------------------
 // Tests
@@ -377,6 +393,61 @@ void main() {
       final restored = await env.userProfile.load();
       check(restored.name).equals('Angela');
       check(restored.age).equals(30);
+    });
+
+    test('exported settings blob carries NO templates — payload[templates] '
+        '(the Drift table) is the only template carrier (bug #14)', () async {
+      final env = await _make();
+      addTearDown(() => _cleanup(env));
+
+      await env.db.reminderTemplatesDao.upsert(_template());
+      final payload =
+          jsonDecode(await env.service.exportToJson()) as Map<String, dynamic>;
+
+      final settings = payload['settings'] as Map<String, dynamic>;
+      final defaults = settings['defaults'] as Map<String, dynamic>;
+      check(defaults.containsKey('templates')).isFalse();
+      final templates = payload['templates'] as List<dynamic>;
+      check(templates.length).equals(1);
+      check((templates.single as Map<String, dynamic>)['id']).equals('tpl-1');
+    });
+
+    test('OLD-shape backup (settings blob still containing templates) '
+        'imports cleanly: the legacy key is IGNORED (lenient, matching '
+        'AppDefaults.fromJson style) and the DAO is restored from '
+        'payload[templates] only', () async {
+      final env = await _make();
+      addTearDown(() => _cleanup(env));
+
+      final json = jsonEncode(<String, dynamic>{
+        '_schemaVersion': 1,
+        'contacts': <dynamic>[],
+        'modes': <dynamic>[],
+        'templates': <dynamic>[_template().toJson()],
+        'settings': <String, dynamic>{
+          'emergencyCallNumber': '999',
+          'defaults': <String, dynamic>{
+            // The pre-#14 shape: a second template copy inside the blob.
+            'templates': <dynamic>[
+              _template(id: 'tpl-legacy', name: 'Legacy Only').toJson(),
+            ],
+            'defaultDistressModeId': 'd-1',
+          },
+        },
+        'profile': const UserProfile().toJson(),
+      });
+
+      await env.service.importFromJson(json);
+
+      // DAO restored from the top-level list only.
+      final daoTemplates = await env.db.reminderTemplatesDao.getAll();
+      check(daoTemplates.length).equals(1);
+      check(daoTemplates.single.id).equals('tpl-1');
+      // The settings blob parsed; its legacy templates copy went nowhere.
+      final settings = await env.appSettings.load();
+      check(settings.emergencyCallNumber).equals('999');
+      check(settings.defaults.defaultDistressModeId).equals('d-1');
+      check(settings.defaults.toJson().containsKey('templates')).isFalse();
     });
   });
 

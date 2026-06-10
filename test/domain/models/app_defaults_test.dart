@@ -2,32 +2,19 @@
 //
 // Verifies the default values per docs/spec/03-data-models.md
 // §AppDefaults, JSON round-trip stability, copyWith semantics, and
-// the equality / hashCode contract (including list-content
-// comparison for [templates]).
+// the equality / hashCode contract. Since bug #14 the model carries NO
+// reminder templates — the Drift `reminder_templates` table is the single
+// source of truth for globals — and `fromJson` must ignore the legacy
+// `templates` key found in old-shape backups.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:guardianangela/domain/enums/confirmation_type.dart';
-import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/enums/stealth_icon_preset.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
-import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
-
-ReminderTemplate _template({String id = 'tpl-1', bool isGlobal = true}) =>
-    ReminderTemplate(
-      id: id,
-      name: 'Calendar',
-      title: 'Calendar Event',
-      body: 'Meeting with Alex at 3 PM',
-      confirmationType: ConfirmationType.tapButton,
-      isCustom: false,
-      displayStyle: ReminderDisplayStyle.fullScreen,
-      isGlobal: isGlobal,
-    );
 
 void main() {
   group('AppDefaults', () {
@@ -50,12 +37,6 @@ void main() {
 
         check(defaults.stealth).equals(const StealthConfig());
         check(defaults.stealth.enabled).isFalse();
-      });
-
-      test('templates defaults to an empty list', () {
-        const defaults = AppDefaults();
-
-        check(defaults.templates).isEmpty();
       });
 
       test('eventDefaults defaults to a non-null EventDefaults instance', () {
@@ -104,23 +85,34 @@ void main() {
         check(json.containsKey('defaultDistressModeId')).isFalse();
       });
 
-      test('templates list round-trips contents in order', () {
-        // Arrange
-        final templates = [
-          _template(id: 't-1'),
-          _template(id: 't-2'),
-          _template(id: 't-3'),
-        ];
-        final defaults = AppDefaults(templates: templates);
+      test('fromJson IGNORES a legacy templates key (old-shape backup '
+          'settings blob) — lenient per the existing fromJson style; the '
+          'Drift DAO restored from payload[templates] is the only template '
+          'carrier (bug #14)', () {
+        // Arrange — the settings blob an old-shape backup carries.
+        final Map<String, dynamic> oldShape = {
+          'templates': <dynamic>[
+            {
+              'id': 'tpl-legacy',
+              'name': 'Calendar',
+              'title': 'Calendar Event',
+              'body': 'Meeting with Alex at 3 PM',
+              'confirmationType': 'tapButton',
+              'isCustom': false,
+              'displayStyle': 'fullScreen',
+              'isGlobal': true,
+            },
+          ],
+          'defaultDistressModeId': 'd-1',
+        };
 
         // Act
-        final restored = AppDefaults.fromJson(defaults.toJson());
+        final restored = AppDefaults.fromJson(oldShape);
 
-        // Assert
-        check(restored.templates.length).equals(3);
-        check(restored.templates[0].id).equals('t-1');
-        check(restored.templates[1].id).equals('t-2');
-        check(restored.templates[2].id).equals('t-3');
+        // Assert — known keys parse; the legacy key is dropped silently and
+        // never re-emitted.
+        check(restored.defaultDistressModeId).equals('d-1');
+        check(restored.toJson().containsKey('templates')).isFalse();
       });
 
       test('non-default GpsLoggingConfig round-trips through JSON', () {
@@ -162,8 +154,8 @@ void main() {
         check(restored).equals(const AppDefaults());
       });
 
-      test('toJson always emits templates as an array (empty when no '
-          'templates)', () {
+      test('toJson never emits a templates key — the settings blob must not '
+          'duplicate the DAO template store (bug #14)', () {
         // Arrange
         const defaults = AppDefaults();
 
@@ -171,8 +163,7 @@ void main() {
         final json = defaults.toJson();
 
         // Assert
-        check(json['templates']).isA<List<dynamic>>();
-        check(json['templates'] as List).isEmpty();
+        check(json.containsKey('templates')).isFalse();
       });
     });
 
@@ -202,19 +193,6 @@ void main() {
         final copy = original.copyWith(stealth: newStealth);
 
         check(copy.stealth).equals(newStealth);
-      });
-
-      test('copyWith can replace templates', () {
-        // Arrange
-        const original = AppDefaults();
-        final templates = [_template()];
-
-        // Act
-        final copy = original.copyWith(templates: templates);
-
-        // Assert
-        check(copy.templates.length).equals(1);
-        check(copy.templates[0].id).equals('tpl-1');
       });
 
       test('copyWith can replace eventDefaults', () {
@@ -286,28 +264,6 @@ void main() {
         const b = AppDefaults(stealth: StealthConfig(enabled: true));
 
         check(a == b).isFalse();
-      });
-
-      test('inequality on differing templates length', () {
-        final a = AppDefaults(templates: [_template(id: 'a-1')]);
-        const b = AppDefaults();
-
-        check(a == b).isFalse();
-      });
-
-      test('inequality on differing template content at same index', () {
-        final a = AppDefaults(templates: [_template(id: 'one')]);
-        final b = AppDefaults(templates: [_template(id: 'two')]);
-
-        check(a == b).isFalse();
-      });
-
-      test('equality on same templates contents and same order', () {
-        final a = AppDefaults(templates: [_template(id: 'x')]);
-        final b = AppDefaults(templates: [_template(id: 'x')]);
-
-        check(a).equals(b);
-        check(a.hashCode).equals(b.hashCode);
       });
 
       test('hashCode is stable across calls', () {

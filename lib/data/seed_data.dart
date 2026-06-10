@@ -346,16 +346,10 @@ final class SeedData {
   static AppSettings defaultAppSettings({
     String seedDistressModeId = defaultDistressModeId,
     String emergencyCallNumber = '112',
-  }) {
-    final templates = reminderTemplates();
-    return AppSettings(
-      emergencyCallNumber: emergencyCallNumber,
-      defaults: AppDefaults(
-        templates: templates,
-        defaultDistressModeId: seedDistressModeId,
-      ),
-    );
-  }
+  }) => AppSettings(
+    emergencyCallNumber: emergencyCallNumber,
+    defaults: AppDefaults(defaultDistressModeId: seedDistressModeId),
+  );
 
   /// Default empty [UserProfile].
   static UserProfile defaultUserProfile() => const UserProfile();

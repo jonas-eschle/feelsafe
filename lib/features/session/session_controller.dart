@@ -637,8 +637,14 @@ class SessionController extends AsyncNotifier<SessionState>
     final profile = await ref.read(userProfileRepositoryProvider).load();
     // Merge global templates with this mode's local templates — the effective
     // pool a disguisedReminder draws from (spec 02:91, mode_overrides.dart:10).
+    // Globals come from the Drift `reminder_templates` table, the single
+    // source of truth the Templates screens write (bug #14); every row in
+    // that table is global — mode-local templates live only in the mode's
+    // overrides JSON, so no isGlobal filter is needed.
+    final db = await ref.read(databaseProvider.future);
+    final globalTemplates = await db.reminderTemplatesDao.getAll();
     final templates = <ReminderTemplate>[
-      ...settings.defaults.templates,
+      ...globalTemplates,
       ...?mode.overrides?.localTemplates,
     ];
     _reminderTemplatePool = templates;

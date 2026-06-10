@@ -1,6 +1,5 @@
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
-import 'package:guardianangela/domain/models/reminder_template.dart';
 import 'package:guardianangela/domain/models/stealth_config.dart';
 
 /// Master source for configurable defaults that all modes inherit.
@@ -9,12 +8,16 @@ import 'package:guardianangela/domain/models/stealth_config.dart';
 /// they specify a [ModeOverrides]. The [defaultDistressModeId] is the
 /// runtime resolution target when [SessionMode.distressModeId] is null.
 /// See spec 03 §AppDefaults.
+///
+/// Global reminder templates are NOT carried here — the Drift
+/// `reminder_templates` table is their single source of truth (bug #14).
+/// Deserialisation is lenient: unknown keys (including a legacy `templates`
+/// key from an old-shape backup) are ignored.
 final class AppDefaults {
   /// Creates an [AppDefaults] instance.
   const AppDefaults({
     this.gpsLogging = const GpsLoggingConfig(),
     this.stealth = const StealthConfig(),
-    this.templates = const [],
     this.eventDefaults = const EventDefaults(),
     this.defaultDistressModeId,
   });
@@ -27,11 +30,6 @@ final class AppDefaults {
     stealth: json['stealth'] != null
         ? StealthConfig.fromJson(json['stealth'] as Map<String, dynamic>)
         : const StealthConfig(),
-    templates:
-        (json['templates'] as List<dynamic>?)
-            ?.map((e) => ReminderTemplate.fromJson(e as Map<String, dynamic>))
-            .toList() ??
-        const [],
     eventDefaults: json['eventDefaults'] != null
         ? EventDefaults.fromJson(json['eventDefaults'] as Map<String, dynamic>)
         : const EventDefaults(),
@@ -43,11 +41,6 @@ final class AppDefaults {
 
   /// Global stealth configuration.
   final StealthConfig stealth;
-
-  /// Global reminder templates (built-in + user-created global templates).
-  ///
-  /// Seeded with 8 built-in templates on first launch.
-  final List<ReminderTemplate> templates;
 
   /// Global per-step-type default configurations.
   final EventDefaults eventDefaults;
@@ -61,13 +54,11 @@ final class AppDefaults {
   AppDefaults copyWith({
     GpsLoggingConfig? gpsLogging,
     StealthConfig? stealth,
-    List<ReminderTemplate>? templates,
     EventDefaults? eventDefaults,
     String? defaultDistressModeId,
   }) => AppDefaults(
     gpsLogging: gpsLogging ?? this.gpsLogging,
     stealth: stealth ?? this.stealth,
-    templates: templates ?? this.templates,
     eventDefaults: eventDefaults ?? this.eventDefaults,
     defaultDistressModeId: defaultDistressModeId ?? this.defaultDistressModeId,
   );
@@ -76,40 +67,21 @@ final class AppDefaults {
   Map<String, dynamic> toJson() => {
     'gpsLogging': gpsLogging.toJson(),
     'stealth': stealth.toJson(),
-    'templates': templates.map((t) => t.toJson()).toList(),
     'eventDefaults': eventDefaults.toJson(),
     if (defaultDistressModeId != null)
       'defaultDistressModeId': defaultDistressModeId,
   };
 
   @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) {
-      return true;
-    }
-    if (other is! AppDefaults) {
-      return false;
-    }
-    if (templates.length != other.templates.length) {
-      return false;
-    }
-    for (var i = 0; i < templates.length; i++) {
-      if (templates[i] != other.templates[i]) {
-        return false;
-      }
-    }
-    return gpsLogging == other.gpsLogging &&
-        stealth == other.stealth &&
-        eventDefaults == other.eventDefaults &&
-        defaultDistressModeId == other.defaultDistressModeId;
-  }
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is AppDefaults &&
+          gpsLogging == other.gpsLogging &&
+          stealth == other.stealth &&
+          eventDefaults == other.eventDefaults &&
+          defaultDistressModeId == other.defaultDistressModeId);
 
   @override
-  int get hashCode => Object.hash(
-    gpsLogging,
-    stealth,
-    Object.hashAll(templates),
-    eventDefaults,
-    defaultDistressModeId,
-  );
+  int get hashCode =>
+      Object.hash(gpsLogging, stealth, eventDefaults, defaultDistressModeId);
 }

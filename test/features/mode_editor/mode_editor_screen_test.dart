@@ -33,7 +33,6 @@ import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
-import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
@@ -80,18 +79,6 @@ ReminderTemplate _reminderTemplate(String id, String name) => ReminderTemplate(
   displayStyle: ReminderDisplayStyle.subtle,
   isGlobal: true,
 );
-
-/// Settings whose defaults carry ONE global reminder template — the global
-/// half of the runtime template pool (`startSession` merges
-/// `settings.defaults.templates` with `mode.overrides?.localTemplates`).
-class _GlobalTemplateSettingsRepository extends _FakeAppSettingsRepository {
-  @override
-  Future<AppSettings> load() async => AppSettings(
-    defaults: AppDefaults(
-      templates: <ReminderTemplate>[_reminderTemplate('tpl_g', 'Global Tpl')],
-    ),
-  );
-}
 
 /// Opens an empty in-memory database (no seed data).
 GuardianAngelaDatabase _emptyDb() =>
@@ -1577,6 +1564,10 @@ void main() {
         final l10n = await loadL10n(const Locale('en'));
         final db = _emptyDb();
         addTearDown(db.close);
+        // The global half of the pool lives in the Drift table (bug #14).
+        await db.reminderTemplatesDao.upsert(
+          _reminderTemplate('tpl_g', 'Global Tpl'),
+        );
         await _seedMode(
           db,
           SessionMode(
@@ -1595,17 +1586,12 @@ void main() {
         await _pumpWithRouter(
           tester,
           const ModeEditorScreen(modeId: 'm1', isDistress: false),
-          <Override>[
-            databaseProvider.overrideWith((_) async => db),
-            appSettingsRepositoryProvider.overrideWithValue(
-              _GlobalTemplateSettingsRepository(),
-            ),
-          ],
+          _overrides(db),
         );
         await _expandStep(tester, l10n.chainStepNameDisguisedReminder);
 
         // BOTH halves of the runtime pool are offered: `startSession`
-        // merges `settings.defaults.templates` with
+        // merges the DAO's global templates with
         // `mode.overrides?.localTemplates`, and the picker must offer the
         // exact pool that merge produces.
         final Finder globalChip = find.widgetWithText(FilterChip, 'Global Tpl');

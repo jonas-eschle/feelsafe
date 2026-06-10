@@ -113,8 +113,9 @@ class ReminderTemplateFormState extends State<ReminderTemplateForm> {
   /// the required name/title/body are blank.
   ///
   /// Reuses [existing]'s id when set; otherwise mints a fresh UUID. [isGlobal]
-  /// distinguishes a global template (stored in `AppDefaults.templates`) from
-  /// a mode-local one (staged into `ModeOverrides.localTemplates`).
+  /// distinguishes a global template (a row in the Drift `reminder_templates`
+  /// table) from a mode-local one (staged into
+  /// `ModeOverrides.localTemplates`).
   ReminderTemplate? buildTemplate({
     required ReminderTemplate? existing,
     required bool isGlobal,

@@ -71,6 +71,9 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final contacts = await db.contactsDao.getAll();
     final distressModes = await db.sessionModesDao.getDistressModes();
+    // Global templates come from the Drift table — the store the Templates
+    // screens write and the session pool reads (bug #14).
+    final globalTemplates = await db.reminderTemplatesDao.getAll();
     final service = ModeEditorService(db);
     final mode = widget.modeId == null
         ? service.blankMode(isDistress: widget.isDistress)
@@ -81,7 +84,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
       _draft = mode;
       _defaults = settings.defaults.eventDefaults;
       _contacts = contacts;
-      _globalTemplates = settings.defaults.templates;
+      _globalTemplates = globalTemplates;
       // A distress mode never references itself in the picker.
       _distressModes = <SessionMode>[
         for (final SessionMode m in distressModes)
@@ -96,8 +99,19 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
 
   void _manageDistressModes() => context.pushNamed(RouteNames.distressModes);
 
-  void _manageTemplates() =>
-      context.pushNamed(RouteNames.settingsReminderTemplates);
+  /// Opens the Templates screen and refreshes the picker pool on return.
+  ///
+  /// The push happens FROM INSIDE the open editor; any CRUD performed on the
+  /// Templates screens writes the Drift table while this screen stays mounted
+  /// beneath, so the load-once [_globalTemplates] must be re-read when the
+  /// route pops (bug #14 staleness family).
+  Future<void> _manageTemplates() async {
+    await context.pushNamed(RouteNames.settingsReminderTemplates);
+    final db = await ref.read(databaseProvider.future);
+    final globalTemplates = await db.reminderTemplatesDao.getAll();
+    if (!mounted) return;
+    setState(() => _globalTemplates = globalTemplates);
+  }
 
   /// Stages a whole-draft mutation (used by the Safety Options section).
   void _updateDraft(SessionMode updated) {
@@ -366,10 +380,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                             onManageContacts: _manageContacts,
                             // The pool a disguisedReminder filters at runtime
                             // (session_controller startSession): global
-                            // AppDefaults.templates + this mode's local
-                            // templates. Built from the LIVE draft so local
-                            // templates added below in Safety Options appear
-                            // in the picker immediately.
+                            // templates from the Drift table + this mode's
+                            // local templates. Built from the LIVE draft so
+                            // local templates added below in Safety Options
+                            // appear in the picker immediately.
                             templates: <ReminderTemplate>[
                               ..._globalTemplates,
                               ...?draft.overrides?.localTemplates,

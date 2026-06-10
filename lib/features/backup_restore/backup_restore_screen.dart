@@ -9,6 +9,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
+import 'package:guardianangela/features/reminder_templates/reminder_templates_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/app_state_providers.dart';
@@ -127,6 +128,10 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       // the screen layer — BackupService must remain Riverpod-free.
       ref.invalidate(homeControllerProvider);
       ref.invalidate(modesControllerProvider);
+      // importFromJson also wiped + re-inserted reminder_templates; the
+      // templates list controller caches its DAO read the same way (bug #14
+      // staleness family).
+      ref.invalidate(reminderTemplatesControllerProvider);
       // importFromJson also overwrote the AppSettings singleton, which may
       // carry a different themeMode / languageCode; the root MaterialApp
       // reads both from the keep-alive appSettingsLiveProvider, so without
