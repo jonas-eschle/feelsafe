@@ -81,6 +81,15 @@ void main() {
         check(cfg.includeInSms).isFalse();
         check(cfg.historyRetentionDays).equals(7);
       });
+
+      test('off is the defaults with only enabled switched to false', () {
+        // Assert — flipping enabled back on must yield the all-defaults
+        // config, proving no other field deviates.
+        check(GpsLoggingConfig.off.enabled).isFalse();
+        check(
+          GpsLoggingConfig.off.copyWith(enabled: true),
+        ).equals(const GpsLoggingConfig());
+      });
     });
 
     group('JSON round-trip', () {
@@ -348,7 +357,7 @@ void main() {
       test('different enabled breaks equality', () {
         // Arrange
         const a = GpsLoggingConfig();
-        const b = GpsLoggingConfig(enabled: false);
+        const b = GpsLoggingConfig.off;
 
         // Act + Assert
         check(a == b).isFalse();

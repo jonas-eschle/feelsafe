@@ -281,9 +281,7 @@ void main() {
           trashRetentionDays: 14,
           telemetryOptOut: true,
           sentryEnabled: true,
-          defaults: const AppDefaults(
-            gpsLogging: GpsLoggingConfig(enabled: false),
-          ),
+          defaults: const AppDefaults(gpsLogging: GpsLoggingConfig.off),
         );
 
         // Act

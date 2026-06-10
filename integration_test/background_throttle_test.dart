@@ -99,7 +99,7 @@ class _LifecycleRecorder with WidgetsBindingObserver {
       (s) => s == AppLifecycleState.paused || s == AppLifecycleState.hidden,
     );
     if (firstBg < 0) return false;
-    return states.skip(firstBg).contains(AppLifecycleState.resumed);
+    return states.indexOf(AppLifecycleState.resumed, firstBg) >= 0;
   }
 }
 

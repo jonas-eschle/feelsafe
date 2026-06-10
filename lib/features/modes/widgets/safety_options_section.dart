@@ -603,7 +603,7 @@ class _GpsLoggingTriState extends StatelessWidget {
         (mode.overrides?.gpsLogging ?? const GpsLoggingConfig()).copyWith(
           enabled: true,
         ),
-      _TriState.off => const GpsLoggingConfig(enabled: false),
+      _TriState.off => GpsLoggingConfig.off,
     };
     onChanged(_modeWithGpsLogging(mode, next));
   }

@@ -818,8 +818,9 @@ class SessionController extends AsyncNotifier<SessionState>
     // first, else the global default. Skipped in simulation — geolocator is
     // real hardware. The same locationServiceProvider instance backs
     // _eventServices.location, so tracked breadcrumbs feed the {location}
-    // placeholder in the smsContact / callEmergency strategies. The configured
-    // interval is honoured; accuracy stays at the service default (high).
+    // template token in the smsContact / callEmergency strategies. The
+    // configured interval is honoured; accuracy stays at the service
+    // default (high).
     if (!simulate) {
       final gpsLogging =
           mode.overrides?.gpsLogging ?? settings.defaults.gpsLogging;

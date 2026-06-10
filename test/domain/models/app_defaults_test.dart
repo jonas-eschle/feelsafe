@@ -187,7 +187,7 @@ void main() {
 
       test('copyWith can replace gpsLogging', () {
         const original = AppDefaults();
-        const newGps = GpsLoggingConfig(enabled: false);
+        const newGps = GpsLoggingConfig.off;
 
         final copy = original.copyWith(gpsLogging: newGps);
 
@@ -276,7 +276,7 @@ void main() {
 
       test('inequality on differing gpsLogging', () {
         const a = AppDefaults();
-        const b = AppDefaults(gpsLogging: GpsLoggingConfig(enabled: false));
+        const b = AppDefaults(gpsLogging: GpsLoggingConfig.off);
 
         check(a == b).isFalse();
       });

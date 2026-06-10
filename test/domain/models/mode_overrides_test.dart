@@ -202,7 +202,7 @@ void main() {
 
       test('copyWith can set gpsLogging', () {
         const original = ModeOverrides();
-        const newGps = GpsLoggingConfig(enabled: false);
+        const newGps = GpsLoggingConfig.off;
 
         final copy = original.copyWith(gpsLogging: newGps);
 
@@ -258,9 +258,7 @@ void main() {
         // The copyWith implementation uses `arg ?? this.field`, so passing
         // null cannot clear a previously-set field. This is the existing
         // pattern across all model copyWith methods in this codebase.
-        const original = ModeOverrides(
-          gpsLogging: GpsLoggingConfig(enabled: false),
-        );
+        const original = ModeOverrides(gpsLogging: GpsLoggingConfig.off);
 
         // Act
         final copy = original.copyWith();
@@ -299,7 +297,7 @@ void main() {
 
       test('inequality on differing gpsLogging', () {
         const a = ModeOverrides();
-        const b = ModeOverrides(gpsLogging: GpsLoggingConfig(enabled: false));
+        const b = ModeOverrides(gpsLogging: GpsLoggingConfig.off);
 
         check(a == b).isFalse();
       });

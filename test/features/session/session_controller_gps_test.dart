@@ -207,7 +207,7 @@ void main() {
     await container
         .read(sessionControllerProvider.notifier)
         .startSession(
-          mode: _gpsMode(gps: const GpsLoggingConfig(enabled: false)),
+          mode: _gpsMode(gps: GpsLoggingConfig.off),
           simulate: false,
         );
 

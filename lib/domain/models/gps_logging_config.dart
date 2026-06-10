@@ -36,6 +36,10 @@ final class GpsLoggingConfig {
             (json['historyRetentionDays'] as num?)?.toInt() ?? 30,
       );
 
+  /// The defaults with [enabled] switched to `false` — the explicit
+  /// "logging off" override value (spec 03 §GpsLoggingConfig, Q21).
+  static const GpsLoggingConfig off = GpsLoggingConfig(enabled: false);
+
   /// Master toggle for GPS logging during sessions.
   final bool enabled;
 

@@ -78,7 +78,7 @@ class ReminderDisguiseContent extends StatelessWidget {
 /// 2. [ReminderTemplate.iconAsset] — either one of the canonical
 ///    [kReminderIconCategories] keys (the value the template editor persists),
 ///    mapped to its Material symbol, or an asset image path (e.g.
-///    `assets/icons/calendar.png`, per spec 03 §ReminderTemplate).
+///    `assets/icons/<name>.png`, per spec 03 §ReminderTemplate).
 /// 3. Otherwise the Material [Icons.notifications_active_outlined] fallback.
 ///
 /// A broken image reference degrades to the Material fallback rather than
@@ -131,8 +131,8 @@ class _TemplateDisguiseIcon extends StatelessWidget {
 
   /// Heuristic: an [iconAsset] that is not a known category key is treated as
   /// an asset path when it looks like one (contains a slash or ends in a
-  /// common image extension), matching the spec example
-  /// `"assets/icons/calendar.png"`.
+  /// common image extension), matching the `assets/icons/<name>.png`-style
+  /// example in spec 03 §ReminderTemplate.
   static bool _looksLikeAssetPath(String value) {
     if (value.contains('/')) {
       return true;
