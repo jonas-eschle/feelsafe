@@ -946,6 +946,7 @@
   "eventPreviewLoudAlarmTitle": "Гучність {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Гучність наростає поступово.",
   "eventPreviewLoudAlarmRampOff": "Починає на повній гучності.",
+  "eventPreviewLoudAlarmRampMasterOff": "Починає на повній гучності — поступове наростання вимкнено в налаштуваннях сигналу тривоги.",
   "eventPreviewLoudAlarmFlashScreen": "Екран блимає",
   "eventPreviewLoudAlarmFlashLight": "Ліхтарик блимає",
   "eventPreviewLoudAlarmNoFlash": "Без блимання",

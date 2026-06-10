@@ -946,6 +946,7 @@
   "eventPreviewLoudAlarmTitle": "Volumen {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "El volumen sube gradualmente.",
   "eventPreviewLoudAlarmRampOff": "Empieza a todo volumen.",
+  "eventPreviewLoudAlarmRampMasterOff": "Empieza a todo volumen: el aumento gradual está desactivado en los ajustes de alarma.",
   "eventPreviewLoudAlarmFlashScreen": "La pantalla destella",
   "eventPreviewLoudAlarmFlashLight": "La luz de la cámara parpadea",
   "eventPreviewLoudAlarmNoFlash": "Sin destellos",

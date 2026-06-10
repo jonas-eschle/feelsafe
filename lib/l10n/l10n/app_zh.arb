@@ -946,6 +946,7 @@
   "eventPreviewLoudAlarmTitle": "音量 {percent}% · {sound}",
   "eventPreviewLoudAlarmRampOn": "音量逐渐增强。",
   "eventPreviewLoudAlarmRampOff": "一开始就是全音量。",
+  "eventPreviewLoudAlarmRampMasterOff": "一开始就是全音量——警报设置中已关闭逐渐增强。",
   "eventPreviewLoudAlarmFlashScreen": "屏幕闪烁",
   "eventPreviewLoudAlarmFlashLight": "相机灯闪烁",
   "eventPreviewLoudAlarmNoFlash": "不闪烁",

@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "بلندی صدا {percent}٪ · {sound}",
   "eventPreviewLoudAlarmRampOn": "صدا به‌تدریج بالا می‌رود.",
   "eventPreviewLoudAlarmRampOff": "با حداکثر صدا شروع می‌شود.",
+  "eventPreviewLoudAlarmRampMasterOff": "با حداکثر صدا شروع می‌شود — افزایش تدریجی در تنظیمات هشدار غیرفعال است.",
   "eventPreviewLoudAlarmFlashScreen": "صفحه چشمک می‌زند",
   "eventPreviewLoudAlarmFlashLight": "چراغ دوربین چشمک می‌زند",
   "eventPreviewLoudAlarmNoFlash": "بدون چشمک زدن",

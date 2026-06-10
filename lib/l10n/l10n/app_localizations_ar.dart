@@ -2444,6 +2444,10 @@ class AppLocalizationsAr extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'يبدأ بأقصى مستوى صوت.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'يبدأ بأقصى مستوى صوت — الزيادة التدريجية معطّلة في إعدادات الإنذار.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'الشاشة تومض';
 
   @override

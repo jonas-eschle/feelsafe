@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "Głośność {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Głośność narasta stopniowo.",
   "eventPreviewLoudAlarmRampOff": "Zaczyna na pełnej głośności.",
+  "eventPreviewLoudAlarmRampMasterOff": "Zaczyna na pełnej głośności — stopniowe narastanie jest wyłączone w ustawieniach alarmu.",
   "eventPreviewLoudAlarmFlashScreen": "Ekran błyska",
   "eventPreviewLoudAlarmFlashLight": "Latarka błyska",
   "eventPreviewLoudAlarmNoFlash": "Bez błysków",

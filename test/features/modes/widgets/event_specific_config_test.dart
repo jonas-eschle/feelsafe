@@ -10,13 +10,19 @@
 /// the platform-gated Dart behaviour.
 library;
 
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/core/utils/ringtone_picker.dart';
+import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/call_style.dart';
@@ -27,11 +33,60 @@ import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../../helpers/widget_test_helpers.dart';
+
+/// Fake [AppSettingsRepository] serving an in-memory [AppSettings].
+///
+/// [settings] is mutable so a test can flip the app-wide gradual-volume
+/// master and re-trigger `appSettingsLiveProvider` — mirroring the runtime
+/// writer contract (save, then `ref.invalidate(appSettingsLiveProvider)`).
+/// The store callbacks are never invoked because [load] is overridden.
+class _FakeSettingsRepo extends AppSettingsRepository {
+  _FakeSettingsRepo(this.settings)
+    : super(
+        keyProvider: () async =>
+            '0102030405060708090a0b0c0d0e0f'
+            '101112131415161718191a1b1c1d1e1f20',
+        resolveDir: () async =>
+            Directory.systemTemp.createTempSync('esc_test_'),
+      );
+
+  AppSettings settings;
+
+  @override
+  Future<AppSettings> load() async => settings;
+}
+
+/// Settings repo whose [load] never completes — pins the loading-state
+/// conservatism of the loudAlarm preview (an unconfirmed master is treated
+/// as off; the card must not promise a ramp it cannot confirm).
+class _NeverLoadingSettingsRepo extends _FakeSettingsRepo {
+  _NeverLoadingSettingsRepo() : super(const AppSettings());
+
+  @override
+  Future<AppSettings> load() => Completer<AppSettings>().future;
+}
+
+/// Riverpod overrides for the canonical test settings repo.
+///
+/// `_LoudAlarmPreviewCard` watches `appSettingsLiveProvider` (the same live
+/// source every settings writer invalidates), which loads from
+/// `appSettingsRepositoryProvider` — overriding the repo keeps the live
+/// provider's real body in the loop. Defaults to out-of-box [AppSettings]
+/// (gradual-volume master OFF, as in production).
+List<Override> _settingsOverrides(AppSettingsRepository? settingsRepo) =>
+    <Override>[
+      appSettingsRepositoryProvider.overrideWithValue(
+        settingsRepo ?? _FakeSettingsRepo(const AppSettings()),
+      ),
+    ];
 
 /// Fake [RingtonePicker] that returns a canned stored path (or null for a
 /// cancel) without touching `file_selector` or the filesystem.
@@ -1133,7 +1188,16 @@ void main() {
       WidgetTester tester,
     ) async {
       final l10n = await loadL10n(const Locale('en'));
-      await _pumpStateful(tester, const LoudAlarmConfig(volume: 0.5));
+      // Master ON so the step toggle alone controls the ramp line here;
+      // the full master × step effective-state matrix is pinned in its
+      // own group below.
+      await _pumpStateful(
+        tester,
+        const LoudAlarmConfig(volume: 0.5),
+        settingsRepo: _FakeSettingsRepo(
+          const AppSettings(alarmGradualVolume: true),
+        ),
+      );
       expect(
         find.text(l10n.eventPreviewLoudAlarmTitle(50, 'siren')),
         findsOneWidget,
@@ -1181,34 +1245,282 @@ void main() {
       expect(find.text(l10n.eventPreviewLoudAlarmNoFlash), findsOneWidget);
     });
   });
+
+  // ── loudAlarm preview: gradual-volume master × step matrix ────────────────
+  //
+  // The runtime ramps only when BOTH the app-wide master
+  // (AppSettings.alarmGradualVolume, default OFF) and the per-step
+  // gradualVolume flag are on (LoudAlarmStrategy:
+  // `services.alarmGradualVolume && config.gradualVolume`). The preview must
+  // mirror that EFFECTIVE state — a safety-app preview promising a gradual
+  // ramp the alarm will not perform is a truthfulness defect.
+
+  group('EventSpecificConfig — loudAlarm preview honors the gradual-volume '
+      'master (effective state)', () {
+    testWidgets('out-of-box: master OFF (default) + step ON shows the '
+        'full-volume hint, never the ramp promise', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // No settingsRepo → out-of-box AppSettings (master OFF), the exact
+      // default-config state the cohort flagged.
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(gradualVolume: true),
+        onChanged: (_) {},
+      );
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmRampMasterOff),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsNothing);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOff), findsNothing);
+    });
+
+    testWidgets('master ON + step ON shows the gradual-ramp line', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(gradualVolume: true),
+        onChanged: (_) {},
+        settingsRepo: _FakeSettingsRepo(
+          const AppSettings(alarmGradualVolume: true),
+        ),
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsOneWidget);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampMasterOff), findsNothing);
+    });
+
+    testWidgets('step OFF shows the plain full-volume line even with the '
+        'master ON', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(),
+        onChanged: (_) {},
+        settingsRepo: _FakeSettingsRepo(
+          const AppSettings(alarmGradualVolume: true),
+        ),
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOff), findsOneWidget);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsNothing);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampMasterOff), findsNothing);
+    });
+
+    testWidgets('flipping the master flips the card text (live settings '
+        'read)', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final repo = _FakeSettingsRepo(const AppSettings()); // master OFF
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(gradualVolume: true),
+        onChanged: (_) {},
+        settingsRepo: repo,
+      );
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmRampMasterOff),
+        findsOneWidget,
+      );
+
+      // Flip the master ON the way every runtime writer does: persist,
+      // then invalidate appSettingsLiveProvider so watchers re-read.
+      repo.settings = const AppSettings(alarmGradualVolume: true);
+      ProviderScope.containerOf(
+        tester.element(find.byType(EventSpecificConfig)),
+        listen: false,
+      ).invalidate(appSettingsLiveProvider);
+      await tester.pumpAndSettle();
+
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsOneWidget);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampMasterOff), findsNothing);
+    });
+
+    testWidgets('while settings are still loading the master is treated '
+        'as OFF (conservative)', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(gradualVolume: true),
+        onChanged: (_) {},
+        settingsRepo: _NeverLoadingSettingsRepo(),
+      );
+      // Never promise a ramp that cannot be confirmed.
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmRampMasterOff),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsNothing);
+    });
+  });
+
+  // ── smsContact preview: count honors the runtime channel filter ──────────
+  //
+  // The runtime sends only to resolved contacts whose channels include the
+  // configured channel (SmsContactStrategy:
+  // `targets.where((c) => c.channels.contains(config.channel))`). The
+  // preview's "To N contacts" must apply the same filter — a selected
+  // contact lacking the channel is never messaged and must not be counted.
+
+  group('EventSpecificConfig — smsContact preview count honors the channel '
+      'filter', () {
+    testWidgets('a selected contact lacking the configured channel is '
+        'not counted', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // Alice: SMS only. Bob: SMS + Telegram. Both selected, channel
+      // Telegram → runtime messages Bob only.
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(
+          channel: MessageChannel.telegram,
+          contactSelection: SmsContactSelection.specificIds,
+          contactIds: <String>['a', 'b'],
+        ),
+        contacts: <EmergencyContact>[
+          _contact('a', 'Alice'),
+          _contact(
+            'b',
+            'Bob',
+            sortOrder: 1,
+            channels: const <MessageChannel>[
+              MessageChannel.sms,
+              MessageChannel.telegram,
+            ],
+          ),
+        ],
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsToCount(1, 'telegram')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsToCount(2, 'telegram')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('the legacy allContacts+ids count is channel-filtered '
+        'too', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // Legacy shape: allContacts + explicit ids = specific IDs.
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(
+          channel: MessageChannel.telegram,
+          contactIds: <String>['a', 'b'],
+        ),
+        contacts: <EmergencyContact>[
+          _contact('a', 'Alice'),
+          _contact(
+            'b',
+            'Bob',
+            sortOrder: 1,
+            channels: const <MessageChannel>[
+              MessageChannel.sms,
+              MessageChannel.telegram,
+            ],
+          ),
+        ],
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsToCount(1, 'telegram')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('switching the channel re-filters the count live', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // Both contacts support SMS; only Bob supports Telegram.
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(
+          contactSelection: SmsContactSelection.specificIds,
+          contactIds: <String>['a', 'b'],
+        ),
+        contacts: <EmergencyContact>[
+          _contact('a', 'Alice'),
+          _contact(
+            'b',
+            'Bob',
+            sortOrder: 1,
+            channels: const <MessageChannel>[
+              MessageChannel.sms,
+              MessageChannel.telegram,
+            ],
+          ),
+        ],
+      );
+      expect(find.text(l10n.eventPreviewSmsToCount(2, 'sms')), findsOneWidget);
+
+      await _pickEnum(
+        tester,
+        MessageChannel.sms.name,
+        MessageChannel.telegram.name,
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsToCount(1, 'telegram')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsToCount(2, 'telegram')),
+        findsNothing,
+      );
+    });
+
+    testWidgets('a stale id with no matching contact is not counted '
+        '(mirrors the resolver)', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(
+          contactSelection: SmsContactSelection.specificIds,
+          contactIds: <String>['a', 'ghost'],
+        ),
+        contacts: <EmergencyContact>[_contact('a', 'Alice')],
+      );
+      // resolveSmsTargets skips ids with no matching contact; the
+      // runtime never messages "ghost", so the preview must not count it.
+      expect(find.text(l10n.eventPreviewSmsToCount(1, 'sms')), findsOneWidget);
+    });
+  });
 }
 
 // ─── Interaction helpers for the per-type field tests ───────────────────────
 
 /// Pumps [config] inside [EventSpecificConfig] (Event-Defaults context:
 /// no contacts grid) and captures every emitted config via [onChanged].
+///
+/// [settingsRepo] backs `appSettingsLiveProvider` for the loudAlarm
+/// preview's master-flag read; null = out-of-box defaults (master OFF).
 Future<void> _pumpForm(
   WidgetTester tester,
   StepConfig config, {
   required ValueChanged<StepConfig> onChanged,
+  AppSettingsRepository? settingsRepo,
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      localizationsDelegates: const <LocalizationsDelegate<Object>>[
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        platform: TargetPlatform.android,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: EventSpecificConfig(config: config, onChanged: onChanged),
+    ProviderScope(
+      overrides: _settingsOverrides(settingsRepo),
+      child: MaterialApp(
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          platform: TargetPlatform.android,
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: EventSpecificConfig(config: config, onChanged: onChanged),
+          ),
         ),
       ),
     ),
@@ -1251,52 +1563,66 @@ Future<void> _commitText(WidgetTester tester, String label, String text) async {
   await tester.pumpAndSettle();
 }
 
-/// Builds a minimal SMS-capable [EmergencyContact] for grid tests.
+/// Builds a minimal [EmergencyContact] for grid/preview tests.
 ///
-/// Relies on the model's default `channels` ([MessageChannel.sms]).
-EmergencyContact _contact(String id, String name, {int sortOrder = 0}) =>
-    EmergencyContact(
-      id: id,
-      name: name,
-      phoneNumber: '+1555000$sortOrder',
-      sortOrder: sortOrder,
-    );
+/// [channels] defaults (via the model) to `[MessageChannel.sms]`; pass an
+/// explicit list to build contacts that do or do not support a step's
+/// configured channel.
+EmergencyContact _contact(
+  String id,
+  String name, {
+  int sortOrder = 0,
+  List<MessageChannel>? channels,
+}) => EmergencyContact(
+  id: id,
+  name: name,
+  phoneNumber: '+1555000$sortOrder',
+  sortOrder: sortOrder,
+  channels: channels ?? const <MessageChannel>[MessageChannel.sms],
+);
 
 /// Pumps [initial] inside [EventSpecificConfig] with the emitted config fed
 /// back into the widget — the same rebuild-on-change loop both production
 /// callers implement — so preview cards can be asserted to live-update.
+///
+/// [settingsRepo] backs `appSettingsLiveProvider` for the loudAlarm
+/// preview's master-flag read; null = out-of-box defaults (master OFF).
 Future<void> _pumpStateful(
   WidgetTester tester,
   StepConfig initial, {
   List<EmergencyContact>? contacts,
   VoidCallback? onManageTemplates,
+  AppSettingsRepository? settingsRepo,
 }) async {
   StepConfig config = initial;
   await tester.pumpWidget(
-    MaterialApp(
-      localizationsDelegates: const <LocalizationsDelegate<Object>>[
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      theme: ThemeData(
-        platform: TargetPlatform.android,
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
-        useMaterial3: true,
-      ),
-      home: Scaffold(
-        body: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) =>
-              SingleChildScrollView(
-                child: EventSpecificConfig(
-                  config: config,
-                  onChanged: (StepConfig c) => setState(() => config = c),
-                  contacts: contacts,
-                  onManageTemplates: onManageTemplates,
+    ProviderScope(
+      overrides: _settingsOverrides(settingsRepo),
+      child: MaterialApp(
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        theme: ThemeData(
+          platform: TargetPlatform.android,
+          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+          useMaterial3: true,
+        ),
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (BuildContext context, StateSetter setState) =>
+                SingleChildScrollView(
+                  child: EventSpecificConfig(
+                    config: config,
+                    onChanged: (StepConfig c) => setState(() => config = c),
+                    contacts: contacts,
+                    onManageTemplates: onManageTemplates,
+                  ),
                 ),
-              ),
+          ),
         ),
       ),
     ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path/path.dart' as p;
 
 import 'package:guardianangela/core/utils/ringtone_picker.dart';
@@ -15,10 +16,12 @@ import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/orchestration/resolve_sms_targets.dart';
 import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
 import 'package:guardianangela/features/modes/widgets/config_fields.dart';
 import 'package:guardianangela/features/modes/widgets/sms_contact_grid.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 
 /// Renders the type-specific configuration form for a [StepConfig].
 ///
@@ -36,8 +39,9 @@ import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 /// the configured effect (spec 04:1591).
 ///
 /// [contacts] is non-null only in the Mode Editor context, where an
-/// `smsContact` step renders the [SmsContactGrid] recipient picker; in Event
-/// Defaults it is null (a global default has no specific recipients).
+/// `smsContact` step renders the [SmsContactGrid] recipient picker and the
+/// preview card channel-filters its recipient count against the list; in
+/// Event Defaults it is null (a global default has no specific recipients).
 class EventSpecificConfig extends StatelessWidget {
   /// Creates an [EventSpecificConfig] for [config].
   const EventSpecificConfig({
@@ -56,8 +60,9 @@ class EventSpecificConfig extends StatelessWidget {
   /// Called with an updated config whenever a field changes.
   final ValueChanged<StepConfig> onChanged;
 
-  /// All emergency contacts, for the `smsContact` recipient grid. Null in the
-  /// Event Defaults context (no grid shown).
+  /// All emergency contacts, for the `smsContact` recipient grid and the
+  /// preview card's channel-filtered recipient count. Null in the Event
+  /// Defaults context (no grid shown; the preview counts raw ids).
   final List<EmergencyContact>? contacts;
 
   /// Called when the user wants to manage contacts (empty-state deep link).
@@ -232,13 +237,36 @@ class _FakeCallPreviewCard extends StatelessWidget {
 /// Live preview of the configured alert message: recipients, channel, and
 /// the message text (with placeholders) that will be sent.
 class _SmsPreviewCard extends StatelessWidget {
-  const _SmsPreviewCard({required this.config});
+  const _SmsPreviewCard({required this.config, this.contacts});
 
   final SmsContactConfig config;
 
-  /// One-line recipients summary, mirroring the runtime target resolver
-  /// (`resolveSmsTargets`): `allContacts` with a non-empty explicit id list
-  /// is treated as specific IDs.
+  /// All emergency contacts — the same list [SmsContactGrid] renders — so
+  /// the recipient count can mirror the runtime channel filter. Null in the
+  /// Event Defaults context (no contact list is plumbed there); the raw id
+  /// count is then shown unfiltered.
+  final List<EmergencyContact>? contacts;
+
+  /// How many selected contacts the step will actually message: the runtime
+  /// selection ([resolveSmsTargets]) restricted to contacts whose channels
+  /// include the configured channel — the same filter `SmsContactStrategy`
+  /// applies at dispatch (and [SmsContactGrid] enforces when selecting).
+  /// Stale ids with no matching contact are skipped, exactly as at runtime.
+  /// Falls back to the raw id count when no contact list is available.
+  int _messagedCount(List<String>? ids) {
+    final List<EmergencyContact>? contacts = this.contacts;
+    if (contacts == null) return ids?.length ?? 0;
+    return resolveSmsTargets(
+      config,
+      contacts,
+    ).where((EmergencyContact c) => c.channels.contains(config.channel)).length;
+  }
+
+  /// One-line recipients summary, mirroring the runtime pipeline: the target
+  /// resolver (`resolveSmsTargets` — `allContacts` with a non-empty explicit
+  /// id list is treated as specific IDs) followed by the per-channel
+  /// capability filter, so the count never includes a contact the step
+  /// cannot reach on the configured channel.
   String _recipients(AppLocalizations l10n) {
     final String channel = config.channel.name;
     final List<String>? ids = config.contactIds;
@@ -247,13 +275,13 @@ class _SmsPreviewCard extends StatelessWidget {
         ids != null &&
         ids.isNotEmpty;
     if (legacySpecific) {
-      return l10n.eventPreviewSmsToCount(ids.length, channel);
+      return l10n.eventPreviewSmsToCount(_messagedCount(ids), channel);
     }
     return switch (config.contactSelection) {
       SmsContactSelection.allContacts => l10n.eventPreviewSmsToAll(channel),
       SmsContactSelection.firstContact => l10n.eventPreviewSmsToFirst(channel),
       SmsContactSelection.specificIds => l10n.eventPreviewSmsToCount(
-        ids?.length ?? 0,
+        _messagedCount(ids),
         channel,
       ),
     };
@@ -272,14 +300,33 @@ class _SmsPreviewCard extends StatelessWidget {
 }
 
 /// Live preview of the configured alarm: volume, sound, ramp, and flashing.
-class _LoudAlarmPreviewCard extends StatelessWidget {
+///
+/// The ramp line reflects the EFFECTIVE runtime behavior, not just the
+/// per-step flag: `LoudAlarmStrategy` ramps only when BOTH the app-wide
+/// master (`AppSettings.alarmGradualVolume`, default off) AND the step's
+/// `gradualVolume` are on. Step-on/master-off therefore shows a truthful
+/// "starts at full volume" hint pointing at the disabled master instead of
+/// promising a ramp the alarm will not perform. The master is read from
+/// [appSettingsLiveProvider] — the same live source every settings writer
+/// invalidates, and the source the session snapshot copies at start. While
+/// it is still loading the master is treated as off (one conservative
+/// frame: never promise a ramp that cannot be confirmed).
+class _LoudAlarmPreviewCard extends ConsumerWidget {
   const _LoudAlarmPreviewCard({required this.config});
 
   final LoudAlarmConfig config;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
+    final bool masterGradual = ref
+        .watch(appSettingsLiveProvider)
+        .maybeWhen(data: (s) => s.alarmGradualVolume, orElse: () => false);
+    final String rampLine = switch ((config.gradualVolume, masterGradual)) {
+      (false, _) => l10n.eventPreviewLoudAlarmRampOff,
+      (true, true) => l10n.eventPreviewLoudAlarmRampOn,
+      (true, false) => l10n.eventPreviewLoudAlarmRampMasterOff,
+    };
     final List<String> flashes = <String>[
       if (config.flashScreen) l10n.eventPreviewLoudAlarmFlashScreen,
       if (config.flashLight) l10n.eventPreviewLoudAlarmFlashLight,
@@ -291,10 +338,7 @@ class _LoudAlarmPreviewCard extends StatelessWidget {
         config.soundChoice.name,
       ),
       lines: <String>[
-        if (config.gradualVolume)
-          l10n.eventPreviewLoudAlarmRampOn
-        else
-          l10n.eventPreviewLoudAlarmRampOff,
+        rampLine,
         if (flashes.isEmpty)
           l10n.eventPreviewLoudAlarmNoFlash
         else
@@ -768,7 +812,7 @@ class _SmsContactForm extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
-        _SmsPreviewCard(config: config),
+        _SmsPreviewCard(config: config, contacts: contacts),
         _FieldWithInfo(
           title: l10n.eventDefaultsSmsChannel,
           body: l10n.eventDefaultsSmsChannelInfo,

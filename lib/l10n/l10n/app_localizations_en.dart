@@ -2437,6 +2437,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Starts at full volume.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Starts at full volume — gradual ramp is disabled in Alarm settings.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Screen flashes';
 
   @override

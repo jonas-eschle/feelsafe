@@ -2484,6 +2484,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Démarre à plein volume.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Démarre à plein volume — la montée progressive est désactivée dans les paramètres d\'alarme.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'L\'écran clignote';
 
   @override

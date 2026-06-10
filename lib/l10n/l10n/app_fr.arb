@@ -835,6 +835,7 @@
   "eventPreviewLoudAlarmTitle": "Volume {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Le volume monte progressivement.",
   "eventPreviewLoudAlarmRampOff": "Démarre à plein volume.",
+  "eventPreviewLoudAlarmRampMasterOff": "Démarre à plein volume — la montée progressive est désactivée dans les paramètres d'alarme.",
   "eventPreviewLoudAlarmFlashScreen": "L'écran clignote",
   "eventPreviewLoudAlarmFlashLight": "La lampe de la caméra clignote",
   "eventPreviewLoudAlarmNoFlash": "Aucun clignotement",

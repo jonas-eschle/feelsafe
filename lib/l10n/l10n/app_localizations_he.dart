@@ -2423,6 +2423,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'מתחיל בעוצמה מלאה.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'מתחיל בעוצמה מלאה — ההגברה ההדרגתית מושבתת בהגדרות ההתרעה.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'המסך מהבהב';
 
   @override

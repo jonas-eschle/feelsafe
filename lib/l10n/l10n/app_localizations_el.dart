@@ -2486,6 +2486,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Ξεκινά σε πλήρη ένταση.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Ξεκινά σε πλήρη ένταση — η σταδιακή αύξηση είναι απενεργοποιημένη στις ρυθμίσεις συναγερμού.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Η οθόνη αναβοσβήνει';
 
   @override

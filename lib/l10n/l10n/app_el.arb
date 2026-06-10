@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "Ένταση {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Η ένταση ανεβαίνει σταδιακά.",
   "eventPreviewLoudAlarmRampOff": "Ξεκινά σε πλήρη ένταση.",
+  "eventPreviewLoudAlarmRampMasterOff": "Ξεκινά σε πλήρη ένταση — η σταδιακή αύξηση είναι απενεργοποιημένη στις ρυθμίσεις συναγερμού.",
   "eventPreviewLoudAlarmFlashScreen": "Η οθόνη αναβοσβήνει",
   "eventPreviewLoudAlarmFlashLight": "Ο φακός αναβοσβήνει",
   "eventPreviewLoudAlarmNoFlash": "Χωρίς αναλαμπές",

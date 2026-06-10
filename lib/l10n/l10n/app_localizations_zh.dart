@@ -2340,6 +2340,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => '一开始就是全音量。';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff => '一开始就是全音量——警报设置中已关闭逐渐增强。';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => '屏幕闪烁';
 
   @override
@@ -4860,6 +4863,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get eventPreviewLoudAlarmRampOff => '一開始就是全音量。';
+
+  @override
+  String get eventPreviewLoudAlarmRampMasterOff => '一開始就是全音量——警報設定中已關閉逐漸增強。';
 
   @override
   String get eventPreviewLoudAlarmFlashScreen => '螢幕閃爍';

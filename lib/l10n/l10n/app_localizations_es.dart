@@ -2475,6 +2475,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Empieza a todo volumen.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Empieza a todo volumen: el aumento gradual está desactivado en los ajustes de alarma.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'La pantalla destella';
 
   @override

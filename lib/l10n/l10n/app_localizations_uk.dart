@@ -2468,6 +2468,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Починає на повній гучності.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Починає на повній гучності — поступове наростання вимкнено в налаштуваннях сигналу тривоги.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Екран блимає';
 
   @override

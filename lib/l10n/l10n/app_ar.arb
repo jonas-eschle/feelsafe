@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "مستوى الصوت {percent}% · {sound}",
   "eventPreviewLoudAlarmRampOn": "يرتفع الصوت تدريجيًا.",
   "eventPreviewLoudAlarmRampOff": "يبدأ بأقصى مستوى صوت.",
+  "eventPreviewLoudAlarmRampMasterOff": "يبدأ بأقصى مستوى صوت — الزيادة التدريجية معطّلة في إعدادات الإنذار.",
   "eventPreviewLoudAlarmFlashScreen": "الشاشة تومض",
   "eventPreviewLoudAlarmFlashLight": "ضوء الكاميرا يومض",
   "eventPreviewLoudAlarmNoFlash": "بدون وميض",

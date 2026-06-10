@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "עוצמה {percent}% · {sound}",
   "eventPreviewLoudAlarmRampOn": "העוצמה עולה בהדרגה.",
   "eventPreviewLoudAlarmRampOff": "מתחיל בעוצמה מלאה.",
+  "eventPreviewLoudAlarmRampMasterOff": "מתחיל בעוצמה מלאה — ההגברה ההדרגתית מושבתת בהגדרות ההתרעה.",
   "eventPreviewLoudAlarmFlashScreen": "המסך מהבהב",
   "eventPreviewLoudAlarmFlashLight": "פנס המצלמה מהבהב",
   "eventPreviewLoudAlarmNoFlash": "ללא הבהובים",

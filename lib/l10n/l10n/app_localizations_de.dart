@@ -2466,6 +2466,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Beginnt mit voller Lautstärke.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Beginnt mit voller Lautstärke — der allmähliche Anstieg ist in den Alarm-Einstellungen deaktiviert.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Bildschirm blitzt';
 
   @override

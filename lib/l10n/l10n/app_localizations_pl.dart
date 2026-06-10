@@ -2468,6 +2468,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Zaczyna na pełnej głośności.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Zaczyna na pełnej głośności — stopniowe narastanie jest wyłączone w ustawieniach alarmu.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Ekran błyska';
 
   @override

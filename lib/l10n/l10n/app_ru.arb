@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "Громкость {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Громкость нарастает постепенно.",
   "eventPreviewLoudAlarmRampOff": "Начинает на полной громкости.",
+  "eventPreviewLoudAlarmRampMasterOff": "Начинает на полной громкости — постепенное нарастание отключено в настройках сигнала тревоги.",
   "eventPreviewLoudAlarmFlashScreen": "Экран мигает",
   "eventPreviewLoudAlarmFlashLight": "Фонарик мигает",
   "eventPreviewLoudAlarmNoFlash": "Без мигания",

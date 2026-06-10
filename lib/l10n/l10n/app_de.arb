@@ -946,6 +946,7 @@
   "eventPreviewLoudAlarmTitle": "Lautstärke {percent} % · {sound}",
   "eventPreviewLoudAlarmRampOn": "Lautstärke steigt allmählich an.",
   "eventPreviewLoudAlarmRampOff": "Beginnt mit voller Lautstärke.",
+  "eventPreviewLoudAlarmRampMasterOff": "Beginnt mit voller Lautstärke — der allmähliche Anstieg ist in den Alarm-Einstellungen deaktiviert.",
   "eventPreviewLoudAlarmFlashScreen": "Bildschirm blitzt",
   "eventPreviewLoudAlarmFlashLight": "Kameralicht blitzt",
   "eventPreviewLoudAlarmNoFlash": "Kein Blitzen",

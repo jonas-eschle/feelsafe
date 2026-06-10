@@ -2451,6 +2451,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'पूरी आवाज़ से शुरू होता है।';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'पूरी आवाज़ से शुरू होता है — अलार्म सेटिंग्स में धीरे-धीरे बढ़ाना बंद है।';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'स्क्रीन चमकती है';
 
   @override

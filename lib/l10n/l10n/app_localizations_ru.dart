@@ -2477,6 +2477,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'Начинает на полной громкости.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'Начинает на полной громкости — постепенное нарастание отключено в настройках сигнала тревоги.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'Экран мигает';
 
   @override

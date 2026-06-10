@@ -12,13 +12,17 @@ import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
+import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/features/modes/widgets/mode_event_defaults.dart';
 import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/app_state_providers.dart';
 import '../../../helpers/widget_test_helpers.dart';
 
 Future<void> _pump(
@@ -27,17 +31,27 @@ Future<void> _pump(
   required ValueChanged<EventDefaults> onChanged,
 }) async {
   await tester.pumpWidget(
-    MaterialApp(
-      localizationsDelegates: const <LocalizationsDelegate<Object>>[
-        AppLocalizations.delegate,
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
+    // The loudAlarm preview card inside the per-type forms watches
+    // appSettingsLiveProvider (gradual-volume master); pin it to the
+    // out-of-box defaults so this routing test stays deterministic.
+    ProviderScope(
+      overrides: <Override>[
+        appSettingsLiveProvider.overrideWith((ref) async {
+          return const AppSettings();
+        }),
       ],
-      supportedLocales: AppLocalizations.supportedLocales,
-      home: Scaffold(
-        body: SingleChildScrollView(
-          child: ModeEventDefaults(defaults: defaults, onChanged: onChanged),
+      child: MaterialApp(
+        localizationsDelegates: const <LocalizationsDelegate<Object>>[
+          AppLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: Scaffold(
+          body: SingleChildScrollView(
+            child: ModeEventDefaults(defaults: defaults, onChanged: onChanged),
+          ),
         ),
       ),
     ),

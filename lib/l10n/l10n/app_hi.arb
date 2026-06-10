@@ -817,6 +817,7 @@
   "eventPreviewLoudAlarmTitle": "वॉल्यूम {percent}% · {sound}",
   "eventPreviewLoudAlarmRampOn": "वॉल्यूम धीरे-धीरे बढ़ता है।",
   "eventPreviewLoudAlarmRampOff": "पूरी आवाज़ से शुरू होता है।",
+  "eventPreviewLoudAlarmRampMasterOff": "पूरी आवाज़ से शुरू होता है — अलार्म सेटिंग्स में धीरे-धीरे बढ़ाना बंद है।",
   "eventPreviewLoudAlarmFlashScreen": "स्क्रीन चमकती है",
   "eventPreviewLoudAlarmFlashLight": "कैमरा लाइट चमकती है",
   "eventPreviewLoudAlarmNoFlash": "कोई चमक नहीं",

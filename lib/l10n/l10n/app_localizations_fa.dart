@@ -2444,6 +2444,10 @@ class AppLocalizationsFa extends AppLocalizations {
   String get eventPreviewLoudAlarmRampOff => 'با حداکثر صدا شروع می‌شود.';
 
   @override
+  String get eventPreviewLoudAlarmRampMasterOff =>
+      'با حداکثر صدا شروع می‌شود — افزایش تدریجی در تنظیمات هشدار غیرفعال است.';
+
+  @override
   String get eventPreviewLoudAlarmFlashScreen => 'صفحه چشمک می‌زند';
 
   @override

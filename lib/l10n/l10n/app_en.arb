@@ -3068,6 +3068,10 @@
   "@eventPreviewLoudAlarmRampOff": {
     "description": "Preview-card line when loudAlarm gradualVolume is off."
   },
+  "eventPreviewLoudAlarmRampMasterOff": "Starts at full volume — gradual ramp is disabled in Alarm settings.",
+  "@eventPreviewLoudAlarmRampMasterOff": {
+    "description": "Preview-card line when the per-step gradualVolume is on but the app-wide master switch (AppSettings.alarmGradualVolume, Settings → Alarm) is off. The runtime ramps only when BOTH are on, so the alarm will actually start at full volume; the line says so and points at the master switch."
+  },
   "eventPreviewLoudAlarmFlashScreen": "Screen flashes",
   "@eventPreviewLoudAlarmFlashScreen": {
     "description": "Preview-card fragment when loudAlarm flashScreen is on. Joined with ' · ' to other flash fragments."

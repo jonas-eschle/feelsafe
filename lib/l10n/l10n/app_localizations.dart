@@ -4397,6 +4397,12 @@ abstract class AppLocalizations {
   /// **'Starts at full volume.'**
   String get eventPreviewLoudAlarmRampOff;
 
+  /// Preview-card line when the per-step gradualVolume is on but the app-wide master switch (AppSettings.alarmGradualVolume, Settings → Alarm) is off. The runtime ramps only when BOTH are on, so the alarm will actually start at full volume; the line says so and points at the master switch.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts at full volume — gradual ramp is disabled in Alarm settings.'**
+  String get eventPreviewLoudAlarmRampMasterOff;
+
   /// Preview-card fragment when loudAlarm flashScreen is on. Joined with ' · ' to other flash fragments.
   ///
   /// In en, this message translates to:
