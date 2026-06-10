@@ -20,7 +20,7 @@ const int _kCallEmergencyNotificationId = 52;
 /// Optionally sends a location SMS to all SMS-capable emergency contacts
 /// before dialling the emergency number. The confirmation countdown (spec 02
 /// §9 callEmergency "Confirmation Countdown") is a UI concern handled by the
-/// session controller (Phase 5) BEFORE this strategy is called — the strategy
+/// session controller BEFORE this strategy is called — the strategy
 /// assumes confirmation has already been resolved.
 ///
 /// Emergency number precedence (spec 02 §9 callEmergency):

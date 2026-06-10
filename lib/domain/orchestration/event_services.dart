@@ -161,14 +161,16 @@ final class EventServices {
 
   /// Cooperative cancellation poll for long-running operations.
   ///
-  /// Pure-Dart callback (`bool Function()?`) — not Flutter's `VoidCallback`.
-  /// Long-running strategies (e.g. [LoudAlarmStrategy]) can poll this to
-  /// detect session cancellation. `null` means no cancellation check is
-  /// available (no-op; strategy runs to natural completion).
+  /// Pure-Dart callback (`bool Function()?`) — not Flutter's
+  /// `VoidCallback`. Mandated by spec 02 §Event Execution: Strategy
+  /// Pattern as part of the [EventServices] bundle. The
+  /// [SessionController] wires it to engine liveness: it returns `true`
+  /// once the session has ended and a strategy should stop as soon as
+  /// possible. `null` means no cancellation check is available (strategy
+  /// runs to natural completion).
   ///
-  /// Returns `true` when the session has been cancelled and the strategy
-  /// should stop as soon as possible.
-  // ignore: avoid_returning_null_for_void (this is intentionally a bool poll)
+  /// Available for long-running strategies; none of the 9 current
+  /// strategies polls it mid-execution.
   final bool Function()? isCancelled;
 
   /// Returns a copy with the supplied fields replaced.

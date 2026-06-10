@@ -18,8 +18,8 @@ const int _kReminderNotificationIdBase = 100;
 /// Real mode: fires [NotificationServiceProtocol.showDisguisedReminder] with
 /// maximum-urgency flags (Extra-35 fullScreenIntent / Importance.max) so the
 /// reminder surfaces when the device is locked. The reminder overlay is also
-/// rendered by [SessionScreen] in response to the engine's `stepFired` event
-/// (Phase 6); the notification is the out-of-app delivery path.
+/// rendered by [SessionScreen] in response to the engine's `stepFired`
+/// event; the notification is the out-of-app delivery path.
 ///
 /// Vibration: [VibrationServiceProtocol.reminderPattern] fires in both real
 /// and simulation mode (local hardware, safe in sim per spec 02 §Simulation
@@ -81,7 +81,7 @@ final class DisguisedReminderStrategy implements EventStrategy {
   /// Returns `null` — the actual reminder overlay fires identically in
   /// simulation; no `[SIM]` card substitution is needed. The background
   /// notification carries a `[SIM]` suffix, applied by the notification
-  /// layer (Phase 5), not by this strategy.
+  /// layer, not by this strategy.
   @override
   String? simulationDescription(ChainStep step, EventServices services) => null;
 }

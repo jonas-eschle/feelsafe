@@ -23,7 +23,7 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 ///
 /// **Note on [PhoneCallContactConfig.logGps]:** This field is a per-step
 /// GPS-logging override and is consumed by the orchestration layer
-/// (SessionLogRecorder / LocationService — Phase 5), not by this strategy.
+/// (SessionLogRecorder / LocationService), not by this strategy.
 /// The strategy does not read it.
 ///
 /// See spec 02 §7 phoneCallContact.

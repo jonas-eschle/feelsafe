@@ -26,7 +26,7 @@ const int _kFakeCallNotificationId = 50;
 /// vibration, and [NotificationServiceProtocol.showAlarmEscalation] so the
 /// fake call surfaces when the device is locked (spec 05:880-886). The
 /// [SessionScreen] also pushes [FakeCallScreen] in response to the engine's
-/// `stepFired` event (Phase 6 wiring).
+/// `stepFired` event.
 ///
 /// Simulation: all three actions (ringtone, vibration, escalation
 /// notification) fire normally — local-only actions safe in sim per spec 02

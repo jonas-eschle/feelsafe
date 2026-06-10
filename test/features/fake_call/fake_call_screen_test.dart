@@ -2,9 +2,9 @@
 ///
 /// Covers all 5 call styles (Android-native, iOS-native, WhatsApp,
 /// Telegram, Signal), slide-to-answer mechanics, declineIsSafe label
-/// variants, voice/vibration indicators, and the hold-5s distress
-/// trigger. Each scenario gives the screen a [FakeCallConfig] which it
-/// renders directly.
+/// variants, voice/vibration indicators, and the hold-to-distress
+/// trigger (exercised with a 1-second configured hold). Each scenario
+/// gives the screen a [FakeCallConfig] which it renders directly.
 ///
 /// Spec reference: docs/spec/04-screens-navigation.md §Fake Call Screen
 /// (lines 1044–1159).

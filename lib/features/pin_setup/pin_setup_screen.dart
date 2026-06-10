@@ -43,6 +43,9 @@ class _PinSetupScreenState extends ConsumerState<PinSetupScreen> {
 
   Future<void> _save() async {
     final l10n = AppLocalizations.of(context);
+    // Defensive-unreachable via the UI: Submit stays disabled until the
+    // active list has >= 4 digits, and once _confirming is true the
+    // keypad mutates _confirm only, so _entry stays frozen at >= 4.
     if (_entry.length < 4) {
       setState(() => _error = l10n.pinSetupTooShort);
       return;

@@ -1,8 +1,7 @@
 /// Abstract interface for JSON export/import of app data.
 ///
-/// See spec 05 §BackupService. Phase 5 supplies the concrete
-/// implementation. Export is triggered by the UI via `share_plus`;
-/// import is driven by a file picker.
+/// See spec 05 §BackupService. Export is triggered by the UI via
+/// `share_plus`; import is driven by a file picker.
 abstract interface class BackupServiceProtocol {
   /// Assembles all repositories into a JSON export string.
   ///

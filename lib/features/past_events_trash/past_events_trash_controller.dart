@@ -59,19 +59,20 @@ class PastEventsTrashLog {
 /// On every [build] the controller calls
 /// [SessionLogRepository.purgeExpiredLogs] so trashed rows older than
 /// `AppSettings.trashRetentionDays` are hard-deleted before the user
-/// sees the list (spec 04:2458 "On screen open and again on
-/// HistoryController.build, any tombstone older than 7 days is
-/// hard-deleted"). Then it reads the remaining trashed rows from
-/// Drift.
+/// sees the list (spec 04:2444 "On screen open
+/// (`PastEventsTrashController.build`) and again at app startup, any
+/// tombstone older than 7 days is hard-deleted via the repository").
+/// Then it reads the remaining trashed rows from Drift.
 class PastEventsTrashController extends AsyncNotifier<PastEventsTrashState> {
   @override
   Future<PastEventsTrashState> build() async {
     final settings = await ref.read(appSettingsRepositoryProvider).load();
     final repo = await ref.watch(sessionLogRepositoryProvider.future);
-    // Step 1 — purge expired trash (and age-based non-critical logs).
-    // The repository purges both in a single call; we only care about
-    // the trash portion here, but the age-based purge is cheap and
-    // always-correct.
+    // Step 1 — run both purge stages in a single repository call:
+    // (a) age-based soft-delete moves expired non-critical logs INTO
+    // the trash (they surface in this list), then (b) tombstones older
+    // than trashRetentionDays are hard-deleted before the user sees
+    // them.
     try {
       final purge = await repo.purgeExpiredLogs(
         retentionDays: settings.sessionLogRetentionDays,

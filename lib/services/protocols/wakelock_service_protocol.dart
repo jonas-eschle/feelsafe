@@ -1,8 +1,7 @@
 /// Abstract interface for keeping the device screen awake during sessions.
 ///
-/// See spec 05 §WakelockService. Phase 5 supplies the concrete
-/// implementation; this file pins only the methods that the session
-/// controller calls.
+/// See spec 05 §WakelockService. This file pins only the methods that
+/// the session controller calls.
 abstract interface class WakelockServiceProtocol {
   /// Prevents the device from sleeping (keeps screen on).
   ///

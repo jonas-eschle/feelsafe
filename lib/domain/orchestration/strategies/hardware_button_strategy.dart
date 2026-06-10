@@ -14,7 +14,7 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 /// Simulation: the spec specifies a toast `'Button press detected!'` to
 /// indicate that the simulated button press was registered (spec 02
 /// §3 hardwareButton "Simulation: Toast: 'Button press detected!'"). The
-/// text is raw English; localisation happens at UI render time (Phase 6).
+/// text is raw English; localisation happens at UI render time.
 /// Test/Preview in settings uses the same text.
 ///
 /// See spec 02 §3 hardwareButton.
@@ -35,7 +35,7 @@ final class HardwareButtonStrategy implements EventStrategy {
 
   /// Returns the raw English simulation feedback text.
   ///
-  /// The UI layer (Phase 6) is responsible for localising this string.
+  /// The UI layer is responsible for localising this string.
   /// Spec 02 §3 hardwareButton specifies the exact text.
   @override
   String? simulationDescription(ChainStep step, EventServices services) =>

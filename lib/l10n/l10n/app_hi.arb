@@ -422,7 +422,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "मेरा SIM नंबर उपयोग करें",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "SIM नंबर {number} का उपयोग किया जा रहा है",
   "onboardingUseSimNumberUnsupported": "iOS पर उपलब्ध नहीं",
   "onboardingUseSimNumberUnavailable": "नंबर नहीं पढ़ा जा सका",
   "onboardingUseSimNumberPermissionDenied": "अनुमति अस्वीकृत",

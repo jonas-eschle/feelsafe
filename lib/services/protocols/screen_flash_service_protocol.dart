@@ -1,7 +1,6 @@
 /// Abstract interface for screen flash control used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. Only the methods that
-/// strategies call are declared here.
+/// Only the methods that strategies call are declared here.
 abstract interface class ScreenFlashServiceProtocol {
   /// Starts a white/red alternating screen flash at the given speed.
   ///

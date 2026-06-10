@@ -108,7 +108,7 @@ class AppLocalizationsUk extends AppLocalizations {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return 'Використовується номер SIM-картки $number';
   }
 
   @override

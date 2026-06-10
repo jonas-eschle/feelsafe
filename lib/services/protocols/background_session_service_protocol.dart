@@ -1,9 +1,9 @@
 /// Abstract interface for managing background / foreground-service
 /// execution during an active session.
 ///
-/// See spec 05 §BackgroundSessionService (Foreground Service). Phase 5
-/// supplies the concrete implementation. All methods are pure-Dart and
-/// delegate to `flutter_background_service` via the concrete class.
+/// See spec 05 §BackgroundSessionService (Foreground Service). All
+/// methods are pure-Dart and delegate to `flutter_background_service`
+/// via the concrete class.
 abstract interface class BackgroundSessionServiceProtocol {
   /// Performs one-time setup at app startup.
   ///

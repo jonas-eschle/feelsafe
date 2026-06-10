@@ -4,7 +4,8 @@
 /// PIN gate, timeline rendering, badge counts, the share AppBar action,
 /// and navigation back to home. Uses a fake controller subclass so
 /// tests can inject any [SimulationSummaryState] without touching the
-/// repository, settings repo, or `share_plus`.
+/// repository or settings repo. The share group mocks the `share_plus`
+/// MethodChannel to assert the forwarded payload.
 ///
 /// Spec reference: docs/spec/04-screens-navigation.md §Simulation
 /// Summary Screen (lines 1202–1288).

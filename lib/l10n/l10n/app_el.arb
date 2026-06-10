@@ -422,7 +422,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "Χρήση του αριθμού της SIM μου",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "Χρησιμοποιείται ο αριθμός SIM {number}",
   "onboardingUseSimNumberUnsupported": "Μη διαθέσιμο σε iOS",
   "onboardingUseSimNumberUnavailable": "Αδυναμία ανάγνωσης αριθμού",
   "onboardingUseSimNumberPermissionDenied": "Η άδεια απορρίφθηκε",

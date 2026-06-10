@@ -7,7 +7,7 @@ import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 /// Persisted as one row in the Drift `reminder_templates` table.
 /// See spec 03 §ReminderTemplate.
 ///
-/// 8 built-in templates are seeded on first launch (Phase 4).
+/// 8 built-in templates are seeded on first launch.
 /// Built-in templates have [isCustom] = false and cannot be deleted,
 /// only disabled. Custom templates have [isCustom] = true.
 final class ReminderTemplate {

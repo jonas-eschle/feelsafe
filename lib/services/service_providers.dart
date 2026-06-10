@@ -5,13 +5,6 @@
 // file (CI grep gate: `grep -rn "Real.*Service(" lib/ | grep -v
 // service_providers.dart` must be empty).
 //
-// Phase 5A foundation. Stage 5B.1 adds 7 leaf service triplets.
-// Stage 5B.2 adds: location, notification, hardwareButton,
-//   callState, systemUi.
-// Stage 5B.3 adds: phone, messaging, backgroundSession, sentry,
-//   sessionLogRecorder.
-// Stage 5C adds: permissionAudit, sessionStartValidator, backup.
-//   Also reworks databaseProvider → FutureProvider backed by EncryptionService.
 // New Real*Service constructors MUST be added here only.
 //
 // See spec 05 §Service Providers (lines 1295–1330) and

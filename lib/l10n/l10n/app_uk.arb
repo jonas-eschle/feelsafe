@@ -551,7 +551,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "Використати номер SIM-картки",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "Використовується номер SIM-картки {number}",
   "onboardingUseSimNumberUnsupported": "Недоступно на iOS",
   "onboardingUseSimNumberUnavailable": "Не вдалося зчитати номер",
   "onboardingUseSimNumberPermissionDenied": "Доступ відхилено",

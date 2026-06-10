@@ -422,7 +422,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "استخدام رقم شريحة SIM الخاص بي",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "يتم استخدام رقم شريحة SIM {number}",
   "onboardingUseSimNumberUnsupported": "غير متاح على نظام iOS",
   "onboardingUseSimNumberUnavailable": "تعذّرت قراءة الرقم",
   "onboardingUseSimNumberPermissionDenied": "تم رفض الإذن",

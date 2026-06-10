@@ -422,7 +422,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "استفاده از شماره سیم‌کارت من",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "از شماره سیم‌کارت {number} استفاده می‌شود",
   "onboardingUseSimNumberUnsupported": "در iOS در دسترس نیست",
   "onboardingUseSimNumberUnavailable": "خواندن شماره ممکن نشد",
   "onboardingUseSimNumberPermissionDenied": "دسترسی رد شد",

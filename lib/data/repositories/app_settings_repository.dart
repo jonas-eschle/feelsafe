@@ -12,7 +12,7 @@ class AppSettingsRepository {
   /// Creates an [AppSettingsRepository] backed by `app_settings.json`.
   ///
   /// [keyProvider] is the same `flutter_secure_storage`-backed callback
-  /// used by [GuardianAngelaDatabase] (Phase 5 wiring). [resolveDir]
+  /// used by [GuardianAngelaDatabase]. [resolveDir]
   /// defaults to `<app-documents>/json_store`; tests override it. The
   /// optional [random] argument lets tests substitute a deterministic
   /// nonce source for the AES-GCM envelope.

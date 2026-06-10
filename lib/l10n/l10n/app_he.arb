@@ -422,7 +422,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "השתמשי במספר ה-SIM שלי",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "נעשה שימוש במספר ה-SIM {number}",
   "onboardingUseSimNumberUnsupported": "לא זמין ב-iOS",
   "onboardingUseSimNumberUnavailable": "לא ניתן לקרוא את המספר",
   "onboardingUseSimNumberPermissionDenied": "ההרשאה נדחתה",

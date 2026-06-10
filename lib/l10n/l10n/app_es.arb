@@ -551,7 +551,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "Usar el número de mi SIM",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "Usando el número de SIM {number}",
   "onboardingUseSimNumberUnsupported": "No disponible en iOS",
   "onboardingUseSimNumberUnavailable": "No se pudo leer el número",
   "onboardingUseSimNumberPermissionDenied": "Permiso denegado",

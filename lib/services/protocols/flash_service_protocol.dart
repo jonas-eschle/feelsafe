@@ -1,7 +1,6 @@
 /// Abstract interface for camera flashlight control used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. Only the methods that
-/// strategies call are declared here.
+/// Only the methods that strategies call are declared here.
 abstract interface class FlashServiceProtocol {
   /// Starts the SOS morse-code strobe pattern on the camera flash.
   ///

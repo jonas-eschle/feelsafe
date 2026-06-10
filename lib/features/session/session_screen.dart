@@ -465,9 +465,7 @@ class _StandardSessionBody extends ConsumerWidget {
               _DisarmAction(
                 onDisarm: () =>
                     ref.read(sessionControllerProvider.notifier).disarm(),
-                label: state.stealthEnabled
-                    ? l10n.sessionDisarmStealth
-                    : l10n.sessionDisarm,
+                label: l10n.sessionDisarm,
               ),
             if (state.isSimulation)
               _SimulationControlsBar(state: state, textTheme: textTheme),
@@ -1370,9 +1368,9 @@ class _GpsDestinationPromptState extends ConsumerState<_GpsDestinationPrompt> {
 /// tap) so a stray screen-press during a live session cannot disarm the
 /// chain. The reusable [SwipeSlider] enforces the threshold, the
 /// spring-back animation on incomplete release, and the single-fire-per-
-/// gesture guard. [label] is the stealth-aware string chosen at the
-/// call-site ("I'm safe" in normal mode, "No Angela needed" when
-/// `SessionState.stealthEnabled` is true).
+/// gesture guard. [label] is the slider label ("I'm safe"). Stealth
+/// sessions never build this widget — the whole session body is replaced
+/// by the fake music player, which has its own disarm slider.
 class _DisarmAction extends StatelessWidget {
   const _DisarmAction({required this.onDisarm, required this.label});
 

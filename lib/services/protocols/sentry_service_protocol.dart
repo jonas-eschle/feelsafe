@@ -1,8 +1,8 @@
 /// Abstract interface for Sentry error reporting.
 ///
 /// See spec 05 §Service Providers and decisions D2 (Sentry day 1,
-/// opt-in default, EU host). Phase 5 supplies the concrete
-/// implementation via `sentry_flutter ^9`.
+/// opt-in default, EU host). The concrete implementation is backed by
+/// `sentry_flutter`.
 ///
 /// Sentry is **opt-in**: [initialize] MUST be called with
 /// `enabled: false` (the default) unless the user has explicitly

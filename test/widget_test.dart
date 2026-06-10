@@ -3,8 +3,8 @@
 // Phase 6 replaces the Phase 5 placeholder with a GoRouter-driven
 // `MaterialApp.router`. Rendering the full shell requires a Drift
 // database; this smoke test only checks that the JSON recovery widget
-// still renders without errors. Full router smoke tests live in the
-// widget test cohort (next stage).
+// still renders without errors. Full router smoke tests live in
+// `test/router/app_router_test.dart`.
 
 import 'package:flutter/material.dart';
 

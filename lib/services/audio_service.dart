@@ -12,9 +12,8 @@ import 'package:guardianangela/services/protocols/audio_service_protocol.dart';
 /// Default TTS prompt text for each supported locale (D14).
 ///
 /// Keyed by the same locale codes as [_builtInVoicePaths]. Used by
-/// [RealAudioService.bootstrapVoiceAssets] when the ARB key
-/// `fakeCallVoicePromptDefault` is not yet populated (Phase 8 ARB scrum
-/// will replace these hardcoded strings with the translated ARB values).
+/// [RealAudioService.bootstrapVoiceAssets] as the source text for the
+/// built-in fake-call voice prompts.
 const Map<String, String> _builtInVoicePrompts = {
   'en': "Hey, it's Angela, just checking in. Can you call me back?",
   'de':
@@ -249,7 +248,7 @@ class RealAudioService implements AudioServiceProtocol {
     // On Android, AndroidAudioUsage.alarm routes through STREAM_ALARM, which
     // bypasses silent and vibrate modes. ContentType.sonification matches the
     // Android alarm content category. alarmDndOverride is applied here; the
-    // controller (Phase 6) passes the setting value at session start.
+    // session controller passes the setting value at session start.
     try {
       final session = await AudioSession.instance;
       await session.configure(

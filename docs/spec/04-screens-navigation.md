@@ -2441,7 +2441,7 @@ History of completed sessions (real and simulated).
 - **Swipe or trash icon:** triggers a *soft-delete* (Extra 11). A SnackBar appears with a 5-second UNDO action; dismissing the SnackBar finalises the soft-delete by keeping the log in the repository for 7 days.
 - **Tap:** → `/past-events/detail?id={logId}`
 - **App bar actions:** Trash (opens the Trash screen) and Clear All (hard-delete everything with confirmation).
-- **Trash screen (Extra 11):** Shows all soft-deleted logs with a retention note. Per-entry actions are Restore and Delete Permanently. On screen open and again on [`HistoryController.build`], any tombstone older than 7 days is hard-deleted via the repository.
+- **Trash screen (Extra 11):** Shows all soft-deleted logs with a retention note. Per-entry actions are Restore and Delete Permanently. On screen open (`PastEventsTrashController.build`) and again at app startup, any tombstone older than 7 days is hard-deleted via the repository.
 - **Auto-delete:** After 7 days in Trash, the log is permanently removed from the repository. This is in addition to any user-configured retention policy.
 
 ---

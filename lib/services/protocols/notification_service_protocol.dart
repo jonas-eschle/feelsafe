@@ -28,7 +28,6 @@ const String kActionRetrySmsPrefix = 'ga_retry_sms_';
 ///
 /// See spec 05 §Notification Channel Architecture (lines 1279–1293) and
 /// §BackgroundSessionService §Notification Channels (lines 794–870).
-/// Phase 5 supplies the concrete implementation.
 ///
 /// Channel IDs:
 /// - `session_service` — Low importance, foreground-service persistent.

@@ -157,14 +157,14 @@ class RealSessionStartValidator implements SessionStartValidatorProtocol {
       );
     }
 
-    final hasSmsSte = mode.chainSteps.any(
+    final hasSmsStep = mode.chainSteps.any(
       (s) =>
           s.type == ChainStepType.smsContact ||
           s.type == ChainStepType.phoneCallContact,
     );
 
     // ---- Check 2: Emergency contacts (warning if chain needs them) ----
-    if (hasSmsSte && _contactCount == 0) {
+    if (hasSmsStep && _contactCount == 0) {
       warnings.add(
         const ValidationIssue(
           title: 'No emergency contacts',

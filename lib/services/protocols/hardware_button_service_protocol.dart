@@ -4,9 +4,9 @@ import 'package:guardianangela/domain/models/hardware_panic_event.dart';
 
 /// Abstract interface for hardware-button panic detection.
 ///
-/// See spec 05 §HardwareButtonService. Phase 5 supplies the concrete
-/// implementation for Android (volume keys via `dispatchKeyEvent`) and
-/// iOS (headphone remote via `audio_service` `BaseAudioHandler`).
+/// See spec 05 §HardwareButtonService. The concrete implementation
+/// covers Android (volume keys via `dispatchKeyEvent`) and iOS
+/// (headphone remote via `audio_service` `BaseAudioHandler`).
 ///
 /// The service is started/stopped per-session; the provider is
 /// constructed once at app start but begins listening only on `start()`.

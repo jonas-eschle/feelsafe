@@ -74,14 +74,15 @@ void _onBackgroundStart(ServiceInstance service) {
 ///
 /// On Android, the foreground service is managed via
 /// [NotificationServiceProtocol.showForegroundServiceNotification]. The
-/// plugin-level foreground-service promotion (via
-/// `flutter_background_service` with `SERVICE_TYPE_FOREGROUND`) is set up
-/// in Phase 7 Kotlin code; the Dart side calls [startService] to post/update
-/// the notification and [stopService] to cancel it.
+/// foreground-service promotion is handled by
+/// `flutter_background_service`'s own native service (declared with
+/// `foregroundServiceType="specialUse"` in the manifest); the Dart side
+/// calls [startService] to post/update the notification and
+/// [stopService] to cancel it.
 ///
 /// On iOS, [startService] posts a persistent notification and initiates
 /// a background-task keep-alive request. The plugin's iOS background
-/// behaviour is limited — see the Phase 7 native dependency note above.
+/// behaviour is limited — see the plugin note at the top of this file.
 ///
 /// Action-button taps are routed via [NotificationServiceProtocol.actionTaps].
 /// [onImSafe], [onPause], and [onResume] streams are backed by
@@ -277,8 +278,8 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
       case kActionPause:
         log('onPause action tap', name: 'BackgroundSessionService');
         // Update notification text to reflect the paused state immediately
-        // (spec 05:823-832). The engine-timer pause is owned by SessionController
-        // (Phase 6); we only own the notification here.
+        // (spec 05:823-832). The engine-timer pause is owned by
+        // SessionController; we only own the notification here.
         // G2: stealth mode shows "<fakeName> paused" (default fakeName 'Music'
         // → "Music paused"); normal mode shows "Session paused" (spec 05:825).
         _notification.showForegroundServiceNotification(
@@ -290,9 +291,8 @@ class RealBackgroundSessionService implements BackgroundSessionServiceProtocol {
         _pauseController.add(null);
       case kActionResume:
         log('onResume action tap', name: 'BackgroundSessionService');
-        // G3: restore the prior notification text, not a generic fallback.
-        // Phase 6 SessionController will call updateNotification once it
-        // handles the resume (spec 05:830-832).
+        // G3: restore the prior notification text, not a generic fallback
+        // (spec 05:830-832).
         _notification.showForegroundServiceNotification(
           title: _lastTitle,
           body: _lastBody,

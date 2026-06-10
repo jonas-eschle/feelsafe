@@ -45,7 +45,7 @@ final class SeedData {
   /// Called from [GuardianAngelaDatabase] migration callbacks on
   /// `onCreate` and after every nuke-and-reseed `onUpgrade`. The JSON
   /// singletons (app settings, user profile) are not touched here — the
-  /// Phase 5 startup flow seeds them via their respective repositories
+  /// app startup flow seeds them via their respective repositories
   /// using the helpers below.
   static Future<void> seedInto(GuardianAngelaDatabase db) async {
     await db.transaction(() async {

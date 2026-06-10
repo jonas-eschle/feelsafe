@@ -1,9 +1,8 @@
-// Phase 7 native dependency: MethodChannel
-// `com.guardianangela.app/quick_exit` (Android invokes
-// `finishAndRemoveTask()`, iOS invokes `exit(0)`).
-// Until that lands, the Dart side falls back to
-// `SystemNavigator.pop(animated: false)` so the gesture has a visible
-// effect even on a build without the native channel.
+// Native dependency: MethodChannel `com.guardianangela.app/quick_exit`
+// (Android invokes `finishAndRemoveTask()`, iOS invokes `exit(0)`).
+// On builds without the native channel (web, desktop, tests) the Dart
+// side falls back to `SystemNavigator.pop(animated: false)` so the
+// gesture still has a visible effect.
 
 import 'dart:developer';
 
@@ -15,9 +14,9 @@ import 'package:guardianangela/services/protocols/quick_exit_service_protocol.da
 /// MethodChannel call.
 ///
 /// The channel name is `com.guardianangela.app/quick_exit` and the
-/// invoked method is `quickExit`. The native handler (Phase 7) maps
-/// this to `Activity.finishAndRemoveTask()` on Android and to `exit(0)`
-/// on iOS — see spec 04:1020–1027.
+/// invoked method is `quickExit`. The native handler maps this to
+/// `Activity.finishAndRemoveTask()` on Android and to `exit(0)` on
+/// iOS — see spec 04:1020–1027.
 ///
 /// **Fallback:** when the native channel is not yet installed
 /// (development builds, web, desktop) a

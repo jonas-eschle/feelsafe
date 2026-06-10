@@ -1,7 +1,6 @@
 /// Abstract interface for audio recording used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. Only the methods that
-/// strategies call are declared here.
+/// Only the methods that strategies call are declared here.
 abstract interface class RecordingServiceProtocol {
   /// Records audio for the given [duration] and returns the file path.
   ///

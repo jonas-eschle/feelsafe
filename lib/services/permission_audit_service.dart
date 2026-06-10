@@ -27,10 +27,9 @@ Permission _toHandlerPermission(AppPermission p) => switch (p) {
 /// `package:permission_handler`.
 ///
 /// Inspects only the permissions that [mode] actually needs (spec 05
-/// §Permission Audit Flow §step 2). The [revocations] stream polls
-/// on app resume events — Phase 7 wires the Android native EventChannel
-/// for push-based revocation; until then a 5-second poll is used on both
-/// platforms.
+/// §Permission Audit Flow §step 2). The [revocations] stream is backed
+/// by a periodic permission poll ([pollInterval], default 5 seconds)
+/// on both platforms.
 ///
 /// **Single constructor location rule:** no `RealPermissionAuditService()`
 /// call may appear outside `lib/services/service_providers.dart`

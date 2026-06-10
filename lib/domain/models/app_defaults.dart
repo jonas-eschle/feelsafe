@@ -46,7 +46,7 @@ final class AppDefaults {
 
   /// Global reminder templates (built-in + user-created global templates).
   ///
-  /// Seeded with 8 built-in templates on first launch (Phase 4).
+  /// Seeded with 8 built-in templates on first launch.
   final List<ReminderTemplate> templates;
 
   /// Global per-step-type default configurations.

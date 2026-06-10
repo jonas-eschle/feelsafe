@@ -108,7 +108,7 @@ class AppLocalizationsPl extends AppLocalizations {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return 'Używany numer SIM: $number';
   }
 
   @override

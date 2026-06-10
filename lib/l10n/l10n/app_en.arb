@@ -128,7 +128,7 @@
   "@onboardingUseSimNumber": {
     "description": "Button below the Your Name field on onboarding page 2 (spec 04 Extra 28)."
   },
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "Using SIM number {number}",
   "@onboardingUseSimNumberHint": {
     "description": "Read-only hint displaying the SIM phone number.",
     "placeholders": {

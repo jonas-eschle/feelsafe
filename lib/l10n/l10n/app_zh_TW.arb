@@ -551,7 +551,7 @@
     "description": "Tutorial sheet body for item 5 (kept under 80 words)."
   },
   "onboardingUseSimNumber": "使用我的 SIM 卡號碼",
-  "onboardingUseSimNumberHint": "{number}",
+  "onboardingUseSimNumberHint": "正在使用 SIM 卡號碼 {number}",
   "onboardingUseSimNumberUnsupported": "iOS 不支援此功能",
   "onboardingUseSimNumberUnavailable": "無法讀取號碼",
   "onboardingUseSimNumberPermissionDenied": "權限遭拒",

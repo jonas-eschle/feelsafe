@@ -5,8 +5,8 @@ import 'package:guardianangela/domain/models/session_mode.dart';
 /// Abstract interface for pre-session and mid-session permission
 /// auditing.
 ///
-/// See spec 05 §Permission Audit Flow. Phase 5 supplies the concrete
-/// implementation using `permission_handler`.
+/// See spec 05 §Permission Audit Flow. The concrete implementation is
+/// backed by `permission_handler`.
 ///
 /// Lifecycle:
 /// 1. [auditForMode] is called by `SessionController` at session-start

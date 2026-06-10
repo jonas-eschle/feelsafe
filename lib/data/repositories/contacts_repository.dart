@@ -4,7 +4,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 /// Repository for [EmergencyContact] persistence.
 ///
 /// Thin wrapper over [ContactsDao] that exposes the domain-level API used
-/// by [ContactService] (Phase 5B.1). All reads and writes are delegated
+/// by [ContactService]. All reads and writes are delegated
 /// to the DAO; this class owns the transaction boundary if future batch
 /// operations are needed.
 class ContactsRepository {

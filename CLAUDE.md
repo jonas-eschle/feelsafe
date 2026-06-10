@@ -119,9 +119,8 @@ matrix.
 - `SmsWorker.kt` — WorkManager CoroutineWorker for background SMS
 - `CallStateChannel.kt` — `com.guardianangela.app/call_state`
 - `SystemUiChannel.kt` — `com.guardianangela.app/system_ui`
-- `PhoneChannel.kt` — `com.guardianangela.app/phone`
 - `HardwareButtonChannel.kt` — volume distress trigger
-- `DeviceStateChannel.kt` — battery + device state
+- `DeviceInfoChannel.kt` — `com.guardianangela.app/device_info` (SIM number)
 - `StealthIconChannel.kt` — package manager component toggling
 - `GuardianAngelaAppWidget.kt` — home widget RemoteViews
 - `BootReceiver.kt` — WorkManager re-init after reboot

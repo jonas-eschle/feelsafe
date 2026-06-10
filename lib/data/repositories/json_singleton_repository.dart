@@ -11,7 +11,7 @@ import 'package:pointycastle/export.dart' as pc;
 /// Signature for resolving the AES-256 key used to encrypt the JSON
 /// envelope.
 ///
-/// The Phase 5 wiring resolves this to a [Future<String>] backed by
+/// The production wiring resolves this to a [Future<String>] backed by
 /// `flutter_secure_storage`. Tests inject a fixed key. The string MUST
 /// decode to exactly 32 raw bytes (base64-encoded or hex-encoded).
 typedef KeyProvider = Future<String> Function();

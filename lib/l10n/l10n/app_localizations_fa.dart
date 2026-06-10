@@ -108,7 +108,7 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return 'از شماره سیم‌کارت $number استفاده می‌شود';
   }
 
   @override

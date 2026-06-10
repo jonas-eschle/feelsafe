@@ -1,7 +1,6 @@
 /// Abstract interface for haptic feedback used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. Only the methods that
-/// strategies call are declared here.
+/// Only the methods that strategies call are declared here.
 abstract interface class VibrationServiceProtocol {
   /// Plays the three-pulse countdown warning pattern.
   ///
@@ -15,7 +14,6 @@ abstract interface class VibrationServiceProtocol {
   ///
   /// Used on button release or overlay dismiss to confirm the user action.
   /// Per spec 05:200.
-  // Wired by Phase 6 confirm-action UI per ~/.claude/plans/rippling-weaving-puffin.md §Phase 6
   Future<void> confirmPulse();
 
   /// Plays the sustained alarm vibration pattern.

@@ -109,7 +109,7 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return 'SIM नंबर $number का उपयोग किया जा रहा है';
   }
 
   @override

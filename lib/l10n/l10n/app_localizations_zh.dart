@@ -106,7 +106,7 @@ class AppLocalizationsZh extends AppLocalizations {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return '正在使用 SIM 卡号码 $number';
   }
 
   @override
@@ -2387,7 +2387,7 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String onboardingUseSimNumberHint(Object number) {
-    return '$number';
+    return '正在使用 SIM 卡號碼 $number';
   }
 
   @override

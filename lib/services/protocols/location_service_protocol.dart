@@ -23,9 +23,8 @@ final class LocationFallbackResult {
 /// Abstract interface for GPS location data used by event strategies and
 /// the session controller.
 ///
-/// Phase 5 supplies the concrete implementation. All strategy-facing and
-/// controller-facing methods are declared here so the protocol is the
-/// full contact surface (spec 05:374-385).
+/// All strategy-facing and controller-facing methods are declared here
+/// so the protocol is the full contact surface (spec 05:374-385).
 abstract interface class LocationServiceProtocol {
   /// Checks and requests location permission.
   ///

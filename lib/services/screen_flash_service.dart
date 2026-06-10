@@ -5,8 +5,8 @@ import 'package:guardianangela/services/protocols/screen_flash_service_protocol.
 
 /// A single frame event emitted by [ScreenFlashServiceProtocol] impls.
 ///
-/// The overlay widget (Phase 6) subscribes to the stream and renders the
-/// appropriate background color. [isWhite] alternates with each frame.
+/// UI listeners subscribe to the stream and render the appropriate
+/// background color. [isWhite] alternates with each frame.
 final class ScreenFlashFrame {
   /// Creates a [ScreenFlashFrame].
   const ScreenFlashFrame({required this.isWhite});
@@ -20,9 +20,9 @@ final class ScreenFlashFrame {
 
 /// Production [ScreenFlashServiceProtocol] — pure-Dart, stream-based.
 ///
-/// Emits [ScreenFlashFrame] events from a [Timer.periodic] loop. The
-/// overlay widget (Phase 6) subscribes via [frames] and renders the
-/// correct background color.
+/// Emits [ScreenFlashFrame] events from a [Timer.periodic] loop. UI
+/// listeners subscribe via [frames] and render the correct background
+/// color.
 ///
 /// [startScreenFlash] accepts [speed] `'fast'` (500 ms) or `'slow'`
 /// (1000 ms, default). See spec 05 §ScreenFlashService §Flash Speeds.
@@ -40,9 +40,7 @@ class RealScreenFlashService implements ScreenFlashServiceProtocol {
   Timer? _timer;
   bool _isWhite = true;
 
-  /// Broadcast stream of [ScreenFlashFrame] events.
-  ///
-  /// The overlay widget in Phase 6 subscribes here.
+  /// Broadcast stream of [ScreenFlashFrame] events for UI listeners.
   Stream<ScreenFlashFrame> get frames => _controller.stream;
 
   @override

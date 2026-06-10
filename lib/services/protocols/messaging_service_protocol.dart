@@ -8,8 +8,7 @@ typedef MessageWorkId = String;
 
 /// Abstract interface for outbound messaging used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. Only the methods that
-/// strategies call are declared here.
+/// Only the methods that strategies call are declared here.
 abstract interface class MessagingServiceProtocol {
   /// Sends a message to [contact] via the contact's channel.
   ///

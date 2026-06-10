@@ -8,8 +8,8 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 /// registered in [EventStrategyRegistry]. The strategy encapsulates
 /// **all** side effects for a step type — service calls, logging, etc.
 ///
-/// The [SessionController] (Phase 5) obtains the strategy for a given step
-/// via [EventStrategyRegistry.forStep] and calls [executeReal] when the
+/// The [SessionController] obtains the strategy for a given step via
+/// [EventStrategyRegistry.forStep] and calls [executeReal] when the
 /// engine emits a `stepFired` event.
 ///
 /// **Simulation contract (spec 02 §Simulation behavior summary):**
@@ -21,9 +21,9 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 /// UI fires identically and no card is needed.
 ///
 /// **Error handling:** Strategies intentionally do NOT catch errors. The
-/// engine's `notifyStepExecutionFailed` (called by the controller in
-/// Phase 5) is the centralised non-blocking error handler. Fail loud —
-/// propagate all exceptions.
+/// engine's `notifyStepExecutionFailed` (called by the controller) is
+/// the centralised non-blocking error handler. Fail loud — propagate
+/// all exceptions.
 abstract interface class EventStrategy {
   /// Constant constructor so concrete strategies can be `const`.
   const EventStrategy();

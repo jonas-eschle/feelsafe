@@ -316,7 +316,7 @@ abstract class AppLocalizations {
   /// Read-only hint displaying the SIM phone number.
   ///
   /// In en, this message translates to:
-  /// **'{number}'**
+  /// **'Using SIM number {number}'**
   String onboardingUseSimNumberHint(Object number);
 
   /// Snackbar shown when SIM read is unavailable on iOS.

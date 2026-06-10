@@ -1,7 +1,7 @@
 /// Reference widget test for the Phase 6 cohort.
 ///
 /// Demonstrates the standard pattern every screen test follows
-/// (`test/features/&lt;feature&gt;/&lt;feature&gt;_screen_test.dart`):
+/// (`test/features/<feature>/<feature>_screen_test.dart`):
 /// 1. Build a `_FakeHomeController` subclassing the real controller and
 ///    overriding `build()` to return a canned `HomeState`.
 /// 2. In each `testWidgets` body, call `pumpScreen(tester, const

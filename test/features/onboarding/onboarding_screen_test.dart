@@ -764,12 +764,12 @@ void main() {
       // hint row below the button names the source.
       final phoneField = tester.widget<TextField>(find.byType(TextField).at(1));
       check(phoneField.controller?.text).equals('+15559990000');
-      // The en hint template is verbatim "{number}", so the number appears
-      // twice: once inside the phone field, once in the hint row below the
-      // button — the second occurrence proves the hint row rendered.
+      // The hint row below the button renders the full sentence
+      // ("Using SIM number {number}"), distinct from the bare number
+      // inside the phone field.
       expect(
         find.text(l10n.onboardingUseSimNumberHint('+15559990000')),
-        findsNWidgets(2),
+        findsOneWidget,
       );
       // The listener-driven draft persisted through the controller.
       check(fake.updateProfileDraftCalls).isGreaterThan(0);

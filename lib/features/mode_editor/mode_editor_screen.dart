@@ -227,7 +227,10 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
           l10n.validationHardwareTrigger,
         ModeValidationCode.smsChannelNotOnContacts =>
           l10n.validationSmsChannelNotOnContacts,
-        // Non-blocking; handled by [_confirmSaveWithWarning].
+        // Defensive-unreachable: the validator only ever emits
+        // distressNoActionStep as non-blocking (warning), which
+        // [_confirmSaveWithWarning] handles — this method is called for
+        // blockers only. The arm exists for switch exhaustiveness.
         ModeValidationCode.distressNoActionStep =>
           l10n.validationDistressNoActionBody,
       };

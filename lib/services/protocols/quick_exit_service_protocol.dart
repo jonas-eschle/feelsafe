@@ -17,8 +17,7 @@
 ///   app-switcher; the next launch will look like a normal cold start.
 /// - **Web / desktop:** no-op (Quick Exit is mobile-only per spec 10:148).
 ///
-/// The native MethodChannel lands in Phase 7
-/// (`com.guardianangela.app/quick_exit`). Until then, the Real
+/// On builds without the native channel (web, desktop, tests) the Real
 /// implementation falls back to `SystemNavigator.pop(animated: false)`
 /// so the gesture still has a visible effect.
 abstract interface class QuickExitServiceProtocol {

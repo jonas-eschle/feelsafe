@@ -45,7 +45,7 @@ final class SimNumberUnavailable extends SimNumberResult {
 /// onboarding "Use my SIM number" affordance (spec 04 §Onboarding,
 /// Extra 28).
 ///
-/// Phase 7 supplies the concrete Android implementation that talks to
+/// The concrete Android implementation talks to
 /// `com.guardianangela.app/device_info` via MethodChannel
 /// `getSimPhoneNumber`. iOS / Web / Linux / Windows / macOS return
 /// [SimNumberUnsupported] without invoking any platform code.

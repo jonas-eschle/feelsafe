@@ -7,9 +7,8 @@ const int kDefaultAlarmRampSeconds = 5;
 
 /// Abstract interface for audio playback used by event strategies.
 ///
-/// Phase 5 supplies the concrete implementation. This file pins only
-/// the methods that the 9 strategies actually call; the full audio API
-/// lives in `lib/services/audio_service.dart` (Phase 5).
+/// This file pins only the methods that the 9 strategies actually
+/// call; the full audio API lives in `lib/services/audio_service.dart`.
 abstract interface class AudioServiceProtocol {
   /// Plays a ringtone sound, looping indefinitely until [stop] is called.
   ///
