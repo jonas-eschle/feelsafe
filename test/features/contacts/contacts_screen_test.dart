@@ -805,17 +805,17 @@ void main() {
   // ── AppBar import action ─────────────────────────────────────────────────
 
   group('ContactsScreen — Import from device', () {
-    testWidgets('import IconButton renders on mobile', (
-      WidgetTester tester,
-    ) async {
+    testWidgets('import IconButton is absent on desktop hosts where import '
+        'is unsupported', (WidgetTester tester) async {
       final fake = _FakeContactsController(_state());
       await pumpScreen(
         tester,
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
-      // The test runner is Linux desktop so the conditional renders nothing.
-      // Verify only that the PopupMenuButton (overflow) is still present.
+      // The test runner is Linux desktop, so `_importSupported` is false and
+      // the import action must NOT render — only the overflow menu remains.
+      expect(find.byIcon(Icons.import_contacts), findsNothing);
       expect(find.byType(PopupMenuButton<String>), findsOneWidget);
     });
   });

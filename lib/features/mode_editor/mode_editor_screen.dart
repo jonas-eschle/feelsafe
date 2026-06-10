@@ -12,6 +12,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/validation/mode_draft_validator.dart';
+import 'package:guardianangela/features/distress_modes/distress_modes_controller.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
@@ -208,6 +209,9 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     // show the saved/renamed mode until app restart (spec 04:422-426).
     ref.invalidate(homeControllerProvider);
     ref.invalidate(modesControllerProvider);
+    // The distress editor pops back to the same kind of keep-alive list
+    // (spec 04:1707); on an unbuilt provider this merely drops the cache.
+    ref.invalidate(distressModesControllerProvider);
     _dirty = false;
     context.pop();
   }

@@ -37,6 +37,7 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
+import 'package:guardianangela/features/distress_modes/distress_modes_controller.dart';
 import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
 import 'package:guardianangela/features/modes/modes_controller.dart';
@@ -920,6 +921,50 @@ void main() {
         modesAfter.modes.map((m) => m.name),
       ).unorderedEquals(['Walk', 'Editor Mode']);
     });
+
+    testWidgets(
+      'saving a distress rename refreshes the keep-alive distress list '
+      '(spec 04:1707 — distress-editor save matches the regular editor)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final db = _emptyDb();
+        addTearDown(db.close);
+        await _seedMode(db, _mode(id: 'd1', name: 'Panic', isDistress: true));
+        await _pumpWithRouter(
+          tester,
+          const ModeEditorScreen(modeId: 'd1', isDistress: true),
+          _overrides(db),
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(ModeEditorScreen)),
+          listen: false,
+        );
+        // Resolve the distress list BEFORE the save — it is keep-alive, so
+        // this is the cached state a user pops back to beneath the editor.
+        final DistressModesState before = await container.read(
+          distressModesControllerProvider.future,
+        );
+        check(before.modes.map((m) => m.name)).deepEquals(['Panic']);
+
+        await tester.enterText(find.byType(TextField).first, 'Renamed Panic');
+        await tester.pump();
+        await tester.tap(find.text(l10n.commonSave));
+        await tester.pumpAndSettle();
+        // holdButton-only distress chain → non-blocking no-action warning;
+        // proceed to save (spec 04:1659).
+        await tester.tap(
+          find.widgetWithText(FilledButton, l10n.validationSaveAnyway),
+        );
+        await tester.pumpAndSettle();
+
+        // Without the post-save invalidation the keep-alive distress list
+        // keeps the stale pre-save name until app restart.
+        final DistressModesState after = await container.read(
+          distressModesControllerProvider.future,
+        );
+        check(after.modes.map((m) => m.name)).deepEquals(['Renamed Panic']);
+      },
+    );
   });
 
   group('ModeEditorScreen — unsaved-changes guard', () {
