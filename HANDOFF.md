@@ -12,15 +12,17 @@ orchestrator `git` sanity-check after each agent BEFORE spending cohort tokens. 
 committing agent on the tree at a time.** Auto-chain + push are pre-authorized for this
 run; interrupt the user ONLY for a genuine BLOCKED value/spec decision.
 
-**VERIFIED STATE (clean stop):** HEAD = the baton commit atop fix commit `82d4c60`
-(atop `9901002`), **+31 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean.
-Suite **4640 pass**, `analyze --fatal-infos` = 0, **coverage-of-logic 97.85%**
-(13031/13317), floor 97.2. **C7 (a..g + 5 fix legs) COMPLETE — the host-coverage
-campaign is DONE; ~286 missed lines remain = device-only/codegen/defensive census.**
+**VERIFIED STATE (clean stop):** HEAD = the baton commit atop C8 commit `f2054d1`,
+**+33 commits UNPUSHED** vs origin/main (=`f5eea2c`), tree clean. Suite **4645 pass**,
+`analyze --fatal-infos` = 0, **coverage-of-logic 97.85%** (13031/13317), floor 97.2.
+**C7 COMPLETE; C8 COMPLETE (Phase-9 spec-coverage assertions LIVE + fail-loud-proven:
+45 R-rows + 49 section rows + 16 INT/WID name-grep IDs + bidirectional spec↔matrix
+sync + 4 device markers; spec-07 fully reconciled; all 7 rationale markers
+cohort-adjudicated HONEST incl. BatteryAlertConfig=superseded per 08:779).**
 M0–M4 PUSHED; M5 (FINAL milestone) in progress. (NB: local commits survive a `/clear`;
-the fresh session continues C8→C10 then pushes the whole stack at C10.)
+the fresh session continues C9→C10 then pushes the whole stack at C10.)
 
-**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C8:** C1/C2/C3/A5 (INT scenarios
+**COHORT-VERIFIED LEDGER — do NOT re-verify; resume at C9:** C1/C2/C3/A5 (INT scenarios
 + SMS-cancel-on-disarm, prior sessions) · C4 (device-e2e #11/#12/stealth) · C4-fix
 (device-e2e honesty — tagged `@Tags(['device-e2e'])` + #12 hardened to fail-loud on host)
 · C5 (coverage-of-logic gate + ratchet floor; honest 2-file exclude) · C6 (5 safety
@@ -36,11 +38,15 @@ race-free; arch ruled the modes-staleness observation SPEC-MANDATED = bug #9,
 fix mandated as the C7f pre-task) · C7f (nav/entry + contacts + the bug-#9
 4-path pre-task: qa-PASS; arch found the 5th leg — the shared editor is ALSO the
 distress editor and stranded the distress list → C7f-fix `db24ba1` re-cohort
-PASS×2) · **C7g (settings + misc, FINAL slice: qa-PASS; arch symmetry sweep
+PASS×2) · C7g (settings + misc, FINAL slice: qa-PASS; arch symmetry sweep
 found bug #12 theme/language live-propagation → C7g-fix `82d4c60` also proved +
 fixed bug #13 onboarding redirect bounce; re-cohort PASS×2 — await-the-future
-race-close verified deadlock-free + fail-loud, resetOnboarding ruled safe)** —
-ALL architect+qa **PASS**.
+race-close verified deadlock-free + fail-loud, resetOnboarding ruled safe) ·
+**C8 (spec-coverage matrix + spec-07 reconciliation, `f2054d1`: arch
+adjudicated all 7 rationale markers honest + spot-verified 6 renamed rows pin
+real behavior + spec-05 invariants byte-accurate; qa verified every enforcement
+mechanism fail-loud incl. the bidirectional sync + the bug-#13 await-half
+mutation pin)** — ALL architect+qa **PASS**.
 
 **5 production bugs found+fixed+verified this run** (for the C10 milestone summary):
 (1) `RealFlashService.stopFlash()` hung while a flash loop ran → SOS flash couldn't stop
@@ -117,12 +123,22 @@ invalidate-exposes-null race; arch-verified deadlock-free + fail-loud).
 **BUGS #9–#13 are ALL the keep-alive-provider-staleness class — the dominant
 v3 wiring-gap pattern; cite as a family in the C10 milestone summary.**
 
-**NEXT = C8 — spec-coverage matrix + flip the Phase-9 assertions** (the THEN-block
-below has the accumulated item list; C8 also picks up two small test items: (a) the
-qa-prescribed pin isolating the bug-#13 await-half — assert `firstLaunchProvider`
-resolves false immediately after `completeOnboarding`, not just the route outcome;
-(b) the pre-existing `FileSelectorPlatform.instance` swaps without addTearDown in
-backup_restore_screen_test (pollution risk under parallel runs — fix mechanically).
+**NEXT = C9 — doc-sweep + tidy (the accumulated list):** the ~31 stale `Phase [0-9]`
+markers across ~27 `lib/services/` files; CLAUDE.md native-files tidy (PhoneChannel.kt
+/DeviceStateChannel.kt don't exist); the per-chunk C9 items recorded in each KEY
+FINDINGS section below (C7a: dead stealth ternary session_screen.dart:464-471 —
+DELETE, removes 2 uncovered lines; `EventServices.isCancelled` no-consumer doc/API
+decision; C7c: orphaned doc comment, "hold-5s" header, mode_editor:219 dead-arm
+annotation; C7d: "HistoryController.build" phantom quote, :72-74 stale comment;
+C7e: HTML-escaped literals, `hasSmsSte` typo rename, share_plus header; C7f:
+widget_test.dart:6-7 stale pointer, **l10n `onboardingUseSimNumberHint` literally
+"{number}" in ALL 14 locales — fix EN + the 13-locale delta in the same chunk**;
+C7g: pin_setup:47 defensive annotation). THEN **C10** — denominator decision
+(orchestrator-authorized per the original baton: exclude `lib/data/db/tables/*.dart`
+codegen glob + the Platform-gated device-only files per the census; target ~99%-of-
+logic honest), final GA-readiness cohort over the whole M5 stack, authoritative full
+gate, milestone summary citing all 13 bugs (esp. the keep-alive-staleness family
+#9–#13), **PUSH**.
 **C7 chunk-cost ledger (final):** C7a 335k, C7b 249k, C7c 202k, C7d 165k+217k-fix,
 C7e 257k+93k-fix, C7f 307k+~270k-fix(stalls), C7g 233k+211k-fix. Subagent rules that
 saved money: never end a turn with a backgrounded gate pending; read the harness
