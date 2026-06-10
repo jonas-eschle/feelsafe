@@ -123,7 +123,9 @@ Future<_Harness> _pumpGate(
   final bio = biometric ?? SimulationBiometricService();
   await pumpScreen(
     tester,
-    const LaunchPinScreen(),
+    // Deliberately non-const: a purely-const construction never executes
+    // the constructor line at runtime, leaving it lcov-missed.
+    LaunchPinScreen(key: UniqueKey()),
     overrides: <Override>[
       appSettingsRepositoryProvider.overrideWithValue(
         _FakeAppSettingsRepository(settings),
@@ -189,6 +191,29 @@ void main() {
       await _enterDigits(tester, <int>[1, 2, 3, 4]);
       check(h.gate.unlockCalls).equals(1);
       check(h.session.resetCalls).isGreaterThan(0);
+      check(h.session.distressCalls).equals(0);
+    });
+
+    testWidgets('backspace removes the last typed digit and is a no-op on '
+        'an empty entry', (WidgetTester tester) async {
+      final h = await _pumpGate(tester, settings: _settings());
+      // No-op on an empty entry: display unchanged, nothing submitted.
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      expect(find.text('○ ○ ○ ○'), findsOneWidget);
+
+      // Typo a 9, erase it, then the real PIN still unlocks — proving the
+      // erased digit is not part of the submitted entry.
+      await tester.tap(find.widgetWithText(InkWell, '9').last);
+      await tester.pump();
+      expect(find.text('● ○ ○ ○'), findsOneWidget);
+      await tester.tap(find.byIcon(Icons.backspace_outlined));
+      await tester.pump();
+      expect(find.text('○ ○ ○ ○'), findsOneWidget);
+      check(h.gate.unlockCalls).equals(0);
+
+      await _enterDigits(tester, <int>[1, 2, 3, 4]);
+      check(h.gate.unlockCalls).equals(1);
       check(h.session.distressCalls).equals(0);
     });
 

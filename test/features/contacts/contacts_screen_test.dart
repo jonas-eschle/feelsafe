@@ -10,6 +10,7 @@
 /// Spec ref: `docs/spec/04-screens-navigation.md §Contacts Screen`.
 library;
 
+import 'package:flutter/gestures.dart' show kLongPressTimeout, kPressTimeout;
 import 'package:flutter/material.dart';
 
 import 'package:checks/checks.dart';
@@ -78,6 +79,14 @@ class _FakeContactsController extends ContactsController {
     deleteAllCalls++;
     state = const AsyncData(ContactsState(contacts: <EmergencyContact>[]));
   }
+}
+
+/// [ContactsController] whose build fails — drives the AsyncValue error
+/// branch of the screen.
+class _ThrowingContactsController extends ContactsController {
+  @override
+  Future<ContactsState> build() async =>
+      throw StateError('contacts table unreadable');
 }
 
 /// Records which named route was last pushed through GoRouter.
@@ -261,6 +270,22 @@ void main() {
         const ContactsScreen(),
         overrides: _overrideWith(fake),
       );
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+    });
+
+    testWidgets('a failed load renders the error text (no list, no '
+        'spinner)', (WidgetTester tester) async {
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: <Override>[
+          contactsControllerProvider.overrideWith(
+            _ThrowingContactsController.new,
+          ),
+        ],
+      );
+      expect(find.textContaining('contacts table unreadable'), findsOneWidget);
+      expect(find.byType(ListTile), findsNothing);
       expect(find.byType(CircularProgressIndicator), findsNothing);
     });
   });
@@ -732,6 +757,49 @@ void main() {
       );
       expect(find.byIcon(Icons.drag_handle), findsNWidgets(2));
     });
+
+    testWidgets('long-press dragging a row down invokes controller.reorder '
+        'with ReorderableListView indices', (WidgetTester tester) async {
+      final contacts = <EmergencyContact>[
+        _contact('c1', 'Alice'),
+        _contact('c2', 'Bob', sortOrder: 1),
+        _contact('c3', 'Carol', sortOrder: 2),
+      ];
+      final fake = _FakeContactsController(_state(contacts: contacts));
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+
+      // Long-press drag (the mobile ReorderableListView gesture): pick up
+      // Alice (row 0) and drop her clearly past the last row (a stable
+      // slot — mid-list drops sit on a row-boundary and flake). All
+      // geometry is captured BEFORE the gesture: rows shift while the
+      // drag is live, so mid-drag finders read moved positions.
+      final aliceCenter = tester.getCenter(find.text('Alice'));
+      final rowHeight = tester.getSize(find.byType(Dismissible).first).height;
+      final gesture = await tester.startGesture(aliceCenter);
+      await tester.pump(kLongPressTimeout + kPressTimeout);
+      await gesture.moveBy(Offset(0, rowHeight * 3));
+      await tester.pump();
+      await gesture.up();
+      await tester.pumpAndSettle();
+
+      check(fake.reorderCalls).equals(1);
+      check(fake.lastOldIndex).equals(0);
+      // ReorderableListView computes the drop slot from the proxy's top
+      // edge, so a proxy whose center sits 3 rows down reports slot 2 —
+      // still "including the moved row" semantics for a downward move.
+      check(fake.lastNewIndex).equals(2);
+      // The fake mirrors the production adjustment (2 → insert at 1), so
+      // Alice renders between Bob and Carol.
+      final aliceY = tester.getTopLeft(find.text('Alice')).dy;
+      final bobY = tester.getTopLeft(find.text('Bob')).dy;
+      final carolY = tester.getTopLeft(find.text('Carol')).dy;
+      check(aliceY).isGreaterThan(bobY);
+      check(carolY).isGreaterThan(aliceY);
+    });
   });
 
   // ── AppBar import action ─────────────────────────────────────────────────
@@ -876,5 +944,38 @@ void main() {
         check(fake.deleteAllCalls).equals(1);
       },
     );
+
+    testWidgets('cancelling the typed-confirm dialog does NOT call deleteAll '
+        '(second chance to back out, spec 04 §Contacts delete-all)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeContactsController(
+        _state(contacts: <EmergencyContact>[_contact('c1', 'Alice')]),
+      );
+      await pumpScreen(
+        tester,
+        const ContactsScreen(),
+        overrides: _overrideWith(fake),
+      );
+      await tester.tap(find.byType(PopupMenuButton<String>));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.contactsDeleteAllMenu));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.commonConfirm));
+      await tester.pumpAndSettle();
+      // Even with the sentinel typed, Cancel must abort.
+      await tester.enterText(
+        find.byType(TextField),
+        l10n.contactsDeleteAllTypeConfirmSentinel,
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.commonCancel));
+      await tester.pumpAndSettle();
+
+      check(fake.deleteAllCalls).equals(0);
+      expect(find.text('Alice'), findsOneWidget);
+    });
   });
 }

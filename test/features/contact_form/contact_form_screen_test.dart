@@ -796,4 +796,41 @@ void main() {
       expect(find.text(l10n.phoneWarnInvalidChars), findsNothing);
     });
   });
+
+  // ---- Group: load failure modes --------------------------------------------
+
+  group('ContactFormScreen — load failure modes', () {
+    testWidgets('editing a vanished contact id leaves an empty, usable form '
+        '(no spinner hang)', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // No row 'ghost' exists — the load resolves null and must still
+      // clear the loading state instead of spinning forever.
+      await _pumpWithRouter(
+        tester,
+        contactId: 'ghost',
+        overrides: baseOverrides,
+      );
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.text(l10n.contactFormTitleEdit), findsOneWidget);
+      final nameField = tester.widget<TextField>(find.byType(TextField).at(0));
+      check(nameField.controller?.text).equals('');
+    });
+
+    testWidgets('a database failure during load still clears the loading '
+        'state (catch path)', (WidgetTester tester) async {
+      await _pumpWithRouter(
+        tester,
+        contactId: 'c-1',
+        overrides: <Override>[
+          databaseProvider.overrideWith(
+            (_) async => throw StateError('db unavailable'),
+          ),
+        ],
+      );
+
+      expect(find.byType(CircularProgressIndicator), findsNothing);
+      expect(find.byType(TextField), findsWidgets);
+    });
+  });
 }

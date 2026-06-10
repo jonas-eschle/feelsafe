@@ -29,6 +29,11 @@ class ModesController extends AsyncNotifier<ModesState> {
   }
 
   /// Creates a blank mode and returns its id.
+  ///
+  /// Invalidates the home controller for the same reason [delete] does:
+  /// home is keep-alive and stays mounted beneath the modes screen, so
+  /// without a rebuild its cached chip list would not show the new mode
+  /// until app restart (spec 04:422-426).
   Future<String> createBlank() async {
     final db = await ref.read(databaseProvider.future);
     final id = const Uuid().v4();
@@ -50,11 +55,14 @@ class ModesController extends AsyncNotifier<ModesState> {
       ],
     );
     await db.sessionModesDao.upsert(blank);
+    ref.invalidate(homeControllerProvider);
     ref.invalidateSelf();
     return id;
   }
 
   /// Duplicates [sourceId] and returns the new mode's id.
+  ///
+  /// Invalidates the home controller — see [createBlank] for why.
   Future<String> duplicate(String sourceId) async {
     final db = await ref.read(databaseProvider.future);
     final src = await db.sessionModesDao.getById(sourceId);
@@ -64,6 +72,7 @@ class ModesController extends AsyncNotifier<ModesState> {
     final newId = const Uuid().v4();
     final copy = src.copyWith(id: newId, name: 'Copy of ${src.name}');
     await db.sessionModesDao.upsert(copy);
+    ref.invalidate(homeControllerProvider);
     ref.invalidateSelf();
     return newId;
   }

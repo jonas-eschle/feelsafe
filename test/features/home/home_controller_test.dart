@@ -269,6 +269,39 @@ void main() {
         check(session.starts.single.mode.id).equals('m1');
       },
     );
+
+    test('creating a blank mode via ModesController appears on home', () async {
+      // Same staleness class as the delete path (spec 04:422-426 +
+      // :1518-1521): home is keep-alive and stays mounted beneath /modes,
+      // so a mode created on the Modes screen must invalidate home or the
+      // chip list keeps the stale pre-create list until app restart.
+      await db.sessionModesDao.upsert(_mode('m1', 'Walk'));
+      buildContainer();
+      check((await state()).modes.map((m) => m.id)).deepEquals(['m1']);
+
+      final String newId = await container
+          .read(modesControllerProvider.notifier)
+          .createBlank();
+
+      final HomeState s = await state();
+      check(s.modes.map((m) => m.id)).contains(newId);
+    });
+
+    test('duplicating a mode via ModesController appears on home', () async {
+      await db.sessionModesDao.upsert(_mode('m1', 'Walk'));
+      buildContainer();
+      check((await state()).modes.map((m) => m.id)).deepEquals(['m1']);
+
+      final String copyId = await container
+          .read(modesControllerProvider.notifier)
+          .duplicate('m1');
+
+      final HomeState s = await state();
+      check(s.modes.map((m) => m.id)).unorderedEquals(['m1', copyId]);
+      check(
+        s.modes.firstWhere((m) => m.id == copyId).name,
+      ).equals('Copy of Walk');
+    });
   });
 
   group('HomeController.selectMode', () {

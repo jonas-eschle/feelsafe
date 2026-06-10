@@ -128,7 +128,44 @@
 #     synchronously at listen). The HomeScreen super.key const line is
 #     pinned with a non-const UniqueKey() construction (C7b's de-jitter
 #     trick).
-#   * Floor set to 95.1 — ~0.6% under the measurement to absorb run-to-run
+#   * M5 C7f ratchet (2026-06-10) = 96.77%-of-logic (12879 / 13309 lines)
+#     after covering the nav/entry + contacts surface — app_router (60→0:
+#     the REAL goRouterProvider pumped via MaterialApp.router walks all 28
+#     routes, pinning every builder + query-parse — session quickExit
+#     default, fake-call `extra` config used verbatim, completed
+#     duration/simulation/feedback/id, contact-form id/name/phone prefill,
+#     mode-editor regular vs distress variants, pin-setup type + its 'app'
+#     default, past-events detail vs evidence — plus the first-launch
+#     redirect trapping deep links inside onboarding and the launch-gate
+#     lock → /launch-pin → unlock() → / round-trip), contacts_controller
+#     (27→0, real ProviderContainer + in-memory Drift; reorder
+#     down-adjustment vs raw up-index BOTH pinned with persisted sortOrder
+#     rewrite, pre-build reorder no-op, delete/deleteAll db round-trip),
+#     onboarding_screen (26→0, Skip absent on page 0 / jumps to page 2 /
+#     finishes on the last page, all 4 SimNumberResult branches incl. the
+#     phone-field fill + hint row, add-emergency-contact push),
+#     contacts_screen (29→24, AsyncValue error branch, REAL long-press
+#     drag → onReorder indices, typed-confirm Cancel aborts deleteAll),
+#     launch_pin_screen (6→0, backspace erases a typo digit + is a no-op
+#     on empty + erased digit provably absent from the submitted PIN;
+#     super.key const line pinned with the C7b non-const UniqueKey trick),
+#     contact_form_screen (6→4, vanished-contact-id and db-failure loads
+#     both clear the spinner), onboarding_controller (5→0, real-db
+#     contact-count watcher + draft copyWith preservation). +145 covered
+#     lines. PRE-TASK (bug #9, spec 04:422-426 + :1518-1521, all FOUR
+#     paths red→green proven): home chip-list staleness — the keep-alive
+#     homeControllerProvider was only invalidated by ModesController.delete
+#     (C7e), so modes created/duplicated/renamed/restored stayed invisible
+#     on home until app restart. ModesController.createBlank + duplicate
+#     now invalidate home (mirroring delete's why-doc); the mode-editor
+#     save (whose bare ModeEditorService.save upsert routes around BOTH
+#     list controllers) invalidates home + modes post-save; a successful
+#     backup-restore import invalidates home + modes at the SCREEN layer
+#     (BackupService stays Riverpod-free). The 28 lines left in this slice
+#     are the census host-unreachables: contacts_screen 38-41 + 148-180
+#     (Platform.isAndroid/iOS-gated flutter_contacts device import) and
+#     contact_form_screen 290-294 (Platform.isIOS SMS manual-send warning).
+#   * Floor set to 96.1 — ~0.6% under the measurement to absorb run-to-run
 #     widget-test line jitter so the everyday gate never falsely reds. The
 #     gate PASSES at the baseline today.
 #
@@ -138,4 +175,4 @@
 # NOT set this to 99 before the covering tests exist — that would red the
 # everyday CI with no code change.
 # ─────────────────────────────────────────────────────────────────────────────
-95.1
+96.1

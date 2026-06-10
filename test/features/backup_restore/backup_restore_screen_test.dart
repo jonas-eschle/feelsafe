@@ -36,13 +36,20 @@ import 'package:flutter/services.dart';
 
 import 'package:checks/checks.dart';
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+import 'package:guardianangela/data/db/database.dart';
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
+import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
+import 'package:guardianangela/domain/models/chain_step.dart';
+import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/features/backup_restore/backup_restore_screen.dart';
+import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/services/protocols/backup_service_protocol.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import 'package:guardianangela/services/sim/backup_service_sim.dart';
@@ -891,4 +898,106 @@ void main() {
       expect(find.byType(LinearProgressIndicator), findsNothing);
     });
   });
+
+  // ---- Post-restore staleness (bug #9, spec 04:1518-1521) ----
+
+  group('BackupRestoreScreen — post-restore refresh', () {
+    testWidgets(
+      'a successful import refreshes the keep-alive home + modes lists '
+      '(restored modes visible without an app restart)',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        final db = GuardianAngelaDatabase.memory(seedCallback: (_) async {});
+        addTearDown(db.close);
+        await db.sessionModesDao.upsert(_sessionMode('m-old', 'Old Mode'));
+        final service = _ModeSwapBackupService(db);
+        final original = FileSelectorPlatform.instance;
+        FileSelectorPlatform.instance = _FakeFileSelector(file: _xFile());
+        addTearDown(() => FileSelectorPlatform.instance = original);
+        await pumpScreen(
+          tester,
+          const BackupRestoreScreen(),
+          overrides: <Override>[
+            ..._backupOverride(service),
+            databaseProvider.overrideWith((_) async => db),
+          ],
+        );
+        final container = ProviderScope.containerOf(
+          tester.element(find.byType(BackupRestoreScreen)),
+          listen: false,
+        );
+        // Resolve home + modes BEFORE the import — both are keep-alive, so
+        // this is the cached state a user carries beneath the backup screen.
+        final HomeState homeBefore = await container.read(
+          homeControllerProvider.future,
+        );
+        check(homeBefore.modes.map((m) => m.name)).deepEquals(['Old Mode']);
+        final ModesState modesBefore = await container.read(
+          modesControllerProvider.future,
+        );
+        check(modesBefore.modes.map((m) => m.name)).deepEquals(['Old Mode']);
+
+        await tester.tap(
+          find.ancestor(
+            of: find.text(l10n.backupImportButton),
+            matching: find.byType(OutlinedButton),
+          ),
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(find.text(l10n.commonConfirm));
+        await tester.pumpAndSettle();
+        check(service.importCalls).isNotEmpty();
+
+        // importFromJson wiped + re-inserted sessionModes behind both
+        // controllers' backs; without the screen-layer invalidation the
+        // cached lists keep the deleted pre-restore modes.
+        final HomeState homeAfter = await container.read(
+          homeControllerProvider.future,
+        );
+        check(homeAfter.modes.map((m) => m.name)).deepEquals(['Restored Mode']);
+        final ModesState modesAfter = await container.read(
+          modesControllerProvider.future,
+        );
+        check(
+          modesAfter.modes.map((m) => m.name),
+        ).deepEquals(['Restored Mode']);
+      },
+    );
+  });
+}
+
+/// Minimal valid [SessionMode] row for the staleness scenario.
+SessionMode _sessionMode(String id, String name) => SessionMode(
+  id: id,
+  name: name,
+  chainSteps: <ChainStep>[
+    ChainStep(
+      id: '$id-s0',
+      type: ChainStepType.holdButton,
+      order: 0,
+      waitSeconds: 0,
+      durationSeconds: 10,
+      gracePeriodSeconds: 5,
+      retryCount: 0,
+      randomize: false,
+    ),
+  ],
+);
+
+/// Mimics [RealBackupService.importFromJson]'s wipe + re-insert of
+/// sessionModes against the test db, so the screen-layer staleness fix is
+/// proven against a genuinely changed table (not a no-op import).
+class _ModeSwapBackupService extends SimulationBackupService {
+  _ModeSwapBackupService(this._db);
+
+  final GuardianAngelaDatabase _db;
+
+  @override
+  Future<void> importFromJson(String json) async {
+    await super.importFromJson(json);
+    for (final m in await _db.sessionModesDao.getAll()) {
+      await _db.sessionModesDao.deleteById(m.id);
+    }
+    await _db.sessionModesDao.upsert(_sessionMode('m-new', 'Restored Mode'));
+  }
 }

@@ -7,6 +7,8 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
+import 'package:guardianangela/features/home/home_controller.dart';
+import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/session/session_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
@@ -117,6 +119,13 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
       final service = await ref.read(backupServiceProvider.future);
       await service.importFromJson(utf8.decode(bytes));
       if (!mounted) return;
+      // importFromJson wiped + re-inserted sessionModes behind both list
+      // controllers' backs; home and modes are keep-alive, so without a
+      // rebuild their cached chip lists would keep showing the deleted
+      // pre-restore modes until app restart (spec 04:1518-1521). Stays at
+      // the screen layer — BackupService must remain Riverpod-free.
+      ref.invalidate(homeControllerProvider);
+      ref.invalidate(modesControllerProvider);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(l10n.backupImportSuccess)));

@@ -12,7 +12,9 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/validation/mode_draft_validator.dart';
+import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_controller.dart';
+import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/features/modes/widgets/safety_options_section.dart';
 import 'package:guardianangela/features/modes/widgets/step_config_panel.dart';
 import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
@@ -200,6 +202,12 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
     final db = await ref.read(databaseProvider.future);
     await ModeEditorService(db).save(updated);
     if (!mounted) return;
+    // The bare ModeEditorService.save upsert routes around BOTH list
+    // controllers; home and modes are keep-alive and stay mounted beneath
+    // this editor, so without a rebuild their cached chip lists would not
+    // show the saved/renamed mode until app restart (spec 04:422-426).
+    ref.invalidate(homeControllerProvider);
+    ref.invalidate(modesControllerProvider);
     _dirty = false;
     context.pop();
   }

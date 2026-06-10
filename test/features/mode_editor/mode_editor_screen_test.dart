@@ -37,7 +37,9 @@ import 'package:guardianangela/domain/models/emergency_contact.dart';
 import 'package:guardianangela/domain/models/session_mode.dart';
 import 'package:guardianangela/domain/triggers/disarm_trigger.dart';
 import 'package:guardianangela/domain/triggers/distress_trigger.dart';
+import 'package:guardianangela/features/home/home_controller.dart';
 import 'package:guardianangela/features/mode_editor/mode_editor_screen.dart';
+import 'package:guardianangela/features/modes/modes_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
@@ -867,6 +869,56 @@ void main() {
       final allModes = await db.sessionModesDao.getAll();
       final saved = allModes.firstWhere((m) => m.name == 'Panic Mode');
       check(saved.isDistressMode).isTrue();
+    });
+
+    testWidgets('saving a new mode refreshes the keep-alive home + modes lists '
+        '(spec 04:422-426 — no stale chip list after an editor save)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final db = _emptyDb();
+      addTearDown(db.close);
+      await _seedMode(db, _mode());
+      await _pumpWithRouter(
+        tester,
+        const ModeEditorScreen(isDistress: false),
+        _overrides(db),
+      );
+      final container = ProviderScope.containerOf(
+        tester.element(find.byType(ModeEditorScreen)),
+        listen: false,
+      );
+      // Resolve home + modes BEFORE the save — both are keep-alive, so
+      // this is the cached state a user carries beneath the editor.
+      final HomeState homeBefore = await container.read(
+        homeControllerProvider.future,
+      );
+      check(homeBefore.modes.map((m) => m.name)).deepEquals(['Walk']);
+      final ModesState modesBefore = await container.read(
+        modesControllerProvider.future,
+      );
+      check(modesBefore.modes.map((m) => m.name)).deepEquals(['Walk']);
+
+      await tester.enterText(find.byType(TextField).first, 'Editor Mode');
+      await tester.pump();
+      await tester.tap(find.text(l10n.commonSave));
+      await tester.pumpAndSettle();
+
+      // The editor's bare ModeEditorService.save upsert routes around
+      // BOTH controllers — without the post-save invalidation home and
+      // modes keep the stale pre-save list until app restart.
+      final HomeState homeAfter = await container.read(
+        homeControllerProvider.future,
+      );
+      check(
+        homeAfter.modes.map((m) => m.name),
+      ).unorderedEquals(['Walk', 'Editor Mode']);
+      final ModesState modesAfter = await container.read(
+        modesControllerProvider.future,
+      );
+      check(
+        modesAfter.modes.map((m) => m.name),
+      ).unorderedEquals(['Walk', 'Editor Mode']);
     });
   });
 

@@ -23,6 +23,8 @@ import 'package:guardianangela/core/widgets/pride_page_indicator.dart';
 import 'package:guardianangela/features/onboarding/onboarding_controller.dart';
 import 'package:guardianangela/features/onboarding/onboarding_screen.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
+import 'package:guardianangela/services/protocols/device_info_service_protocol.dart';
+import 'package:guardianangela/services/service_providers.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -60,6 +62,21 @@ class _FakeOnboardingController extends OnboardingController {
   }
 }
 
+/// Canned [DeviceInfoServiceProtocol] driving the "Use my SIM number"
+/// result branches (spec 04 §Onboarding, Extra 28).
+class _FakeDeviceInfoService implements DeviceInfoServiceProtocol {
+  _FakeDeviceInfoService(this._result);
+
+  final SimNumberResult _result;
+  int calls = 0;
+
+  @override
+  Future<SimNumberResult> getSimPhoneNumber() async {
+    calls++;
+    return _result;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Harness
 // ---------------------------------------------------------------------------
@@ -88,7 +105,10 @@ GoRouter _router({required List<Override> overrides}) => GoRouter(
     GoRoute(
       path: '/contacts/new',
       name: 'contact_form',
-      builder: (context, state) => const Scaffold(body: SizedBox.shrink()),
+      builder: (context, state) => const Scaffold(
+        key: ValueKey('contact-form-stub'),
+        body: SizedBox.shrink(),
+      ),
     ),
   ],
 );
@@ -661,6 +681,157 @@ void main() {
       await tester.pumpAndSettle();
       await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
       handle.dispose();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Skip button (AppBar, pages 1-2 only)
+  // -------------------------------------------------------------------------
+
+  group('OnboardingScreen — Skip button', () {
+    testWidgets('is absent on page 0 and Skip on page 1 jumps to page 2', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      await _pumpOnboarding(tester, overrides: _overrides(fake));
+      expect(find.text(l10n.onboardingSkip), findsNothing);
+
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.onboardingSkip));
+      await tester.pumpAndSettle();
+
+      // Landed on the permissions page with the final-page CTA.
+      expect(find.text(l10n.onboardingPermissionsTitle), findsOneWidget);
+      expect(find.text(l10n.onboardingGetStarted), findsOneWidget);
+      check(fake.completeOnboardingCalls).equals(0);
+    });
+
+    testWidgets('Skip on the last page finishes onboarding and leaves the '
+        'screen', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      await _pumpOnboarding(tester, overrides: _overrides(fake));
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.onboardingSkip));
+      await tester.pumpAndSettle();
+
+      check(fake.completeOnboardingCalls).equals(1);
+      expect(find.byType(OnboardingScreen), findsNothing);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // "Use my SIM number" (profile page, Extra 28)
+  // -------------------------------------------------------------------------
+
+  group('OnboardingScreen — Use my SIM number', () {
+    Future<void> pumpProfilePage(
+      WidgetTester tester, {
+      required _FakeDeviceInfoService device,
+      required _FakeOnboardingController fake,
+    }) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpOnboarding(
+        tester,
+        overrides: <Override>[
+          ..._overrides(fake),
+          deviceInfoServiceProvider.overrideWithValue(device),
+        ],
+      );
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.onboardingUseSimNumber));
+      await tester.pumpAndSettle();
+    }
+
+    testWidgets('an available SIM number fills the phone field and shows '
+        'the source hint', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      final device = _FakeDeviceInfoService(
+        const SimNumberAvailable('+15559990000'),
+      );
+      await pumpProfilePage(tester, device: device, fake: fake);
+
+      check(device.calls).equals(1);
+      // The phone TextField (index 1) now carries the SIM number and the
+      // hint row below the button names the source.
+      final phoneField = tester.widget<TextField>(find.byType(TextField).at(1));
+      check(phoneField.controller?.text).equals('+15559990000');
+      // The en hint template is verbatim "{number}", so the number appears
+      // twice: once inside the phone field, once in the hint row below the
+      // button — the second occurrence proves the hint row rendered.
+      expect(
+        find.text(l10n.onboardingUseSimNumberHint('+15559990000')),
+        findsNWidgets(2),
+      );
+      // The listener-driven draft persisted through the controller.
+      check(fake.updateProfileDraftCalls).isGreaterThan(0);
+    });
+
+    testWidgets('a permission denial surfaces the denied SnackBar', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      final device = _FakeDeviceInfoService(const SimNumberPermissionDenied());
+      await pumpProfilePage(tester, device: device, fake: fake);
+
+      expect(
+        find.text(l10n.onboardingUseSimNumberPermissionDenied),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('an unsupported platform surfaces the unsupported SnackBar', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      final device = _FakeDeviceInfoService(const SimNumberUnsupported());
+      await pumpProfilePage(tester, device: device, fake: fake);
+
+      expect(find.text(l10n.onboardingUseSimNumberUnsupported), findsOneWidget);
+    });
+
+    testWidgets('an empty SIM slot surfaces the unavailable SnackBar', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      final device = _FakeDeviceInfoService(const SimNumberUnavailable());
+      await pumpProfilePage(tester, device: device, fake: fake);
+
+      expect(find.text(l10n.onboardingUseSimNumberUnavailable), findsOneWidget);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Add-emergency-contact CTA (profile page)
+  // -------------------------------------------------------------------------
+
+  group('OnboardingScreen — add emergency contact', () {
+    testWidgets('tapping the add button pushes the contact form route', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      final fake = _FakeOnboardingController(_state());
+      await _pumpOnboarding(tester, overrides: _overrides(fake));
+      await tester.tap(find.text(l10n.onboardingNext));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text(l10n.onboardingEmergencyContactAdd));
+      await tester.pumpAndSettle();
+
+      // The harness's /contacts/new stub replaced the onboarding UI.
+      expect(find.text(l10n.onboardingProfileTitle), findsNothing);
+      expect(find.byKey(const ValueKey('contact-form-stub')), findsOneWidget);
     });
   });
 }
