@@ -87,12 +87,30 @@ restores (11/11).
   keys removed across ALL 14 ARBs (parity!) + affected tests. `GpsFormat`
   enum: delete if format was its only consumer. Pre-alpha: nuke-and-reseed,
   no migrations.
+- **P5b (l10n debt, ADDED by the P1 arch sweep; runs AFTER P5 — both touch
+  gps_logging_screen):** timing_slider.dart:136/146/159 dialog (reuse existing
+  commonCancel/commonSave + 1 new key); 16× `Text('Error: $e')` AsyncValue
+  builders (one generic `{detail}` key; file list in task #9 / P1 arch
+  report); past_events_detail_screen.dart:219/221 Start:/End: labels;
+  loud_alarm_strategy.dart:87-88 notification title/body (domain layer, no
+  BuildContext — implementer designs the locale plumb, e.g. localize at the
+  notification-service layer via the stored language; precedent:
+  audio_service per-locale TTS bootstrap). Language batch ×13.
 - **P6 (finale):** authoritative full gate (analyze 0; full suite; coverage
   ≥98.7 via LCOV_BIN=/home/jonas/lcov/bin/lcov filter+check; parity 28/28;
   NO-STUBS S-1..S-12; format lib test; import_sorter) + MILESTONE cohort over
   the whole M6 diff + baton close. NEVER push.
 
-**NEXT: P1** (then P2 → P3 → P4 → P5 → P6).
+**DONE: P1** (`60bccd0`, cohort PASS×2 2026-06-10): spec 06:268 ramp 1–60 +
+TimingSlider; `templatesRequiredFieldsError` ×14 + both call sites;
+copy-hop value-arrival tests (red-proved; dnd seeded TRUE — false is the
+model default; QA note: the gradual-OFF arm pins the strategy ternary, the
+ON arm is what discriminates the hop); disabled-Delete real tap;
+_onPanCancel REACHED via freeze-then-arena-loss (deterministic 3×) — that
+file's last gap closed. Suite 4649→4652. Costs: impl 142k/53t, arch 44k,
+qa 46k.
+
+**NEXT: P2** (then P3 → P4 → P5 → P5b → P6).
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
