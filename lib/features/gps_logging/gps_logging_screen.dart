@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/features/gps_logging/gps_logging_controller.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -65,34 +64,6 @@ class GpsLoggingScreen extends ConsumerWidget {
                     ),
                   ],
                 ),
-              ),
-              ListTile(
-                title: Text(l10n.gpsLoggingFormatLabel),
-                trailing: DropdownButton<GpsFormat>(
-                  value: cfg.format,
-                  onChanged: (GpsFormat? v) {
-                    if (v != null) notifier.setFormat(v);
-                  },
-                  items: <DropdownMenuItem<GpsFormat>>[
-                    DropdownMenuItem(
-                      value: GpsFormat.decimal,
-                      child: Text(l10n.gpsLoggingFormatDecimal),
-                    ),
-                    DropdownMenuItem(
-                      value: GpsFormat.dms,
-                      child: Text(l10n.gpsLoggingFormatDms),
-                    ),
-                    DropdownMenuItem(
-                      value: GpsFormat.openLocationCode,
-                      child: Text(l10n.gpsLoggingFormatAddress),
-                    ),
-                  ],
-                ),
-              ),
-              SwitchListTile(
-                title: Text(l10n.gpsLoggingIncludeInSms),
-                value: cfg.includeInSms,
-                onChanged: notifier.setIncludeInSms,
               ),
             ],
           );

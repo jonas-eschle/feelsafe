@@ -1783,21 +1783,6 @@ class AppLocalizationsRu extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'Низкая';
 
   @override
-  String get gpsLoggingFormatLabel => 'Формат координат';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'Десятичный';
-
-  @override
-  String get gpsLoggingFormatDms => 'ГМС';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'Добавлять местоположение в SMS';
-
-  @override
   String get historyRetentionLogsLabel => 'Хранение журналов сессий (дни)';
 
   @override

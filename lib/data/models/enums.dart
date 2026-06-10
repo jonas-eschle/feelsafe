@@ -13,7 +13,6 @@ export 'package:guardianangela/domain/enums/countdown_style.dart';
 export 'package:guardianangela/domain/enums/end_reason.dart';
 export 'package:guardianangela/domain/enums/gps_accuracy.dart';
 export 'package:guardianangela/domain/enums/gps_destination_source.dart';
-export 'package:guardianangela/domain/enums/gps_format.dart';
 export 'package:guardianangela/domain/enums/hold_style.dart';
 export 'package:guardianangela/domain/enums/log_gps_override.dart';
 export 'package:guardianangela/domain/enums/loud_alarm_sound.dart';

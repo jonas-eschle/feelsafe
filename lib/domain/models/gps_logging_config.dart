@@ -1,26 +1,32 @@
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 
 /// Configures GPS logging during safety sessions.
 ///
 /// The global config lives in [AppDefaults.gpsLogging]; modes can override
 /// via [ModeOverrides.gpsLogging]. See spec 03 §GpsLoggingConfig and Q21.
+///
+/// Deliberately minimal (M6-P5 trim, decisions-log D-DATA-22): location-in-
+/// SMS is configured per-step via `SmsContactConfig.includeLocation`; the
+/// `{location}` placeholder is always a Google Maps URL (spec 02), so no
+/// coordinate-format option can apply; and GPS history is in-memory only
+/// (cleared when the session ends), so there is nothing for a retention
+/// policy to govern.
 final class GpsLoggingConfig {
   /// Creates a GPS logging config with the given values.
   ///
   /// Defaults: [enabled] = true, [intervalSeconds] = 30,
-  /// [accuracy] = [GpsAccuracy.high], [format] = [GpsFormat.decimal],
-  /// [includeInSms] = true, [historyRetentionDays] = 30.
+  /// [accuracy] = [GpsAccuracy.high].
   const GpsLoggingConfig({
     this.enabled = true,
     this.intervalSeconds = 30,
     this.accuracy = GpsAccuracy.high,
-    this.format = GpsFormat.decimal,
-    this.includeInSms = true,
-    this.historyRetentionDays = 30,
   });
 
   /// Deserialises a [GpsLoggingConfig] from [json].
+  ///
+  /// Lenient: unknown keys — including the legacy `format`,
+  /// `includeInSms`, and `historyRetentionDays` keys carried by
+  /// old-shape backups — are ignored.
   factory GpsLoggingConfig.fromJson(Map<String, dynamic> json) =>
       GpsLoggingConfig(
         enabled: (json['enabled'] as bool?) ?? true,
@@ -28,12 +34,6 @@ final class GpsLoggingConfig {
         accuracy: GpsAccuracy.values.byName(
           (json['accuracy'] as String?) ?? GpsAccuracy.high.name,
         ),
-        format: GpsFormat.values.byName(
-          (json['format'] as String?) ?? GpsFormat.decimal.name,
-        ),
-        includeInSms: (json['includeInSms'] as bool?) ?? true,
-        historyRetentionDays:
-            (json['historyRetentionDays'] as num?)?.toInt() ?? 30,
       );
 
   /// The defaults with [enabled] switched to `false` — the explicit
@@ -49,30 +49,15 @@ final class GpsLoggingConfig {
   /// Desired GPS accuracy level.
   final GpsAccuracy accuracy;
 
-  /// Coordinate format used in session logs and SMS messages.
-  final GpsFormat format;
-
-  /// Whether to append the current location to SMS steps.
-  final bool includeInSms;
-
-  /// How many days of GPS history to retain.
-  final int historyRetentionDays;
-
   /// Returns a copy with the specified fields replaced.
   GpsLoggingConfig copyWith({
     bool? enabled,
     int? intervalSeconds,
     GpsAccuracy? accuracy,
-    GpsFormat? format,
-    bool? includeInSms,
-    int? historyRetentionDays,
   }) => GpsLoggingConfig(
     enabled: enabled ?? this.enabled,
     intervalSeconds: intervalSeconds ?? this.intervalSeconds,
     accuracy: accuracy ?? this.accuracy,
-    format: format ?? this.format,
-    includeInSms: includeInSms ?? this.includeInSms,
-    historyRetentionDays: historyRetentionDays ?? this.historyRetentionDays,
   );
 
   /// Serialises this config to a JSON map.
@@ -80,9 +65,6 @@ final class GpsLoggingConfig {
     'enabled': enabled,
     'intervalSeconds': intervalSeconds,
     'accuracy': accuracy.name,
-    'format': format.name,
-    'includeInSms': includeInSms,
-    'historyRetentionDays': historyRetentionDays,
   };
 
   @override
@@ -91,18 +73,8 @@ final class GpsLoggingConfig {
       (other is GpsLoggingConfig &&
           enabled == other.enabled &&
           intervalSeconds == other.intervalSeconds &&
-          accuracy == other.accuracy &&
-          format == other.format &&
-          includeInSms == other.includeInSms &&
-          historyRetentionDays == other.historyRetentionDays);
+          accuracy == other.accuracy);
 
   @override
-  int get hashCode => Object.hash(
-    enabled,
-    intervalSeconds,
-    accuracy,
-    format,
-    includeInSms,
-    historyRetentionDays,
-  );
+  int get hashCode => Object.hash(enabled, intervalSeconds, accuracy);
 }

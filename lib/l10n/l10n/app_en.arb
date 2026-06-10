@@ -2251,26 +2251,6 @@
   "@gpsLoggingAccuracyLow": {
     "description": "GPS accuracy low."
   },
-  "gpsLoggingFormatLabel": "Coordinate format",
-  "@gpsLoggingFormatLabel": {
-    "description": "GPS coordinate format label."
-  },
-  "gpsLoggingFormatDecimal": "Decimal",
-  "@gpsLoggingFormatDecimal": {
-    "description": "GPS format decimal."
-  },
-  "gpsLoggingFormatDms": "DMS",
-  "@gpsLoggingFormatDms": {
-    "description": "GPS format DMS."
-  },
-  "gpsLoggingFormatAddress": "Plus Code",
-  "@gpsLoggingFormatAddress": {
-    "description": "GPS format Plus Code (Open Location Code)."
-  },
-  "gpsLoggingIncludeInSms": "Append location to SMS",
-  "@gpsLoggingIncludeInSms": {
-    "description": "Toggle to include GPS in SMS."
-  },
   "historyRetentionLogsLabel": "Session log retention (days)",
   "@historyRetentionLogsLabel": {
     "description": "Session log retention slider label."

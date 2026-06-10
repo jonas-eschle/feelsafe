@@ -1780,21 +1780,6 @@ class AppLocalizationsPl extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'Niska';
 
   @override
-  String get gpsLoggingFormatLabel => 'Format współrzędnych';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'Dziesiętny';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'Dołącz lokalizację do SMS-a';
-
-  @override
   String get historyRetentionLogsLabel =>
       'Przechowywanie dziennika sesji (dni)';
 

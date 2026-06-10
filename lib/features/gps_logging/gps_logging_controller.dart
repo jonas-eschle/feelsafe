@@ -2,7 +2,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:meta/meta.dart';
 
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 import 'package:guardianangela/services/service_providers.dart';
 
@@ -52,20 +51,6 @@ class GpsLoggingController extends AsyncNotifier<GpsLoggingState> {
     final current = state.value;
     if (current == null) return;
     await _save(current.config.copyWith(accuracy: a));
-  }
-
-  /// Update format.
-  Future<void> setFormat(GpsFormat f) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.config.copyWith(format: f));
-  }
-
-  /// Toggle include-in-SMS.
-  Future<void> setIncludeInSms(bool v) async {
-    final current = state.value;
-    if (current == null) return;
-    await _save(current.config.copyWith(includeInSms: v));
   }
 }
 

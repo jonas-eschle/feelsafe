@@ -900,11 +900,8 @@ GPS logging is configured via `GpsLoggingConfig`:
 | `enabled` | bool | true | Master GPS logging switch |
 | `intervalSeconds` | int | 30 | Periodic recording interval during session |
 | `accuracy` | enum | high | GPS accuracy level (high/balanced/low) |
-| `format` | enum | decimal | Coordinate format (decimal/dms/address) |
-| `includeInSms` | bool | true | Embed location in outgoing SMS messages |
-| `historyRetentionDays` | int | 30 | How long to keep location history |
 
-Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` (null = inherit).
+Global: `AppDefaults.gpsLogging`. Per-mode override: `ModeOverrides.gpsLogging` (null = inherit). Three further fields (coordinate format, location-in-SMS, history retention) were trimmed 2026-06-10 — no runtime consumer; see decisions-log D-DATA-22 and spec 03 §GpsLoggingConfig for the Why.
 
 ---
 
@@ -1060,7 +1057,7 @@ The following decisions were made during phases 1–10 of the rewrite. Each is d
 | Q18 | `AppSettings` biometric / telemetry | `appPinBiometricEnabled`, `sessionEndPinBiometricEnabled`, `distressCancelBiometricEnabled`, `sentryEnabled`, `telemetryOptOut` documented explicitly. (`requireLaunchAuth` + `launchAuthBiometric` were **removed 2026-06-09** as redundant with the App-PIN launch gate — `appPinHash` + `appPinBiometricEnabled` is the sole launch-auth.) |
 | Q19 | `alarmDndOverride` default | `false` (opt-in). |
 | Q20 | `StealthConfig` defaults | `fakeName = 'Music'`, `fakeIcon = StealthIconPreset.music`. |
-| Q21 | `GpsLoggingConfig` defaults | `intervalSeconds = 30`, `accuracy = high`, `format = decimal`. |
+| Q21 | `GpsLoggingConfig` defaults | `intervalSeconds = 30`, `accuracy = high`. (The former `format` default — `decimal` — died with the field in the 2026-06-10 trim; D-DATA-22.) |
 | Q23/24/25 | Services exist + wired | `RecordingService`, `FlashService`, `ScreenFlashService`, `BackgroundSessionService` all implemented under `lib/services/implementations/`. |
 | Q26 | Onboarding p2 contact form | Uses the full `ContactFormScreen` (not a stripped form). |
 | Q27 | `EmergencyConfirmScreen` | Wired into `CallEmergencyStrategy` via the `emergencyConfirmationRequests` stream. |

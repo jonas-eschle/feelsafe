@@ -18,6 +18,7 @@ import 'package:guardianangela/data/repositories/session_log_repository.dart';
 import 'package:guardianangela/data/repositories/user_profile_repository.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/gps_accuracy.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/chain_step.dart';
@@ -448,6 +449,51 @@ void main() {
       check(settings.emergencyCallNumber).equals('999');
       check(settings.defaults.defaultDistressModeId).equals('d-1');
       check(settings.defaults.toJson().containsKey('templates')).isFalse();
+    });
+
+    test('OLD-shape backup (gpsLogging blob still carrying the pre-trim '
+        'format/includeInSms/historyRetentionDays keys) imports cleanly: '
+        'the legacy keys are IGNORED (lenient, matching '
+        'GpsLoggingConfig.fromJson style; fields trimmed by '
+        'D-DATA-22)', () async {
+      final env = await _make();
+      addTearDown(() => _cleanup(env));
+
+      final json = jsonEncode(<String, dynamic>{
+        '_schemaVersion': 1,
+        'contacts': <dynamic>[],
+        'modes': <dynamic>[],
+        'templates': <dynamic>[],
+        'settings': <String, dynamic>{
+          'emergencyCallNumber': '999',
+          'defaults': <String, dynamic>{
+            // The pre-trim shape: three extra gpsLogging keys.
+            'gpsLogging': <String, dynamic>{
+              'enabled': false,
+              'intervalSeconds': 90,
+              'accuracy': 'medium',
+              'format': 'openLocationCode',
+              'includeInSms': false,
+              'historyRetentionDays': 365,
+            },
+          },
+        },
+        'profile': const UserProfile().toJson(),
+      });
+
+      await env.service.importFromJson(json);
+
+      // The kept keys round-tripped; the legacy keys went nowhere and
+      // are never re-emitted.
+      final settings = await env.appSettings.load();
+      final gps = settings.defaults.gpsLogging;
+      check(gps.enabled).isFalse();
+      check(gps.intervalSeconds).equals(90);
+      check(gps.accuracy).equals(GpsAccuracy.medium);
+      final reEmitted = gps.toJson();
+      check(reEmitted.containsKey('format')).isFalse();
+      check(reEmitted.containsKey('includeInSms')).isFalse();
+      check(reEmitted.containsKey('historyRetentionDays')).isFalse();
     });
   });
 

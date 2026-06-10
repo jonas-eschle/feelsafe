@@ -27,6 +27,7 @@ import 'package:guardianangela/domain/configs/step_config.dart';
 import 'package:guardianangela/domain/enums/button_type.dart';
 import 'package:guardianangela/domain/enums/chain_step_type.dart';
 import 'package:guardianangela/domain/enums/confirmation_type.dart';
+import 'package:guardianangela/domain/enums/gps_accuracy.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/enums/reminder_display_style.dart';
@@ -1134,8 +1135,11 @@ void main() {
   });
 
   // T5 — GPS-logging Custom: edit an inline field round-trips --------------
+  // (Uses the accuracy dropdown: the former includeInSms toggle was trimmed
+  // from GpsLoggingConfig — D-DATA-22 — so accuracy is the editable inline
+  // field that proves the Custom draft round-trips.)
   group('SafetyOptions — GPS-logging inline field', () {
-    testWidgets('toggling includeInSms under Custom round-trips', (
+    testWidgets('changing accuracy under Custom round-trips', (
       WidgetTester tester,
     ) async {
       final l10n = await AppLocalizations.delegate.load(const Locale('en'));
@@ -1152,19 +1156,18 @@ void main() {
       // Enter Custom (1st tri-state Custom) → inline GpsLoggingFields appears.
       await tester.tap(find.text(l10n.safetyOptionsTriStateCustom).first);
       await tester.pumpAndSettle();
-      // includeInSms defaults true; toggle it off via its SwitchListTile.
-      final includeToggle = find.widgetWithText(
-        SwitchListTile,
-        l10n.gpsLoggingIncludeInSms,
-      );
-      await _scrollTo(tester, includeToggle);
-      await tester.tap(includeToggle);
+      // accuracy defaults to high; switch it to Balanced via the dropdown.
+      final accuracyDropdown = find.text(l10n.gpsLoggingAccuracyHigh);
+      await _scrollTo(tester, accuracyDropdown);
+      await tester.tap(accuracyDropdown);
+      await tester.pumpAndSettle();
+      await tester.tap(find.text(l10n.gpsLoggingAccuracyBalanced).last);
       await tester.pumpAndSettle();
       await _tapSave(tester, l10n);
 
       final saved = await db.sessionModesDao.getById('m1');
       check(saved!.overrides?.gpsLogging?.enabled).equals(true);
-      check(saved.overrides?.gpsLogging?.includeInSms).equals(false);
+      check(saved.overrides?.gpsLogging?.accuracy).equals(GpsAccuracy.medium);
     });
   });
 

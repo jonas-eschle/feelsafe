@@ -1787,21 +1787,6 @@ class AppLocalizationsEl extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'Χαμηλή';
 
   @override
-  String get gpsLoggingFormatLabel => 'Μορφή συντεταγμένων';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'Δεκαδική';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'Προσθήκη τοποθεσίας στο SMS';
-
-  @override
   String get historyRetentionLogsLabel =>
       'Διατήρηση αρχείων συνεδρίας (ημέρες)';
 

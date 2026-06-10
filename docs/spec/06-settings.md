@@ -533,18 +533,15 @@ Configures `AppDefaults.gpsLogging` (`GpsLoggingConfig`). Every non-trivial opti
 | **enabled** | true | bool | Master toggle — log GPS during sessions ℹ |
 | **intervalSeconds** | 30 | int | How often to log position (10–3600s) ℹ |
 | **accuracy** | high | enum | high / balanced / low ℹ |
-| **format** | decimal | enum | decimal / dms / address — how coordinates are displayed ℹ |
-| **includeInSms** | true | bool | Append location URL to SMS steps ℹ |
-| **historyRetentionDays** | 30 | int | How long GPS track history is kept ℹ |
 
 **Info tooltips:**
 - `enabled`: "Location is recorded during sessions to include in emergency messages and session logs."
 - `intervalSeconds`: "How often your position is recorded. More frequent = better accuracy but higher battery drain."
 - `accuracy`: "High = uses GPS chip (most accurate, more battery). Balanced = combines GPS and cell towers. Low = cell towers only."
-- `includeInSms`: "When a step sends an SMS, the current location is appended as a Google Maps link."
-- `historyRetentionDays`: "GPS tracks are automatically deleted after this many days."
 
 Modes can override via `ModeOverrides.gpsLogging`.
+
+There are deliberately no coordinate-format, location-in-SMS, or history-retention options (trimmed 2026-06-10, D-DATA-22). *Why:* whether a step's SMS carries the location is a per-step decision (`SmsContactConfig.includeLocation`, §Event Defaults); the `{location}` placeholder is always rendered as a Google Maps URL (spec 02 §SMS placeholders), so a coordinate-format choice has nothing to format; and GPS history is held in memory only and cleared when the session ends, so there is no persisted track for a retention window to govern — not persisting a movement trail is the privacy-correct default for a safety app.
 
 ### Stealth
 

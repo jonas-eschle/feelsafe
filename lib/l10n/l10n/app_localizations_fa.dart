@@ -1764,21 +1764,6 @@ class AppLocalizationsFa extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'پایین';
 
   @override
-  String get gpsLoggingFormatLabel => 'قالب مختصات';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'اعشاری';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'افزودن موقعیت به پیامک';
-
-  @override
   String get historyRetentionLogsLabel => 'مدت نگهداری گزارش جلسه (روز)';
 
   @override

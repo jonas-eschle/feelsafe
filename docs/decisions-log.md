@@ -140,6 +140,7 @@ corresponding entry (or reference to an entry) in this document.
 | D-DATA-19 | Every session start/end is logged (no trivial-session gate) | RESOLVED | Extra 65 |
 | D-DATA-20 | SMS {name} fallback = "the owner of this phone" | RESOLVED | Extra 41 |
 | D-DATA-21 | DistressChain extracted from AppDefaults into dedicated repo + editor UI | RESOLVED | supersedes D-DATA-2 |
+| D-DATA-22 | GpsLoggingConfig trimmed to {enabled, intervalSeconds, accuracy}; GpsFormat deleted | RESOLVED | M6-P5 user ruling |
 | D-ENGINE-1 | Hardware panic pressCount default = 5 | RESOLVED | B1 |
 | D-ENGINE-2 | Global disguisedReminder retryCount default = 1 | RESOLVED | B2 |
 | D-ENGINE-3 | Global fakeCall retryCount default = 0 | RESOLVED | B3 |
@@ -237,6 +238,7 @@ corresponding entry (or reference to an entry) in this document.
 | D-TEST-14 | `mocktail` = only where fakes are impractical (platform boundaries) | RESOLVED | refines D-TEST-8 |
 | D-DATA-21 | DistressChain extracted from AppDefaults into dedicated repo + editor UI | RESOLVED | supersedes D-DATA-2 |
 | D-UX-35 | SMS step contact picker = per-contact buttons with channel-gated graying | RESOLVED | new feature |
+| D-DATA-22 | GpsLoggingConfig trimmed to {enabled, intervalSeconds, accuracy}; GpsFormat deleted | RESOLVED | M6-P5 user ruling (2026-06-10) |
 
 **Status summary as of 2026-04-20 (Round 3 + D-OPEN-4 closed + DistressChain extraction + SMS picker rework):**
 
@@ -1424,6 +1426,51 @@ context, alternatives, rationale, implications, and references.
   (SUPERSEDED); D-DATA-9 (nuke-and-reseed); D-UX-31 (settings hub
   structure); D-PLATFORM-1 (storage engine — Drift tables will host
   the repository post-rewrite); spec 03 §"AppDefaults".
+
+#### D-DATA-22: GpsLoggingConfig trimmed to {enabled, intervalSeconds, accuracy}
+
+- **Status:** RESOLVED (user ruling, M6-P5)
+- **Date:** 2026-06-10
+- **Context:** `GpsLoggingConfig` carried three fields — `format`
+  (`GpsFormat` enum: dms / decimal / openLocationCode), `includeInSms`,
+  and `historyRetentionDays` — that were persisted and editable on two
+  UI surfaces (the GPS-logging settings screen and the mode editor's
+  inline `GpsLoggingFields`) but had **no runtime consumer anywhere**
+  (M6-P0 scout, verified): nothing read them when logging points,
+  composing SMS, or pruning data. Spec 06 and spec 03 had also drifted
+  on the enum values ("address" vs `openLocationCode`).
+- **Decision:** TRIM all three fields, the now-orphaned `GpsFormat`
+  enum, their UI controls on both editing surfaces, and their l10n
+  keys (5 keys × 14 locales). `enabled`, `intervalSeconds`, and
+  `accuracy` remain (accuracy stays as a documented as-is deferral).
+  Old-shape backups that still carry the legacy keys import cleanly —
+  `fromJson` is lenient and ignores unknown keys (same posture as the
+  D-DATA-4 / bug-#14 `templates` key).
+- **Why:**
+  - `includeInSms`: whether an SMS carries the location is a
+    **per-step** decision — `SmsContactConfig.includeLocation` is the
+    real, consumed switch. A second global flag could only shadow or
+    contradict it.
+  - `format`: spec 02 (§SMS placeholders, 02:289) mandates that
+    `{location}` renders as a Google Maps URL, so a coordinate-format
+    preference can never apply to any user-visible output.
+  - `historyRetentionDays`: GPS history is **in-memory only**
+    (`LocationService`: bounded at 1000 points, cleared when the
+    session stops) — there is no persisted track for a retention
+    window to govern. NOT persisting a movement trail is the
+    privacy-correct default for a safety app; if persistent tracks
+    ever ship, retention must be re-decided alongside that feature,
+    not kept as a dead knob.
+- **Implications:** model/JSON shape change (pre-alpha, D-DATA-9
+  nuke-and-reseed posture; lenient import needs no migration); spec
+  06 §GPS Logging table loses 3 rows + 2 tooltips (which also kills
+  the 06 "address" vs 03 `openLocationCode` mismatch); spec 03
+  §GpsLoggingConfig, spec 08 (model table + Q21 row), and spec 09
+  glossary updated; tests pin the legacy-key-ignoring `fromJson` and
+  the absence of the removed controls on both UI surfaces.
+- **References:** M6 user decision #1 (2026-06-10); spec 02:289
+  (`{location}` = Google Maps URL); spec 03 §GpsLoggingConfig; spec 06
+  §GPS Logging; D-DATA-4 (lenient legacy-key precedent); D-DATA-9.
 
 ---
 

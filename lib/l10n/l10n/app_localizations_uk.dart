@@ -1781,21 +1781,6 @@ class AppLocalizationsUk extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'Низька';
 
   @override
-  String get gpsLoggingFormatLabel => 'Формат координат';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'Десятковий';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'Додавати місцезнаходження до SMS';
-
-  @override
   String get historyRetentionLogsLabel => 'Зберігання журналів сесій (днів)';
 
   @override

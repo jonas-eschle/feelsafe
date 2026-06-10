@@ -18,7 +18,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 import 'package:guardianangela/features/gps_logging/gps_logging_controller.dart';
 import 'package:guardianangela/features/gps_logging/gps_logging_screen.dart';
@@ -39,10 +38,6 @@ class _FakeGpsLoggingController extends GpsLoggingController {
   int? lastInterval;
   int setAccuracyCalls = 0;
   GpsAccuracy? lastAccuracy;
-  int setFormatCalls = 0;
-  GpsFormat? lastFormat;
-  int setIncludeInSmsCalls = 0;
-  bool? lastIncludeInSms;
 
   @override
   Future<GpsLoggingState> build() async => _initial;
@@ -75,24 +70,6 @@ class _FakeGpsLoggingController extends GpsLoggingController {
       GpsLoggingState(config: _initial.config.copyWith(accuracy: a)),
     );
   }
-
-  @override
-  Future<void> setFormat(GpsFormat f) async {
-    setFormatCalls++;
-    lastFormat = f;
-    state = AsyncData(
-      GpsLoggingState(config: _initial.config.copyWith(format: f)),
-    );
-  }
-
-  @override
-  Future<void> setIncludeInSms(bool v) async {
-    setIncludeInSmsCalls++;
-    lastIncludeInSms = v;
-    state = AsyncData(
-      GpsLoggingState(config: _initial.config.copyWith(includeInSms: v)),
-    );
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -103,15 +80,11 @@ GpsLoggingState _state({
   bool enabled = true,
   int intervalSeconds = 30,
   GpsAccuracy accuracy = GpsAccuracy.high,
-  GpsFormat format = GpsFormat.decimal,
-  bool includeInSms = true,
 }) => GpsLoggingState(
   config: GpsLoggingConfig(
     enabled: enabled,
     intervalSeconds: intervalSeconds,
     accuracy: accuracy,
-    format: format,
-    includeInSms: includeInSms,
   ),
 );
 
@@ -357,121 +330,29 @@ void main() {
   });
 
   // -------------------------------------------------------------------------
-  // Format dropdown
+  // Trimmed controls stay gone (D-DATA-22)
   // -------------------------------------------------------------------------
 
-  group('GpsLoggingScreen — format dropdown', () {
-    testWidgets('renders the format label', (WidgetTester tester) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester, _FakeGpsLoggingController(_state()));
-      expect(find.text(l10n.gpsLoggingFormatLabel), findsOneWidget);
-    });
-
-    testWidgets('shows "Decimal" when format is GpsFormat.decimal', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester, _FakeGpsLoggingController(_state()));
-      expect(find.text(l10n.gpsLoggingFormatDecimal), findsWidgets);
-    });
-
-    testWidgets('shows "DMS" when format is GpsFormat.dms', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state(format: GpsFormat.dms)),
-      );
-      expect(find.text(l10n.gpsLoggingFormatDms), findsWidgets);
-    });
-
-    testWidgets('shows "Address" when format is GpsFormat.openLocationCode', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state(format: GpsFormat.openLocationCode)),
-      );
-      expect(find.text(l10n.gpsLoggingFormatAddress), findsWidgets);
-    });
-
-    testWidgets('selecting DMS from decimal calls setFormat(GpsFormat.dms)', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeGpsLoggingController(_state());
-      await _pump(tester, fake);
-      // Open the format dropdown.
-      await tester.tap(
-        find
-            .ancestor(
-              of: find.text(l10n.gpsLoggingFormatDecimal),
-              matching: find.byType(DropdownButton<GpsFormat>),
-            )
-            .first,
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.text(l10n.gpsLoggingFormatDms).last);
-      await tester.pumpAndSettle();
-      check(fake.setFormatCalls).equals(1);
-      check(fake.lastFormat).equals(GpsFormat.dms);
-    });
-  });
-
-  // -------------------------------------------------------------------------
-  // Include-in-SMS toggle
-  // -------------------------------------------------------------------------
-
-  group('GpsLoggingScreen — include-in-SMS toggle', () {
-    testWidgets('include-in-SMS switch is on when includeInSms is true', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(tester, _FakeGpsLoggingController(_state()));
-      final tile = tester.widget<SwitchListTile>(
-        find.ancestor(
-          of: find.text(l10n.gpsLoggingIncludeInSms),
-          matching: find.byType(SwitchListTile),
-        ),
-      );
-      check(tile.value).isTrue();
-    });
-
-    testWidgets('include-in-SMS switch is off when includeInSms is false', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      await _pump(
-        tester,
-        _FakeGpsLoggingController(_state(includeInSms: false)),
-      );
-      final tile = tester.widget<SwitchListTile>(
-        find.ancestor(
-          of: find.text(l10n.gpsLoggingIncludeInSms),
-          matching: find.byType(SwitchListTile),
-        ),
-      );
-      check(tile.value).isFalse();
-    });
-
-    testWidgets('toggling include-in-SMS calls setIncludeInSms', (
-      WidgetTester tester,
-    ) async {
-      final l10n = await loadL10n(const Locale('en'));
-      final fake = _FakeGpsLoggingController(_state());
-      await _pump(tester, fake);
-      await tester.tap(
-        find.ancestor(
-          of: find.text(l10n.gpsLoggingIncludeInSms),
-          matching: find.byType(SwitchListTile),
-        ),
-      );
-      await tester.pumpAndSettle();
-      check(fake.setIncludeInSmsCalls).equals(1);
-      check(fake.lastIncludeInSms).equals(false);
-    });
+  group('GpsLoggingScreen — trimmed controls (D-DATA-22)', () {
+    testWidgets(
+      'exactly the three model controls render — no format dropdown and no '
+      'include-in-SMS switch, because GpsLoggingConfig was trimmed to '
+      '{enabled, intervalSeconds, accuracy} (location-in-SMS is per-step '
+      'SmsContactConfig.includeLocation; {location} is always a Maps URL)',
+      (WidgetTester tester) async {
+        await _pump(tester, _FakeGpsLoggingController(_state()));
+        // One switch (enabled), one slider (interval), one dropdown
+        // (accuracy) — a second switch or dropdown means a trimmed
+        // control was resurrected without a decision.
+        expect(find.byType(SwitchListTile), findsOneWidget);
+        expect(find.byType(TimingSlider), findsOneWidget);
+        expect(
+          find.byWidgetPredicate((w) => w is DropdownButton<Object?>),
+          findsOneWidget,
+        );
+        expect(find.byType(DropdownButton<GpsAccuracy>), findsOneWidget);
+      },
+    );
   });
 
   // -------------------------------------------------------------------------
@@ -515,13 +396,12 @@ void main() {
 
   group('GpsLoggingScreen — accessibility', () {
     testWidgets(
-      'SwitchListTile tiles are reachable by semantics (label present)',
+      'SwitchListTile tile is reachable by semantics (label present)',
       (WidgetTester tester) async {
         final l10n = await loadL10n(const Locale('en'));
         await _pump(tester, _FakeGpsLoggingController(_state()));
-        // Both SwitchListTile labels must be in the semantics tree.
+        // The enabled SwitchListTile label must be in the semantics tree.
         expect(find.text(l10n.gpsLoggingEnabled), findsOneWidget);
-        expect(find.text(l10n.gpsLoggingIncludeInSms), findsOneWidget);
       },
     );
 
@@ -530,9 +410,8 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pump(tester, _FakeGpsLoggingController(_state()));
-      // Both selected values appear as text.
+      // The selected accuracy value appears as text.
       expect(find.text(l10n.gpsLoggingAccuracyHigh), findsWidgets);
-      expect(find.text(l10n.gpsLoggingFormatDecimal), findsWidgets);
     });
 
     testWidgets('screen renders under large font scale without overflow', (

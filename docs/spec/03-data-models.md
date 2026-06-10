@@ -1127,14 +1127,12 @@ final class GpsLoggingConfig {
   final bool enabled;               // master toggle; default true
   final int intervalSeconds;        // default 30 (Q21)
   final GpsAccuracy accuracy;       // low / medium / high; default high (Q21)
-  final GpsFormat format;           // dms / decimal / openLocationCode;
-                                    // default decimal (Q21)
-  final bool includeInSms;          // append location to SMS steps; default true
-  final int historyRetentionDays;   // default 30
 }
 ```
 
 **Purpose:** Configures HOW GPS is logged during sessions. Global config lives in `AppDefaults.gpsLogging`; modes can override via `ModeOverrides.gpsLogging`.
+
+**Why only these three fields** (a coordinate-format enum, a location-in-SMS flag, and a history-retention-days field were trimmed 2026-06-10 — see D-DATA-22 for the exact names): location-in-SMS is a per-step decision via `SmsContactConfig.includeLocation`; the `{location}` placeholder is always a Google Maps URL (spec 02 §SMS placeholders), so a coordinate-format option can never apply; and the GPS history is in-memory only (capped, cleared at session end — see `LocationService`), so there is no persisted track for a retention policy to govern. None of the three had a runtime consumer.
 
 **Accessible from:** Settings → Defaults → GPS Logging
 

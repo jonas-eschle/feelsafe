@@ -1775,21 +1775,6 @@ class AppLocalizationsAr extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'منخفضة';
 
   @override
-  String get gpsLoggingFormatLabel => 'تنسيق الإحداثيات';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'عشري';
-
-  @override
-  String get gpsLoggingFormatDms => 'درجات ودقائق وثوانٍ';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'إلحاق الموقع بالرسالة النصية';
-
-  @override
   String get historyRetentionLogsLabel => 'مدة الاحتفاظ بسجل الجلسة (أيام)';
 
   @override

@@ -73,7 +73,7 @@ These step types let the user disarm the chain by responding. Any step type can 
 | **Distress Mode** | A `SessionMode` flagged with `isDistressMode = true`; its `chainSteps` are the distress chain. | `SessionMode` (with `isDistressMode = true`) | modes.json, AppDefaults.defaultDistressModeId | Default distress mode: SMS + call emergency |
 | **App Defaults** | Master defaults for all modes: gpsLogging, stealth, templates, eventDefaults, defaultDistressModeId. Modes inherit and may override per-field. | `AppDefaults` | AppSettings.defaults | Global GPS interval=30s, stealth disabled |
 | **Mode Overrides** | Per-mode optional override of any AppDefaults field. null field = inherit from AppDefaults. `localTemplates` appended to global templates. | `ModeOverrides` (inline in SessionMode) | SessionMode.overrides | Override stealth for Walk Mode only |
-| **GPS Logging Config** | Structured GPS logging settings: enabled, intervalSeconds, accuracy, format, includeInSms, historyRetentionDays. | `GpsLoggingConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.gpsLogging, ModeOverrides.gpsLogging | interval=30s, format=decimal, includeInSms=true |
+| **GPS Logging Config** | Structured GPS logging settings: enabled, intervalSeconds, accuracy (D-DATA-22 trim). | `GpsLoggingConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.gpsLogging, ModeOverrides.gpsLogging | interval=30s, accuracy=high |
 | **Stealth Config** | Structured stealth settings: enabled, fakeName, fakeIcon, notificationDisguise, timerDisplay, sessionScreenStealth. | `StealthConfig` (inline in AppDefaults/ModeOverrides) | AppDefaults.stealth, ModeOverrides.stealth | fakeName="Music App", timerDisplay=none |
 
 ---
@@ -106,7 +106,7 @@ These step types let the user disarm the chain by responding. Any step type can 
 | Term | Definition | Code Name | Used In | Example |
 |---|---|---|---|---|
 | **GPS Location** | User's geographic coordinates recorded during session. | `LocationService`, `recordLocation()` | SessionLog, smsContact | "Last known location at 8:45pm: 40.7128, -74.0060" |
-| **Location Recording** | Optional logging of GPS coordinates during session events. Configured via `GpsLoggingConfig`. | `GpsLoggingConfig`, `AppDefaults.gpsLogging` | AppSettings, ModeOverrides, LocationService | Interval=30s, includeInSms=true, format=decimal |
+| **Location Recording** | Optional logging of GPS coordinates during session events. Configured via `GpsLoggingConfig`. | `GpsLoggingConfig`, `AppDefaults.gpsLogging` | AppSettings, ModeOverrides, LocationService | Interval=30s, accuracy=high |
 | **Maps URL** | Google Maps link embedded in SMS messages. | `{location}` placeholder | Message templates, smsContact | "https://maps.google.com/?q=40.7128,-74.0060" |
 | **Session Timeline** | Chronological record of all events during session. | `SessionLog.events` | Session logs, history detail | 8:00pm: session start, 8:15pm: reminder fired, 8:20pm: user disarmed |
 

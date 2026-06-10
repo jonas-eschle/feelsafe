@@ -25,7 +25,6 @@ import 'package:guardianangela/domain/enums/countdown_style.dart';
 import 'package:guardianangela/domain/enums/end_reason.dart';
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
 import 'package:guardianangela/domain/enums/gps_destination_source.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/enums/hold_style.dart';
 import 'package:guardianangela/domain/enums/log_gps_override.dart';
 import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
@@ -320,13 +319,9 @@ void main() {
     });
   });
 
-  group('GpsFormat (spec 03 §GpsLoggingConfig / Q21)', () {
-    test('has exactly {dms, decimal, openLocationCode} in spec order', () {
-      check(GpsFormat.values).deepEquals([
-        GpsFormat.dms,
-        GpsFormat.decimal,
-        GpsFormat.openLocationCode,
-      ]);
-    });
-  });
+  // GpsFormat was DELETED with the GpsLoggingConfig.format field
+  // (D-DATA-22, M6-P5): `{location}` is always a Google Maps URL
+  // (spec 02), so a coordinate-format enum had no consumer. Its
+  // exhaustiveness group is intentionally gone — resurrecting the
+  // enum requires a new decision, not a revert of this file.
 }

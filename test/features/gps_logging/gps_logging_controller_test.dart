@@ -21,7 +21,6 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/data/repositories/app_settings_repository.dart';
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/app_defaults.dart';
 import 'package:guardianangela/domain/models/app_settings.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
@@ -91,8 +90,6 @@ void main() {
       check(s.config.enabled).isTrue();
       check(s.config.intervalSeconds).equals(45);
       check(s.config.accuracy).equals(GpsAccuracy.medium);
-      check(s.config.format).equals(GpsFormat.decimal);
-      check(s.config.includeInSms).isTrue();
     });
   });
 
@@ -108,7 +105,7 @@ void main() {
       check(saved.enabled).isFalse();
       // Sibling config values and unrelated settings are NOT clobbered.
       check(saved.intervalSeconds).equals(45);
-      check(saved.includeInSms).isTrue();
+      check(saved.accuracy).equals(GpsAccuracy.medium);
       check(settingsRepo.saved.single.selectedModeId).equals('walk');
       check((await state()).config.enabled).isFalse();
     });
@@ -139,33 +136,6 @@ void main() {
         settingsRepo.saved.single.defaults.gpsLogging.accuracy,
       ).equals(GpsAccuracy.low);
       check((await state()).config.accuracy).equals(GpsAccuracy.low);
-    });
-  });
-
-  group('GpsLoggingController.setFormat', () {
-    test('persists the new format and refreshes state', () async {
-      await state();
-
-      await controller().setFormat(GpsFormat.dms);
-
-      check(
-        settingsRepo.saved.single.defaults.gpsLogging.format,
-      ).equals(GpsFormat.dms);
-      check((await state()).config.format).equals(GpsFormat.dms);
-    });
-  });
-
-  group('GpsLoggingController.setIncludeInSms', () {
-    test('persists the new include-in-SMS flag and refreshes state', () async {
-      await state();
-
-      await controller().setIncludeInSms(false);
-
-      final GpsLoggingConfig saved =
-          settingsRepo.saved.single.defaults.gpsLogging;
-      check(saved.includeInSms).isFalse();
-      check(saved.enabled).isTrue();
-      check((await state()).config.includeInSms).isFalse();
     });
   });
 

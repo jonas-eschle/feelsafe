@@ -3167,36 +3167,6 @@ abstract class AppLocalizations {
   /// **'Low'**
   String get gpsLoggingAccuracyLow;
 
-  /// GPS coordinate format label.
-  ///
-  /// In en, this message translates to:
-  /// **'Coordinate format'**
-  String get gpsLoggingFormatLabel;
-
-  /// GPS format decimal.
-  ///
-  /// In en, this message translates to:
-  /// **'Decimal'**
-  String get gpsLoggingFormatDecimal;
-
-  /// GPS format DMS.
-  ///
-  /// In en, this message translates to:
-  /// **'DMS'**
-  String get gpsLoggingFormatDms;
-
-  /// GPS format Plus Code (Open Location Code).
-  ///
-  /// In en, this message translates to:
-  /// **'Plus Code'**
-  String get gpsLoggingFormatAddress;
-
-  /// Toggle to include GPS in SMS.
-  ///
-  /// In en, this message translates to:
-  /// **'Append location to SMS'**
-  String get gpsLoggingIncludeInSms;
-
   /// Session log retention slider label.
   ///
   /// In en, this message translates to:

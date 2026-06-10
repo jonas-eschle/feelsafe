@@ -10,7 +10,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 import 'package:guardianangela/features/modes/widgets/gps_logging_fields.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
@@ -97,24 +96,26 @@ void main() {
     });
   });
 
-  group('GpsLoggingFields — format dropdown', () {
-    testWidgets('selecting DMS emits format: dms', (WidgetTester tester) async {
-      final l10n = await loadL10n(const Locale('en'));
-      GpsLoggingConfig? emitted;
-      await _pump(
-        tester,
-        const GpsLoggingConfig(),
-        onChanged: (GpsLoggingConfig c) => emitted = c,
-      );
+  group('GpsLoggingFields — trimmed controls (D-DATA-22)', () {
+    testWidgets(
+      'renders only the interval slider and the accuracy dropdown — the '
+      'format dropdown and include-in-SMS switch are gone because '
+      'GpsLoggingConfig was trimmed to {enabled, intervalSeconds, accuracy} '
+      '(location-in-SMS is per-step SmsContactConfig.includeLocation)',
+      (WidgetTester tester) async {
+        await _pump(tester, const GpsLoggingConfig(), onChanged: (_) {});
 
-      await _pickDropdown(
-        tester,
-        l10n.gpsLoggingFormatDecimal,
-        l10n.gpsLoggingFormatDms,
-      );
-
-      check(emitted).isNotNull();
-      check(emitted!.format).equals(GpsFormat.dms);
-    });
+        expect(find.byType(Slider), findsOneWidget);
+        expect(
+          find.byWidgetPredicate((w) => w is DropdownButton<Object?>),
+          findsOneWidget,
+        );
+        expect(find.byType(DropdownButton<GpsAccuracy>), findsOneWidget);
+        // No switch at all: the master `enabled` toggle is the caller's
+        // tri-state selector, and the trimmed include-in-SMS switch must
+        // not come back without a new decision.
+        expect(find.byType(SwitchListTile), findsNothing);
+      },
+    );
   });
 }

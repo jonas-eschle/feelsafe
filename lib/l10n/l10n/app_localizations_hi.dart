@@ -1769,21 +1769,6 @@ class AppLocalizationsHi extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'कम';
 
   @override
-  String get gpsLoggingFormatLabel => 'निर्देशांक प्रारूप';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'दशमलव';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'SMS में स्थान जोड़ें';
-
-  @override
   String get historyRetentionLogsLabel => 'सत्र लॉग रखरखाव (दिन)';
 
   @override

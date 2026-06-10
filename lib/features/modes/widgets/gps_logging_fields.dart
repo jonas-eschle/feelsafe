@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:guardianangela/core/widgets/timing_slider.dart';
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 
@@ -63,36 +62,6 @@ class GpsLoggingFields extends StatelessWidget {
               ),
             ],
           ),
-        ),
-        ListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l10n.gpsLoggingFormatLabel),
-          trailing: DropdownButton<GpsFormat>(
-            value: config.format,
-            onChanged: (GpsFormat? v) {
-              if (v != null) onChanged(config.copyWith(format: v));
-            },
-            items: <DropdownMenuItem<GpsFormat>>[
-              DropdownMenuItem<GpsFormat>(
-                value: GpsFormat.decimal,
-                child: Text(l10n.gpsLoggingFormatDecimal),
-              ),
-              DropdownMenuItem<GpsFormat>(
-                value: GpsFormat.dms,
-                child: Text(l10n.gpsLoggingFormatDms),
-              ),
-              DropdownMenuItem<GpsFormat>(
-                value: GpsFormat.openLocationCode,
-                child: Text(l10n.gpsLoggingFormatAddress),
-              ),
-            ],
-          ),
-        ),
-        SwitchListTile(
-          contentPadding: EdgeInsets.zero,
-          title: Text(l10n.gpsLoggingIncludeInSms),
-          value: config.includeInSms,
-          onChanged: (bool v) => onChanged(config.copyWith(includeInSms: v)),
         ),
       ],
     );

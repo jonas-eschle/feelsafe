@@ -3,12 +3,18 @@
 // Verifies constructor defaults, JSON round-trip, copyWith behaviour,
 // equality / hashCode contract, and enum coverage per
 // docs/spec/03-data-models.md §GpsLoggingConfig and Q21.
+//
+// The model is exactly {enabled, intervalSeconds, accuracy}: the former
+// format / includeInSms / historyRetentionDays fields were trimmed
+// (D-DATA-22, M6-P5) because nothing consumed them — location-in-SMS is
+// per-step `SmsContactConfig.includeLocation`, `{location}` is always a
+// Google Maps URL, and GPS history is in-memory only. The legacy-key
+// tests below pin that old-shape JSON still parses cleanly.
 
 import 'package:checks/checks.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:guardianangela/domain/enums/gps_accuracy.dart';
-import 'package:guardianangela/domain/enums/gps_format.dart';
 import 'package:guardianangela/domain/models/gps_logging_config.dart';
 
 void main() {
@@ -38,48 +44,18 @@ void main() {
         check(cfg.accuracy).equals(GpsAccuracy.high);
       });
 
-      test('format defaults to GpsFormat.decimal (Q21)', () {
-        // Arrange + Act
-        const cfg = GpsLoggingConfig();
-
-        // Assert
-        check(cfg.format).equals(GpsFormat.decimal);
-      });
-
-      test('includeInSms defaults to true', () {
-        // Arrange + Act
-        const cfg = GpsLoggingConfig();
-
-        // Assert
-        check(cfg.includeInSms).isTrue();
-      });
-
-      test('historyRetentionDays defaults to 30', () {
-        // Arrange + Act
-        const cfg = GpsLoggingConfig();
-
-        // Assert
-        check(cfg.historyRetentionDays).equals(30);
-      });
-
       test('non-default values stored unchanged', () {
         // Arrange + Act
         const cfg = GpsLoggingConfig(
           enabled: false,
           intervalSeconds: 120,
           accuracy: GpsAccuracy.low,
-          format: GpsFormat.dms,
-          includeInSms: false,
-          historyRetentionDays: 7,
         );
 
         // Assert
         check(cfg.enabled).isFalse();
         check(cfg.intervalSeconds).equals(120);
         check(cfg.accuracy).equals(GpsAccuracy.low);
-        check(cfg.format).equals(GpsFormat.dms);
-        check(cfg.includeInSms).isFalse();
-        check(cfg.historyRetentionDays).equals(7);
       });
 
       test('off is the defaults with only enabled switched to false', () {
@@ -93,7 +69,8 @@ void main() {
     });
 
     group('JSON round-trip', () {
-      test('toJson contains all six keys', () {
+      test('toJson contains exactly the three model keys '
+          '(D-DATA-22 trim: no format/includeInSms/historyRetentionDays)', () {
         // Arrange
         const cfg = GpsLoggingConfig();
 
@@ -101,12 +78,9 @@ void main() {
         final json = cfg.toJson();
 
         // Assert
-        check(json).containsKey('enabled');
-        check(json).containsKey('intervalSeconds');
-        check(json).containsKey('accuracy');
-        check(json).containsKey('format');
-        check(json).containsKey('includeInSms');
-        check(json).containsKey('historyRetentionDays');
+        check(
+          json.keys.toSet(),
+        ).deepEquals({'enabled', 'intervalSeconds', 'accuracy'});
       });
 
       test('toJson encodes accuracy by enum name', () {
@@ -118,17 +92,6 @@ void main() {
 
         // Assert
         check(json['accuracy']).equals('medium');
-      });
-
-      test('toJson encodes format by enum name', () {
-        // Arrange
-        const cfg = GpsLoggingConfig(format: GpsFormat.openLocationCode);
-
-        // Act
-        final json = cfg.toJson();
-
-        // Assert
-        check(json['format']).equals('openLocationCode');
       });
 
       test('fromJson(toJson) round-trips default config', () {
@@ -148,9 +111,6 @@ void main() {
           enabled: false,
           intervalSeconds: 90,
           accuracy: GpsAccuracy.medium,
-          format: GpsFormat.openLocationCode,
-          includeInSms: false,
-          historyRetentionDays: 365,
         );
 
         // Act
@@ -170,17 +130,44 @@ void main() {
 
       test('fromJson tolerates numeric ints encoded as doubles', () {
         // Arrange — JSON decoders sometimes give num instead of int
-        final json = <String, dynamic>{
-          'intervalSeconds': 45.0,
-          'historyRetentionDays': 14.0,
-        };
+        final json = <String, dynamic>{'intervalSeconds': 45.0};
 
         // Act
         final cfg = GpsLoggingConfig.fromJson(json);
 
         // Assert
         check(cfg.intervalSeconds).equals(45);
-        check(cfg.historyRetentionDays).equals(14);
+      });
+
+      test('fromJson ignores the legacy includeInSms, format, and '
+          'historyRetentionDays keys (old-shape backup gpsLogging blob; '
+          'trimmed by D-DATA-22, lenient per the existing fromJson '
+          'style)', () {
+        // Arrange — the gpsLogging blob a pre-trim backup carries.
+        final Map<String, dynamic> oldShape = {
+          'enabled': false,
+          'intervalSeconds': 90,
+          'accuracy': 'medium',
+          'format': 'openLocationCode',
+          'includeInSms': false,
+          'historyRetentionDays': 365,
+        };
+
+        // Act
+        final restored = GpsLoggingConfig.fromJson(oldShape);
+
+        // Assert — known keys parse; the legacy keys are dropped silently
+        // and never re-emitted.
+        check(restored).equals(
+          const GpsLoggingConfig(
+            enabled: false,
+            intervalSeconds: 90,
+            accuracy: GpsAccuracy.medium,
+          ),
+        );
+        check(restored.toJson().containsKey('format')).isFalse();
+        check(restored.toJson().containsKey('includeInSms')).isFalse();
+        check(restored.toJson().containsKey('historyRetentionDays')).isFalse();
       });
 
       test('all GpsAccuracy values round-trip via JSON', () {
@@ -193,19 +180,6 @@ void main() {
 
           // Assert
           check(restored.accuracy).equals(value);
-        }
-      });
-
-      test('all GpsFormat values round-trip via JSON', () {
-        for (final value in GpsFormat.values) {
-          // Arrange
-          final original = GpsLoggingConfig(format: value);
-
-          // Act
-          final restored = GpsLoggingConfig.fromJson(original.toJson());
-
-          // Assert
-          check(restored.format).equals(value);
         }
       });
     });
@@ -233,9 +207,6 @@ void main() {
         check(next.enabled).isFalse();
         check(next.intervalSeconds).equals(base.intervalSeconds);
         check(next.accuracy).equals(base.accuracy);
-        check(next.format).equals(base.format);
-        check(next.includeInSms).equals(base.includeInSms);
-        check(next.historyRetentionDays).equals(base.historyRetentionDays);
       });
 
       test('replaces intervalSeconds only', () {
@@ -259,42 +230,6 @@ void main() {
 
         // Assert
         check(next.accuracy).equals(GpsAccuracy.low);
-        check(next.format).equals(base.format);
-      });
-
-      test('replaces format only', () {
-        // Arrange
-        const base = GpsLoggingConfig();
-
-        // Act
-        final next = base.copyWith(format: GpsFormat.dms);
-
-        // Assert
-        check(next.format).equals(GpsFormat.dms);
-        check(next.accuracy).equals(base.accuracy);
-      });
-
-      test('replaces includeInSms only', () {
-        // Arrange
-        const base = GpsLoggingConfig();
-
-        // Act
-        final next = base.copyWith(includeInSms: false);
-
-        // Assert
-        check(next.includeInSms).isFalse();
-        check(next.enabled).equals(base.enabled);
-      });
-
-      test('replaces historyRetentionDays only', () {
-        // Arrange
-        const base = GpsLoggingConfig();
-
-        // Act
-        final next = base.copyWith(historyRetentionDays: 14);
-
-        // Assert
-        check(next.historyRetentionDays).equals(14);
         check(next.intervalSeconds).equals(base.intervalSeconds);
       });
 
@@ -307,18 +242,12 @@ void main() {
           enabled: false,
           intervalSeconds: 5,
           accuracy: GpsAccuracy.low,
-          format: GpsFormat.dms,
-          includeInSms: false,
-          historyRetentionDays: 1,
         );
 
         // Assert
         check(next.enabled).isFalse();
         check(next.intervalSeconds).equals(5);
         check(next.accuracy).equals(GpsAccuracy.low);
-        check(next.format).equals(GpsFormat.dms);
-        check(next.includeInSms).isFalse();
-        check(next.historyRetentionDays).equals(1);
       });
     });
 
@@ -381,37 +310,10 @@ void main() {
         check(a == b).isFalse();
       });
 
-      test('different format breaks equality', () {
-        // Arrange
-        const a = GpsLoggingConfig();
-        const b = GpsLoggingConfig(format: GpsFormat.dms);
-
-        // Act + Assert
-        check(a == b).isFalse();
-      });
-
-      test('different includeInSms breaks equality', () {
-        // Arrange
-        const a = GpsLoggingConfig();
-        const b = GpsLoggingConfig(includeInSms: false);
-
-        // Act + Assert
-        check(a == b).isFalse();
-      });
-
-      test('different historyRetentionDays breaks equality', () {
-        // Arrange
-        const a = GpsLoggingConfig();
-        const b = GpsLoggingConfig(historyRetentionDays: 90);
-
-        // Act + Assert
-        check(a == b).isFalse();
-      });
-
       test('hashCode equals when configs are equal', () {
         // Arrange
-        const a = GpsLoggingConfig(intervalSeconds: 7, includeInSms: false);
-        const b = GpsLoggingConfig(intervalSeconds: 7, includeInSms: false);
+        const a = GpsLoggingConfig(intervalSeconds: 7, enabled: false);
+        const b = GpsLoggingConfig(intervalSeconds: 7, enabled: false);
 
         // Act + Assert
         check(a.hashCode).equals(b.hashCode);
@@ -433,14 +335,6 @@ void main() {
 
         // Assert
         check(cfg.intervalSeconds).equals(3600);
-      });
-
-      test('historyRetentionDays can hold large positive values', () {
-        // Arrange + Act
-        const cfg = GpsLoggingConfig(historyRetentionDays: 365);
-
-        // Assert
-        check(cfg.historyRetentionDays).equals(365);
       });
     });
   });

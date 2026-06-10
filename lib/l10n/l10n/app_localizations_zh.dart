@@ -1693,21 +1693,6 @@ class AppLocalizationsZh extends AppLocalizations {
   String get gpsLoggingAccuracyLow => '低';
 
   @override
-  String get gpsLoggingFormatLabel => '坐标格式';
-
-  @override
-  String get gpsLoggingFormatDecimal => '十进制';
-
-  @override
-  String get gpsLoggingFormatDms => '度分秒';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => '在短信中附加位置';
-
-  @override
   String get historyRetentionLogsLabel => '会话日志保留天数';
 
   @override
@@ -4376,21 +4361,6 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get gpsLoggingAccuracyLow => '低';
-
-  @override
-  String get gpsLoggingFormatLabel => '座標格式';
-
-  @override
-  String get gpsLoggingFormatDecimal => '十進位';
-
-  @override
-  String get gpsLoggingFormatDms => '度分秒';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => '在簡訊附加位置';
 
   @override
   String get historyRetentionLogsLabel => '守護紀錄保留(天)';

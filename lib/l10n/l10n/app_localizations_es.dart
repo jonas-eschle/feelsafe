@@ -1778,21 +1778,6 @@ class AppLocalizationsEs extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'Baja';
 
   @override
-  String get gpsLoggingFormatLabel => 'Formato de coordenadas';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'Decimal';
-
-  @override
-  String get gpsLoggingFormatDms => 'GMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'Añadir la ubicación al SMS';
-
-  @override
   String get historyRetentionLogsLabel =>
       'Retención del registro de sesión (días)';
 

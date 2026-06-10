@@ -1755,21 +1755,6 @@ class AppLocalizationsHe extends AppLocalizations {
   String get gpsLoggingAccuracyLow => 'נמוך';
 
   @override
-  String get gpsLoggingFormatLabel => 'פורמט קואורדינטות';
-
-  @override
-  String get gpsLoggingFormatDecimal => 'עשרוני';
-
-  @override
-  String get gpsLoggingFormatDms => 'DMS';
-
-  @override
-  String get gpsLoggingFormatAddress => 'Plus Code';
-
-  @override
-  String get gpsLoggingIncludeInSms => 'צרפי מיקום ל-SMS';
-
-  @override
   String get historyRetentionLogsLabel => 'שמירת יומני מושב (ימים)';
 
   @override
