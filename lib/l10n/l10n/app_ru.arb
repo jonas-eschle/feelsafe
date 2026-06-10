@@ -605,6 +605,7 @@
   "templatesNameLabel": "Название",
   "templatesTitleLabel": "Заголовок",
   "templatesBodyLabel": "Текст",
+  "templatesRequiredFieldsError": "Необходимо указать название, заголовок и текст.",
   "templatesBuiltinNoDelete": "Встроенные шаблоны нельзя удалить",
   "templatesAddFromTemplate": "Из шаблона",
   "templatesAddFromScratch": "С нуля",

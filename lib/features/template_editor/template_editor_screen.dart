@@ -85,8 +85,9 @@ class _TemplateEditorScreenState extends ConsumerState<TemplateEditorScreen> {
       isGlobal: true,
     );
     if (t == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name, title, and body required.')),
+        SnackBar(content: Text(l10n.templatesRequiredFieldsError)),
       );
       return;
     }

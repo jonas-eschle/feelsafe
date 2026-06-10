@@ -1670,6 +1670,10 @@ class AppLocalizationsEl extends AppLocalizations {
   String get templatesBodyLabel => 'Κείμενο';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Το όνομα, ο τίτλος και το κείμενο είναι υποχρεωτικά.';
+
+  @override
   String get templatesBuiltinNoDelete =>
       'Τα ενσωματωμένα πρότυπα δεν μπορούν να διαγραφούν';
 

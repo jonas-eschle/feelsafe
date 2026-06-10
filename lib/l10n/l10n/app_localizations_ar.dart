@@ -1649,6 +1649,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get templatesBodyLabel => 'النص';
 
   @override
+  String get templatesRequiredFieldsError => 'الاسم والعنوان والنص مطلوبة.';
+
+  @override
   String get templatesBuiltinNoDelete => 'لا يمكن حذف القوالب المضمَّنة';
 
   @override

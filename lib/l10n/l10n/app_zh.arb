@@ -734,6 +734,7 @@
   "templatesNameLabel": "名称",
   "templatesTitleLabel": "标题",
   "templatesBodyLabel": "正文",
+  "templatesRequiredFieldsError": "名称、标题和正文均为必填项。",
   "templatesBuiltinNoDelete": "内置模板无法删除",
   "templatesAddFromTemplate": "基于模板",
   "templatesAddFromScratch": "从零开始",

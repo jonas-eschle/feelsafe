@@ -1661,6 +1661,10 @@ class AppLocalizationsRu extends AppLocalizations {
   String get templatesBodyLabel => 'Текст';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Необходимо указать название, заголовок и текст.';
+
+  @override
   String get templatesBuiltinNoDelete => 'Встроенные шаблоны нельзя удалить';
 
   @override

@@ -605,6 +605,7 @@
   "templatesNameLabel": "नाम",
   "templatesTitleLabel": "शीर्षक",
   "templatesBodyLabel": "मुख्य पाठ",
+  "templatesRequiredFieldsError": "नाम, शीर्षक और मुख्य पाठ आवश्यक हैं।",
   "templatesBuiltinNoDelete": "बिल्ट-इन टेम्पलेट हटाए नहीं जा सकते",
   "templatesAddFromTemplate": "टेम्पलेट से",
   "templatesAddFromScratch": "शुरू से",

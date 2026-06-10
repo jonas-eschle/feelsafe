@@ -833,8 +833,9 @@ class _LocalTemplateEditorSheetState extends State<_LocalTemplateEditorSheet> {
       isGlobal: false,
     );
     if (created == null) {
+      final l10n = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Name, title, and body required.')),
+        SnackBar(content: Text(l10n.templatesRequiredFieldsError)),
       );
       return;
     }

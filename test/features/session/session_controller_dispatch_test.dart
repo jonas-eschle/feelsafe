@@ -61,8 +61,10 @@ import 'package:guardianangela/services/sim/vibration_service_sim.dart';
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
 class _FakeAppSettingsRepository extends AppSettingsRepository {
-  _FakeAppSettingsRepository()
-    : super(
+  /// [settings] defaults to `const AppSettings()` (all model defaults).
+  _FakeAppSettingsRepository({AppSettings? settings})
+    : _settings = settings ?? const AppSettings(),
+      super(
         keyProvider: () async =>
             '0102030405060708090a0b0c0d0e0f'
             '101112131415161718191a1b1c1d1e1f20',
@@ -70,8 +72,10 @@ class _FakeAppSettingsRepository extends AppSettingsRepository {
             Directory.systemTemp.createTempSync('dispatch_test_'),
       );
 
+  final AppSettings _settings;
+
   @override
-  Future<AppSettings> load() async => const AppSettings();
+  Future<AppSettings> load() async => _settings;
 }
 
 class _FakeUserProfileRepository extends UserProfileRepository {
@@ -99,7 +103,11 @@ final class _RecordingAudioService implements AudioServiceProtocol {
     bool isSimulation = false,
     int rampSeconds = kDefaultAlarmRampSeconds,
     bool alarmDndOverride = true,
-  }) async => calls.add({'method': 'playAlarmWithConfig'});
+  }) async => calls.add({
+    'method': 'playAlarmWithConfig',
+    'rampSeconds': rampSeconds,
+    'alarmDndOverride': alarmDndOverride,
+  });
 
   @override
   Future<void> playRingtone(String? assetPath) async =>
@@ -225,7 +233,7 @@ final class _RecordingNotificationService
 
 // ─── Mode factories ───────────────────────────────────────────────────────────
 
-SessionMode _loudAlarmMode() => SessionMode(
+SessionMode _loudAlarmMode({LoudAlarmConfig? config}) => SessionMode(
   id: 'mode-la',
   name: 'LoudAlarm Test',
   chainSteps: <ChainStep>[
@@ -238,6 +246,7 @@ SessionMode _loudAlarmMode() => SessionMode(
       gracePeriodSeconds: 1,
       retryCount: 0,
       randomize: false,
+      config: config,
     ),
   ],
 );
@@ -359,11 +368,12 @@ ProviderContainer _container(
   NotificationServiceProtocol? notification,
   CallStateServiceProtocol? callState,
   SimulationBackgroundSessionService? background,
+  AppSettings? settings,
 }) {
   final container = ProviderContainer(
     overrides: [
       appSettingsRepositoryProvider.overrideWithValue(
-        _FakeAppSettingsRepository(),
+        _FakeAppSettingsRepository(settings: settings),
       ),
       userProfileRepositoryProvider.overrideWithValue(
         _FakeUserProfileRepository(),
@@ -501,6 +511,89 @@ void main() {
       await container.read(sessionControllerProvider.notifier).endSession();
     },
   );
+
+  // ─── AppSettings → EventServices copy-hop (alarm settings arrival) ──────────
+  //
+  // session_controller.startSession copies alarmDndOverride /
+  // alarmGradualVolume / alarmGradualVolumeDurationSeconds from the loaded
+  // AppSettings into the per-session EventServices bundle. These tests seed
+  // the fake repository with values that ALL differ from the AppSettings
+  // defaults (false / false / 5) AND from kDefaultAlarmRampSeconds (5), so a
+  // dropped or mis-wired hop cannot pass vacuously.
+  group('AppSettings → EventServices alarm-settings arrival', () {
+    test('gradual ON: non-default rampSeconds=42 and alarmDndOverride=true '
+        'arrive at the audio service', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(
+        db,
+        audio: audio,
+        settings: const AppSettings(
+          alarmDndOverride: true,
+          alarmGradualVolume: true,
+          alarmGradualVolumeDurationSeconds: 42,
+        ),
+      );
+      await container.read(sessionControllerProvider.future);
+
+      // The ramp fires only when BOTH the global toggle and the per-step
+      // LoudAlarmConfig.gradualVolume opt-in are true (spec 02 §loudAlarm).
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(
+            mode: _loudAlarmMode(
+              config: const LoudAlarmConfig(gradualVolume: true),
+            ),
+            simulate: false,
+          );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final call = audio.calls.firstWhere(
+        (c) => c['method'] == 'playAlarmWithConfig',
+      );
+      check(call['rampSeconds']).equals(42);
+      check(call['alarmDndOverride']).equals(true);
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+
+    test('gradual OFF globally: rampSeconds=0 arrives even though the '
+        'configured duration is 42 and the step opts in', () async {
+      final audio = _RecordingAudioService();
+      final container = _container(
+        db,
+        audio: audio,
+        // Master toggle left at its default OFF — the per-step opt-in alone
+        // must not ramp, even with a non-default 42 s duration configured.
+        settings: const AppSettings(
+          alarmDndOverride: true,
+          alarmGradualVolumeDurationSeconds: 42,
+        ),
+      );
+      await container.read(sessionControllerProvider.future);
+
+      await container
+          .read(sessionControllerProvider.notifier)
+          .startSession(
+            mode: _loudAlarmMode(
+              config: const LoudAlarmConfig(gradualVolume: true),
+            ),
+            simulate: false,
+          );
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+
+      final call = audio.calls.firstWhere(
+        (c) => c['method'] == 'playAlarmWithConfig',
+      );
+      // LoudAlarmStrategy passes 0 (not the 42 duration, not the protocol
+      // default 5) when the global gradual-volume toggle is off.
+      check(call['rampSeconds']).equals(0);
+      check(call['alarmDndOverride']).equals(true);
+
+      await container.read(sessionControllerProvider.notifier).endSession();
+    });
+  });
 
   test(
     'disguisedReminder NOT dispatched on stepStarted: notification receives no calls immediately',

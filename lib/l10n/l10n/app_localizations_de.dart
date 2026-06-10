@@ -1658,6 +1658,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get templatesBodyLabel => 'Text';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Name, Titel und Text sind erforderlich.';
+
+  @override
   String get templatesBuiltinNoDelete =>
       'Integrierte Vorlagen können nicht gelöscht werden';
 

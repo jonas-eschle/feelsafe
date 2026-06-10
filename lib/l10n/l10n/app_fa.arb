@@ -605,6 +605,7 @@
   "templatesNameLabel": "نام",
   "templatesTitleLabel": "عنوان",
   "templatesBodyLabel": "متن",
+  "templatesRequiredFieldsError": "نام، عنوان و متن الزامی هستند.",
   "templatesBuiltinNoDelete": "الگوهای داخلی قابل حذف نیستند",
   "templatesAddFromTemplate": "از روی الگو",
   "templatesAddFromScratch": "از صفر",

@@ -1659,6 +1659,10 @@ class AppLocalizationsPl extends AppLocalizations {
   String get templatesBodyLabel => 'Treść';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Nazwa, tytuł i treść są wymagane.';
+
+  @override
   String get templatesBuiltinNoDelete =>
       'Wbudowanych szablonów nie można usunąć';
 

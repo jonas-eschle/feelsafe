@@ -3029,6 +3029,12 @@ abstract class AppLocalizations {
   /// **'Body'**
   String get templatesBodyLabel;
 
+  /// Snackbar shown when saving a template with an empty name, title, or body.
+  ///
+  /// In en, this message translates to:
+  /// **'Name, title, and body required.'**
+  String get templatesRequiredFieldsError;
+
   /// Tooltip on disabled delete for built-in templates.
   ///
   /// In en, this message translates to:

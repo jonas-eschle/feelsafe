@@ -2084,6 +2084,10 @@
   "@templatesBodyLabel": {
     "description": "Template body label."
   },
+  "templatesRequiredFieldsError": "Name, title, and body required.",
+  "@templatesRequiredFieldsError": {
+    "description": "Snackbar shown when saving a template with an empty name, title, or body."
+  },
   "templatesBuiltinNoDelete": "Built-in templates cannot be deleted",
   "@templatesBuiltinNoDelete": {
     "description": "Tooltip on disabled delete for built-in templates."

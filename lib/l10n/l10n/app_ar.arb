@@ -605,6 +605,7 @@
   "templatesNameLabel": "الاسم",
   "templatesTitleLabel": "العنوان",
   "templatesBodyLabel": "النص",
+  "templatesRequiredFieldsError": "الاسم والعنوان والنص مطلوبة.",
   "templatesBuiltinNoDelete": "لا يمكن حذف القوالب المضمَّنة",
   "templatesAddFromTemplate": "من قالب",
   "templatesAddFromScratch": "من الصفر",

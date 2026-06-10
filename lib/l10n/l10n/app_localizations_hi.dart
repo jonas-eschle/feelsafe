@@ -1651,6 +1651,10 @@ class AppLocalizationsHi extends AppLocalizations {
   String get templatesBodyLabel => 'मुख्य पाठ';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'नाम, शीर्षक और मुख्य पाठ आवश्यक हैं।';
+
+  @override
   String get templatesBuiltinNoDelete => 'बिल्ट-इन टेम्पलेट हटाए नहीं जा सकते';
 
   @override

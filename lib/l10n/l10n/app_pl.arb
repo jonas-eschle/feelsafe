@@ -605,6 +605,7 @@
   "templatesNameLabel": "Nazwa",
   "templatesTitleLabel": "Tytuł",
   "templatesBodyLabel": "Treść",
+  "templatesRequiredFieldsError": "Nazwa, tytuł i treść są wymagane.",
   "templatesBuiltinNoDelete": "Wbudowanych szablonów nie można usunąć",
   "templatesAddFromTemplate": "Z szablonu",
   "templatesAddFromScratch": "Od zera",

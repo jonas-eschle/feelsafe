@@ -605,6 +605,7 @@
   "templatesNameLabel": "שם",
   "templatesTitleLabel": "כותרת",
   "templatesBodyLabel": "תוכן",
+  "templatesRequiredFieldsError": "שם, כותרת ותוכן הם שדות חובה.",
   "templatesBuiltinNoDelete": "לא ניתן למחוק תבניות מוטמעות",
   "templatesAddFromTemplate": "מתוך תבנית",
   "templatesAddFromScratch": "מאפס",

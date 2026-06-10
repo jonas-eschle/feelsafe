@@ -734,6 +734,7 @@
   "templatesNameLabel": "Назва",
   "templatesTitleLabel": "Заголовок",
   "templatesBodyLabel": "Текст",
+  "templatesRequiredFieldsError": "Назва, заголовок і текст обов'язкові.",
   "templatesBuiltinNoDelete": "Вбудовані шаблони неможливо видалити",
   "templatesAddFromTemplate": "З шаблону",
   "templatesAddFromScratch": "З нуля",

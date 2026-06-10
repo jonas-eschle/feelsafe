@@ -1668,6 +1668,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get templatesBodyLabel => 'Corps';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Le nom, le titre et le corps sont requis.';
+
+  @override
   String get templatesBuiltinNoDelete =>
       'Les modèles préinstallés ne peuvent pas être supprimés';
 

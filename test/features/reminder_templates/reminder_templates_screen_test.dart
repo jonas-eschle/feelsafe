@@ -721,8 +721,14 @@ void main() {
       );
       await tester.tap(find.byType(PopupMenuButton<String>).first);
       await tester.pumpAndSettle();
-      // Do not attempt to tap the disabled item; verify no call
-      // occurred simply by asserting the controller was never called.
+      // Really tap the disabled Delete item. The gesture must be inert:
+      // the menu stays open (a selection would dismiss it), no confirm
+      // dialog appears, and the controller is never called.
+      final l10n = await loadL10n(const Locale('en'));
+      await tester.tap(find.text(l10n.commonDelete), warnIfMissed: false);
+      await tester.pumpAndSettle();
+      check(find.byType(AlertDialog).evaluate()).isEmpty();
+      check(find.text(l10n.commonDelete).evaluate()).isNotEmpty();
       check(fake.deleteCalls).equals(0);
     });
   });

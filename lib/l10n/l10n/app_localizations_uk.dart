@@ -1659,6 +1659,10 @@ class AppLocalizationsUk extends AppLocalizations {
   String get templatesBodyLabel => 'Текст';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'Назва, заголовок і текст обов\'язкові.';
+
+  @override
   String get templatesBuiltinNoDelete => 'Вбудовані шаблони неможливо видалити';
 
   @override

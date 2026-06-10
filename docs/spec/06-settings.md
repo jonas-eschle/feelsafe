@@ -265,7 +265,9 @@ Global alarm behavior (affects all loudAlarm steps).
 
 #### Gradual Volume Duration (If Gradual Volume is ON)
 - **Label:** "Ramp duration"
-- **Control:** LogarithmicSlider (range 0–60 seconds, default **5s**)
+- **Control:** `TimingSlider` (log-scale; range 1–60 seconds, default **5s**.
+  Why min 1: a 0s ramp is indistinguishable from Gradual Volume OFF — the
+  strategy passes `rampSeconds: 0` only when the ramp is disabled)
 - **Real-time display:** "5s" or "30s" with unit suffix
 - **Persistence:** `AppSettings.alarmGradualVolumeDurationSeconds`
 - **Effect:** Time to reach full volume from zero; linear ramp over this duration. Ignored when `alarmGradualVolume` is OFF.

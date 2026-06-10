@@ -734,6 +734,7 @@
   "templatesNameLabel": "Name",
   "templatesTitleLabel": "Titel",
   "templatesBodyLabel": "Text",
+  "templatesRequiredFieldsError": "Name, Titel und Text sind erforderlich.",
   "templatesBuiltinNoDelete": "Integrierte Vorlagen können nicht gelöscht werden",
   "templatesAddFromTemplate": "Aus Vorlage",
   "templatesAddFromScratch": "Von Grund auf",

@@ -1661,6 +1661,10 @@ class AppLocalizationsEs extends AppLocalizations {
   String get templatesBodyLabel => 'Cuerpo';
 
   @override
+  String get templatesRequiredFieldsError =>
+      'El nombre, el título y el cuerpo son obligatorios.';
+
+  @override
   String get templatesBuiltinNoDelete =>
       'Las plantillas preinstaladas no se pueden eliminar';
 

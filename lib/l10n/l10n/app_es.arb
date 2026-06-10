@@ -734,6 +734,7 @@
   "templatesNameLabel": "Nombre",
   "templatesTitleLabel": "Título",
   "templatesBodyLabel": "Cuerpo",
+  "templatesRequiredFieldsError": "El nombre, el título y el cuerpo son obligatorios.",
   "templatesBuiltinNoDelete": "Las plantillas preinstaladas no se pueden eliminar",
   "templatesAddFromTemplate": "Desde plantilla",
   "templatesAddFromScratch": "Desde cero",

@@ -1641,6 +1641,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get templatesBodyLabel => 'Body';
 
   @override
+  String get templatesRequiredFieldsError => 'Name, title, and body required.';
+
+  @override
   String get templatesBuiltinNoDelete => 'Built-in templates cannot be deleted';
 
   @override

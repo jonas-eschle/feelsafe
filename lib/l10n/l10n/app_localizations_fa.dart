@@ -1646,6 +1646,9 @@ class AppLocalizationsFa extends AppLocalizations {
   String get templatesBodyLabel => 'متن';
 
   @override
+  String get templatesRequiredFieldsError => 'نام، عنوان و متن الزامی هستند.';
+
+  @override
   String get templatesBuiltinNoDelete => 'الگوهای داخلی قابل حذف نیستند';
 
   @override

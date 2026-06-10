@@ -1633,6 +1633,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get templatesBodyLabel => 'תוכן';
 
   @override
+  String get templatesRequiredFieldsError => 'שם, כותרת ותוכן הם שדות חובה.';
+
+  @override
   String get templatesBuiltinNoDelete => 'לא ניתן למחוק תבניות מוטמעות';
 
   @override

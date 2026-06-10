@@ -623,6 +623,7 @@
   "templatesNameLabel": "Nom",
   "templatesTitleLabel": "Titre",
   "templatesBodyLabel": "Corps",
+  "templatesRequiredFieldsError": "Le nom, le titre et le corps sont requis.",
   "templatesBuiltinNoDelete": "Les modèles préinstallés ne peuvent pas être supprimés",
   "templatesAddFromTemplate": "À partir d'un modèle",
   "templatesAddFromScratch": "De toutes pièces",

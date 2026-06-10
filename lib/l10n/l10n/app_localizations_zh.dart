@@ -1584,6 +1584,9 @@ class AppLocalizationsZh extends AppLocalizations {
   String get templatesBodyLabel => '正文';
 
   @override
+  String get templatesRequiredFieldsError => '名称、标题和正文均为必填项。';
+
+  @override
   String get templatesBuiltinNoDelete => '内置模板无法删除';
 
   @override
@@ -3863,6 +3866,9 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get templatesBodyLabel => '內文';
+
+  @override
+  String get templatesRequiredFieldsError => '名稱、標題和內文均為必填。';
 
   @override
   String get templatesBuiltinNoDelete => '內建範本無法刪除';

@@ -144,6 +144,88 @@ void main() {
     );
   });
 
+  group('SwipeSlider — onPanCancel (real arena loss)', () {
+    testWidgets(
+      'losing the gesture arena to a parent Scrollable mid-cycle fires a '
+      'REAL onPanCancel that resets a still-displaced knob',
+      (WidgetTester tester) async {
+        // _onPanCancel needs _dragX > 0, but a pan recognizer only receives a
+        // cancel BEFORE it accepts (after acceptance the framework routes a
+        // pointer cancel to onEnd). The one real-world path: a previous drag
+        // left the knob displaced and its reset animation running; a new
+        // pointer goes down (onPanDown stops the reset, freezing _dragX > 0)
+        // and the OS/arena cancels that pointer before the pan accepts. Here
+        // the slider sits in a vertical ListView: moving the second pointer
+        // 25 px vertically is past the scrollable's drag slop (18) but below
+        // the pan slop (36), so the scrollable wins the arena and the pan
+        // recognizer receives a genuine cancel.
+        var confirmCount = 0;
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: const <LocalizationsDelegate<Object>>[
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: ListView(
+                children: <Widget>[
+                  const SizedBox(height: 40),
+                  Center(
+                    child: SizedBox(
+                      width: 320,
+                      child: SwipeSlider(
+                        label: 'Swipe to confirm',
+                        onConfirm: () => confirmCount++,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final knob = find.byIcon(Icons.arrow_forward_rounded);
+        final restDx = tester.getTopLeft(knob).dx;
+
+        // Drag 1: displace the knob below the threshold, then release —
+        // _onPanEnd starts the 220 ms reset animation. The first 80 px get
+        // absorbed by drag-start slop handling, so add a separate 40 px
+        // update that definitely reaches _onPanUpdate.
+        final g1 = await tester.startGesture(tester.getCenter(knob));
+        await g1.moveBy(const Offset(80, 0));
+        await tester.pump();
+        await g1.moveBy(const Offset(40, 0));
+        await tester.pump();
+        await g1.up();
+        // Zero-duration pump: the reset animation has not advanced yet.
+        await tester.pump();
+        final displacedDx = tester.getTopLeft(knob).dx;
+        check(displacedDx).isGreaterThan(restDx);
+
+        // Drag 2: pointer down stops the reset (knob frozen displaced), then
+        // a 25 px vertical move hands the arena to the ListView → the pan
+        // recognizer is rejected → real onPanCancel with _dragX > 0.
+        final g2 = await tester.startGesture(tester.getCenter(knob));
+        await tester.pump();
+        await g2.moveBy(const Offset(0, 25));
+        await tester.pump();
+        await g2.up();
+        await tester.pumpAndSettle();
+
+        // The cancel handler restarted the reset: the knob is back at rest.
+        // (If onPanCancel had not run, the animation would still be stopped
+        // and the knob would remain frozen at displacedDx.)
+        check(confirmCount).equals(0);
+        check(tester.getTopLeft(knob).dx).equals(restDx);
+      },
+    );
+  });
+
   group('SwipeSlider — haptic feedback', () {
     testWidgets('crossing the threshold triggers a light-impact haptic', (
       WidgetTester tester,

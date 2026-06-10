@@ -605,6 +605,7 @@
   "templatesNameLabel": "Όνομα",
   "templatesTitleLabel": "Τίτλος",
   "templatesBodyLabel": "Κείμενο",
+  "templatesRequiredFieldsError": "Το όνομα, ο τίτλος και το κείμενο είναι υποχρεωτικά.",
   "templatesBuiltinNoDelete": "Τα ενσωματωμένα πρότυπα δεν μπορούν να διαγραφούν",
   "templatesAddFromTemplate": "Από πρότυπο",
   "templatesAddFromScratch": "Από την αρχή",
