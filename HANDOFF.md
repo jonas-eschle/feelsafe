@@ -227,7 +227,31 @@ INFOs: ModeOverrides legacy path covered by construction (same fromJson);
 docs/architecture-sketch.md:1261 historical mention left (outside spec
 canon). Costs: impl 175k/125t, arch 56k, qa 65k.
 
-**NEXT: P5b** (l10n debt + annexes — the LAST code chunk) → P6 (finale).
+**P5b IMPLEMENTED (`0eacb52`) — COHORT PENDING (re-run on resume).**
+Impl report: 6 items done — timing-dialog keys; 16 error builders →
+commonErrorWithDetail (exact-assert upgrade EXPOSED 2 vacuous tests:
+modes_screen + reminder_templates error tests matched Riverpod's
+uninitialized-notifier message, not the screen branch — restructured to
+build()-throwing controllers); pastEventsDetailStart/End keys
+(_toTextSummary export labels deliberately left raw — export format);
+localized alarm notification via EventServices copy-hop (2 fields,
+resolved ONCE at startSession via lookupAppLocalizations; red-proven
+es+zh_TW: 'Expected Alarma / Actual Alarm'; **implementer found+fixed a
+zh_TW Locale() crash in its own new path — _localeForLanguageCode
+underscore-split, session_controller.dart:~1779**); 2 stale doc-strings;
+P3c annex (backup import force isGlobal:true + tamper test; repo
+no-templates-key pin; isGlobal pin extended to 4 write paths). 6 keys
+×14 (parity 807), suite 4756→4760, analyze 0, coverage 99.42%.
+**BOTH P5b cohort agents died on the SESSION LIMIT (resets 8:40pm
+Europe/Dublin) with NO verdict. ON RESUME: (1) re-dispatch the P5b
+cohort — arch must ALSO run the zh_TW sweep over every other
+`Locale(`-from-languageCode site in lib/ (main.dart MaterialApp locale
+path above all — a silent zh→zh_TW fallback there would be bug #15);
+qa re-derives the es/zh_TW value-arrival red-proofs + the premise guard
++ the de-fabricated error tests; (2) then P6 finale** (authoritative
+full gate + MILESTONE cohort over the whole M6 diff + baton close).
+
+**NEXT: P5b cohort re-run → P6 (finale).**
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
