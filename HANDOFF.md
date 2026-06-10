@@ -212,7 +212,22 @@ Parked LOWs: modeIcon() log-call unpinned; golden lacks a
 non-default-icon chip scenario (behavioral tests cover it). Costs:
 impl 358k/165t, arch 85k, qa 128k, fix 135k/56t, re-arch 74k, re-qa 52k.
 
-**NEXT: P5** (GPS trim) → P5b → P6.
+**DONE: P5** (`c159005`, cohort PASS×2, no fix round): GPS trim complete —
+3 fields + orphaned GpsFormat enum (+ barrel export, + exhaustiveness
+tombstone) deleted; 5 l10n keys ×14 removed (parity 801 verified both
+directions); spec 06/03/08/09 reconciled + decisions-log **D-DATA-22**;
+lenient legacy-key fromJson pinned (parse + never-re-emit) + old-shape
+backup import case; UI absence pins discriminate resurrection (typed
+dropdown counts / findsNothing switch). Scope guard held byte-identical
+(enabled/intervalSeconds/accuracy; kept features includeLocation +
+trashRetentionDays verified untouched). QA audited ALL −20 removed tests:
+every subject itself removed; T5 converted to an equal-depth accuracy
+round-trip. Suite 4776→4756, coverage 99.41%, trimmed files 100%.
+INFOs: ModeOverrides legacy path covered by construction (same fromJson);
+docs/architecture-sketch.md:1261 historical mention left (outside spec
+canon). Costs: impl 175k/125t, arch 56k, qa 65k.
+
+**NEXT: P5b** (l10n debt + annexes — the LAST code chunk) → P6 (finale).
 
 **FINAL STATE:** Suite **4649 pass** · `analyze --fatal-infos` 0 ·
 **coverage-of-logic 99.33%** (13039/13127), floor **98.7** (M5 "~99% with an
