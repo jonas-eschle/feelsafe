@@ -361,6 +361,7 @@ class _ModeEditorScreenState extends ConsumerState<ModeEditorScreen> {
                             canDelete: draft.chainSteps.length > 1,
                             contacts: _contacts,
                             onManageContacts: _manageContacts,
+                            onManageTemplates: _manageTemplates,
                             onChanged: (ChainStep s) => _updateStep(index, s),
                             onDuplicate: () => _duplicateStep(index),
                             onReset: () => _resetStep(index),
@@ -411,6 +412,7 @@ class _StepTile extends StatelessWidget {
     required this.canDelete,
     required this.contacts,
     required this.onManageContacts,
+    required this.onManageTemplates,
     required this.onChanged,
     required this.onDuplicate,
     required this.onReset,
@@ -423,6 +425,7 @@ class _StepTile extends StatelessWidget {
   final bool canDelete;
   final List<EmergencyContact> contacts;
   final VoidCallback onManageContacts;
+  final VoidCallback onManageTemplates;
   final ValueChanged<ChainStep> onChanged;
   final VoidCallback onDuplicate;
   final VoidCallback onReset;
@@ -461,6 +464,7 @@ class _StepTile extends StatelessWidget {
             canDelete: canDelete,
             contacts: contacts,
             onManageContacts: onManageContacts,
+            onManageTemplates: onManageTemplates,
             onChanged: onChanged,
             onDuplicate: onDuplicate,
             onReset: onReset,

@@ -197,6 +197,33 @@ class AppLocalizationsZh extends AppLocalizations {
   String get chainStepNameHardwareButton => '硬件按键';
 
   @override
+  String get chainStepDescHoldButton => '长按以保持安全——松开会启动宽限倒计时。';
+
+  @override
+  String get chainStepDescDisguisedReminder => '发送伪装通知——你必须作出回应以确认安全。';
+
+  @override
+  String get chainStepDescFakeCall => '模拟来电——接听或拒接以表明你是安全的。';
+
+  @override
+  String get chainStepDescSmsContact => '向紧急联系人发送包含你位置的短信。';
+
+  @override
+  String get chainStepDescCountdownWarning => '显示带声音和闪烁的倒计时，作为最后警告。';
+
+  @override
+  String get chainStepDescLoudAlarm => '以最大音量播放警报并闪烁，以吸引注意。';
+
+  @override
+  String get chainStepDescCallEmergency => '自动拨打紧急服务电话（112/911）。';
+
+  @override
+  String get chainStepDescPhoneCallContact => '直接拨打某位紧急联系人的电话。';
+
+  @override
+  String get chainStepDescHardwareButton => '监听硬件按键的紧急按压模式。';
+
+  @override
   String get homeChecklistTitle => '安全设置';
 
   @override
@@ -2113,6 +2140,215 @@ class AppLocalizationsZh extends AppLocalizations {
   String get eventDefaultsHardwareLongDuration => '长按时长（秒）';
 
   @override
+  String get eventDefaultsHoldStyleInfo => '长按区域的外观：大按钮、整个屏幕，或一个伪装应用行为的假锁屏。';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      '抬起手指多严格地算作松开。较低的值容忍短暂滑脱；较高的值立即响应。';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo => '手指一离开按钮，手机就会振动，让你立刻察觉意外松开。';
+
+  @override
+  String get eventDefaultsHoldSoundInfo => '手指离开按钮时播放短促提示音，即使不看屏幕也能察觉意外松开。';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      '在此步骤期间保持黑屏，模仿锁定的手机，让旁观者看不到这个应用。步骤会在底层继续运行。';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      '将提醒之间的时间随机变化约 ±20%，使它们看起来像普通应用通知，而不是固定的时间表。';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      '每次选用不同的提醒模板，让重复的提醒在旁观者眼中不会一模一样。';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      '如果你在提醒触发前签到，计时器会从完整间隔重新开始，而不是沿用旧的时间表。';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => '提醒模板';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      '模板定义伪装提醒的样子——假的应用名称、标题和文本（例如日历或语言学习应用的通知）。在这里管理共享模板池；每个伪装提醒步骤都从中选取。';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo => '倒计时的显示方式：全屏警告，或不太显眼的简洁悬浮层。';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo => '倒计时进行时手机振动，即使手机在口袋里也能察觉。';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo => '倒计时进行时播放警示音。如果警告必须保持静音，请关闭它。';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo => '虚假来电模仿哪个应用的来电界面，让它在你的手机上显得可信。';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      '虚假来电界面上显示的来电人姓名。选一个你接听起来很自然的人。';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      '虚假来电响铃多久后算作未接。未接来电会让链条继续升级。';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      '接听后语音从哪里播放：听筒（安静且私密）或扬声器。';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      '虚假来电的铃声。导入你自己的音频文件以匹配真实铃声——如果文件丢失，会改为播放内置铃声。';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      '开启时，拒接来电算作安全签到，链条会重置。关闭时，拒接算作未接，来电可能再次响起。';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      '此步骤使用的通讯应用：短信、WhatsApp、Telegram 或 Signal。无法接收所选渠道的联系人会显示为灰色。';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      '谁会收到此警报。点按联系人进行选择——全选会保持列表动态更新，之后添加的联系人会自动包含在内。';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return '警报消息的文本。$name、$location 之类的占位符会在发送时填入真实值。留空则使用内置警报。';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      '在消息中附上你当前的 GPS 位置，让联系人知道去哪里找你。';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      '在消息中加入你个人资料中的医疗信息（如血型或过敏史），供急救人员参考。';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo => '此步骤触发时自动开始录音，保留你周围正在发生的事情的证据。';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo => '自动录音持续多少秒。';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      '最先拨打的联系人。留空则拨打你的第一位紧急联系人。如果对方未接，将按顺序尝试备选联系人。';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      '警报的音量大小，从静音（0）到设备最大值（1）。警报旨在吸引附近人们的注意。';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo => '警报播放的声音：内置警笛或你自己的声音文件。';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      '警报响起时屏幕以明亮颜色闪烁。默认关闭——闪烁可能影响光敏人群。';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      '警报响起时相机闪光灯频闪，让你在黑暗中更容易被找到。';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo => '音量从静音逐渐升到设定级别，而不是一开始就全音量。';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      '覆盖此步骤拨打的紧急号码。留空则使用应用全局号码（例如 112 或 911）。';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      '在拨号前向你的紧急联系人发送位置短信，即使电话未接通他们也能知情。';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      '拨号前显示短暂倒计时，给你最后一次取消误触紧急呼叫的机会。';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      '取消倒计时持续多少秒后才拨出紧急电话。';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo => '此步骤监听哪个物理按键（音量加或音量减）的紧急按压。';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo => '触发该步骤的按压模式：连续多次快速按压，或一次长按。';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo => '需要连续快速按压多少次。次数越多，越不容易误触发。';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo => '按住按键多久才会触发该步骤。';
+
+  @override
+  String get eventPreviewCardLabel => '预览';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return '来自$name的来电';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return '响铃 $seconds 秒 · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe => '拒接算作安全签到。';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe => '拒接算作未接——来电可能再次响起。';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return '发给所有联系人 · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '发给 $count 位联系人 · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return '发给你的第一位联系人 · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return '消息：$gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return '音量 $percent% · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => '音量逐渐增强。';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => '一开始就是全音量。';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => '屏幕闪烁';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => '相机灯闪烁';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => '不闪烁';
+
+  @override
   String get pastEventsTrashTitle => '回收站';
 
   @override
@@ -2479,6 +2715,33 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get chainStepNameHardwareButton => '硬體按鍵';
+
+  @override
+  String get chainStepDescHoldButton => '長按以保持安全——放開會啟動寬限倒數。';
+
+  @override
+  String get chainStepDescDisguisedReminder => '傳送偽裝通知——你必須回應以確認安全。';
+
+  @override
+  String get chainStepDescFakeCall => '模擬來電——接聽或拒接以表明你是安全的。';
+
+  @override
+  String get chainStepDescSmsContact => '向緊急聯絡人傳送包含你位置的簡訊。';
+
+  @override
+  String get chainStepDescCountdownWarning => '顯示帶聲音與閃爍的倒數，作為最後警告。';
+
+  @override
+  String get chainStepDescLoudAlarm => '以最大音量播放警報並閃爍，以吸引注意。';
+
+  @override
+  String get chainStepDescCallEmergency => '自動撥打緊急服務電話（112/911）。';
+
+  @override
+  String get chainStepDescPhoneCallContact => '直接撥打某位緊急聯絡人的電話。';
+
+  @override
+  String get chainStepDescHardwareButton => '監聽硬體按鍵的緊急按壓模式。';
 
   @override
   String get homeChecklistTitle => '安全設定';
@@ -4395,6 +4658,217 @@ class AppLocalizationsZhTw extends AppLocalizationsZh {
 
   @override
   String get eventDefaultsHardwareLongDuration => '長按時長(秒)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      '長按區域的外觀：大按鈕、整個螢幕，或一個掩飾 App 行為的假鎖定畫面。';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      '抬起手指多嚴格地算作放開。較低的值容忍短暫滑脫；較高的值立即反應。';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo => '手指一離開按鈕，手機就會震動，讓你立刻察覺不小心放開。';
+
+  @override
+  String get eventDefaultsHoldSoundInfo => '手指離開按鈕時播放短促提示音，即使不看螢幕也能察覺不小心放開。';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      '在此步驟期間保持黑屏，模仿鎖定的手機，讓旁觀者看不到這個 App。步驟會在底層繼續執行。';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      '將提醒之間的時間隨機變化約 ±20%，使它們看起來像一般 App 通知，而不是固定的時間表。';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      '每次選用不同的提醒範本，讓重複的提醒在旁觀者眼中不會一模一樣。';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      '如果你在提醒觸發前報平安，計時器會從完整間隔重新開始，而不是沿用舊的時間表。';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => '提醒範本';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      '範本定義偽裝提醒的樣子——假的 App 名稱、標題與文字（例如行事曆或語言學習 App 的通知）。在這裡管理共用範本庫；每個偽裝提醒步驟都從中選取。';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo => '倒數的顯示方式：全螢幕警告，或不太顯眼的簡潔覆蓋層。';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo => '倒數進行時手機震動，即使手機在口袋裡也能察覺。';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo => '倒數進行時播放警示音。如果警告必須保持靜音，請關閉它。';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      '假來電模仿哪個 App 的來電畫面，讓它在你的手機上顯得可信。';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      '假來電畫面上顯示的來電者姓名。選一個你接聽起來很自然的人。';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      '假來電響鈴多久後算作未接。未接來電會讓鏈條繼續升級。';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      '接聽後語音從哪裡播放：聽筒（安靜且私密）或揚聲器。';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      '假來電的鈴聲。匯入你自己的音訊檔以符合真實鈴聲——如果檔案遺失，會改為播放內建鈴聲。';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      '開啟時，拒接來電算作安全報平安，鏈條會重設。關閉時，拒接算作未接，來電可能再次響起。';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      '此步驟使用的通訊 App：簡訊、WhatsApp、Telegram 或 Signal。無法接收所選頻道的聯絡人會顯示為灰色。';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      '誰會收到此警報。點按聯絡人進行選擇——全選會保持清單動態更新，之後新增的聯絡人會自動包含在內。';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return '警報訊息的文字。$name、$location 之類的預留位置會在傳送時填入真實值。留空則使用內建警報。';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      '在訊息中附上你目前的 GPS 位置，讓聯絡人知道去哪裡找你。';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      '在訊息中加入你個人檔案中的醫療資訊（如血型或過敏史），供急救人員參考。';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo => '此步驟觸發時自動開始錄音，保留你周圍正在發生的事情的證據。';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo => '自動錄音持續多少秒。';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      '最先撥打的聯絡人。留空則撥打你的第一位緊急聯絡人。如果對方未接，將依序嘗試備選聯絡人。';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      '警報的音量大小，從靜音（0）到裝置最大值（1）。警報旨在吸引附近人們的注意。';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo => '警報播放的聲音：內建警笛或你自己的聲音檔。';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      '警報響起時螢幕以明亮顏色閃爍。預設關閉——閃爍可能影響光敏感族群。';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      '警報響起時相機閃光燈頻閃，讓你在黑暗中更容易被找到。';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo => '音量從靜音逐漸升到設定的等級，而不是一開始就全音量。';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      '覆寫此步驟撥打的緊急號碼。留空則使用 App 全域號碼（例如 112 或 911）。';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      '在撥號前向你的緊急聯絡人傳送位置簡訊，即使電話未接通他們也能知情。';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      '撥號前顯示短暫倒數，給你最後一次取消誤觸緊急通話的機會。';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      '取消倒數持續多少秒後才撥出緊急電話。';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo => '此步驟監聽哪個實體按鍵（音量加或音量減）的緊急按壓。';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo => '觸發該步驟的按壓模式：連續多次快速按壓，或一次長按。';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo => '需要連續快速按壓多少次。次數越多，越不容易誤觸發。';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo => '按住按鍵多久才會觸發該步驟。';
+
+  @override
+  String get eventPreviewCardLabel => '預覽';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return '來自$name的來電';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return '響鈴 $seconds 秒 · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe => '拒接算作安全報平安。';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe => '拒接算作未接——來電可能再次響起。';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return '傳給所有聯絡人 · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '傳給 $count 位聯絡人 · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return '傳給你的第一位聯絡人 · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return '訊息：$gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return '音量 $percent% · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => '音量逐漸增強。';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => '一開始就是全音量。';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => '螢幕閃爍';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => '相機燈閃爍';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => '不閃爍';
 
   @override
   String get pastEventsTrashTitle => '垃圾桶';

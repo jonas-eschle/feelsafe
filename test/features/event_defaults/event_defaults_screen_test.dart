@@ -24,6 +24,8 @@ import 'package:guardianangela/domain/enums/press_pattern.dart';
 import 'package:guardianangela/domain/models/event_defaults.dart';
 import 'package:guardianangela/features/event_defaults/event_defaults_controller.dart';
 import 'package:guardianangela/features/event_defaults/event_defaults_screen.dart';
+import 'package:guardianangela/features/modes/widgets/step_helpers.dart';
+import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../helpers/widget_test_helpers.dart';
 
 // ---------------------------------------------------------------------------
@@ -70,8 +72,9 @@ Override _override(_FakeEventDefaultsController fake) =>
 
 /// Returns the tile-header text rendered by the screen for [type].
 ///
-/// The screen uses `type.name` directly (e.g. `"holdButton"`).
-String _tileName(ChainStepType t) => t.name;
+/// The screen renders the localized step name via `stepName` (spec 04
+/// §Step Type Preview — no raw enum names in the UI).
+String _tileName(AppLocalizations l10n, ChainStepType t) => stepName(l10n, t);
 
 /// Scrolls the outer [ListView] downward (300 px per step, up to 20 steps)
 /// until [targetFinder] finds at least one widget.
@@ -99,13 +102,14 @@ Future<_FakeEventDefaultsController> _pumpAndExpand(
   ChainStepType type, {
   EventDefaults? defaults,
 }) async {
+  final l10n = await loadL10n(const Locale('en'));
   final fake = _FakeEventDefaultsController(_defaultState(defaults: defaults));
   await pumpScreen(
     tester,
     const EventDefaultsScreen(),
     overrides: <Override>[_override(fake)],
   );
-  final tileFinder = find.text(_tileName(type));
+  final tileFinder = find.text(_tileName(l10n, type));
   await _scrollUntilVisible(tester, tileFinder);
   await tester.tap(tileFinder);
   await tester.pumpAndSettle();
@@ -274,6 +278,7 @@ void main() {
     testWidgets('all 9 tile headers reachable by scrolling', (
       WidgetTester tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeEventDefaultsController(_defaultState());
       await pumpScreen(
         tester,
@@ -281,7 +286,7 @@ void main() {
         overrides: <Override>[_override(fake)],
       );
       for (final type in ChainStepType.values) {
-        final tileFinder = find.text(_tileName(type));
+        final tileFinder = find.text(_tileName(l10n, type));
         await _scrollUntilVisible(tester, tileFinder);
         expect(
           tileFinder,
@@ -292,19 +297,26 @@ void main() {
     });
 
     for (final type in ChainStepType.values) {
-      testWidgets('tile for ${type.name} scrolls into view and is tappable', (
-        WidgetTester tester,
-      ) async {
-        final fake = _FakeEventDefaultsController(_defaultState());
-        await pumpScreen(
-          tester,
-          const EventDefaultsScreen(),
-          overrides: <Override>[_override(fake)],
-        );
-        final tileFinder = find.text(_tileName(type));
-        await _scrollUntilVisible(tester, tileFinder);
-        expect(tileFinder, findsOneWidget);
-      });
+      testWidgets(
+        'tile for ${type.name} shows the localized name and description',
+        (WidgetTester tester) async {
+          final l10n = await loadL10n(const Locale('en'));
+          final fake = _FakeEventDefaultsController(_defaultState());
+          await pumpScreen(
+            tester,
+            const EventDefaultsScreen(),
+            overrides: <Override>[_override(fake)],
+          );
+          final tileFinder = find.text(_tileName(l10n, type));
+          await _scrollUntilVisible(tester, tileFinder);
+          expect(tileFinder, findsOneWidget);
+          // Subtitle is the localized one-sentence description
+          // (spec 04:1621-1630), not a hard-coded English string.
+          expect(find.text(stepDescription(l10n, type)), findsOneWidget);
+          // The raw enum name must never appear as a tile title.
+          expect(find.text(type.name), findsNothing);
+        },
+      );
     }
   });
 
@@ -553,9 +565,11 @@ void main() {
     ) async {
       final l10n = await loadL10n(const Locale('en'));
       await _pumpAndExpand(tester, ChainStepType.loudAlarm);
+      // The slider label renders as "<label>: <value>"; the trailing colon
+      // disambiguates it from the preview-card volume summary.
       await _assertText(
         tester,
-        find.textContaining(l10n.eventDefaultsLoudAlarmVolume),
+        find.textContaining('${l10n.eventDefaultsLoudAlarmVolume}:'),
       );
     });
 
@@ -784,6 +798,7 @@ void main() {
     testWidgets('all tiles can be expanded and collapsed without exception', (
       WidgetTester tester,
     ) async {
+      final l10n = await loadL10n(const Locale('en'));
       final fake = _FakeEventDefaultsController(_defaultState());
       await pumpScreen(
         tester,
@@ -791,7 +806,7 @@ void main() {
         overrides: <Override>[_override(fake)],
       );
       for (final type in ChainStepType.values) {
-        final tileFinder = find.text(_tileName(type));
+        final tileFinder = find.text(_tileName(l10n, type));
         await _scrollUntilVisible(tester, tileFinder);
         await tester.tap(tileFinder);
         await tester.pumpAndSettle();
@@ -828,6 +843,48 @@ void main() {
       await _tapSwitch(tester, l10n.eventDefaultsHoldSound);
       check(fake.lastSaved!.holdButton.soundOnRelease).isTrue();
       check(fake.lastSaved!.smsContact.includeLocation).isTrue();
+    });
+  });
+
+  // ── Preview card reacts through the real save loop ───────────────────────
+
+  group('EventDefaultsScreen — fakeCall preview card (spec 04:1591)', () {
+    testWidgets('ring-duration change updates the preview via save state', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // ringDurationSeconds defaults to 30, callStyle to platformNative.
+      final fake = await _pumpAndExpand(tester, ChainStepType.fakeCall);
+      final before = find.text(
+        l10n.eventPreviewFakeCallRing(30, 'platformNative'),
+      );
+      await _scrollUntilVisible(tester, before);
+      expect(before, findsOneWidget);
+
+      final Finder plus = find.byIcon(Icons.add_circle_outline);
+      await tester.scrollUntilVisible(
+        plus,
+        100,
+        scrollable: find
+            .descendant(
+              of: find.byType(ListView),
+              matching: find.byType(Scrollable),
+            )
+            .first,
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(plus);
+      await tester.pumpAndSettle();
+
+      // The save round-trips through the controller; the rebuilt form's
+      // preview card must reflect the new config.
+      check(fake.saveCalls).equals(1);
+      check(fake.lastSaved!.fakeCall.ringDurationSeconds).equals(31);
+      expect(
+        find.text(l10n.eventPreviewFakeCallRing(31, 'platformNative')),
+        findsOneWidget,
+      );
+      expect(before, findsNothing);
     });
   });
 }

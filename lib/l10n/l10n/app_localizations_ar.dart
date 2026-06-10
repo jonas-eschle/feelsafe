@@ -199,6 +199,42 @@ class AppLocalizationsAr extends AppLocalizations {
   String get chainStepNameHardwareButton => 'زر الجهاز';
 
   @override
+  String get chainStepDescHoldButton =>
+      'اضغطي مطوّلاً لتبقي بأمان — رفع الإصبع يبدأ عدًّا تنازليًا لفترة السماح.';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'يرسل إشعارًا مموَّهًا — يجب أن تستجيبي لتأكيد سلامتك.';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'يحاكي مكالمة واردة — أجيبي أو ارفضي لإظهار أنك بأمان.';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'يرسل رسالة SMS بموقعك إلى جهات اتصال الطوارئ.';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'يعرض عدًّا تنازليًا مع صوت ووميض كتحذير أخير.';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'يطلق إنذارًا بأقصى مستوى صوت مع وميض لجذب الانتباه.';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'يتصل تلقائيًا بخدمات الطوارئ (112/911).';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'يتصل مباشرة بإحدى جهات اتصال الطوارئ.';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'يراقب زرًّا في الجهاز لرصد نمط ضغط الذعر.';
+
+  @override
   String get homeChecklistTitle => 'إعداد الأمان';
 
   @override
@@ -2188,6 +2224,233 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get eventDefaultsHardwareLongDuration => 'مدة الضغط المطوّل (ث)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'كيف يبدو سطح الضغط المطوّل: زر كبير، أو الشاشة كاملة، أو شاشة قفل زائفة تُخفي ما يفعله التطبيق.';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'مدى صرامة اعتبار رفع الإصبع إفلاتًا. القيم المنخفضة تتسامح مع الانزلاقات القصيرة؛ والقيم العالية تستجيب فورًا.';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'يهتز الهاتف لحظة مغادرة إصبعك للزر، لتلاحظي الإفلات غير المقصود فورًا.';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'يصدر صوتًا قصيرًا عندما يغادر إصبعك الزر، لتلاحظي الإفلات غير المقصود حتى دون النظر إلى الشاشة.';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'يبقي الشاشة سوداء أثناء هذه الخطوة محاكيًا هاتفًا مقفلاً، فيظل التطبيق غير مرئي لأي مراقب. وتستمر الخطوة في العمل في الخلفية.';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'يغيّر الوقت بين التذكيرات بنحو ±20%، لتبدو كإشعارات تطبيقات عادية لا كجدول ثابت.';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'يختار قالب تذكير مختلفًا في كل مرة، حتى لا تبدو التذكيرات المتكررة متطابقة لمن يراقب إشعاراتك.';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'إذا سجّلتِ وصولك قبل انطلاق التذكير، يبدأ المؤقّت من جديد بالفاصل الكامل بدلاً من الإبقاء على جدوله القديم.';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'قوالب التذكير';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'تحدد القوالب شكل التذكير المموَّه — اسم التطبيق الزائف والعنوان والنص (مثل إشعار تقويم أو تطبيق لتعلم اللغات). أديري هنا المجموعة المشتركة؛ وكل خطوة تذكير مموَّه تختار منها.';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'كيفية عرض العد التنازلي: تحذير بملء الشاشة أو طبقة بسيطة تلفت انتباهًا أقل.';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'يهتز الهاتف أثناء العد التنازلي، لتلاحظيه حتى والهاتف في جيبك.';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'يصدر تنبيهًا مسموعًا أثناء العد التنازلي. أوقفيه إذا كان يجب أن يبقى التحذير صامتًا.';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'شاشة المكالمة الواردة لأي تطبيق تحاكيها المكالمة الوهمية، لتبدو مقنعة على هاتفك.';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'الاسم الظاهر كمتصل على شاشة المكالمة الوهمية. اختاري شخصًا يكون من الطبيعي أن تجيبي عليه.';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'كم تدوم رنّة المكالمة الوهمية قبل اعتبارها فائتة. المكالمة الفائتة تسمح للسلسلة بالتصعيد.';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'أين يُسمع الصوت بعد الرد: في سماعة الأذن (بهدوء وخصوصية) أو عبر مكبر الصوت.';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'نغمة المكالمة الوهمية. استوردي ملفًا صوتيًا خاصًا بك ليطابق نغمتك الحقيقية — وإذا فُقد الملف يومًا، تُشغَّل النغمة المدمجة بدلاً منه.';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'عند التفعيل، يُحتسب رفض المكالمة تسجيل وصول آمن وتُعاد السلسلة إلى بدايتها. وعند الإيقاف، يُحتسب الرفض مكالمة فائتة وقد ترنّ المكالمة مجددًا.';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'تطبيق المراسلة المستخدم في هذه الخطوة: SMS أو WhatsApp أو Telegram أو Signal. جهات الاتصال التي لا تستطيع استقبال القناة المختارة تظهر رمادية.';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'من يتلقى هذا التنبيه. انقري على جهات الاتصال لاختيارها — اختيار الجميع يبقي القائمة ديناميكية، فتُضاف تلقائيًا جهات الاتصال التي تضيفينها لاحقًا.';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'نص رسالة التنبيه. تُملأ العناصر النائبة مثل $name و$location بالقيم الحقيقية عند إرسال الرسالة. اتركيه فارغًا لاستخدام التنبيه المدمج.';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'يضيف موقع GPS الحالي إلى الرسالة، لتعرف جهات اتصالك أين تجدك.';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'يضيف إلى الرسالة البيانات الطبية من ملفك الشخصي (مثل فصيلة الدم أو الحساسيات) للمسعفين.';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'يبدأ تسجيلًا صوتيًا تلقائيًا عند انطلاق هذه الخطوة، حافظًا دليلاً على ما يجري حولك.';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'كم ثانية يستمر التسجيل الصوتي التلقائي.';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'جهة الاتصال التي يُتصل بها أولاً. اتركيه فارغًا للاتصال بجهة اتصال الطوارئ الأولى لديك. وإذا لم تُجب، تُجرَّب البدائل بالترتيب.';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'مدى ارتفاع صوت الإنذار، من الصمت (0) إلى أقصى مستوى للجهاز (1). الغرض من الإنذار جذب انتباه من حولك.';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'الصوت الذي يصدره الإنذار: صفّارة الإنذار المدمجة أو صوت من اختيارك.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'تومض الشاشة بألوان ساطعة أثناء الإنذار. معطَّل افتراضيًا — فالوميض قد يؤثر على ذوي الحساسية للضوء.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'يومض ضوء الكاميرا أثناء الإنذار، ليسهل العثور عليك في الظلام.';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'يرفع مستوى الصوت من الصمت إلى المستوى المضبوط بدلاً من البدء بأقصى قوة.';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'يتجاوز رقم الطوارئ الذي تتصل به هذه الخطوة. اتركيه فارغًا لاستخدام الرقم المعتمد في التطبيق كله (مثل 112 أو 911).';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'يرسل رسالة SMS بالموقع إلى جهات اتصال الطوارئ قُبيل الاتصال مباشرة، فيكونون على علم حتى لو لم تُوصَل المكالمة.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'يعرض عدًّا تنازليًا قصيرًا قبل الاتصال، ليمنحك فرصة أخيرة لإلغاء مكالمة طوارئ غير مقصودة.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'كم ثانية يستمر العد التنازلي للإلغاء قبل إجراء مكالمة الطوارئ.';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'أي زر فعلي (رفع الصوت أو خفضه) تراقبه هذه الخطوة لرصد ضغطة الذعر.';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'نمط الضغط الذي يطلق الخطوة: عدة ضغطات سريعة متتالية أو ضغطة مطوّلة واحدة.';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'كم ضغطة سريعة متتالية مطلوبة. كلما زادت الضغطات قلّ احتمال الإطلاق غير المقصود.';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'كم يجب أن يبقى الزر مضغوطًا لإطلاق الخطوة.';
+
+  @override
+  String get eventPreviewCardLabel => 'معاينة';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return 'مكالمة واردة من $name';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return 'يرنّ $seconds ث · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe => 'الرفض يُحتسب تسجيل وصول آمن.';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'الرفض يُحتسب مكالمة فائتة — قد ترنّ المكالمة مجددًا.';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'إلى جميع جهات الاتصال · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'إلى $count من جهات الاتصال · $channel',
+      two: 'إلى جهتي اتصال · $channel',
+      one: 'إلى جهة اتصال واحدة · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'إلى جهة اتصالك الأولى · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'الرسالة: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'مستوى الصوت $percent% · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'يرتفع الصوت تدريجيًا.';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'يبدأ بأقصى مستوى صوت.';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'الشاشة تومض';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'ضوء الكاميرا يومض';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'بدون وميض';
 
   @override
   String get pastEventsTrashTitle => 'سلة المهملات';

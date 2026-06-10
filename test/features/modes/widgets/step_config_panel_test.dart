@@ -150,4 +150,58 @@ void main() {
       check(emitted!.randomize).isTrue();
     });
   });
+
+  group('StepConfigPanel — manage-templates link (spec 04:1635)', () {
+    testWidgets(
+      'a disguisedReminder step forwards onManageTemplates to its form',
+      (WidgetTester tester) async {
+        final l10n = await loadL10n(const Locale('en'));
+        var tapped = 0;
+        final ChainStep step = ChainStep(
+          id: 's1',
+          type: ChainStepType.disguisedReminder,
+          order: 0,
+          waitSeconds: 5,
+          durationSeconds: 30,
+          gracePeriodSeconds: 10,
+          retryCount: 0,
+          randomize: false,
+        );
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: const <LocalizationsDelegate<Object>>[
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: AppLocalizations.supportedLocales,
+            home: Scaffold(
+              body: SingleChildScrollView(
+                child: StepConfigPanel(
+                  step: step,
+                  defaultConfig: const DisguisedReminderConfig(),
+                  onChanged: (_) {},
+                  onDuplicate: () {},
+                  onReset: () {},
+                  onDelete: () {},
+                  onManageTemplates: () => tapped++,
+                ),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        final Finder link = find.widgetWithText(
+          ListTile,
+          l10n.safetyOptionsManageTemplates,
+        );
+        expect(link, findsOneWidget);
+        await tester.ensureVisible(link);
+        await tester.tap(link);
+        check(tapped).equals(1);
+      },
+    );
+  });
 }

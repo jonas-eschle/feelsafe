@@ -241,6 +241,42 @@
   "@chainStepNameHardwareButton": {
     "description": "Display name for the hardwareButton chain step type."
   },
+  "chainStepDescHoldButton": "Hold to stay safe — releasing starts a grace countdown.",
+  "@chainStepDescHoldButton": {
+    "description": "One-sentence description of the holdButton step type (spec 04:1622)."
+  },
+  "chainStepDescDisguisedReminder": "Sends a disguised notification — you must respond to confirm safety.",
+  "@chainStepDescDisguisedReminder": {
+    "description": "One-sentence description of the disguisedReminder step type (spec 04:1623)."
+  },
+  "chainStepDescFakeCall": "Simulates an incoming call — answer or decline to show you're safe.",
+  "@chainStepDescFakeCall": {
+    "description": "One-sentence description of the fakeCall step type (spec 04:1624)."
+  },
+  "chainStepDescSmsContact": "Sends an SMS with your location to emergency contacts.",
+  "@chainStepDescSmsContact": {
+    "description": "One-sentence description of the smsContact step type (spec 04:1625)."
+  },
+  "chainStepDescCountdownWarning": "Shows a countdown with sound and flash as a last warning.",
+  "@chainStepDescCountdownWarning": {
+    "description": "One-sentence description of the countdownWarning step type (spec 04:1626)."
+  },
+  "chainStepDescLoudAlarm": "Plays a max-volume alarm with flash to attract attention.",
+  "@chainStepDescLoudAlarm": {
+    "description": "One-sentence description of the loudAlarm step type (spec 04:1627)."
+  },
+  "chainStepDescCallEmergency": "Calls emergency services (112/911) automatically.",
+  "@chainStepDescCallEmergency": {
+    "description": "One-sentence description of the callEmergency step type (spec 04:1628)."
+  },
+  "chainStepDescPhoneCallContact": "Calls an emergency contact directly.",
+  "@chainStepDescPhoneCallContact": {
+    "description": "One-sentence description of the phoneCallContact step type (spec 04:1629)."
+  },
+  "chainStepDescHardwareButton": "Watches a hardware button for a panic press pattern.",
+  "@chainStepDescHardwareButton": {
+    "description": "One-sentence description of the hardwareButton step type (spec 04:1630)."
+  },
   "homeChecklistTitle": "Safety Setup",
   "@homeChecklistTitle": {
     "description": "Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist)."
@@ -2789,6 +2825,260 @@
   "eventDefaultsHardwareLongDuration": "Long-press duration (s)",
   "@eventDefaultsHardwareLongDuration": {
     "description": "Field label for HardwareButtonConfig.longPressDurationSeconds (long-press only)."
+  },
+  "eventDefaultsHoldStyleInfo": "How the hold surface looks: a large button, the whole screen, or a fake lock screen that disguises what the app is doing.",
+  "@eventDefaultsHoldStyleInfo": {
+    "description": "Info-sheet body for the holdButton holdStyle field (spec 04:1591 per-field info)."
+  },
+  "eventDefaultsHoldSensitivityInfo": "How strictly a lifted finger counts as a release. Lower values forgive brief slips; higher values react immediately.",
+  "@eventDefaultsHoldSensitivityInfo": {
+    "description": "Info-sheet body for the holdButton releaseSensitivity field."
+  },
+  "eventDefaultsHoldVibrateInfo": "Vibrates the phone the moment your finger leaves the button, so you notice an accidental release right away.",
+  "@eventDefaultsHoldVibrateInfo": {
+    "description": "Info-sheet body for the holdButton vibrateOnRelease field."
+  },
+  "eventDefaultsHoldSoundInfo": "Plays a short sound when your finger leaves the button, so you notice an accidental release even without looking at the screen.",
+  "@eventDefaultsHoldSoundInfo": {
+    "description": "Info-sheet body for the holdButton soundOnRelease field."
+  },
+  "eventDefaultsBlackScreenInfo": "Keeps the screen black during this step, mimicking a locked phone, so the app stays invisible to anyone watching. The step keeps running underneath.",
+  "@eventDefaultsBlackScreenInfo": {
+    "description": "Info-sheet body for the shared blackScreenMode field (all step types)."
+  },
+  "eventDefaultsReminderRandomIntervalInfo": "Varies the time between reminders by about ±20%, so they look like ordinary app notifications instead of a fixed schedule.",
+  "@eventDefaultsReminderRandomIntervalInfo": {
+    "description": "Info-sheet body for the disguisedReminder randomizeInterval field."
+  },
+  "eventDefaultsReminderRandomTemplateInfo": "Picks a different reminder template each time, so repeated reminders don't look identical to someone watching your notifications.",
+  "@eventDefaultsReminderRandomTemplateInfo": {
+    "description": "Info-sheet body for the disguisedReminder randomizeTemplateOrder field."
+  },
+  "eventDefaultsReminderResetOnEarlyInfo": "If you check in before the reminder fires, the timer restarts at the full interval instead of keeping its old schedule.",
+  "@eventDefaultsReminderResetOnEarlyInfo": {
+    "description": "Info-sheet body for the disguisedReminder resetOnEarlyCheckIn field."
+  },
+  "eventDefaultsReminderTemplatesTitle": "Reminder templates",
+  "@eventDefaultsReminderTemplatesTitle": {
+    "description": "Header above the manage-reminder-templates link in the disguisedReminder form (spec 04:1635)."
+  },
+  "eventDefaultsReminderTemplatesInfo": "Templates define what a disguised reminder looks like — its fake app name, title, and text (for example a calendar or language-app notification). Manage the shared pool here; every disguised-reminder step picks from it.",
+  "@eventDefaultsReminderTemplatesInfo": {
+    "description": "Info-sheet body explaining what reminder templates are, shown above the manage-templates link (spec 04:1635)."
+  },
+  "eventDefaultsCountdownStyleInfo": "How the countdown is shown: a full-screen warning or a minimal overlay that draws less attention.",
+  "@eventDefaultsCountdownStyleInfo": {
+    "description": "Info-sheet body for the countdownWarning style field."
+  },
+  "eventDefaultsCountdownVibrateInfo": "Vibrates the phone while the countdown runs, so you can notice it even with the phone in your pocket.",
+  "@eventDefaultsCountdownVibrateInfo": {
+    "description": "Info-sheet body for the countdownWarning vibrate field."
+  },
+  "eventDefaultsCountdownSoundInfo": "Plays an audible alert while the countdown runs. Turn it off if the warning must stay silent.",
+  "@eventDefaultsCountdownSoundInfo": {
+    "description": "Info-sheet body for the countdownWarning sound field."
+  },
+  "eventDefaultsFakeCallStyleInfo": "Which app's incoming-call screen the fake call imitates, so it looks believable on your phone.",
+  "@eventDefaultsFakeCallStyleInfo": {
+    "description": "Info-sheet body for the fakeCall callStyle field."
+  },
+  "eventDefaultsFakeCallCallerNameInfo": "The name shown as the caller on the fake-call screen. Pick someone it would be natural for you to answer.",
+  "@eventDefaultsFakeCallCallerNameInfo": {
+    "description": "Info-sheet body for the fakeCall callerName field."
+  },
+  "eventDefaultsFakeCallRingDurationInfo": "How long the fake call rings before it counts as missed. A missed call lets the chain escalate.",
+  "@eventDefaultsFakeCallRingDurationInfo": {
+    "description": "Info-sheet body for the fakeCall ringDurationSeconds field."
+  },
+  "eventDefaultsFakeCallVoiceOutputInfo": "Where the voice audio plays after you answer: the earpiece (quiet and private) or the loudspeaker.",
+  "@eventDefaultsFakeCallVoiceOutputInfo": {
+    "description": "Info-sheet body for the fakeCall voiceOutputMode field."
+  },
+  "eventDefaultsFakeCallRingtoneInfo": "The ringtone played for the fake call. Import your own audio file to match your real ringtone — if the file ever goes missing, the built-in ring plays instead.",
+  "@eventDefaultsFakeCallRingtoneInfo": {
+    "description": "Info-sheet body for the fakeCall custom-ringtone picker."
+  },
+  "eventDefaultsFakeCallDeclineIsSafeInfo": "When on, declining the call counts as a safe check-in and the chain resets. When off, declining counts as a miss and the call can ring again.",
+  "@eventDefaultsFakeCallDeclineIsSafeInfo": {
+    "description": "Info-sheet body for the fakeCall declineIsSafe field."
+  },
+  "eventDefaultsSmsChannelInfo": "The messaging app used for this step: SMS, WhatsApp, Telegram, or Signal. Contacts that can't receive the chosen channel are greyed out.",
+  "@eventDefaultsSmsChannelInfo": {
+    "description": "Info-sheet body for the smsContact channel field."
+  },
+  "smsContactRecipientsInfo": "Who receives this alert. Tap contacts to select them — selecting everyone keeps the list dynamic, so contacts you add later are included automatically.",
+  "@smsContactRecipientsInfo": {
+    "description": "Info-sheet body for the smsContact recipients grid."
+  },
+  "eventDefaultsSmsMessageTemplateInfo": "The text of the alert message. Placeholders like {name} and {location} are filled in with real values when the message is sent. Leave blank to use the built-in alert.",
+  "@eventDefaultsSmsMessageTemplateInfo": {
+    "description": "Info-sheet body for the smsContact messageTemplate field. {name} and {location} receive the literal token strings ('{name}', '{location}') from code so the rendered text shows them verbatim — do not translate or alter them.",
+    "placeholders": {
+      "name": {},
+      "location": {}
+    }
+  },
+  "eventDefaultsSmsIncludeLocationInfo": "Appends your current GPS position to the message, so your contacts know where to find you.",
+  "@eventDefaultsSmsIncludeLocationInfo": {
+    "description": "Info-sheet body for the smsContact includeLocation field."
+  },
+  "eventDefaultsSmsIncludeMedicalInfo": "Adds the medical details from your profile (such as blood type or allergies) to the message for first responders.",
+  "@eventDefaultsSmsIncludeMedicalInfo": {
+    "description": "Info-sheet body for the smsContact includeMedicalInfo field."
+  },
+  "eventDefaultsSmsAutoRecordInfo": "Starts an audio recording automatically when this step fires, preserving evidence of what is happening around you.",
+  "@eventDefaultsSmsAutoRecordInfo": {
+    "description": "Info-sheet body for the smsContact autoRecordAudio field."
+  },
+  "eventDefaultsSmsRecordDurationInfo": "How many seconds the automatic audio recording lasts.",
+  "@eventDefaultsSmsRecordDurationInfo": {
+    "description": "Info-sheet body for the smsContact recordDurationSeconds field."
+  },
+  "eventDefaultsPhonePrimaryContactInfo": "The contact called first. Leave empty to call your first emergency contact. If they don't pick up, the alternatives are tried in order.",
+  "@eventDefaultsPhonePrimaryContactInfo": {
+    "description": "Info-sheet body for the phoneCallContact contactId field."
+  },
+  "eventDefaultsLoudAlarmVolumeInfo": "How loud the alarm plays, from silent (0) to the device maximum (1). The alarm is meant to attract attention from people nearby.",
+  "@eventDefaultsLoudAlarmVolumeInfo": {
+    "description": "Info-sheet body for the loudAlarm volume field."
+  },
+  "eventDefaultsLoudAlarmSoundInfo": "Which sound the alarm plays: the built-in siren or a custom sound of your own.",
+  "@eventDefaultsLoudAlarmSoundInfo": {
+    "description": "Info-sheet body for the loudAlarm soundChoice field."
+  },
+  "eventDefaultsLoudAlarmFlashScreenInfo": "Flashes the screen in bright colors while the alarm sounds. Off by default — flashing can affect people with photosensitivity.",
+  "@eventDefaultsLoudAlarmFlashScreenInfo": {
+    "description": "Info-sheet body for the loudAlarm flashScreen field."
+  },
+  "eventDefaultsLoudAlarmFlashLightInfo": "Strobes the camera flashlight while the alarm sounds, making you easier to locate in the dark.",
+  "@eventDefaultsLoudAlarmFlashLightInfo": {
+    "description": "Info-sheet body for the loudAlarm flashLight field."
+  },
+  "eventDefaultsLoudAlarmGradualInfo": "Ramps the volume up from silent to the configured level instead of starting at full blast.",
+  "@eventDefaultsLoudAlarmGradualInfo": {
+    "description": "Info-sheet body for the loudAlarm gradualVolume field."
+  },
+  "eventDefaultsCallEmergencyNumberInfo": "Overrides the emergency number dialled by this step. Leave empty to use the app-wide number (for example 112 or 911).",
+  "@eventDefaultsCallEmergencyNumberInfo": {
+    "description": "Info-sheet body for the callEmergency emergencyNumber field."
+  },
+  "eventDefaultsCallEmergencySmsFirstInfo": "Sends a location SMS to your emergency contacts just before dialling, so they are informed even if the call doesn't connect.",
+  "@eventDefaultsCallEmergencySmsFirstInfo": {
+    "description": "Info-sheet body for the callEmergency sendLocationSmsFirst field."
+  },
+  "eventDefaultsCallEmergencyConfirmInfo": "Shows a short countdown before dialling, giving you a last chance to cancel an accidental emergency call.",
+  "@eventDefaultsCallEmergencyConfirmInfo": {
+    "description": "Info-sheet body for the callEmergency showConfirmation field."
+  },
+  "eventDefaultsCallEmergencyConfirmDurationInfo": "How many seconds the cancel countdown lasts before the emergency call is placed.",
+  "@eventDefaultsCallEmergencyConfirmDurationInfo": {
+    "description": "Info-sheet body for the callEmergency confirmationDurationSeconds field."
+  },
+  "eventDefaultsHardwareButtonInfo": "Which physical button (volume up or volume down) this step watches for the panic press.",
+  "@eventDefaultsHardwareButtonInfo": {
+    "description": "Info-sheet body for the hardwareButton buttonType field."
+  },
+  "eventDefaultsHardwarePatternInfo": "The press pattern that triggers the step: several quick presses in a row, or one long press.",
+  "@eventDefaultsHardwarePatternInfo": {
+    "description": "Info-sheet body for the hardwareButton pressPattern field."
+  },
+  "eventDefaultsHardwarePressCountInfo": "How many quick presses in a row are required. More presses make accidental triggers less likely.",
+  "@eventDefaultsHardwarePressCountInfo": {
+    "description": "Info-sheet body for the hardwareButton pressCount field (repeat-press pattern)."
+  },
+  "eventDefaultsHardwareLongDurationInfo": "How long the button must be held down to trigger the step.",
+  "@eventDefaultsHardwareLongDurationInfo": {
+    "description": "Info-sheet body for the hardwareButton longPressDurationSeconds field (long-press pattern)."
+  },
+  "eventPreviewCardLabel": "Preview",
+  "@eventPreviewCardLabel": {
+    "description": "Small caption on the live preview cards in the fakeCall/smsContact/loudAlarm config forms (spec 04:1591)."
+  },
+  "eventPreviewFakeCallCaller": "Incoming call from {name}",
+  "@eventPreviewFakeCallCaller": {
+    "description": "Preview-card title for the fakeCall form. {name} is the configured caller name.",
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "eventPreviewFakeCallRing": "Rings for {seconds}s · {style}",
+  "@eventPreviewFakeCallRing": {
+    "description": "Preview-card line summarising the fakeCall ring duration and call style.",
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      },
+      "style": {}
+    }
+  },
+  "eventPreviewFakeCallDeclineSafe": "Declining counts as a safe check-in.",
+  "@eventPreviewFakeCallDeclineSafe": {
+    "description": "Preview-card line when fakeCall declineIsSafe is on."
+  },
+  "eventPreviewFakeCallDeclineNotSafe": "Declining counts as a miss — the call can ring again.",
+  "@eventPreviewFakeCallDeclineNotSafe": {
+    "description": "Preview-card line when fakeCall declineIsSafe is off."
+  },
+  "eventPreviewSmsToAll": "To all contacts · {channel}",
+  "@eventPreviewSmsToAll": {
+    "description": "Preview-card recipients line when the smsContact step targets every contact. {channel} is the messaging channel name.",
+    "placeholders": {
+      "channel": {}
+    }
+  },
+  "eventPreviewSmsToCount": "{count, plural, =1{To 1 contact · {channel}} other{To {count} contacts · {channel}}}",
+  "@eventPreviewSmsToCount": {
+    "description": "Preview-card recipients line when the smsContact step targets specific contacts.",
+    "placeholders": {
+      "count": {
+        "type": "num"
+      },
+      "channel": {}
+    }
+  },
+  "eventPreviewSmsToFirst": "To your first contact · {channel}",
+  "@eventPreviewSmsToFirst": {
+    "description": "Preview-card recipients line when the smsContact step targets only the first contact.",
+    "placeholders": {
+      "channel": {}
+    }
+  },
+  "eventPreviewSmsMessage": "Message: {gist}",
+  "@eventPreviewSmsMessage": {
+    "description": "Preview-card line showing the message text (with its placeholders) that the smsContact step will send.",
+    "placeholders": {
+      "gist": {}
+    }
+  },
+  "eventPreviewLoudAlarmTitle": "Volume {percent}% · {sound}",
+  "@eventPreviewLoudAlarmTitle": {
+    "description": "Preview-card title for the loudAlarm form: configured volume percentage and sound choice.",
+    "placeholders": {
+      "percent": {
+        "type": "int"
+      },
+      "sound": {}
+    }
+  },
+  "eventPreviewLoudAlarmRampOn": "Volume ramps up gradually.",
+  "@eventPreviewLoudAlarmRampOn": {
+    "description": "Preview-card line when loudAlarm gradualVolume is on."
+  },
+  "eventPreviewLoudAlarmRampOff": "Starts at full volume.",
+  "@eventPreviewLoudAlarmRampOff": {
+    "description": "Preview-card line when loudAlarm gradualVolume is off."
+  },
+  "eventPreviewLoudAlarmFlashScreen": "Screen flashes",
+  "@eventPreviewLoudAlarmFlashScreen": {
+    "description": "Preview-card fragment when loudAlarm flashScreen is on. Joined with ' · ' to other flash fragments."
+  },
+  "eventPreviewLoudAlarmFlashLight": "Camera light flashes",
+  "@eventPreviewLoudAlarmFlashLight": {
+    "description": "Preview-card fragment when loudAlarm flashLight is on. Joined with ' · ' to other flash fragments."
+  },
+  "eventPreviewLoudAlarmNoFlash": "No flashing",
+  "@eventPreviewLoudAlarmNoFlash": {
+    "description": "Preview-card fragment when neither loudAlarm flash option is on."
   },
   "pastEventsTrashTitle": "Trash",
   "@pastEventsTrashTitle": {

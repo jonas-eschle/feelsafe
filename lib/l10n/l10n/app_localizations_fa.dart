@@ -200,6 +200,42 @@ class AppLocalizationsFa extends AppLocalizations {
   String get chainStepNameHardwareButton => 'دکمهٔ سخت‌افزاری';
 
   @override
+  String get chainStepDescHoldButton =>
+      'برای ایمن ماندن نگه دار — رها کردن، شمارش معکوس مهلت اضافه را آغاز می‌کند.';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'اعلانی استتاری می‌فرستد — باید پاسخ دهید تا ایمنی‌تان تأیید شود.';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'تماسی ورودی را شبیه‌سازی می‌کند — پاسخ دهید یا رد کنید تا نشان دهید ایمن هستید.';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'پیامکی همراه با موقعیت شما به مخاطبان اضطراری می‌فرستد.';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'شمارش معکوسی با صدا و فلش به‌عنوان آخرین هشدار نمایش می‌دهد.';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'زنگ هشداری با حداکثر صدا و همراه فلش پخش می‌کند تا توجه جلب کند.';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'به‌طور خودکار با خدمات اضطراری (۱۱۲/۹۱۱) تماس می‌گیرد.';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'مستقیماً با یک مخاطب اضطراری تماس می‌گیرد.';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'دکمه‌ای سخت‌افزاری را برای الگوی فشار اضطراری زیر نظر می‌گیرد.';
+
+  @override
   String get homeChecklistTitle => 'راه‌اندازی ایمنی';
 
   @override
@@ -2188,6 +2224,233 @@ class AppLocalizationsFa extends AppLocalizations {
 
   @override
   String get eventDefaultsHardwareLongDuration => 'مدت فشار طولانی (ث)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'ظاهر سطح نگه‌داشتن: یک دکمهٔ بزرگ، تمام صفحه، یا صفحهٔ قفل ساختگی که کار برنامه را پنهان می‌کند.';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'اینکه بلند شدن انگشت با چه سخت‌گیری‌ای رها کردن محسوب شود. مقادیر پایین‌تر لغزش‌های کوتاه را می‌بخشند؛ مقادیر بالاتر بلافاصله واکنش نشان می‌دهند.';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'به‌محض جدا شدن انگشت از دکمه، تلفن می‌لرزد تا رها شدن تصادفی را فوراً متوجه شوید.';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'وقتی انگشتتان از دکمه جدا شود صدای کوتاهی پخش می‌کند تا حتی بدون نگاه کردن به صفحه متوجه رها شدن تصادفی شوید.';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'در طول این مرحله صفحه را سیاه نگه می‌دارد و تلفن قفل‌شده را تقلید می‌کند تا برنامه از دید ناظران پنهان بماند. مرحله در پس‌زمینه به کار خود ادامه می‌دهد.';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'زمان بین یادآورها را حدود ±۲۰٪ تغییر می‌دهد تا به‌جای برنامهٔ ثابت، مانند اعلان‌های عادی برنامه‌ها به نظر برسند.';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'هر بار الگوی یادآور متفاوتی انتخاب می‌کند تا یادآورهای تکراری برای کسی که اعلان‌هایتان را می‌بیند یکسان به نظر نرسند.';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'اگر پیش از فعال شدن یادآور اعلام حضور کنید، زمان‌سنج به‌جای حفظ برنامهٔ قبلی، از بازهٔ کامل دوباره شروع می‌شود.';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'الگوهای یادآوری';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'الگوها ظاهر یادآور استتاری را تعیین می‌کنند — نام ساختگی برنامه، عنوان و متن آن (مثلاً اعلان تقویم یا برنامهٔ آموزش زبان). مجموعهٔ مشترک را اینجا مدیریت کنید؛ هر مرحلهٔ یادآور استتاری از آن انتخاب می‌کند.';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'نحوهٔ نمایش شمارش معکوس: هشداری تمام‌صفحه یا پوششی کوچک که کمتر جلب توجه می‌کند.';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'در طول شمارش معکوس تلفن می‌لرزد تا حتی با تلفنِ در جیب هم متوجه آن شوید.';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'در طول شمارش معکوس هشدار صوتی پخش می‌کند. اگر هشدار باید بی‌صدا بماند، آن را خاموش کنید.';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'تماس ساختگی صفحهٔ تماس ورودی کدام برنامه را تقلید کند تا روی تلفن شما باورپذیر به نظر برسد.';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'نامی که در صفحهٔ تماس ساختگی به‌عنوان تماس‌گیرنده نمایش داده می‌شود. کسی را انتخاب کنید که پاسخ دادن به او طبیعی باشد.';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'تماس ساختگی چه مدت زنگ بخورد تا از‌دست‌رفته محسوب شود. تماس از‌دست‌رفته اجازه می‌دهد زنجیره تشدید شود.';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'صدا پس از پاسخ دادن کجا پخش شود: گوشی (آرام و خصوصی) یا بلندگو.';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'آهنگ زنگ تماس ساختگی. فایل صوتی خودتان را وارد کنید تا با زنگ واقعی‌تان هماهنگ باشد — اگر فایل روزی در دسترس نباشد، زنگ داخلی پخش می‌شود.';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'وقتی روشن باشد، رد تماس اعلام حضور ایمن محسوب می‌شود و زنجیره از نو شروع می‌شود. وقتی خاموش باشد، رد تماس از‌دست‌رفته محسوب می‌شود و تماس ممکن است دوباره زنگ بخورد.';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'برنامهٔ پیام‌رسانی این مرحله: SMS، WhatsApp، Telegram یا Signal. مخاطبانی که نمی‌توانند کانال انتخابی را دریافت کنند خاکستری نمایش داده می‌شوند.';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'چه کسی این هشدار را دریافت می‌کند. روی مخاطبان بزنید تا انتخاب شوند — با انتخاب همه، فهرست پویا می‌ماند و مخاطبانی که بعداً اضافه کنید خودکار شامل می‌شوند.';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'متن پیام هشدار. جای‌نگهدارهایی مانند $name و $location هنگام ارسال با مقادیر واقعی پر می‌شوند. برای استفاده از هشدار داخلی، خالی بگذارید.';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'موقعیت فعلی GPS شما را به پیام می‌افزاید تا مخاطبانتان بدانند کجا پیدایتان کنند.';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'اطلاعات پزشکی نمایهٔ شما (مانند گروه خونی یا حساسیت‌ها) را برای امدادگران به پیام می‌افزاید.';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'با فعال شدن این مرحله، ضبط صدا را خودکار آغاز می‌کند و شواهدی از آنچه اطرافتان می‌گذرد نگه می‌دارد.';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'ضبط خودکار صدا چند ثانیه طول بکشد.';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'مخاطبی که اول با او تماس گرفته می‌شود. برای تماس با نخستین مخاطب اضطراری خود، خالی بگذارید. اگر پاسخ ندهد، گزینه‌های جایگزین به‌ترتیب امتحان می‌شوند.';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'بلندی صدای زنگ هشدار، از سکوت (۰) تا حداکثر دستگاه (۱). هدف زنگ هشدار جلب توجه اطرافیان است.';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'زنگ هشدار چه صدایی پخش کند: آژیر داخلی یا صدایی از خودتان.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'در حین زنگ هشدار، صفحه با رنگ‌های روشن چشمک می‌زند. به‌طور پیش‌فرض خاموش است — چشمک زدن می‌تواند بر افراد حساس به نور اثر بگذارد.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'در حین زنگ هشدار چراغ دوربین چشمک می‌زند تا در تاریکی راحت‌تر پیدا شوید.';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'صدا را به‌جای شروع با حداکثر قدرت، از سکوت تا سطح تنظیم‌شده بالا می‌برد.';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'شمارهٔ اضطراری‌ای را که این مرحله می‌گیرد جایگزین می‌کند. برای استفاده از شمارهٔ سراسری برنامه (مثلاً ۱۱۲ یا ۹۱۱) خالی بگذارید.';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'درست پیش از شماره‌گیری، پیامکی با موقعیت به مخاطبان اضطراری‌تان می‌فرستد تا حتی اگر تماس برقرار نشد، در جریان باشند.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'پیش از شماره‌گیری، شمارش معکوس کوتاهی نمایش می‌دهد و آخرین فرصت را برای لغو تماس اضطراری تصادفی به شما می‌دهد.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'شمارش معکوس لغو چند ثانیه طول بکشد تا تماس اضطراری برقرار شود.';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'این مرحله کدام دکمهٔ فیزیکی (افزایش یا کاهش صدا) را برای فشار اضطراری زیر نظر بگیرد.';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'الگوی فشاری که مرحله را فعال می‌کند: چند فشار سریع پشت سر هم یا یک فشار طولانی.';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'چند فشار سریع پشت سر هم لازم است. فشارهای بیشتر، فعال شدن تصادفی را کم‌احتمال‌تر می‌کنند.';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'دکمه چه مدت باید نگه داشته شود تا مرحله فعال شود.';
+
+  @override
+  String get eventPreviewCardLabel => 'پیش‌نمایش';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return 'تماس ورودی از $name';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return '$seconds ثانیه زنگ می‌خورد · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe =>
+      'رد تماس، اعلام حضور ایمن محسوب می‌شود.';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'رد تماس از‌دست‌رفته محسوب می‌شود — تماس ممکن است دوباره زنگ بخورد.';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'به همهٔ مخاطبان · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'به $count مخاطب · $channel',
+      one: 'به ۱ مخاطب · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'به نخستین مخاطب شما · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'پیام: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'بلندی صدا $percent٪ · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'صدا به‌تدریج بالا می‌رود.';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'با حداکثر صدا شروع می‌شود.';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'صفحه چشمک می‌زند';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'چراغ دوربین چشمک می‌زند';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'بدون چشمک زدن';
 
   @override
   String get pastEventsTrashTitle => 'سطل زباله';

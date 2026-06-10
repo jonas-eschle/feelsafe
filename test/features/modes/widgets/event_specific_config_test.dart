@@ -1,6 +1,7 @@
-/// Widget tests for [EventSpecificConfig]'s #20 additions: the iOS
-/// platform-limitation warnings (spec 02:325, 02:479) and the SMS
-/// message-template editor (spec 02:287-304).
+/// Widget tests for [EventSpecificConfig]: the iOS platform-limitation
+/// warnings (spec 02:325, 02:479), the SMS message-template editor (spec
+/// 02:287-304), the per-field info icons + live preview cards (spec
+/// 04:1591), and the disguisedReminder manage-templates link (spec 04:1635).
 ///
 /// The iOS warnings are gated on `Theme.of(context).platform`, so the test
 /// harness injects the platform via `ThemeData(platform: ...)` — a real,
@@ -24,8 +25,10 @@ import 'package:guardianangela/domain/enums/hold_style.dart';
 import 'package:guardianangela/domain/enums/loud_alarm_sound.dart';
 import 'package:guardianangela/domain/enums/message_channel.dart';
 import 'package:guardianangela/domain/enums/press_pattern.dart';
+import 'package:guardianangela/domain/enums/sms_contact_selection.dart';
 import 'package:guardianangela/domain/enums/voice_output_mode.dart';
 import 'package:guardianangela/domain/models/emergency_contact.dart';
+import 'package:guardianangela/domain/orchestration/strategies/sms_contact_strategy.dart';
 import 'package:guardianangela/features/modes/widgets/event_specific_config.dart';
 import 'package:guardianangela/l10n/l10n/app_localizations.dart';
 import '../../../helpers/widget_test_helpers.dart';
@@ -682,6 +685,502 @@ void main() {
       ).not((it) => it.equals(2.0));
     });
   });
+
+  // ── Per-field info icons (spec 04:1591) ───────────────────────────────────
+  //
+  // "Every field has a small info-icon button that opens a bottom sheet with
+  // a plain-language explanation." Each test pumps one real form, asserts an
+  // info button exists for EVERY field (found via its tooltip = field label),
+  // and opens at least one sheet to verify the right l10n body renders.
+
+  group('EventSpecificConfig — per-field info icons (spec 04:1591)', () {
+    testWidgets('holdButton: all 5 fields, holdStyle sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(tester, const HoldButtonConfig(), onChanged: (_) {});
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsHoldStyle,
+        l10n.eventDefaultsHoldSensitivity,
+        l10n.eventDefaultsHoldVibrate,
+        l10n.eventDefaultsHoldSound,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsHoldStyle,
+        body: l10n.eventDefaultsHoldStyleInfo,
+      );
+    });
+
+    testWidgets('disguisedReminder: all 4 fields, resetOnEarly sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(),
+        onChanged: (_) {},
+      );
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsReminderRandomInterval,
+        l10n.eventDefaultsReminderRandomTemplate,
+        l10n.eventDefaultsReminderResetOnEarly,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsReminderResetOnEarly,
+        body: l10n.eventDefaultsReminderResetOnEarlyInfo,
+      );
+    });
+
+    testWidgets('countdownWarning: all 4 fields, style sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const CountdownWarningConfig(),
+        onChanged: (_) {},
+      );
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsCountdownStyle,
+        l10n.eventDefaultsCountdownVibrate,
+        l10n.eventDefaultsCountdownSound,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsCountdownStyle,
+        body: l10n.eventDefaultsCountdownStyleInfo,
+      );
+    });
+
+    testWidgets('fakeCall: all 7 fields, declineIsSafe sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(tester, const FakeCallConfig(), onChanged: (_) {});
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsFakeCallStyle,
+        l10n.eventDefaultsFakeCallCallerName,
+        l10n.eventDefaultsFakeCallRingDuration,
+        l10n.eventDefaultsFakeCallVoiceOutput,
+        l10n.eventDefaultsFakeCallRingtone,
+        l10n.eventDefaultsFakeCallDeclineIsSafe,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsFakeCallDeclineIsSafe,
+        body: l10n.eventDefaultsFakeCallDeclineIsSafeInfo,
+      );
+    });
+
+    testWidgets('smsContact: all 7 fields, template sheet shows the literal '
+        'placeholder tokens', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // autoRecordAudio: true so the record-duration field is rendered too.
+      await _pumpForm(
+        tester,
+        const SmsContactConfig(autoRecordAudio: true),
+        onChanged: (_) {},
+      );
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsSmsChannel,
+        l10n.eventDefaultsSmsMessageTemplate,
+        l10n.eventDefaultsSmsIncludeLocation,
+        l10n.eventDefaultsSmsIncludeMedical,
+        l10n.eventDefaultsSmsAutoRecord,
+        l10n.eventDefaultsSmsRecordDuration,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsSmsMessageTemplate,
+        body: l10n.eventDefaultsSmsMessageTemplateInfo('{name}', '{location}'),
+      );
+    });
+
+    testWidgets('smsContact recipients grid header has an info icon too', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(),
+        contacts: <EmergencyContact>[_contact('a', 'Alice')],
+      );
+      await _openInfoSheet(
+        tester,
+        title: l10n.smsContactRecipientsHeader,
+        body: l10n.smsContactRecipientsInfo,
+      );
+    });
+
+    testWidgets('phoneCallContact: both fields, primary-contact sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const PhoneCallContactConfig(),
+        onChanged: (_) {},
+      );
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsPhonePrimaryContact,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsPhonePrimaryContact,
+        body: l10n.eventDefaultsPhonePrimaryContactInfo,
+      );
+    });
+
+    testWidgets('loudAlarm: all 6 fields, flash-screen sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(tester, const LoudAlarmConfig(), onChanged: (_) {});
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsLoudAlarmVolume,
+        l10n.eventDefaultsLoudAlarmSound,
+        l10n.eventDefaultsLoudAlarmFlashScreen,
+        l10n.eventDefaultsLoudAlarmFlashLight,
+        l10n.eventDefaultsLoudAlarmGradual,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsLoudAlarmFlashScreen,
+        body: l10n.eventDefaultsLoudAlarmFlashScreenInfo,
+      );
+    });
+
+    testWidgets('callEmergency: all 5 fields, confirm sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // showConfirmation defaults to true → the duration field is rendered.
+      await _pumpForm(tester, const CallEmergencyConfig(), onChanged: (_) {});
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsCallEmergencyNumber,
+        l10n.eventDefaultsCallEmergencySmsFirst,
+        l10n.eventDefaultsCallEmergencyConfirm,
+        l10n.eventDefaultsCallEmergencyConfirmDuration,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsCallEmergencyConfirm,
+        body: l10n.eventDefaultsCallEmergencyConfirmInfo,
+      );
+    });
+
+    testWidgets('hardwareButton (repeat): all 4 fields, button sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(tester, const HardwareButtonConfig(), onChanged: (_) {});
+      _expectInfoButtons(<String>[
+        l10n.eventDefaultsHardwareButton,
+        l10n.eventDefaultsHardwarePattern,
+        l10n.eventDefaultsHardwarePressCount,
+        l10n.eventDefaultsBlackScreen,
+      ]);
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsHardwareButton,
+        body: l10n.eventDefaultsHardwareButtonInfo,
+      );
+    });
+
+    testWidgets('hardwareButton (longPress): duration field sheet opens', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const HardwareButtonConfig(pressPattern: PressPattern.longPress),
+        onChanged: (_) {},
+      );
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsHardwareLongDuration,
+        body: l10n.eventDefaultsHardwareLongDurationInfo,
+      );
+    });
+  });
+
+  // ── Manage-templates link (spec 04:1635) ──────────────────────────────────
+
+  group('EventSpecificConfig — manage-templates link (spec 04:1635)', () {
+    testWidgets('renders the ListTile with icons and fires the callback', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      var tapped = 0;
+      await _pumpStateful(
+        tester,
+        const DisguisedReminderConfig(),
+        onManageTemplates: () => tapped++,
+      );
+      final Finder link = find.widgetWithText(
+        ListTile,
+        l10n.safetyOptionsManageTemplates,
+      );
+      expect(link, findsOneWidget);
+      expect(find.byIcon(Icons.collections_outlined), findsOneWidget);
+      expect(find.byIcon(Icons.chevron_right), findsOneWidget);
+      await tester.ensureVisible(link);
+      await tester.tap(link);
+      check(tapped).equals(1);
+    });
+
+    testWidgets('an InfoIconButton above the link explains templates', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const DisguisedReminderConfig(),
+        onManageTemplates: () {},
+      );
+      expect(
+        find.text(l10n.eventDefaultsReminderTemplatesTitle),
+        findsOneWidget,
+      );
+      await _openInfoSheet(
+        tester,
+        title: l10n.eventDefaultsReminderTemplatesTitle,
+        body: l10n.eventDefaultsReminderTemplatesInfo,
+      );
+    });
+
+    testWidgets('hidden in the Event Defaults context (no callback)', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const DisguisedReminderConfig(),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.safetyOptionsManageTemplates), findsNothing);
+      expect(find.text(l10n.eventDefaultsReminderTemplatesTitle), findsNothing);
+    });
+  });
+
+  // ── Preview cards (spec 04:1591) ──────────────────────────────────────────
+  //
+  // "Three step types (fakeCall, smsContact, loudAlarm) render a preview
+  // card so users can see the effect of their settings at a glance." The
+  // reactivity tests drive a real form through a stateful harness (the
+  // emitted config is fed back, exactly like both production callers).
+
+  group('EventSpecificConfig — fakeCall preview card (spec 04:1591)', () {
+    testWidgets('renders caller, ring summary, and decline meaning', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(tester, const FakeCallConfig());
+      expect(find.text(l10n.eventPreviewCardLabel), findsOneWidget);
+      expect(
+        find.text(l10n.eventPreviewFakeCallCaller('Angela')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.eventPreviewFakeCallRing(30, 'platformNative')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventPreviewFakeCallDeclineSafe), findsOneWidget);
+    });
+
+    testWidgets('reacts to caller-name, ring-duration, and decline edits', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(tester, const FakeCallConfig());
+
+      await _commitText(tester, l10n.eventDefaultsFakeCallCallerName, 'Mom');
+      expect(find.text(l10n.eventPreviewFakeCallCaller('Mom')), findsOneWidget);
+
+      await _tapSpinnerPlus(tester);
+      expect(
+        find.text(l10n.eventPreviewFakeCallRing(31, 'platformNative')),
+        findsOneWidget,
+      );
+
+      await _toggleSwitch(tester, l10n.eventDefaultsFakeCallDeclineIsSafe);
+      expect(
+        find.text(l10n.eventPreviewFakeCallDeclineNotSafe),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventPreviewFakeCallDeclineSafe), findsNothing);
+    });
+  });
+
+  group('EventSpecificConfig — smsContact preview card (spec 04:1591)', () {
+    testWidgets('default config previews all-contacts and the seeded text', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(tester, const SmsContactConfig());
+      expect(find.text(l10n.eventPreviewSmsToAll('sms')), findsOneWidget);
+      expect(
+        find.text(l10n.eventPreviewSmsMessage(kDefaultSmsMessageTemplate)),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('reacts to a channel change', (WidgetTester tester) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(tester, const SmsContactConfig());
+      await _pickEnum(
+        tester,
+        MessageChannel.sms.name,
+        MessageChannel.telegram.name,
+      );
+      expect(find.text(l10n.eventPreviewSmsToAll('telegram')), findsOneWidget);
+      expect(find.text(l10n.eventPreviewSmsToAll('sms')), findsNothing);
+    });
+
+    testWidgets('reacts to deselecting a recipient in the grid', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(),
+        contacts: <EmergencyContact>[
+          _contact('a', 'Alice'),
+          _contact('b', 'Bob', sortOrder: 1),
+        ],
+      );
+      expect(find.text(l10n.eventPreviewSmsToAll('sms')), findsOneWidget);
+      // Deselect Alice → only Bob remains → specific-ids count form.
+      await tester.tap(find.text('Alice'));
+      await tester.pumpAndSettle();
+      expect(find.text(l10n.eventPreviewSmsToCount(1, 'sms')), findsOneWidget);
+      expect(find.text(l10n.eventPreviewSmsToAll('sms')), findsNothing);
+    });
+
+    testWidgets('previews a custom template verbatim', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(
+        tester,
+        const SmsContactConfig(messageTemplate: 'Help {name}'),
+      );
+      expect(
+        find.text(l10n.eventPreviewSmsMessage('Help {name}')),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('covers the firstContact, legacy, and empty-ids summaries', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const SmsContactConfig(
+          contactSelection: SmsContactSelection.firstContact,
+        ),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.eventPreviewSmsToFirst('sms')), findsOneWidget);
+
+      // Legacy: allContacts + an explicit id list is treated as specific
+      // IDs, mirroring the runtime resolver.
+      await _pumpForm(
+        tester,
+        const SmsContactConfig(contactIds: <String>['a', 'b']),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.eventPreviewSmsToCount(2, 'sms')), findsOneWidget);
+
+      await _pumpForm(
+        tester,
+        const SmsContactConfig(
+          contactSelection: SmsContactSelection.specificIds,
+        ),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.eventPreviewSmsToCount(0, 'sms')), findsOneWidget);
+    });
+  });
+
+  group('EventSpecificConfig — loudAlarm preview card (spec 04:1591)', () {
+    testWidgets('renders volume, sound, ramp, and flash summary', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      // Defaults: volume 1.0, siren, no ramp, camera flash on.
+      await _pumpStateful(tester, const LoudAlarmConfig());
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmTitle(100, 'siren')),
+        findsOneWidget,
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOff), findsOneWidget);
+      expect(find.text(l10n.eventPreviewLoudAlarmFlashLight), findsOneWidget);
+    });
+
+    testWidgets('reacts to a volume drag and a gradual-ramp toggle', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpStateful(tester, const LoudAlarmConfig(volume: 0.5));
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmTitle(50, 'siren')),
+        findsOneWidget,
+      );
+
+      // A large drag saturates the slider at its max (volume 1.0).
+      await tester.drag(find.byType(Slider), const Offset(400, 0));
+      await tester.pumpAndSettle();
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmTitle(100, 'siren')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(l10n.eventPreviewLoudAlarmTitle(50, 'siren')),
+        findsNothing,
+      );
+
+      await _toggleSwitch(tester, l10n.eventDefaultsLoudAlarmGradual);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOn), findsOneWidget);
+      expect(find.text(l10n.eventPreviewLoudAlarmRampOff), findsNothing);
+    });
+
+    testWidgets('joins both flash fragments; shows no-flash when both off', (
+      WidgetTester tester,
+    ) async {
+      final l10n = await loadL10n(const Locale('en'));
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(flashScreen: true),
+        onChanged: (_) {},
+      );
+      expect(
+        find.text(
+          '${l10n.eventPreviewLoudAlarmFlashScreen} · '
+          '${l10n.eventPreviewLoudAlarmFlashLight}',
+        ),
+        findsOneWidget,
+      );
+
+      await _pumpForm(
+        tester,
+        const LoudAlarmConfig(flashLight: false),
+        onChanged: (_) {},
+      );
+      expect(find.text(l10n.eventPreviewLoudAlarmNoFlash), findsOneWidget);
+    });
+  });
 }
 
 // ─── Interaction helpers for the per-type field tests ───────────────────────
@@ -750,4 +1249,83 @@ Future<void> _commitText(WidgetTester tester, String label, String text) async {
   await tester.enterText(field, text);
   await tester.testTextInput.receiveAction(TextInputAction.done);
   await tester.pumpAndSettle();
+}
+
+/// Builds a minimal SMS-capable [EmergencyContact] for grid tests.
+///
+/// Relies on the model's default `channels` ([MessageChannel.sms]).
+EmergencyContact _contact(String id, String name, {int sortOrder = 0}) =>
+    EmergencyContact(
+      id: id,
+      name: name,
+      phoneNumber: '+1555000$sortOrder',
+      sortOrder: sortOrder,
+    );
+
+/// Pumps [initial] inside [EventSpecificConfig] with the emitted config fed
+/// back into the widget — the same rebuild-on-change loop both production
+/// callers implement — so preview cards can be asserted to live-update.
+Future<void> _pumpStateful(
+  WidgetTester tester,
+  StepConfig initial, {
+  List<EmergencyContact>? contacts,
+  VoidCallback? onManageTemplates,
+}) async {
+  StepConfig config = initial;
+  await tester.pumpWidget(
+    MaterialApp(
+      localizationsDelegates: const <LocalizationsDelegate<Object>>[
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: AppLocalizations.supportedLocales,
+      theme: ThemeData(
+        platform: TargetPlatform.android,
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF131118)),
+        useMaterial3: true,
+      ),
+      home: Scaffold(
+        body: StatefulBuilder(
+          builder: (BuildContext context, StateSetter setState) =>
+              SingleChildScrollView(
+                child: EventSpecificConfig(
+                  config: config,
+                  onChanged: (StepConfig c) => setState(() => config = c),
+                  contacts: contacts,
+                  onManageTemplates: onManageTemplates,
+                ),
+              ),
+        ),
+      ),
+    ),
+  );
+  await tester.pumpAndSettle();
+}
+
+/// Asserts an [InfoIconButton] (found via its tooltip = the field label)
+/// exists for every label in [labels].
+void _expectInfoButtons(List<String> labels) {
+  for (final String label in labels) {
+    expect(find.byTooltip(label), findsOneWidget, reason: 'info: $label');
+  }
+}
+
+/// Taps the info button tooltipped [title], asserts the sheet shows [body],
+/// and dismisses it via "Got it".
+Future<void> _openInfoSheet(
+  WidgetTester tester, {
+  required String title,
+  required String body,
+}) async {
+  final l10n = await loadL10n(const Locale('en'));
+  final Finder button = find.byTooltip(title);
+  await tester.ensureVisible(button);
+  await tester.tap(button);
+  await tester.pumpAndSettle();
+  expect(find.text(body), findsOneWidget);
+  await tester.tap(find.text(l10n.commonGotIt));
+  await tester.pumpAndSettle();
+  expect(find.text(body), findsNothing);
 }

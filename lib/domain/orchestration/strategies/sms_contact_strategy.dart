@@ -13,7 +13,11 @@ import 'package:guardianangela/services/protocols/messaging_service_protocol.dar
 
 /// Default message template used when [SmsContactConfig.messageTemplate]
 /// is `null`.
-const _kDefaultMessageTemplate =
+///
+/// Public so the mode editor's smsContact preview card can show the exact
+/// message a step will send when no per-step template overrides it
+/// (spec 04:1591 §preview cards).
+const kDefaultSmsMessageTemplate =
     'Automated safety alert from Guardian Angela.\n'
     '{name} may need help.\n'
     'Last known location: {location}\n'
@@ -71,7 +75,7 @@ final class SmsContactStrategy implements EventStrategy {
       );
     }
 
-    final template = config.messageTemplate ?? _kDefaultMessageTemplate;
+    final template = config.messageTemplate ?? kDefaultSmsMessageTemplate;
     final location = config.includeLocation
         ? (services.location.getLastLocationUrl() ??
               services.location.getLastLocationDescription() ??

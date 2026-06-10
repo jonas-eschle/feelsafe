@@ -202,6 +202,42 @@ class AppLocalizationsEl extends AppLocalizations {
   String get chainStepNameHardwareButton => 'Πλήκτρο υλικού';
 
   @override
+  String get chainStepDescHoldButton =>
+      'Κρατήστε για να μείνετε ασφαλείς — η απελευθέρωση ξεκινά αντίστροφη μέτρηση χάριτος.';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'Στέλνει μια καμουφλαρισμένη ειδοποίηση — πρέπει να αποκριθείτε για να επιβεβαιώσετε την ασφάλειά σας.';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'Προσομοιώνει μια εισερχόμενη κλήση — απαντήστε ή απορρίψτε για να δείξετε ότι είστε ασφαλείς.';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'Στέλνει SMS με την τοποθεσία σας στις επαφές έκτακτης ανάγκης.';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'Εμφανίζει αντίστροφη μέτρηση με ήχο και αναλαμπές ως τελευταία προειδοποίηση.';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'Παίζει συναγερμό σε πλήρη ένταση με αναλαμπές για να τραβήξει την προσοχή.';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'Καλεί αυτόματα τις υπηρεσίες έκτακτης ανάγκης (112/911).';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'Καλεί απευθείας μια επαφή έκτακτης ανάγκης.';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'Παρακολουθεί ένα πλήκτρο υλικού για μοτίβο πατήματος πανικού.';
+
+  @override
   String get homeChecklistTitle => 'Ρύθμιση ασφάλειας';
 
   @override
@@ -2230,6 +2266,233 @@ class AppLocalizationsEl extends AppLocalizations {
   @override
   String get eventDefaultsHardwareLongDuration =>
       'Διάρκεια παρατεταμένου πατήματος (δ)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'Πώς φαίνεται η επιφάνεια κρατήματος: ένα μεγάλο κουμπί, ολόκληρη η οθόνη ή μια ψεύτικη οθόνη κλειδώματος που συγκαλύπτει τι κάνει η εφαρμογή.';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'Πόσο αυστηρά ένα σηκωμένο δάχτυλο μετράει ως απελευθέρωση. Οι χαμηλές τιμές συγχωρούν σύντομα γλιστρήματα· οι υψηλές αντιδρούν αμέσως.';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'Το τηλέφωνο δονείται μόλις το δάχτυλό σας αφήσει το κουμπί, ώστε να αντιληφθείτε αμέσως μια κατά λάθος απελευθέρωση.';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'Παίζει έναν σύντομο ήχο όταν το δάχτυλό σας αφήσει το κουμπί, ώστε να αντιληφθείτε μια κατά λάθος απελευθέρωση ακόμη και χωρίς να κοιτάτε την οθόνη.';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'Κρατά την οθόνη μαύρη κατά τη διάρκεια αυτού του βήματος, μιμούμενη ένα κλειδωμένο τηλέφωνο, ώστε η εφαρμογή να μένει αόρατη σε όποιον παρακολουθεί. Το βήμα συνεχίζει να τρέχει από κάτω.';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'Μεταβάλλει τον χρόνο μεταξύ υπενθυμίσεων κατά περίπου ±20 %, ώστε να μοιάζουν με συνηθισμένες ειδοποιήσεις εφαρμογών αντί για σταθερό πρόγραμμα.';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'Επιλέγει διαφορετικό πρότυπο υπενθύμισης κάθε φορά, ώστε οι επαναλαμβανόμενες υπενθυμίσεις να μη φαίνονται πανομοιότυπες σε όποιον παρακολουθεί τις ειδοποιήσεις σας.';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'Αν δηλώσετε ασφάλεια πριν ενεργοποιηθεί η υπενθύμιση, το χρονόμετρο ξεκινά ξανά από το πλήρες διάστημα αντί να κρατήσει το παλιό του πρόγραμμα.';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'Πρότυπα υπενθύμισης';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'Τα πρότυπα ορίζουν πώς φαίνεται μια καμουφλαρισμένη υπενθύμιση — το ψεύτικο όνομα εφαρμογής, τον τίτλο και το κείμενο (για παράδειγμα μια ειδοποίηση ημερολογίου ή εφαρμογής γλωσσών). Διαχειριστείτε εδώ την κοινή δεξαμενή· κάθε βήμα καμουφλαρισμένης υπενθύμισης επιλέγει από αυτήν.';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'Πώς εμφανίζεται η αντίστροφη μέτρηση: προειδοποίηση πλήρους οθόνης ή ελάχιστη επικάλυψη που τραβά λιγότερη προσοχή.';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'Το τηλέφωνο δονείται όσο τρέχει η αντίστροφη μέτρηση, ώστε να την αντιληφθείτε ακόμη και με το τηλέφωνο στην τσέπη.';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'Παίζει ηχητική ειδοποίηση όσο τρέχει η αντίστροφη μέτρηση. Απενεργοποιήστε την αν η προειδοποίηση πρέπει να μείνει αθόρυβη.';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'Την οθόνη εισερχόμενης κλήσης ποιας εφαρμογής μιμείται η ψεύτικη κλήση, ώστε να φαίνεται πειστική στο τηλέφωνό σας.';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'Το όνομα που εμφανίζεται ως καλών στην οθόνη της ψεύτικης κλήσης. Επιλέξτε κάποιον στον οποίο θα ήταν φυσικό να απαντήσετε.';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'Πόση ώρα χτυπά η ψεύτικη κλήση πριν θεωρηθεί αναπάντητη. Μια αναπάντητη κλήση αφήνει την αλυσίδα να κλιμακωθεί.';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'Πού ακούγεται η φωνή αφού απαντήσετε: στο ακουστικό (ήσυχα και ιδιωτικά) ή στο μεγάφωνο.';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'Ο ήχος κλήσης της ψεύτικης κλήσης. Εισαγάγετε δικό σας αρχείο ήχου ώστε να ταιριάζει με τον πραγματικό σας ήχο — αν το αρχείο λείψει, θα ακουστεί ο ενσωματωμένος ήχος.';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'Όταν είναι ενεργό, η απόρριψη της κλήσης μετράει ως δήλωση ασφάλειας και η αλυσίδα επανεκκινείται. Όταν είναι ανενεργό, η απόρριψη μετράει ως αναπάντητη και η κλήση μπορεί να χτυπήσει ξανά.';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'Η εφαρμογή μηνυμάτων αυτού του βήματος: SMS, WhatsApp, Telegram ή Signal. Οι επαφές που δεν μπορούν να λάβουν το επιλεγμένο κανάλι εμφανίζονται γκρι.';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'Ποιος λαμβάνει αυτή την ειδοποίηση. Πατήστε επαφές για να τις επιλέξετε — επιλέγοντας όλους, η λίστα μένει δυναμική και οι επαφές που προσθέτετε αργότερα συμπεριλαμβάνονται αυτόματα.';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'Το κείμενο του μηνύματος ειδοποίησης. Σύμβολα κράτησης θέσης όπως $name και $location συμπληρώνονται με πραγματικές τιμές κατά την αποστολή. Αφήστε κενό για να χρησιμοποιηθεί η ενσωματωμένη ειδοποίηση.';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'Προσθέτει την τρέχουσα θέση GPS στο μήνυμα, ώστε οι επαφές σας να ξέρουν πού να σας βρουν.';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'Προσθέτει στο μήνυμα τα ιατρικά στοιχεία του προφίλ σας (όπως ομάδα αίματος ή αλλεργίες) για τους διασώστες.';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'Ξεκινά αυτόματα ηχογράφηση όταν ενεργοποιηθεί αυτό το βήμα, διατηρώντας αποδείξεις για το τι συμβαίνει γύρω σας.';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'Πόσα δευτερόλεπτα διαρκεί η αυτόματη ηχογράφηση.';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'Η επαφή που καλείται πρώτη. Αφήστε το κενό για να κληθεί η πρώτη επαφή έκτακτης ανάγκης. Αν δεν απαντήσει, δοκιμάζονται οι εναλλακτικές με τη σειρά.';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'Πόσο δυνατά παίζει ο συναγερμός, από σιωπή (0) έως το μέγιστο της συσκευής (1). Ο συναγερμός προορίζεται να τραβήξει την προσοχή όσων βρίσκονται κοντά.';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'Ποιος ήχος παίζει στον συναγερμό: η ενσωματωμένη σειρήνα ή δικός σας ήχος.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'Η οθόνη αναβοσβήνει με έντονα χρώματα όσο ηχεί ο συναγερμός. Απενεργοποιημένο από προεπιλογή — οι αναλαμπές μπορεί να επηρεάσουν άτομα με φωτοευαισθησία.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'Ο φακός της κάμερας αναβοσβήνει όσο ηχεί ο συναγερμός, ώστε να εντοπίζεστε ευκολότερα στο σκοτάδι.';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'Ανεβάζει την ένταση από τη σιωπή έως το ρυθμισμένο επίπεδο αντί να ξεκινά στο μέγιστο.';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'Παρακάμπτει τον αριθμό έκτακτης ανάγκης που καλεί αυτό το βήμα. Αφήστε το κενό για να χρησιμοποιηθεί ο αριθμός όλης της εφαρμογής (π.χ. 112 ή 911).';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'Στέλνει SMS τοποθεσίας στις επαφές έκτακτης ανάγκης λίγο πριν την κλήση, ώστε να ενημερωθούν ακόμη κι αν η κλήση δεν συνδεθεί.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'Εμφανίζει σύντομη αντίστροφη μέτρηση πριν την κλήση, δίνοντάς σας μια τελευταία ευκαιρία να ακυρώσετε μια κατά λάθος κλήση έκτακτης ανάγκης.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'Πόσα δευτερόλεπτα διαρκεί η αντίστροφη μέτρηση ακύρωσης πριν πραγματοποιηθεί η κλήση έκτακτης ανάγκης.';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'Ποιο φυσικό πλήκτρο (αύξηση ή μείωση έντασης) παρακολουθεί αυτό το βήμα για το πάτημα πανικού.';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'Το μοτίβο πατήματος που ενεργοποιεί το βήμα: πολλά γρήγορα πατήματα στη σειρά ή ένα παρατεταμένο πάτημα.';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'Πόσα γρήγορα πατήματα στη σειρά απαιτούνται. Περισσότερα πατήματα κάνουν τις κατά λάθος ενεργοποιήσεις λιγότερο πιθανές.';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'Πόση ώρα πρέπει να μείνει πατημένο το πλήκτρο για να ενεργοποιηθεί το βήμα.';
+
+  @override
+  String get eventPreviewCardLabel => 'Προεπισκόπηση';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return 'Εισερχόμενη κλήση από $name';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return 'Χτυπά $seconds δ. · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe =>
+      'Η απόρριψη μετράει ως δήλωση ασφάλειας.';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'Η απόρριψη μετράει ως αναπάντητη — η κλήση μπορεί να χτυπήσει ξανά.';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'Σε όλες τις επαφές · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Σε $count επαφές · $channel',
+      one: 'Σε 1 επαφή · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'Στην πρώτη σας επαφή · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'Μήνυμα: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'Ένταση $percent % · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'Η ένταση ανεβαίνει σταδιακά.';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'Ξεκινά σε πλήρη ένταση.';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'Η οθόνη αναβοσβήνει';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'Ο φακός αναβοσβήνει';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'Χωρίς αναλαμπές';
 
   @override
   String get pastEventsTrashTitle => 'Κάδος';

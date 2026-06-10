@@ -201,6 +201,42 @@ class AppLocalizationsRu extends AppLocalizations {
   String get chainStepNameHardwareButton => 'Аппаратная кнопка';
 
   @override
+  String get chainStepDescHoldButton =>
+      'Удерживайте, чтобы быть в безопасности — отпускание запускает льготный отсчёт.';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'Отправляет замаскированное уведомление — вы должны отреагировать, чтобы подтвердить безопасность.';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'Имитирует входящий звонок — ответьте или отклоните, чтобы показать, что вы в безопасности.';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'Отправляет SMS с вашим местоположением экстренным контактам.';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'Показывает обратный отсчёт со звуком и вспышками как последнее предупреждение.';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'Включает тревогу на максимальной громкости со вспышками, чтобы привлечь внимание.';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'Автоматически звонит в экстренные службы (112/911).';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'Звонит напрямую экстренному контакту.';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'Следит за аппаратной кнопкой, ожидая панического нажатия.';
+
+  @override
   String get homeChecklistTitle => 'Настройка безопасности';
 
   @override
@@ -2219,6 +2255,235 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String get eventDefaultsHardwareLongDuration =>
       'Длительность долгого нажатия (с)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'Как выглядит область удержания: большая кнопка, весь экран или поддельный экран блокировки, скрывающий, что делает приложение.';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'Насколько строго поднятый палец считается отпусканием. Низкие значения прощают краткие соскальзывания; высокие реагируют мгновенно.';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'Телефон вибрирует, как только палец покидает кнопку, чтобы вы сразу заметили случайное отпускание.';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'Проигрывает короткий звук, когда палец покидает кнопку, чтобы вы заметили случайное отпускание, даже не глядя на экран.';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'Держит экран чёрным во время этого шага, имитируя заблокированный телефон, чтобы приложение оставалось невидимым для наблюдателей. Шаг продолжает работать в фоне.';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'Варьирует время между напоминаниями примерно на ±20 %, чтобы они выглядели как обычные уведомления приложений, а не как фиксированное расписание.';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'Каждый раз выбирает другой шаблон напоминания, чтобы повторяющиеся напоминания не выглядели одинаково для того, кто следит за вашими уведомлениями.';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'Если вы отметитесь до срабатывания напоминания, таймер перезапустится с полного интервала, а не сохранит прежнее расписание.';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'Шаблоны напоминаний';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'Шаблоны определяют, как выглядит замаскированное напоминание — поддельное имя приложения, заголовок и текст (например, уведомление календаря или приложения для изучения языков). Управляйте общим пулом здесь; каждый шаг замаскированного напоминания выбирает из него.';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'Как показывается обратный отсчёт: полноэкранное предупреждение или минимальная накладка, привлекающая меньше внимания.';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'Телефон вибрирует во время обратного отсчёта, чтобы вы заметили его даже с телефоном в кармане.';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'Проигрывает звуковой сигнал во время обратного отсчёта. Отключите, если предупреждение должно оставаться беззвучным.';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'Экран входящего звонка какого приложения имитирует поддельный звонок, чтобы он выглядел правдоподобно на вашем телефоне.';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'Имя, отображаемое как звонящий на экране поддельного звонка. Выберите того, кому вам было бы естественно ответить.';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'Сколько времени звонит поддельный звонок, прежде чем считаться пропущенным. Пропущенный звонок позволяет цепочке эскалировать.';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'Где воспроизводится голос после ответа: в динамике у уха (тихо и приватно) или через громкоговоритель.';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'Рингтон поддельного звонка. Импортируйте собственный аудиофайл, совпадающий с вашим настоящим рингтоном — если файл пропадёт, прозвучит встроенный рингтон.';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'Если включено, отклонение звонка считается отметкой безопасности, и цепочка сбрасывается. Если выключено, отклонение считается пропуском, и звонок может прозвенеть снова.';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'Мессенджер, используемый на этом шаге: SMS, WhatsApp, Telegram или Signal. Контакты, которые не могут получать выбранный канал, отображаются серыми.';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'Кто получает это оповещение. Нажимайте на контакты, чтобы выбрать их — если выбрать всех, список останется динамическим, и добавленные позже контакты будут включены автоматически.';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'Текст оповещения. Плейсхолдеры вроде $name и $location заполняются реальными значениями при отправке сообщения. Оставьте пустым, чтобы использовать встроенное оповещение.';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'Добавляет вашу текущую GPS-позицию к сообщению, чтобы контакты знали, где вас искать.';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'Добавляет в сообщение медицинские данные из вашего профиля (например, группу крови или аллергии) для спасателей.';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'Автоматически начинает аудиозапись при срабатывании этого шага, сохраняя свидетельство происходящего вокруг вас.';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'Сколько секунд длится автоматическая аудиозапись.';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'Контакт, которому звонят первым. Оставьте пустым, чтобы позвонить первому экстренному контакту. Если он не ответит, запасные варианты пробуются по порядку.';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'Насколько громко звучит тревога: от тишины (0) до максимума устройства (1). Тревога предназначена привлекать внимание людей поблизости.';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'Какой звук проигрывает тревога: встроенную сирену или собственный звук.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'Экран мигает яркими цветами, пока звучит тревога. По умолчанию выключено — мигание может влиять на людей со светочувствительностью.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'Стробирует фонарик камеры, пока звучит тревога, чтобы вас было легче найти в темноте.';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'Поднимает громкость от тишины до настроенного уровня вместо старта на полной громкости.';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'Переопределяет экстренный номер, набираемый этим шагом. Оставьте пустым, чтобы использовать общий номер приложения (например, 112 или 911).';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'Отправляет SMS с местоположением вашим экстренным контактам прямо перед набором, чтобы они были в курсе, даже если звонок не пройдёт.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'Показывает короткий обратный отсчёт перед набором, давая последний шанс отменить случайный экстренный вызов.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'Сколько секунд длится отсчёт отмены, прежде чем будет сделан экстренный вызов.';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'Какую физическую кнопку (громкость вверх или вниз) этот шаг отслеживает для панического нажатия.';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'Шаблон нажатия, запускающий шаг: несколько быстрых нажатий подряд или одно долгое нажатие.';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'Сколько быстрых нажатий подряд требуется. Чем больше нажатий, тем менее вероятны случайные срабатывания.';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'Как долго нужно удерживать кнопку, чтобы запустить шаг.';
+
+  @override
+  String get eventPreviewCardLabel => 'Предпросмотр';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return 'Входящий звонок от $name';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return 'Звонит $seconds с · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe =>
+      'Отклонение считается отметкой безопасности.';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'Отклонение считается пропуском — звонок может прозвенеть снова.';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'Всем контактам · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count контактам · $channel',
+      many: '$count контактам · $channel',
+      few: '$count контактам · $channel',
+      one: '$count контакту · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'Вашему первому контакту · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'Сообщение: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'Громкость $percent % · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'Громкость нарастает постепенно.';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'Начинает на полной громкости.';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'Экран мигает';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'Фонарик мигает';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'Без мигания';
 
   @override
   String get pastEventsTrashTitle => 'Корзина';

@@ -37,22 +37,18 @@ IconData stepIcon(ChainStepType type) => switch (type) {
   ChainStepType.hardwareButton => Icons.touch_app,
 };
 
-/// Returns a one-sentence, user-facing description of what [type] does.
-String stepDescription(ChainStepType type) => switch (type) {
-  ChainStepType.holdButton =>
-    'Hold to stay safe — releasing starts a grace countdown.',
-  ChainStepType.disguisedReminder =>
-    'Sends a disguised notification — respond to confirm safety.',
-  ChainStepType.countdownWarning =>
-    'Shows a countdown with sound and flash as a last warning.',
-  ChainStepType.fakeCall => 'Simulates an incoming call — answer or decline.',
-  ChainStepType.smsContact =>
-    'Sends an SMS with your location to emergency contacts.',
-  ChainStepType.phoneCallContact => 'Calls an emergency contact directly.',
-  ChainStepType.loudAlarm =>
-    'Plays a max-volume alarm with flash to attract attention.',
-  ChainStepType.callEmergency =>
-    'Calls emergency services (112/911) automatically.',
-  ChainStepType.hardwareButton =>
-    'Watches a hardware button for a panic press pattern.',
-};
+/// Returns the localized one-sentence description of what [type] does.
+///
+/// Sentences mirror spec 04:1621-1630 (§Step Type Preview) verbatim.
+String stepDescription(AppLocalizations l10n, ChainStepType type) =>
+    switch (type) {
+      ChainStepType.holdButton => l10n.chainStepDescHoldButton,
+      ChainStepType.disguisedReminder => l10n.chainStepDescDisguisedReminder,
+      ChainStepType.countdownWarning => l10n.chainStepDescCountdownWarning,
+      ChainStepType.fakeCall => l10n.chainStepDescFakeCall,
+      ChainStepType.smsContact => l10n.chainStepDescSmsContact,
+      ChainStepType.phoneCallContact => l10n.chainStepDescPhoneCallContact,
+      ChainStepType.loudAlarm => l10n.chainStepDescLoudAlarm,
+      ChainStepType.callEmergency => l10n.chainStepDescCallEmergency,
+      ChainStepType.hardwareButton => l10n.chainStepDescHardwareButton,
+    };

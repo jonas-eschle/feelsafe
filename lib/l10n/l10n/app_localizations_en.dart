@@ -199,6 +199,42 @@ class AppLocalizationsEn extends AppLocalizations {
   String get chainStepNameHardwareButton => 'Hardware button';
 
   @override
+  String get chainStepDescHoldButton =>
+      'Hold to stay safe — releasing starts a grace countdown.';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'Sends a disguised notification — you must respond to confirm safety.';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'Simulates an incoming call — answer or decline to show you\'re safe.';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'Sends an SMS with your location to emergency contacts.';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'Shows a countdown with sound and flash as a last warning.';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'Plays a max-volume alarm with flash to attract attention.';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'Calls emergency services (112/911) automatically.';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'Calls an emergency contact directly.';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'Watches a hardware button for a panic press pattern.';
+
+  @override
   String get homeChecklistTitle => 'Safety Setup';
 
   @override
@@ -2181,6 +2217,233 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get eventDefaultsHardwareLongDuration => 'Long-press duration (s)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'How the hold surface looks: a large button, the whole screen, or a fake lock screen that disguises what the app is doing.';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'How strictly a lifted finger counts as a release. Lower values forgive brief slips; higher values react immediately.';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'Vibrates the phone the moment your finger leaves the button, so you notice an accidental release right away.';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'Plays a short sound when your finger leaves the button, so you notice an accidental release even without looking at the screen.';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'Keeps the screen black during this step, mimicking a locked phone, so the app stays invisible to anyone watching. The step keeps running underneath.';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'Varies the time between reminders by about ±20%, so they look like ordinary app notifications instead of a fixed schedule.';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'Picks a different reminder template each time, so repeated reminders don\'t look identical to someone watching your notifications.';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'If you check in before the reminder fires, the timer restarts at the full interval instead of keeping its old schedule.';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'Reminder templates';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'Templates define what a disguised reminder looks like — its fake app name, title, and text (for example a calendar or language-app notification). Manage the shared pool here; every disguised-reminder step picks from it.';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'How the countdown is shown: a full-screen warning or a minimal overlay that draws less attention.';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'Vibrates the phone while the countdown runs, so you can notice it even with the phone in your pocket.';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'Plays an audible alert while the countdown runs. Turn it off if the warning must stay silent.';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'Which app\'s incoming-call screen the fake call imitates, so it looks believable on your phone.';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'The name shown as the caller on the fake-call screen. Pick someone it would be natural for you to answer.';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'How long the fake call rings before it counts as missed. A missed call lets the chain escalate.';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'Where the voice audio plays after you answer: the earpiece (quiet and private) or the loudspeaker.';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'The ringtone played for the fake call. Import your own audio file to match your real ringtone — if the file ever goes missing, the built-in ring plays instead.';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'When on, declining the call counts as a safe check-in and the chain resets. When off, declining counts as a miss and the call can ring again.';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'The messaging app used for this step: SMS, WhatsApp, Telegram, or Signal. Contacts that can\'t receive the chosen channel are greyed out.';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'Who receives this alert. Tap contacts to select them — selecting everyone keeps the list dynamic, so contacts you add later are included automatically.';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'The text of the alert message. Placeholders like $name and $location are filled in with real values when the message is sent. Leave blank to use the built-in alert.';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'Appends your current GPS position to the message, so your contacts know where to find you.';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'Adds the medical details from your profile (such as blood type or allergies) to the message for first responders.';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'Starts an audio recording automatically when this step fires, preserving evidence of what is happening around you.';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'How many seconds the automatic audio recording lasts.';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'The contact called first. Leave empty to call your first emergency contact. If they don\'t pick up, the alternatives are tried in order.';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'How loud the alarm plays, from silent (0) to the device maximum (1). The alarm is meant to attract attention from people nearby.';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'Which sound the alarm plays: the built-in siren or a custom sound of your own.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'Flashes the screen in bright colors while the alarm sounds. Off by default — flashing can affect people with photosensitivity.';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'Strobes the camera flashlight while the alarm sounds, making you easier to locate in the dark.';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'Ramps the volume up from silent to the configured level instead of starting at full blast.';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'Overrides the emergency number dialled by this step. Leave empty to use the app-wide number (for example 112 or 911).';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'Sends a location SMS to your emergency contacts just before dialling, so they are informed even if the call doesn\'t connect.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'Shows a short countdown before dialling, giving you a last chance to cancel an accidental emergency call.';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'How many seconds the cancel countdown lasts before the emergency call is placed.';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'Which physical button (volume up or volume down) this step watches for the panic press.';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'The press pattern that triggers the step: several quick presses in a row, or one long press.';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'How many quick presses in a row are required. More presses make accidental triggers less likely.';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'How long the button must be held down to trigger the step.';
+
+  @override
+  String get eventPreviewCardLabel => 'Preview';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return 'Incoming call from $name';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return 'Rings for ${seconds}s · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe =>
+      'Declining counts as a safe check-in.';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'Declining counts as a miss — the call can ring again.';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'To all contacts · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'To $count contacts · $channel',
+      one: 'To 1 contact · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'To your first contact · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'Message: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'Volume $percent% · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'Volume ramps up gradually.';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'Starts at full volume.';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'Screen flashes';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'Camera light flashes';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'No flashing';
 
   @override
   String get pastEventsTrashTitle => 'Trash';

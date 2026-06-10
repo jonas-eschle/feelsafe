@@ -201,6 +201,42 @@ class AppLocalizationsHi extends AppLocalizations {
   String get chainStepNameHardwareButton => 'हार्डवेयर बटन';
 
   @override
+  String get chainStepDescHoldButton =>
+      'सुरक्षित रहने के लिए दबाए रखें — छोड़ने पर छूट अवधि की उलटी गिनती शुरू हो जाती है।';
+
+  @override
+  String get chainStepDescDisguisedReminder =>
+      'एक छिपा हुआ नोटिफ़िकेशन भेजता है — सुरक्षा की पुष्टि के लिए आपको जवाब देना होगा।';
+
+  @override
+  String get chainStepDescFakeCall =>
+      'इनकमिंग कॉल की नकल करता है — सुरक्षित होने का संकेत देने के लिए उत्तर दें या अस्वीकार करें।';
+
+  @override
+  String get chainStepDescSmsContact =>
+      'आपातकालीन संपर्कों को आपके स्थान के साथ SMS भेजता है।';
+
+  @override
+  String get chainStepDescCountdownWarning =>
+      'अंतिम चेतावनी के रूप में ध्वनि और चमक के साथ उलटी गिनती दिखाता है।';
+
+  @override
+  String get chainStepDescLoudAlarm =>
+      'ध्यान आकर्षित करने के लिए चमक के साथ अधिकतम वॉल्यूम पर अलार्म बजाता है।';
+
+  @override
+  String get chainStepDescCallEmergency =>
+      'आपातकालीन सेवाओं (112/911) को स्वचालित रूप से कॉल करता है।';
+
+  @override
+  String get chainStepDescPhoneCallContact =>
+      'किसी आपातकालीन संपर्क को सीधे कॉल करता है।';
+
+  @override
+  String get chainStepDescHardwareButton =>
+      'पैनिक प्रेस पैटर्न के लिए हार्डवेयर बटन पर नज़र रखता है।';
+
+  @override
   String get homeChecklistTitle => 'सुरक्षा सेटअप';
 
   @override
@@ -2195,6 +2231,233 @@ class AppLocalizationsHi extends AppLocalizations {
 
   @override
   String get eventDefaultsHardwareLongDuration => 'लंबे-दबाव की अवधि (से)';
+
+  @override
+  String get eventDefaultsHoldStyleInfo =>
+      'होल्ड सतह कैसी दिखती है: एक बड़ा बटन, पूरी स्क्रीन, या एक नकली लॉक स्क्रीन जो छिपाती है कि ऐप क्या कर रहा है।';
+
+  @override
+  String get eventDefaultsHoldSensitivityInfo =>
+      'उठी हुई उंगली कितनी सख़्ती से छोड़ना मानी जाए। कम मान छोटी फिसलन माफ़ करते हैं; अधिक मान तुरंत प्रतिक्रिया देते हैं।';
+
+  @override
+  String get eventDefaultsHoldVibrateInfo =>
+      'जैसे ही आपकी उंगली बटन से हटती है, फ़ोन कंपन करता है, ताकि आप गलती से छूटने को तुरंत भांप लें।';
+
+  @override
+  String get eventDefaultsHoldSoundInfo =>
+      'जब आपकी उंगली बटन से हटती है तो एक छोटी ध्वनि बजती है, ताकि स्क्रीन देखे बिना भी आप गलती से छूटने को भांप लें।';
+
+  @override
+  String get eventDefaultsBlackScreenInfo =>
+      'इस चरण के दौरान स्क्रीन को काला रखता है, लॉक फ़ोन की नकल करते हुए, ताकि देखने वाले को ऐप दिखाई न दे। चरण नीचे चलता रहता है।';
+
+  @override
+  String get eventDefaultsReminderRandomIntervalInfo =>
+      'रिमाइंडर के बीच के समय में लगभग ±20% का बदलाव करता है, ताकि वे तय कार्यक्रम के बजाय सामान्य ऐप नोटिफ़िकेशन लगें।';
+
+  @override
+  String get eventDefaultsReminderRandomTemplateInfo =>
+      'हर बार अलग रिमाइंडर टेम्पलेट चुनता है, ताकि आपके नोटिफ़िकेशन देखने वाले को दोहराए गए रिमाइंडर एक जैसे न लगें।';
+
+  @override
+  String get eventDefaultsReminderResetOnEarlyInfo =>
+      'यदि आप रिमाइंडर बजने से पहले चेक-इन करते हैं, तो टाइमर पुराना कार्यक्रम रखने के बजाय पूरे अंतराल से फिर शुरू होता है।';
+
+  @override
+  String get eventDefaultsReminderTemplatesTitle => 'रिमाइंडर टेम्पलेट';
+
+  @override
+  String get eventDefaultsReminderTemplatesInfo =>
+      'टेम्पलेट तय करते हैं कि छिपा हुआ रिमाइंडर कैसा दिखे — उसका नकली ऐप नाम, शीर्षक और टेक्स्ट (जैसे कैलेंडर या भाषा-ऐप का नोटिफ़िकेशन)। साझा पूल यहाँ प्रबंधित करें; हर छिपा-रिमाइंडर चरण इसी में से चुनता है।';
+
+  @override
+  String get eventDefaultsCountdownStyleInfo =>
+      'उलटी गिनती कैसे दिखे: पूर्ण-स्क्रीन चेतावनी या कम ध्यान खींचने वाला छोटा ओवरले।';
+
+  @override
+  String get eventDefaultsCountdownVibrateInfo =>
+      'उलटी गिनती चलते समय फ़ोन कंपन करता है, ताकि जेब में फ़ोन होने पर भी आप उसे भांप लें।';
+
+  @override
+  String get eventDefaultsCountdownSoundInfo =>
+      'उलटी गिनती चलते समय श्रव्य अलर्ट बजाता है। यदि चेतावनी मौन रहनी चाहिए तो इसे बंद कर दें।';
+
+  @override
+  String get eventDefaultsFakeCallStyleInfo =>
+      'नकली कॉल किस ऐप की इनकमिंग-कॉल स्क्रीन की नकल करे, ताकि वह आपके फ़ोन पर विश्वसनीय लगे।';
+
+  @override
+  String get eventDefaultsFakeCallCallerNameInfo =>
+      'नकली कॉल स्क्रीन पर कॉलर के रूप में दिखने वाला नाम। ऐसा कोई चुनें जिसका कॉल उठाना आपके लिए स्वाभाविक लगे।';
+
+  @override
+  String get eventDefaultsFakeCallRingDurationInfo =>
+      'नकली कॉल मिस्ड मानी जाने से पहले कितनी देर बजती है। मिस्ड कॉल चेन को आगे बढ़ने देती है।';
+
+  @override
+  String get eventDefaultsFakeCallVoiceOutputInfo =>
+      'उत्तर देने के बाद आवाज़ कहाँ बजे: ईयरपीस (धीमा और निजी) या लाउडस्पीकर।';
+
+  @override
+  String get eventDefaultsFakeCallRingtoneInfo =>
+      'नकली कॉल की रिंगटोन। अपनी असली रिंगटोन से मेल खाने के लिए अपनी ऑडियो फ़ाइल आयात करें — यदि फ़ाइल कभी न मिले, तो अंतर्निहित रिंग बजती है।';
+
+  @override
+  String get eventDefaultsFakeCallDeclineIsSafeInfo =>
+      'चालू होने पर, कॉल अस्वीकार करना सुरक्षित चेक-इन माना जाता है और चेन रीसेट हो जाती है। बंद होने पर, अस्वीकार करना चूक माना जाता है और कॉल फिर बज सकती है।';
+
+  @override
+  String get eventDefaultsSmsChannelInfo =>
+      'इस चरण के लिए उपयोग किया जाने वाला मैसेजिंग ऐप: SMS, WhatsApp, Telegram या Signal। जो संपर्क चुना गया चैनल प्राप्त नहीं कर सकते, वे धूसर दिखते हैं।';
+
+  @override
+  String get smsContactRecipientsInfo =>
+      'यह अलर्ट किसे मिलता है। संपर्क चुनने के लिए उन पर टैप करें — सभी को चुनने पर सूची गतिशील रहती है, और बाद में जोड़े गए संपर्क स्वतः शामिल हो जाते हैं।';
+
+  @override
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location) {
+    return 'अलर्ट संदेश का टेक्स्ट। $name और $location जैसे प्लेसहोल्डर संदेश भेजते समय असली मानों से भर दिए जाते हैं। अंतर्निहित अलर्ट उपयोग करने के लिए खाली छोड़ें।';
+  }
+
+  @override
+  String get eventDefaultsSmsIncludeLocationInfo =>
+      'संदेश में आपकी वर्तमान GPS स्थिति जोड़ता है, ताकि आपके संपर्क जानें कि आपको कहाँ खोजना है।';
+
+  @override
+  String get eventDefaultsSmsIncludeMedicalInfo =>
+      'प्राथमिक उपचारकर्ताओं के लिए आपकी प्रोफ़ाइल की चिकित्सा जानकारी (जैसे रक्त समूह या एलर्जी) संदेश में जोड़ता है।';
+
+  @override
+  String get eventDefaultsSmsAutoRecordInfo =>
+      'यह चरण सक्रिय होते ही स्वचालित रूप से ऑडियो रिकॉर्डिंग शुरू करता है, जिससे आपके आस-पास जो हो रहा है उसका प्रमाण सुरक्षित रहता है।';
+
+  @override
+  String get eventDefaultsSmsRecordDurationInfo =>
+      'स्वचालित ऑडियो रिकॉर्डिंग कितने सेकंड चलती है।';
+
+  @override
+  String get eventDefaultsPhonePrimaryContactInfo =>
+      'जिस संपर्क को पहले कॉल किया जाता है। अपने पहले आपातकालीन संपर्क को कॉल करने के लिए खाली छोड़ें। यदि वह न उठाए, तो विकल्प क्रम से आज़माए जाते हैं।';
+
+  @override
+  String get eventDefaultsLoudAlarmVolumeInfo =>
+      'अलार्म कितनी तेज़ बजे, मौन (0) से डिवाइस के अधिकतम (1) तक। अलार्म का उद्देश्य आस-पास के लोगों का ध्यान खींचना है।';
+
+  @override
+  String get eventDefaultsLoudAlarmSoundInfo =>
+      'अलार्म कौन-सी ध्वनि बजाए: अंतर्निहित सायरन या आपकी अपनी ध्वनि।';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashScreenInfo =>
+      'अलार्म बजते समय स्क्रीन चमकीले रंगों में चमकती है। डिफ़ॉल्ट रूप से बंद — चमक प्रकाश-संवेदनशील लोगों को प्रभावित कर सकती है।';
+
+  @override
+  String get eventDefaultsLoudAlarmFlashLightInfo =>
+      'अलार्म बजते समय कैमरे की फ़्लैशलाइट चमकती है, जिससे अंधेरे में आपको खोजना आसान हो जाता है।';
+
+  @override
+  String get eventDefaultsLoudAlarmGradualInfo =>
+      'पूरी आवाज़ से शुरू करने के बजाय वॉल्यूम को मौन से सेट स्तर तक बढ़ाता है।';
+
+  @override
+  String get eventDefaultsCallEmergencyNumberInfo =>
+      'इस चरण द्वारा डायल किए जाने वाले आपातकालीन नंबर को बदलता है। ऐप-व्यापी नंबर (जैसे 112 या 911) उपयोग करने के लिए खाली छोड़ें।';
+
+  @override
+  String get eventDefaultsCallEmergencySmsFirstInfo =>
+      'डायल करने से ठीक पहले आपके आपातकालीन संपर्कों को स्थान SMS भेजता है, ताकि कॉल न जुड़ने पर भी वे सूचित रहें।';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmInfo =>
+      'डायल करने से पहले एक छोटी उलटी गिनती दिखाता है, जिससे गलती से हुई आपातकालीन कॉल रद्द करने का आख़िरी मौका मिलता है।';
+
+  @override
+  String get eventDefaultsCallEmergencyConfirmDurationInfo =>
+      'आपातकालीन कॉल होने से पहले रद्द-करने की उलटी गिनती कितने सेकंड चलती है।';
+
+  @override
+  String get eventDefaultsHardwareButtonInfo =>
+      'यह चरण पैनिक प्रेस के लिए किस भौतिक बटन (वॉल्यूम ऊपर या नीचे) पर नज़र रखता है।';
+
+  @override
+  String get eventDefaultsHardwarePatternInfo =>
+      'चरण को सक्रिय करने वाला प्रेस पैटर्न: लगातार कई तेज़ प्रेस या एक लंबा प्रेस।';
+
+  @override
+  String get eventDefaultsHardwarePressCountInfo =>
+      'लगातार कितने तेज़ प्रेस चाहिए। अधिक प्रेस से गलती से सक्रिय होने की संभावना घटती है।';
+
+  @override
+  String get eventDefaultsHardwareLongDurationInfo =>
+      'चरण सक्रिय करने के लिए बटन कितनी देर दबाए रखना होगा।';
+
+  @override
+  String get eventPreviewCardLabel => 'पूर्वावलोकन';
+
+  @override
+  String eventPreviewFakeCallCaller(Object name) {
+    return '$name से इनकमिंग कॉल';
+  }
+
+  @override
+  String eventPreviewFakeCallRing(int seconds, Object style) {
+    return '$seconds सेकंड बजती है · $style';
+  }
+
+  @override
+  String get eventPreviewFakeCallDeclineSafe =>
+      'अस्वीकार करना सुरक्षित चेक-इन माना जाता है।';
+
+  @override
+  String get eventPreviewFakeCallDeclineNotSafe =>
+      'अस्वीकार करना चूक माना जाता है — कॉल फिर बज सकती है।';
+
+  @override
+  String eventPreviewSmsToAll(Object channel) {
+    return 'सभी संपर्कों को · $channel';
+  }
+
+  @override
+  String eventPreviewSmsToCount(num count, Object channel) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count संपर्कों को · $channel',
+      one: '1 संपर्क को · $channel',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String eventPreviewSmsToFirst(Object channel) {
+    return 'आपके पहले संपर्क को · $channel';
+  }
+
+  @override
+  String eventPreviewSmsMessage(Object gist) {
+    return 'संदेश: $gist';
+  }
+
+  @override
+  String eventPreviewLoudAlarmTitle(int percent, Object sound) {
+    return 'वॉल्यूम $percent% · $sound';
+  }
+
+  @override
+  String get eventPreviewLoudAlarmRampOn => 'वॉल्यूम धीरे-धीरे बढ़ता है।';
+
+  @override
+  String get eventPreviewLoudAlarmRampOff => 'पूरी आवाज़ से शुरू होता है।';
+
+  @override
+  String get eventPreviewLoudAlarmFlashScreen => 'स्क्रीन चमकती है';
+
+  @override
+  String get eventPreviewLoudAlarmFlashLight => 'कैमरा लाइट चमकती है';
+
+  @override
+  String get eventPreviewLoudAlarmNoFlash => 'कोई चमक नहीं';
 
   @override
   String get pastEventsTrashTitle => 'ट्रैश';

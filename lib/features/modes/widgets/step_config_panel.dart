@@ -34,6 +34,7 @@ class StepConfigPanel extends StatelessWidget {
     this.canDelete = true,
     this.contacts,
     this.onManageContacts,
+    this.onManageTemplates,
   });
 
   /// The step being edited.
@@ -51,6 +52,10 @@ class StepConfigPanel extends StatelessWidget {
 
   /// Called when the user wants to manage contacts (empty-state deep link).
   final VoidCallback? onManageContacts;
+
+  /// Opens the global reminder-templates screen from a `disguisedReminder`
+  /// step's form (spec 04:1635).
+  final VoidCallback? onManageTemplates;
 
   /// Called when the user taps Duplicate.
   final VoidCallback onDuplicate;
@@ -103,6 +108,7 @@ class StepConfigPanel extends StatelessWidget {
               onChanged: (StepConfig c) => onChanged(step.copyWith(config: c)),
               contacts: contacts,
               onManageContacts: onManageContacts,
+              onManageTemplates: onManageTemplates,
             ),
           ],
         ),

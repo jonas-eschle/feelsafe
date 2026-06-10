@@ -88,11 +88,12 @@ class _TypeTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     return Card(
       child: ExpansionTile(
         leading: Icon(stepIcon(type)),
-        title: Text(type.name),
-        subtitle: Text(stepDescription(type)),
+        title: Text(stepName(l10n, type)),
+        subtitle: Text(stepDescription(l10n, type)),
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16),

@@ -469,6 +469,60 @@ abstract class AppLocalizations {
   /// **'Hardware button'**
   String get chainStepNameHardwareButton;
 
+  /// One-sentence description of the holdButton step type (spec 04:1622).
+  ///
+  /// In en, this message translates to:
+  /// **'Hold to stay safe — releasing starts a grace countdown.'**
+  String get chainStepDescHoldButton;
+
+  /// One-sentence description of the disguisedReminder step type (spec 04:1623).
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a disguised notification — you must respond to confirm safety.'**
+  String get chainStepDescDisguisedReminder;
+
+  /// One-sentence description of the fakeCall step type (spec 04:1624).
+  ///
+  /// In en, this message translates to:
+  /// **'Simulates an incoming call — answer or decline to show you\'re safe.'**
+  String get chainStepDescFakeCall;
+
+  /// One-sentence description of the smsContact step type (spec 04:1625).
+  ///
+  /// In en, this message translates to:
+  /// **'Sends an SMS with your location to emergency contacts.'**
+  String get chainStepDescSmsContact;
+
+  /// One-sentence description of the countdownWarning step type (spec 04:1626).
+  ///
+  /// In en, this message translates to:
+  /// **'Shows a countdown with sound and flash as a last warning.'**
+  String get chainStepDescCountdownWarning;
+
+  /// One-sentence description of the loudAlarm step type (spec 04:1627).
+  ///
+  /// In en, this message translates to:
+  /// **'Plays a max-volume alarm with flash to attract attention.'**
+  String get chainStepDescLoudAlarm;
+
+  /// One-sentence description of the callEmergency step type (spec 04:1628).
+  ///
+  /// In en, this message translates to:
+  /// **'Calls emergency services (112/911) automatically.'**
+  String get chainStepDescCallEmergency;
+
+  /// One-sentence description of the phoneCallContact step type (spec 04:1629).
+  ///
+  /// In en, this message translates to:
+  /// **'Calls an emergency contact directly.'**
+  String get chainStepDescPhoneCallContact;
+
+  /// One-sentence description of the hardwareButton step type (spec 04:1630).
+  ///
+  /// In en, this message translates to:
+  /// **'Watches a hardware button for a panic press pattern.'**
+  String get chainStepDescHardwareButton;
+
   /// Header of the Safety Setup Checklist card on the home screen (spec 04 §Safety Setup Checklist).
   ///
   /// In en, this message translates to:
@@ -4030,6 +4084,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Long-press duration (s)'**
   String get eventDefaultsHardwareLongDuration;
+
+  /// Info-sheet body for the holdButton holdStyle field (spec 04:1591 per-field info).
+  ///
+  /// In en, this message translates to:
+  /// **'How the hold surface looks: a large button, the whole screen, or a fake lock screen that disguises what the app is doing.'**
+  String get eventDefaultsHoldStyleInfo;
+
+  /// Info-sheet body for the holdButton releaseSensitivity field.
+  ///
+  /// In en, this message translates to:
+  /// **'How strictly a lifted finger counts as a release. Lower values forgive brief slips; higher values react immediately.'**
+  String get eventDefaultsHoldSensitivityInfo;
+
+  /// Info-sheet body for the holdButton vibrateOnRelease field.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrates the phone the moment your finger leaves the button, so you notice an accidental release right away.'**
+  String get eventDefaultsHoldVibrateInfo;
+
+  /// Info-sheet body for the holdButton soundOnRelease field.
+  ///
+  /// In en, this message translates to:
+  /// **'Plays a short sound when your finger leaves the button, so you notice an accidental release even without looking at the screen.'**
+  String get eventDefaultsHoldSoundInfo;
+
+  /// Info-sheet body for the shared blackScreenMode field (all step types).
+  ///
+  /// In en, this message translates to:
+  /// **'Keeps the screen black during this step, mimicking a locked phone, so the app stays invisible to anyone watching. The step keeps running underneath.'**
+  String get eventDefaultsBlackScreenInfo;
+
+  /// Info-sheet body for the disguisedReminder randomizeInterval field.
+  ///
+  /// In en, this message translates to:
+  /// **'Varies the time between reminders by about ±20%, so they look like ordinary app notifications instead of a fixed schedule.'**
+  String get eventDefaultsReminderRandomIntervalInfo;
+
+  /// Info-sheet body for the disguisedReminder randomizeTemplateOrder field.
+  ///
+  /// In en, this message translates to:
+  /// **'Picks a different reminder template each time, so repeated reminders don\'t look identical to someone watching your notifications.'**
+  String get eventDefaultsReminderRandomTemplateInfo;
+
+  /// Info-sheet body for the disguisedReminder resetOnEarlyCheckIn field.
+  ///
+  /// In en, this message translates to:
+  /// **'If you check in before the reminder fires, the timer restarts at the full interval instead of keeping its old schedule.'**
+  String get eventDefaultsReminderResetOnEarlyInfo;
+
+  /// Header above the manage-reminder-templates link in the disguisedReminder form (spec 04:1635).
+  ///
+  /// In en, this message translates to:
+  /// **'Reminder templates'**
+  String get eventDefaultsReminderTemplatesTitle;
+
+  /// Info-sheet body explaining what reminder templates are, shown above the manage-templates link (spec 04:1635).
+  ///
+  /// In en, this message translates to:
+  /// **'Templates define what a disguised reminder looks like — its fake app name, title, and text (for example a calendar or language-app notification). Manage the shared pool here; every disguised-reminder step picks from it.'**
+  String get eventDefaultsReminderTemplatesInfo;
+
+  /// Info-sheet body for the countdownWarning style field.
+  ///
+  /// In en, this message translates to:
+  /// **'How the countdown is shown: a full-screen warning or a minimal overlay that draws less attention.'**
+  String get eventDefaultsCountdownStyleInfo;
+
+  /// Info-sheet body for the countdownWarning vibrate field.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibrates the phone while the countdown runs, so you can notice it even with the phone in your pocket.'**
+  String get eventDefaultsCountdownVibrateInfo;
+
+  /// Info-sheet body for the countdownWarning sound field.
+  ///
+  /// In en, this message translates to:
+  /// **'Plays an audible alert while the countdown runs. Turn it off if the warning must stay silent.'**
+  String get eventDefaultsCountdownSoundInfo;
+
+  /// Info-sheet body for the fakeCall callStyle field.
+  ///
+  /// In en, this message translates to:
+  /// **'Which app\'s incoming-call screen the fake call imitates, so it looks believable on your phone.'**
+  String get eventDefaultsFakeCallStyleInfo;
+
+  /// Info-sheet body for the fakeCall callerName field.
+  ///
+  /// In en, this message translates to:
+  /// **'The name shown as the caller on the fake-call screen. Pick someone it would be natural for you to answer.'**
+  String get eventDefaultsFakeCallCallerNameInfo;
+
+  /// Info-sheet body for the fakeCall ringDurationSeconds field.
+  ///
+  /// In en, this message translates to:
+  /// **'How long the fake call rings before it counts as missed. A missed call lets the chain escalate.'**
+  String get eventDefaultsFakeCallRingDurationInfo;
+
+  /// Info-sheet body for the fakeCall voiceOutputMode field.
+  ///
+  /// In en, this message translates to:
+  /// **'Where the voice audio plays after you answer: the earpiece (quiet and private) or the loudspeaker.'**
+  String get eventDefaultsFakeCallVoiceOutputInfo;
+
+  /// Info-sheet body for the fakeCall custom-ringtone picker.
+  ///
+  /// In en, this message translates to:
+  /// **'The ringtone played for the fake call. Import your own audio file to match your real ringtone — if the file ever goes missing, the built-in ring plays instead.'**
+  String get eventDefaultsFakeCallRingtoneInfo;
+
+  /// Info-sheet body for the fakeCall declineIsSafe field.
+  ///
+  /// In en, this message translates to:
+  /// **'When on, declining the call counts as a safe check-in and the chain resets. When off, declining counts as a miss and the call can ring again.'**
+  String get eventDefaultsFakeCallDeclineIsSafeInfo;
+
+  /// Info-sheet body for the smsContact channel field.
+  ///
+  /// In en, this message translates to:
+  /// **'The messaging app used for this step: SMS, WhatsApp, Telegram, or Signal. Contacts that can\'t receive the chosen channel are greyed out.'**
+  String get eventDefaultsSmsChannelInfo;
+
+  /// Info-sheet body for the smsContact recipients grid.
+  ///
+  /// In en, this message translates to:
+  /// **'Who receives this alert. Tap contacts to select them — selecting everyone keeps the list dynamic, so contacts you add later are included automatically.'**
+  String get smsContactRecipientsInfo;
+
+  /// Info-sheet body for the smsContact messageTemplate field. {name} and {location} receive the literal token strings ('{name}', '{location}') from code so the rendered text shows them verbatim — do not translate or alter them.
+  ///
+  /// In en, this message translates to:
+  /// **'The text of the alert message. Placeholders like {name} and {location} are filled in with real values when the message is sent. Leave blank to use the built-in alert.'**
+  String eventDefaultsSmsMessageTemplateInfo(Object name, Object location);
+
+  /// Info-sheet body for the smsContact includeLocation field.
+  ///
+  /// In en, this message translates to:
+  /// **'Appends your current GPS position to the message, so your contacts know where to find you.'**
+  String get eventDefaultsSmsIncludeLocationInfo;
+
+  /// Info-sheet body for the smsContact includeMedicalInfo field.
+  ///
+  /// In en, this message translates to:
+  /// **'Adds the medical details from your profile (such as blood type or allergies) to the message for first responders.'**
+  String get eventDefaultsSmsIncludeMedicalInfo;
+
+  /// Info-sheet body for the smsContact autoRecordAudio field.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts an audio recording automatically when this step fires, preserving evidence of what is happening around you.'**
+  String get eventDefaultsSmsAutoRecordInfo;
+
+  /// Info-sheet body for the smsContact recordDurationSeconds field.
+  ///
+  /// In en, this message translates to:
+  /// **'How many seconds the automatic audio recording lasts.'**
+  String get eventDefaultsSmsRecordDurationInfo;
+
+  /// Info-sheet body for the phoneCallContact contactId field.
+  ///
+  /// In en, this message translates to:
+  /// **'The contact called first. Leave empty to call your first emergency contact. If they don\'t pick up, the alternatives are tried in order.'**
+  String get eventDefaultsPhonePrimaryContactInfo;
+
+  /// Info-sheet body for the loudAlarm volume field.
+  ///
+  /// In en, this message translates to:
+  /// **'How loud the alarm plays, from silent (0) to the device maximum (1). The alarm is meant to attract attention from people nearby.'**
+  String get eventDefaultsLoudAlarmVolumeInfo;
+
+  /// Info-sheet body for the loudAlarm soundChoice field.
+  ///
+  /// In en, this message translates to:
+  /// **'Which sound the alarm plays: the built-in siren or a custom sound of your own.'**
+  String get eventDefaultsLoudAlarmSoundInfo;
+
+  /// Info-sheet body for the loudAlarm flashScreen field.
+  ///
+  /// In en, this message translates to:
+  /// **'Flashes the screen in bright colors while the alarm sounds. Off by default — flashing can affect people with photosensitivity.'**
+  String get eventDefaultsLoudAlarmFlashScreenInfo;
+
+  /// Info-sheet body for the loudAlarm flashLight field.
+  ///
+  /// In en, this message translates to:
+  /// **'Strobes the camera flashlight while the alarm sounds, making you easier to locate in the dark.'**
+  String get eventDefaultsLoudAlarmFlashLightInfo;
+
+  /// Info-sheet body for the loudAlarm gradualVolume field.
+  ///
+  /// In en, this message translates to:
+  /// **'Ramps the volume up from silent to the configured level instead of starting at full blast.'**
+  String get eventDefaultsLoudAlarmGradualInfo;
+
+  /// Info-sheet body for the callEmergency emergencyNumber field.
+  ///
+  /// In en, this message translates to:
+  /// **'Overrides the emergency number dialled by this step. Leave empty to use the app-wide number (for example 112 or 911).'**
+  String get eventDefaultsCallEmergencyNumberInfo;
+
+  /// Info-sheet body for the callEmergency sendLocationSmsFirst field.
+  ///
+  /// In en, this message translates to:
+  /// **'Sends a location SMS to your emergency contacts just before dialling, so they are informed even if the call doesn\'t connect.'**
+  String get eventDefaultsCallEmergencySmsFirstInfo;
+
+  /// Info-sheet body for the callEmergency showConfirmation field.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows a short countdown before dialling, giving you a last chance to cancel an accidental emergency call.'**
+  String get eventDefaultsCallEmergencyConfirmInfo;
+
+  /// Info-sheet body for the callEmergency confirmationDurationSeconds field.
+  ///
+  /// In en, this message translates to:
+  /// **'How many seconds the cancel countdown lasts before the emergency call is placed.'**
+  String get eventDefaultsCallEmergencyConfirmDurationInfo;
+
+  /// Info-sheet body for the hardwareButton buttonType field.
+  ///
+  /// In en, this message translates to:
+  /// **'Which physical button (volume up or volume down) this step watches for the panic press.'**
+  String get eventDefaultsHardwareButtonInfo;
+
+  /// Info-sheet body for the hardwareButton pressPattern field.
+  ///
+  /// In en, this message translates to:
+  /// **'The press pattern that triggers the step: several quick presses in a row, or one long press.'**
+  String get eventDefaultsHardwarePatternInfo;
+
+  /// Info-sheet body for the hardwareButton pressCount field (repeat-press pattern).
+  ///
+  /// In en, this message translates to:
+  /// **'How many quick presses in a row are required. More presses make accidental triggers less likely.'**
+  String get eventDefaultsHardwarePressCountInfo;
+
+  /// Info-sheet body for the hardwareButton longPressDurationSeconds field (long-press pattern).
+  ///
+  /// In en, this message translates to:
+  /// **'How long the button must be held down to trigger the step.'**
+  String get eventDefaultsHardwareLongDurationInfo;
+
+  /// Small caption on the live preview cards in the fakeCall/smsContact/loudAlarm config forms (spec 04:1591).
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get eventPreviewCardLabel;
+
+  /// Preview-card title for the fakeCall form. {name} is the configured caller name.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming call from {name}'**
+  String eventPreviewFakeCallCaller(Object name);
+
+  /// Preview-card line summarising the fakeCall ring duration and call style.
+  ///
+  /// In en, this message translates to:
+  /// **'Rings for {seconds}s · {style}'**
+  String eventPreviewFakeCallRing(int seconds, Object style);
+
+  /// Preview-card line when fakeCall declineIsSafe is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Declining counts as a safe check-in.'**
+  String get eventPreviewFakeCallDeclineSafe;
+
+  /// Preview-card line when fakeCall declineIsSafe is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Declining counts as a miss — the call can ring again.'**
+  String get eventPreviewFakeCallDeclineNotSafe;
+
+  /// Preview-card recipients line when the smsContact step targets every contact. {channel} is the messaging channel name.
+  ///
+  /// In en, this message translates to:
+  /// **'To all contacts · {channel}'**
+  String eventPreviewSmsToAll(Object channel);
+
+  /// Preview-card recipients line when the smsContact step targets specific contacts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{To 1 contact · {channel}} other{To {count} contacts · {channel}}}'**
+  String eventPreviewSmsToCount(num count, Object channel);
+
+  /// Preview-card recipients line when the smsContact step targets only the first contact.
+  ///
+  /// In en, this message translates to:
+  /// **'To your first contact · {channel}'**
+  String eventPreviewSmsToFirst(Object channel);
+
+  /// Preview-card line showing the message text (with its placeholders) that the smsContact step will send.
+  ///
+  /// In en, this message translates to:
+  /// **'Message: {gist}'**
+  String eventPreviewSmsMessage(Object gist);
+
+  /// Preview-card title for the loudAlarm form: configured volume percentage and sound choice.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume {percent}% · {sound}'**
+  String eventPreviewLoudAlarmTitle(int percent, Object sound);
+
+  /// Preview-card line when loudAlarm gradualVolume is on.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume ramps up gradually.'**
+  String get eventPreviewLoudAlarmRampOn;
+
+  /// Preview-card line when loudAlarm gradualVolume is off.
+  ///
+  /// In en, this message translates to:
+  /// **'Starts at full volume.'**
+  String get eventPreviewLoudAlarmRampOff;
+
+  /// Preview-card fragment when loudAlarm flashScreen is on. Joined with ' · ' to other flash fragments.
+  ///
+  /// In en, this message translates to:
+  /// **'Screen flashes'**
+  String get eventPreviewLoudAlarmFlashScreen;
+
+  /// Preview-card fragment when loudAlarm flashLight is on. Joined with ' · ' to other flash fragments.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera light flashes'**
+  String get eventPreviewLoudAlarmFlashLight;
+
+  /// Preview-card fragment when neither loudAlarm flash option is on.
+  ///
+  /// In en, this message translates to:
+  /// **'No flashing'**
+  String get eventPreviewLoudAlarmNoFlash;
 
   /// Title of the past-events trash screen.
   ///
